@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-cream-50 text-brown-900 antialiased;
+    font-family: "Inter", system-ui, sans-serif;
+  }
+
+  h1, h2, h3 {
+    font-family: "Playfair Display", Georgia, serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-none bg-brown-800 px-6 py-3 text-sm font-medium tracking-wide text-cream-50 transition-colors hover:bg-brown-900 focus:outline-none focus:ring-2 focus:ring-brown-700 focus:ring-offset-2;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-none border border-brown-300 bg-transparent px-6 py-3 text-sm font-medium tracking-wide text-brown-800 transition-colors hover:bg-brown-100 focus:outline-none focus:ring-2 focus:ring-brown-400 focus:ring-offset-2;
+  }
+
+  .btn-outline-light {
+    @apply inline-flex items-center justify-center gap-2 rounded-none border border-cream-200 bg-transparent px-6 py-3 text-sm font-medium tracking-wide text-cream-100 transition-colors hover:bg-white/10 focus:outline-none;
+  }
+
+  .card {
+    @apply border border-brown-200 bg-white transition-shadow hover:shadow-md;
+  }
+
+  .section-label {
+    @apply text-xs font-semibold uppercase tracking-widest text-brown-500;
+  }
+
+  .input-field {
+    @apply w-full rounded-none border border-brown-300 bg-white px-4 py-2.5 text-sm text-brown-800 placeholder-brown-400 focus:border-brown-600 focus:outline-none focus:ring-1 focus:ring-brown-600;
+  }
+}
