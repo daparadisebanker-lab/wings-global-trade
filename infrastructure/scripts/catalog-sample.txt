@@ -1,0 +1,45 @@
+﻿--- PAGE 1 ---
+´╝æ
+--- PAGE 2 ---
+SH504
+MainTechnical Parameters
+HorsePower(HP) 50 EngineModel 4100B-4a
+37 RatedSpeed(rpm) 2000
+RatedPower(KW)
+Gears 8+2 334
+Min.GroundClearance(mm)
+PTO(r/min) 766 OverallDimensions(mm) 3325*1848*2350
+Tyre Size(mm) 8.3-20/11-32 Quality(kg) 2370
+´╝Æ
+--- PAGE 3 ---
+SNH504
+Main Technical Parameters
+HorsePower(HP) 50 EngineModel 4100B-3
+37 RatedSpeed(rpm) 2000
+RatedPower(KW)
+Gears 10+2(8+2) 334
+Min.GroundClearance(mm)
+PTO(r/min) 766 OverallDimensions(mm) 3350*1848*2357
+Tyre Size(mm) 8.3-20/11-32 Quality(kg) 2370
+´╝ô
+--- PAGE 4 ---
+SNH554
+MainTechnical Parameters
+HorsePower(HP) 55 EngineModel 4100B-2
+40 RatedSpeed(rpm) 2000
+RatedPower(KW)
+Gears 10+2/8+2 334
+Min.GroundClearance(mm)
+PTO(r/min) 766 OverallDimensions(mm) 3350*1848*2357
+Tyre Size(mm) 8.3-20/11-32 Quality(kg) 2370
+´╝ö
+--- PAGE 5 ---
+SNH704
+MainTechnical Parameters
+HorsePower(HP) 70 EngineModel SNH4102
+51.5 RatedSpeed(rpm) 2400
+RatedPower(KW)
+Gears 10+2/8+2 Min. Ground Clearance(mm) 359
+PTO(r/min) 783 OverallDimensions(mm) 3942*1930*2394
+Tyre Size(mm) 11.2-24/14.9-30 Quality(kg) 2500
+´╝ò

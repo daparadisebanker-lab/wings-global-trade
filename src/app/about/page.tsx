@@ -148,7 +148,7 @@ export default function AboutPage() {
           <h2 className="font-serif text-2xl font-semibold text-cream-50">Join Our Marketplace</h2>
           <p className="mt-3 text-sm text-brown-400">Whether you are buying or selling, we are here to help.</p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link href="/tractors" className="btn-primary text-xs uppercase tracking-widest">
+            <Link href="/agricultural/tractors" className="btn-primary text-xs uppercase tracking-widest">
               Browse Listings
             </Link>
             <Link href="/sellers/post-listing" className="btn-outline-light text-xs uppercase tracking-widest">

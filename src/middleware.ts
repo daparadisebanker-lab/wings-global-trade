@@ -1,9 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { getCurrencyForCountry, CURRENCY_COOKIE } from "@/lib/currencies";
 import { getLanguageForCountry, LANG_COOKIE } from "@/lib/i18n";
+import { updateSession } from "@/lib/supabase/middleware";
 
-export function middleware(request: NextRequest) {
-  const response = NextResponse.next();
+export async function middleware(request: NextRequest) {
+  let response = NextResponse.next();
   const country = request.headers.get("x-vercel-ip-country") ?? "DE";
 
   if (!request.cookies.get(CURRENCY_COOKIE)) {
@@ -22,7 +23,7 @@ export function middleware(request: NextRequest) {
     });
   }
 
-  return response;
+  return await updateSession(request, response);
 }
 
 export const config = {

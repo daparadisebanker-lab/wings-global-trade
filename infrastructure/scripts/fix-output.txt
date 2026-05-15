@@ -1,0 +1,102 @@
+﻿Processing 86 products...
+
+  Ô£ô [unknown-sh504] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-snh504] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-snh554] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-snh704] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-snh754] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-snh804] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-snh804-2] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-snh904] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-snh1004] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-snh1104] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-t1104] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-snh1204] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-snh1304] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-snh1354] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-tm140] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [yto-me404] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [yto-mf454] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [yto-me504] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [yto-mf554] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [yto-mf704] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [yto-mg704] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [yto-lx804] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [yto-lx904] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [yto-lx954] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [yto-lx1204] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [yto-ly1204d] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [yto-lx1304] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [yto-lx1504] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [yto-lx1604] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [yto-lx1804] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [yto-lx2004] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [john-deere-484] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [john-deere-3b-554] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [john-deere-5b-704] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [john-deere-5-754] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [john-deere-5-904] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [john-deere-5e-804] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [john-deere-5e-854] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [john-deere-5e-954] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [john-deere-5e-1004] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [john-deere-5e-1004-2] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [john-deere-5e-1104] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [john-deere-5e-1204] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [john-deere-6b1204] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [john-deere-6b1204-2] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [john-deere-6e1404] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [john-deere-6b1404] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-m554-b] brand: Unknown ÔåÆ YTO, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-m554-ba] brand: Unknown ÔåÆ YTO, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-m604l-e] brand: Unknown ÔåÆ YTO, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-m704-ba] brand: Unknown ÔåÆ YTO, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-m804-b] brand: Unknown ÔåÆ YTO, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-m904] brand: Unknown ÔåÆ YTO, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-m1004-aa] brand: Unknown ÔåÆ YTO, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-m1004-a] brand: Unknown ÔåÆ YTO, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-m1204-a] brand: Unknown ÔåÆ YTO, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-m1204-4x] brand: Unknown ÔåÆ YTO, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-m1304-a-u] brand: Unknown ÔåÆ YTO, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-m1404-d] brand: Unknown ÔåÆ YTO, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-m1604-5g] brand: Unknown ÔåÆ YTO, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-m1854-g] brand: Unknown ÔåÆ YTO, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-m2004-q] brand: Unknown ÔåÆ YTO, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-sh554-c] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-sh704-1] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-cd904-1] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-cd904-s] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-cd1004-s] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-cd1304-1] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-cd1504] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-df1404] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-cd1604-1] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-df1704] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-cd1804e] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-cd2004] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [unknown-cd2104] brand: Unknown ÔåÆ SinoHarvest, price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [massey-ferguson-mf1004] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [massey-ferguson-mf1104] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [massey-ferguson-mf1204] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [massey-ferguson-s1204-c] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [massey-ferguson-iseki-t954] price: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [massey-ferguson-iseki-t804] price: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [kubota-m704k] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [kubota-m854k] year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [kubota-m954k] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [kubota-m954kq] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+  Ô£ô [kubota-m1004q] price: 0 ÔåÆ null, year: 0 ÔåÆ null, location: TBD ÔåÆ null, country: TBD ÔåÆ null
+
+ÔÜá´©Å  Remaining issues to resolve manually:
+  ÔÜá´©Å  Still Unknown: id=unknown-t1104 model=T1104
+
+Ô£à Done! Wrote corrected product-catalog.json and product-catalog.ts
+   Total products: 86
+
+   Brand breakdown:
+   - John Deere: 16
+   - Kubota: 5
+   - Massey Ferguson: 6
+   - SinoHarvest: 27
+   - Unknown: 1
+   - YTO: 31

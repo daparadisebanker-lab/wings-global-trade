@@ -1,15 +1,7 @@
 import Link from "next/link";
+import { CATEGORIES } from "@/lib/categories";
 
 const footerLinks = {
-  Browse: [
-    { label: "Tractors",     href: "/tractors"     },
-    { label: "Trucks",       href: "/trucks"       },
-    { label: "Harvesters",   href: "/harvesters"   },
-    { label: "Balers",       href: "/balers"       },
-    { label: "Telehandlers", href: "/telehandlers" },
-    { label: "Plows",        href: "/plows"        },
-    { label: "Mowers",       href: "/mowers"       },
-  ],
   Sellers: [
     { label: "Post a Listing",   href: "/sellers/post-listing"    },
     { label: "Dealer Accounts",  href: "/sellers/dealer-accounts" },
@@ -56,7 +48,40 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Links */}
+          {/* Browse by category */}
+          <div>
+            <h3 className="mb-4 text-[10px] font-semibold uppercase tracking-widest text-brown-500">
+              Browse
+            </h3>
+            <ul className="space-y-2.5">
+              {CATEGORIES.map((cat) => (
+                <li key={cat.slug}>
+                  <Link
+                    href={cat.href}
+                    className="text-sm font-medium text-brown-300 transition-colors hover:text-cream-100"
+                  >
+                    {cat.shortLabel}
+                  </Link>
+                  {cat.subtypes.length > 0 && (
+                    <ul className="mt-1.5 ml-3 space-y-1.5 border-l border-brown-800 pl-3">
+                      {cat.subtypes.map((sub) => (
+                        <li key={sub.href}>
+                          <Link
+                            href={sub.href}
+                            className="text-xs text-brown-500 transition-colors hover:text-brown-300"
+                          >
+                            {sub.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Other static link groups */}
           {Object.entries(footerLinks).map(([title, links]) => (
             <div key={title}>
               <h3 className="mb-4 text-[10px] font-semibold uppercase tracking-widest text-brown-500">
@@ -83,9 +108,12 @@ export default function Footer() {
           <p className="text-xs text-brown-600">
             &copy; {new Date().getFullYear()} Euro Global Machinery Ltd. All rights reserved.
           </p>
-          <p className="text-xs text-brown-600">
-            Registered in the European Union
-          </p>
+          <div className="flex items-center gap-4 text-xs text-brown-600">
+            <p>Registered in the European Union</p>
+            <Link href="/admin/login" className="opacity-10 hover:opacity-100 transition-opacity">
+              Admin
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

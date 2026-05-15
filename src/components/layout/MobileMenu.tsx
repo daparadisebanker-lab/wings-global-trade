@@ -1,28 +1,22 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
-
-const TRACTOR_BRANDS = [
-  "John Deere", "Fendt", "New Holland", "Claas",
-  "Massey Ferguson", "Deutz-Fahr", "Case IH", "Valtra",
-];
-
-const TRUCK_BRANDS = [
-  "Volvo", "Mercedes-Benz", "Scania", "DAF",
-  "MAN", "Iveco", "Renault Trucks",
-];
+import { CATEGORIES } from "@/lib/categories";
 
 export default function MobileMenu() {
   const [open, setOpen] = useState(false);
-  const [tractorsOpen, setTractorsOpen] = useState(false);
-  const [trucksOpen, setTrucksOpen] = useState(false);
+  // Track which category accordion is open by slug
+  const [openCat, setOpenCat] = useState<string | null>(null);
 
   const close = () => {
     setOpen(false);
-    setTractorsOpen(false);
-    setTrucksOpen(false);
+    setOpenCat(null);
   };
+
+  const toggleCat = (slug: string) =>
+    setOpenCat((prev) => (prev === slug ? null : slug));
 
   return (
     <>
@@ -53,85 +47,71 @@ export default function MobileMenu() {
               Home
             </Link>
 
-            {/* Tractors with sub-menu */}
-            <div className="border-b border-brown-100">
-              <button
-                onClick={() => setTractorsOpen((v) => !v)}
-                className="flex w-full items-center justify-between py-3 text-sm font-medium text-brown-700"
-              >
-                <span>Tractors</span>
-                <svg
-                  className={`h-3 w-3 transition-transform ${tractorsOpen ? "rotate-180" : ""}`}
-                  fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              {tractorsOpen && (
-                <ul className="mb-3 ml-3 space-y-2 border-l border-brown-200 pl-4">
-                  {TRACTOR_BRANDS.map((b) => (
-                    <li key={b}>
-                      <Link
-                        href={`/tractors?brand=${encodeURIComponent(b)}`}
-                        onClick={close}
-                        className="block py-1 text-sm text-brown-600 hover:text-brown-900"
-                      >
-                        {b}
-                      </Link>
-                    </li>
-                  ))}
-                  <li>
-                    <Link
-                      href="/tractors"
-                      onClick={close}
-                      className="block py-1 text-xs font-semibold uppercase tracking-widest text-brown-500"
+            {CATEGORIES.map((cat) =>
+              cat.subtypes.length > 0 ? (
+                /* Category with sub-types → accordion */
+                <div key={cat.slug} className="border-b border-brown-50">
+                  <button
+                    onClick={() => toggleCat(cat.slug)}
+                    className="flex w-full items-center justify-between py-4 text-sm font-semibold tracking-wide text-brown-800"
+                  >
+                    <span>{cat.label}</span>
+                    <svg
+                      className={`h-4 w-4 transition-transform duration-300 ${openCat === cat.slug ? "rotate-180" : ""}`}
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
                     >
-                      All Tractors →
-                    </Link>
-                  </li>
-                </ul>
-              )}
-            </div>
-
-            {/* Trucks with sub-menu */}
-            <div className="border-b border-brown-100">
-              <button
-                onClick={() => setTrucksOpen((v) => !v)}
-                className="flex w-full items-center justify-between py-3 text-sm font-medium text-brown-700"
-              >
-                <span>Trucks</span>
-                <svg
-                  className={`h-3 w-3 transition-transform ${trucksOpen ? "rotate-180" : ""}`}
-                  fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              {trucksOpen && (
-                <ul className="mb-3 ml-3 space-y-2 border-l border-brown-200 pl-4">
-                  {TRUCK_BRANDS.map((b) => (
-                    <li key={b}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {openCat === cat.slug && (
+                    <div className="grid grid-cols-1 gap-1 pb-4 pr-2">
+                      {cat.subtypes.map((sub) => (
+                        <Link
+                          key={sub.href}
+                          href={sub.href}
+                          onClick={close}
+                          className="flex items-center gap-4 rounded-sm bg-cream-50/50 px-3 py-2.5 transition-colors active:bg-cream-100"
+                        >
+                          <div className="relative h-8 w-10 flex-shrink-0 opacity-70">
+                            {sub.icon ? (
+                              <Image
+                                src={sub.icon}
+                                alt={sub.label}
+                                fill
+                                className="object-contain"
+                              />
+                            ) : (
+                              <div className="h-full w-full border border-dashed border-brown-200" />
+                            )}
+                          </div>
+                          <div className="flex flex-1 items-center justify-between">
+                            <span className="text-xs font-medium text-brown-700">{sub.label}</span>
+                            <span className="text-[10px] font-bold uppercase tracking-tighter text-brown-400">{sub.count}</span>
+                          </div>
+                        </Link>
+                      ))}
                       <Link
-                        href={`/trucks?brand=${encodeURIComponent(b)}`}
+                        href={cat.href}
                         onClick={close}
-                        className="block py-1 text-sm text-brown-600 hover:text-brown-900"
+                        className="mt-2 block rounded-sm border border-brown-100 py-3 text-center text-[10px] font-bold uppercase tracking-widest text-brown-500"
                       >
-                        {b}
+                        Explore All {cat.shortLabel} →
                       </Link>
-                    </li>
-                  ))}
-                  <li>
-                    <Link
-                      href="/trucks"
-                      onClick={close}
-                      className="block py-1 text-xs font-semibold uppercase tracking-widest text-brown-500"
-                    >
-                      All Trucks →
-                    </Link>
-                  </li>
-                </ul>
-              )}
-            </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* Category without sub-types → direct link */
+                <Link
+                  key={cat.slug}
+                  href={cat.href}
+                  onClick={close}
+                  className="border-b border-brown-50 py-4 text-sm font-semibold text-brown-800"
+                >
+                  {cat.label}
+                </Link>
+              )
+            )}
 
             <Link
               href="/about"

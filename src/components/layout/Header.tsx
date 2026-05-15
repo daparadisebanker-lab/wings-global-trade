@@ -3,19 +3,11 @@ import { cookies } from "next/headers";
 import CurrencySwitcher from "./CurrencySwitcher";
 import LanguageSwitcher from "./LanguageSwitcher";
 import MobileMenu from "./MobileMenu";
+import CategoryMegaMenu from "./CategoryMegaMenu";
 import NavLinkWithDropdown from "./NavLinkWithDropdown";
 import { CURRENCY_COOKIE, DEFAULT_CURRENCY } from "@/lib/currencies";
 import { LANG_COOKIE, DEFAULT_LANG, getTranslations } from "@/lib/i18n";
-
-const TRACTOR_BRANDS = [
-  "John Deere", "Fendt", "New Holland", "Claas",
-  "Massey Ferguson", "Deutz-Fahr", "Case IH", "Valtra",
-];
-
-const TRUCK_BRANDS = [
-  "Volvo", "Mercedes-Benz", "Scania", "DAF",
-  "MAN", "Iveco", "Renault Trucks",
-];
+import { CATEGORIES } from "@/lib/categories";
 
 export default async function Header() {
   const cookieStore = await cookies();
@@ -44,25 +36,16 @@ export default async function Header() {
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden items-center gap-8 md:flex">
+          <nav className="hidden items-center gap-10 md:flex">
+            <CategoryMegaMenu />
+
             <Link
               href="/"
               className="text-sm font-medium tracking-wide text-brown-600 transition-colors hover:text-brown-900"
             >
               {t.navHome}
             </Link>
-            <NavLinkWithDropdown
-              label={t.navTractors}
-              href="/tractors"
-              brands={TRACTOR_BRANDS}
-              allBrandsLabel="All Tractors"
-            />
-            <NavLinkWithDropdown
-              label="Trucks"
-              href="/trucks"
-              brands={TRUCK_BRANDS}
-              allBrandsLabel="All Trucks"
-            />
+
             <Link
               href="/about"
               className="text-sm font-medium tracking-wide text-brown-600 transition-colors hover:text-brown-900"

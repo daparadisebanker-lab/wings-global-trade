@@ -12,7 +12,7 @@ export default function NotFound() {
         <Link href="/" className="btn-primary text-xs uppercase tracking-widest">
           Go Home
         </Link>
-        <Link href="/tractors" className="btn-secondary text-xs uppercase tracking-widest">
+        <Link href="/agricultural/tractors" className="btn-secondary text-xs uppercase tracking-widest">
           Browse Listings
         </Link>
       </div>

@@ -1,0 +1,126 @@
+{
+  "INSTRUCTIONS": "Copy this file, remove this INSTRUCTIONS key, fill in the fields you have, and delete the ones you don't. Every field is optional except: id, title, brand, model, year, price, currency, condition, location, country, description.",
+
+  "id": "SLUG-STYLE-ID (e.g. john-deere-6r150-2022)",
+  "title": "Full listing title shown on the product page",
+  "brand": "John Deere",
+  "model": "6R 150",
+  "year": 2022,
+  "price": 118500,
+  "currency": "EUR",
+  "hours_used": 1240,
+  "horsepower": 150,
+  "condition": "used",
+  "location": "Munich",
+  "country": "Germany",
+  "description": "Full paragraph description shown under the listing title.",
+  "transmission": "CommandQuad",
+  "drive_type": "4WD",
+  "images": [
+    "https://your-supabase-url.supabase.co/storage/v1/object/public/listings/LISTING-ID/front.webp",
+    "https://your-supabase-url.supabase.co/storage/v1/object/public/listings/LISTING-ID/rear.webp",
+    "https://your-supabase-url.supabase.co/storage/v1/object/public/listings/LISTING-ID/side.webp"
+  ],
+
+  "details": {
+    "vat_excluded": true,
+    "max_speed_kmh": 50,
+    "warranty": "12 months",
+    "registration_year": 2022,
+    "serial_number": "1RW6R150XCPXXXXXX",
+    "service_history": true,
+    "first_owner": true,
+
+    "engine": {
+      "manufacturer": "John Deere",
+      "model": "PowerTech PSS 6.8L",
+      "displacement_cc": 6800,
+      "cylinders": 6,
+      "emissions_standard": "Stage V",
+      "fuel_type": "Diesel",
+      "rpm_rated": 2100,
+      "max_torque_nm": 750
+    },
+
+    "transmission_details": {
+      "type": "CommandQuad",
+      "forward_gears": 16,
+      "reverse_gears": 16,
+      "creeper": false,
+      "reversible": false,
+      "drive_type": "4WD",
+      "pto_drive": "Independent"
+    },
+
+    "cabin": {
+      "cabin": true,
+      "air_conditioning": true,
+      "heating": true,
+      "suspension_seat": true,
+      "radio": true,
+      "front_loader_ready": false,
+      "gps_ready": true,
+      "sunroof": false,
+      "rear_window_wiper": true
+    },
+
+    "pto": {
+      "rear_pto": true,
+      "rear_pto_rpm": "540 / 1000",
+      "rear_pto_hp": 130,
+      "front_pto": false,
+      "front_pto_rpm": null,
+      "front_pto_hp": null
+    },
+
+    "hydraulics": {
+      "pump_flow_lpm": 114,
+      "max_pressure_bar": 200,
+      "rear_remote_valves": 4,
+      "front_remote_valves": 2,
+      "isobus": true,
+      "load_sensing": true,
+      "electronic_control": true
+    },
+
+    "rear_hitch": {
+      "three_point_category": "Category 3",
+      "lift_capacity_kg": 8500,
+      "quick_hitch": true
+    },
+
+    "front_hitch": {
+      "front_hitch": true,
+      "front_hitch_category": "Category 3",
+      "front_lift_capacity_kg": 4000
+    },
+
+    "tires": {
+      "front_left": "540/65 R30",
+      "front_right": "540/65 R30",
+      "rear_left": "650/65 R42",
+      "rear_right": "650/65 R42"
+    },
+
+    "dimensions": {
+      "operating_weight_kg": 8700,
+      "max_allowed_weight_kg": 14000,
+      "front_axle_load_kg": 4200,
+      "rear_axle_load_kg": 4500,
+      "wheelbase_mm": 2840,
+      "length_mm": 5240,
+      "width_mm": 2520,
+      "height_mm": 3010,
+      "ground_clearance_mm": 430,
+      "turning_radius_m": 5.8
+    },
+
+    "electrical": {
+      "voltage_v": 12,
+      "alternator_a": 150,
+      "battery_ah": 180,
+      "telematics": true,
+      "telematics_system": "John Deere Operations Center"
+    }
+  }
+}

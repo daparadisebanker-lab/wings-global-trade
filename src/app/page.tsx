@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { cookies } from "next/headers";
-import { listings } from "@/data/listings";
+import { getListings } from "@data/listings";
 import FeaturedCarousel from "@/components/listings/FeaturedCarousel";
 import { CURRENCY_COOKIE, DEFAULT_CURRENCY } from "@/lib/currencies";
 import { LANG_COOKIE, DEFAULT_LANG, getTranslations } from "@/lib/i18n";
+import { CATEGORIES, ALL_SUBTYPES } from "@/lib/categories";
 
 export const metadata: Metadata = {
   title: "Euro Global Machinery — Europe's Agricultural Machinery Marketplace",
@@ -15,7 +16,7 @@ const HERO_BG     = "/images/hero.jpg";
 const FEATURED_BG = "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1920&q=80";
 const CTA_BG      = "https://images.unsplash.com/photo-1560493676-04071c5f467b?w=1920&q=80";
 
-const SOLD_IDS = ["3", "6"];
+const SOLD_IDS: string[] = [];
 
 const TRUST_BADGES = [
   { title: "Certified Inspection",  body: "Every machine professionally verified before listing" },
@@ -24,19 +25,7 @@ const TRUST_BADGES = [
   { title: "Registration Support",  body: "Full cross-border documentation handled for you" },
 ];
 
-const SEARCH_TYPES = [
-  "Tractors", "Trucks", "Harvesters", "Balers",
-  "Telehandlers", "Plows", "Mowers",
-];
-
-const MACHINERY_TYPES = [
-  { label: "Tractors",     href: "/tractors",     count: "18,400", img: "photo-1598520106830-8c45c2035460" },
-  { label: "Harvesters",   href: "/harvesters",   count: "6,200",  img: "photo-1464226184884-fa280b87c399" },
-  { label: "Balers",       href: "/balers",       count: "3,800",  img: "photo-1416879595882-3373a0480b5b" },
-  { label: "Telehandlers", href: "/telehandlers", count: "4,500",  img: "photo-1574943320219-553eb213f72d" },
-  { label: "Plows",        href: "/plows",        count: "2,900",  img: "photo-1500382017468-9049fed747ef" },
-  { label: "Mowers",       href: "/mowers",       count: "3,200",  img: "photo-1416159090022-e9a4c6f0f35e" },
-];
+// Derived from central config — no hardcoding needed here
 
 const BRANDS = [
   "John Deere", "Fendt", "Claas", "New Holland",
@@ -64,7 +53,11 @@ export default async function HomePage() {
   const cookieStore = await cookies();
   const currency = cookieStore.get(CURRENCY_COOKIE)?.value ?? DEFAULT_CURRENCY;
   const lang     = cookieStore.get(LANG_COOKIE)?.value     ?? DEFAULT_LANG;
-  const t        = await getTranslations(lang);
+  const [t, allListings] = await Promise.all([
+    getTranslations(lang),
+    getListings(),
+  ]);
+  const listings = allListings.slice(0, 6);
 
   const stats = [
     { label: t.statListings,  value: "52,000+" },
@@ -106,9 +99,21 @@ export default async function HomePage() {
           <div className="mx-auto mt-10 flex max-w-3xl flex-col border border-brown-600 bg-brown-800/90 backdrop-blur-sm sm:flex-row">
             <select className="flex-1 border-0 bg-transparent px-5 py-4 text-sm text-brown-300 focus:outline-none focus:ring-0">
               <option value="" className="bg-brown-900">{t.allCategories}</option>
-              {SEARCH_TYPES.map((type) => (
-                <option key={type} className="bg-brown-900">{type}</option>
-              ))}
+              {CATEGORIES.map((cat) =>
+                cat.subtypes.length > 0 ? (
+                  <optgroup key={cat.slug} label={cat.shortLabel} className="bg-brown-900">
+                    {cat.subtypes.map((sub) => (
+                      <option key={sub.href} value={sub.href} className="bg-brown-900">
+                        {sub.label}
+                      </option>
+                    ))}
+                  </optgroup>
+                ) : (
+                  <option key={cat.slug} value={cat.href} className="bg-brown-900">
+                    {cat.shortLabel}
+                  </option>
+                )
+              )}
             </select>
             <div className="hidden w-px bg-brown-600 sm:block" />
             <input
@@ -117,7 +122,7 @@ export default async function HomePage() {
               className="flex-[2] border-0 bg-transparent px-5 py-4 text-sm text-cream-50 placeholder-brown-500 focus:outline-none focus:ring-0"
             />
             <Link
-              href="/tractors"
+              href="/agricultural/tractors"
               className="bg-brown-500 px-10 py-4 text-center text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-brown-400"
             >
               {t.searchBtn}
@@ -129,7 +134,7 @@ export default async function HomePage() {
             {["John Deere 6M", "Fendt 700", "New Holland T7", "Claas Axion"].map((term) => (
               <Link
                 key={term}
-                href="/tractors"
+                href="/agricultural/tractors"
                 className="text-xs text-brown-700 underline-offset-2 hover:text-brown-900 hover:underline"
               >
                 {term}
@@ -162,7 +167,7 @@ export default async function HomePage() {
               <h2 className="font-serif text-3xl font-semibold text-cream-50">{t.featuredTitle}</h2>
             </div>
             <Link
-              href="/tractors"
+              href="/agricultural/tractors"
               className="hidden text-xs font-semibold uppercase tracking-widest text-brown-300 underline-offset-4 hover:text-cream-50 hover:underline sm:block"
             >
               {t.viewAllListings} →
@@ -184,6 +189,7 @@ export default async function HomePage() {
               condRefurbished: t.condLabelRefurbished,
               viewAllListings: t.viewAllListings,
             }}
+            lang={lang}
           />
         </div>
       </section>
@@ -210,15 +216,15 @@ export default async function HomePage() {
             <h2 className="font-serif text-3xl font-semibold text-brown-900">Most Popular Machinery Types</h2>
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-            {MACHINERY_TYPES.map((cat) => (
+            {ALL_SUBTYPES.map((sub) => (
               <Link
-                key={cat.label}
-                href={cat.href}
+                key={sub.href}
+                href={sub.href}
                 className="group relative h-48 overflow-hidden"
               >
                 <Image
-                  src={`https://images.unsplash.com/${cat.img}?w=400&q=80`}
-                  alt={cat.label}
+                  src={`https://images.unsplash.com/${sub.unsplashId}?w=400&q=80`}
+                  alt={sub.label}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
                   sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
@@ -226,10 +232,10 @@ export default async function HomePage() {
                 <div className="absolute inset-0 bg-brown-900/60 transition-colors duration-300 group-hover:bg-brown-900/75" />
                 <div className="absolute inset-0 flex flex-col items-center justify-end p-4 text-center">
                   <span className="font-serif text-sm font-semibold leading-tight text-cream-50">
-                    {cat.label}
+                    {sub.label}
                   </span>
                   <span className="mt-1 text-[10px] text-brown-300">
-                    {cat.count} {t.listings}
+                    {sub.count} {t.listings}
                   </span>
                 </div>
               </Link>
@@ -246,7 +252,7 @@ export default async function HomePage() {
               <p className="section-label mb-2">Client Stories</p>
               <h2 className="font-serif text-3xl font-semibold text-brown-900">What Our Buyers Say</h2>
             </div>
-            <Link href="/tractors" className="hidden text-xs font-semibold uppercase tracking-widest text-brown-400 underline-offset-4 hover:text-brown-900 hover:underline sm:block">
+            <Link href="/agricultural/tractors" className="hidden text-xs font-semibold uppercase tracking-widest text-brown-400 underline-offset-4 hover:text-brown-900 hover:underline sm:block">
               View More Listings →
             </Link>
           </div>
@@ -287,7 +293,7 @@ export default async function HomePage() {
             {BRANDS.map((brand) => (
               <Link
                 key={brand}
-                href={`/tractors?brand=${encodeURIComponent(brand)}`}
+                href={`/agricultural/tractors?brand=${encodeURIComponent(brand)}`}
                 className="group flex items-center justify-center bg-white px-6 py-10 transition-colors hover:bg-brown-900"
               >
                 <span className="font-serif text-lg font-semibold text-brown-500 transition-colors group-hover:text-cream-50">

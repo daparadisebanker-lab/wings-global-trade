@@ -1,0 +1,13 @@
+<svg viewBox="0 0 120 80" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M 30 35 L 30 60" />
+  <path d="M 90 35 L 90 60" />
+  <path d="M 15 35 L 105 35 L 105 30 L 15 30 Z" />
+  <path d="M 25 30 L 30 12 L 45 12 L 45 30" />
+  <path d="M 29 28 L 33 15 L 42 15 L 42 28 Z" fill="rgba(255,255,255,0.15)" />
+  <path d="M 50 30 C 50 15, 85 15, 85 30" />
+  <path d="M 95 30 L 95 10 L 102 10 L 102 30" />
+  <circle cx="30" cy="60" r="8" />
+  <circle cx="30" cy="60" r="3" />
+  <circle cx="90" cy="60" r="8" />
+  <circle cx="90" cy="60" r="3" />
+</svg>

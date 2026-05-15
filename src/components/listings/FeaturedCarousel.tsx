@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Listing } from "@/types";
 import { formatPrice } from "@/lib/currencies";
+import { ts } from "@/lib/specs-i18n";
 
 interface CarouselLabels {
   hours: string;
@@ -23,6 +24,7 @@ interface Props {
   soldIds?: string[];
   currency?: string;
   labels: CarouselLabels;
+  lang?: string;
 }
 
 const PLACEHOLDER = "https://images.unsplash.com/photo-1598520106830-8c45c2035460?w=800&q=80";
@@ -33,7 +35,7 @@ const condStyles: Record<string, string> = {
   refurbished: "bg-brown-200 text-brown-800",
 };
 
-export default function FeaturedCarousel({ listings, soldIds = [], currency = "EUR", labels }: Props) {
+export default function FeaturedCarousel({ listings, soldIds = [], currency = "EUR", labels, lang = "en" }: Props) {
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
 
@@ -129,7 +131,7 @@ export default function FeaturedCarousel({ listings, soldIds = [], currency = "E
 
                   <div className="mt-3 grid grid-cols-3 gap-2 border-t border-brown-100 pt-3 text-xs">
                     <div>
-                      <p className="uppercase tracking-wide text-brown-400">Year</p>
+                      <p className="uppercase tracking-wide text-brown-400">{ts("Registration year", lang).replace("Registration ", "")}</p>
                       <p className="mt-0.5 font-medium text-brown-800">{listing.year}</p>
                     </div>
                     <div>
@@ -153,7 +155,7 @@ export default function FeaturedCarousel({ listings, soldIds = [], currency = "E
                       {formatPrice(listing.price, currency)}
                     </p>
                     <Link
-                      href={`/tractors/${listing.id}`}
+                      href={`/agricultural/tractors/${listing.id}`}
                       className="text-xs font-semibold uppercase tracking-widest text-brown-600 underline-offset-2 hover:underline"
                     >
                       {labels.viewDetails}
@@ -191,7 +193,7 @@ export default function FeaturedCarousel({ listings, soldIds = [], currency = "E
 
       {/* CTA */}
       <div className="mt-10 text-center">
-        <Link href="/tractors" className="btn-primary px-12 text-xs uppercase tracking-widest">
+        <Link href="/agricultural/tractors" className="btn-primary px-12 text-xs uppercase tracking-widest">
           {labels.viewAllListings}
         </Link>
       </div>

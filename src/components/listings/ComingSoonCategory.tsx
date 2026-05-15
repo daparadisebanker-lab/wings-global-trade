@@ -1,9 +1,16 @@
+import HorizontalSubtypeSwitcher from "./HorizontalSubtypeSwitcher";
+import { CATEGORIES } from "@/lib/categories";
+
 interface Props {
   title: string;
   filterTypes: string[];
+  categorySlug?: string;
+  activeSlug?: string;
 }
 
-export default function ComingSoonCategory({ title, filterTypes }: Props) {
+export default function ComingSoonCategory({ title, filterTypes, categorySlug, activeSlug }: Props) {
+  const category = categorySlug ? CATEGORIES.find(c => c.slug === categorySlug) : null;
+
   return (
     <div className="min-h-screen bg-cream-50">
 
@@ -28,6 +35,11 @@ export default function ComingSoonCategory({ title, filterTypes }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Horizontal Subtype Switcher */}
+      {category && activeSlug && (
+        <HorizontalSubtypeSwitcher category={category} activeSlug={activeSlug} />
+      )}
 
       <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
         <div className="lg:grid lg:grid-cols-4 lg:gap-10">

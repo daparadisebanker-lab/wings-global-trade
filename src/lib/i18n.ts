@@ -127,6 +127,9 @@ export interface Translations {
   condLabelUsed: string;
   condLabelRefurbished: string;
 
+  // Detail page generators
+  generateDescription: (listing: any) => string;
+
   // 404
   notFoundCode: string;
   notFoundTitle: string;
