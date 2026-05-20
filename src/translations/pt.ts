@@ -1,15 +1,15 @@
 import type { Translations } from "@/lib/i18n";
 
 const pt: Translations = {
-  topBar: "O Marketplace Europeu de Veículos e Máquinas",
-  navHome: "Início", navTractors: "Tratores", navAutomobiles: "Automóveis",
-  navAbout: "Sobre nós", navContact: "Contacto",
-  signIn: "Entrar", postListing: "Publicar anúncio",
+  topBar: "O Marketplace Europeu de VeÃ­culos e MÃ¡quinas",
+  navHome: "InÃ­cio", navTractors: "Tratores", navAutomobiles: "AutomÃ³veis",
+  navAbout: "Sobre nÃ³s", navContact: "Contacto",
+  signIn: "Entrar", postListing: "Publicar anÃºncio",
 
-  heroLabel: "O Marketplace Líder da Europa",
-  heroLine1: "Encontre o seu próximo",
-  heroLine2: "Veículo",
-  heroSubtitle: "Milhares de tratores, veículos e equipamentos agrícolas novos e usados de concessionários verificados em toda a Europa.",
+  heroLabel: "O Marketplace LÃ­der da Europa",
+  heroLine1: "Encontre o seu prÃ³ximo",
+  heroLine2: "VeÃ­culo",
+  heroSubtitle: "Milhares de tratores, veÃ­culos e equipamentos agrÃ­colas novos e usados de concessionÃ¡rios verificados em toda a Europa.",
   allCategories: "Todas as categorias",
   searchPlaceholder: "Marca, modelo ou palavra-chave",
   searchBtn: "Pesquisar",
@@ -17,76 +17,76 @@ const pt: Translations = {
 
   browseLabel: "Pesquisar por tipo",
   browseTitle: "Categorias de equipamentos",
-  catTractors: "Tratores", catCars: "Carros", catTrucks: "Camiões",
-  catAutomobiles: "Automóveis", catOtherMachinery: "Outras máquinas", catSpareParts: "Peças sobressalentes",
-  listings: "anúncios",
+  catTractors: "Tratores", catCars: "Carros", catTrucks: "CamiÃµes",
+  catAutomobiles: "AutomÃ³veis", catOtherMachinery: "Outras mÃ¡quinas", catSpareParts: "PeÃ§as sobressalentes",
+  listings: "anÃºncios",
 
-  statListings: "Anúncios ativos", statDealers: "Concessionários verificados",
-  statCountries: "Países", statSold: "Máquinas vendidas",
+  statListings: "AnÃºncios ativos", statDealers: "ConcessionÃ¡rios verificados",
+  statCountries: "PaÃ­ses", statSold: "MÃ¡quinas vendidas",
 
-  featuredLabel: "Seleção especial", featuredTitle: "Anúncios em destaque",
-  viewAll: "Ver tudo", viewAllListings: "Ver todos os anúncios",
+  featuredLabel: "SeleÃ§Ã£o especial", featuredTitle: "AnÃºncios em destaque",
+  viewAll: "Ver tudo", viewAllListings: "Ver todos os anÃºncios",
 
-  whyLabel: "Porquê escolher-nos", whyTitle: "A confiança dos profissionais",
+  whyLabel: "PorquÃª escolher-nos", whyTitle: "A confianÃ§a dos profissionais",
   whyReason1Title: "Vendedores verificados",
-  whyReason1Body: "Cada concessionário na plataforma é verificado individualmente. Comercialize além-fronteiras com total confiança.",
+  whyReason1Body: "Cada concessionÃ¡rio na plataforma Ã© verificado individualmente. Comercialize alÃ©m-fronteiras com total confianÃ§a.",
   whyReason2Title: "Alcance pan-europeu",
-  whyReason2Body: "28 países cobertos. Parceiros logísticos dedicados disponíveis para transporte transfronteiriço.",
-  whyReason3Title: "Relatórios de inspeção",
-  whyReason3Body: "Solicite relatórios de inspeção certificados por terceiros antes de se comprometer com qualquer compra.",
+  whyReason2Body: "28 paÃ­ses cobertos. Parceiros logÃ­sticos dedicados disponÃ­veis para transporte transfronteiriÃ§o.",
+  whyReason3Title: "RelatÃ³rios de inspeÃ§Ã£o",
+  whyReason3Body: "Solicite relatÃ³rios de inspeÃ§Ã£o certificados por terceiros antes de se comprometer com qualquer compra.",
 
-  ctaLabel: "Para vendedores", ctaTitle: "Tem máquinas para vender?",
-  ctaBody: "Publique o seu anúncio em minutos e alcance milhares de compradores qualificados em toda a Europa.",
-  ctaBtn: "Publicar anúncio", ctaBtnSecondary: "Ver planos para concessionários",
+  ctaLabel: "Para vendedores", ctaTitle: "Tem mÃ¡quinas para vender?",
+  ctaBody: "Publique o seu anÃºncio em minutos e alcance milhares de compradores qualificados em toda a Europa.",
+  ctaBtn: "Publicar anÃºncio", ctaBtnSecondary: "Ver planos para concessionÃ¡rios",
 
-  tractorsTitle: "Tratores à venda",
-  tractorsCount: (n) => `${n} anúncios disponíveis`,
+  tractorsTitle: "Tratores Ã  venda",
+  tractorsCount: (n) => `${n} anÃºncios disponÃ­veis`,
   sortBy: "Ordenar",
-  sortNewest: "Mais recentes", sortPriceAsc: "Preço: crescente",
-  sortPriceDesc: "Preço: decrescente", sortHoursAsc: "Menos horas",
+  sortNewest: "Mais recentes", sortPriceAsc: "PreÃ§o: crescente",
+  sortPriceDesc: "PreÃ§o: decrescente", sortHoursAsc: "Menos horas",
   filters: "Filtros", clearAll: "Limpar tudo",
   conditionLabel: "Estado", makeLabel: "Marca", yearLabel: "Ano",
-  priceLabel: "Preço (EUR)", countryLabel: "País",
+  priceLabel: "PreÃ§o (EUR)", countryLabel: "PaÃ­s",
   anyLabel: "Qualquer", applyFilters: "Aplicar filtros",
   condAny: "Qualquer", condNew: "Novo", condUsed: "Usado", condRefurbished: "Recondicionado",
   pagination_prev: "Anterior", pagination_next: "Seguinte",
 
-  cardHours: "Horas", cardPower: "Potência", cardLocation: "Localização",
-  cardCountry: "País", cardViewDetails: "Ver detalhes",
+  cardHours: "Horas", cardPower: "PotÃªncia", cardLocation: "LocalizaÃ§Ã£o",
+  cardCountry: "PaÃ­s", cardViewDetails: "Ver detalhes",
   hrsUnit: "h", hpUnit: "cv",
 
-  breadHome: "Início", specsMake: "Marca", specsModel: "Modelo",
-  specsYear: "Ano", specsCondition: "Estado", specsHorsepower: "Potência",
-  specsHours: "Horas", specsTransmission: "Transmissão", specsDrive: "Tração",
-  specsLocation: "Localização", specificationsTitle: "Especificações",
+  breadHome: "InÃ­cio", specsMake: "Marca", specsModel: "Modelo",
+  specsYear: "Ano", specsCondition: "Estado", specsHorsepower: "PotÃªncia",
+  specsHours: "Horas", specsTransmission: "TransmissÃ£o", specsDrive: "TraÃ§Ã£o",
+  specsLocation: "LocalizaÃ§Ã£o", specificationsTitle: "EspecificaÃ§Ãµes",
   contactSeller: "Contactar vendedor", repliesVia: "Respostas via WhatsApp",
-  buyerGuidanceTitle: "Orientações para compradores",
-  buyerGuidanceBody: "Inspecione sempre as máquinas pessoalmente antes de comprar. Para transações de alto valor, recomendamos o nosso serviço de custódia.",
-  backToListings: "Voltar aos anúncios",
+  buyerGuidanceTitle: "OrientaÃ§Ãµes para compradores",
+  buyerGuidanceBody: "Inspecione sempre as mÃ¡quinas pessoalmente antes de comprar. Para transaÃ§Ãµes de alto valor, recomendamos o nosso serviÃ§o de custÃ³dia.",
+  backToListings: "Voltar aos anÃºncios",
 
-  formName: "Nome completo", formEmail: "Endereço de e-mail",
-  formPhone: "Número de telefone (opcional)",
-  formDefaultMessage: (title) => `Olá, estou interessado(a) em ${title}. Por favor, informe-me se ainda está disponível.`,
+  formName: "Nome completo", formEmail: "EndereÃ§o de e-mail",
+  formPhone: "NÃºmero de telefone (opcional)",
+  formDefaultMessage: (title) => `OlÃ¡, estou interessado(a) em ${title}. Por favor, informe-me se ainda estÃ¡ disponÃ­vel.`,
   formSending: "A enviar...", formSubmit: "Enviar consulta",
   formSuccessTitle: "Mensagem enviada",
-  formSuccessBody: "O vendedor entrará em contacto consigo em breve.",
+  formSuccessBody: "O vendedor entrarÃ¡ em contacto consigo em breve.",
   formSuccessBtn: "Enviar outra mensagem",
   formError: "Algo correu mal. Por favor, tente novamente.",
 
   condLabelNew: "Novo", condLabelUsed: "Usado", condLabelRefurbished: "Recondicionado",
 
-  notFoundCode: "404", notFoundTitle: "Página não encontrada",
-  notFoundBody: "A página que procura não existe ou foi movida.",
-  goHome: "Ir para o início", browseListings: "Ver anúncios",
+  notFoundCode: "404", notFoundTitle: "PÃ¡gina nÃ£o encontrada",
+  notFoundBody: "A pÃ¡gina que procura nÃ£o existe ou foi movida.",
+  goHome: "Ir para o inÃ­cio", browseListings: "Ver anÃºncios",
 
-  footerTagline: "O marketplace líder da Europa para todo o tipo de veículos. A ligar compradores e vendedores em todo o mundo desde 2005.",
-  footerRegistered: "Registado na União Europeia",
+  footerTagline: "O marketplace lÃ­der da Europa para todo o tipo de veÃ­culos. A ligar compradores e vendedores em todo o mundo desde 2005.",
+  footerRegistered: "Registado na UniÃ£o Europeia",
   footerBrowse: "Explorar", footerSellers: "Vendedores", footerCompany: "Empresa", footerSupport: "Suporte",
-  footerAboutUs: "Sobre nós", footerCareers: "Carreiras", footerPress: "Imprensa",
-  footerHelpCenter: "Centro de ajuda", footerSafetyTips: "Dicas de segurança",
-  footerPrivacy: "Política de privacidade", footerTerms: "Termos de utilização",
-  footerPostListing: "Publicar anúncio", footerDealerAccounts: "Contas de concessionários",
-  footerPricing: "Preços", footerSellerResources: "Recursos para vendedores",
+  footerAboutUs: "Sobre nÃ³s", footerCareers: "Carreiras", footerPress: "Imprensa",
+  footerHelpCenter: "Centro de ajuda", footerSafetyTips: "Dicas de seguranÃ§a",
+  footerPrivacy: "PolÃ­tica de privacidade", footerTerms: "Termos de utilizaÃ§Ã£o",
+  footerPostListing: "Publicar anÃºncio", footerDealerAccounts: "Contas de concessionÃ¡rios",
+  footerPricing: "PreÃ§os", footerSellerResources: "Recursos para vendedores",
 
   generateDescription: (listing: any) => {
     const b = listing.brand || "This";
@@ -101,22 +101,22 @@ const pt: Translations = {
     const weight = dims.operating_weight_kg ? dims.operating_weight_kg.toLocaleString() : null;
     const pto = listing.details?.pto?.rear_pto_rpm;
 
-    const intro = `O {b} {m} é um trator agrícola de nível profissional projetado para as modernas operações agrícolas.`.replace("{b}", b).replace("{m}", m);
-    const engine = engine_model ? `Impulsionado por um motor {e} altamente eficiente,`.replace("{e}", engine_model) : `Equipado com um propulsor confiável,`;
-    const hp = hp_val ? `oferecendo robustos {hp} cavalos de potência,`.replace("{hp}", hp_val) : `projetado para um desempenho confiável,`;
-    const mid = `ele proporciona um equilíbrio excepcional entre torque e eficiência de combustível.`;
+    const intro = `O {b} {m} Ã© um trator agrÃ­cola de nÃ­vel profissional projetado para as modernas operaÃ§Ãµes agrÃ­colas.`.replace("{b}", b).replace("{m}", m);
+    const engine = engine_model ? `Impulsionado por um motor {e} altamente eficiente,`.replace("{e}", engine_model) : `Equipado com um propulsor confiÃ¡vel,`;
+    const hp = hp_val ? `oferecendo robustos {hp} cavalos de potÃªncia,`.replace("{hp}", hp_val) : `projetado para um desempenho confiÃ¡vel,`;
+    const mid = `ele proporciona um equilÃ­brio excepcional entre torque e eficiÃªncia de combustÃ­vel.`;
     
     let drivetrain = "";
-    if (drive && trans) drivetrain = `O sistema de transmissão {d}, combinado com uma transmissão {t} versátil, garante tração ideal e fornecimento contínuo de energia em terrenos difíceis.`.replace("{d}", drive).replace("{t}", trans);
-    else if (drive) drivetrain = `A configuração {d} fornece tração e estabilidade superiores em ambientes agrícolas exigentes.`.replace("{d}", drive);
-    else if (trans) drivetrain = `Sua transmissão {t} versátil permite que os operadores se adaptem sem esforço a várias condições de campo e requisitos de implementos.`.replace("{t}", trans);
+    if (drive && trans) drivetrain = `O sistema de transmissÃ£o {d}, combinado com uma transmissÃ£o {t} versÃ¡til, garante traÃ§Ã£o ideal e fornecimento contÃ­nuo de energia em terrenos difÃ­ceis.`.replace("{d}", drive).replace("{t}", trans);
+    else if (drive) drivetrain = `A configuraÃ§Ã£o {d} fornece traÃ§Ã£o e estabilidade superiores em ambientes agrÃ­colas exigentes.`.replace("{d}", drive);
+    else if (trans) drivetrain = `Sua transmissÃ£o {t} versÃ¡til permite que os operadores se adaptem sem esforÃ§o a vÃ¡rias condiÃ§Ãµes de campo e requisitos de implementos.`.replace("{t}", trans);
 
     let capability = "";
-    if (weight && pto) capability = `Pesando {w} kg, oferece uma plataforma estável para implementos pesados, enquanto a TDF de {p} RPM fornece transferência de energia confiável para uma ampla gama de acessórios.`.replace("{w}", weight).replace("{p}", pto);
-    else if (weight) capability = `Pesando {w} kg, oferece uma plataforma altamente estável e imponente para implementos agrícolas pesados.`.replace("{w}", weight);
-    else if (pto) capability = `O avançado sistema TDF de {p} RPM fornece transferência de energia confiável e contínua para implementos agrícolas exigentes.`.replace("{p}", pto);
+    if (weight && pto) capability = `Pesando {w} kg, oferece uma plataforma estÃ¡vel para implementos pesados, enquanto a TDF de {p} RPM fornece transferÃªncia de energia confiÃ¡vel para uma ampla gama de acessÃ³rios.`.replace("{w}", weight).replace("{p}", pto);
+    else if (weight) capability = `Pesando {w} kg, oferece uma plataforma altamente estÃ¡vel e imponente para implementos agrÃ­colas pesados.`.replace("{w}", weight);
+    else if (pto) capability = `O avanÃ§ado sistema TDF de {p} RPM fornece transferÃªncia de energia confiÃ¡vel e contÃ­nua para implementos agrÃ­colas exigentes.`.replace("{p}", pto);
 
-    const outro = `Construído para resistência e excelência operacional, o {m} é um ativo indispensável para maximizar a produtividade no campo.`.replace("{m}", m);
+    const outro = `ConstruÃ­do para resistÃªncia e excelÃªncia operacional, o {m} Ã© um ativo indispensÃ¡vel para maximizar a produtividade no campo.`.replace("{m}", m);
 
     return `${intro} ${engine} ${hp} ${mid} ${drivetrain} ${capability} ${outro}`.replace(/\s+/g, ' ').trim();
   },

@@ -7,7 +7,7 @@ export default function LanguageSwitcher({ current }: { current: string }) {
   const router = useRouter();
 
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    document.cookie = `${LANG_COOKIE}=${e.target.value};path=/;max-age=${60 * 60 * 24 * 365};samesite=lax`;
+    document.cookie = `${LANG_COOKIE}=${e.target.value}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
     router.refresh();
   }
 
@@ -15,10 +15,12 @@ export default function LanguageSwitcher({ current }: { current: string }) {
     <select
       value={current}
       onChange={handleChange}
-      className="border border-brown-300 bg-white px-2 py-1.5 text-xs text-brown-700 focus:border-brown-600 focus:outline-none"
+      className="border-0 bg-transparent text-xs font-medium text-white/50 focus:outline-none hover:text-white cursor-pointer"
+      style={{ fontFamily: "var(--font-body)" }}
+      aria-label="Select language"
     >
       {SUPPORTED_LANGUAGES.map((l) => (
-        <option key={l.code} value={l.code}>
+        <option key={l.code} value={l.code} className="bg-[#001E50] text-white">
           {l.label}
         </option>
       ))}

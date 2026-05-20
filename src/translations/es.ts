@@ -1,90 +1,90 @@
 import type { Translations } from "@/lib/i18n";
 
 const es: Translations = {
-  topBar: "El Mercado LÌder de VehÌculos y Maquinaria",
-  navHome: "Inicio", navTractors: "Tractores", navAutomobiles: "AutomÛviles",
+  topBar: "El Mercado L√≠der de Veh√≠culos y Maquinaria",
+  navHome: "Inicio", navTractors: "Tractores", navAutomobiles: "Autom√≥viles",
   navAbout: "Sobre Nosotros", navContact: "Contacto",
-  signIn: "Iniciar SesiÛn", postListing: "Publicar Anuncio",
+  signIn: "Iniciar Sesi√≥n", postListing: "Publicar Anuncio",
 
-  heroLabel: "El Mercado LÌder de Europa",
-  heroLine1: "Encuentra Tu PrÛximo",
-  heroLine2: "VehÌculo",
-  heroSubtitle: "Miles de tractores, vehÌculos y maquinaria agrÌcola nueva y usada de concesionarios verificados en toda Europa.",
-  allCategories: "Todas las CategorÌas",
+  heroLabel: "El Mercado L√≠der de Europa",
+  heroLine1: "Encuentra Tu Pr√≥ximo",
+  heroLine2: "Veh√≠culo",
+  heroSubtitle: "Miles de tractores, veh√≠culos y maquinaria agr√≠cola nueva y usada de concesionarios verificados en toda Europa.",
+  allCategories: "Todas las Categor√≠as",
   searchPlaceholder: "Marca, modelo o palabra clave",
   searchBtn: "Buscar",
   popular: "Popular:",
 
   browseLabel: "Explorar por Tipo",
-  browseTitle: "CategorÌas de Equipos",
+  browseTitle: "Categor√≠as de Equipos",
   catTractors: "Tractores", catCars: "Coches", catTrucks: "Camiones",
-  catAutomobiles: "AutomÛviles", catOtherMachinery: "Otra Maquinaria", catSpareParts: "Repuestos",
+  catAutomobiles: "Autom√≥viles", catOtherMachinery: "Otra Maquinaria", catSpareParts: "Repuestos",
   listings: "anuncios",
 
   statListings: "Anuncios Activos", statDealers: "Concesionarios Verificados",
-  statCountries: "PaÌses", statSold: "M·quinas Vendidas",
+  statCountries: "Pa√≠ses", statSold: "M√°quinas Vendidas",
 
-  featuredLabel: "SelecciÛn Especial", featuredTitle: "Anuncios Destacados",
+  featuredLabel: "Selecci√≥n Especial", featuredTitle: "Anuncios Destacados",
   viewAll: "Ver Todo", viewAllListings: "Ver Todos los Anuncios",
 
-  whyLabel: "Por QuÈ Elegirnos", whyTitle: "La Confianza de los Profesionales",
+  whyLabel: "Por Qu√© Elegirnos", whyTitle: "La Confianza de los Profesionales",
   whyReason1Title: "Vendedores Verificados",
-  whyReason1Body: "Cada concesionario en la plataforma est· verificado individualmente. Comercia a travÈs de fronteras con total confianza.",
+  whyReason1Body: "Cada concesionario en la plataforma est√° verificado individualmente. Comercia a trav√©s de fronteras con total confianza.",
   whyReason2Title: "Alcance Paneuropeo",
-  whyReason2Body: "28 paÌses cubiertos. Socios logÌsticos dedicados disponibles para el transporte transfronterizo.",
-  whyReason3Title: "Informes de InspecciÛn",
-  whyReason3Body: "Solicita informes de inspecciÛn certificados por terceros antes de comprometerte con cualquier compra.",
+  whyReason2Body: "28 pa√≠ses cubiertos. Socios log√≠sticos dedicados disponibles para el transporte transfronterizo.",
+  whyReason3Title: "Informes de Inspecci√≥n",
+  whyReason3Body: "Solicita informes de inspecci√≥n certificados por terceros antes de comprometerte con cualquier compra.",
 
-  ctaLabel: "Para Vendedores", ctaTitle: "øTienes Maquinaria para Vender?",
+  ctaLabel: "Para Vendedores", ctaTitle: "¬øTienes Maquinaria para Vender?",
   ctaBody: "Publica tu anuncio en minutos y llega a miles de compradores cualificados en toda Europa.",
   ctaBtn: "Publicar Anuncio", ctaBtnSecondary: "Ver Planes para Concesionarios",
 
   tractorsTitle: "Tractores en Venta",
   tractorsCount: (n) => `${n} anuncios disponibles`,
   sortBy: "Ordenar",
-  sortNewest: "M·s Recientes", sortPriceAsc: "Precio: Menor a Mayor",
+  sortNewest: "M√°s Recientes", sortPriceAsc: "Precio: Menor a Mayor",
   sortPriceDesc: "Precio: Mayor a Menor", sortHoursAsc: "Menos Horas",
   filters: "Filtros", clearAll: "Borrar todo",
-  conditionLabel: "Estado", makeLabel: "Marca", yearLabel: "AÒo",
-  priceLabel: "Precio (EUR)", countryLabel: "PaÌs",
+  conditionLabel: "Estado", makeLabel: "Marca", yearLabel: "A√±o",
+  priceLabel: "Precio (EUR)", countryLabel: "Pa√≠s",
   anyLabel: "Cualquiera", applyFilters: "Aplicar Filtros",
   condAny: "Cualquiera", condNew: "Nuevo", condUsed: "Usado", condRefurbished: "Reacondicionado",
   pagination_prev: "Anterior", pagination_next: "Siguiente",
 
-  cardHours: "Horas", cardPower: "Potencia", cardLocation: "UbicaciÛn",
-  cardCountry: "PaÌs", cardViewDetails: "Ver Detalles",
+  cardHours: "Horas", cardPower: "Potencia", cardLocation: "Ubicaci√≥n",
+  cardCountry: "Pa√≠s", cardViewDetails: "Ver Detalles",
   hrsUnit: "hrs", hpUnit: "cv",
 
   breadHome: "Inicio", specsMake: "Marca", specsModel: "Modelo",
-  specsYear: "AÒo", specsCondition: "Estado", specsHorsepower: "Potencia",
-  specsHours: "Horas", specsTransmission: "TransmisiÛn", specsDrive: "TracciÛn",
-  specsLocation: "UbicaciÛn", specificationsTitle: "Especificaciones",
+  specsYear: "A√±o", specsCondition: "Estado", specsHorsepower: "Potencia",
+  specsHours: "Horas", specsTransmission: "Transmisi√≥n", specsDrive: "Tracci√≥n",
+  specsLocation: "Ubicaci√≥n", specificationsTitle: "Especificaciones",
   contactSeller: "Contactar Vendedor", repliesVia: "Respuestas enviadas por WhatsApp",
-  buyerGuidanceTitle: "GuÌa para Compradores",
-  buyerGuidanceBody: "Inspecciona siempre la maquinaria en persona antes de comprar. Para transacciones de alto valor, recomendamos usar nuestro servicio de depÛsito en garantÌa.",
+  buyerGuidanceTitle: "Gu√≠a para Compradores",
+  buyerGuidanceBody: "Inspecciona siempre la maquinaria en persona antes de comprar. Para transacciones de alto valor, recomendamos usar nuestro servicio de dep√≥sito en garant√≠a.",
   backToListings: "Volver a los Anuncios",
 
-  formName: "Nombre completo", formEmail: "Correo electrÛnico",
-  formPhone: "TelÈfono (opcional)",
-  formDefaultMessage: (title) => `Hola, estoy interesado en ${title}. øPodrÌa decirme si todavÌa est· disponible?`,
+  formName: "Nombre completo", formEmail: "Correo electr√≥nico",
+  formPhone: "Tel√©fono (opcional)",
+  formDefaultMessage: (title) => `Hola, estoy interesado en ${title}. ¬øPodr√≠a decirme si todav√≠a est√° disponible?`,
   formSending: "Enviando...", formSubmit: "Enviar Consulta",
   formSuccessTitle: "Mensaje Enviado",
-  formSuccessBody: "El vendedor se pondr· en contacto contigo en breve.",
+  formSuccessBody: "El vendedor se pondr√° en contacto contigo en breve.",
   formSuccessBtn: "Enviar Otro Mensaje",
-  formError: "Algo saliÛ mal. Por favor, intÈntalo de nuevo.",
+  formError: "Algo sali√≥ mal. Por favor, int√©ntalo de nuevo.",
 
   condLabelNew: "Nuevo", condLabelUsed: "Usado", condLabelRefurbished: "Reacondicionado",
 
-  notFoundCode: "404", notFoundTitle: "P·gina No Encontrada",
-  notFoundBody: "La p·gina que buscas no existe o ha sido movida.",
+  notFoundCode: "404", notFoundTitle: "P√°gina No Encontrada",
+  notFoundBody: "La p√°gina que buscas no existe o ha sido movida.",
   goHome: "Ir al Inicio", browseListings: "Ver Anuncios",
 
-  footerTagline: "El mercado lÌder de Europa para todo tipo de vehÌculos. Conectando compradores y vendedores en todo el mundo desde 2005.",
-  footerRegistered: "Registrado en la UniÛn Europea",
+  footerTagline: "El mercado l√≠der de Europa para todo tipo de veh√≠culos. Conectando compradores y vendedores en todo el mundo desde 2005.",
+  footerRegistered: "Registrado en la Uni√≥n Europea",
   footerBrowse: "Explorar", footerSellers: "Vendedores", footerCompany: "Empresa", footerSupport: "Soporte",
   footerAboutUs: "Sobre Nosotros", footerCareers: "Empleo", footerPress: "Prensa",
   footerHelpCenter: "Centro de Ayuda", footerSafetyTips: "Consejos de Seguridad",
-  footerPrivacy: "PolÌtica de Privacidad", footerTerms: "TÈrminos de Uso",
+  footerPrivacy: "Pol√≠tica de Privacidad", footerTerms: "T√©rminos de Uso",
   footerPostListing: "Publicar Anuncio", footerDealerAccounts: "Cuentas de Concesionario",
   footerPricing: "Precios", footerSellerResources: "Recursos para Vendedores",
 
@@ -101,20 +101,20 @@ const es: Translations = {
     const weight = dims.operating_weight_kg ? dims.operating_weight_kg.toLocaleString() : null;
     const pto = listing.details?.pto?.rear_pto_rpm;
 
-    const intro = `El {b} {m} es un tractor agrÌcola de calidad profesional diseÒado para las operaciones agrÌcolas modernas.`.replace("{b}", b).replace("{m}", m);
+    const intro = `El {b} {m} es un tractor agr√≠cola de calidad profesional dise√±ado para las operaciones agr√≠colas modernas.`.replace("{b}", b).replace("{m}", m);
     const engine = engine_model ? `Impulsado por un motor {e} de alta eficiencia,`.replace("{e}", engine_model) : `Equipado con un motor confiable,`;
-    const hp = hp_val ? `que ofrece una robusta potencia de {hp} caballos de fuerza,`.replace("{hp}", hp_val) : `diseÒado para un rendimiento confiable,`;
+    const hp = hp_val ? `que ofrece una robusta potencia de {hp} caballos de fuerza,`.replace("{hp}", hp_val) : `dise√±ado para un rendimiento confiable,`;
     const mid = `proporciona un equilibrio excepcional entre torque y eficiencia de combustible.`;
     
     let drivetrain = "";
-    if (drive && trans) drivetrain = `La transmisiÛn {d}, combinada con una vers·til caja de cambios {t}, garantiza una tracciÛn Ûptima y una entrega de potencia perfecta en terrenos difÌciles.`.replace("{d}", drive).replace("{t}", trans);
-    else if (drive) drivetrain = `La configuraciÛn {d} proporciona una tracciÛn y estabilidad superiores en entornos agrÌcolas exigentes.`.replace("{d}", drive);
-    else if (trans) drivetrain = `Su vers·til caja de cambios {t} permite a los operadores adaptarse sin esfuerzo a diversas condiciones del campo y requerimientos de implementos.`.replace("{t}", trans);
+    if (drive && trans) drivetrain = `La transmisi√≥n {d}, combinada con una vers√°til caja de cambios {t}, garantiza una tracci√≥n √≥ptima y una entrega de potencia perfecta en terrenos dif√≠ciles.`.replace("{d}", drive).replace("{t}", trans);
+    else if (drive) drivetrain = `La configuraci√≥n {d} proporciona una tracci√≥n y estabilidad superiores en entornos agr√≠colas exigentes.`.replace("{d}", drive);
+    else if (trans) drivetrain = `Su vers√°til caja de cambios {t} permite a los operadores adaptarse sin esfuerzo a diversas condiciones del campo y requerimientos de implementos.`.replace("{t}", trans);
 
     let capability = "";
     if (weight && pto) capability = `Con un peso de {w} kg, ofrece una plataforma estable para implementos pesados, mientras que la TDF de {p} RPM proporciona una transferencia de potencia confiable para una amplia gama de accesorios.`.replace("{w}", weight).replace("{p}", pto);
-    else if (weight) capability = `Con un peso de {w} kg, ofrece una plataforma altamente estable e imponente para implementos agrÌcolas de trabajo pesado.`.replace("{w}", weight);
-    else if (pto) capability = `El avanzado sistema de TDF de {p} RPM proporciona una transferencia de potencia confiable y continua para implementos agrÌcolas exigentes.`.replace("{p}", pto);
+    else if (weight) capability = `Con un peso de {w} kg, ofrece una plataforma altamente estable e imponente para implementos agr√≠colas de trabajo pesado.`.replace("{w}", weight);
+    else if (pto) capability = `El avanzado sistema de TDF de {p} RPM proporciona una transferencia de potencia confiable y continua para implementos agr√≠colas exigentes.`.replace("{p}", pto);
 
     const outro = `Construido para la resistencia y la excelencia operativa, el {m} se erige como un activo indispensable para maximizar la productividad en el campo.`.replace("{m}", m);
 

@@ -5,16 +5,16 @@ import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
   title: {
-    default: "Euro Global Machinery | Agricultural Equipment Marketplace",
-    template: "%s | Euro Global Machinery",
+    default: "Euro Global | Maquinaria Agrícola desde Asia para Latinoamérica",
+    template: "%s | Euro Global",
   },
   description:
-    "Europe's leading marketplace for new and used agricultural machinery. Browse tractors, harvesters, and farm equipment listings.",
-  keywords: ["tractors", "agricultural machinery", "farm equipment", "used tractors"],
+    "86 tractores nuevos de YTO, SinoHarvest, John Deere y Massey Ferguson — cotizados con flete, aranceles y entrega hasta tu campo en Colombia, Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay.",
+  keywords: ["tractores", "maquinaria agrícola", "importación", "YTO", "SinoHarvest", "John Deere", "Colombia", "Perú", "Bolivia", "Chile"],
   openGraph: {
     type: "website",
-    locale: "en_EU",
-    siteName: "Euro Global Machinery",
+    locale: "es_419",
+    siteName: "Euro Global",
   },
 };
 
@@ -22,7 +22,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="es">
       <body className="flex min-h-screen flex-col">
         <Header />
         <main className="flex-1">{children}</main>

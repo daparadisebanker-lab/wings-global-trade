@@ -39,14 +39,32 @@ export default function FeaturedCarousel({ listings, soldIds = [], currency = "E
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
 
-  const next = useCallback(() => setCurrent((c) => (c + 1) % listings.length), [listings.length]);
-  const prev = useCallback(() => setCurrent((c) => (c - 1 + listings.length) % listings.length), [listings.length]);
+  const safeLen = Math.max(listings.length, 1);
+  const next = useCallback(() => setCurrent((c) => (c + 1) % safeLen), [safeLen]);
+  const prev = useCallback(() => setCurrent((c) => (c - 1 + safeLen) % safeLen), [safeLen]);
 
   useEffect(() => {
-    if (paused) return;
+    if (paused || listings.length === 0) return;
     const id = setInterval(next, 4500);
     return () => clearInterval(id);
-  }, [next, paused]);
+  }, [next, paused, listings.length]);
+
+  if (listings.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+        <p className="text-sm text-white/40" style={{ fontFamily: "var(--font-body)" }}>
+          Catálogo disponible próximamente.
+        </p>
+        <Link
+          href="/agricultural/tractors"
+          className="rounded-full bg-[#C4933F] px-10 py-3 text-xs font-semibold uppercase tracking-widest text-white hover:bg-[#D4A855]"
+          style={{ fontFamily: "var(--font-body)" }}
+        >
+          {labels.viewAllListings}
+        </Link>
+      </div>
+    );
+  }
 
   const condLabel: Record<string, string> = {
     new:         labels.condNew,

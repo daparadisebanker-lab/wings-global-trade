@@ -1,15 +1,15 @@
 import type { Translations } from "@/lib/i18n";
 
 const pl: Translations = {
-  topBar: "Europejski Rynek Pojazd體 i Maszyn",
-  navHome: "Strona gl體na", navTractors: "Traktory", navAutomobiles: "Samochody",
+  topBar: "Europejski Rynek Pojazd贸w i Maszyn",
+  navHome: "Strona gl贸wna", navTractors: "Traktory", navAutomobiles: "Samochody",
   navAbout: "O nas", navContact: "Kontakt",
   signIn: "Zaloguj sie", postListing: "Dodaj ogloszenie",
 
   heroLabel: "Wiodacy Rynek Europejski",
-  heroLine1: "Znajdz sw骿 nastepny",
+  heroLine1: "Znajdz sw贸j nastepny",
   heroLine2: "Pojazd",
-  heroSubtitle: "Tysiace nowych i uzywanych traktor體, pojazd體 i maszyn rolniczych od zweryfikowanych dealer體 z calej Europy.",
+  heroSubtitle: "Tysiace nowych i uzywanych traktor贸w, pojazd贸w i maszyn rolniczych od zweryfikowanych dealer贸w z calej Europy.",
   allCategories: "Wszystkie kategorie",
   searchPlaceholder: "Marka, model lub slowo kluczowe",
   searchBtn: "Szukaj",
@@ -17,27 +17,27 @@ const pl: Translations = {
 
   browseLabel: "Przegladaj wedlug typu",
   browseTitle: "Kategorie sprzetu",
-  catTractors: "Traktory", catCars: "Samochody osobowe", catTrucks: "Ciezar體ki",
+  catTractors: "Traktory", catCars: "Samochody osobowe", catTrucks: "Ciezar贸wki",
   catAutomobiles: "Samochody", catOtherMachinery: "Inne maszyny", catSpareParts: "Czesci zamienne",
   listings: "ogloszen",
 
   statListings: "Aktywne ogloszenia", statDealers: "Zweryfikowani dealerzy",
   statCountries: "Kraje", statSold: "Sprzedanych maszyn",
 
-  featuredLabel: "Starannie wybrane", featuredTitle: "Wyr髗nione ogloszenia",
+  featuredLabel: "Starannie wybrane", featuredTitle: "Wyr贸znione ogloszenia",
   viewAll: "Zobacz wszystko", viewAllListings: "Zobacz wszystkie ogloszenia",
 
-  whyLabel: "Dlaczego my?", whyTitle: "Zaufanie profesjonalist體",
+  whyLabel: "Dlaczego my?", whyTitle: "Zaufanie profesjonalist贸w",
   whyReason1Title: "Zweryfikowani sprzedawcy",
   whyReason1Body: "Kazdy dealer na platformie jest indywidualnie weryfikowany. Handluj ponad granicami z pelnym zaufaniem.",
-  whyReason2Title: "Zasieg og髄noeuropejski",
-  whyReason2Body: "28 objetych kraj體. Dedykowani partnerzy logistyczni dostepni dla transportu transgranicznego.",
+  whyReason2Title: "Zasieg og贸lnoeuropejski",
+  whyReason2Body: "28 objetych kraj贸w. Dedykowani partnerzy logistyczni dostepni dla transportu transgranicznego.",
   whyReason3Title: "Raporty z inspekcji",
-  whyReason3Body: "Zazadaj certyfikowanych raport體 z inspekcji od stron trzecich przed podjeciem jakiegokolwiek zakupu.",
+  whyReason3Body: "Zazadaj certyfikowanych raport贸w z inspekcji od stron trzecich przed podjeciem jakiegokolwiek zakupu.",
 
-  ctaLabel: "Dla sprzedawc體", ctaTitle: "Masz maszyny na sprzedaz?",
+  ctaLabel: "Dla sprzedawc贸w", ctaTitle: "Masz maszyny na sprzedaz?",
   ctaBody: "Dodaj ogloszenie w kilka minut i dotrzyj do tysiecy kwalifikowanych kupujacych w calej Europie.",
-  ctaBtn: "Dodaj ogloszenie", ctaBtnSecondary: "Zobacz plany dla dealer體",
+  ctaBtn: "Dodaj ogloszenie", ctaBtnSecondary: "Zobacz plany dla dealer贸w",
 
   tractorsTitle: "Traktory na sprzedaz",
   tractorsCount: (n) => `${n} ogloszen dostepnych`,
@@ -52,41 +52,41 @@ const pl: Translations = {
   pagination_prev: "Poprzedni", pagination_next: "Nastepny",
 
   cardHours: "Godziny", cardPower: "Moc", cardLocation: "Lokalizacja",
-  cardCountry: "Kraj", cardViewDetails: "Zobacz szczeg髄y",
+  cardCountry: "Kraj", cardViewDetails: "Zobacz szczeg贸ly",
   hrsUnit: "godz.", hpUnit: "KM",
 
-  breadHome: "Strona gl體na", specsMake: "Marka", specsModel: "Model",
+  breadHome: "Strona gl贸wna", specsMake: "Marka", specsModel: "Model",
   specsYear: "Rok", specsCondition: "Stan", specsHorsepower: "Moc",
-  specsHours: "Godziny", specsTransmission: "Skrzynia bieg體", specsDrive: "Naped",
+  specsHours: "Godziny", specsTransmission: "Skrzynia bieg贸w", specsDrive: "Naped",
   specsLocation: "Lokalizacja", specificationsTitle: "Specyfikacje",
   contactSeller: "Skontaktuj sie ze sprzedawca", repliesVia: "Odpowiedzi przez WhatsApp",
-  buyerGuidanceTitle: "Wskaz體ki dla kupujacych",
+  buyerGuidanceTitle: "Wskaz贸wki dla kupujacych",
   buyerGuidanceBody: "Zawsze sprawdzaj maszyny osobiscie przed zakupem. W przypadku transakcji o duzej wartosci zalecamy skorzystanie z naszej uslugi escrow.",
-  backToListings: "Wr骳 do ogloszen",
+  backToListings: "Wr贸c do ogloszen",
 
   formName: "Imie i nazwisko", formEmail: "Adres e-mail",
   formPhone: "Numer telefonu (opcjonalnie)",
   formDefaultMessage: (title) => `Dzien dobry, jestem zainteresowany/a ${title}. Prosze o informacje, czy jest jeszcze dostepny/a.`,
   formSending: "Wysylanie...", formSubmit: "Wyslij zapytanie",
   formSuccessTitle: "Wiadomosc wyslana",
-  formSuccessBody: "Sprzedawca skontaktuje sie z toba wkr髏ce.",
+  formSuccessBody: "Sprzedawca skontaktuje sie z toba wkr贸tce.",
   formSuccessBtn: "Wyslij kolejna wiadomosc",
-  formError: "Cos poszlo nie tak. Spr骲uj ponownie.",
+  formError: "Cos poszlo nie tak. Spr贸buj ponownie.",
 
   condLabelNew: "Nowy", condLabelUsed: "Uzywany", condLabelRefurbished: "Odnowiony",
 
   notFoundCode: "404", notFoundTitle: "Strona nie znaleziona",
-  notFoundBody: "Strona, kt髍ej szukasz, nie istnieje lub zostala przeniesiona.",
-  goHome: "Strona gl體na", browseListings: "Przegladaj ogloszenia",
+  notFoundBody: "Strona, kt贸rej szukasz, nie istnieje lub zostala przeniesiona.",
+  goHome: "Strona gl贸wna", browseListings: "Przegladaj ogloszenia",
 
-  footerTagline: "Wiodacy rynek europejski dla wszelkiego rodzaju pojazd體. Laczymy kupujacych i sprzedawc體 na calym swiecie od 2005 roku.",
+  footerTagline: "Wiodacy rynek europejski dla wszelkiego rodzaju pojazd贸w. Laczymy kupujacych i sprzedawc贸w na calym swiecie od 2005 roku.",
   footerRegistered: "Zarejestrowany w Unii Europejskiej",
   footerBrowse: "Przegladaj", footerSellers: "Sprzedawcy", footerCompany: "Firma", footerSupport: "Wsparcie",
   footerAboutUs: "O nas", footerCareers: "Kariera", footerPress: "Prasa",
   footerHelpCenter: "Centrum pomocy", footerSafetyTips: "Porady bezpieczenstwa",
   footerPrivacy: "Polityka prywatnosci", footerTerms: "Warunki uzytkowania",
-  footerPostListing: "Dodaj ogloszenie", footerDealerAccounts: "Konta dealer體",
-  footerPricing: "Cennik", footerSellerResources: "Zasoby dla sprzedawc體",
+  footerPostListing: "Dodaj ogloszenie", footerDealerAccounts: "Konta dealer贸w",
+  footerPricing: "Cennik", footerSellerResources: "Zasoby dla sprzedawc贸w",
 
   generateDescription: (listing: any) => {
     const b = listing.brand || "This";
@@ -104,15 +104,15 @@ const pl: Translations = {
     const intro = `Ciagnik {b} {m} to profesjonalna maszyna rolnicza przeznaczona do nowoczesnych prac polowych.`.replace("{b}", b).replace("{m}", m);
     const engine = engine_model ? `Napedzany wysoce wydajnym silnikiem {e},`.replace("{e}", engine_model) : `Wyposazony w niezawodna jednostke napedowa,`;
     const hp = hp_val ? `zapewniajaca solidna moc {hp} KM,`.replace("{hp}", hp_val) : `zaprojektowany z mysla o niezawodnej wydajnosci,`;
-    const mid = `zapewnia wyjatkowa r體nowage miedzy momentem obrotowym a oszczednoscia paliwa.`;
+    const mid = `zapewnia wyjatkowa r贸wnowage miedzy momentem obrotowym a oszczednoscia paliwa.`;
     
     let drivetrain = "";
     if (drive && trans) drivetrain = `Uklad napedowy {d} w polaczeniu z wszechstronna przekladnia {t} zapewnia optymalna trakcje i plynne przenoszenie mocy na trudnym terenie.`.replace("{d}", drive).replace("{t}", trans);
     else if (drive) drivetrain = `Konfiguracja {d} zapewnia doskonala trakcje i stabilnosc w wymagajacych srodowiskach rolniczych.`.replace("{d}", drive);
-    else if (trans) drivetrain = `Wszechstronna przekladnia {t} pozwala operatorom bez wysilku dostosowac sie do r髗nych warunk體 polowych i wymagan narzedzi.`.replace("{t}", trans);
+    else if (trans) drivetrain = `Wszechstronna przekladnia {t} pozwala operatorom bez wysilku dostosowac sie do r贸znych warunk贸w polowych i wymagan narzedzi.`.replace("{t}", trans);
 
     let capability = "";
-    if (weight && pto) capability = `Wazac {w} kg, oferuje stabilna platforme do ciezkich narzedzi, podczas gdy wal odbioru mocy {p} obr./min zapewnia niezawodne przenoszenie mocy dla szerokiej gamy akcesori體.`.replace("{w}", weight).replace("{p}", pto);
+    if (weight && pto) capability = `Wazac {w} kg, oferuje stabilna platforme do ciezkich narzedzi, podczas gdy wal odbioru mocy {p} obr./min zapewnia niezawodne przenoszenie mocy dla szerokiej gamy akcesori贸w.`.replace("{w}", weight).replace("{p}", pto);
     else if (weight) capability = `Wazac {w} kg, oferuje wysoce stabilna i imponujaca platforme do ciezkich narzedzi rolniczych.`.replace("{w}", weight);
     else if (pto) capability = `Zaawansowany system WOM {p} obr./min zapewnia niezawodne, ciagle przenoszenie mocy dla wymagajacych narzedzi rolniczych.`.replace("{p}", pto);
 

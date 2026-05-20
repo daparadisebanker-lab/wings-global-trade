@@ -23,5 +23,5 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "Euro-Global-claude-nextjs-14-typescript-setup-WYGxI", "scripts"]
+  "exclude": ["node_modules", "legacy", "infrastructure", "wings-global-trade"]
 }

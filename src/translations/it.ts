@@ -27,9 +27,9 @@ const it: Translations = {
   featuredLabel: "Selezione curata", featuredTitle: "Annunci in evidenza",
   viewAll: "Vedi tutti", viewAllListings: "Vedi tutti gli annunci",
 
-  whyLabel: "PerchÈ sceglierci", whyTitle: "La fiducia dei professionisti",
+  whyLabel: "Perch√© sceglierci", whyTitle: "La fiducia dei professionisti",
   whyReason1Title: "Venditori verificati",
-  whyReason1Body: "Ogni concessionario sulla piattaforma Ë verificato individualmente. Commercia oltre i confini in tutta fiducia.",
+  whyReason1Body: "Ogni concessionario sulla piattaforma √® verificato individualmente. Commercia oltre i confini in tutta fiducia.",
   whyReason2Title: "Copertura paneuropea",
   whyReason2Body: "28 paesi coperti. Partner logistici dedicati disponibili per il trasporto transfrontaliero.",
   whyReason3Title: "Rapporti di ispezione",
@@ -42,7 +42,7 @@ const it: Translations = {
   tractorsTitle: "Trattori in vendita",
   tractorsCount: (n) => `${n} annunci disponibili`,
   sortBy: "Ordina",
-  sortNewest: "Pi˘ recenti", sortPriceAsc: "Prezzo: crescente",
+  sortNewest: "Pi√π recenti", sortPriceAsc: "Prezzo: crescente",
   sortPriceDesc: "Prezzo: decrescente", sortHoursAsc: "Meno ore",
   filters: "Filtri", clearAll: "Cancella tutto",
   conditionLabel: "Condizione", makeLabel: "Marca", yearLabel: "Anno",
@@ -66,17 +66,17 @@ const it: Translations = {
 
   formName: "Nome completo", formEmail: "Indirizzo e-mail",
   formPhone: "Numero di telefono (opzionale)",
-  formDefaultMessage: (title) => `Salve, sono interessato/a a ${title}. Potrebbe dirmi se Ë ancora disponibile?`,
+  formDefaultMessage: (title) => `Salve, sono interessato/a a ${title}. Potrebbe dirmi se √® ancora disponibile?`,
   formSending: "Invio in corso...", formSubmit: "Invia richiesta",
   formSuccessTitle: "Messaggio inviato",
-  formSuccessBody: "Il venditore ti contatter‡ a breve.",
+  formSuccessBody: "Il venditore ti contatter√† a breve.",
   formSuccessBtn: "Invia un altro messaggio",
-  formError: "Qualcosa Ë andato storto. Riprova.",
+  formError: "Qualcosa √® andato storto. Riprova.",
 
   condLabelNew: "Nuovo", condLabelUsed: "Usato", condLabelRefurbished: "Ricondizionato",
 
   notFoundCode: "404", notFoundTitle: "Pagina non trovata",
-  notFoundBody: "La pagina che stai cercando non esiste o Ë stata spostata.",
+  notFoundBody: "La pagina che stai cercando non esiste o √® stata spostata.",
   goHome: "Vai alla home", browseListings: "Sfoglia annunci",
 
   footerTagline: "Il marketplace leader d'Europa per tutti i tipi di veicoli. Collegando acquirenti e venditori in tutto il mondo dal 2005.",
@@ -101,14 +101,14 @@ const it: Translations = {
     const weight = dims.operating_weight_kg ? dims.operating_weight_kg.toLocaleString() : null;
     const pto = listing.details?.pto?.rear_pto_rpm;
 
-    const intro = `Il {b} {m} Ë un trattore agricolo di livello professionale progettato per le moderne operazioni agricole.`.replace("{b}", b).replace("{m}", m);
+    const intro = `Il {b} {m} √® un trattore agricolo di livello professionale progettato per le moderne operazioni agricole.`.replace("{b}", b).replace("{m}", m);
     const engine = engine_model ? `Alimentato da un motore {e} ad alta efficienza,`.replace("{e}", engine_model) : `Dotato di un affidabile propulsore,`;
     const hp = hp_val ? `che eroga una robusta potenza di {hp} cavalli,`.replace("{hp}", hp_val) : `progettato per prestazioni affidabili,`;
     const mid = `fornisce un eccezionale equilibrio tra coppia ed efficienza del carburante.`;
     
     let drivetrain = "";
     if (drive && trans) drivetrain = `La trasmissione {d}, abbinata a un versatile cambio {t}, garantisce una trazione ottimale e un'erogazione di potenza fluida su terreni difficili.`.replace("{d}", drive).replace("{t}", trans);
-    else if (drive) drivetrain = `La configurazione {d} offre trazione e stabilit‡ superiori in ambienti agricoli difficili.`.replace("{d}", drive);
+    else if (drive) drivetrain = `La configurazione {d} offre trazione e stabilit√† superiori in ambienti agricoli difficili.`.replace("{d}", drive);
     else if (trans) drivetrain = `Il suo versatile cambio {t} consente agli operatori di adattarsi senza sforzo a varie condizioni del campo e requisiti degli attrezzi.`.replace("{t}", trans);
 
     let capability = "";
@@ -116,7 +116,7 @@ const it: Translations = {
     else if (weight) capability = `Con un peso di {w} kg, offre una piattaforma altamente stabile e imponente per attrezzi agricoli pesanti.`.replace("{w}", weight);
     else if (pto) capability = `L'avanzato sistema di presa di forza da {p} giri/min fornisce un trasferimento di potenza affidabile e continuo per attrezzi agricoli impegnativi.`.replace("{p}", pto);
 
-    const outro = `Costruito per la resistenza e l'eccellenza operativa, il {m} rappresenta una risorsa indispensabile per massimizzare la produttivit‡ sul campo.`.replace("{m}", m);
+    const outro = `Costruito per la resistenza e l'eccellenza operativa, il {m} rappresenta una risorsa indispensabile per massimizzare la produttivit√† sul campo.`.replace("{m}", m);
 
     return `${intro} ${engine} ${hp} ${mid} ${drivetrain} ${capability} ${outro}`.replace(/\s+/g, ' ').trim();
   },

@@ -9,6 +9,23 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // ── Wings brand palette (primary going forward) ──────────────────
+        navy: {
+          DEFAULT: "#001E50",
+          light:   "#0A2D6E",
+          deep:    "#001240",
+        },
+        gold: {
+          DEFAULT: "#C4933F",
+          hover:   "#D4A855",
+          light:   "#F0E4CC",
+        },
+        charcoal: "#1C1A16",
+        "warm-white": "#F8F6F0",
+        "warm-gray":  "#E8E4DB",
+        "mid-gray":   "#6B6560",
+
+        // ── Legacy brown/cream (kept during phase-by-phase migration) ────
         brown: {
           50:  "#FAF7F4",
           100: "#F2EBE2",
@@ -30,8 +47,20 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans:  ["Inter", "system-ui", "sans-serif"],
-        serif: ["Playfair Display", "Georgia", "serif"],
+        // ── Wings brand fonts (primary going forward) ────────────────────
+        display: ["Cormorant Garamond", "Georgia", "serif"],
+        body:    ["Flexo", "system-ui", "sans-serif"],
+        // ── Legacy (kept during migration) ──────────────────────────────
+        sans:    ["Flexo", "Inter", "system-ui", "sans-serif"],
+        serif:   ["Cormorant Garamond", "Playfair Display", "Georgia", "serif"],
+      },
+      borderRadius: {
+        "2xl": "1rem",
+        "3xl": "1.5rem",
+      },
+      boxShadow: {
+        card: "0 2px 16px rgba(0, 0, 0, 0.06)",
+        "card-md": "0 2px 24px rgba(0, 0, 0, 0.08)",
       },
     },
   },

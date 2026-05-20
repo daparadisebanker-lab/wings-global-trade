@@ -10,13 +10,13 @@ const nl: Translations = {
   heroLine1: "Vind uw volgende",
   heroLine2: "Voertuig",
   heroSubtitle: "Duizenden nieuwe en gebruikte tractoren, voertuigen en landbouwmachines van geverifieerde dealers door heel Europa.",
-  allCategories: "Alle categorieën",
+  allCategories: "Alle categorieÃ«n",
   searchPlaceholder: "Merk, model of trefwoord",
   searchBtn: "Zoeken",
   popular: "Populair:",
 
   browseLabel: "Bladeren op type",
-  browseTitle: "Uitrustingscategorieën",
+  browseTitle: "UitrustingscategorieÃ«n",
   catTractors: "Tractoren", catCars: "Auto's", catTrucks: "Vrachtwagens",
   catAutomobiles: "Automobiles", catOtherMachinery: "Overige machines", catSpareParts: "Reserveonderdelen",
   listings: "advertenties",
@@ -66,7 +66,7 @@ const nl: Translations = {
 
   formName: "Volledige naam", formEmail: "E-mailadres",
   formPhone: "Telefoonnummer (optioneel)",
-  formDefaultMessage: (title) => `Hallo, ik ben geïnteresseerd in ${title}. Kunt u mij laten weten of het nog beschikbaar is?`,
+  formDefaultMessage: (title) => `Hallo, ik ben geÃ¯nteresseerd in ${title}. Kunt u mij laten weten of het nog beschikbaar is?`,
   formSending: "Verzenden...", formSubmit: "Vraag versturen",
   formSuccessTitle: "Bericht verzonden",
   formSuccessBody: "De verkoper neemt binnenkort contact met u op.",
@@ -82,7 +82,7 @@ const nl: Translations = {
   footerTagline: "Europa's toonaangevende marktplaats voor alle soorten voertuigen. Kopers en verkopers wereldwijd verbinden sinds 2005.",
   footerRegistered: "Geregistreerd in de Europese Unie",
   footerBrowse: "Bladeren", footerSellers: "Verkopers", footerCompany: "Bedrijf", footerSupport: "Ondersteuning",
-  footerAboutUs: "Over ons", footerCareers: "Carrières", footerPress: "Pers",
+  footerAboutUs: "Over ons", footerCareers: "CarriÃ¨res", footerPress: "Pers",
   footerHelpCenter: "Helpcentrum", footerSafetyTips: "Veiligheidstips",
   footerPrivacy: "Privacybeleid", footerTerms: "Gebruiksvoorwaarden",
   footerPostListing: "Advertentie plaatsen", footerDealerAccounts: "Dealeraccounts",
@@ -102,9 +102,9 @@ const nl: Translations = {
     const pto = listing.details?.pto?.rear_pto_rpm;
 
     const intro = `De {b} {m} is een professionele landbouwtractor ontworpen voor moderne landbouwactiviteiten.`.replace("{b}", b).replace("{m}", m);
-    const engine = engine_model ? `Aangedreven door een uiterst efficiënte {e}-motor,`.replace("{e}", engine_model) : `Uitgerust met een betrouwbare krachtbron,`;
+    const engine = engine_model ? `Aangedreven door een uiterst efficiÃ«nte {e}-motor,`.replace("{e}", engine_model) : `Uitgerust met een betrouwbare krachtbron,`;
     const hp = hp_val ? `die een robuuste {hp} pk levert,`.replace("{hp}", hp_val) : `ontworpen voor betrouwbare prestaties,`;
-    const mid = `biedt hij een uitzonderlijke balans tussen koppel en brandstofefficiëntie.`;
+    const mid = `biedt hij een uitzonderlijke balans tussen koppel en brandstofefficiÃ«ntie.`;
     
     let drivetrain = "";
     if (drive && trans) drivetrain = `De {d}-aandrijflijn, gecombineerd met een veelzijdige {t}-transmissie, zorgt voor optimale tractie en naadloze vermogensafgifte op uitdagend terrein.`.replace("{d}", drive).replace("{t}", trans);

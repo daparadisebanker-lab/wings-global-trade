@@ -1,46 +1,151 @@
+/* Cormorant Garamond — must be first, before Tailwind inlines its rules */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+/* ── Flexo (self-hosted) ─────────────────────────────────────────────────── */
+@font-face { font-family: 'Flexo'; src: url('/fonts/flexo/Flexo-Light.ttf') format('truetype'); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Flexo'; src: url('/fonts/flexo/Flexo-Regular.ttf') format('truetype'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Flexo'; src: url('/fonts/flexo/Flexo-It.ttf') format('truetype'); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Flexo'; src: url('/fonts/flexo/Flexo-Medium.ttf') format('truetype'); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Flexo'; src: url('/fonts/flexo/Flexo-Demi.ttf') format('truetype'); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Flexo'; src: url('/fonts/flexo/Flexo-Bold.ttf') format('truetype'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Flexo'; src: url('/fonts/flexo/Flexo-Heavy.ttf') format('truetype'); font-weight: 800; font-style: normal; font-display: swap; }
 
+/* ── CSS custom properties (available everywhere via var()) ──────────────── */
+:root {
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body:    'Flexo', system-ui, sans-serif;
+
+  --color-navy:       #001E50;
+  --color-navy-light: #0A2D6E;
+  --color-navy-deep:  #001240;
+  --color-gold:       #C4933F;
+  --color-gold-hover: #D4A855;
+  --color-gold-light: #F0E4CC;
+  --color-warm-white: #F8F6F0;
+  --color-warm-gray:  #E8E4DB;
+  --color-mid-gray:   #6B6560;
+  --color-charcoal:   #1C1A16;
+}
+
+/* ── Base ────────────────────────────────────────────────────────────────── */
 @layer base {
   html {
     scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-cream-50 text-brown-900 antialiased;
-    font-family: "Inter", system-ui, sans-serif;
+    @apply bg-warm-white text-charcoal antialiased;
+    font-family: var(--font-body);
   }
 
-  h1, h2, h3 {
-    font-family: "Playfair Display", Georgia, serif;
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
   }
 }
 
+/* ── Wings component library ─────────────────────────────────────────────── */
 @layer components {
+
+  /* Buttons */
+  .btn-gold {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-gold px-8 py-3.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-gold-hover;
+    font-family: var(--font-body);
+  }
+
+  .btn-navy {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-navy px-8 py-3.5 text-sm font-semibold text-white transition-colors duration-200 hover:bg-navy-light;
+    font-family: var(--font-body);
+  }
+
+  .btn-outline-white {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/8 px-8 py-3.5 text-sm font-medium text-white transition-colors duration-200 hover:bg-white/12;
+    font-family: var(--font-body);
+  }
+
+  .btn-outline-navy {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border-2 border-navy px-8 py-3.5 text-sm font-semibold text-navy transition-colors duration-200 hover:bg-navy hover:text-white;
+    font-family: var(--font-body);
+  }
+
+  /* Legacy button aliases — still used in existing components during migration */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-none bg-brown-800 px-6 py-3 text-sm font-medium tracking-wide text-cream-50 transition-colors hover:bg-brown-900 focus:outline-none focus:ring-2 focus:ring-brown-700 focus:ring-offset-2;
+    @apply btn-gold rounded-none;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-none border border-brown-300 bg-transparent px-6 py-3 text-sm font-medium tracking-wide text-brown-800 transition-colors hover:bg-brown-100 focus:outline-none focus:ring-2 focus:ring-brown-400 focus:ring-offset-2;
+    @apply inline-flex items-center justify-center gap-2 rounded-none border border-warm-gray bg-transparent px-6 py-3 text-sm font-medium tracking-wide text-charcoal transition-colors hover:bg-warm-white;
+    font-family: var(--font-body);
   }
 
   .btn-outline-light {
-    @apply inline-flex items-center justify-center gap-2 rounded-none border border-cream-200 bg-transparent px-6 py-3 text-sm font-medium tracking-wide text-cream-100 transition-colors hover:bg-white/10 focus:outline-none;
+    @apply inline-flex items-center justify-center gap-2 rounded-none border border-white/20 bg-transparent px-6 py-3 text-sm font-medium tracking-wide text-white transition-colors hover:bg-white/10;
+    font-family: var(--font-body);
   }
 
+  /* Cards */
   .card {
-    @apply border border-brown-200 bg-white transition-shadow hover:shadow-md;
+    @apply rounded-2xl border border-warm-gray bg-white shadow-card transition-shadow hover:shadow-card-md;
   }
 
+  /* Eyebrow label — gold uppercase */
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.12em] text-gold;
+    font-family: var(--font-body);
+  }
+
+  /* Legacy alias */
   .section-label {
-    @apply text-xs font-semibold uppercase tracking-widest text-brown-500;
+    @apply eyebrow;
   }
 
-  .input-field {
-    @apply w-full rounded-none border border-brown-300 bg-white px-4 py-2.5 text-sm text-brown-800 placeholder-brown-400 focus:border-brown-600 focus:outline-none focus:ring-1 focus:ring-brown-600;
+  /* Display heading — Cormorant */
+  .heading-display {
+    font-family: var(--font-display);
+    @apply font-semibold tracking-tight text-charcoal;
   }
+
+  /* Form inputs */
+  .input-field {
+    @apply w-full rounded-xl border border-warm-gray bg-warm-white px-4 py-3 text-sm text-charcoal placeholder-mid-gray transition-all duration-200 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/10;
+    font-family: var(--font-body);
+  }
+
+  /* Gold pill badge */
+  .badge-gold {
+    @apply inline-flex items-center rounded-full bg-gold/10 px-3 py-1 text-xs font-medium text-gold;
+    font-family: var(--font-body);
+  }
+
+  /* Navy badge */
+  .badge-navy {
+    @apply inline-flex items-center rounded-full bg-navy/10 px-3 py-1 text-xs font-medium text-navy;
+    font-family: var(--font-body);
+  }
+}
+
+/* ── Scroll animations ───────────────────────────────────────────────────── */
+.fade-up {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.stagger-item {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.stagger-item.visible {
+  opacity: 1;
+  transform: translateY(0);
 }

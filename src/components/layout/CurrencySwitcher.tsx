@@ -3,16 +3,11 @@
 import { useRouter } from "next/navigation";
 import { CURRENCIES, CURRENCY_COOKIE } from "@/lib/currencies";
 
-interface Props {
-  current: string;
-}
-
-export default function CurrencySwitcher({ current }: Props) {
+export default function CurrencySwitcher({ current }: { current: string }) {
   const router = useRouter();
 
   function handleChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    const value = e.target.value;
-    document.cookie = `${CURRENCY_COOKIE}=${value}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
+    document.cookie = `${CURRENCY_COOKIE}=${e.target.value}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
     router.refresh();
   }
 
@@ -20,11 +15,12 @@ export default function CurrencySwitcher({ current }: Props) {
     <select
       value={current}
       onChange={handleChange}
-      className="border-0 bg-transparent text-xs font-medium text-brown-600 focus:outline-none hover:text-brown-900 cursor-pointer"
+      className="border-0 bg-transparent text-xs font-medium text-white/50 focus:outline-none hover:text-white cursor-pointer"
+      style={{ fontFamily: "var(--font-body)" }}
       aria-label="Select currency"
     >
       {Object.values(CURRENCIES).map((c) => (
-        <option key={c.code} value={c.code}>
+        <option key={c.code} value={c.code} className="bg-[#001E50] text-white">
           {c.symbol} {c.code}
         </option>
       ))}

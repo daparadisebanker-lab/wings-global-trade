@@ -20,51 +20,38 @@ export default function CategoryMegaMenu() {
   };
 
   return (
-    <div 
-      className="relative" 
-      onMouseEnter={handleMouseEnter} 
-      onMouseLeave={handleMouseLeave}
-    >
+    <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <button
-        className={`flex items-center gap-2 py-6 text-sm font-semibold tracking-wide transition-colors ${
-          isOpen ? "text-brown-900" : "text-brown-600 hover:text-brown-900"
+        className={`flex items-center gap-2 py-5 text-sm font-medium transition-colors ${
+          isOpen ? "text-white" : "text-white/70 hover:text-white"
         }`}
+        style={{ fontFamily: "var(--font-body)" }}
       >
-        <svg
-          className="h-4 w-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d={isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
-          />
+        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round"
+            d={isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
         </svg>
-        Browse Categories
+        Catálogo
       </button>
 
-      {/* Mega Menu Overlay */}
-      {isOpen && (activeCategory || CATEGORIES.length > 0) && (
-        <div className="absolute left-0 top-full z-[100] flex w-[850px] -translate-x-12 border border-brown-200 bg-white shadow-2xl overflow-hidden rounded-sm transition-all duration-300 ease-out">
-          
-          {/* Sidebar: Main Categories */}
-          <div className="w-64 border-r border-brown-100 bg-cream-50/50">
+      {isOpen && (
+        <div className="absolute left-0 top-full z-[100] flex w-[780px] -translate-x-4 overflow-hidden rounded-2xl border border-white/10 bg-[#001240] shadow-[0_24px_64px_rgba(0,0,0,0.4)]">
+
+          {/* Sidebar */}
+          <div className="w-56 border-r border-white/8 py-3">
             {CATEGORIES.map((cat) => (
               <div
                 key={cat.slug}
                 onMouseEnter={() => setActiveCategory(cat)}
-                className={`flex items-center justify-between px-6 py-4 cursor-pointer transition-all duration-150 ${
+                className={`flex cursor-pointer items-center justify-between px-5 py-3.5 transition-colors ${
                   activeCategory?.slug === cat.slug
-                    ? "bg-white text-brown-900 border-r-2 border-brown-900"
-                    : "text-brown-500 hover:bg-white hover:text-brown-700"
+                    ? "border-r-2 border-[#C4933F] bg-white/6 text-white"
+                    : "text-white/50 hover:bg-white/4 hover:text-white/80"
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium">{cat.label}</span>
-                </div>
+                <span className="text-sm font-medium" style={{ fontFamily: "var(--font-body)" }}>
+                  {cat.label}
+                </span>
                 <svg className="h-3 w-3 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
                 </svg>
@@ -72,59 +59,59 @@ export default function CategoryMegaMenu() {
             ))}
           </div>
 
-          {/* Panel: Subcategories Grid */}
-          <div className="flex-1 p-8 bg-white max-h-[600px] overflow-y-auto">
-            <div className="mb-6 border-b border-brown-100 pb-4">
-              <h3 className="font-serif text-xl font-semibold text-brown-900">
+          {/* Subcategories panel */}
+          <div className="flex-1 max-h-[480px] overflow-y-auto p-7">
+            <div className="mb-5 border-b border-white/8 pb-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#C4933F]" style={{ fontFamily: "var(--font-body)" }}>
                 {activeCategory?.label}
-              </h3>
-              <p className="mt-1 text-xs text-brown-400">
-                Explore our full inventory of {activeCategory?.label.toLowerCase()}
               </p>
+              <h3 className="mt-1 text-lg font-semibold text-white" style={{ fontFamily: "var(--font-display)" }}>
+                {activeCategory?.description}
+              </h3>
             </div>
 
-            <div className="grid grid-cols-3 gap-x-8 gap-y-6">
+            <div className="grid grid-cols-3 gap-x-6 gap-y-5">
               {activeCategory?.subtypes.map((sub) => (
                 <Link
                   key={sub.href}
                   href={sub.href}
                   onClick={() => setIsOpen(false)}
-                  className="group flex items-start gap-3 transition-colors"
+                  className="group flex items-start gap-3"
                 >
-                  <div className="relative h-12 w-16 flex-shrink-0 bg-cream-50 rounded p-1 transition-colors group-hover:bg-brown-50">
+                  <div className="relative h-10 w-14 flex-shrink-0 rounded-lg bg-white/5 p-1.5 transition-colors group-hover:bg-white/10">
                     {sub.icon ? (
                       <Image
                         src={sub.icon}
                         alt={sub.label}
                         fill
-                        className="object-contain p-1 opacity-70 group-hover:opacity-100 transition-opacity"
+                        className="object-contain p-1 opacity-50 transition-opacity group-hover:opacity-80 brightness-0 invert"
                       />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center border border-dashed border-brown-200">
-                        <span className="text-[10px] text-brown-300">SVG</span>
+                      <div className="flex h-full w-full items-center justify-center">
+                        <div className="h-1.5 w-1.5 rounded-full bg-[#C4933F]" />
                       </div>
                     )}
                   </div>
                   <div>
-                    <p className="text-[13px] font-semibold text-brown-800 group-hover:text-brown-900 transition-colors">
+                    <p className="text-[13px] font-semibold text-white/70 transition-colors group-hover:text-white" style={{ fontFamily: "var(--font-body)" }}>
                       {sub.label}
                     </p>
-                    <p className="text-[10px] uppercase tracking-tighter text-brown-400">
-                      {sub.count} Units
+                    <p className="text-[10px] text-[#C4933F]/70" style={{ fontFamily: "var(--font-body)" }}>
+                      {sub.count} modelos
                     </p>
                   </div>
                 </Link>
               ))}
             </div>
 
-            {/* View All Button */}
-            <div className="mt-10">
+            <div className="mt-8">
               <Link
                 href={activeCategory?.href || "#"}
                 onClick={() => setIsOpen(false)}
-                className="inline-flex items-center gap-2 border border-brown-200 px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.2em] text-brown-600 transition-all hover:border-brown-900 hover:bg-brown-900 hover:text-white"
+                className="inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-2 text-[11px] font-semibold uppercase tracking-widest text-white/60 transition-colors hover:border-[#C4933F] hover:text-[#C4933F]"
+                style={{ fontFamily: "var(--font-body)" }}
               >
-                View All {activeCategory?.label} →
+                Ver todo {activeCategory?.shortLabel} →
               </Link>
             </div>
           </div>
