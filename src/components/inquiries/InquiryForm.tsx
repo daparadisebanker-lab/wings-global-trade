@@ -1,50 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import type { InquiryPayload } from "@/types";
-
-interface FormLabels {
-  name: string;
-  email: string;
-  phone: string;
-  defaultMessage: string;
-  sending: string;
-  submit: string;
-  successTitle: string;
-  successBody: string;
-  successBtn: string;
-  error: string;
-}
 
 interface Props {
   listingId: string;
   listingTitle: string;
-  labels?: FormLabels;
 }
 
-const DEFAULT_LABELS: FormLabels = {
-  name: "Full name",
-  email: "Email address",
-  phone: "Phone number (optional)",
-  defaultMessage: "",
-  sending: "Sending...",
-  submit: "Send Inquiry",
-  successTitle: "Message Sent",
-  successBody: "The seller will be in touch with you shortly.",
-  successBtn: "Send Another Message",
-  error: "Something went wrong. Please try again.",
-};
+const fieldClass =
+  "w-full rounded-xl border border-[#E8E4DB] bg-[#F8F6F0] px-3 py-2.5 text-sm text-[#1C1A16] focus:border-[#C4933F] focus:outline-none";
 
 type Status = "idle" | "loading" | "success" | "error";
 
-export default function InquiryForm({ listingId, listingTitle, labels }: Props) {
-  const l = { ...DEFAULT_LABELS, ...labels };
+export default function InquiryForm({ listingId, listingTitle }: Props) {
   const [status, setStatus] = useState<Status>("idle");
   const [form, setForm] = useState({
     name: "",
-    email: "",
     phone: "",
-    message: l.defaultMessage || `Hello, I am interested in the ${listingTitle}. Please let me know if it is still available.`,
+    email: "",
+    message: `Hola, estoy interesado en el ${listingTitle}. ¿Está disponible?`,
   });
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
@@ -54,20 +28,13 @@ export default function InquiryForm({ listingId, listingTitle, labels }: Props) 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("loading");
-
-    const payload: InquiryPayload = {
-      listing_id: listingId,
-      listing_title: listingTitle,
-      ...form,
-    };
-
     try {
       const res = await fetch("/api/inquiries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ listing_id: listingId, listing_title: listingTitle, ...form }),
       });
-      if (!res.ok) throw new Error("Failed to send");
+      if (!res.ok) throw new Error();
       setStatus("success");
     } catch {
       setStatus("error");
@@ -76,11 +43,26 @@ export default function InquiryForm({ listingId, listingTitle, labels }: Props) 
 
   if (status === "success") {
     return (
-      <div className="border border-brown-200 bg-cream-100 p-6 text-center">
-        <p className="font-serif text-base font-medium text-brown-900">{l.successTitle}</p>
-        <p className="mt-2 text-sm text-brown-600">{l.successBody}</p>
-        <button onClick={() => setStatus("idle")} className="btn-secondary mt-5 text-xs">
-          {l.successBtn}
+      <div className="rounded-2xl bg-[#001E50] p-6 text-center">
+        <div className="mb-3 flex justify-center">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#C4933F]">
+            <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+        </div>
+        <p className="font-semibold text-white" style={{ fontFamily: "var(--font-display)" }}>
+          Consulta enviada
+        </p>
+        <p className="mt-2 text-sm text-white/60" style={{ fontFamily: "var(--font-body)" }}>
+          Te contactamos en menos de 24 horas.
+        </p>
+        <button
+          onClick={() => setStatus("idle")}
+          className="mt-4 text-xs font-semibold text-[#C4933F] hover:underline underline-offset-2"
+          style={{ fontFamily: "var(--font-body)" }}
+        >
+          Enviar otra consulta
         </button>
       </div>
     );
@@ -89,36 +71,40 @@ export default function InquiryForm({ listingId, listingTitle, labels }: Props) 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
       <input
-        name="name" type="text" placeholder={l.name}
+        name="name" type="text" placeholder="Nombre completo *"
         required value={form.name} onChange={handleChange}
-        className="input-field"
+        className={fieldClass} style={{ fontFamily: "var(--font-body)" }}
       />
       <input
-        name="email" type="email" placeholder={l.email}
+        name="phone" type="tel" placeholder="WhatsApp *"
+        required value={form.phone} onChange={handleChange}
+        className={fieldClass} style={{ fontFamily: "var(--font-body)" }}
+      />
+      <input
+        name="email" type="email" placeholder="Correo electrónico *"
         required value={form.email} onChange={handleChange}
-        className="input-field"
-      />
-      <input
-        name="phone" type="tel" placeholder={l.phone}
-        value={form.phone} onChange={handleChange}
-        className="input-field"
+        className={fieldClass} style={{ fontFamily: "var(--font-body)" }}
       />
       <textarea
-        name="message" rows={4}
+        name="message" rows={3}
         required value={form.message} onChange={handleChange}
-        className="input-field resize-none"
+        className={`${fieldClass} resize-none`}
+        style={{ fontFamily: "var(--font-body)" }}
       />
 
       {status === "error" && (
-        <p className="text-xs text-red-700">{l.error}</p>
+        <p className="text-xs text-red-600" style={{ fontFamily: "var(--font-body)" }}>
+          Error al enviar. Intenta de nuevo.
+        </p>
       )}
 
       <button
         type="submit"
         disabled={status === "loading"}
-        className="btn-primary w-full text-xs uppercase tracking-widest disabled:opacity-60"
+        className="w-full rounded-full bg-[#C4933F] py-3 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-[#D4A855] disabled:opacity-60"
+        style={{ fontFamily: "var(--font-body)" }}
       >
-        {status === "loading" ? l.sending : l.submit}
+        {status === "loading" ? "Enviando…" : "Consultar disponibilidad"}
       </button>
     </form>
   );

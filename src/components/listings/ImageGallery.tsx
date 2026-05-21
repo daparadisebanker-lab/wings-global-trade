@@ -13,8 +13,8 @@ export default function ImageGallery({ images, alt }: Props) {
   const current = images[active] ?? images[0];
 
   return (
-    <div className="space-y-3">
-      <div className="relative h-72 overflow-hidden bg-brown-100 sm:h-[28rem]">
+    <div className="space-y-2">
+      <div className="relative h-72 overflow-hidden rounded-2xl bg-[#EEE9E0] sm:h-[32rem]">
         <Image
           src={current}
           alt={alt}
@@ -26,20 +26,22 @@ export default function ImageGallery({ images, alt }: Props) {
       </div>
 
       {images.length > 1 && (
-        <div className="grid grid-cols-4 gap-3 sm:grid-cols-5">
+        <div className="grid grid-cols-5 gap-2">
           {images.map((src, i) => (
             <button
               key={src}
               type="button"
               onClick={() => setActive(i)}
-              className={`relative h-20 overflow-hidden border-2 bg-brown-100 transition-colors ${
-                i === active ? "border-brown-700" : "border-transparent hover:border-brown-300"
+              className={`relative h-16 overflow-hidden rounded-xl border-2 bg-[#EEE9E0] transition-colors ${
+                i === active
+                  ? "border-[#C4933F]"
+                  : "border-transparent hover:border-[#C4933F]/40"
               }`}
-              aria-label={`View image ${i + 1}`}
+              aria-label={`Ver imagen ${i + 1}`}
             >
               <Image
                 src={src}
-                alt={`${alt} – view ${i + 1}`}
+                alt={`${alt} – vista ${i + 1}`}
                 fill
                 className="object-cover"
                 sizes="120px"
