@@ -6,7 +6,7 @@ import FeaturedCarousel from "@/components/listings/FeaturedCarousel";
 import HpFinder from "@/components/listings/HpFinder";
 import { DEFAULT_CURRENCY } from "@/lib/currencies";
 import { DEFAULT_LANG, getTranslations } from "@/lib/i18n";
-import { ALL_SUBTYPES } from "@/lib/categories";
+import { CATEGORIES } from "@/lib/categories";
 
 export const metadata: Metadata = {
   title: "Euro Global | Maquinaria Agrícola desde Asia para Latinoamérica",
@@ -16,6 +16,14 @@ export const metadata: Metadata = {
 
 const FEATURED_BG =
   "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1920&q=80";
+
+const CAT_IMAGES: Record<string, string> = {
+  "agricultural": "photo-1625246333195-78d9c38ad449",
+  "trucks":       "photo-1601584115197-04ecc0da31d7",
+  "buses":        "photo-1570125909517-53cb21c89ff2",
+  "industrial":   "photo-1504307651254-35680f356dfd",
+  "spare-parts":  "photo-1596813362035-d3c3e042a763",
+};
 
 const TRUST_BADGES = [
   {
@@ -252,49 +260,67 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── MACHINERY TYPES ───────────────────────────────────────────────── */}
+      {/* ── CATEGORY CARDS ────────────────────────────────────────────────── */}
       <section className="bg-[#F8F6F0] py-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mb-10">
-            <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
-              style={{ fontFamily: "var(--font-body)" }}>
-              Categorías
-            </p>
-            <h2
-              className="text-3xl font-semibold text-[#1C1A16]"
-              style={{ fontFamily: "var(--font-display)" }}
+          <div className="mb-10 flex items-end justify-between">
+            <div>
+              <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
+                style={{ fontFamily: "var(--font-body)" }}>
+                Catálogo
+              </p>
+              <h2
+                className="text-3xl font-semibold text-[#1C1A16]"
+                style={{ fontFamily: "var(--font-display)" }}
+              >
+                Explorar por categoría
+              </h2>
+            </div>
+            <Link
+              href="/categories"
+              className="hidden text-xs font-semibold uppercase tracking-widest text-[#6B6560] underline-offset-4 hover:text-[#1C1A16] hover:underline sm:block"
+              style={{ fontFamily: "var(--font-body)" }}
             >
-              Navegar por tipo de maquinaria
-            </h2>
+              Ver todas →
+            </Link>
           </div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-            {ALL_SUBTYPES.map((sub) => (
+
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
+            {CATEGORIES.map((cat, i) => (
               <Link
-                key={sub.href}
-                href={sub.href}
-                className="group relative h-48 overflow-hidden rounded-xl"
+                key={cat.slug}
+                href={cat.href}
+                className={`group relative overflow-hidden rounded-2xl ${
+                  i < 3 ? "h-72" : "h-56"
+                } md:h-72`}
               >
                 <Image
-                  src={`https://images.unsplash.com/${sub.unsplashId}?w=400&q=80`}
-                  alt={sub.label}
+                  src={`https://images.unsplash.com/${CAT_IMAGES[cat.slug]}?w=600&q=80`}
+                  alt={cat.label}
                   fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-110"
-                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
                 />
-                <div className="absolute inset-0 bg-[#001E50]/55 transition-colors duration-300 group-hover:bg-[#001E50]/75" />
-                <div className="absolute inset-0 flex flex-col items-center justify-end p-4 text-center">
-                  <span
-                    className="text-sm font-semibold leading-tight text-white"
-                    style={{ fontFamily: "var(--font-display)" }}
-                  >
-                    {sub.label}
-                  </span>
-                  <span
-                    className="mt-1 text-[10px] text-[#C4933F] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                <div className="absolute inset-0 bg-gradient-to-t from-[#001240]/90 via-[#001E50]/30 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-5">
+                  <p
+                    className="text-[9px] font-semibold uppercase tracking-[0.15em] text-[#C4933F]"
                     style={{ fontFamily: "var(--font-body)" }}
                   >
-                    Ver catálogo →
-                  </span>
+                    {cat.subtypes.length} subcategorías
+                  </p>
+                  <p
+                    className="mt-1 text-lg font-semibold leading-tight text-white"
+                    style={{ fontFamily: "var(--font-display)" }}
+                  >
+                    {cat.shortLabel}
+                  </p>
+                  <p
+                    className="mt-1.5 text-[10px] font-semibold text-white/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                    style={{ fontFamily: "var(--font-body)" }}
+                  >
+                    Explorar →
+                  </p>
                 </div>
               </Link>
             ))}
