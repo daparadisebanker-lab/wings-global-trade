@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useFadeIn, useStaggerFadeIn } from "@/hooks/useFadeIn";
 
@@ -72,7 +72,7 @@ export default function WingsHowItWorks() {
     <section id="como-funciona" className="bg-[#F8F6F0] py-24 md:py-32">
       <div className="max-w-7xl mx-auto px-6">
         <div ref={headerRef as React.RefObject<HTMLDivElement>} className="fade-up text-center mb-20">
-          <p className="text-[#C4933F] text-sm font-medium tracking-[0.12em] uppercase mb-5" style={{ fontFamily: "var(--font-body)" }}>
+          <p className="text-[#C4933F] text-[10px] font-semibold tracking-[0.12em] uppercase mb-5" style={{ fontFamily: "var(--font-body)" }}>
             El proceso
           </p>
           <h2

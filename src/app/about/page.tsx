@@ -1,15 +1,15 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Quiénes somos — Euro Global Machinery",
+  title: "Quiénes somos — Wings Global Trade",
   description: "Conectamos compradores latinoamericanos con fabricantes asiáticos de maquinaria agrícola — precio landed total, sin intermediarios.",
 };
 
 const STATS = [
   { value: "86",       label: "Modelos disponibles" },
   { value: "5",        label: "Marcas verificadas"  },
-  { value: "7",        label: "Países de entrega"   },
+  { value: "6",        label: "Países de entrega"   },
   { value: "40–210",   label: "Rango HP del catálogo" },
 ];
 
@@ -32,7 +32,7 @@ const HOW = [
   {
     num: "01",
     title: "Selecciona el equipo",
-    body: "Explora nuestro catálogo de tractores y maquinaria agrícola. Filtra por potencia, marca y tracción.",
+    body: "Explora el catálogo — tractores, camiones, buses, equipos industriales y repuestos. Filtra por categoría y marca.",
   },
   {
     num: "02",
@@ -52,7 +52,7 @@ const HOW = [
 ];
 
 const MARKETS = [
-  "Colombia", "Perú", "Bolivia", "Chile", "Paraguay", "Uruguay", "Ecuador",
+  "Perú", "Bolivia", "Chile", "Paraguay", "Argentina", "Uruguay",
 ];
 
 export default function AboutPage() {
@@ -136,7 +136,7 @@ export default function AboutPage() {
                 className="mt-4 text-sm leading-relaxed text-[#6B6560]"
                 style={{ fontFamily: "var(--font-body)" }}
               >
-                Nuestra plataforma elimina esa cadena de intermediarios. Compradores en 7 países de Latinoamérica reciben cotizaciones con precio landed total — sin calcular nada por su cuenta.
+                Nuestra plataforma elimina esa cadena de intermediarios. Compradores en 6 países de Latinoamérica reciben cotizaciones con precio landed total — sin calcular nada por su cuenta.
               </p>
             </div>
             <div>
@@ -224,7 +224,7 @@ export default function AboutPage() {
             className="mb-8 text-2xl font-semibold text-[#1C1A16]"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            Entregamos en 7 países de Latinoamérica.
+            Entregamos en 6 países de Latinoamérica.
           </h2>
           <div className="flex flex-wrap gap-3">
             {MARKETS.map((m) => (
@@ -263,7 +263,7 @@ export default function AboutPage() {
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
-              href="/agricultural/tractors"
+              href="/categories"
               className="rounded-full bg-[#C4933F] px-8 py-3 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-[#D4A855]"
               style={{ fontFamily: "var(--font-body)" }}
             >

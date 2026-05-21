@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import ComingSoonCategory from "@/components/listings/ComingSoonCategory";
 
 export const metadata: Metadata = {
-  title: "Reach Stackers for Sale — Euro Global Machinery",
+  title: "Reach Stackers for Sale — Wings Global Trade",
   description: "Browse new and used reach stackers from verified dealers across Europe.",
 };
 

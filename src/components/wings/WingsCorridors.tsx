@@ -1,4 +1,4 @@
-const CORRIDORS = [
+﻿const CORRIDORS = [
   {
     hub: "ZOFRI",
     location: "Iquique, Chile",
@@ -30,7 +30,7 @@ export default function WingsCorridors() {
     <section id="corredores" className="bg-[#0D1B2A] py-28 md:py-36">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
-          <p className="text-[#C4933F] text-sm font-medium tracking-[0.12em] uppercase mb-5" style={{ fontFamily: "var(--font-body)" }}>
+          <p className="text-[#C4933F] text-[10px] font-semibold tracking-[0.12em] uppercase mb-5" style={{ fontFamily: "var(--font-body)" }}>
             Corredores de importación
           </p>
           <h2

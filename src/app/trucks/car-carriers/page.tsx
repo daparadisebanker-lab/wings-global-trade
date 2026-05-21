@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import ComingSoonCategory from "@/components/listings/ComingSoonCategory";
 
 export const metadata: Metadata = {
-  title: "Car Carriers for Sale — Euro Global Machinery",
+  title: "Car Carriers for Sale — Wings Global Trade",
   description: "Browse new and used car carriers from verified dealers across Europe.",
 };
 

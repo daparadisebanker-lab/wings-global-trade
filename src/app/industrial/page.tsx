@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import CategoryHubPage from "@/components/listings/CategoryHubPage";
 import { CATEGORIES } from "@/lib/categories";
 
 export const metadata: Metadata = {
-  title: "Construcción e Industrial — Euro Global Machinery",
+  title: "Construcción e Industrial — Wings Global Trade",
   description: "Montacargas, excavadoras, manipuladores telescópicos, grúas, topadoras y equipos industriales desde Asia.",
 };
 

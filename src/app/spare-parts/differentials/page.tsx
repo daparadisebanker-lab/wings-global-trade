@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import ComingSoonCategory from "@/components/listings/ComingSoonCategory";
 
 export const metadata: Metadata = {
-  title: "Differential Housings for Sale — Euro Global Machinery",
+  title: "Differential Housings for Sale — Wings Global Trade",
   description: "Browse new and used differential housings from verified dealers across Europe.",
 };
 

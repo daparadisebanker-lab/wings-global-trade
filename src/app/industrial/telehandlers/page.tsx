@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import ComingSoonCategory from "@/components/listings/ComingSoonCategory";
 
 export const metadata: Metadata = {
-  title: "Telescopic Handlers for Sale — Euro Global Machinery",
+  title: "Telescopic Handlers for Sale — Wings Global Trade",
   description: "Browse new and used telehandlers from verified dealers across Europe.",
 };
 

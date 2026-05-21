@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { cookies } from "next/headers";
@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const listing = await getListingById(params.id);
   if (!listing) return {};
   return {
-    title: `${listing.year ?? ""} ${listing.brand} ${listing.model} — Euro Global Machinery`.trim(),
+    title: `${listing.year ?? ""} ${listing.brand} ${listing.model} — Wings Global Trade`.trim(),
     description: `${listing.brand} ${listing.model} ${listing.year ?? ""} — ${listing.horsepower ?? "—"} hp. Disponible en ${listing.country ?? "—"}. Solicita cotización con precio landed total.`,
   };
 }
@@ -40,7 +40,7 @@ export default async function TractorDetailPage({ params }: Props) {
   const listingTitle  = `${listing.year ?? ""} ${listing.brand} ${listing.model}`.trim();
   const priceDisplay  = listing.price ? formatPrice(listing.price, currency) : null;
 
-  const waNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "51999000000";
+  const waNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "51934987440";
   const waLink   = `https://wa.me/${waNumber}?text=${encodeURIComponent(`Hola, estoy interesado en el ${listingTitle}. ¿Está disponible?`)}`;
 
   const specs = [

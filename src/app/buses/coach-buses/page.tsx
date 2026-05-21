@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import ComingSoonCategory from "@/components/listings/ComingSoonCategory";
 
 export const metadata: Metadata = {
-  title: "Coach Buses for Sale — Euro Global Machinery",
+  title: "Coach Buses for Sale — Wings Global Trade",
   description: "Browse new and used coach buses from verified dealers across Europe.",
 };
 

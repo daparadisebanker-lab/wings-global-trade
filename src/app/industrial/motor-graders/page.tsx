@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import ComingSoonCategory from "@/components/listings/ComingSoonCategory";
 
 export const metadata: Metadata = {
-  title: "Motor Graders for Sale — Euro Global Machinery",
+  title: "Motor Graders for Sale — Wings Global Trade",
   description: "Browse new and used motor graders from verified dealers across Europe.",
 };
 

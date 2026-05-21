@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useFadeIn, useStaggerFadeIn } from "@/hooks/useFadeIn";
 
 const WHATSAPP_URL =
-  "https://wa.me/51999000000?text=Hola%2C%20acabo%20de%20completar%20el%20formulario%20en%20su%20sitio%20web.%20Me%20gustar%C3%ADa%20hablar%20sobre%20mi%20proyecto%20de%20importaci%C3%B3n.";
+  "https://wa.me/51934987440?text=Hola%2C%20acabo%20de%20completar%20el%20formulario%20en%20su%20sitio%20web.%20Me%20gustar%C3%ADa%20hablar%20sobre%20mi%20proyecto%20de%20importaci%C3%B3n.";
 
 type FormData = { nombre: string; empresa: string; contacto: string };
 const EMPTY: FormData = { nombre: "", empresa: "", contacto: "" };
@@ -49,7 +49,7 @@ export default function WingsLeadForm() {
     <section id="contacto" className="bg-[#F8F6F0] py-24 md:py-32">
       <div className="max-w-7xl mx-auto px-6">
         <div ref={headerRef as React.RefObject<HTMLDivElement>} className="fade-up text-center mb-16">
-          <p className="text-[#C4933F] text-sm font-medium tracking-[0.12em] uppercase mb-5" style={{ fontFamily: "var(--font-body)" }}>
+          <p className="text-[#C4933F] text-[10px] font-semibold tracking-[0.12em] uppercase mb-5" style={{ fontFamily: "var(--font-body)" }}>
             Empieza ahora
           </p>
           <h2
@@ -66,11 +66,6 @@ export default function WingsLeadForm() {
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-8 max-w-6xl mx-auto">
           {/* Trust points */}
           <div ref={trustRef as React.RefObject<HTMLDivElement>} className="flex flex-col gap-5">
-            <div className="hidden lg:block mb-2">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/wings-logo2-v2.svg" alt="Wings Global Trade" className="h-10 w-auto" />
-            </div>
-
             {[
               { label: "Sin costo inicial",           detail: "La primera consulta es completamente gratuita.",                    icon: <GiftIcon />        },
               { label: "Respuesta en menos de 24 h",  detail: "Un asesor real te contacta, no un bot automatizado.",               icon: <ClockIcon />       },

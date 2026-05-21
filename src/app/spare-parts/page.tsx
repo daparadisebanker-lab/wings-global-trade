@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import CategoryHubPage from "@/components/listings/CategoryHubPage";
 import { CATEGORIES } from "@/lib/categories";
 
 export const metadata: Metadata = {
-  title: "Repuestos y Componentes — Euro Global Machinery",
+  title: "Repuestos y Componentes — Wings Global Trade",
   description: "Motores usados de Japón, motores nuevos de China, cajas de cambio, ejes y componentes alternativos para camiones y maquinaria pesada.",
 };
 

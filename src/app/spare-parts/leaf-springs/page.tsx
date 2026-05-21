@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import ComingSoonCategory from "@/components/listings/ComingSoonCategory";
 
 export const metadata: Metadata = {
-  title: "Leaf Spring Packs for Sale — Euro Global Machinery",
+  title: "Leaf Spring Packs for Sale — Wings Global Trade",
   description: "Browse new and used leaf spring packs from verified dealers across Europe.",
 };
 

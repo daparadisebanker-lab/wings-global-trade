@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import ComingSoonCategory from "@/components/listings/ComingSoonCategory";
 
 export const metadata: Metadata = {
-  title: "Wheel Hubs & Brake Drums for Sale — Euro Global Machinery",
+  title: "Wheel Hubs & Brake Drums for Sale — Wings Global Trade",
   description: "Browse new and used wheel hubs and brake drums from verified dealers across Europe.",
 };
 

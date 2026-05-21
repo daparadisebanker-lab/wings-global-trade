@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import ComingSoonCategory from "@/components/listings/ComingSoonCategory";
 
 export const metadata: Metadata = {
-  title: "Seeder & Planters for Sale — Euro Global Machinery",
+  title: "Seeder & Planters for Sale — Wings Global Trade",
   description: "Browse new and used seeders and planters from verified dealers across Europe.",
 };
 

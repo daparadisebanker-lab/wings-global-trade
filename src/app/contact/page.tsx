@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import ContactTracks from "@/components/contact/ContactTracks";
 
 export const metadata: Metadata = {
-  title: "Solicitar cotización — Euro Global Machinery",
+  title: "Solicitar cotización — Wings Global Trade",
   description: "Cotiza maquinaria de nuestro catálogo o inicia tu importación desde Asia. Precio landed total en menos de 24 horas.",
 };
 

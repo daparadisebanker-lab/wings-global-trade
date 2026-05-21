@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import ComingSoonCategory from "@/components/listings/ComingSoonCategory";
 
 export const metadata: Metadata = {
-  title: "Diesel Engine Blocks for Sale — Euro Global Machinery",
+  title: "Diesel Engine Blocks for Sale — Wings Global Trade",
   description: "Browse new and used diesel engine blocks from verified dealers across Europe.",
 };
 

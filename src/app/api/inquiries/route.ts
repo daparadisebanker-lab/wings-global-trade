@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import type { InquiryPayload } from "@/types";
 
@@ -6,7 +6,7 @@ function buildEmailHtml(data: InquiryPayload): string {
   return `
     <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;color:#2c1a0e">
       <div style="background:#2c1a0e;padding:24px 32px">
-        <p style="margin:0;font-size:11px;letter-spacing:0.2em;color:#c4a882;text-transform:uppercase">Euro Global Machinery</p>
+        <p style="margin:0;font-size:11px;letter-spacing:0.2em;color:#c4a882;text-transform:uppercase">Wings Global Trade</p>
         <h1 style="margin:6px 0 0;font-size:22px;color:#fdf6ee">New Inquiry</h1>
       </div>
       <div style="background:#fdf6ee;padding:32px">
@@ -24,7 +24,7 @@ function buildEmailHtml(data: InquiryPayload): string {
         <p style="margin:0;background:#fff;border:1px solid #e5d5c0;padding:16px;font-size:14px;line-height:1.7;white-space:pre-wrap">${data.message}</p>
       </div>
       <div style="background:#e5d5c0;padding:16px 32px;font-size:11px;color:#7a5c40;text-align:center">
-        Euro Global Machinery — reply directly to this email to respond to the buyer.
+        Wings Global Trade — reply directly to this email to respond to the buyer.
       </div>
     </div>
   `;
@@ -32,7 +32,7 @@ function buildEmailHtml(data: InquiryPayload): string {
 
 function buildWhatsAppMessage(data: InquiryPayload): string {
   return [
-    `📋 *New Inquiry — Euro Global Machinery*`,
+    `📋 *New Inquiry — Wings Global Trade*`,
     ``,
     `*Listing:* ${data.listing_title}`,
     ``,
@@ -62,7 +62,7 @@ async function sendEmail(data: InquiryPayload) {
   });
 
   await transporter.sendMail({
-    from: CONTACT_EMAIL_FROM || `"Euro Global Machinery" <${SMTP_USER}>`,
+    from: CONTACT_EMAIL_FROM || `"Wings Global Trade" <${SMTP_USER}>`,
     to: CONTACT_EMAIL,
     replyTo: `"${data.name}" <${data.email}>`,
     subject: `New Inquiry: ${data.listing_title}`,

@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import MobileMenu from "./MobileMenu";
 import CategoryMegaMenu from "./CategoryMegaMenu";
 
@@ -13,8 +13,8 @@ export default function Header() {
           <Link href="/" className="flex-shrink-0">
             <img
               src="/wings-logo2.svg"
-              alt="Euro Global"
-              className="h-10 w-auto brightness-0 invert"
+              alt="Wings Global Trade"
+              className="h-8 w-auto brightness-0 invert md:h-6"
             />
           </Link>
 

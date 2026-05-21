@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import ComingSoonCategory from "@/components/listings/ComingSoonCategory";
 
 export const metadata: Metadata = {
-  title: "Rigid Dump Trucks for Sale — Euro Global Machinery",
+  title: "Rigid Dump Trucks for Sale — Wings Global Trade",
   description: "Browse new and used rigid dump trucks from verified dealers across Europe.",
 };
 

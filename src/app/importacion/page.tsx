@@ -10,7 +10,7 @@ import WingsLeadForm     from "@/components/wings/WingsLeadForm";
 export const metadata: Metadata = {
   title: "Importación desde Asia — Wings Global Trade",
   description:
-    "Importa maquinaria, repuestos y productos desde Asia con precio landed total. Asesoría en español, dos hubs en zona franca y entrega en 7 países de Latinoamérica.",
+    "Importa maquinaria, repuestos y productos desde Asia con precio landed total. Asesoría en español, dos hubs en zona franca y entrega en 6 países de Latinoamérica.",
 };
 
 export default function ImportacionPage() {

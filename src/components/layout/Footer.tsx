@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 
 const CATALOG_LINKS = [
   { label: "Ver catálogo completo",    href: "/categories"  },
@@ -193,8 +193,8 @@ export default function Footer() {
               <Link href="/" className="inline-block">
                 <img
                   src="/wings-logo2.svg"
-                  alt="Euro Global"
-                  className="h-9 w-auto brightness-0 invert opacity-70"
+                  alt="Wings Global Trade"
+                  className="h-6 w-auto brightness-0 invert opacity-60"
                 />
               </Link>
               <p
@@ -241,7 +241,7 @@ export default function Footer() {
                 className="text-xs text-white/20"
                 style={{ fontFamily: "var(--font-body)" }}
               >
-                &copy; {new Date().getFullYear()} Euro Global. Todos los derechos reservados.
+                &copy; {new Date().getFullYear()} Wings Global Trade. Todos los derechos reservados.
               </p>
               <div className="flex items-center gap-4">
                 <Link

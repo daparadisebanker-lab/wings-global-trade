@@ -3,19 +3,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { getListings } from "@data/listings";
 import FeaturedCarousel from "@/components/listings/FeaturedCarousel";
-import HpFinder from "@/components/listings/HpFinder";
 import { DEFAULT_CURRENCY } from "@/lib/currencies";
 import { DEFAULT_LANG, getTranslations } from "@/lib/i18n";
 import { CATEGORIES } from "@/lib/categories";
 
 export const metadata: Metadata = {
-  title: "Euro Global | Maquinaria Agrícola desde Asia para Latinoamérica",
+  title: "Wings Global Trade | Maquinaria desde Asia para Latinoamérica",
   description:
-    "86 tractores nuevos de YTO, SinoHarvest, John Deere y Massey Ferguson. Precio landed con flete, aranceles y entrega en Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay.",
+    "Tractores, camiones, buses y equipos industriales — importados directamente de fábrica con precio landed total en Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay.",
 };
-
-const FEATURED_BG =
-  "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1920&q=80";
 
 const CAT_IMAGES: Record<string, string> = {
   "agricultural": "photo-1625246333195-78d9c38ad449",
@@ -54,36 +50,16 @@ const BRANDS = [
 
 const TESTIMONIALS = [
   {
-    name:    "Andrés Villanueva",
+    name:     "Andrés Villanueva",
     location: "Santa Cruz, Bolivia",
-    machine:  "YTO X1304 — 130hp · 4WD",
+    machine:  "YTO X1304 — 130 hp · 4WD",
     quote:    "Recibí el tractor en mi finca con todos los documentos de importación resueltos. El precio final fue exactamente el que me cotizaron.",
-    img:      "https://images.unsplash.com/photo-1598520106830-8c45c2035460?w=500&q=80",
   },
   {
-    name:    "Rodrigo Cárdenas",
+    name:     "Rodrigo Cárdenas",
     location: "Junín, Perú",
-    machine:  "SinoHarvest SH1004 — 100hp · Cabina",
+    machine:  "SinoHarvest SH1004 — 100 hp · Cabina",
     quote:    "Comparé tres opciones con el asesor y elegimos el modelo que mejor se adaptaba al terreno. El proceso de importación fue completamente transparente.",
-    img:      "https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=500&q=80",
-  },
-];
-
-const BENEFITS = [
-  {
-    num:   "01",
-    title: "Catálogo directo de fábrica",
-    body:  "Trabajamos directamente con los fabricantes. Sin revendedores europeos ni márgenes ocultos. El precio que ves es el precio real de exportación.",
-  },
-  {
-    num:   "02",
-    title: "Cotización con costo landed",
-    body:  "Tu cotización incluye flete marítimo, seguro, aranceles de importación y entrega hasta tu país de destino. Sin sorpresas al momento de la llegada.",
-  },
-  {
-    num:   "03",
-    title: "Acompañamiento experto",
-    body:  "Un asesor en español te guía desde la selección del modelo hasta la entrega. Gestionamos la documentación, la aduana y la logística por ti.",
   },
 ];
 
@@ -98,10 +74,10 @@ export default async function HomePage() {
   const listings = allListings.slice(0, 6);
 
   const stats = [
-    { value: "86",    label: "Modelos disponibles" },
+    { value: "86",     label: "Modelos disponibles" },
     { value: "40–210", label: "Rango de potencia (hp)" },
-    { value: "5",     label: "Marcas de fábrica" },
-    { value: "6",     label: "Países atendidos" },
+    { value: "5",      label: "Marcas de fábrica" },
+    { value: "6",      label: "Países atendidos" },
   ];
 
   return (
@@ -116,19 +92,18 @@ export default async function HomePage() {
           priority
         />
         <div className="absolute inset-0 bg-[#001E50]/60" />
-        {/* Gold radial accent */}
         <div
           className="absolute inset-0 opacity-20"
           style={{ background: "radial-gradient(ellipse at 60% 30%, #C4933F 0%, transparent 60%)" }}
         />
-        {/* Bottom fade to page bg */}
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#F8F6F0] to-transparent" />
 
         <div className="relative z-10 mx-auto w-full max-w-5xl px-6 py-28 text-center lg:px-8">
-          {/* Eyebrow markets pill */}
           <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/8 px-5 py-2 backdrop-blur-sm">
-            <span className="text-[11px] font-medium tracking-widest text-white/60"
-              style={{ fontFamily: "var(--font-body)" }}>
+            <span
+              className="text-[11px] font-medium tracking-widest text-white/60"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
               Perú · Bolivia · Chile · Paraguay · Argentina · Uruguay
             </span>
           </div>
@@ -137,47 +112,51 @@ export default async function HomePage() {
             className="text-5xl font-semibold leading-tight text-white drop-shadow-sm sm:text-6xl lg:text-7xl"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            Maquinaria agrícola de Asia
+            Maquinaria de Asia
             <br />
-            <span className="text-[#C4933F]">con precio landed y asesoría experta.</span>
+            <span className="text-[#C4933F]">con precio landed y entrega garantizada.</span>
           </h1>
 
           <p
             className="mx-auto mt-6 max-w-2xl text-lg font-light leading-relaxed text-white/70"
             style={{ fontFamily: "var(--font-body)" }}
           >
-            86 tractores nuevos de YTO, SinoHarvest, John Deere y Massey Ferguson —
-            cotizados con flete, aranceles y entrega hasta tu campo.
+            Tractores, camiones, buses y equipos industriales — importados directamente
+            de fábrica con flete, aranceles y entrega incluidos en cada cotización.
           </p>
 
-          {/* HP Finder */}
-          <HpFinder />
-
-          <div className="mt-5 flex flex-wrap justify-center gap-3">
-            <span className="pt-0.5 text-xs uppercase tracking-widest text-white/40"
-              style={{ fontFamily: "var(--font-body)" }}>
-              Más buscados:
-            </span>
-            {["YTO X904", "SinoHarvest SH1004", "John Deere 5E", "MF 1204"].map((term) => (
-              <Link
-                key={term}
-                href="/agricultural/tractors"
-                className="text-xs text-[#C4933F] underline-offset-2 hover:underline"
-                style={{ fontFamily: "var(--font-body)" }}
-              >
-                {term}
-              </Link>
-            ))}
+          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Link
+              href="/categories"
+              className="rounded-full bg-[#C4933F] px-9 py-3.5 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-[#D4A855]"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              Ver catálogo completo
+            </Link>
+            <Link
+              href="/importacion"
+              className="rounded-full border border-white/25 px-9 py-3.5 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-white/10"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              Servicio de importación
+            </Link>
           </div>
 
-          {/* Trust badges */}
           <div className="mt-16 grid grid-cols-2 gap-x-8 gap-y-6 lg:grid-cols-4">
             {TRUST_BADGES.map((b) => (
               <div key={b.title} className="border-l-2 border-[#C4933F]/40 pl-4 text-left">
-                <p className="text-sm font-semibold text-white"
-                  style={{ fontFamily: "var(--font-body)" }}>{b.title}</p>
-                <p className="mt-1.5 text-xs leading-relaxed text-white/50"
-                  style={{ fontFamily: "var(--font-body)" }}>{b.body}</p>
+                <p
+                  className="text-sm font-semibold text-white"
+                  style={{ fontFamily: "var(--font-body)" }}
+                >
+                  {b.title}
+                </p>
+                <p
+                  className="mt-1.5 text-xs leading-relaxed text-white/50"
+                  style={{ fontFamily: "var(--font-body)" }}
+                >
+                  {b.body}
+                </p>
               </div>
             ))}
           </div>
@@ -188,7 +167,7 @@ export default async function HomePage() {
       <section
         className="relative py-20"
         style={{
-          backgroundImage: `url('${FEATURED_BG}')`,
+          backgroundImage: "url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1920&q=80')",
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
@@ -197,8 +176,10 @@ export default async function HomePage() {
         <div className="relative z-10 mx-auto max-w-5xl px-6 lg:px-8">
           <div className="mb-10 flex items-end justify-between">
             <div>
-              <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
-                style={{ fontFamily: "var(--font-body)" }}>
+              <p
+                className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
                 Catálogo destacado
               </p>
               <h2
@@ -209,11 +190,11 @@ export default async function HomePage() {
               </h2>
             </div>
             <Link
-              href="/agricultural/tractors"
+              href="/categories"
               className="hidden text-xs font-semibold uppercase tracking-widest text-white/40 underline-offset-4 hover:text-white hover:underline sm:block"
               style={{ fontFamily: "var(--font-body)" }}
             >
-              {t.viewAllListings} →
+              Ver catálogo completo →
             </Link>
           </div>
 
@@ -260,13 +241,122 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ── DUAL-PATH DECISION ───────────────────────────────────────────── */}
+      <section className="bg-[#001E50] py-24">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mb-14 text-center">
+            <p
+              className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C4933F]"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              Dos modelos. Una infraestructura.
+            </p>
+            <h2
+              className="text-4xl font-semibold text-white sm:text-5xl"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              ¿Qué necesitas hoy?
+            </h2>
+            <p
+              className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-white/50"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              Compra del inventario existente o importa cualquier producto desde Asia.
+              El mismo equipo, la misma garantía de precio landed.
+            </p>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Link
+              href="/categories"
+              className="group relative overflow-hidden rounded-2xl bg-[#F8F6F0] p-8 transition-transform duration-300 hover:-translate-y-0.5"
+            >
+              <p
+                className="mb-4 text-[9px] font-semibold uppercase tracking-[0.2em] text-[#C4933F]"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                Catálogo propio
+              </p>
+              <h3
+                className="text-3xl font-semibold text-[#1C1A16] sm:text-4xl"
+                style={{ fontFamily: "var(--font-display)" }}
+              >
+                Maquinaria disponible en inventario
+              </h3>
+              <p
+                className="mt-4 text-sm leading-relaxed text-[#6B6560]"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                86 modelos listos para cotizar — tractores, camiones, buses,
+                equipos industriales y repuestos. Precio landed confirmado.
+              </p>
+              <div className="mt-8 flex items-center gap-2">
+                <span
+                  className="text-xs font-semibold uppercase tracking-widest text-[#C4933F]"
+                  style={{ fontFamily: "var(--font-body)" }}
+                >
+                  Explorar catálogo
+                </span>
+                <svg
+                  className="h-3.5 w-3.5 text-[#C4933F] transition-transform duration-200 group-hover:translate-x-1"
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </Link>
+
+            <Link
+              href="/importacion"
+              className="group relative overflow-hidden rounded-2xl bg-[#001240] p-8 transition-transform duration-300 hover:-translate-y-0.5"
+            >
+              <p
+                className="mb-4 text-[9px] font-semibold uppercase tracking-[0.2em] text-[#C4933F]"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                Servicio de importación
+              </p>
+              <h3
+                className="text-3xl font-semibold text-white sm:text-4xl"
+                style={{ fontFamily: "var(--font-display)" }}
+              >
+                Importa cualquier producto desde Asia
+              </h3>
+              <p
+                className="mt-4 text-sm leading-relaxed text-white/50"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                ¿Tu producto no está en el catálogo? Lo gestionamos desde fábrica
+                hasta tu aduana — selección, negociación, flete y documentación.
+              </p>
+              <div className="mt-8 flex items-center gap-2">
+                <span
+                  className="text-xs font-semibold uppercase tracking-widest text-[#C4933F]"
+                  style={{ fontFamily: "var(--font-body)" }}
+                >
+                  Conocer el servicio
+                </span>
+                <svg
+                  className="h-3.5 w-3.5 text-[#C4933F] transition-transform duration-200 group-hover:translate-x-1"
+                  fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* ── CATEGORY CARDS ────────────────────────────────────────────────── */}
       <section className="bg-[#F8F6F0] py-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mb-10 flex items-end justify-between">
             <div>
-              <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
-                style={{ fontFamily: "var(--font-body)" }}>
+              <p
+                className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
                 Catálogo
               </p>
               <h2
@@ -328,70 +418,46 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── TESTIMONIALS ──────────────────────────────────────────────────── */}
-      <section className="border-y border-[#E8E4DB] bg-white py-20">
+      {/* ── TESTIMONIALS — typographic, no photos ─────────────────────────── */}
+      <section className="bg-white py-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mb-12 flex items-end justify-between">
-            <div>
-              <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
-                style={{ fontFamily: "var(--font-body)" }}>
-                Compradores verificados
-              </p>
-              <h2
-                className="text-3xl font-semibold text-[#1C1A16]"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                Lo que dicen nuestros clientes
-              </h2>
-            </div>
-            <Link
-              href="/agricultural/tractors"
-              className="hidden text-xs font-semibold uppercase tracking-widest text-[#6B6560] underline-offset-4 hover:text-[#1C1A16] hover:underline sm:block"
-              style={{ fontFamily: "var(--font-body)" }}
-            >
-              Ver catálogo completo →
-            </Link>
-          </div>
-          <div className="grid gap-6 sm:grid-cols-2">
+          <p
+            className="mb-16 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
+            style={{ fontFamily: "var(--font-body)" }}
+          >
+            Compradores verificados
+          </p>
+          <div className="grid gap-12 sm:grid-cols-2 sm:gap-16">
             {TESTIMONIALS.map((item) => (
-              <div
-                key={item.name}
-                className="flex flex-col gap-0 overflow-hidden rounded-2xl border border-[#E8E4DB] sm:flex-row"
-              >
-                <div className="relative h-52 w-full shrink-0 sm:h-auto sm:w-48">
-                  <Image
-                    src={item.img}
-                    alt={item.machine}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 100vw, 192px"
-                  />
-                </div>
-                <div className="flex flex-col justify-center p-7">
-                  <p
-                    className="text-base font-semibold text-[#1C1A16]"
-                    style={{ fontFamily: "var(--font-display)" }}
-                  >
-                    {item.name}
-                  </p>
-                  <p
-                    className="mt-0.5 text-[10px] font-semibold uppercase tracking-widest text-[#C4933F]"
-                    style={{ fontFamily: "var(--font-body)" }}
-                  >
-                    {item.location}
-                  </p>
-                  <p
-                    className="mt-4 text-sm leading-relaxed text-[#6B6560]"
-                    style={{ fontFamily: "var(--font-body)", fontStyle: "italic" }}
-                  >
-                    &ldquo;{item.quote}&rdquo;
-                  </p>
-                  <p
-                    className="mt-4 text-xs text-[#6B6560]"
-                    style={{ fontFamily: "var(--font-body)" }}
-                  >
-                    {item.machine}
-                  </p>
+              <div key={item.name}>
+                <p
+                  className="text-3xl font-semibold leading-snug text-[#1C1A16] sm:text-4xl"
+                  style={{ fontFamily: "var(--font-display)", fontStyle: "italic" }}
+                >
+                  &ldquo;{item.quote}&rdquo;
+                </p>
+                <div className="mt-8 flex items-center gap-4">
+                  <div className="h-px flex-1 bg-[#E8E4DB]" />
+                  <div className="text-right">
+                    <p
+                      className="text-sm font-semibold text-[#1C1A16]"
+                      style={{ fontFamily: "var(--font-body)" }}
+                    >
+                      {item.name}
+                    </p>
+                    <p
+                      className="mt-0.5 text-[10px] font-semibold uppercase tracking-widest text-[#C4933F]"
+                      style={{ fontFamily: "var(--font-body)" }}
+                    >
+                      {item.location}
+                    </p>
+                    <p
+                      className="mt-1 text-xs text-[#9B9590]"
+                      style={{ fontFamily: "var(--font-body)" }}
+                    >
+                      {item.machine}
+                    </p>
+                  </div>
                 </div>
               </div>
             ))}
@@ -400,11 +466,13 @@ export default async function HomePage() {
       </section>
 
       {/* ── BRANDS ────────────────────────────────────────────────────────── */}
-      <section className="bg-[#F8F6F0] py-16">
+      <section className="border-t border-[#E8E4DB] bg-[#F8F6F0] py-16">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mb-10">
-            <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
-              style={{ fontFamily: "var(--font-body)" }}>
+            <p
+              className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
               Fabricantes
             </p>
             <h2
@@ -435,91 +503,6 @@ export default async function HomePage() {
                 </span>
               </Link>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── BENEFITS ──────────────────────────────────────────────────────── */}
-      <section className="border-y border-[#E8E4DB] bg-white py-20">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mb-12">
-            <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
-              style={{ fontFamily: "var(--font-body)" }}>
-              Por qué elegirnos
-            </p>
-            <h2
-              className="text-3xl font-semibold text-[#1C1A16]"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              Importación sin fricciones desde Asia
-            </h2>
-          </div>
-          <div className="grid gap-px border border-[#E8E4DB] bg-[#E8E4DB] sm:grid-cols-3">
-            {BENEFITS.map((b) => (
-              <div key={b.num} className="bg-white p-10">
-                <p
-                  className="text-7xl font-semibold leading-none text-[#C4933F]/20"
-                  style={{ fontFamily: "var(--font-display)" }}
-                >
-                  {b.num}
-                </p>
-                <h3
-                  className="mt-5 text-lg font-semibold text-[#1C1A16]"
-                  style={{ fontFamily: "var(--font-display)" }}
-                >
-                  {b.title}
-                </h3>
-                <div className="mt-3 h-px w-12 bg-[#C4933F]" />
-                <p
-                  className="mt-4 text-sm leading-relaxed text-[#6B6560]"
-                  style={{ fontFamily: "var(--font-body)" }}
-                >
-                  {b.body}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── WINGS IMPORTACIÓN CROSSLINK ────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-[#001E50] py-24">
-        <div
-          className="absolute inset-0 opacity-10 pointer-events-none"
-          style={{ background: "radial-gradient(ellipse at 30% 50%, #C4933F 0%, transparent 60%)" }}
-        />
-        <div className="relative mx-auto max-w-3xl px-6 text-center lg:px-8">
-          <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
-            style={{ fontFamily: "var(--font-body)" }}>
-            Importación desde Asia
-          </p>
-          <h2
-            className="text-4xl font-semibold text-white sm:text-5xl"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            ¿Tu empresa en Latinoamérica necesita maquinaria con precio final?
-          </h2>
-          <p
-            className="mx-auto mt-5 max-w-xl text-base font-light leading-relaxed text-white/60"
-            style={{ fontFamily: "var(--font-body)" }}
-          >
-            Wings Global Trade gestiona toda la cadena — desde la selección en fábrica hasta la entrega en aduana. Precio landed confirmado. Documentación incluida.
-          </p>
-          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link
-              href="/importacion"
-              className="inline-flex items-center justify-center rounded-full bg-[#C4933F] px-10 py-3 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-[#D4A855]"
-              style={{ fontFamily: "var(--font-body)" }}
-            >
-              Conocer el servicio
-            </Link>
-            <Link
-              href="/agricultural/tractors"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 px-10 py-3 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-white/8"
-              style={{ fontFamily: "var(--font-body)" }}
-            >
-              Ver catálogo completo
-            </Link>
           </div>
         </div>
       </section>

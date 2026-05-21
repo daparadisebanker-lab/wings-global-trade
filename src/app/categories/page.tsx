@@ -36,7 +36,7 @@ const HUBS = [
   {
     hub: "ZOFRATACNA",
     location: "Tacna, Perú",
-    markets: ["Perú", "Bolivia (ruta andina)", "Ecuador"],
+    markets: ["Perú", "Bolivia (ruta andina)"],
   },
 ];
 
@@ -54,7 +54,7 @@ export default function CategoriesPage() {
         <div className="max-w-7xl mx-auto px-6">
 
           <div ref={heroRef as React.RefObject<HTMLDivElement>} className="fade-up text-center mb-14">
-            <p className="text-[#C4933F] text-sm font-medium tracking-[0.12em] uppercase mb-4"
+            <p className="text-[#C4933F] text-[10px] font-semibold tracking-[0.12em] uppercase mb-4"
               style={{ fontFamily: "var(--font-body)" }}>
               Dos modelos. Una infraestructura.
             </p>
@@ -105,7 +105,7 @@ export default function CategoriesPage() {
                 ))}
               </div>
               <Link
-                href="/agricultural/tractors"
+                href="/agricultural"
                 className="mt-auto inline-flex items-center justify-center gap-2 bg-[#C4933F] hover:bg-[#D4A855] text-white font-semibold px-8 py-3.5 rounded-full text-sm transition-colors duration-200"
                 style={{ fontFamily: "var(--font-body)" }}
               >
@@ -165,7 +165,7 @@ export default function CategoriesPage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
             <div>
-              <p className="text-[#C4933F] text-sm font-medium tracking-[0.12em] uppercase mb-4"
+              <p className="text-[#C4933F] text-[10px] font-semibold tracking-[0.12em] uppercase mb-4"
                 style={{ fontFamily: "var(--font-body)" }}>
                 Catálogo propio
               </p>
@@ -238,7 +238,7 @@ export default function CategoriesPage() {
 
             {/* Left: copy + features */}
             <div>
-              <p className="text-[#C4933F] text-sm font-medium tracking-[0.12em] uppercase mb-5"
+              <p className="text-[#C4933F] text-[10px] font-semibold tracking-[0.12em] uppercase mb-5"
                 style={{ fontFamily: "var(--font-body)" }}>
                 Servicio de importación
               </p>
@@ -332,7 +332,7 @@ export default function CategoriesPage() {
       <section className="bg-[#001E50] py-20 md:py-28">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
-            <p className="text-[#C4933F] text-sm font-medium tracking-[0.12em] uppercase mb-4"
+            <p className="text-[#C4933F] text-[10px] font-semibold tracking-[0.12em] uppercase mb-4"
               style={{ fontFamily: "var(--font-body)" }}>
               Por qué elegirnos
             </p>
@@ -374,7 +374,7 @@ export default function CategoriesPage() {
       <section className="bg-[#F8F6F0] py-20 md:py-28">
         <div className="max-w-4xl mx-auto px-6">
           <div ref={ctaRef as React.RefObject<HTMLDivElement>} className="fade-up text-center mb-12">
-            <p className="text-[#C4933F] text-sm font-medium tracking-[0.12em] uppercase mb-4"
+            <p className="text-[#C4933F] text-[10px] font-semibold tracking-[0.12em] uppercase mb-4"
               style={{ fontFamily: "var(--font-body)" }}>
               Empieza aquí
             </p>
@@ -393,7 +393,7 @@ export default function CategoriesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* CTA A — Catalog path */}
             <Link
-              href="/agricultural/tractors"
+              href="/contact"
               className="group bg-white rounded-2xl border border-[#E8E4DB] p-8 hover:border-[#C4933F] hover:shadow-[0_4px_24px_rgba(196,147,63,0.10)] transition-all duration-200 block"
             >
               <div className="w-10 h-10 rounded-xl bg-[#C4933F]/10 flex items-center justify-center mb-5">
@@ -415,7 +415,7 @@ export default function CategoriesPage() {
                 className="inline-flex items-center gap-2 text-[#C4933F] text-xs font-semibold group-hover:gap-3 transition-all duration-200"
                 style={{ fontFamily: "var(--font-body)" }}
               >
-                Ver catálogo completo
+                Solicitar cotización
                 <svg width="12" height="12" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
                 </svg>

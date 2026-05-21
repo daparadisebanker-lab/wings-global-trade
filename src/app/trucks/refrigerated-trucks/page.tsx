@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import ComingSoonCategory from "@/components/listings/ComingSoonCategory";
 
 export const metadata: Metadata = {
-  title: "Refrigerated Trucks for Sale — Euro Global Machinery",
+  title: "Refrigerated Trucks for Sale — Wings Global Trade",
   description: "Browse new and used refrigerated trucks from verified dealers across Europe.",
 };
 

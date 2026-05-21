@@ -1,12 +1,12 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
   title: {
-    default: "Euro Global | Maquinaria Agrícola desde Asia para Latinoamérica",
-    template: "%s | Euro Global",
+    default: "Wings Global Trade | Maquinaria desde Asia para Latinoamérica",
+    template: "%s | Wings Global Trade",
   },
   description:
     "86 tractores nuevos de YTO, SinoHarvest, John Deere y Massey Ferguson — cotizados con flete, aranceles y entrega hasta tu campo en Colombia, Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay.",
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "es_419",
-    siteName: "Euro Global",
+    siteName: "Wings Global Trade",
   },
 };
 

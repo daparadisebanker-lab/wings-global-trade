@@ -1,4 +1,4 @@
-const FEATURES = [
+﻿const FEATURES = [
   { label: "Cotización con aranceles y entrega final incluidos",      wings: true,      agent: false,      diy: false },
   { label: "Asesoría integral en español",                            wings: true,      agent: "partial",  diy: false },
   { label: "Inspección de carga en fábrica antes del pago final",     wings: true,      agent: false,      diy: false },
@@ -49,7 +49,7 @@ export default function WingsWhyWings() {
     <section className="bg-[#F8F6F0] py-28 md:py-36">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
-          <p className="text-[#C4933F] text-sm font-medium tracking-[0.12em] uppercase mb-5" style={{ fontFamily: "var(--font-body)" }}>
+          <p className="text-[#C4933F] text-[10px] font-semibold tracking-[0.12em] uppercase mb-5" style={{ fontFamily: "var(--font-body)" }}>
             Por qué Wings
           </p>
           <h2

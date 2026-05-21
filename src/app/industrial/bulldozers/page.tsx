@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import ComingSoonCategory from "@/components/listings/ComingSoonCategory";
 
 export const metadata: Metadata = {
-  title: "Bulldozers for Sale — Euro Global Machinery",
+  title: "Bulldozers for Sale — Wings Global Trade",
   description: "Browse new and used bulldozers from verified dealers across Europe.",
 };
 

@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import CategoryHubPage from "@/components/listings/CategoryHubPage";
 import { CATEGORIES } from "@/lib/categories";
 
 export const metadata: Metadata = {
-  title: "Buses y Autocares — Euro Global Machinery",
+  title: "Buses y Autocares — Wings Global Trade",
   description: "Buses urbanos, autocares interurbanos, minibuses y buses escolares de fabricantes asiáticos con entrega en Latinoamérica.",
 };
 

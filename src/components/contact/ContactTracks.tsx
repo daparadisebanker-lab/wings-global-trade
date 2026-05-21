@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 
@@ -426,7 +426,7 @@ export default function ContactTracks() {
               Escríbenos directamente. Un asesor responde en minutos durante horario laboral.
             </p>
             <a
-              href="https://wa.me/51999000000"
+              href="https://wa.me/51934987440"
               target="_blank"
               rel="noopener noreferrer"
               className="flex w-full items-center justify-center gap-2 rounded-full bg-[#C4933F] py-3 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-[#D4A855]"
@@ -476,7 +476,7 @@ export default function ContactTracks() {
                   Correo
                 </p>
                 <p className="mt-1 text-[#1C1A16]" style={{ fontFamily: "var(--font-body)" }}>
-                  info@euroglobalexport.com
+                  ventas@wingsglobaltrade.com
                 </p>
               </div>
               <div>
