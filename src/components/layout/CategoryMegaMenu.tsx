@@ -23,16 +23,18 @@ export default function CategoryMegaMenu() {
     <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
       <Link
         href="/categories"
-        className={`flex items-center gap-2 py-5 text-sm font-medium transition-colors ${
+        className={`flex items-center gap-1.5 py-5 text-sm font-medium transition-colors ${
           isOpen ? "text-white" : "text-white/70 hover:text-white"
         }`}
         style={{ fontFamily: "var(--font-body)" }}
       >
-        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-          <path strokeLinecap="round" strokeLinejoin="round"
-            d={isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
-        </svg>
         Catálogo
+        <svg
+          className={`h-3.5 w-3.5 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+          fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
       </Link>
 
       {isOpen && (
