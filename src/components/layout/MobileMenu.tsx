@@ -139,18 +139,10 @@ export default function MobileMenu() {
             <Link
               href="/about"
               onClick={close}
-              className="border-b border-white/8 py-3.5 text-sm font-medium text-white/50 hover:text-white"
-              style={{ fontFamily: "var(--font-body)" }}
-            >
-              Nosotros
-            </Link>
-            <Link
-              href="/contact"
-              onClick={close}
               className="py-3.5 text-sm font-medium text-white/50 hover:text-white"
               style={{ fontFamily: "var(--font-body)" }}
             >
-              Contacto
+              Nosotros
             </Link>
           </nav>
 

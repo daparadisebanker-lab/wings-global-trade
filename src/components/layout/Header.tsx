@@ -29,13 +29,6 @@ export default function Header() {
             >
               Nosotros
             </Link>
-            <Link
-              href="/contact"
-              className="text-sm font-medium text-white/70 transition-colors hover:text-white"
-              style={{ fontFamily: "var(--font-body)" }}
-            >
-              Contacto
-            </Link>
           </nav>
 
           {/* Desktop right — dual business model CTAs */}
