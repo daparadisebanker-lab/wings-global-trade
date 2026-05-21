@@ -71,9 +71,9 @@
     font-family: var(--font-body);
   }
 
-  /* Legacy button aliases — still used in existing components during migration */
+  /* Legacy button alias */
   .btn-primary {
-    @apply btn-gold rounded-none;
+    @apply btn-gold;
   }
 
   .btn-secondary {

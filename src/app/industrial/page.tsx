@@ -3,8 +3,8 @@ import CategoryHubPage from "@/components/listings/CategoryHubPage";
 import { CATEGORIES } from "@/lib/categories";
 
 export const metadata: Metadata = {
-  title: "Construction & Industrial Machinery — Euro Global Machinery",
-  description: "Browse forklifts, telehandlers, excavators, wheel loaders, bulldozers, cranes, and more.",
+  title: "Construcción e Industrial — Euro Global Machinery",
+  description: "Montacargas, excavadoras, manipuladores telescópicos, grúas, topadoras y equipos industriales desde Asia.",
 };
 
 const cat = CATEGORIES.find((c) => c.slug === "industrial")!;

@@ -3,8 +3,8 @@ import CategoryHubPage from "@/components/listings/CategoryHubPage";
 import { CATEGORIES } from "@/lib/categories";
 
 export const metadata: Metadata = {
-  title: "Agricultural Machinery for Sale — Euro Global Machinery",
-  description: "Browse tractors, harvesters, balers, plows, and mowers from verified dealers across Europe.",
+  title: "Maquinaria Agrícola — Euro Global Machinery",
+  description: "Tractores, cosechadoras, empacadoras, arados y segadoras importados desde Asia con precio landed total para Latinoamérica.",
 };
 
 const cat = CATEGORIES.find((c) => c.slug === "agricultural")!;

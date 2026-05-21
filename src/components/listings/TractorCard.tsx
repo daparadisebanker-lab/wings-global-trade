@@ -3,100 +3,75 @@ import Image from "next/image";
 import type { Listing } from "@/types";
 import type { Translations } from "@/lib/i18n";
 import { ts } from "@/lib/specs-i18n";
-import { formatPrice } from "@/lib/currencies";
 
 const conditionStyles: Record<Listing["condition"], string> = {
-  new:         "bg-brown-800 text-cream-50",
-  used:        "bg-amber-700 text-cream-50",
-  refurbished: "bg-brown-200 text-brown-800",
+  new:         "bg-[#001E50] text-white",
+  used:        "bg-[#C4933F] text-white",
+  refurbished: "bg-[#E8E4DB] text-[#1C1A16]",
 };
 
 const PLACEHOLDER =
   "https://images.unsplash.com/photo-1598520106830-8c45c2035460?w=800&q=80";
 
-// ── Helper: render a spec row ─────────────────────────────────────────────────
 function SpecRow({ label, value }: { label: string; value?: string | number | null }) {
   if (value == null || value === "") return null;
   return (
     <div>
-      <dt className="text-brown-400 uppercase tracking-wide text-[10px]">{label}</dt>
-      <dd className="mt-0.5 font-medium text-brown-800 truncate">{value}</dd>
+      <dt className="text-[10px] uppercase tracking-wide text-[#6B6560]"
+        style={{ fontFamily: "var(--font-body)" }}>{label}</dt>
+      <dd className="mt-0.5 truncate font-medium text-[#1C1A16]"
+        style={{ fontFamily: "var(--font-body)" }}>{value}</dd>
     </div>
   );
 }
 
 export default function TractorCard({
   listing,
-  currency = "EUR",
+  currency = "USD",
   t,
-  lang = "en",
+  lang = "es",
 }: {
   listing: Listing;
   currency?: string;
   t?: Translations;
   lang?: string;
 }) {
-  const cover      = listing.images?.[0] ?? PLACEHOLDER;
-  const details    = listing.details ?? {};
-  const engine     = details.engine     ?? {};
-  const trans      = details.transmission_details ?? {};
-  const pto        = details.pto        ?? {};
-  const tires      = details.tires      ?? {};
-  const dims       = details.dimensions ?? {};
+  const cover   = listing.images?.[0] ?? PLACEHOLDER;
+  const details = listing.details ?? {};
+  const engine  = details.engine ?? {};
+  const trans   = details.transmission_details ?? {};
+  const pto     = details.pto ?? {};
+  const tires   = details.tires ?? {};
+  const dims    = details.dimensions ?? {};
 
   const condLabel: Record<Listing["condition"], string> = {
-    new:         t?.condLabelNew         ?? "New",
-    used:        t?.condLabelUsed        ?? "Used",
-    refurbished: t?.condLabelRefurbished ?? "Refurbished",
+    new:         t?.condLabelNew         ?? "Nuevo",
+    used:        t?.condLabelUsed        ?? "Usado",
+    refurbished: t?.condLabelRefurbished ?? "Reacondicionado",
   };
 
-  // ── Price display ─────────────────────────────────────────────────────────
-  const priceDisplay =
-    listing.price != null && listing.price > 0
-      ? formatPrice(listing.price, currency)
-      : "Price on request";
-
-  // ── Title: year only if not null ──────────────────────────────────────────
-  const title = [listing.year, listing.model].filter(Boolean).join(" ");
-
-  // ── Drive badge ───────────────────────────────────────────────────────────
-  const driveType = listing.drive_type ?? trans.drive_type;
-
-  // ── Engine label ──────────────────────────────────────────────────────────
+  const title = [listing.year || null, listing.model].filter(Boolean).join(" ");
+  const driveType  = listing.drive_type ?? trans.drive_type;
   const engineLabel = [engine.manufacturer, engine.model].filter(Boolean).join(" ") || null;
-
-  // ── Transmission label ────────────────────────────────────────────────────
   const transLabel =
     listing.transmission ??
     (trans.forward_gears != null && trans.reverse_gears != null
       ? `${trans.forward_gears}F / ${trans.reverse_gears}R`
       : null);
-
-  // ── PTO ───────────────────────────────────────────────────────────────────
-  const ptoLabel = pto.rear_pto_rpm ? `${pto.rear_pto_rpm} rpm` : null;
-
-  // ── Tires ─────────────────────────────────────────────────────────────────
-  const tiresLabel =
+  const ptoLabel    = pto.rear_pto_rpm ? `${pto.rear_pto_rpm} rpm` : null;
+  const tiresLabel  =
     tires.front && tires.rear
       ? `${tires.front} / ${tires.rear}`
       : tires.front ?? tires.rear ?? null;
-
-  // ── Weight ────────────────────────────────────────────────────────────────
   const weightLabel = dims.operating_weight_kg
     ? `${dims.operating_weight_kg.toLocaleString()} kg`
     : null;
 
-  // ── Location display ──────────────────────────────────────────────────────
-  const locationDisplay =
-    listing.location && listing.country
-      ? `${listing.location}, ${listing.country}`
-      : listing.location ?? listing.country ?? null;
-
   return (
-    <article className="card group flex flex-col overflow-hidden bg-white">
+    <article className="group flex flex-col overflow-hidden rounded-2xl border border-[#E8E4DB] bg-white shadow-[0_2px_16px_rgba(0,0,0,0.06)] transition-shadow hover:shadow-[0_4px_24px_rgba(0,0,0,0.10)]">
 
       {/* Image */}
-      <div className="relative h-52 overflow-hidden bg-brown-100">
+      <div className="relative h-52 overflow-hidden bg-[#F8F6F0]">
         <Image
           src={cover}
           alt={`${listing.brand} ${listing.model}`}
@@ -105,12 +80,18 @@ export default function TractorCard({
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
         {/* Condition badge */}
-        <span className={`absolute left-0 top-4 px-3 py-1 text-[10px] font-semibold uppercase tracking-widest ${conditionStyles[listing.condition]}`}>
+        <span
+          className={`absolute left-3 top-3 rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-widest ${conditionStyles[listing.condition]}`}
+          style={{ fontFamily: "var(--font-body)" }}
+        >
           {condLabel[listing.condition]}
         </span>
         {/* Drive badge */}
         {driveType && (
-          <span className="absolute right-0 top-4 bg-black/50 px-2 py-1 text-[10px] font-semibold uppercase tracking-widest text-white">
+          <span
+            className="absolute right-3 top-3 rounded-full bg-[#001E50]/80 px-2 py-1 text-[10px] font-semibold uppercase tracking-widest text-white"
+            style={{ fontFamily: "var(--font-body)" }}
+          >
             {driveType}
           </span>
         )}
@@ -120,54 +101,57 @@ export default function TractorCard({
       <div className="flex flex-1 flex-col p-5">
 
         {/* Brand */}
-        <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-brown-500">
+        <p
+          className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-[#C4933F]"
+          style={{ fontFamily: "var(--font-body)" }}
+        >
           {listing.brand}
         </p>
 
         {/* Title */}
-        <h3 className="mb-1 font-serif text-lg font-semibold leading-snug text-brown-900 group-hover:text-brown-700">
+        <h3
+          className="mb-1 text-xl font-semibold leading-snug text-[#1C1A16]"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
           {title}
         </h3>
 
         {/* Engine subtitle */}
         {engineLabel && (
-          <p className="mb-3 text-xs text-brown-400 truncate">{engineLabel}</p>
+          <p className="mb-3 truncate text-xs text-[#6B6560]"
+            style={{ fontFamily: "var(--font-body)" }}>{engineLabel}</p>
         )}
 
-        {/* Price */}
-        <p className={`mb-4 text-xl font-semibold ${listing.price ? "text-brown-800" : "text-brown-400 italic text-base"}`}>
-          {priceDisplay}
+        {/* Price → Quote only */}
+        <p
+          className="mb-4 text-[10px] font-semibold uppercase tracking-[0.1em] text-[#C4933F]"
+          style={{ fontFamily: "var(--font-body)" }}
+        >
+          Precio a consultar
         </p>
 
         {/* Spec grid */}
-        <dl className="mb-5 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-brown-100 pt-4 text-xs">
+        <dl className="mb-5 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-[#E8E4DB] pt-4 text-xs">
           <SpecRow
-            label={t?.cardPower ?? "Power"}
+            label={t?.cardPower ?? "Potencia"}
             value={listing.horsepower != null ? `${listing.horsepower} ${t?.hpUnit ?? "hp"}` : null}
           />
           <SpecRow
-            label={t?.cardHours ?? "Hours"}
+            label={t?.cardHours ?? "Horas"}
             value={listing.hours_used != null ? `${listing.hours_used.toLocaleString()} ${t?.hrsUnit ?? "hrs"}` : null}
           />
           <SpecRow label={ts("Transmission", lang)} value={transLabel} />
           <SpecRow label={ts("PTO (Power Take-Off)", lang)} value={ptoLabel} />
-          <SpecRow label={ts("Tires", lang)}        value={tiresLabel} />
+          <SpecRow label={ts("Tires", lang)} value={tiresLabel} />
           <SpecRow label={ts("Operating weight", lang)} value={weightLabel} />
-          {locationDisplay && (
-            <div className="col-span-2">
-              <dt className="text-brown-400 uppercase tracking-wide text-[10px]">
-                {t?.cardLocation ?? "Location"}
-              </dt>
-              <dd className="mt-0.5 font-medium text-brown-800 truncate">{locationDisplay}</dd>
-            </div>
-          )}
         </dl>
 
         <Link
           href={`/agricultural/tractors/${listing.id}`}
-          className="btn-primary mt-auto w-full justify-center text-xs tracking-widest uppercase"
+          className="mt-auto flex w-full items-center justify-center rounded-full bg-[#C4933F] py-3 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-[#D4A855]"
+          style={{ fontFamily: "var(--font-body)" }}
         >
-          {t?.cardViewDetails ?? "View Details"}
+          {t?.cardViewDetails ?? "Solicitar cotización"}
         </Link>
       </div>
     </article>

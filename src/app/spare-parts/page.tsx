@@ -3,8 +3,8 @@ import CategoryHubPage from "@/components/listings/CategoryHubPage";
 import { CATEGORIES } from "@/lib/categories";
 
 export const metadata: Metadata = {
-  title: "Spare Parts & Components — Euro Global Machinery",
-  description: "Used engines from Japan, new engines from China, transmissions, axles, and aftermarket components for trucks, buses, and heavy equipment.",
+  title: "Repuestos y Componentes — Euro Global Machinery",
+  description: "Motores usados de Japón, motores nuevos de China, cajas de cambio, ejes y componentes alternativos para camiones y maquinaria pesada.",
 };
 
 const cat = CATEGORIES.find((c) => c.slug === "spare-parts")!;

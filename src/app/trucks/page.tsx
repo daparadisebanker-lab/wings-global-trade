@@ -3,8 +3,8 @@ import CategoryHubPage from "@/components/listings/CategoryHubPage";
 import { CATEGORIES } from "@/lib/categories";
 
 export const metadata: Metadata = {
-  title: "Trucks & Heavy Vehicles for Sale — Euro Global Machinery",
-  description: "Browse tractor trucks, dump trucks, cargo, tanker, and refrigerated vehicles — new and used from verified dealers.",
+  title: "Camiones y Vehículos Pesados — Euro Global Machinery",
+  description: "Camiones tractores, volquetes, plataformas, cisternas y refrigerados — nuevos y usados importados desde Asia.",
 };
 
 const cat = CATEGORIES.find((c) => c.slug === "trucks")!;

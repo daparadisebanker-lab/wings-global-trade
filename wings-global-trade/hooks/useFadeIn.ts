@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, RefObject } from "react";
 
-export function useFadeIn(): RefObject<HTMLElement> {
-  const ref = useRef<HTMLElement>(null);
+export function useFadeIn(): RefObject<HTMLElement | null> {
+  const ref = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const el = ref.current;
@@ -24,8 +24,8 @@ export function useFadeIn(): RefObject<HTMLElement> {
   return ref;
 }
 
-export function useStaggerFadeIn(delay = 90): RefObject<HTMLElement> {
-  const ref = useRef<HTMLElement>(null);
+export function useStaggerFadeIn(delay = 90): RefObject<HTMLElement | null> {
+  const ref = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const container = ref.current;

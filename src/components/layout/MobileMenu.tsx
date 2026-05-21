@@ -30,9 +30,18 @@ export default function MobileMenu() {
         )}
       </button>
 
-      {open && (
-        <div className="absolute left-0 right-0 top-full max-h-[calc(100vh-4rem)] overflow-y-auto bg-[#001240] px-6 pb-8 md:hidden">
+      <div className={`absolute left-0 right-0 top-full z-50 max-h-[calc(100vh-4rem)] overflow-y-auto bg-[#001240] px-6 pb-8 md:hidden transition-all duration-200 ease-out ${open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none"}`}>
           <nav className="flex flex-col pt-2">
+
+            <Link
+              href="/categories"
+              onClick={close}
+              className="flex items-center justify-between border-b border-white/8 py-4 text-sm font-semibold text-white/80"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              <span>Catálogo</span>
+              <span className="text-[10px] font-semibold uppercase tracking-widest text-[#C4933F]">Ver todo →</span>
+            </Link>
 
             {CATEGORIES.map((cat) =>
               cat.subtypes.length > 0 ? (
@@ -125,24 +134,15 @@ export default function MobileMenu() {
 
           <div className="mt-6 flex flex-col gap-3">
             <Link
-              href="/sign-in"
-              onClick={close}
-              className="w-full rounded-full border border-white/20 py-3 text-center text-sm font-medium text-white hover:bg-white/8"
-              style={{ fontFamily: "var(--font-body)" }}
-            >
-              Iniciar sesión
-            </Link>
-            <Link
-              href="/sellers/post-listing"
+              href="/contact"
               onClick={close}
               className="w-full rounded-full bg-[#C4933F] py-3 text-center text-sm font-semibold text-white hover:bg-[#D4A855]"
               style={{ fontFamily: "var(--font-body)" }}
             >
-              Publicar anuncio
+              Solicitar cotización
             </Link>
           </div>
-        </div>
-      )}
+      </div>
     </>
   );
 }

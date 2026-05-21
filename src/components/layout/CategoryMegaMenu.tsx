@@ -21,7 +21,8 @@ export default function CategoryMegaMenu() {
 
   return (
     <div className="relative" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-      <button
+      <Link
+        href="/categories"
         className={`flex items-center gap-2 py-5 text-sm font-medium transition-colors ${
           isOpen ? "text-white" : "text-white/70 hover:text-white"
         }`}
@@ -32,7 +33,7 @@ export default function CategoryMegaMenu() {
             d={isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
         </svg>
         Catálogo
-      </button>
+      </Link>
 
       {isOpen && (
         <div className="absolute left-0 top-full z-[100] flex w-[780px] -translate-x-4 overflow-hidden rounded-2xl border border-white/10 bg-[#001240] shadow-[0_24px_64px_rgba(0,0,0,0.4)]">
@@ -104,7 +105,7 @@ export default function CategoryMegaMenu() {
               ))}
             </div>
 
-            <div className="mt-8">
+            <div className="mt-8 flex items-center gap-4">
               <Link
                 href={activeCategory?.href || "#"}
                 onClick={() => setIsOpen(false)}
@@ -112,6 +113,14 @@ export default function CategoryMegaMenu() {
                 style={{ fontFamily: "var(--font-body)" }}
               >
                 Ver todo {activeCategory?.shortLabel} →
+              </Link>
+              <Link
+                href="/categories"
+                onClick={() => setIsOpen(false)}
+                className="text-[11px] font-semibold uppercase tracking-widest text-[#C4933F]/50 transition-colors hover:text-[#C4933F]"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                Todos los servicios ↗
               </Link>
             </div>
           </div>

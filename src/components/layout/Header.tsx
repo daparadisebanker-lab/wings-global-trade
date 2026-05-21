@@ -1,17 +1,8 @@
 import Link from "next/link";
-import { cookies } from "next/headers";
-import CurrencySwitcher from "./CurrencySwitcher";
-import LanguageSwitcher from "./LanguageSwitcher";
 import MobileMenu from "./MobileMenu";
 import CategoryMegaMenu from "./CategoryMegaMenu";
-import { CURRENCY_COOKIE, DEFAULT_CURRENCY } from "@/lib/currencies";
-import { LANG_COOKIE, DEFAULT_LANG, getTranslations } from "@/lib/i18n";
 
-export default async function Header() {
-  const cookieStore = await cookies();
-  const currency = cookieStore.get(CURRENCY_COOKIE)?.value ?? DEFAULT_CURRENCY;
-  const lang     = cookieStore.get(LANG_COOKIE)?.value     ?? DEFAULT_LANG;
-  const t        = await getTranslations(lang);
+export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 bg-[#001E50]">
@@ -23,7 +14,7 @@ export default async function Header() {
             <img
               src="/wings-logo2.svg"
               alt="Euro Global"
-              className="h-7 w-auto brightness-0 invert"
+              className="h-10 w-auto brightness-0 invert"
             />
           </Link>
 
@@ -58,22 +49,12 @@ export default async function Header() {
 
           {/* Desktop right */}
           <div className="hidden items-center gap-3 md:flex">
-            <LanguageSwitcher current={lang} />
-            <CurrencySwitcher current={currency} />
-            <div className="h-4 w-px bg-white/15" />
             <Link
-              href="/sign-in"
-              className="rounded-full border border-white/20 px-5 py-2 text-xs font-medium text-white transition-colors hover:bg-white/8"
-              style={{ fontFamily: "var(--font-body)" }}
-            >
-              {t.signIn}
-            </Link>
-            <Link
-              href="/sellers/post-listing"
+              href="/contact"
               className="rounded-full bg-[#C4933F] px-5 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#D4A855]"
               style={{ fontFamily: "var(--font-body)" }}
             >
-              {t.postListing}
+              Solicitar cotización
             </Link>
           </div>
 

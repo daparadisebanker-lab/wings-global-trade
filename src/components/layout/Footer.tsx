@@ -1,89 +1,99 @@
 import Link from "next/link";
-import { CATEGORIES } from "@/lib/categories";
 
-const footerLinks = {
-  "Servicios": [
-    { label: "Importación desde Asia",  href: "/importacion"              },
-    { label: "Cotización Landed Cost",  href: "/importacion#contacto"     },
-    { label: "Sourcing Gestionado",     href: "/sourcing"                 },
-    { label: "Zonas Francas",           href: "/importacion#zonas-francas"},
-  ],
-  "Vendedores": [
-    { label: "Publicar Anuncio",        href: "/sellers/post-listing"     },
-    { label: "Cuentas Dealer",          href: "/sellers/dealer-accounts"  },
-    { label: "Precios y Planes",        href: "/sellers/pricing"          },
-    { label: "Recursos",                href: "/sellers/resources"        },
-  ],
-  "Empresa": [
-    { label: "Nosotros",                href: "/about"                    },
-    { label: "Contacto",                href: "/contact"                  },
-    { label: "Empleos",                 href: "/careers"                  },
-    { label: "Prensa",                  href: "/press"                    },
-  ],
-  "Soporte": [
-    { label: "Centro de Ayuda",         href: "#"                         },
-    { label: "Política de Privacidad",  href: "#"                         },
-    { label: "Términos de Uso",         href: "#"                         },
-  ],
-};
+const CATALOG_LINKS = [
+  { label: "Ver catálogo completo",    href: "/categories"  },
+  { label: "Maquinaria Agrícola",      href: "/agricultural" },
+  { label: "Camiones y Vehículos",     href: "/trucks"       },
+  { label: "Construcción e Industrial",href: "/industrial"   },
+  { label: "Repuestos y Componentes",  href: "/spare-parts"  },
+];
 
-const MARKETS = ["Colombia", "Perú", "Bolivia", "Chile", "Paraguay", "Argentina", "Uruguay"];
+const IMPORT_LINKS = [
+  { label: "Cómo funciona",          href: "/importacion"               },
+  { label: "Zonas Francas",          href: "/importacion#zonas-francas" },
+  { label: "Precio Landed Total",    href: "/importacion#costos"        },
+  { label: "Importadores mayoristas",href: "/importacion"               },
+  { label: "Hablar con un asesor",   href: "/contact"                   },
+];
+
+const COMPANY_LINKS = [
+  { label: "Nosotros",               href: "/about"                     },
+  { label: "Operaciones en LATAM",   href: "/about"                     },
+  { label: "Zonas Francas",          href: "/importacion#zonas-francas" },
+  { label: "Empleos",                href: "/careers"                   },
+  { label: "Prensa",                 href: "/press"                     },
+];
+
+const CONTACT_LINKS = [
+  { label: "Contacto",               href: "/contact" },
+  { label: "Solicitar cotización",   href: "/contact" },
+  { label: "Agendar llamada",        href: "/contact" },
+  { label: "Privacidad",             href: "#"        },
+  { label: "Términos de Uso",        href: "#"        },
+];
+
+const MARKETS = ["Perú", "Bolivia", "Chile", "Paraguay", "Argentina", "Uruguay"];
 
 export default function Footer() {
   return (
-    <footer className="bg-[#001E50] text-white/50">
-      <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
-        <div className="grid grid-cols-2 gap-10 sm:grid-cols-3 lg:grid-cols-6">
+    <footer>
 
-          {/* Brand */}
-          <div className="col-span-2 sm:col-span-3 lg:col-span-2">
-            <Link href="/" className="inline-block">
-              <img
-                src="/wings-logo2.svg"
-                alt="Euro Global"
-                className="h-7 w-auto brightness-0 invert opacity-80"
-              />
-            </Link>
-            <p className="mt-5 text-sm leading-relaxed text-white/40" style={{ fontFamily: "var(--font-body)" }}>
-              Maquinaria agrícola de Asia con precio landed total — desde el proveedor hasta tu campo en Latinoamérica.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-x-3 gap-y-1">
-              {MARKETS.map((m) => (
-                <span key={m} className="text-[10px] font-medium tracking-wide text-white/25" style={{ fontFamily: "var(--font-body)" }}>
-                  {m}
-                </span>
-              ))}
+      {/* ── ZONE 1: CTA STRIP ─────────────────────────────────────────────── */}
+      <div className="bg-[#001240]">
+        <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p
+                className="text-lg font-semibold text-white leading-snug"
+                style={{ fontFamily: "var(--font-display)" }}
+              >
+                Dos caminos, una decisión.
+              </p>
+              <p
+                className="mt-1 text-sm text-white/45"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                Catálogo propio o importación gestionada — dinos qué necesitas.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/categories"
+                className="rounded-full border border-[#C4933F] px-6 py-2.5 text-xs font-semibold uppercase tracking-widest text-[#C4933F] transition-colors hover:bg-[#C4933F] hover:text-white"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                Explorar catálogo
+              </Link>
+              <Link
+                href="/importacion"
+                className="rounded-full border border-white/20 bg-white/8 px-6 py-2.5 text-xs font-semibold uppercase tracking-widest text-white/80 transition-colors hover:border-white/40 hover:bg-white/12 hover:text-white"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                Servicio de importación
+              </Link>
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Browse by category */}
-          <div>
-            <h3 className="mb-4 text-[10px] font-semibold uppercase tracking-[0.15em] text-[#C4933F]" style={{ fontFamily: "var(--font-body)" }}>
-              Catálogo
-            </h3>
-            <ul className="space-y-2.5">
-              {CATEGORIES.map((cat) => (
-                <li key={cat.slug}>
-                  <Link
-                    href={cat.href}
-                    className="text-sm text-white/40 transition-colors hover:text-white"
-                    style={{ fontFamily: "var(--font-body)" }}
-                  >
-                    {cat.shortLabel}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+      {/* ── ZONE 2: LINK GRID ─────────────────────────────────────────────── */}
+      <div className="bg-[#001E50]">
+        <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+          <div className="grid grid-cols-2 gap-10 lg:grid-cols-4">
 
-          {/* Other link groups */}
-          {Object.entries(footerLinks).map(([title, links]) => (
-            <div key={title}>
-              <h3 className="mb-4 text-[10px] font-semibold uppercase tracking-[0.15em] text-[#C4933F]" style={{ fontFamily: "var(--font-body)" }}>
-                {title}
-              </h3>
-              <ul className="space-y-2.5">
-                {links.map((link) => (
+            {/* Column 1 — Catalog (gold accent) */}
+            <div>
+              <div className="mb-5 flex items-center gap-2">
+                <div className="h-1.5 w-1.5 rounded-full bg-[#C4933F] flex-shrink-0" />
+                <h3
+                  className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#C4933F]"
+                  style={{ fontFamily: "var(--font-body)" }}
+                >
+                  Catálogo
+                </h3>
+              </div>
+              <ul className="space-y-3">
+                {CATALOG_LINKS.map((link) => (
                   <li key={link.label}>
                     <Link
                       href={link.href}
@@ -96,22 +106,172 @@ export default function Footer() {
                 ))}
               </ul>
             </div>
-          ))}
-        </div>
 
-        {/* Bottom */}
-        <div className="mt-14 flex flex-col items-center justify-between gap-3 border-t border-white/8 pt-6 sm:flex-row">
-          <p className="text-xs text-white/20" style={{ fontFamily: "var(--font-body)" }}>
-            &copy; {new Date().getFullYear()} Euro Global. Todos los derechos reservados.
-          </p>
-          <div className="flex items-center gap-4 text-xs text-white/20" style={{ fontFamily: "var(--font-body)" }}>
-            <p>Hubs: ZOFRI Iquique · ZOFRATACNA Tacna</p>
-            <Link href="/admin/login" className="opacity-0 hover:opacity-100 transition-opacity">
-              Admin
-            </Link>
+            {/* Column 2 — Import Services (steel-blue accent) */}
+            <div>
+              <div className="mb-5 flex items-center gap-2">
+                <div className="h-1.5 w-1.5 rounded-full bg-[#6BA3C8] flex-shrink-0" />
+                <h3
+                  className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#6BA3C8]"
+                  style={{ fontFamily: "var(--font-body)" }}
+                >
+                  Importación
+                </h3>
+              </div>
+              <ul className="space-y-3">
+                {IMPORT_LINKS.map((link) => (
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-white/40 transition-colors hover:text-white"
+                      style={{ fontFamily: "var(--font-body)" }}
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Column 3 — Company */}
+            <div>
+              <h3
+                className="mb-5 text-[10px] font-semibold uppercase tracking-[0.15em] text-white/30"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                Empresa
+              </h3>
+              <ul className="space-y-3">
+                {COMPANY_LINKS.map((link) => (
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-white/40 transition-colors hover:text-white"
+                      style={{ fontFamily: "var(--font-body)" }}
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Column 4 — Contact */}
+            <div>
+              <h3
+                className="mb-5 text-[10px] font-semibold uppercase tracking-[0.15em] text-white/30"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                Contacto
+              </h3>
+              <ul className="space-y-3">
+                {CONTACT_LINKS.map((link) => (
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-white/40 transition-colors hover:text-white"
+                      style={{ fontFamily: "var(--font-body)" }}
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
           </div>
         </div>
       </div>
+
+      {/* ── ZONE 3: LEGAL BAR ─────────────────────────────────────────────── */}
+      <div className="bg-[#001E50] border-t border-white/8">
+        <div className="mx-auto max-w-7xl px-6 py-7 lg:px-8">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+
+            {/* Logo + tagline */}
+            <div className="flex flex-col gap-2">
+              <Link href="/" className="inline-block">
+                <img
+                  src="/wings-logo2.svg"
+                  alt="Euro Global"
+                  className="h-9 w-auto brightness-0 invert opacity-70"
+                />
+              </Link>
+              <p
+                className="text-xs text-white/30 max-w-xs leading-relaxed"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                Catálogo propio e importación gestionada para las zonas francas de Latinoamérica.
+              </p>
+            </div>
+
+            {/* Hub + market tags */}
+            <div className="flex flex-col gap-2">
+              <p
+                className="text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                Hubs operativos
+              </p>
+              <div className="flex flex-wrap gap-x-4 gap-y-1">
+                <span className="text-xs text-white/40" style={{ fontFamily: "var(--font-body)" }}>
+                  ZOFRI · Iquique, Chile
+                </span>
+                <span className="text-white/20 text-xs">|</span>
+                <span className="text-xs text-white/40" style={{ fontFamily: "var(--font-body)" }}>
+                  ZOFRATACNA · Tacna, Perú
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1">
+                {MARKETS.map((m) => (
+                  <span
+                    key={m}
+                    className="text-[10px] font-medium tracking-wide text-white/20"
+                    style={{ fontFamily: "var(--font-body)" }}
+                  >
+                    {m}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Legal */}
+            <div className="flex flex-col items-start gap-2 lg:items-end">
+              <p
+                className="text-xs text-white/20"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                &copy; {new Date().getFullYear()} Euro Global. Todos los derechos reservados.
+              </p>
+              <div className="flex items-center gap-4">
+                <Link
+                  href="#"
+                  className="text-xs text-white/25 transition-colors hover:text-white/60"
+                  style={{ fontFamily: "var(--font-body)" }}
+                >
+                  Privacidad
+                </Link>
+                <Link
+                  href="#"
+                  className="text-xs text-white/25 transition-colors hover:text-white/60"
+                  style={{ fontFamily: "var(--font-body)" }}
+                >
+                  Términos de Uso
+                </Link>
+                <Link
+                  href="/admin/login"
+                  className="text-xs opacity-0 transition-opacity hover:opacity-100 text-white/30"
+                  style={{ fontFamily: "var(--font-body)" }}
+                >
+                  Admin
+                </Link>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
     </footer>
   );
 }
