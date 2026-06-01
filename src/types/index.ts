@@ -106,6 +106,7 @@ export interface ElectricalDetails {
 // ─── Top-level Listing Details (JSONB in Supabase) ────────────────────────────
 export interface ListingDetails {
   // General
+  category?: string;          // e.g. "Agricultural - Tractor", "Industrial", "Trucks"
   vat_excluded?: boolean;
   max_speed_kmh?: number;
   warranty?: string;            // e.g. "12 months", "Factory warranty remaining"
