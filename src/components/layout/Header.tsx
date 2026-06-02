@@ -14,7 +14,7 @@ export default function Header() {
             <img
               src="/wings-logo2.svg"
               alt="Wings Global Trade"
-              className="h-8 w-auto brightness-0 invert md:h-6"
+              className="h-10 w-auto brightness-0 invert md:h-12"
             />
           </Link>
 
@@ -35,7 +35,7 @@ export default function Header() {
           <div className="hidden items-center gap-2 md:flex">
             <Link
               href="/importacion"
-              className="flex items-center gap-1.5 rounded-full border border-white/20 px-5 py-2 text-xs font-semibold text-white/75 transition-colors hover:border-white/40 hover:text-white"
+              className="flex items-center gap-1.5 rounded-full border-[1.5px] border-white/20 px-5 py-2 text-xs font-semibold text-white/75 transition-colors hover:border-white/40 hover:bg-white/10 hover:text-white"
               style={{ fontFamily: "var(--font-body)" }}
             >
               Importar desde Asia
