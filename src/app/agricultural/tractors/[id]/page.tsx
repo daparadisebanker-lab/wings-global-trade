@@ -4,6 +4,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { getListingById } from "@data/listings";
 import ImageGallery from "@/components/listings/ImageGallery";
+import TechnicalSpecs from "@/components/listings/TechnicalSpecs";
 import InquiryForm from "@/components/inquiries/InquiryForm";
 import { CURRENCY_COOKIE, DEFAULT_CURRENCY, formatPrice } from "@/lib/currencies";
 
@@ -119,7 +120,7 @@ export default async function TractorDetailPage({ params }: Props) {
               </span>
             </div>
 
-            {/* Key specs */}
+            {/* Quick specs */}
             {specs.length > 0 && (
               <div className="mt-8">
                 <p
@@ -148,6 +149,9 @@ export default async function TractorDetailPage({ params }: Props) {
                 </dl>
               </div>
             )}
+
+            {/* Full technical spec sheet */}
+            <TechnicalSpecs listing={listing} />
           </div>
 
           {/* ── Right — sticky sidebar ── */}
