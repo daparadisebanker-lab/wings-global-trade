@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { useCallback, useTransition, useRef } from "react";
+import { useCallback, useTransition, useRef, useState } from "react";
 
 interface Props {
   makes:     string[];
@@ -48,6 +48,7 @@ export default function FilterPanel({ makes, countries: _countries, t }: Props) 
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const debounceRef  = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const [open, setOpen] = useState(true);
 
   const get    = (key: string) => searchParams.get(key) ?? "";
   const getAll = (key: string) => searchParams.getAll(key);
@@ -111,8 +112,12 @@ export default function FilterPanel({ makes, countries: _countries, t }: Props) 
   return (
     <div className="overflow-hidden rounded-2xl border border-[#E8E4DB] bg-white">
 
-      {/* Header */}
-      <div className="flex items-center justify-between border-b border-[#E8E4DB] px-5 py-4">
+      {/* Header — click anywhere to collapse/expand */}
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className="flex w-full items-center justify-between border-b border-[#E8E4DB] px-5 py-4 transition-colors hover:bg-[#FAFAF8]"
+      >
         <span
           className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#1C1A16]"
           style={{ fontFamily: "var(--font-body)" }}
@@ -122,22 +127,30 @@ export default function FilterPanel({ makes, countries: _countries, t }: Props) 
             <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-[#C4933F]" />
           )}
         </span>
-        {hasFilters && (
-          <button
-            type="button"
-            onClick={reset}
-            className="flex items-center gap-1 rounded-full px-3 py-1 text-xs uppercase tracking-wide text-[#6B6560] transition-colors hover:bg-[#F8F6F0] hover:text-[#1C1A16]"
-            style={{ fontFamily: "var(--font-body)" }}
+        <div className="flex items-center gap-2">
+          {hasFilters && (
+            <span
+              onClick={(e) => { e.stopPropagation(); reset(); }}
+              role="button"
+              className="flex items-center gap-1 rounded-full px-3 py-1 text-xs uppercase tracking-wide text-[#6B6560] transition-colors hover:bg-[#F0EBE1] hover:text-[#1C1A16]"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              {t.clearAll}
+            </span>
+          )}
+          <svg
+            className={`h-4 w-4 text-[#9B9590] transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
           >
-            <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-            {t.clearAll}
-          </button>
-        )}
-      </div>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </button>
 
-      <div className="divide-y divide-[#E8E4DB]">
+      <div className={`divide-y divide-[#E8E4DB] transition-all duration-200 ${open ? "" : "hidden"}`}>
 
         {/* Sort */}
         <FilterSection title={t.sortBy}>
