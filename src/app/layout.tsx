@@ -9,8 +9,8 @@ export const metadata: Metadata = {
     template: "%s | Wings Global Trade",
   },
   description:
-    "86 tractores nuevos de YTO, SinoHarvest, John Deere y Massey Ferguson — cotizados con flete, aranceles y entrega hasta tu campo en Colombia, Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay.",
-  keywords: ["tractores", "maquinaria agrícola", "importación", "YTO", "SinoHarvest", "John Deere", "Colombia", "Perú", "Bolivia", "Chile"],
+    "34 tractores nuevos de New Holland, John Deere, Massey Ferguson y Kubota — cotizados con flete, aranceles y entrega hasta tu campo en Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay.",
+  keywords: ["tractores", "maquinaria agrícola", "importación", "New Holland", "John Deere", "Massey Ferguson", "Kubota", "Perú", "Bolivia", "Chile"],
   openGraph: {
     type: "website",
     locale: "es_419",

@@ -2,8 +2,8 @@
 import ComingSoonCategory from "@/components/listings/ComingSoonCategory";
 
 export const metadata: Metadata = {
-  title: "Harvesters for Sale — Wings Global Trade",
-  description: "Browse new and used combine harvesters from verified dealers across Europe.",
+  title: "Cosechadoras de Importación — Wings Global Trade",
+  description: "Cosechadoras nuevas desde Asia con precio landed total. Importación directa desde fabricantes verificados con entrega en Latinoamérica.",
 };
 
 export default function HarvestersPage() {

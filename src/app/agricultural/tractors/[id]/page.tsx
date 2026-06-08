@@ -88,6 +88,24 @@ export default async function TractorDetailPage({ params }: Props) {
               >
                 {listing.brand}
               </p>
+              {(() => {
+                const brandSlug: Record<string, string> = {
+                  "New Holland": "new-holland",
+                  "John Deere": "john-deere",
+                  "Massey Ferguson": "massey-ferguson",
+                  "Kubota": "kubota",
+                };
+                const slug = brandSlug[listing.brand];
+                return slug ? (
+                  <Link
+                    href={`/brands/${slug}`}
+                    className="mt-1 inline-block text-xs text-[#C4933F] hover:underline"
+                    style={{ fontFamily: "var(--font-body)" }}
+                  >
+                    Ver todos los tractores {listing.brand} →
+                  </Link>
+                ) : null;
+              })()}
               <h1
                 className="mt-2 text-4xl font-semibold text-[#1C1A16] leading-tight sm:text-5xl"
                 style={{ fontFamily: "var(--font-display)" }}
@@ -217,6 +235,36 @@ export default async function TractorDetailPage({ params }: Props) {
 
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Wings Import CTA */}
+      <div
+        className="mt-16 rounded-2xl px-8 py-12"
+        style={{ background: "#001240" }}
+      >
+        <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+          <div>
+            <h2
+              className="text-2xl font-semibold text-white"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              ¿No encontraste exactamente lo que buscas?
+            </h2>
+            <p
+              className="mt-2 max-w-lg text-sm leading-relaxed text-white/60"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              Importamos cualquier modelo desde fábrica — precio landed total con flete, aranceles y entrega incluida.
+            </p>
+          </div>
+          <Link
+            href="/importacion"
+            className="flex-shrink-0 rounded-full px-6 py-3 text-sm font-semibold text-white transition-colors hover:opacity-90"
+            style={{ backgroundColor: "#C4933F", fontFamily: "var(--font-body)" }}
+          >
+            Solicitar importación →
+          </Link>
         </div>
       </div>
     </div>

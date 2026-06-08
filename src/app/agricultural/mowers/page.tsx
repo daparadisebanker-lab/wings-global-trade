@@ -2,8 +2,8 @@
 import ComingSoonCategory from "@/components/listings/ComingSoonCategory";
 
 export const metadata: Metadata = {
-  title: "Mowers for Sale — Wings Global Trade",
-  description: "Browse new and used agricultural mowers from verified dealers across Europe.",
+  title: "Segadoras de Importación — Wings Global Trade",
+  description: "Segadoras agrícolas nuevas desde fabricantes asiáticos verificados. Precio landed total con flete y aranceles incluidos.",
 };
 
 export default function MowersPage() {

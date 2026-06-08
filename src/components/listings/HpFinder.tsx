@@ -10,7 +10,7 @@ const HECTARE_RANGES = [
   { label: "Más de 500 ha",   hpMin: 160, hpMax: 210 },
 ];
 
-const BRANDS = ["YTO", "SinoHarvest", "John Deere", "Massey Ferguson", "Kubota"];
+const BRANDS = ["New Holland", "John Deere", "Massey Ferguson", "Kubota"];
 
 export default function HpFinder() {
   const router = useRouter();

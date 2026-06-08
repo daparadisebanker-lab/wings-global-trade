@@ -1,18 +1,18 @@
 ﻿import Link from "next/link";
 
 const CATALOG_LINKS = [
-  { label: "Ver catálogo completo",    href: "/categories"  },
-  { label: "Maquinaria Agrícola",      href: "/agricultural" },
-  { label: "Camiones y Vehículos",     href: "/trucks"       },
-  { label: "Construcción e Industrial",href: "/industrial"   },
-  { label: "Repuestos y Componentes",  href: "/spare-parts"  },
+  { label: "Tractores",              href: "/agricultural/tractors" },
+  { label: "Por marca",             href: "/brands"                },
+  { label: "New Holland",            href: "/brands/new-holland"    },
+  { label: "John Deere",            href: "/brands/john-deere"     },
+  { label: "Kubota · Massey Ferguson", href: "/brands/kubota"      },
 ];
 
 const IMPORT_LINKS = [
-  { label: "Cómo funciona",          href: "/importacion"               },
+  { label: "Importación a pedido",   href: "/importacion"               },
   { label: "Zonas Francas",          href: "/importacion#zonas-francas" },
-  { label: "Precio Landed Total",    href: "/importacion#costos"        },
-  { label: "Importadores mayoristas",href: "/importacion"               },
+  { label: "Sourcing B2B con IA",    href: "/sourcing"                  },
+  { label: "Próximamente",           href: "/proximamente"              },
   { label: "Hablar con un asesor",   href: "/contact"                   },
 ];
 

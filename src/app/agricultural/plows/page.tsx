@@ -2,8 +2,8 @@
 import ComingSoonCategory from "@/components/listings/ComingSoonCategory";
 
 export const metadata: Metadata = {
-  title: "Plows for Sale — Wings Global Trade",
-  description: "Browse new and used plows from verified dealers across Europe.",
+  title: "Arados de Importación — Wings Global Trade",
+  description: "Arados y equipos de labranza desde Asia. Importación directa con precio landed total y entrega en Latinoamérica.",
 };
 
 export default function PlowsPage() {

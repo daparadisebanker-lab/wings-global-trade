@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Tractores en venta — Wings Global Trade",
-  description: "Tractores nuevos de YTO, SinoHarvest, John Deere y Massey Ferguson con precio landed total. Entrega en Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay.",
+  description: "34 modelos de tractores New Holland, John Deere, Massey Ferguson y Kubota con precio landed total. Entrega en Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay.",
 };
 
 interface PageProps {

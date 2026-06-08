@@ -385,7 +385,7 @@ export default function ListingForm({ mode, listing }: Props) {
         />
         <div className="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-3">
           <Field label="Brand" required>
-            <TextInput value={brand} onChange={setBrand} placeholder="e.g. YTO, SinoHarvest, JD" required />
+            <TextInput value={brand} onChange={setBrand} placeholder="e.g. New Holland, John Deere, Kubota" required />
           </Field>
           <Field label="Model" required>
             <TextInput value={model} onChange={setModel} placeholder="e.g. SH504" required />

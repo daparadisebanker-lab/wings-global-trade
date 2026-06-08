@@ -29,6 +29,17 @@ export default function Header() {
             >
               Nosotros
             </Link>
+
+            <Link
+              href="/sourcing"
+              className="flex items-center text-sm font-medium text-white/70 transition-colors hover:text-white"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              Sourcing IA
+              <span className="ml-1.5 rounded-full bg-[#C4933F]/20 px-1.5 py-0.5 text-[9px] font-semibold text-[#C4933F]">
+                Nuevo
+              </span>
+            </Link>
           </nav>
 
           {/* Desktop right — dual business model CTAs */}

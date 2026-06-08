@@ -2,8 +2,8 @@
 import ComingSoonCategory from "@/components/listings/ComingSoonCategory";
 
 export const metadata: Metadata = {
-  title: "Seeder & Planters for Sale — Wings Global Trade",
-  description: "Browse new and used seeders and planters from verified dealers across Europe.",
+  title: "Sembradoras de Importación — Wings Global Trade",
+  description: "Sembradoras y plantadoras desde Asia. Importación directa con precio landed y entrega en Perú, Bolivia, Chile y más.",
 };
 
 export default function SeederPlantersPage() {

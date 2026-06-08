@@ -1,4 +1,4 @@
-export type ListingCondition = "new" | "used" | "refurbished";
+﻿export type ListingCondition = "new" | "used" | "refurbished";
 
 export type TractorListingDetails = {
   engine?: {
@@ -132,7 +132,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-sh504",
       "title": "SH504 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SH504",
       "year": null,
       "price": null,
@@ -176,7 +176,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-snh504",
       "title": "SNH504 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SNH504",
       "year": null,
       "price": null,
@@ -220,7 +220,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-snh554",
       "title": "SNH554 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SNH554",
       "year": null,
       "price": null,
@@ -264,7 +264,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-snh704",
       "title": "SNH704 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SNH704",
       "year": null,
       "price": null,
@@ -308,7 +308,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-snh754",
       "title": "SNH754 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SNH754",
       "year": null,
       "price": null,
@@ -352,7 +352,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-snh804",
       "title": "SNH804 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SNH804",
       "year": null,
       "price": null,
@@ -396,7 +396,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-snh804-2",
       "title": "SNH804 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SNH804",
       "year": null,
       "price": null,
@@ -440,7 +440,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-snh904",
       "title": "SNH904 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SNH904",
       "year": null,
       "price": null,
@@ -484,7 +484,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-snh1004",
       "title": "SNH1004 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SNH1004",
       "year": null,
       "price": null,
@@ -528,7 +528,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-snh1104",
       "title": "SNH1104 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SNH1104",
       "year": null,
       "price": null,
@@ -608,7 +608,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-snh1204",
       "title": "SNH1204 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SNH1204",
       "year": null,
       "price": null,
@@ -652,7 +652,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-snh1304",
       "title": "SNH1304 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SNH1304",
       "year": null,
       "price": null,
@@ -696,7 +696,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-snh1354",
       "title": "SNH1354 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SNH1354",
       "year": null,
       "price": null,
@@ -740,7 +740,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-tm140",
       "title": "TM140 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "TM140",
       "year": null,
       "price": null,
@@ -748,17 +748,17 @@ export const productCatalog: ProductCatalog = {
       "condition": "new",
       "location": null,
       "country": null,
-      "description": "TM140 Tractor from the product catalog with Horsepower 140, rated speed 2200, gears 20×16, PTO 540/1000, tyres 14.9-28/18.4-38, operating weight 5400.",
+      "description": "TM140 Tractor from the product catalog with Horsepower 140, rated speed 2200, gears 20Ã—16, PTO 540/1000, tyres 14.9-28/18.4-38, operating weight 5400.",
       "images": [],
       "horsepower": 140,
-      "transmission": "20×16",
+      "transmission": "20Ã—16",
       "details": {
         "engine": {
           "rpm_rated": 2200,
           "cylinders": 6
         },
         "transmission_details": {
-          "type": "20×16"
+          "type": "20Ã—16"
         },
         "pto": {
           "rear_pto": true,
@@ -826,14 +826,14 @@ export const productCatalog: ProductCatalog = {
       "condition": "new",
       "location": null,
       "country": null,
-      "description": "YTO MF454 Tractor from the product catalog with Horsepower 45, engine Yangdong 4100 （Optional:Xinchai495）, rated power 33.08, gears 8+4, PTO 540/720,540/1000, tyres 8.3-20/12.4-28.",
+      "description": "YTO MF454 Tractor from the product catalog with Horsepower 45, engine Yangdong 4100 ï¼ˆOptional:Xinchai495ï¼‰, rated power 33.08, gears 8+4, PTO 540/720,540/1000, tyres 8.3-20/12.4-28.",
       "images": [],
       "horsepower": 45,
       "transmission": "8+4",
       "drive_type": "4WD",
       "details": {
         "engine": {
-          "model": "Yangdong 4100 （Optional:Xinchai495）"
+          "model": "Yangdong 4100 ï¼ˆOptional:Xinchai495ï¼‰"
         },
         "transmission_details": {
           "type": "8+4",
@@ -909,14 +909,14 @@ export const productCatalog: ProductCatalog = {
       "condition": "new",
       "location": null,
       "country": null,
-      "description": "YTO MF554 Tractor from the product catalog with Horsepower 55, engine Yangdong495 （Optional:Xinchai498）, rated power 40.44, gears 8+8, PTO 540/720,540/1000, tyres 8.3-20/12.4-28.",
+      "description": "YTO MF554 Tractor from the product catalog with Horsepower 55, engine Yangdong495 ï¼ˆOptional:Xinchai498ï¼‰, rated power 40.44, gears 8+8, PTO 540/720,540/1000, tyres 8.3-20/12.4-28.",
       "images": [],
       "horsepower": 55,
       "transmission": "8+8",
       "drive_type": "4WD",
       "details": {
         "engine": {
-          "model": "Yangdong495 （Optional:Xinchai498）"
+          "model": "Yangdong495 ï¼ˆOptional:Xinchai498ï¼‰"
         },
         "transmission_details": {
           "type": "8+8",
@@ -952,14 +952,14 @@ export const productCatalog: ProductCatalog = {
       "condition": "new",
       "location": null,
       "country": null,
-      "description": "YTO MF704 Tractor from the product catalog with Horsepower 70, engine Dongchai4108（Optional Yangdong4100、 Xinchai498）, rated power 51.5, gears 12+12, tyres 8.3-24,9.5-20,9.5-24/11-32,14.9-30.",
+      "description": "YTO MF704 Tractor from the product catalog with Horsepower 70, engine Dongchai4108ï¼ˆOptional Yangdong4100ã€ Xinchai498ï¼‰, rated power 51.5, gears 12+12, tyres 8.3-24,9.5-20,9.5-24/11-32,14.9-30.",
       "images": [],
       "horsepower": 70,
       "transmission": "12+12",
       "drive_type": "4WD",
       "details": {
         "engine": {
-          "model": "Dongchai4108（Optional Yangdong4100、 Xinchai498）"
+          "model": "Dongchai4108ï¼ˆOptional Yangdong4100ã€ Xinchai498ï¼‰"
         },
         "transmission_details": {
           "type": "12+12",
@@ -1036,14 +1036,14 @@ export const productCatalog: ProductCatalog = {
       "condition": "new",
       "location": null,
       "country": null,
-      "description": "YTO LX804 Tractor from the product catalog with Horsepower 80, engine LR4M5R22/0588、 LR4M5U22/0588E, rated power 58.8, rated speed 2200, gears 12+4, tyres 11.2-28,12.4-26(paddy wheel)/13.6-38,16.9-34(pa ddywheel), operating weight 3675.",
+      "description": "YTO LX804 Tractor from the product catalog with Horsepower 80, engine LR4M5R22/0588ã€ LR4M5U22/0588E, rated power 58.8, rated speed 2200, gears 12+4, tyres 11.2-28,12.4-26(paddy wheel)/13.6-38,16.9-34(pa ddywheel), operating weight 3675.",
       "images": [],
       "horsepower": 80,
       "transmission": "12+4",
       "drive_type": "4WD",
       "details": {
         "engine": {
-          "model": "LR4M5R22/0588、 LR4M5U22/0588E",
+          "model": "LR4M5R22/0588ã€ LR4M5U22/0588E",
           "rpm_rated": 2200
         },
         "transmission_details": {
@@ -1534,17 +1534,17 @@ export const productCatalog: ProductCatalog = {
       "condition": "new",
       "location": null,
       "country": null,
-      "description": "John Deere 5B-704 Tractor from the product catalog with Horsepower 70, rated power 51.5, rated speed 2300, gears 4×（2+1）, PTO 540/720,540/1000, operating weight 2790.",
+      "description": "John Deere 5B-704 Tractor from the product catalog with Horsepower 70, rated power 51.5, rated speed 2300, gears 4Ã—ï¼ˆ2+1ï¼‰, PTO 540/720,540/1000, operating weight 2790.",
       "images": [],
       "horsepower": 70,
-      "transmission": "4×（2+1）",
+      "transmission": "4Ã—ï¼ˆ2+1ï¼‰",
       "drive_type": "4WD",
       "details": {
         "engine": {
           "rpm_rated": 2300
         },
         "transmission_details": {
-          "type": "4×（2+1）",
+          "type": "4Ã—ï¼ˆ2+1ï¼‰",
           "forward_gears": 2,
           "reverse_gears": 1,
           "drive_type": "4WD"
@@ -2648,7 +2648,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-sh554-c",
       "title": "SH554-C Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SH554-C",
       "year": null,
       "price": null,
@@ -2684,7 +2684,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-sh704-1",
       "title": "SH704-1 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SH704-1",
       "year": null,
       "price": null,
@@ -2724,7 +2724,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-cd904-1",
       "title": "CD904-1 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "CD904-1",
       "year": null,
       "price": null,
@@ -2763,7 +2763,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-cd904-s",
       "title": "CD904-S Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "CD904-S",
       "year": null,
       "price": null,
@@ -2802,7 +2802,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-cd1004-s",
       "title": "CD1004 S Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "CD1004 S",
       "year": null,
       "price": null,
@@ -2842,7 +2842,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-cd1304-1",
       "title": "CD1304-1 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "CD1304-1",
       "year": null,
       "price": null,
@@ -2868,7 +2868,7 @@ export const productCatalog: ProductCatalog = {
         },
         "pto": {
           "rear_pto": true,
-          "rear_pto_rpm": "540/760选装 760/850, 540/1000,760/1000"
+          "rear_pto_rpm": "540/760é€‰è£… 760/850, 540/1000,760/1000"
         },
         "dimensions": {
           "length_mm": 4350,
@@ -2882,7 +2882,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-cd1504",
       "title": "CD1504 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "CD1504",
       "year": null,
       "price": null,
@@ -2922,7 +2922,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-df1404",
       "title": "DF1404 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "DF1404",
       "year": null,
       "price": null,
@@ -2962,7 +2962,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-cd1604-1",
       "title": "CD1604-1 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "CD1604-1",
       "year": null,
       "price": null,
@@ -3002,7 +3002,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-df1704",
       "title": "DF1704 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "DF1704",
       "year": null,
       "price": null,
@@ -3042,7 +3042,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-cd1804e",
       "title": "CD1804E Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "CD1804E",
       "year": null,
       "price": null,
@@ -3076,7 +3076,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-cd2004",
       "title": "CD2004 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "CD2004",
       "year": null,
       "price": null,
@@ -3112,7 +3112,7 @@ export const productCatalog: ProductCatalog = {
     {
       "id": "unknown-cd2104",
       "title": "CD2104 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "CD2104",
       "year": null,
       "price": null,
@@ -3544,7 +3544,7 @@ export const productCatalog: ProductCatalog = {
       "condition": "new",
       "location": null,
       "country": null,
-      "description": "Kubota M954KQ Tractor from the product catalog with Horsepower 95, engine V3800-DI-T, rated power 69.9, rated speed 2600, gears 12+12, tyres 12.4-24(paddywheel： 9.5-24)/16.9-34(paddy wheel：16.9-30）, operating weight 3245/3270.",
+      "description": "Kubota M954KQ Tractor from the product catalog with Horsepower 95, engine V3800-DI-T, rated power 69.9, rated speed 2600, gears 12+12, tyres 12.4-24(paddywheelï¼š 9.5-24)/16.9-34(paddy wheelï¼š16.9-30ï¼‰, operating weight 3245/3270.",
       "images": [],
       "horsepower": 95,
       "transmission": "12+12",
@@ -3559,8 +3559,8 @@ export const productCatalog: ProductCatalog = {
           "reverse_gears": 12
         },
         "tires": {
-          "front": "12.4-24(paddywheel： 9.5-24)",
-          "rear": "16.9-34(paddy wheel：16.9-30）"
+          "front": "12.4-24(paddywheelï¼š 9.5-24)",
+          "rear": "16.9-34(paddy wheelï¼š16.9-30ï¼‰"
         },
         "dimensions": {
           "length_mm": 4445,
@@ -3583,7 +3583,7 @@ export const productCatalog: ProductCatalog = {
       "condition": "new",
       "location": null,
       "country": null,
-      "description": "Kubota M1004Q Tractor from the product catalog with Horsepower 100, engine V3800-DI-TI-ES02, rated power 73.5, rated speed 2600, gears 12F+12R, PTO 540/720, tyres 12.4-24/16.9-34,paddy wheel：9.5-24/16.9-30, operating weight 3135.",
+      "description": "Kubota M1004Q Tractor from the product catalog with Horsepower 100, engine V3800-DI-TI-ES02, rated power 73.5, rated speed 2600, gears 12F+12R, PTO 540/720, tyres 12.4-24/16.9-34,paddy wheelï¼š9.5-24/16.9-30, operating weight 3135.",
       "images": [],
       "horsepower": 100,
       "transmission": "12F+12R",
@@ -3603,7 +3603,7 @@ export const productCatalog: ProductCatalog = {
         },
         "tires": {
           "front": "12.4-24",
-          "rear": "16.9-34,paddy wheel：9.5-24/16.9-30"
+          "rear": "16.9-34,paddy wheelï¼š9.5-24/16.9-30"
         },
         "dimensions": {
           "length_mm": 4200,

@@ -154,6 +154,16 @@ export default function TractorCard({
           {t?.cardViewDetails ?? "Solicitar cotización"}
         </Link>
       </div>
+
+      {/* Wings import micro-CTA */}
+      <div className="border-t border-[#E8E4DB] px-5 pb-3 pt-2">
+        <p className="text-[10px] text-[#1C1A16]/35" style={{ fontFamily: "var(--font-body)" }}>
+          ¿No es lo que buscas?{" "}
+          <Link href="/importacion" className="font-semibold text-[#C4933F] hover:underline">
+            Impórtalo →
+          </Link>
+        </p>
+      </div>
     </article>
   );
 }

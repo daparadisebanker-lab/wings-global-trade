@@ -149,3 +149,12 @@
   opacity: 1;
   transform: translateY(0);
 }
+
+/* ── Hero scroll indicator ───────────────────────────────────────────────── */
+@keyframes hero-scroll {
+  0%, 100% { opacity: 0.3; transform: translateY(-4px); }
+  50%       { opacity: 0.7; transform: translateY(4px); }
+}
+.hero-scroll-indicator {
+  animation: hero-scroll 2s ease-in-out infinite;
+}

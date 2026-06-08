@@ -128,6 +128,41 @@ export default function CategoryHubPage({ category, comingSoonExtra = [] }: Prop
           </>
         )}
 
+        {/* Import CTA when no active inventory */}
+        {activeSubtypes.length === 0 && (
+          <div className="mb-10 rounded-2xl bg-[#001240] px-8 py-10">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p
+                  className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
+                  style={{ fontFamily: "var(--font-body)" }}
+                >
+                  Disponible ahora
+                </p>
+                <p
+                  className="mt-1 text-lg font-semibold text-white"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  ¿Lo necesitas ahora? Lo importamos.
+                </p>
+                <p
+                  className="mt-1 text-sm text-white/50"
+                  style={{ fontFamily: "var(--font-body)" }}
+                >
+                  El catálogo en línea está en preparación — pero podemos importar directamente desde fábrica con precio landed total.
+                </p>
+              </div>
+              <Link
+                href="/importacion"
+                className="flex-shrink-0 rounded-full bg-[#C4933F] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#D4A855]"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                Solicitar importación →
+              </Link>
+            </div>
+          </div>
+        )}
+
         {/* Coming-soon items */}
         {allComingSoon.length > 0 && (
           <div className={activeSubtypes.length > 0 ? "mt-10" : ""}>

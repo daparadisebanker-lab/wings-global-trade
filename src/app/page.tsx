@@ -41,9 +41,8 @@ const TRUST_BADGES = [
 ];
 
 const BRANDS = [
-  { name: "YTO",             count: 31 },
-  { name: "SinoHarvest",     count: 28 },
-  { name: "John Deere",      count: 16 },
+  { name: "New Holland",     count: 14 },
+  { name: "John Deere",      count: 9  },
   { name: "Massey Ferguson", count: 6  },
   { name: "Kubota",          count: 5  },
 ];
@@ -52,13 +51,13 @@ const TESTIMONIALS = [
   {
     name:     "Andrés Villanueva",
     location: "Santa Cruz, Bolivia",
-    machine:  "YTO X1304 — 130 hp · 4WD",
+    machine:  "New Holland SNH1304 — 130 hp · 4WD",
     quote:    "Recibí el tractor en mi finca con todos los documentos de importación resueltos. El precio final fue exactamente el que me cotizaron.",
   },
   {
     name:     "Rodrigo Cárdenas",
     location: "Junín, Perú",
-    machine:  "SinoHarvest SH1004 — 100 hp · Cabina",
+    machine:  "New Holland SH1004 — 100 hp · Cabina",
     quote:    "Comparé tres opciones con el asesor y elegimos el modelo que mejor se adaptaba al terreno. El proceso de importación fue completamente transparente.",
   },
 ];
@@ -74,9 +73,9 @@ export default async function HomePage() {
   const listings = allListings.slice(0, 6);
 
   const stats = [
-    { value: "86",     label: "Modelos disponibles" },
-    { value: "40–210", label: "Rango de potencia (hp)" },
-    { value: "5",      label: "Marcas de fábrica" },
+    { value: "34",     label: "Modelos disponibles" },
+    { value: "50–140", label: "Rango de potencia (hp)" },
+    { value: "4",      label: "Marcas de fábrica" },
     { value: "6",      label: "Países atendidos" },
   ];
 
@@ -91,7 +90,7 @@ export default async function HomePage() {
           className="object-cover"
           priority
         />
-        <div className="absolute inset-0 bg-[#001E50]/60" />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.55) 100%)' }} />
         <div
           className="absolute inset-0 opacity-20"
           style={{ background: "radial-gradient(ellipse at 60% 30%, #C4933F 0%, transparent 60%)" }}
@@ -99,9 +98,12 @@ export default async function HomePage() {
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#F8F6F0] to-transparent" />
 
         <div className="relative z-10 mx-auto w-full max-w-5xl px-6 py-28 text-center lg:px-8">
-          <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/8 px-5 py-2 backdrop-blur-sm">
+          <div
+            className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-2"
+            style={{ background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(4px)' }}
+          >
             <span
-              className="text-[11px] font-medium tracking-widest text-white/60"
+              className="text-[11px] font-medium tracking-widest text-white"
               style={{ fontFamily: "var(--font-body)" }}
             >
               Perú · Bolivia · Chile · Paraguay · Argentina · Uruguay
@@ -114,12 +116,12 @@ export default async function HomePage() {
           >
             Maquinaria de Asia
             <br />
-            <span className="text-[#C4933F]">con precio landed y entrega garantizada.</span>
+            <span style={{ color: '#F0A030' }}>con precio landed y entrega garantizada.</span>
           </h1>
 
           <p
-            className="mx-auto mt-6 max-w-2xl text-lg font-light leading-relaxed text-white/70"
-            style={{ fontFamily: "var(--font-body)" }}
+            className="mx-auto mt-6 max-w-2xl text-lg font-light leading-relaxed text-white/80"
+            style={{ fontFamily: "var(--font-body)", textShadow: '0 1px 6px rgba(0,0,0,0.7)' }}
           >
             Tractores, camiones, buses y equipos industriales — importados directamente
             de fábrica con flete, aranceles y entrega incluidos en cada cotización.
@@ -127,18 +129,25 @@ export default async function HomePage() {
 
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
-              href="/categories"
-              className="rounded-full bg-[#C4933F] px-9 py-3.5 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-[#D4A855]"
-              style={{ fontFamily: "var(--font-body)" }}
+              href="/contact"
+              className="rounded-full transition-opacity hover:opacity-90"
+              style={{
+                fontFamily: "var(--font-body)",
+                backgroundColor: '#F0A030',
+                color: '#1a1a1a',
+                padding: '14px 32px',
+                fontWeight: 500,
+                fontSize: '0.9rem',
+              }}
             >
-              Ver catálogo completo
+              Solicitar cotización
             </Link>
             <Link
-              href="/importacion"
+              href="/categories"
               className="rounded-full border border-white/25 px-9 py-3.5 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-white/10"
               style={{ fontFamily: "var(--font-body)" }}
             >
-              Servicio de importación
+              Ver catálogo
             </Link>
           </div>
 
@@ -160,6 +169,13 @@ export default async function HomePage() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="hero-scroll-indicator absolute bottom-8 left-1/2 z-10 -translate-x-1/2 text-white">
+          <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
         </div>
       </section>
 
@@ -287,8 +303,8 @@ export default async function HomePage() {
                 className="mt-4 text-sm leading-relaxed text-[#6B6560]"
                 style={{ fontFamily: "var(--font-body)" }}
               >
-                86 modelos listos para cotizar — tractores, camiones, buses,
-                equipos industriales y repuestos. Precio landed confirmado.
+                34 modelos listos para cotizar — tractores de New Holland, John Deere,
+                Massey Ferguson y Kubota. Precio landed confirmado.
               </p>
               <div className="mt-8 flex items-center gap-2">
                 <span
@@ -482,11 +498,19 @@ export default async function HomePage() {
               Marcas disponibles en el catálogo
             </h2>
           </div>
-          <div className="grid grid-cols-2 gap-px border border-[#E8E4DB] bg-[#E8E4DB] sm:grid-cols-5">
-            {BRANDS.map((b) => (
+          <div className="grid grid-cols-2 gap-px border border-[#E8E4DB] bg-[#E8E4DB] sm:grid-cols-4">
+            {BRANDS.map((b) => {
+              const slugMap: Record<string, string> = {
+                "New Holland": "new-holland",
+                "John Deere": "john-deere",
+                "Massey Ferguson": "massey-ferguson",
+                "Kubota": "kubota",
+              };
+              const href = slugMap[b.name] ? `/brands/${slugMap[b.name]}` : `/agricultural/tractors?brand=${encodeURIComponent(b.name)}`;
+              return (
               <Link
                 key={b.name}
-                href={`/agricultural/tractors?brand=${encodeURIComponent(b.name)}`}
+                href={href}
                 className="group flex flex-col items-center justify-center bg-white px-6 py-10 transition-colors hover:bg-[#001E50]"
               >
                 <span
@@ -502,7 +526,8 @@ export default async function HomePage() {
                   {b.count} modelos
                 </span>
               </Link>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>

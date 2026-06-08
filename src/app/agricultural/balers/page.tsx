@@ -2,8 +2,8 @@
 import ComingSoonCategory from "@/components/listings/ComingSoonCategory";
 
 export const metadata: Metadata = {
-  title: "Balers for Sale — Wings Global Trade",
-  description: "Browse new and used balers from verified dealers across Europe.",
+  title: "Empacadoras de Importación — Wings Global Trade",
+  description: "Empacadoras agrícolas nuevas desde Asia. Importación directa con precio landed total y entrega en Perú, Bolivia, Chile y más.",
 };
 
 export default function BalersPage() {

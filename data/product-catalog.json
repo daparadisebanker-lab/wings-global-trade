@@ -1,14 +1,14 @@
-{
+﻿{
   "source": {
     "fileName": "product catalog.pdf",
     "originalPath": "C:\\Users\\USER\\Downloads\\EURO GLOBAL CODE\\product catalog.pdf"
   },
-  "productCount": 86,
+  "productCount": 34,
   "products": [
     {
       "id": "unknown-sh504",
       "title": "SH504 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SH504",
       "year": null,
       "price": null,
@@ -16,7 +16,7 @@
       "condition": "new",
       "location": null,
       "country": null,
-      "description": "The SinoHarvest SH504 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient 4100B-4a engine, delivering a robust 50 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 8+2 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 2,370 kg, it offers a stable platform for heavy-duty implements, while the 766 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the SH504 stands as an indispensable asset for maximizing productivity in the field.",
+      "description": "The New Holland SH504 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient 4100B-4a engine, delivering a robust 50 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 8+2 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 2,370 kg, it offers a stable platform for heavy-duty implements, while the 766 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the SH504 stands as an indispensable asset for maximizing productivity in the field.",
       "images": [],
       "horsepower": 50,
       "transmission": "8+2",
@@ -52,7 +52,7 @@
     {
       "id": "unknown-snh504",
       "title": "SNH504 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SNH504",
       "year": null,
       "price": null,
@@ -60,7 +60,7 @@
       "condition": "new",
       "location": null,
       "country": null,
-      "description": "The SinoHarvest SNH504 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient 4100B-3 engine, delivering a robust 50 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 10+2(8+2) transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 2,370 kg, it offers a stable platform for heavy-duty implements, while the 766 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the SNH504 stands as an indispensable asset for maximizing productivity in the field.",
+      "description": "The New Holland SNH504 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient 4100B-3 engine, delivering a robust 50 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 10+2(8+2) transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 2,370 kg, it offers a stable platform for heavy-duty implements, while the 766 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the SNH504 stands as an indispensable asset for maximizing productivity in the field.",
       "images": [],
       "horsepower": 50,
       "transmission": "10+2(8+2)",
@@ -96,7 +96,7 @@
     {
       "id": "unknown-snh554",
       "title": "SNH554 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SNH554",
       "year": null,
       "price": null,
@@ -104,7 +104,7 @@
       "condition": "new",
       "location": null,
       "country": null,
-      "description": "The SinoHarvest SNH554 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient 4100B-2 engine, delivering a robust 55 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 10+2/8+2 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 2,370 kg, it offers a stable platform for heavy-duty implements, while the 766 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the SNH554 stands as an indispensable asset for maximizing productivity in the field.",
+      "description": "The New Holland SNH554 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient 4100B-2 engine, delivering a robust 55 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 10+2/8+2 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 2,370 kg, it offers a stable platform for heavy-duty implements, while the 766 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the SNH554 stands as an indispensable asset for maximizing productivity in the field.",
       "images": [],
       "horsepower": 55,
       "transmission": "10+2/8+2",
@@ -140,7 +140,7 @@
     {
       "id": "unknown-snh704",
       "title": "SNH704 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SNH704",
       "year": null,
       "price": null,
@@ -148,7 +148,7 @@
       "condition": "new",
       "location": null,
       "country": null,
-      "description": "The SinoHarvest SNH704 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient SNH4102 engine, delivering a robust 70 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 10+2/8+2 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 2,500 kg, it offers a stable platform for heavy-duty implements, while the 783 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the SNH704 stands as an indispensable asset for maximizing productivity in the field.",
+      "description": "The New Holland SNH704 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient SNH4102 engine, delivering a robust 70 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 10+2/8+2 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 2,500 kg, it offers a stable platform for heavy-duty implements, while the 783 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the SNH704 stands as an indispensable asset for maximizing productivity in the field.",
       "images": [],
       "horsepower": 70,
       "transmission": "10+2/8+2",
@@ -184,7 +184,7 @@
     {
       "id": "unknown-snh754",
       "title": "SNH754 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SNH754",
       "year": null,
       "price": null,
@@ -192,7 +192,7 @@
       "condition": "new",
       "location": null,
       "country": null,
-      "description": "The SinoHarvest SNH754 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient SNH4102Z engine, delivering a robust 75 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 10+2/8+2 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 2,520 kg, it offers a stable platform for heavy-duty implements, while the 783 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the SNH754 stands as an indispensable asset for maximizing productivity in the field.",
+      "description": "The New Holland SNH754 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient SNH4102Z engine, delivering a robust 75 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 10+2/8+2 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 2,520 kg, it offers a stable platform for heavy-duty implements, while the 783 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the SNH754 stands as an indispensable asset for maximizing productivity in the field.",
       "images": [],
       "horsepower": 75,
       "transmission": "10+2/8+2",
@@ -228,7 +228,7 @@
     {
       "id": "unknown-snh804",
       "title": "SNH804 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SNH804",
       "year": null,
       "price": null,
@@ -236,7 +236,7 @@
       "condition": "new",
       "location": null,
       "country": null,
-      "description": "The SinoHarvest SNH804 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient SNH4102Z/LR4B3-24 engine, delivering a robust 80 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 10+2 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 2,520 kg, it offers a stable platform for heavy-duty implements, while the 783 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the SNH804 stands as an indispensable asset for maximizing productivity in the field.",
+      "description": "The New Holland SNH804 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient SNH4102Z/LR4B3-24 engine, delivering a robust 80 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 10+2 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 2,520 kg, it offers a stable platform for heavy-duty implements, while the 783 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the SNH804 stands as an indispensable asset for maximizing productivity in the field.",
       "images": [],
       "horsepower": 80,
       "transmission": "10+2",
@@ -272,7 +272,7 @@
     {
       "id": "unknown-snh804-2",
       "title": "SNH804 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SNH804",
       "year": null,
       "price": null,
@@ -280,7 +280,7 @@
       "condition": "new",
       "location": null,
       "country": null,
-      "description": "The SinoHarvest SNH804 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient SNH4102Z engine, delivering a robust 80 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 10+2 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 2,520 kg, it offers a stable platform for heavy-duty implements, while the 783 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the SNH804 stands as an indispensable asset for maximizing productivity in the field.",
+      "description": "The New Holland SNH804 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient SNH4102Z engine, delivering a robust 80 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 10+2 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 2,520 kg, it offers a stable platform for heavy-duty implements, while the 783 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the SNH804 stands as an indispensable asset for maximizing productivity in the field.",
       "images": [],
       "horsepower": 80,
       "transmission": "10+2",
@@ -314,53 +314,9 @@
       }
     },
     {
-      "id": "unknown-snh904",
-      "title": "SNH904 Tractor",
-      "brand": "SinoHarvest",
-      "model": "SNH904",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The SinoHarvest SNH904 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient WP4T90E20 engine, delivering a robust 90 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 3,890 kg, it offers a stable platform for heavy-duty implements, while the 540/750 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the SNH904 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 90,
-      "transmission": "12+12",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "WP4T90E20",
-          "rpm_rated": 2300
-        },
-        "transmission_details": {
-          "type": "12+12",
-          "forward_gears": 12,
-          "reverse_gears": 12,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/750"
-        },
-        "tires": {
-          "front": "12.4-24",
-          "rear": "16.9-34"
-        },
-        "dimensions": {
-          "length_mm": 4516,
-          "width_mm": 2110,
-          "height_mm": 2765,
-          "operating_weight_kg": 3890,
-          "ground_clearance_mm": 416
-        }
-      }
-    },
-    {
       "id": "unknown-snh1004",
       "title": "SNH1004 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SNH1004",
       "year": null,
       "price": null,
@@ -368,7 +324,7 @@
       "condition": "new",
       "location": null,
       "country": null,
-      "description": "The SinoHarvest SNH1004 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient WP4T90E20 engine, delivering a robust 100 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 3,890 kg, it offers a stable platform for heavy-duty implements, while the 540/750 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the SNH1004 stands as an indispensable asset for maximizing productivity in the field.",
+      "description": "The New Holland SNH1004 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient WP4T90E20 engine, delivering a robust 100 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 3,890 kg, it offers a stable platform for heavy-duty implements, while the 540/750 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the SNH1004 stands as an indispensable asset for maximizing productivity in the field.",
       "images": [],
       "horsepower": 100,
       "transmission": "12+12",
@@ -404,7 +360,7 @@
     {
       "id": "unknown-snh1104",
       "title": "SNH1104 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SNH1104",
       "year": null,
       "price": null,
@@ -412,7 +368,7 @@
       "condition": "new",
       "location": null,
       "country": null,
-      "description": "The SinoHarvest SNH1104 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient WP6T110E20 engine, delivering a robust 110 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 4,720 kg, it offers a highly stable and commanding platform for heavy-duty agricultural implements. Built for endurance and operational excellence, the SNH1104 stands as an indispensable asset for maximizing productivity in the field.",
+      "description": "The New Holland SNH1104 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient WP6T110E20 engine, delivering a robust 110 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 4,720 kg, it offers a highly stable and commanding platform for heavy-duty agricultural implements. Built for endurance and operational excellence, the SNH1104 stands as an indispensable asset for maximizing productivity in the field.",
       "images": [],
       "horsepower": 110,
       "transmission": "12+12",
@@ -442,9 +398,9 @@
       }
     },
     {
-      "id": "sinoharvest-t1104",
-      "title": "SinoHarvest T1104 Tractor",
-      "brand": "SinoHarvest",
+      "id": "New Holland-t1104",
+      "title": "New Holland T1104 Tractor",
+      "brand": "New Holland",
       "model": "T1104",
       "year": null,
       "price": null,
@@ -452,7 +408,7 @@
       "condition": "new",
       "location": null,
       "country": null,
-      "description": "The SinoHarvest T1104 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient IVECO 8045.25D.313T engine, delivering a robust 110 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 3,900 kg, it offers a highly stable and commanding platform for heavy-duty agricultural implements. Built for endurance and operational excellence, the T1104 stands as an indispensable asset for maximizing productivity in the field.",
+      "description": "The New Holland T1104 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient IVECO 8045.25D.313T engine, delivering a robust 110 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 3,900 kg, it offers a highly stable and commanding platform for heavy-duty agricultural implements. Built for endurance and operational excellence, the T1104 stands as an indispensable asset for maximizing productivity in the field.",
       "images": [],
       "horsepower": 110,
       "transmission": "12+12",
@@ -484,7 +440,7 @@
     {
       "id": "unknown-snh1204",
       "title": "SNH1204 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SNH1204",
       "year": null,
       "price": null,
@@ -492,7 +448,7 @@
       "condition": "new",
       "location": null,
       "country": null,
-      "description": "The SinoHarvest SNH1204 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient WP6T120E20 engine, delivering a robust 120 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 4,850 kg, it offers a stable platform for heavy-duty implements, while the 540/1000 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the SNH1204 stands as an indispensable asset for maximizing productivity in the field.",
+      "description": "The New Holland SNH1204 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient WP6T120E20 engine, delivering a robust 120 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 4,850 kg, it offers a stable platform for heavy-duty implements, while the 540/1000 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the SNH1204 stands as an indispensable asset for maximizing productivity in the field.",
       "images": [],
       "horsepower": 120,
       "transmission": "12+12",
@@ -528,7 +484,7 @@
     {
       "id": "unknown-snh1304",
       "title": "SNH1304 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SNH1304",
       "year": null,
       "price": null,
@@ -536,7 +492,7 @@
       "condition": "new",
       "location": null,
       "country": null,
-      "description": "The SinoHarvest SNH1304 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient WP6T130E20 engine, delivering a robust 130 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 4,850 kg, it offers a stable platform for heavy-duty implements, while the 540/1000 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the SNH1304 stands as an indispensable asset for maximizing productivity in the field.",
+      "description": "The New Holland SNH1304 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient WP6T130E20 engine, delivering a robust 130 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 4,850 kg, it offers a stable platform for heavy-duty implements, while the 540/1000 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the SNH1304 stands as an indispensable asset for maximizing productivity in the field.",
       "images": [],
       "horsepower": 130,
       "transmission": "12+12",
@@ -572,7 +528,7 @@
     {
       "id": "unknown-snh1354",
       "title": "SNH1354 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "SNH1354",
       "year": null,
       "price": null,
@@ -580,7 +536,7 @@
       "condition": "new",
       "location": null,
       "country": null,
-      "description": "The SinoHarvest SNH1354 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient WP6T135E20 engine, delivering a robust 135 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 4,850 kg, it offers a stable platform for heavy-duty implements, while the 540/1000 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the SNH1354 stands as an indispensable asset for maximizing productivity in the field.",
+      "description": "The New Holland SNH1354 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient WP6T135E20 engine, delivering a robust 135 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 4,850 kg, it offers a stable platform for heavy-duty implements, while the 540/1000 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the SNH1354 stands as an indispensable asset for maximizing productivity in the field.",
       "images": [],
       "horsepower": 135,
       "transmission": "12+12",
@@ -616,7 +572,7 @@
     {
       "id": "unknown-tm140",
       "title": "TM140 Tractor",
-      "brand": "SinoHarvest",
+      "brand": "New Holland",
       "model": "TM140",
       "year": null,
       "price": null,
@@ -624,17 +580,17 @@
       "condition": "new",
       "location": null,
       "country": null,
-      "description": "The SinoHarvest TM140 is a professional-grade agricultural tractor designed for modern farming operations. Equipped with a dependable power plant, delivering a robust 140 horsepower, it provides an exceptional balance of torque and fuel efficiency. Its versatile 20\u00d716 transmission allows operators to adapt effortlessly to various field conditions and implement requirements. Weighing in at 5,400 kg, it offers a stable platform for heavy-duty implements, while the 540/1000 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the TM140 stands as an indispensable asset for maximizing productivity in the field.",
+      "description": "The New Holland TM140 is a professional-grade agricultural tractor designed for modern farming operations. Equipped with a dependable power plant, delivering a robust 140 horsepower, it provides an exceptional balance of torque and fuel efficiency. Its versatile 20Ã—16 transmission allows operators to adapt effortlessly to various field conditions and implement requirements. Weighing in at 5,400 kg, it offers a stable platform for heavy-duty implements, while the 540/1000 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the TM140 stands as an indispensable asset for maximizing productivity in the field.",
       "images": [],
       "horsepower": 140,
-      "transmission": "20\u00d716",
+      "transmission": "20Ã—16",
       "details": {
         "engine": {
           "rpm_rated": 2200,
           "cylinders": 6
         },
         "transmission_details": {
-          "type": "20\u00d716"
+          "type": "20Ã—16"
         },
         "pto": {
           "rear_pto": true,
@@ -653,753 +609,6 @@
       }
     },
     {
-      "id": "yto-me404",
-      "title": "YTO ME404 Tractor",
-      "brand": "YTO",
-      "model": "ME404",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO ME404 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient C490BT-7/ZN490BT engine, delivering a robust 40 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD configuration provides superior traction and stability in demanding agricultural environments. The advanced 2300/2400 RPM PTO system provides dependable, continuous power transfer for demanding agricultural attachments. Built for endurance and operational excellence, the ME404 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 40,
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "C490BT-7/ZN490BT"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "2300/2400"
-        },
-        "tires": {
-          "front": "7.5-16",
-          "rear": "11.2-28"
-        },
-        "dimensions": {
-          "length_mm": 3662,
-          "width_mm": 1390,
-          "height_mm": 1560,
-          "wheelbase_mm": 1970,
-          "ground_clearance_mm": 290
-        },
-        "transmission_details": {
-          "drive_type": "4WD"
-        }
-      }
-    },
-    {
-      "id": "yto-mf454",
-      "title": "YTO MF454 Tractor",
-      "brand": "YTO",
-      "model": "MF454",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO MF454 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient Yangdong 4100 \uff08Optional:Xinchai495\uff09 engine, delivering a robust 45 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 8+4 transmission, ensures optimal traction and seamless power delivery across challenging terrains. The advanced 540/720,540/1000 RPM PTO system provides dependable, continuous power transfer for demanding agricultural attachments. Built for endurance and operational excellence, the MF454 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 45,
-      "transmission": "8+4",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "Yangdong 4100 \uff08Optional:Xinchai495\uff09"
-        },
-        "transmission_details": {
-          "type": "8+4",
-          "forward_gears": 8,
-          "reverse_gears": 4,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/720,540/1000"
-        },
-        "tires": {
-          "front": "8.3-20",
-          "rear": "12.4-28"
-        },
-        "dimensions": {
-          "length_mm": 3740,
-          "width_mm": 1645,
-          "height_mm": 2420,
-          "wheelbase_mm": 1970,
-          "ground_clearance_mm": 350
-        }
-      }
-    },
-    {
-      "id": "yto-me504",
-      "title": "YTO ME504 Tractor",
-      "brand": "YTO",
-      "model": "ME504",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO ME504 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient Xinchai:A498BT engine, delivering a robust 50 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 8+4 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Built for endurance and operational excellence, the ME504 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 50,
-      "transmission": "8+4",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "Xinchai:A498BT"
-        },
-        "transmission_details": {
-          "type": "8+4",
-          "forward_gears": 8,
-          "reverse_gears": 4,
-          "drive_type": "4WD"
-        },
-        "tires": {
-          "front": "8.3-20,8.3-20(paddy wheel)",
-          "rear": "12.4-28,11-28(paddy wheel)"
-        },
-        "dimensions": {
-          "length_mm": 3675,
-          "width_mm": 1515,
-          "height_mm": 2735,
-          "wheelbase_mm": 1830,
-          "ground_clearance_mm": 280,
-          "turning_radius_m": 3.4
-        }
-      }
-    },
-    {
-      "id": "yto-mf554",
-      "title": "YTO MF554 Tractor",
-      "brand": "YTO",
-      "model": "MF554",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO MF554 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient Yangdong495 \uff08Optional:Xinchai498\uff09 engine, delivering a robust 55 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 8+8 transmission, ensures optimal traction and seamless power delivery across challenging terrains. The advanced 540/720,540/1000 RPM PTO system provides dependable, continuous power transfer for demanding agricultural attachments. Built for endurance and operational excellence, the MF554 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 55,
-      "transmission": "8+8",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "Yangdong495 \uff08Optional:Xinchai498\uff09"
-        },
-        "transmission_details": {
-          "type": "8+8",
-          "forward_gears": 8,
-          "reverse_gears": 8,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/720,540/1000"
-        },
-        "tires": {
-          "front": "8.3-20",
-          "rear": "12.4-28"
-        },
-        "dimensions": {
-          "length_mm": 3780,
-          "width_mm": 1685,
-          "height_mm": 2134,
-          "ground_clearance_mm": 350,
-          "turning_radius_m": 4.5
-        }
-      }
-    },
-    {
-      "id": "yto-mf704",
-      "title": "YTO MF704 Tractor",
-      "brand": "YTO",
-      "model": "MF704",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO MF704 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient Dongchai4108\uff08Optional Yangdong4100\u3001 Xinchai498\uff09 engine, delivering a robust 70 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Built for endurance and operational excellence, the MF704 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 70,
-      "transmission": "12+12",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "Dongchai4108\uff08Optional Yangdong4100\u3001 Xinchai498\uff09"
-        },
-        "transmission_details": {
-          "type": "12+12",
-          "forward_gears": 12,
-          "reverse_gears": 12,
-          "drive_type": "4WD"
-        },
-        "tires": {
-          "front": "8.3-24,9.5-20,9.5-24",
-          "rear": "11-32,14.9-30"
-        },
-        "dimensions": {
-          "length_mm": 3910,
-          "width_mm": 1780,
-          "height_mm": 2565,
-          "wheelbase_mm": 2110,
-          "ground_clearance_mm": 400,
-          "turning_radius_m": 4.5
-        }
-      }
-    },
-    {
-      "id": "yto-mg704",
-      "title": "YTO MG704 Tractor",
-      "brand": "YTO",
-      "model": "MG704",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO MG704 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient YTOYTR4108 engine, delivering a robust 70 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 10+2 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 3,100 kg, it offers a stable platform for heavy-duty implements, while the 720/540/1000 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the MG704 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 70,
-      "transmission": "10+2",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "YTOYTR4108",
-          "rpm_rated": 2200
-        },
-        "transmission_details": {
-          "type": "10+2",
-          "forward_gears": 10,
-          "reverse_gears": 2,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "720/540/1000"
-        },
-        "tires": {
-          "front": "9.5-24",
-          "rear": "14.9-30(paddy wheel11-32)"
-        },
-        "dimensions": {
-          "length_mm": 4150,
-          "width_mm": 2040,
-          "height_mm": 2790,
-          "operating_weight_kg": 3100,
-          "ground_clearance_mm": 390
-        }
-      }
-    },
-    {
-      "id": "yto-lx804",
-      "title": "YTO LX804 Tractor",
-      "brand": "YTO",
-      "model": "LX804",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO LX804 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient LR4M5R22/0588\u3001 LR4M5U22/0588E engine, delivering a robust 80 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+4 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 3,675 kg, it offers a highly stable and commanding platform for heavy-duty agricultural implements. Built for endurance and operational excellence, the LX804 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 80,
-      "transmission": "12+4",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "LR4M5R22/0588\u3001 LR4M5U22/0588E",
-          "rpm_rated": 2200
-        },
-        "transmission_details": {
-          "type": "12+4",
-          "forward_gears": 12,
-          "reverse_gears": 4,
-          "drive_type": "4WD"
-        },
-        "tires": {
-          "front": "11.2-28,12.4-26(paddy wheel)",
-          "rear": "13.6-38,16.9-34(pa ddywheel)"
-        },
-        "dimensions": {
-          "length_mm": 4350,
-          "width_mm": 2170,
-          "height_mm": 2740,
-          "operating_weight_kg": 3675,
-          "ground_clearance_mm": 430,
-          "turning_radius_m": 5.6
-        }
-      }
-    },
-    {
-      "id": "yto-lx904",
-      "title": "YTO LX904 Tractor",
-      "brand": "YTO",
-      "model": "LX904",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO LX904 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient LR4V5U22/0662E engine, delivering a robust 90 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+4 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 3,870 kg, it offers a highly stable and commanding platform for heavy-duty agricultural implements. Built for endurance and operational excellence, the LX904 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 90,
-      "transmission": "12+4",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "LR4V5U22/0662E",
-          "rpm_rated": 2200
-        },
-        "transmission_details": {
-          "type": "12+4",
-          "forward_gears": 12,
-          "reverse_gears": 4,
-          "drive_type": "4WD"
-        },
-        "tires": {
-          "front": "13.6-24",
-          "rear": "16.9-34"
-        },
-        "dimensions": {
-          "length_mm": 4315,
-          "operating_weight_kg": 3870,
-          "ground_clearance_mm": 430,
-          "turning_radius_m": 5.6
-        }
-      }
-    },
-    {
-      "id": "yto-lx954",
-      "title": "YTO LX954 Tractor",
-      "brand": "YTO",
-      "model": "LX954",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO LX954 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient LR4A3LU22/0700E engine, delivering a robust 95 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+4 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 3,870 kg, it offers a highly stable and commanding platform for heavy-duty agricultural implements. Built for endurance and operational excellence, the LX954 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 95,
-      "transmission": "12+4",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "LR4A3LU22/0700E",
-          "rpm_rated": 2200
-        },
-        "transmission_details": {
-          "type": "12+4",
-          "forward_gears": 12,
-          "reverse_gears": 4,
-          "drive_type": "4WD"
-        },
-        "tires": {
-          "front": "13.6-24",
-          "rear": "16.9-34"
-        },
-        "dimensions": {
-          "length_mm": 4315,
-          "operating_weight_kg": 3870,
-          "ground_clearance_mm": 430,
-          "turning_radius_m": 5.6
-        }
-      }
-    },
-    {
-      "id": "yto-lx1204",
-      "title": "YTO LX1204 Tractor",
-      "brand": "YTO",
-      "model": "LX1204",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO LX1204 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient LR6B5~23 engine, delivering a robust 120 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+4 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 4,850 kg, it offers a highly stable and commanding platform for heavy-duty agricultural implements. Built for endurance and operational excellence, the LX1204 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 120,
-      "transmission": "12+4",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "LR6B5~23",
-          "rpm_rated": 2300
-        },
-        "transmission_details": {
-          "type": "12+4",
-          "forward_gears": 12,
-          "reverse_gears": 4,
-          "drive_type": "4WD"
-        },
-        "tires": {
-          "front": "14.9-26",
-          "rear": "18.4-38"
-        },
-        "dimensions": {
-          "length_mm": 5040,
-          "operating_weight_kg": 4850,
-          "ground_clearance_mm": 430,
-          "turning_radius_m": 7
-        }
-      }
-    },
-    {
-      "id": "yto-ly1204d",
-      "title": "YTO LY1204D Tractor",
-      "brand": "YTO",
-      "model": "LY1204D",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO LY1204D is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient LR4M3LR22/0882E engine, delivering a robust 120 horsepower, it provides an exceptional balance of torque and fuel efficiency. Its versatile 12+12 transmission allows operators to adapt effortlessly to various field conditions and implement requirements. Weighing in at 4,040 kg, it offers a stable platform for heavy-duty implements, while the 540/720720/1000650/720720/800 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the LY1204D stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 120,
-      "transmission": "12+12",
-      "details": {
-        "engine": {
-          "model": "LR4M3LR22/0882E",
-          "rpm_rated": 2200
-        },
-        "transmission_details": {
-          "type": "12+12",
-          "forward_gears": 12,
-          "reverse_gears": 12
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/720720/1000650/720720/800"
-        },
-        "tires": {
-          "front": "13.6-24,12.4-26(paddy wheel)",
-          "rear": "16.9-34,13.6-38"
-        },
-        "dimensions": {
-          "length_mm": 4350,
-          "width_mm": 2150,
-          "height_mm": 3030,
-          "operating_weight_kg": 4040,
-          "ground_clearance_mm": 420
-        }
-      }
-    },
-    {
-      "id": "yto-lx1304",
-      "title": "YTO LX1304 Tractor",
-      "brand": "YTO",
-      "model": "LX1304",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO LX1304 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient LR6A3LU22/0920E engine, delivering a robust 130 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+4 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 5,080 kg, it offers a highly stable and commanding platform for heavy-duty agricultural implements. Built for endurance and operational excellence, the LX1304 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 130,
-      "transmission": "12+4",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "LR6A3LU22/0920E",
-          "rpm_rated": 2200
-        },
-        "transmission_details": {
-          "type": "12+4",
-          "forward_gears": 12,
-          "reverse_gears": 4,
-          "drive_type": "4WD"
-        },
-        "tires": {
-          "front": "14.9-26,12.4-26(paddy wheel)",
-          "rear": "18.4-38,18.4-34"
-        },
-        "dimensions": {
-          "length_mm": 5010,
-          "width_mm": 2360,
-          "height_mm": 3030,
-          "operating_weight_kg": 5080,
-          "ground_clearance_mm": 470,
-          "turning_radius_m": 6.5
-        }
-      }
-    },
-    {
-      "id": "yto-lx1504",
-      "title": "YTO LX1504 Tractor",
-      "brand": "YTO",
-      "model": "LX1504",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO LX1504 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient LR6A3LU22/1103E engine, delivering a robust 150 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+4 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 5,280 kg, it offers a stable platform for heavy-duty implements, while the 540/1000540/720540720 1000 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the LX1504 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 150,
-      "transmission": "12+4",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "LR6A3LU22/1103E",
-          "rpm_rated": 2200
-        },
-        "transmission_details": {
-          "type": "12+4",
-          "forward_gears": 12,
-          "reverse_gears": 4,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/1000540/720540720 1000"
-        },
-        "tires": {
-          "front": "14.9-26",
-          "rear": "18.4-38"
-        },
-        "dimensions": {
-          "length_mm": 5050,
-          "operating_weight_kg": 5280,
-          "ground_clearance_mm": 470
-        }
-      }
-    },
-    {
-      "id": "yto-lx1604",
-      "title": "YTO LX1604 Tractor",
-      "brand": "YTO",
-      "model": "LX1604",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO LX1604 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient LR6A3LU22/1177E engine, delivering a robust 160 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+4 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 5,280 kg, it offers a stable platform for heavy-duty implements, while the 540/1000540/720540720 1000 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the LX1604 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 160,
-      "transmission": "12+4",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "LR6A3LU22/1177E",
-          "rpm_rated": 2200
-        },
-        "transmission_details": {
-          "type": "12+4",
-          "forward_gears": 12,
-          "reverse_gears": 4,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/1000540/720540720 1000"
-        },
-        "tires": {
-          "front": "14.9-26",
-          "rear": "18.4-38"
-        },
-        "dimensions": {
-          "length_mm": 5050,
-          "operating_weight_kg": 5280,
-          "ground_clearance_mm": 470
-        }
-      }
-    },
-    {
-      "id": "yto-lx1804",
-      "title": "YTO LX1804 Tractor",
-      "brand": "YTO",
-      "model": "LX1804",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO LX1804 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient LR6M3LR22/1324 engine, delivering a robust 180 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+4 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 5,400 kg, it offers a stable platform for heavy-duty implements, while the 540/1000540/720540720 1000 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the LX1804 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 180,
-      "transmission": "12+4",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "LR6M3LR22/1324",
-          "rpm_rated": 2200
-        },
-        "transmission_details": {
-          "type": "12+4",
-          "forward_gears": 12,
-          "reverse_gears": 4,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/1000540/720540720 1000"
-        },
-        "tires": {
-          "front": "14.9-26",
-          "rear": "18.4-38"
-        },
-        "dimensions": {
-          "length_mm": 5100,
-          "width_mm": 2380,
-          "height_mm": 3120,
-          "operating_weight_kg": 5400,
-          "ground_clearance_mm": 470
-        }
-      }
-    },
-    {
-      "id": "yto-lx2004",
-      "title": "YTO LX2004 Tractor",
-      "brand": "YTO",
-      "model": "LX2004",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO LX2004 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient LR6M220-40 engine, delivering a robust 200 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 24+8 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 5,400 kg, it offers a stable platform for heavy-duty implements, while the 650/720540/720540720 1000 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the LX2004 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 200,
-      "transmission": "24+8",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "LR6M220-40",
-          "rpm_rated": 2200
-        },
-        "transmission_details": {
-          "type": "24+8",
-          "forward_gears": 24,
-          "reverse_gears": 8,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "650/720540/720540720 1000"
-        },
-        "tires": {
-          "front": "14.9-26",
-          "rear": "18.4-38"
-        },
-        "dimensions": {
-          "length_mm": 5100,
-          "width_mm": 2380,
-          "height_mm": 3170,
-          "operating_weight_kg": 5400,
-          "ground_clearance_mm": 470
-        }
-      }
-    },
-    {
-      "id": "john-deere-484",
-      "title": "John Deere 484 Tractor",
-      "brand": "John Deere",
-      "model": "484",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The John Deere 484 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient A498BT-11 engine, delivering a robust 48 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 8+2 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 1,900 kg, it offers a stable platform for heavy-duty implements, while the 540/720,540/1000 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the 484 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 48,
-      "transmission": "8+2",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "A498BT-11",
-          "rpm_rated": 2400
-        },
-        "transmission_details": {
-          "type": "8+2",
-          "forward_gears": 8,
-          "reverse_gears": 2,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/720,540/1000"
-        },
-        "tires": {
-          "front": "7.5-16",
-          "rear": "11.2-28"
-        },
-        "dimensions": {
-          "length_mm": 3150,
-          "width_mm": 1590,
-          "height_mm": 2050,
-          "operating_weight_kg": 1900,
-          "ground_clearance_mm": 295
-        }
-      }
-    },
-    {
-      "id": "john-deere-3b-554",
-      "title": "John Deere 3B-554 Tractor",
-      "brand": "John Deere",
-      "model": "3B-554",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The John Deere 3B-554 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient 4D32ZT31/603 engine, delivering a robust 55 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 2,100 kg, it offers a highly stable and commanding platform for heavy-duty agricultural implements. Built for endurance and operational excellence, the 3B-554 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 55,
-      "transmission": "12+12",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "4D32ZT31/603",
-          "rpm_rated": 2300
-        },
-        "transmission_details": {
-          "type": "12+12",
-          "forward_gears": 12,
-          "reverse_gears": 12,
-          "drive_type": "4WD"
-        },
-        "tires": {
-          "front": "8.3-20",
-          "rear": "12.4-28"
-        },
-        "dimensions": {
-          "length_mm": 3680,
-          "width_mm": 1700,
-          "height_mm": 2440,
-          "operating_weight_kg": 2100,
-          "wheelbase_mm": 1960,
-          "turning_radius_m": 4.6
-        }
-      }
-    },
-    {
       "id": "john-deere-5b-704",
       "title": "John Deere 5B-704 Tractor",
       "brand": "John Deere",
@@ -1410,17 +619,17 @@
       "condition": "new",
       "location": null,
       "country": null,
-      "description": "The John Deere 5B-704 is a professional-grade agricultural tractor designed for modern farming operations. Equipped with a dependable power plant, delivering a robust 70 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 4\u00d7\uff082+1\uff09 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 2,790 kg, it offers a stable platform for heavy-duty implements, while the 540/720,540/1000 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the 5B-704 stands as an indispensable asset for maximizing productivity in the field.",
+      "description": "The John Deere 5B-704 is a professional-grade agricultural tractor designed for modern farming operations. Equipped with a dependable power plant, delivering a robust 70 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 4Ã—ï¼ˆ2+1ï¼‰ transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 2,790 kg, it offers a stable platform for heavy-duty implements, while the 540/720,540/1000 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the 5B-704 stands as an indispensable asset for maximizing productivity in the field.",
       "images": [],
       "horsepower": 70,
-      "transmission": "4\u00d7\uff082+1\uff09",
+      "transmission": "4Ã—ï¼ˆ2+1ï¼‰",
       "drive_type": "4WD",
       "details": {
         "engine": {
           "rpm_rated": 2300
         },
         "transmission_details": {
-          "type": "4\u00d7\uff082+1\uff09",
+          "type": "4Ã—ï¼ˆ2+1ï¼‰",
           "forward_gears": 2,
           "reverse_gears": 1,
           "drive_type": "4WD"
@@ -1435,129 +644,6 @@
           "height_mm": 2140,
           "operating_weight_kg": 2790,
           "wheelbase_mm": 2140
-        }
-      }
-    },
-    {
-      "id": "john-deere-5-754",
-      "title": "John Deere 5-754 Tractor",
-      "brand": "John Deere",
-      "model": "5-754",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The John Deere 5-754 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient 4RNT4/LR4A5-23 engine, delivering a robust 75 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+4 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 3,310 kg, it offers a highly stable and commanding platform for heavy-duty agricultural implements. Built for endurance and operational excellence, the 5-754 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 75,
-      "transmission": "12+4",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "4RNT4/LR4A5-23",
-          "rpm_rated": 2300
-        },
-        "transmission_details": {
-          "type": "12+4",
-          "forward_gears": 12,
-          "reverse_gears": 4,
-          "drive_type": "4WD"
-        },
-        "tires": {
-          "front": "11.2-24",
-          "rear": "16.9-30"
-        },
-        "dimensions": {
-          "length_mm": 4217,
-          "width_mm": 1890,
-          "height_mm": 2760,
-          "operating_weight_kg": 3310,
-          "wheelbase_mm": 2310,
-          "turning_radius_m": 4.3
-        }
-      }
-    },
-    {
-      "id": "john-deere-5-904",
-      "title": "John Deere 5-904 Tractor",
-      "brand": "John Deere",
-      "model": "5-904",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The John Deere 5-904 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient 4RMIZT13/LR4A3Z-23 engine, delivering a robust 90 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+4 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 3,350 kg, it offers a highly stable and commanding platform for heavy-duty agricultural implements. Built for endurance and operational excellence, the 5-904 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 90,
-      "transmission": "12+4",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "4RMIZT13/LR4A3Z-23",
-          "rpm_rated": 2300
-        },
-        "transmission_details": {
-          "type": "12+4",
-          "forward_gears": 12,
-          "reverse_gears": 4,
-          "drive_type": "4WD"
-        },
-        "tires": {
-          "front": "13.6-24",
-          "rear": "16.9-34"
-        },
-        "dimensions": {
-          "length_mm": 4217,
-          "width_mm": 1890,
-          "height_mm": 2782,
-          "operating_weight_kg": 3350,
-          "wheelbase_mm": 2310,
-          "turning_radius_m": 4.3
-        }
-      }
-    },
-    {
-      "id": "john-deere-5e-804",
-      "title": "John Deere 5E-804 Tractor",
-      "brand": "John Deere",
-      "model": "5E-804",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The John Deere 5E-804 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient Johndeere4045 engine, delivering a robust 80 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+4 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 3,350 kg, it offers a highly stable and commanding platform for heavy-duty agricultural implements. Built for endurance and operational excellence, the 5E-804 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 80,
-      "transmission": "12+4",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "Johndeere4045",
-          "rpm_rated": 2300
-        },
-        "transmission_details": {
-          "type": "12+4",
-          "forward_gears": 12,
-          "reverse_gears": 4,
-          "drive_type": "4WD"
-        },
-        "tires": {
-          "front": "13.6-24",
-          "rear": "16.9-34"
-        },
-        "dimensions": {
-          "length_mm": 4217,
-          "width_mm": 1890,
-          "height_mm": 2782,
-          "operating_weight_kg": 3350,
-          "wheelbase_mm": 2310,
-          "turning_radius_m": 4.3
         }
       }
     },
@@ -1636,80 +722,6 @@
           "operating_weight_kg": 3488,
           "wheelbase_mm": 2230,
           "turning_radius_m": 4.3
-        }
-      }
-    },
-    {
-      "id": "john-deere-5e-1004",
-      "title": "John Deere 5E-1004 Tractor",
-      "brand": "John Deere",
-      "model": "5E-1004",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The John Deere 5E-1004 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient Johndeere4045 engine, delivering a robust 100 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+4 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 3,488 kg, it offers a highly stable and commanding platform for heavy-duty agricultural implements. Built for endurance and operational excellence, the 5E-1004 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 100,
-      "transmission": "12+4",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "Johndeere4045",
-          "rpm_rated": 2300
-        },
-        "transmission_details": {
-          "type": "12+4",
-          "forward_gears": 12,
-          "reverse_gears": 4,
-          "drive_type": "4WD"
-        },
-        "tires": {
-          "front": "13.6-24",
-          "rear": "16.9-34"
-        },
-        "dimensions": {
-          "length_mm": 4372,
-          "operating_weight_kg": 3488,
-          "wheelbase_mm": 2230,
-          "turning_radius_m": 4.3
-        }
-      }
-    },
-    {
-      "id": "john-deere-5e-1004-2",
-      "title": "John Deere 5E-1004 Tractor",
-      "brand": "John Deere",
-      "model": "5E-1004",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The John Deere 5E-1004 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient John deere4045 engine, delivering a robust 100 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+4 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Built for endurance and operational excellence, the 5E-1004 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 100,
-      "transmission": "12+4",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "John deere4045",
-          "rpm_rated": 2300
-        },
-        "transmission_details": {
-          "type": "12+4",
-          "forward_gears": 12,
-          "reverse_gears": 4,
-          "drive_type": "4WD"
-        },
-        "dimensions": {
-          "length_mm": 4372,
-          "width_mm": 1830,
-          "height_mm": 2560,
-          "wheelbase_mm": 2230
         }
       }
     },
@@ -1949,1075 +961,6 @@
           "operating_weight_kg": 4860,
           "wheelbase_mm": 2677,
           "turning_radius_m": 6
-        }
-      }
-    },
-    {
-      "id": "unknown-m554-b",
-      "title": "M554-B Tractor",
-      "brand": "YTO",
-      "model": "M554-B",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO M554-B is a professional-grade agricultural tractor designed for modern farming operations. Equipped with a dependable power plant, delivering a robust 55 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 2,540 kg, it offers a stable platform for heavy-duty implements, while the 540/760 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the M554-B stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 55,
-      "transmission": "12+12",
-      "drive_type": "4WD",
-      "details": {
-        "transmission_details": {
-          "type": "12+12",
-          "forward_gears": 12,
-          "reverse_gears": 12,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/760"
-        },
-        "tires": {
-          "front": "8.3-20",
-          "rear": "12.4-28"
-        },
-        "dimensions": {
-          "length_mm": 4030,
-          "width_mm": 1650,
-          "height_mm": 2520,
-          "operating_weight_kg": 2540,
-          "wheelbase_mm": 2040,
-          "turning_radius_m": 4.3
-        }
-      }
-    },
-    {
-      "id": "unknown-m554-ba",
-      "title": "M554-BA Tractor",
-      "brand": "YTO",
-      "model": "M554-BA",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO M554-BA is a professional-grade agricultural tractor designed for modern farming operations. Equipped with a dependable power plant, delivering a robust 55 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 4*3*(1+1),4*(2+1)*2 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 2,360 kg, it offers a stable platform for heavy-duty implements, while the 540/760 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the M554-BA stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 55,
-      "transmission": "4*3*(1+1),4*(2+1)*2",
-      "drive_type": "4WD",
-      "details": {
-        "transmission_details": {
-          "type": "4*3*(1+1),4*(2+1)*2",
-          "forward_gears": 1,
-          "reverse_gears": 1,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/760"
-        },
-        "dimensions": {
-          "length_mm": 4030,
-          "width_mm": 1650,
-          "height_mm": 2150,
-          "operating_weight_kg": 2360,
-          "wheelbase_mm": 2040,
-          "turning_radius_m": 4.3
-        }
-      }
-    },
-    {
-      "id": "unknown-m604l-e",
-      "title": "M604L-E Tractor",
-      "brand": "YTO",
-      "model": "M604L-E",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO M604L-E is a professional-grade agricultural tractor designed for modern farming operations. Equipped with a dependable power plant, delivering a robust 60 horsepower, it provides an exceptional balance of torque and fuel efficiency. Its versatile 8+2 transmission allows operators to adapt effortlessly to various field conditions and implement requirements. Weighing in at 1,485 kg, it offers a stable platform for heavy-duty implements, while the 540/720 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the M604L-E stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 60,
-      "transmission": "8+2",
-      "details": {
-        "transmission_details": {
-          "type": "8+2",
-          "forward_gears": 8,
-          "reverse_gears": 2
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/720"
-        },
-        "dimensions": {
-          "length_mm": 3136,
-          "width_mm": 1350,
-          "height_mm": 1420,
-          "operating_weight_kg": 1485,
-          "wheelbase_mm": 1756,
-          "turning_radius_m": 3.9
-        }
-      }
-    },
-    {
-      "id": "unknown-m704-ba",
-      "title": "M704-BA Tractor",
-      "brand": "YTO",
-      "model": "M704-BA",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO M704-BA is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient Quanchai4108 engine, delivering a robust 70 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 2,276 kg, it offers a stable platform for heavy-duty implements, while the 540/760 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the M704-BA stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 70,
-      "transmission": "12+12",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "Quanchai4108"
-        },
-        "transmission_details": {
-          "type": "12+12",
-          "forward_gears": 12,
-          "reverse_gears": 12,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/760"
-        },
-        "tires": {
-          "front": "8.3-24",
-          "rear": "11-32"
-        },
-        "dimensions": {
-          "length_mm": 3900,
-          "width_mm": 1795,
-          "height_mm": 2160,
-          "operating_weight_kg": 2276,
-          "wheelbase_mm": 2072,
-          "ground_clearance_mm": 410
-        }
-      }
-    },
-    {
-      "id": "unknown-m804-b",
-      "title": "M804-B Tractor",
-      "brand": "YTO",
-      "model": "M804-B",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO M804-B is a professional-grade agricultural tractor designed for modern farming operations. Equipped with a dependable power plant, delivering a robust 80 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 2,830 kg, it offers a stable platform for heavy-duty implements, while the 540/760 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the M804-B stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 80,
-      "transmission": "12+12",
-      "drive_type": "4WD",
-      "details": {
-        "transmission_details": {
-          "type": "12+12",
-          "forward_gears": 12,
-          "reverse_gears": 12,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/760"
-        },
-        "dimensions": {
-          "length_mm": 4130,
-          "width_mm": 1795,
-          "height_mm": 2160,
-          "operating_weight_kg": 2830,
-          "wheelbase_mm": 2072,
-          "ground_clearance_mm": 440
-        }
-      }
-    },
-    {
-      "id": "unknown-m904",
-      "title": "M904 Tractor",
-      "brand": "YTO",
-      "model": "M904",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO M904 is a professional-grade agricultural tractor designed for modern farming operations. Equipped with a dependable power plant, delivering a robust 90 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. The advanced 540/760 RPM PTO system provides dependable, continuous power transfer for demanding agricultural attachments. Built for endurance and operational excellence, the M904 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 90,
-      "transmission": "12+12",
-      "drive_type": "4WD",
-      "details": {
-        "transmission_details": {
-          "type": "12+12",
-          "forward_gears": 12,
-          "reverse_gears": 12,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/760"
-        },
-        "dimensions": {
-          "length_mm": 4180,
-          "width_mm": 1795,
-          "height_mm": 2210,
-          "wheelbase_mm": 2122,
-          "ground_clearance_mm": 460,
-          "turning_radius_m": 4.6
-        }
-      }
-    },
-    {
-      "id": "unknown-m1004-aa",
-      "title": "M1004-AA Tractor",
-      "brand": "YTO",
-      "model": "M1004-AA",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO M1004-AA is a professional-grade agricultural tractor designed for modern farming operations. Equipped with a dependable power plant, delivering a robust 110 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 16+8 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 3,780 kg, it offers a stable platform for heavy-duty implements, while the 760/1000 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the M1004-AA stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 110,
-      "transmission": "16+8",
-      "drive_type": "4WD",
-      "details": {
-        "transmission_details": {
-          "type": "16+8",
-          "forward_gears": 16,
-          "reverse_gears": 8,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "760/1000"
-        },
-        "dimensions": {
-          "operating_weight_kg": 3780,
-          "wheelbase_mm": 2380
-        }
-      }
-    },
-    {
-      "id": "unknown-m1004-a",
-      "title": "M1004-A Tractor",
-      "brand": "YTO",
-      "model": "M1004-A",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO M1004-A is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient YC4A11 engine, delivering a robust 100 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 16+8 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 3,855 kg, it offers a stable platform for heavy-duty implements, while the 540/760 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the M1004-A stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 100,
-      "transmission": "16+8",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "YC4A11"
-        },
-        "transmission_details": {
-          "type": "16+8",
-          "forward_gears": 16,
-          "reverse_gears": 8,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/760",
-          "rear_pto_hp": 62.5
-        },
-        "dimensions": {
-          "length_mm": 4200,
-          "width_mm": 1910,
-          "height_mm": 2760,
-          "operating_weight_kg": 3855,
-          "wheelbase_mm": 2273,
-          "turning_radius_m": 4
-        },
-        "rear_hitch": {
-          "lift_capacity_kg": 20
-        }
-      }
-    },
-    {
-      "id": "unknown-m1204-a",
-      "title": "M1204-A Tractor",
-      "brand": "YTO",
-      "model": "M1204-A",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO M1204-A is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient YC4A11 engine, delivering a robust 120 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 10+10 transmission, ensures optimal traction and seamless power delivery across challenging terrains. The advanced 540/760 RPM PTO system provides dependable, continuous power transfer for demanding agricultural attachments. Built for endurance and operational excellence, the M1204-A stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 120,
-      "transmission": "10+10",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "YC4A11"
-        },
-        "transmission_details": {
-          "type": "10+10",
-          "forward_gears": 10,
-          "reverse_gears": 10,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/760",
-          "rear_pto_hp": 88.2
-        },
-        "dimensions": {
-          "wheelbase_mm": 2380,
-          "turning_radius_m": 4.9
-        },
-        "rear_hitch": {
-          "lift_capacity_kg": 21.2
-        }
-      }
-    },
-    {
-      "id": "unknown-m1204-4x",
-      "title": "M1204-4X Tractor",
-      "brand": "YTO",
-      "model": "M1204-4X",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO M1204-4X is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient Weichai engine, delivering a robust 120 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. The advanced 540/760 RPM PTO system provides dependable, continuous power transfer for demanding agricultural attachments. Built for endurance and operational excellence, the M1204-4X stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 120,
-      "transmission": "12+12",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "Weichai"
-        },
-        "transmission_details": {
-          "type": "12+12",
-          "forward_gears": 12,
-          "reverse_gears": 12,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/760",
-          "rear_pto_hp": 88.2
-        },
-        "dimensions": {
-          "wheelbase_mm": 2380,
-          "turning_radius_m": 4.9
-        },
-        "rear_hitch": {
-          "lift_capacity_kg": 21.2
-        }
-      }
-    },
-    {
-      "id": "unknown-m1304-a-u",
-      "title": "M1304-A/U Tractor",
-      "brand": "YTO",
-      "model": "M1304-A/U",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO M1304-A/U is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient YC4A150-T304 engine, delivering a robust 130 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 10+10 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 4,100 kg, it offers a highly stable and commanding platform for heavy-duty agricultural implements. Built for endurance and operational excellence, the M1304-A/U stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 130,
-      "transmission": "10+10",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "YC4A150-T304",
-          "rpm_rated": 2200
-        },
-        "transmission_details": {
-          "type": "10+10",
-          "forward_gears": 10,
-          "reverse_gears": 10,
-          "drive_type": "4WD"
-        },
-        "dimensions": {
-          "length_mm": 4580,
-          "width_mm": 2070,
-          "height_mm": 2800,
-          "operating_weight_kg": 4100,
-          "ground_clearance_mm": 490
-        }
-      }
-    },
-    {
-      "id": "unknown-m1404-d",
-      "title": "M1404-D Tractor",
-      "brand": "YTO",
-      "model": "M1404-D",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO M1404-D is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient Yuchai engine, delivering a robust 140 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 16+8 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 4,100 kg, it offers a highly stable and commanding platform for heavy-duty agricultural implements. Built for endurance and operational excellence, the M1404-D stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 140,
-      "transmission": "16+8",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "Yuchai",
-          "rpm_rated": 2200
-        },
-        "transmission_details": {
-          "type": "16+8",
-          "forward_gears": 16,
-          "reverse_gears": 8,
-          "drive_type": "4WD"
-        },
-        "dimensions": {
-          "length_mm": 4580,
-          "width_mm": 2070,
-          "height_mm": 2800,
-          "operating_weight_kg": 4100,
-          "ground_clearance_mm": 490
-        }
-      }
-    },
-    {
-      "id": "unknown-m1604-5g",
-      "title": "M1604-5G Tractor",
-      "brand": "YTO",
-      "model": "M1604-5G",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO M1604-5G is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient Weichai engine, delivering a robust 160 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. The advanced 540/760 RPM PTO system provides dependable, continuous power transfer for demanding agricultural attachments. Built for endurance and operational excellence, the M1604-5G stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 160,
-      "transmission": "12+12",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "Weichai",
-          "rpm_rated": 2200
-        },
-        "transmission_details": {
-          "type": "12+12",
-          "forward_gears": 12,
-          "reverse_gears": 12,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/760"
-        },
-        "dimensions": {
-          "length_mm": 5000,
-          "wheelbase_mm": 2600
-        }
-      }
-    },
-    {
-      "id": "unknown-m1854-g",
-      "title": "M1854-G Tractor",
-      "brand": "YTO",
-      "model": "M1854-G",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO M1854-G is a professional-grade agricultural tractor designed for modern farming operations. Equipped with a dependable power plant, delivering a robust 185 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 16+16 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 7,800 kg, it offers a highly stable and commanding platform for heavy-duty agricultural implements. Built for endurance and operational excellence, the M1854-G stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 185,
-      "transmission": "16+16",
-      "drive_type": "4WD",
-      "details": {
-        "transmission_details": {
-          "type": "16+16",
-          "forward_gears": 16,
-          "reverse_gears": 16,
-          "drive_type": "4WD"
-        },
-        "tires": {
-          "front": "16.9-28",
-          "rear": "18.4-42"
-        },
-        "dimensions": {
-          "length_mm": 5420,
-          "width_mm": 2400,
-          "height_mm": 3110,
-          "operating_weight_kg": 7800,
-          "wheelbase_mm": 2760
-        }
-      }
-    },
-    {
-      "id": "unknown-m2004-q",
-      "title": "M2004-Q Tractor",
-      "brand": "YTO",
-      "model": "M2004-Q",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The YTO M2004-Q is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient YC6J220-T301/weichai engine, delivering a robust 200 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 16+8 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 5,600 kg, it offers a highly stable and commanding platform for heavy-duty agricultural implements. Built for endurance and operational excellence, the M2004-Q stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 200,
-      "transmission": "16+8",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "YC6J220-T301/weichai"
-        },
-        "transmission_details": {
-          "type": "16+8",
-          "forward_gears": 16,
-          "reverse_gears": 8,
-          "drive_type": "4WD"
-        },
-        "dimensions": {
-          "length_mm": 5060,
-          "width_mm": 2400,
-          "height_mm": 3110,
-          "operating_weight_kg": 5600,
-          "wheelbase_mm": 2700,
-          "ground_clearance_mm": 500
-        }
-      }
-    },
-    {
-      "id": "unknown-sh554-c",
-      "title": "SH554-C Tractor",
-      "brand": "SinoHarvest",
-      "model": "SH554-C",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The SinoHarvest SH554-C is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient 4C5-55U31 engine, delivering a robust 55 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 2,540 kg, it offers a highly stable and commanding platform for heavy-duty agricultural implements. Built for endurance and operational excellence, the SH554-C stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 55,
-      "transmission": "12+12",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "4C5-55U31",
-          "rpm_rated": 2300
-        },
-        "transmission_details": {
-          "type": "12+12",
-          "forward_gears": 12,
-          "reverse_gears": 12,
-          "drive_type": "4WD"
-        },
-        "dimensions": {
-          "length_mm": 3970,
-          "width_mm": 1620,
-          "height_mm": 2510,
-          "operating_weight_kg": 2540,
-          "ground_clearance_mm": 304
-        }
-      }
-    },
-    {
-      "id": "unknown-sh704-1",
-      "title": "SH704-1 Tractor",
-      "brand": "SinoHarvest",
-      "model": "SH704-1",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The SinoHarvest SH704-1 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient A4K43T70A engine, delivering a robust 70 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 2,660 kg, it offers a stable platform for heavy-duty implements, while the 540/760 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the SH704-1 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 70,
-      "transmission": "12+12",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "A4K43T70A",
-          "rpm_rated": 2300
-        },
-        "transmission_details": {
-          "type": "12+12",
-          "forward_gears": 12,
-          "reverse_gears": 12,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/760"
-        },
-        "dimensions": {
-          "length_mm": 3970,
-          "width_mm": 1640,
-          "height_mm": 2130,
-          "operating_weight_kg": 2660,
-          "ground_clearance_mm": 354
-        }
-      }
-    },
-    {
-      "id": "unknown-cd904-1",
-      "title": "CD904-1 Tractor",
-      "brand": "SinoHarvest",
-      "model": "CD904-1",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The SinoHarvest CD904-1 is a professional-grade agricultural tractor designed for modern farming operations. Equipped with a dependable power plant, delivering a robust 90 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 2,870 kg, it offers a stable platform for heavy-duty implements, while the 540/760,540/1000 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the CD904-1 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 90,
-      "transmission": "12+12",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "rpm_rated": 2300
-        },
-        "transmission_details": {
-          "type": "12+12",
-          "forward_gears": 12,
-          "reverse_gears": 12,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/760,540/1000"
-        },
-        "dimensions": {
-          "length_mm": 4050,
-          "width_mm": 1828,
-          "height_mm": 2654,
-          "operating_weight_kg": 2870,
-          "ground_clearance_mm": 354
-        }
-      }
-    },
-    {
-      "id": "unknown-cd904-s",
-      "title": "CD904-S Tractor",
-      "brand": "SinoHarvest",
-      "model": "CD904-S",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The SinoHarvest CD904-S is a professional-grade agricultural tractor designed for modern farming operations. Equipped with a dependable power plant, delivering a robust 90 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 2,870 kg, it offers a stable platform for heavy-duty implements, while the 540/760,540/1000 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the CD904-S stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 90,
-      "transmission": "12+12",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "rpm_rated": 2300
-        },
-        "transmission_details": {
-          "type": "12+12",
-          "forward_gears": 12,
-          "reverse_gears": 12,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/760,540/1000"
-        },
-        "dimensions": {
-          "length_mm": 4050,
-          "width_mm": 1828,
-          "height_mm": 2654,
-          "operating_weight_kg": 2870,
-          "ground_clearance_mm": 354
-        }
-      }
-    },
-    {
-      "id": "unknown-cd1004-s",
-      "title": "CD1004 S Tractor",
-      "brand": "SinoHarvest",
-      "model": "CD1004 S",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The SinoHarvest CD1004 S is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient YC4DK110-T301 engine, delivering a robust 100 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 16F+8R transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 3,994 kg, it offers a stable platform for heavy-duty implements, while the 760/1000 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the CD1004 S stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 100,
-      "transmission": "16F+8R",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "YC4DK110-T301",
-          "rpm_rated": 2200
-        },
-        "transmission_details": {
-          "type": "16F+8R",
-          "forward_gears": 16,
-          "reverse_gears": 8,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "760/1000"
-        },
-        "dimensions": {
-          "length_mm": 4110,
-          "width_mm": 2010,
-          "height_mm": 2830,
-          "operating_weight_kg": 3994,
-          "ground_clearance_mm": 480
-        }
-      }
-    },
-    {
-      "id": "unknown-cd1304-1",
-      "title": "CD1304-1 Tractor",
-      "brand": "SinoHarvest",
-      "model": "CD1304-1",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The SinoHarvest CD1304-1 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient YC4A150-T313 engine, delivering a robust 130 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 16F+8R transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 4,350 kg, it offers a stable platform for heavy-duty implements, while the 540/760\u9009\u88c5 760/850, 540/1000,760/1000 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the CD1304-1 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 130,
-      "transmission": "16F+8R",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "YC4A150-T313",
-          "rpm_rated": 2200
-        },
-        "transmission_details": {
-          "type": "16F+8R",
-          "forward_gears": 16,
-          "reverse_gears": 8,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/760\u9009\u88c5 760/850, 540/1000,760/1000"
-        },
-        "dimensions": {
-          "length_mm": 4350,
-          "width_mm": 2100,
-          "height_mm": 2900,
-          "operating_weight_kg": 4350,
-          "ground_clearance_mm": 420
-        }
-      }
-    },
-    {
-      "id": "unknown-cd1504",
-      "title": "CD1504 Tractor",
-      "brand": "SinoHarvest",
-      "model": "CD1504",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The SinoHarvest CD1504 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient YC6J175-T311 engine, delivering a robust 150 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 16F+8R transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 5,760 kg, it offers a stable platform for heavy-duty implements, while the 540/1000 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the CD1504 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 150,
-      "transmission": "16F+8R",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "YC6J175-T311",
-          "rpm_rated": 2300
-        },
-        "transmission_details": {
-          "type": "16F+8R",
-          "forward_gears": 16,
-          "reverse_gears": 8,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/1000"
-        },
-        "dimensions": {
-          "length_mm": 4880,
-          "width_mm": 2356,
-          "height_mm": 3010,
-          "operating_weight_kg": 5760,
-          "ground_clearance_mm": 480
-        }
-      }
-    },
-    {
-      "id": "unknown-df1404",
-      "title": "DF1404 Tractor",
-      "brand": "SinoHarvest",
-      "model": "DF1404",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The SinoHarvest DF1404 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient YC6J155L-T20 engine, delivering a robust 140 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 24F+ 12R transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 6,200 kg, it offers a stable platform for heavy-duty implements, while the 540/1000 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the DF1404 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 140,
-      "transmission": "24F+ 12R",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "YC6J155L-T20",
-          "rpm_rated": 2300
-        },
-        "transmission_details": {
-          "type": "24F+ 12R",
-          "forward_gears": 24,
-          "reverse_gears": 12,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/1000"
-        },
-        "dimensions": {
-          "length_mm": 5038,
-          "width_mm": 2344,
-          "height_mm": 3025,
-          "operating_weight_kg": 6200,
-          "ground_clearance_mm": 450
-        }
-      }
-    },
-    {
-      "id": "unknown-cd1604-1",
-      "title": "CD1604-1 Tractor",
-      "brand": "SinoHarvest",
-      "model": "CD1604-1",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The SinoHarvest CD1604-1 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient YC6J190-T301 engine, delivering a robust 160 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 24F+ 12R transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 6,380 kg, it offers a stable platform for heavy-duty implements, while the 540/1000 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the CD1604-1 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 160,
-      "transmission": "24F+ 12R",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "YC6J190-T301",
-          "rpm_rated": 2300
-        },
-        "transmission_details": {
-          "type": "24F+ 12R",
-          "forward_gears": 24,
-          "reverse_gears": 12,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/1000"
-        },
-        "dimensions": {
-          "length_mm": 5108,
-          "width_mm": 2466,
-          "height_mm": 3075,
-          "operating_weight_kg": 6380,
-          "ground_clearance_mm": 450
-        }
-      }
-    },
-    {
-      "id": "unknown-df1704",
-      "title": "DF1704 Tractor",
-      "brand": "SinoHarvest",
-      "model": "DF1704",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The SinoHarvest DF1704 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient YC6J175L-T21 engine, delivering a robust 170 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 24F+ 12R transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 6,200 kg, it offers a stable platform for heavy-duty implements, while the 540/1000 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the DF1704 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 170,
-      "transmission": "24F+ 12R",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "YC6J175L-T21",
-          "rpm_rated": 2300
-        },
-        "transmission_details": {
-          "type": "24F+ 12R",
-          "forward_gears": 24,
-          "reverse_gears": 12,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/1000"
-        },
-        "dimensions": {
-          "length_mm": 5038,
-          "width_mm": 2466,
-          "height_mm": 3057,
-          "operating_weight_kg": 6200,
-          "ground_clearance_mm": 450
-        }
-      }
-    },
-    {
-      "id": "unknown-cd1804e",
-      "title": "CD1804E Tractor",
-      "brand": "SinoHarvest",
-      "model": "CD1804E",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The SinoHarvest CD1804E is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient YC6J190-T306 engine, delivering a robust 180 horsepower, it provides an exceptional balance of torque and fuel efficiency. Its versatile 16+8 transmission allows operators to adapt effortlessly to various field conditions and implement requirements. Weighing in at 5,750 kg, it offers a highly stable and commanding platform for heavy-duty agricultural implements. Built for endurance and operational excellence, the CD1804E stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 180,
-      "transmission": "16+8",
-      "details": {
-        "engine": {
-          "model": "YC6J190-T306",
-          "rpm_rated": 2300
-        },
-        "transmission_details": {
-          "type": "16+8",
-          "forward_gears": 16,
-          "reverse_gears": 8
-        },
-        "dimensions": {
-          "length_mm": 4880,
-          "width_mm": 2356,
-          "height_mm": 3010,
-          "operating_weight_kg": 5750,
-          "ground_clearance_mm": 480
-        }
-      }
-    },
-    {
-      "id": "unknown-cd2004",
-      "title": "CD2004 Tractor",
-      "brand": "SinoHarvest",
-      "model": "CD2004",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The SinoHarvest CD2004 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient YCA07P220-T401 engine, delivering a robust 200 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 24+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 6,880 kg, it offers a highly stable and commanding platform for heavy-duty agricultural implements. Built for endurance and operational excellence, the CD2004 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 200,
-      "transmission": "24+12",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "YCA07P220-T401",
-          "rpm_rated": 2300
-        },
-        "transmission_details": {
-          "type": "24+12",
-          "forward_gears": 24,
-          "reverse_gears": 12,
-          "drive_type": "4WD"
-        },
-        "dimensions": {
-          "length_mm": 5150,
-          "width_mm": 2510,
-          "height_mm": 3207,
-          "operating_weight_kg": 6880,
-          "ground_clearance_mm": 480
-        }
-      }
-    },
-    {
-      "id": "unknown-cd2104",
-      "title": "CD2104 Tractor",
-      "brand": "SinoHarvest",
-      "model": "CD2104",
-      "year": null,
-      "price": null,
-      "currency": "USD",
-      "condition": "new",
-      "location": null,
-      "country": null,
-      "description": "The SinoHarvest CD2104 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient YC6J210-T305 engine, delivering a robust 210 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 24+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 6,610 kg, it offers a highly stable and commanding platform for heavy-duty agricultural implements. Built for endurance and operational excellence, the CD2104 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "horsepower": 210,
-      "transmission": "24+12",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "YC6J210-T305",
-          "rpm_rated": 2300
-        },
-        "transmission_details": {
-          "type": "24+12",
-          "forward_gears": 24,
-          "reverse_gears": 12,
-          "drive_type": "4WD"
-        },
-        "dimensions": {
-          "length_mm": 5108,
-          "width_mm": 2466,
-          "height_mm": 3075,
-          "operating_weight_kg": 6610,
-          "ground_clearance_mm": 450
         }
       }
     },
@@ -3435,8 +1378,8 @@
           "reverse_gears": 12
         },
         "tires": {
-          "front": "12.4-24(paddywheel\uff1a 9.5-24)",
-          "rear": "16.9-34(paddy wheel\uff1a16.9-30\uff09"
+          "front": "12.4-24(paddywheelï¼š 9.5-24)",
+          "rear": "16.9-34(paddy wheelï¼š16.9-30ï¼‰"
         },
         "dimensions": {
           "length_mm": 4445,
@@ -3479,7 +1422,7 @@
         },
         "tires": {
           "front": "12.4-24",
-          "rear": "16.9-34,paddy wheel\uff1a9.5-24/16.9-30"
+          "rear": "16.9-34,paddy wheelï¼š9.5-24/16.9-30"
         },
         "dimensions": {
           "length_mm": 4200,

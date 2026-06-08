@@ -105,11 +105,11 @@ export default function CategoriesPage() {
                 ))}
               </div>
               <Link
-                href="/agricultural"
+                href="/agricultural/tractors"
                 className="mt-auto inline-flex items-center justify-center gap-2 bg-[#C4933F] hover:bg-[#D4A855] text-white font-semibold px-8 py-3.5 rounded-full text-sm transition-colors duration-200"
                 style={{ fontFamily: "var(--font-body)" }}
               >
-                Explorar catálogo
+                Ver tractores disponibles
                 <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
@@ -206,7 +206,9 @@ export default function CategoriesPage() {
                   <div className="absolute inset-0 p-6 flex flex-col justify-end">
                     <p className="text-[#C4933F] text-[10px] font-semibold tracking-[0.15em] uppercase mb-1.5"
                       style={{ fontFamily: "var(--font-body)" }}>
-                      {cat.subtypes.length} subcategorías
+                      {cat.subtypes.filter((s) => !s.comingSoon).length > 0
+                        ? `${cat.subtypes.filter((s) => !s.comingSoon).length} activa${cat.subtypes.filter((s) => !s.comingSoon).length !== 1 ? "s" : ""}`
+                        : "Próximamente"}
                     </p>
                     <h3
                       className="text-white text-2xl font-semibold tracking-tight mb-3"

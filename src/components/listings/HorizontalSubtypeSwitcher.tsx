@@ -8,7 +8,7 @@ interface Props {
 }
 
 export default function HorizontalSubtypeSwitcher({ category, activeSlug }: Props) {
-  const subtypes = category.subtypes;
+  const subtypes = category.subtypes.filter((s) => !s.comingSoon);
 
   return (
     <div className="w-full border-b border-[#E8E4DB] bg-white">
