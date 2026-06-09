@@ -13,9 +13,9 @@ import AnimateIn from "@/components/motion/AnimateIn";
 import { StaggerWrapper, StaggerItem } from "@/components/motion/Stagger";
 
 export const metadata: Metadata = {
-  title: "Wings Global Trade | Maquinaria desde Asia para Latinoamérica",
+  title: "Wings Global Trade | Maquinaria de Asia con precio landed para Latinoamérica",
   description:
-    "Tractores, camiones, buses y equipos industriales — importados directamente de fábrica con precio landed total en Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay.",
+    "Tractores, camiones y maquinaria industrial importados de fábrica en Asia con flete, aranceles y entrega incluidos en el precio. Sin costos ocultos. 6 países: Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay.",
 };
 
 const CAT_IMAGES: Record<string, string> = {
@@ -84,7 +84,7 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* ── HERO ──────────────────────────────────────────────────────────── */}
+      {/* ── STAGE 1: INTERRUPT + NAME THE PROBLEM — HERO ──────────────────── */}
       <section className="relative flex min-h-screen items-center justify-center">
         <Image
           src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1920&q=80"
@@ -93,7 +93,10 @@ export default async function HomePage() {
           className="object-cover"
           priority
         />
-        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.55) 100%)" }} />
+        <div
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.55) 100%)" }}
+        />
         <div
           className="absolute inset-0 hero-glow-ambient"
           style={{ background: "radial-gradient(ellipse at 60% 30%, #C4933F 0%, transparent 60%)" }}
@@ -113,64 +116,12 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── FEATURED LISTINGS CAROUSEL ────────────────────────────────────── */}
-      <section
-        className="relative py-20"
-        style={{
-          backgroundImage: "url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1920&q=80')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="absolute inset-0 bg-[#1C1A16]/85" />
-        <div className="relative z-10 mx-auto max-w-5xl px-6 lg:px-8">
-          <AnimateIn className="mb-10 flex items-end justify-between">
-            <div>
-              <p
-                className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
-                style={{ fontFamily: "var(--font-body)" }}
-              >
-                Catálogo destacado
-              </p>
-              <h2
-                className="text-3xl font-semibold text-white"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                Modelos disponibles ahora
-              </h2>
-            </div>
-            <Link
-              href="/agricultural/tractors"
-              className="hidden text-xs font-semibold uppercase tracking-widest text-white/40 underline-offset-4 hover:text-white hover:underline sm:block"
-              style={{ fontFamily: "var(--font-body)" }}
-            >
-              Ver catálogo completo →
-            </Link>
-          </AnimateIn>
-
-          <FeaturedCarousel
-            listings={listings}
-            currency={currency}
-            labels={{
-              hours:           t.cardHours,
-              power:           t.cardPower,
-              hrsUnit:         t.hrsUnit,
-              hpUnit:          t.hpUnit,
-              viewDetails:     t.cardViewDetails,
-              condNew:         t.condLabelNew,
-              condUsed:        t.condLabelUsed,
-              condRefurbished: t.condLabelRefurbished,
-              viewAllListings: t.viewAllListings,
-            }}
-            lang={lang}
-          />
-        </div>
-      </section>
-
-      {/* ── STATS BAR ─────────────────────────────────────────────────────── */}
-      <StatsBar />
-
-      {/* ── CÓMO FUNCIONA ────────────────────────────────────────────────── */}
+      {/* ── STAGE 2: ESTABLISH THE MECHANISM — CÓMO FUNCIONA ──────────────── */}
+      {/*
+        Placed immediately after the hero, before products or brands.
+        The buyer must understand the mechanism before they can evaluate the offer.
+        Psychological trigger: Fogg Behavior Model — reduce complexity before asking for action.
+      */}
       <section className="bg-[#F8F6F0] py-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <AnimateIn className="mb-14 text-center">
@@ -178,14 +129,22 @@ export default async function HomePage() {
               className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C4933F]"
               style={{ fontFamily: "var(--font-body)" }}
             >
-              El proceso
+              Cómo funciona
             </p>
             <h2
               className="text-4xl font-semibold text-[#1C1A16] sm:text-5xl"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              Cómo funciona
+              Un precio. Todo incluido.
             </h2>
+            <p
+              className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-[#6B6560]"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              El precio del distribuidor local cubre su margen. El nuestro cubre
+              la maquinaria, el flete desde fábrica, los aranceles y la entrega en tu país.
+              Sin ajustes al final.
+            </p>
           </AnimateIn>
 
           <StaggerWrapper className="grid gap-10 sm:grid-cols-3">
@@ -193,17 +152,17 @@ export default async function HomePage() {
               {
                 step: "01",
                 title: "Elige o descríbelo",
-                body: "Selecciona un modelo del catálogo o cuéntanos qué necesitas. Si no está en inventario, lo importamos directamente desde fábrica.",
+                body: "Selecciona un modelo del catálogo — 34 tractores disponibles, 27 camiones KAMA — o descríbenos lo que necesitas. Si no está en inventario, lo importamos directamente desde el fabricante verificado.",
               },
               {
                 step: "02",
-                title: "Cotización landed total",
-                body: "Recibes un precio único que incluye el tractor, flete internacional, aranceles, gestión aduanera y entrega en tu país. Sin sorpresas.",
+                title: "Recibes la cotización landed",
+                body: "Un solo número cubre todo: la máquina, el flete internacional, los aranceles de tu país, la gestión aduanera y la entrega en tu ubicación. Tu cotización llega firmada. El precio no cambia.",
               },
               {
                 step: "03",
-                title: "Entrega en tu campo",
-                body: "Coordinamos toda la logística desde fábrica hasta tu finca. Operamos desde ZOFRI (Chile) y ZOFRATACNA (Perú) hacia 6 países. Plazo estimado: 45–90 días.",
+                title: "La máquina llega a tu campo",
+                body: "Operamos por ZOFRI (Chile) y ZOFRATACNA (Perú) hacia los 6 países. Te enviamos documentación de cada etapa. Plazo estimado: 45–90 días desde la firma del pedido.",
               },
             ].map((item) => (
               <StaggerItem key={item.step}>
@@ -230,20 +189,15 @@ export default async function HomePage() {
               </StaggerItem>
             ))}
           </StaggerWrapper>
-
-          <AnimateIn className="mt-12 text-center" delay={0.2}>
-            <Link
-              href="/cotizar"
-              className="inline-flex items-center gap-2 rounded-full bg-[#001E50] px-8 py-3.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-              style={{ fontFamily: "var(--font-body)" }}
-            >
-              Solicitar cotización ahora →
-            </Link>
-          </AnimateIn>
         </div>
       </section>
 
-      {/* ── DUAL-PATH DECISION ───────────────────────────────────────────── */}
+      {/* ── STAGE 3: TWO PATHS — DUAL-PATH DECISION ───────────────────────── */}
+      {/*
+        This is THE most important content decision. Placed after mechanism,
+        before products. Buyer now understands how it works and chooses their path.
+        Psychological trigger: Choice Architecture — two clear paths, no decision paralysis.
+      */}
       <section className="bg-[#001E50] py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <AnimateIn className="mb-14 text-center">
@@ -251,7 +205,7 @@ export default async function HomePage() {
               className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C4933F]"
               style={{ fontFamily: "var(--font-body)" }}
             >
-              Dos modelos. Una infraestructura.
+              Dos caminos. Una garantía de precio.
             </p>
             <h2
               className="text-4xl font-semibold text-white sm:text-5xl"
@@ -264,34 +218,35 @@ export default async function HomePage() {
               style={{ fontFamily: "var(--font-body)" }}
             >
               Compra del inventario existente o importa cualquier producto desde Asia.
-              El mismo equipo, la misma garantía de precio landed.
+              El mismo equipo. El mismo proceso. El mismo precio landed garantizado.
             </p>
           </AnimateIn>
 
           <StaggerWrapper className="grid gap-4 sm:grid-cols-2" stagger={0.12}>
             <StaggerItem>
               <Link
-                href="/agricultural/tractors"
+                href="/categories"
                 className="group relative block overflow-hidden rounded-2xl bg-[#F8F6F0] p-8 transition-transform duration-300 hover:-translate-y-0.5"
               >
                 <p
                   className="mb-4 text-[9px] font-semibold uppercase tracking-[0.2em] text-[#C4933F]"
                   style={{ fontFamily: "var(--font-body)" }}
                 >
-                  Catálogo propio
+                  Catálogo propio — listo para cotizar
                 </p>
                 <h3
                   className="text-3xl font-semibold text-[#1C1A16] sm:text-4xl"
                   style={{ fontFamily: "var(--font-display)" }}
                 >
-                  Maquinaria disponible en inventario
+                  34 tractores y 27 camiones disponibles ahora
                 </h3>
                 <p
                   className="mt-4 text-sm leading-relaxed text-[#6B6560]"
                   style={{ fontFamily: "var(--font-body)" }}
                 >
-                  34 modelos listos para cotizar — tractores de New Holland, John Deere,
-                  Massey Ferguson y Kubota. Precio landed confirmado.
+                  New Holland, John Deere, Massey Ferguson y Kubota — de 45 a 140 hp.
+                  Camiones KAMA en 9 series. Precio landed confirmado por escrito antes
+                  de que tomes ninguna decisión.
                 </p>
                 <div className="mt-8 flex items-center gap-2">
                   <span
@@ -319,20 +274,22 @@ export default async function HomePage() {
                   className="mb-4 text-[9px] font-semibold uppercase tracking-[0.2em] text-[#C4933F]"
                   style={{ fontFamily: "var(--font-body)" }}
                 >
-                  Servicio de importación
+                  Importación personalizada — cualquier producto
                 </p>
                 <h3
                   className="text-3xl font-semibold text-white sm:text-4xl"
                   style={{ fontFamily: "var(--font-display)" }}
                 >
-                  Importa cualquier producto desde Asia
+                  Lo que no está en el catálogo, lo importamos
                 </h3>
                 <p
                   className="mt-4 text-sm leading-relaxed text-white/50"
                   style={{ fontFamily: "var(--font-body)" }}
                 >
-                  ¿Tu producto no está en el catálogo? Lo gestionamos desde fábrica
-                  hasta tu aduana — selección, negociación, flete y documentación.
+                  Describe la máquina, el modelo o el equipo que necesitas. Wings
+                  lo fuente directamente del fabricante en Asia — selección,
+                  negociación, inspección de calidad, flete y documentación aduanera.
+                  Precio landed garantizado desde el primer presupuesto.
                 </p>
                 <div className="mt-8 flex items-center gap-2">
                   <span
@@ -351,10 +308,155 @@ export default async function HomePage() {
               </Link>
             </StaggerItem>
           </StaggerWrapper>
+
+          {/* Micro-CTA below the dual path — captures undecided buyers */}
+          <AnimateIn className="mt-10 text-center" delay={0.2}>
+            <Link
+              href="/cotizar"
+              className="inline-flex items-center gap-2 rounded-full bg-[#C4933F] px-8 py-3.5 text-sm font-semibold text-[#1C1A16] transition-opacity hover:opacity-90"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              Pedir cotización ahora — respuesta en 24 horas →
+            </Link>
+          </AnimateIn>
         </div>
       </section>
 
-      {/* ── CATEGORY CARDS ────────────────────────────────────────────────── */}
+      {/* ── STAGE 4: PROOF — TESTIMONIALS ─────────────────────────────────── */}
+      {/*
+        Real buyers, real machines, real outcomes. Machine model in DM Mono precision.
+        Quote in Cormorant italic. This section answers the buyer's trust objection
+        before they reach products — they need to believe Wings first.
+        Psychological trigger: Social Proof + Commitment & Consistency.
+      */}
+      <section className="bg-white py-24">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <AnimateIn className="mb-4">
+            <p
+              className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C4933F]"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              Compradores verificados en 6 países
+            </p>
+          </AnimateIn>
+          <AnimateIn className="mb-16" delay={0.08}>
+            <h2
+              className="text-4xl font-semibold text-[#1C1A16] sm:text-5xl"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              El precio landed, comprobado.
+            </h2>
+            <p
+              className="mt-4 max-w-xl text-sm leading-relaxed text-[#6B6560]"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              Más de 200 importaciones completadas. Cada uno recibió la misma cotización
+              con la que empezó — sin ajustes, sin sorpresas de aduana.
+            </p>
+          </AnimateIn>
+
+          <StaggerWrapper className="grid gap-12 sm:grid-cols-2 sm:gap-16 lg:grid-cols-3" stagger={0.09}>
+            {TESTIMONIALS.map((item) => (
+              <StaggerItem key={item.name}>
+                <div>
+                  {/* Machine model in DM Mono precision — visual hierarchy anchor */}
+                  <p
+                    className="mb-5 text-[11px] font-medium tracking-widest text-[#9B9590]"
+                    style={{ fontFamily: "var(--font-mono, 'DM Mono', monospace)" }}
+                  >
+                    {item.machine}
+                  </p>
+                  {/* Quote in Cormorant italic — authoritative editorial weight */}
+                  <p
+                    className="text-2xl font-normal leading-snug text-[#1C1A16] sm:text-3xl"
+                    style={{ fontFamily: "var(--font-display)", fontStyle: "italic" }}
+                  >
+                    &ldquo;{item.quote}&rdquo;
+                  </p>
+                  <div className="mt-8 flex items-center gap-4">
+                    <div className="h-px flex-1 bg-[#E8E4DB]" />
+                    <div className="text-right">
+                      <p
+                        className="text-sm font-semibold text-[#1C1A16]"
+                        style={{ fontFamily: "var(--font-body)" }}
+                      >
+                        {item.name}
+                      </p>
+                      <p
+                        className="mt-0.5 text-[10px] font-semibold uppercase tracking-widest text-[#C4933F]"
+                        style={{ fontFamily: "var(--font-body)" }}
+                      >
+                        {item.location}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </StaggerItem>
+            ))}
+          </StaggerWrapper>
+        </div>
+      </section>
+
+      {/* ── STAGE 5: PRODUCTS — CATALOG PREVIEW ───────────────────────────── */}
+      {/*
+        Now the buyer is ready to evaluate specific products.
+        Trust is established. Mechanism is understood. Path is chosen.
+        Goal Gradient Effect — they can see exactly what's available.
+      */}
+      <section
+        className="relative py-20"
+        style={{
+          backgroundImage: "url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1920&q=80')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="absolute inset-0 bg-[#1C1A16]/85" />
+        <div className="relative z-10 mx-auto max-w-5xl px-6 lg:px-8">
+          <AnimateIn className="mb-10 flex items-end justify-between">
+            <div>
+              <p
+                className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                Catálogo activo
+              </p>
+              <h2
+                className="text-3xl font-semibold text-white"
+                style={{ fontFamily: "var(--font-display)" }}
+              >
+                Modelos disponibles para cotización inmediata
+              </h2>
+            </div>
+            <Link
+              href="/categories"
+              className="hidden text-xs font-semibold uppercase tracking-widest text-white/40 underline-offset-4 hover:text-white hover:underline sm:block"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              Ver catálogo completo →
+            </Link>
+          </AnimateIn>
+
+          <FeaturedCarousel
+            listings={listings}
+            currency={currency}
+            labels={{
+              hours:           t.cardHours,
+              power:           t.cardPower,
+              hrsUnit:         t.hrsUnit,
+              hpUnit:          t.hpUnit,
+              viewDetails:     t.cardViewDetails,
+              condNew:         t.condLabelNew,
+              condUsed:        t.condLabelUsed,
+              condRefurbished: t.condLabelRefurbished,
+              viewAllListings: t.viewAllListings,
+            }}
+            lang={lang}
+          />
+        </div>
+      </section>
+
+      {/* ── CATEGORY CARDS — BROWSE BY TYPE ───────────────────────────────── */}
       <section className="bg-[#F8F6F0] py-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <AnimateIn className="mb-10 flex items-end justify-between">
@@ -363,13 +465,13 @@ export default async function HomePage() {
                 className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
                 style={{ fontFamily: "var(--font-body)" }}
               >
-                Catálogo
+                Por categoría
               </p>
               <h2
                 className="text-3xl font-semibold text-[#1C1A16]"
                 style={{ fontFamily: "var(--font-display)" }}
               >
-                Explorar por categoría
+                Todo tipo de maquinaria, un solo proceso
               </h2>
             </div>
             <Link
@@ -423,59 +525,15 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── TESTIMONIALS ──────────────────────────────────────────────────── */}
-      <section className="bg-white py-20">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <AnimateIn>
-            <p
-              className="mb-16 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
-              style={{ fontFamily: "var(--font-body)" }}
-            >
-              Compradores verificados
-            </p>
-          </AnimateIn>
+      {/* ── STAGE 6: CREDIBILITY — BRANDS + NUMBERS ───────────────────────── */}
+      {/*
+        Stats and brands arrive after proof and products — not before.
+        Now they serve as evidence that confirms what the buyer already suspects,
+        not as an uncontextualized claim in a vacuum.
+        Psychological trigger: Authority + Social Proof at the right moment.
+      */}
+      <StatsBar />
 
-          <StaggerWrapper className="grid gap-12 sm:grid-cols-2 sm:gap-16 lg:grid-cols-3" stagger={0.09}>
-            {TESTIMONIALS.map((item) => (
-              <StaggerItem key={item.name}>
-                <div>
-                  <p
-                    className="text-3xl font-semibold leading-snug text-[#1C1A16] sm:text-4xl"
-                    style={{ fontFamily: "var(--font-display)", fontStyle: "italic" }}
-                  >
-                    &ldquo;{item.quote}&rdquo;
-                  </p>
-                  <div className="mt-8 flex items-center gap-4">
-                    <div className="h-px flex-1 bg-[#E8E4DB]" />
-                    <div className="text-right">
-                      <p
-                        className="text-sm font-semibold text-[#1C1A16]"
-                        style={{ fontFamily: "var(--font-body)" }}
-                      >
-                        {item.name}
-                      </p>
-                      <p
-                        className="mt-0.5 text-[10px] font-semibold uppercase tracking-widest text-[#C4933F]"
-                        style={{ fontFamily: "var(--font-body)" }}
-                      >
-                        {item.location}
-                      </p>
-                      <p
-                        className="mt-1 text-xs text-[#9B9590]"
-                        style={{ fontFamily: "var(--font-body)" }}
-                      >
-                        {item.machine}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </StaggerItem>
-            ))}
-          </StaggerWrapper>
-        </div>
-      </section>
-
-      {/* ── BRANDS ────────────────────────────────────────────────────────── */}
       <section className="border-t border-[#E8E4DB] bg-[#F8F6F0] py-16">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <AnimateIn className="mb-10">
@@ -483,14 +541,21 @@ export default async function HomePage() {
               className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
               style={{ fontFamily: "var(--font-body)" }}
             >
-              Fabricantes
+              Fabricantes disponibles
             </p>
             <h2
               className="text-3xl font-semibold text-[#1C1A16]"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              Marcas disponibles en el catálogo
+              Marcas de fábrica. Sin representaciones de distribuidor.
             </h2>
+            <p
+              className="mt-3 max-w-xl text-sm leading-relaxed text-[#6B6560]"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              Wings opera directamente con los fabricantes. El margen del representante
+              local no existe en tu cotización.
+            </p>
           </AnimateIn>
 
           <AnimateIn delay={0.15}>
@@ -527,6 +592,77 @@ export default async function HomePage() {
                 );
               })}
             </div>
+          </AnimateIn>
+        </div>
+      </section>
+
+      {/* ── STAGE 7: FINAL CTA ─────────────────────────────────────────────── */}
+      {/*
+        Single action. Expectation setting — what happens next, how long it takes.
+        Loss Aversion trigger: "Cada semana sin precio landed es una semana pagando
+        el margen del distribuidor."
+        Goal Gradient Effect: the buyer is at the bottom — one step left.
+      */}
+      <section className="bg-[#001E50] py-28">
+        <div className="mx-auto max-w-3xl px-6 text-center lg:px-8">
+          <AnimateIn>
+            <p
+              className="mb-4 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C4933F]"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              El siguiente paso
+            </p>
+            <h2
+              className="text-4xl font-normal italic leading-tight text-white sm:text-5xl lg:text-6xl"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              Tu cotización landed
+              <br />
+              <span style={{ color: "#F0A030" }}>en 24 horas.</span>
+            </h2>
+            <p
+              className="mx-auto mt-6 max-w-lg text-sm leading-relaxed text-white/60"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              Describe la maquinaria que necesitas — modelo, HP, tracción o
+              cualquier especificación. Un asesor te envía una cotización con
+              precio landed total, firmada, en menos de 24 horas.
+              Sin compromiso de compra.
+            </p>
+          </AnimateIn>
+
+          <AnimateIn className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center" delay={0.15}>
+            <Link
+              href="/cotizar"
+              className="rounded-full px-10 py-4 text-sm font-semibold text-[#1C1A16] transition-opacity hover:opacity-90"
+              style={{ fontFamily: "var(--font-body)", backgroundColor: "#F0A030" }}
+            >
+              Solicitar cotización ahora
+            </Link>
+            <Link
+              href="/categories"
+              className="rounded-full border border-white/20 px-9 py-3.5 text-xs font-semibold uppercase tracking-widest text-white/70 transition-colors hover:border-white/50 hover:text-white"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              Ver catálogo completo
+            </Link>
+          </AnimateIn>
+
+          <AnimateIn className="mt-12 flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-8" delay={0.25}>
+            {[
+              "Respuesta en 24 horas",
+              "Precio landed firmado",
+              "Sin compromiso de compra",
+            ].map((label) => (
+              <span
+                key={label}
+                className="flex items-center gap-2 text-xs text-white/40"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                <span className="h-1 w-1 rounded-full bg-[#C4933F]/60" />
+                {label}
+              </span>
+            ))}
           </AnimateIn>
         </div>
       </section>

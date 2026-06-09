@@ -60,7 +60,7 @@ export default function CamionesPage() {
           </h1>
           <p className="mt-4 max-w-xl text-base text-white/50 leading-relaxed"
             style={{ fontFamily: "var(--font-body)" }}>
-            27 modelos en 9 series — del mini truck urbano al camión pesado de 16.6T. Combustión y eléctrico (BEV). Importados con precio landed total para toda Latinoamérica.
+            27 modelos en 9 series — del mini truck urbano al camión pesado de 16.6T. Combustión Euro-IV a Euro-VI y eléctrico BEV hasta 360 km. Precio landed confirmado por escrito: fábrica, flete, aduanas y entrega en tu país.
           </p>
 
           {/* Stats */}

@@ -170,7 +170,7 @@ export default function CategoryMegaMenu() {
                 className="text-[11px] font-semibold uppercase tracking-widest text-[#C4933F]/50 transition-colors hover:text-[#C4933F]"
                 style={{ fontFamily: "var(--font-body)" }}
               >
-                Todos los servicios ↗
+                Ver todo el catálogo ↗
               </Link>
             </div>
           </div>

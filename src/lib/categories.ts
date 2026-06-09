@@ -41,7 +41,7 @@ export const CATEGORIES: Category[] = [
     label: "Camiones y Vehículos Pesados",
     shortLabel: "Camiones",
     slug: "trucks",
-    href: "/trucks",
+    href: "/camiones",
     description: "27 modelos KAMA disponibles — camiones de combustión y eléctricos (BEV) con precio landed total para toda Latinoamérica.",
     subtypes: [
       { label: "Camiones KAMA — Catálogo activo", href: "/camiones", count: "27", unsplashId: "photo-1601584115197-04ecc0da31d7", icon: "/icons/trucks/day-cab.svg" },

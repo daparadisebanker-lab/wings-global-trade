@@ -7,24 +7,24 @@ export const metadata: Metadata = {
 };
 
 const STATS = [
-  { value: "86",       label: "Modelos disponibles" },
-  { value: "5",        label: "Marcas verificadas"  },
-  { value: "6",        label: "Países de entrega"   },
-  { value: "40–210",   label: "Rango HP del catálogo" },
+  { value: "200+",     label: "Importaciones completadas" },
+  { value: "61",       label: "Modelos en catálogo"       },
+  { value: "6",        label: "Países de entrega"         },
+  { value: "45–90d",   label: "Plazo confirmado por escrito" },
 ];
 
 const VALUES = [
   {
-    title: "Precio Landed Total",
-    body: "Cada cotización incluye el costo del equipo, flete marítimo, aranceles de importación y entrega hasta el destino final. Sin sorpresas al momento del despacho.",
+    title: "Precio landed total — por escrito",
+    body: "La cotización incluye el equipo, flete marítimo, zona franca, aranceles de tu país y entrega. Ese número no cambia. Lo firmamos antes de que tomes ninguna decisión.",
   },
   {
-    title: "Fabricantes verificados",
-    body: "Trabajamos directamente con fabricantes que tienen historial documentado de exportación a Latinoamérica. Sin intermediarios que inflen el precio.",
+    title: "Fábrica verificada, sin intermediarios",
+    body: "Acceso directo al fabricante en China. Sin representante regional, sin distribuidor local cobrando margen. El ahorro promedio frente al canal tradicional es del 15–25%.",
   },
   {
-    title: "Asesoría en español",
-    body: "Un consultor real te acompaña desde la selección del equipo hasta la entrega. Respondemos en menos de 24 horas, en tu horario y en tu idioma.",
+    title: "Un asesor real, en español",
+    body: "No un formulario. Un asesor que conoce el catálogo, entiende tu terreno, y te acompaña desde la selección hasta la entrega. Respuesta en menos de 24 horas.",
   },
 ];
 
@@ -73,13 +73,13 @@ export default function AboutPage() {
               className="text-4xl font-semibold text-white sm:text-5xl"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              Maquinaria agrícola de Asia con precio landed total.
+              Tractores, camiones y maquinaria de fábrica en Asia. Entregados con precio landed en Latinoamérica.
             </h1>
             <p
               className="mt-6 max-w-2xl text-base leading-relaxed text-white/60"
               style={{ fontFamily: "var(--font-body)" }}
             >
-              Conectamos compradores latinoamericanos directamente con fabricantes asiáticos verificados — con flete, aranceles y entrega incluidos en cada cotización.
+              Conectamos compradores en 6 países directamente con fabricantes verificados en Asia — con flete internacional, aranceles y entrega en destino incluidos en un solo precio, firmado por escrito antes de que confirmes nada.
             </p>
           </div>
         </div>
@@ -130,13 +130,13 @@ export default function AboutPage() {
                 className="mt-5 text-sm leading-relaxed text-[#6B6560]"
                 style={{ fontFamily: "var(--font-body)" }}
               >
-                La maquinaria agrícola de calidad no debería costar el doble por pasar por tres intermediarios. Asia produce algunos de los mejores tractores y equipos del mercado a precios que transforman la rentabilidad del campo latinoamericano.
+                El distribuidor local cobra su margen. El importador cobra el suyo. El representante regional cobra el suyo. Para cuando la máquina llega al campo latinoamericano, el precio se duplicó — sin que el comprador supiera exactamente por qué.
               </p>
               <p
                 className="mt-4 text-sm leading-relaxed text-[#6B6560]"
                 style={{ fontFamily: "var(--font-body)" }}
               >
-                Nuestra plataforma elimina esa cadena de intermediarios. Compradores en 6 países de Latinoamérica reciben cotizaciones con precio landed total — sin calcular nada por su cuenta.
+                Wings elimina esa cadena. Un asesor trabaja directamente con el fabricante en Asia, gestiona el flete, la zona franca y los aranceles, y entrega un solo número firmado — el precio final en tu país. Tractores, camiones y cualquier producto industrial bajo el mismo proceso.
               </p>
             </div>
             <div>

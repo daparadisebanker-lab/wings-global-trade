@@ -30,15 +30,15 @@ export default function WingsHero() {
           className="text-white font-semibold text-4xl md:text-5xl lg:text-6xl leading-[1.08] tracking-tight mb-8"
           style={{ fontFamily: "var(--font-display)" }}
         >
-          Importa desde Asia con precio final y asesoría experta.
+          Importa cualquier producto desde Asia. Precio landed total. Sin intermediarios.
         </h1>
 
         <p
           className="text-white/85 text-lg md:text-xl leading-relaxed mb-12 max-w-2xl mx-auto"
           style={{ fontFamily: "var(--font-body)", fontWeight: 300 }}
         >
-          Wings Global Trade gestiona todo el proceso para empresas en Perú, Bolivia, Chile,
-          Paraguay, Argentina y Uruguay — desde el proveedor hasta tu ciudad.
+          Un asesor gestiona el proveedor, el flete, la zona franca y los aranceles — y te entrega un solo número
+          firmado antes de que confirmes cualquier compra. Entregamos en 6 países.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -47,7 +47,7 @@ export default function WingsHero() {
             className="inline-flex items-center justify-center gap-2 bg-[#C4933F] hover:bg-[#D4A855] text-white font-semibold px-8 py-3.5 rounded-full text-sm transition-colors duration-200"
             style={{ fontFamily: "var(--font-body)" }}
           >
-            Inicia tu proyecto
+            Solicitar cotización landed
             <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
             </svg>
@@ -65,7 +65,7 @@ export default function WingsHero() {
           {[
             { n: "6",     label: "países atendidos",    sub: "Perú, Bolivia, Chile, Paraguay, Argentina, Uruguay" },
             { n: "2",     label: "hubs zona franca",    sub: "ZOFRI Iquique + ZOFRATACNA Tacna" },
-            { n: "48 h",  label: "cotización landed",   sub: "Con aranceles, flete y entrega final" },
+            { n: "24 h",  label: "cotización landed",   sub: "Con aranceles, flete y entrega incluidos" },
             { n: "100%",  label: "en español",          sub: "Asesoría, documentos y soporte" },
           ].map((s) => (
             <div key={s.label} className="text-center">

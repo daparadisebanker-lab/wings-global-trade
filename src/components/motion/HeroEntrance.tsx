@@ -5,20 +5,20 @@ import Link from "next/link";
 
 const TRUST_BADGES = [
   {
-    title: "Precio Landed Total",
-    body:  "Flete, aranceles y entrega incluidos en tu cotización",
+    title: "Precio landed por escrito",
+    body:  "Flete, aranceles, aduana y entrega incluidos. Sin ajustes al final.",
   },
   {
-    title: "Sin intermediarios",
-    body:  "Acceso directo a fabricantes verificados en China",
+    title: "Fábrica verificada, sin intermediarios",
+    body:  "Acceso directo al fabricante en China. No hay margen oculto de distribuidor.",
   },
   {
-    title: "Entrega en 6 países",
-    body:  "Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay",
+    title: "6 países, un solo proceso",
+    body:  "Perú · Bolivia · Chile · Paraguay · Argentina · Uruguay",
   },
   {
-    title: "Asesoría en español",
-    body:  "Un consultor real, no un bot",
+    title: "45–90 días, plazo confirmado",
+    body:  "Desde la firma del pedido hasta entrega en tu campo.",
   },
 ];
 
@@ -28,7 +28,7 @@ export default function HeroEntrance() {
   return (
     <div className="relative z-10 mx-auto w-full max-w-5xl px-6 py-28 text-center lg:px-8">
 
-      {/* Countries badge */}
+      {/* Eyebrow badge */}
       <motion.div
         className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-2"
         style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(4px)" }}
@@ -37,31 +37,31 @@ export default function HeroEntrance() {
         transition={{ duration: 0.5, delay: 0.15, ease }}
       >
         <span
-          className="text-[11px] font-medium tracking-widest text-white"
+          className="text-[11px] font-medium tracking-widest text-white/70"
           style={{ fontFamily: "var(--font-body)" }}
         >
-          Perú · Bolivia · Chile · Paraguay · Argentina · Uruguay
+          200+ importaciones completadas · 6 países · ZOFRI + ZOFRATACNA
         </span>
       </motion.div>
 
       {/* H1 — line 1 */}
       <motion.h1
-        className="text-5xl font-normal italic leading-tight text-white sm:text-7xl lg:text-[88px]"
+        className="text-5xl font-normal italic leading-tight text-white sm:text-7xl lg:text-[82px]"
         style={{ fontFamily: "var(--font-display)" }}
         initial={{ opacity: 0, y: 36 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.75, delay: 0.3, ease }}
       >
-        Maquinaria de Asia
+        El distribuidor cotizó más.
         <br />
-        {/* H1 — line 2 (gold), slight extra delay */}
+        {/* H1 — line 2 (gold) */}
         <motion.span
           style={{ color: "#F0A030" }}
           initial={{ opacity: 0, y: 36 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75, delay: 0.52, ease }}
         >
-          con precio landed y entrega garantizada.
+          Nosotros entregamos en tu campo.
         </motion.span>
       </motion.h1>
 
@@ -73,8 +73,9 @@ export default function HeroEntrance() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.72, ease }}
       >
-        Tractores, camiones, buses y equipos industriales — importados directamente
-        de fábrica con flete, aranceles y entrega incluidos en cada cotización.
+        Tractores, camiones y maquinaria industrial importados directamente
+        de fábrica en Asia — con flete internacional, aranceles y entrega en tu país
+        incluidos en una sola cotización. Sin ajustes. Sin sorpresas.
       </motion.p>
 
       {/* CTAs */}
@@ -92,18 +93,18 @@ export default function HeroEntrance() {
             backgroundColor: "#F0A030",
             color: "#1a1a1a",
             padding: "14px 32px",
-            fontWeight: 500,
+            fontWeight: 600,
             fontSize: "0.9rem",
           }}
         >
-          Solicitar cotización
+          Solicitar cotización landed
         </Link>
         <Link
           href="/agricultural/tractors"
           className="rounded-full border border-white/25 px-9 py-3.5 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-white/10"
           style={{ fontFamily: "var(--font-body)" }}
         >
-          Ver catálogo
+          Ver catálogo — 34 modelos
         </Link>
       </motion.div>
 

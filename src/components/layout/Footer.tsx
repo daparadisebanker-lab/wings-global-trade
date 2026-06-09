@@ -5,7 +5,8 @@ const CATALOG_LINKS = [
   { label: "Por marca",             href: "/brands"                },
   { label: "New Holland",            href: "/brands/new-holland"    },
   { label: "John Deere",            href: "/brands/john-deere"     },
-  { label: "Kubota · Massey Ferguson", href: "/brands/kubota"      },
+  { label: "Kubota",                   href: "/brands/kubota"          },
+  { label: "Massey Ferguson",          href: "/brands/massey-ferguson" },
 ];
 
 const IMPORT_LINKS = [
@@ -26,7 +27,7 @@ const COMPANY_LINKS = [
 
 const CONTACT_LINKS = [
   { label: "Contacto",               href: "/contact" },
-  { label: "Solicitar cotización",   href: "/contact" },
+  { label: "Solicitar cotización",   href: "/cotizar" },
   { label: "Agendar llamada",        href: "/contact" },
   { label: "Privacidad",             href: "#"        },
   { label: "Términos de Uso",        href: "#"        },
@@ -58,7 +59,7 @@ export default function Footer() {
             </div>
             <div className="flex flex-wrap gap-3">
               <Link
-                href="/agricultural/tractors"
+                href="/categories"
                 className="rounded-full border border-[#C4933F] px-6 py-2.5 text-xs font-semibold uppercase tracking-widest text-[#C4933F] transition-colors hover:bg-[#C4933F] hover:text-white"
                 style={{ fontFamily: "var(--font-body)" }}
               >

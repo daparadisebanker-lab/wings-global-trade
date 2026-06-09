@@ -91,11 +91,11 @@ export default function CotizarPage() {
               Escribir por WhatsApp ahora
             </a>
             <Link
-              href="/agricultural/tractors"
+              href="/categories"
               className="block text-center text-sm text-[#9B9590] transition-colors hover:text-[#C4933F]"
               style={{ fontFamily: "var(--font-body)" }}
             >
-              ← Volver al catálogo
+              ← Explorar el catálogo
             </Link>
           </div>
         </div>
@@ -157,12 +157,12 @@ export default function CotizarPage() {
                   {
                     value: "catalog" as Intent,
                     title: "Modelo del catálogo",
-                    desc: "Tractores New Holland, John Deere, Massey Ferguson o Kubota disponibles ahora para cotización inmediata.",
+                    desc: "34 tractores y 27 camiones KAMA disponibles para cotización inmediata. Precio landed confirmado en menos de 24 horas.",
                   },
                   {
                     value: "import" as Intent,
                     title: "Importación a pedido",
-                    desc: "Cualquier modelo o equipo que no esté en nuestro catálogo — lo gestionamos desde fábrica hasta tu país.",
+                    desc: "¿No está en el catálogo? Lo importamos directamente desde fábrica. Mismo proceso, mismo precio landed garantizado.",
                   },
                 ].map((opt) => (
                   <button

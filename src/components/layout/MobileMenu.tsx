@@ -148,7 +148,7 @@ export default function MobileMenu() {
 
           <div className="mt-5 flex flex-col gap-2">
             <Link
-              href="/contact"
+              href="/cotizar"
               onClick={close}
               className="w-full rounded-full bg-[#C4933F] py-3 text-center text-sm font-semibold text-white hover:bg-[#D4A855]"
               style={{ fontFamily: "var(--font-body)" }}
