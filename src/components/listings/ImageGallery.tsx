@@ -58,7 +58,7 @@ export default function ImageGallery({ images, alt }: Props) {
       {/* ── Main viewer ───────────────────────────────────────────────────────── */}
       <div className="space-y-2">
         <div
-          className="group relative h-72 cursor-zoom-in overflow-hidden rounded-2xl bg-[#EEE9E0] sm:h-[32rem]"
+          className="group relative aspect-[4/3] w-full cursor-zoom-in overflow-hidden rounded-2xl bg-[#EEE9E0]"
           onClick={() => setLightbox(true)}
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
@@ -122,7 +122,7 @@ export default function ImageGallery({ images, alt }: Props) {
                 key={src}
                 type="button"
                 onClick={() => setActive(i)}
-                className={`relative h-16 w-24 flex-shrink-0 overflow-hidden rounded-xl border-2 bg-[#EEE9E0] transition-all ${
+                className={`relative aspect-[4/3] w-24 flex-shrink-0 overflow-hidden rounded-xl border-2 bg-[#EEE9E0] transition-all ${
                   i === active
                     ? "border-[#C4933F]"
                     : "border-transparent opacity-60 hover:opacity-100 hover:border-[#C4933F]/40"
@@ -164,7 +164,7 @@ export default function ImageGallery({ images, alt }: Props) {
 
           {/* Image — stopPropagation so clicking image doesn't close lightbox */}
           <div
-            className="relative mx-4 h-[80vh] w-full max-w-5xl sm:mx-16"
+            className="relative mx-4 aspect-[4/3] w-full max-w-5xl sm:mx-16"
             onClick={(e) => e.stopPropagation()}
           >
             <Image
@@ -224,7 +224,7 @@ export default function ImageGallery({ images, alt }: Props) {
                   key={src}
                   type="button"
                   onClick={() => setActive(i)}
-                  className={`relative h-12 w-16 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-all ${
+                  className={`relative aspect-[4/3] w-20 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-all ${
                     i === active
                       ? "border-[#C4933F]"
                       : "border-white/20 opacity-50 hover:opacity-100"
