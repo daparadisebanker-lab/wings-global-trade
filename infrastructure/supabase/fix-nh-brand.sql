@@ -5,6 +5,9 @@
 -- manufacturer name instead of the commercial brand name.
 -- ─────────────────────────────────────────────────────────────────────────────
 
+-- 0. Condition — all current inventory is used/pre-owned
+UPDATE listings SET condition = 'used';
+
 -- 1. Brand name — fix all SinoHarvest → New Holland
 UPDATE listings
 SET brand = 'New Holland'

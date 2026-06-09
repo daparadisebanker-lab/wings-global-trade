@@ -49,11 +49,13 @@ const BRAND_CORRECTIONS: Record<string, string> = {
 
 function normalizeListing(listing: Listing): Listing {
   const corrected = BRAND_CORRECTIONS[listing.brand];
-  if (!corrected) return listing;
   return {
     ...listing,
-    brand: corrected,
-    title: listing.title.replace(/SinoHarvest/gi, corrected),
+    ...(corrected && {
+      brand: corrected,
+      title: listing.title.replace(/SinoHarvest/gi, corrected),
+    }),
+    condition: "used",
   };
 }
 
