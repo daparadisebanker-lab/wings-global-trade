@@ -14,7 +14,7 @@ export default function Header() {
             <img
               src="/wings-logo-complete.svg"
               alt="Wings Global Trade"
-              className="h-9 w-auto brightness-0 invert md:h-10"
+              className="h-12 w-auto brightness-0 invert md:h-14"
             />
           </Link>
 
