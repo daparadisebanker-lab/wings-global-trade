@@ -24,9 +24,9 @@ const BRANDS = [
   {
     name: "Massey Ferguson",
     slug: "massey-ferguson",
-    count: 6,
-    hpRange: "80–120 hp",
-    description: "Marca AGCO con modelos ISEKI. Tractores compactos y medianos de alta fiabilidad, 80 a 120 hp.",
+    count: 4,
+    hpRange: "100–120 hp",
+    description: "Tractores AGCO de alta fiabilidad. Rango 100–120 hp para fincas latinoamericanas.",
   },
   {
     name: "Kubota",

@@ -1129,104 +1129,6 @@
       }
     },
     {
-      "id": "massey-ferguson-iseki-t954",
-      "title": "Massey Ferguson ISEKI T954 Tractor",
-      "brand": "Massey Ferguson",
-      "model": "ISEKI T954",
-      "year": 2016,
-      "price": null,
-      "currency": "USD",
-      "condition": "used",
-      "location": null,
-      "country": null,
-      "description": "The Massey Ferguson ISEKI T954 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient 1104D-44T(Perkins) engine, delivering a robust 95 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 3,015 kg, it offers a stable platform for heavy-duty implements, while the 540/750 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the ISEKI T954 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "hours_used": 900,
-      "horsepower": 95,
-      "transmission": "12+12",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "1104D-44T(Perkins)",
-          "rpm_rated": 2200,
-          "displacement_cc": 4400
-        },
-        "transmission_details": {
-          "type": "12+12",
-          "forward_gears": 12,
-          "reverse_gears": 12,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/750"
-        },
-        "tires": {
-          "front": "9.5-24,12.4-24",
-          "rear": "16.9-30"
-        },
-        "dimensions": {
-          "length_mm": 3830,
-          "width_mm": 1985,
-          "height_mm": 2600,
-          "operating_weight_kg": 3015,
-          "wheelbase_mm": 2260,
-          "ground_clearance_mm": 460,
-          "turning_radius_m": 3.6
-        },
-        "registration_year": 2016
-      }
-    },
-    {
-      "id": "massey-ferguson-iseki-t804",
-      "title": "Massey Ferguson ISEKI T804 Tractor",
-      "brand": "Massey Ferguson",
-      "model": "ISEKI T804",
-      "year": 2016,
-      "price": null,
-      "currency": "USD",
-      "condition": "used",
-      "location": null,
-      "country": null,
-      "description": "The Massey Ferguson ISEKI T804 is a professional-grade agricultural tractor designed for modern farming operations. Powered by a highly-efficient 1104D-44T(Perkins) engine, delivering a robust 80 horsepower, it provides an exceptional balance of torque and fuel efficiency. The 4WD drivetrain, paired with a versatile 12+12 transmission, ensures optimal traction and seamless power delivery across challenging terrains. Weighing in at 3,015 kg, it offers a stable platform for heavy-duty implements, while the 540/750 RPM PTO provides dependable power transfer for a wide range of attachments. Built for endurance and operational excellence, the ISEKI T804 stands as an indispensable asset for maximizing productivity in the field.",
-      "images": [],
-      "hours_used": 900,
-      "horsepower": 80,
-      "transmission": "12+12",
-      "drive_type": "4WD",
-      "details": {
-        "engine": {
-          "model": "1104D-44T(Perkins)",
-          "rpm_rated": 2200,
-          "displacement_cc": 4400
-        },
-        "transmission_details": {
-          "type": "12+12",
-          "forward_gears": 12,
-          "reverse_gears": 12,
-          "drive_type": "4WD"
-        },
-        "pto": {
-          "rear_pto": true,
-          "rear_pto_rpm": "540/750"
-        },
-        "tires": {
-          "front": "9.5-24,12.4-24",
-          "rear": "16.9-30"
-        },
-        "dimensions": {
-          "length_mm": 3830,
-          "width_mm": 1985,
-          "height_mm": 2600,
-          "operating_weight_kg": 3015,
-          "wheelbase_mm": 2260,
-          "ground_clearance_mm": 460,
-          "turning_radius_m": 3.6
-        },
-        "registration_year": 2016
-      }
-    },
-    {
       "id": "kubota-m704k",
       "title": "Kubota M704K Tractor",
       "brand": "Kubota",
@@ -2728,5 +2630,6 @@
         }
       }
     }
-  ]
+  ],
+  "tractors": []
 }
