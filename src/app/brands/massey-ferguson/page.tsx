@@ -7,8 +7,9 @@ import { CURRENCY_COOKIE, DEFAULT_CURRENCY } from "@/lib/currencies";
 import { LANG_COOKIE, DEFAULT_LANG, getTranslations } from "@/lib/i18n";
 
 export const metadata: Metadata = {
-  title: "Tractores Massey Ferguson — Wings Global Trade",
-  description: "6 modelos de tractores Massey Ferguson y ISEKI. Rango 80–120 hp. Confiabilidad AGCO con precio landed total en Latinoamérica.",
+  title: "Tractores Massey Ferguson en Perú y LATAM — Importación Directa | Wings Global Trade",
+  description: "6 modelos de tractores Massey Ferguson (AGCO) importados desde Asia. Rango 80–120 hp. Precio landed total con flete, aranceles y entrega para Perú, Bolivia, Chile y más.",
+  alternates: { canonical: "https://wingsglobaltrade.com/brands/massey-ferguson" },
 };
 
 export const dynamic = "force-dynamic";

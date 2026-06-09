@@ -7,8 +7,9 @@ import { CURRENCY_COOKIE, DEFAULT_CURRENCY } from "@/lib/currencies";
 import { LANG_COOKIE, DEFAULT_LANG, getTranslations } from "@/lib/i18n";
 
 export const metadata: Metadata = {
-  title: "Tractores New Holland — Wings Global Trade",
-  description: "14 modelos de tractores New Holland disponibles. Rango 50–140 hp, tracción 4WD disponible. Marca CNH Industrial con precio landed total y entrega en Latinoamérica.",
+  title: "Tractores New Holland en Perú y LATAM — Importación con Precio Landed | Wings Global Trade",
+  description: "14 modelos de tractores New Holland (CNH Industrial) importados directamente desde Asia. Rango 50–140 hp, 4WD disponible. Precio total con flete y aranceles para Perú, Bolivia, Chile y más.",
+  alternates: { canonical: "https://wingsglobaltrade.com/brands/new-holland" },
 };
 
 export const dynamic = "force-dynamic";

@@ -3,8 +3,9 @@ import Link from "next/link";
 import { KAMA_SERIES, KAMA_GROUPS } from "@/lib/kama-series";
 
 export const metadata: Metadata = {
-  title: "Camiones KAMA — Vehículos Comerciales | Wings Global Trade",
-  description: "27 modelos de camiones y furgonetas KAMA disponibles para importación: W, X, V, M3, M6, GM, EW/EV, ES/ESP, EX/EM. Combustión y eléctrico (BEV). Entrega en LATAM con precio landed total.",
+  title: "Camiones KAMA en Perú y LATAM — Importación con Precio Landed | Wings Global Trade",
+  description: "27 modelos de camiones KAMA importados desde Asia: mini trucks, camiones de carga y furgonetas BEV eléctricas. Combustión Euro-IV a Euro-VI y eléctrico. Precio landed total para Perú, Bolivia, Chile y LATAM.",
+  alternates: { canonical: "https://wingsglobaltrade.com/camiones" },
 };
 
 function CombustionIcon({ color }: { color: string }) {

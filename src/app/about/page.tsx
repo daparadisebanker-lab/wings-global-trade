@@ -2,8 +2,9 @@
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Quiénes somos — Wings Global Trade",
-  description: "Conectamos compradores latinoamericanos con fabricantes asiáticos de maquinaria agrícola — precio landed total, sin intermediarios.",
+  title: "Quiénes somos — Importador de Maquinaria Agrícola desde Asia | Wings Global Trade",
+  description: "Wings Global Trade conecta compradores en Perú, Bolivia, Chile y LATAM directamente con fabricantes asiáticos de tractores y camiones. 200+ importaciones completadas. Precio landed total, sin intermediarios.",
+  alternates: { canonical: "https://wingsglobaltrade.com/about" },
 };
 
 const STATS = [

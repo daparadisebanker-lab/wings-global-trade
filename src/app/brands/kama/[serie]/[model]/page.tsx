@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { getListingById } from "@data/listings";
 import ImageGallery from "@/components/listings/ImageGallery";
 import InquiryForm from "@/components/inquiries/InquiryForm";
+import JsonLd from "@/components/seo/JsonLd";
 import { KAMA_SERIES, getSeriesBySlug } from "@/lib/kama-series";
 
 interface PageProps {
@@ -20,13 +21,16 @@ export async function generateStaticParams() {
   );
 }
 
+const BASE = "https://wingsglobaltrade.com";
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const listing = await getListingById(params.model);
   if (!listing) return { title: "Modelo no encontrado" };
   const serie = getSeriesBySlug(params.serie);
   return {
-    title: `KAMA ${listing.model}${serie ? ` — ${serie.label}` : ""} | Wings Global Trade`,
-    description: `${listing.brand} ${listing.model} — ${listing.horsepower ?? "—"} hp. Importación con precio landed total para Latinoamérica.`,
+    title: `KAMA ${listing.model}${serie ? ` — ${serie.label}` : ""} — Precio de Importación | Wings Global Trade`,
+    description: `KAMA ${listing.model}${serie ? ` serie ${serie.label}` : ""} — ${listing.horsepower ?? "—"} hp. Importación directa desde Asia con precio landed total para Perú, Bolivia, Chile y LATAM.`,
+    alternates: { canonical: `${BASE}/brands/kama/${params.serie}/${params.model}` },
   };
 }
 
@@ -133,10 +137,43 @@ export default async function KamaTruckDetailPage({ params }: PageProps) {
   const galleryImages  = listing.images?.length ? listing.images : [TRUCK_PLACEHOLDER];
   const narrative      = buildTruckNarrative(listing, serie);
 
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": listingTitle,
+    "description": narrative,
+    "brand": { "@type": "Brand", "name": "KAMA" },
+    ...(galleryImages[0] !== TRUCK_PLACEHOLDER ? { "image": galleryImages[0] } : {}),
+    "offers": {
+      "@type": "Offer",
+      "availability": "https://schema.org/InStock",
+      "priceCurrency": "USD",
+      "seller": {
+        "@type": "Organization",
+        "name": "Wings Global Trade",
+        "url": BASE,
+      },
+    },
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Inicio",          "item": BASE },
+      { "@type": "ListItem", "position": 2, "name": "Camiones KAMA",   "item": `${BASE}/camiones` },
+      { "@type": "ListItem", "position": 3, "name": serie.label,       "item": `${BASE}/brands/kama/${serie.slug}` },
+      { "@type": "ListItem", "position": 4, "name": listing.model,     "item": `${BASE}/brands/kama/${serie.slug}/${listing.id}` },
+    ],
+  };
+
   const tiresLabel =
     tires.all ?? (tires.front && tires.rear ? `${tires.front} / ${tires.rear}` : tires.front ?? tires.rear ?? null);
 
   return (
+    <>
+      <JsonLd schema={productSchema} />
+      <JsonLd schema={breadcrumbSchema} />
     <div className="min-h-screen bg-[#F8F6F0]">
       <div className="mx-auto max-w-7xl px-6 py-8 lg:px-8">
 
@@ -431,5 +468,6 @@ export default async function KamaTruckDetailPage({ params }: PageProps) {
         </Link>
       </div>
     </div>
+    </>
   );
 }

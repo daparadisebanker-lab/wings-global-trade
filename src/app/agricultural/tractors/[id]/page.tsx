@@ -7,17 +7,22 @@ import ImageGallery from "@/components/listings/ImageGallery";
 import TechnicalSpecs from "@/components/listings/TechnicalSpecs";
 import InquiryForm from "@/components/inquiries/InquiryForm";
 import { CURRENCY_COOKIE, DEFAULT_CURRENCY, formatPrice } from "@/lib/currencies";
+import JsonLd from "@/components/seo/JsonLd";
 
 interface Props { params: { id: string } }
 
 export const dynamic = "force-dynamic";
 
+const BASE = "https://wingsglobaltrade.com";
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const listing = await getListingById(params.id);
   if (!listing) return {};
+  const title = `${listing.brand} ${listing.model}${listing.year ? ` ${listing.year}` : ""}`;
   return {
-    title: `${listing.year ?? ""} ${listing.brand} ${listing.model} — Wings Global Trade`.trim(),
-    description: `${listing.brand} ${listing.model} ${listing.year ?? ""} — ${listing.horsepower ?? "—"} hp. Disponible en ${listing.country ?? "—"}. Solicita cotización con precio landed total.`,
+    title: `${title} — Precio de Importación con Flete y Aranceles | Wings Global Trade`,
+    description: `${listing.brand} ${listing.model}${listing.year ? ` (${listing.year})` : ""} — ${listing.horsepower ?? "—"} hp. Importación directa con precio landed total para Perú, Bolivia, Chile y LATAM. Sin costos ocultos.`,
+    alternates: { canonical: `${BASE}/agricultural/tractors/${params.id}` },
   };
 }
 
@@ -93,6 +98,35 @@ export default async function TractorDetailPage({ params }: Props) {
 
   const narrative = buildNarrative(listing);
 
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": `${listing.brand} ${listing.model}${listing.year ? ` ${listing.year}` : ""}`,
+    "description": narrative,
+    "brand": { "@type": "Brand", "name": listing.brand },
+    ...(listing.images?.[0] ? { "image": listing.images[0] } : {}),
+    "offers": {
+      "@type": "Offer",
+      "availability": "https://schema.org/InStock",
+      "priceCurrency": "USD",
+      "seller": {
+        "@type": "Organization",
+        "name": "Wings Global Trade",
+        "url": BASE,
+      },
+    },
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Inicio",    "item": BASE },
+      { "@type": "ListItem", "position": 2, "name": "Tractores", "item": `${BASE}/agricultural/tractors` },
+      { "@type": "ListItem", "position": 3, "name": `${listing.brand} ${listing.model}`, "item": `${BASE}/agricultural/tractors/${listing.id}` },
+    ],
+  };
+
   const waNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "51934987440";
   const waLink   = `https://wa.me/${waNumber}?text=${encodeURIComponent(`Hola, estoy interesado en el ${listingTitle}. ¿Está disponible?`)}`;
 
@@ -108,6 +142,9 @@ export default async function TractorDetailPage({ params }: Props) {
   ].filter((s) => s.value && s.value !== "—");
 
   return (
+    <>
+      <JsonLd schema={productSchema} />
+      <JsonLd schema={breadcrumbSchema} />
     <div className="min-h-screen bg-[#F8F6F0]">
       <div className="mx-auto max-w-7xl px-6 py-8 lg:px-8">
 
@@ -367,5 +404,6 @@ export default async function TractorDetailPage({ params }: Props) {
         </div>
       </div>
     </div>
+    </>
   );
 }

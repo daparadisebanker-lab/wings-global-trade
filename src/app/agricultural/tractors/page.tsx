@@ -16,8 +16,9 @@ export const dynamic = "force-dynamic";
 const AGRICULTURAL_BRANDS = ["New Holland", "John Deere", "Massey Ferguson", "Kubota"];
 
 export const metadata: Metadata = {
-  title: "Tractores en venta — Wings Global Trade",
-  description: "Tractores New Holland, John Deere, Massey Ferguson y Kubota con precio landed total. Entrega en Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay.",
+  title: "Tractores Nuevos: New Holland, John Deere, Massey Ferguson y Kubota | Wings Global Trade",
+  description: "34 modelos de tractores nuevos en venta con precio de importación total. New Holland, John Deere, Massey Ferguson y Kubota — flete, aranceles y entrega incluidos. Perú, Bolivia, Chile y LATAM.",
+  alternates: { canonical: "https://wingsglobaltrade.com/agricultural/tractors" },
 };
 
 interface PageProps {

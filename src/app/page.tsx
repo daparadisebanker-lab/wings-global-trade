@@ -13,9 +13,10 @@ import AnimateIn from "@/components/motion/AnimateIn";
 import { StaggerWrapper, StaggerItem } from "@/components/motion/Stagger";
 
 export const metadata: Metadata = {
-  title: "Wings Global Trade | Maquinaria de Asia con precio landed para Latinoamérica",
+  title: "Tractores e Importación de Maquinaria Agrícola desde Asia | Wings Global Trade",
   description:
-    "Tractores, camiones y maquinaria industrial importados de fábrica en Asia con flete, aranceles y entrega incluidos en el precio. Sin costos ocultos. 6 países: Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay.",
+    "Importa tractores New Holland, John Deere, Massey Ferguson y Kubota directamente desde Asia. Precio landed total — flete, aranceles y entrega incluidos. Sin intermediarios. Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay.",
+  alternates: { canonical: "https://wingsglobaltrade.com" },
 };
 
 const CAT_IMAGES: Record<string, string> = {

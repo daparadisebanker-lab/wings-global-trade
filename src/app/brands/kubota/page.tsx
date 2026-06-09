@@ -7,8 +7,9 @@ import { CURRENCY_COOKIE, DEFAULT_CURRENCY } from "@/lib/currencies";
 import { LANG_COOKIE, DEFAULT_LANG, getTranslations } from "@/lib/i18n";
 
 export const metadata: Metadata = {
-  title: "Tractores Kubota — Wings Global Trade",
-  description: "5 modelos de tractores Kubota serie M. Rango 70–100 hp. Ingeniería japonesa de precisión con precio landed total en Latinoamérica.",
+  title: "Tractores Kubota en Perú y LATAM — Importación Directa desde Fábrica | Wings Global Trade",
+  description: "5 modelos de tractores Kubota serie M importados directamente. Rango 70–100 hp. Ingeniería japonesa con precio landed total — flete y aranceles incluidos — para Perú, Bolivia, Chile y LATAM.",
+  alternates: { canonical: "https://wingsglobaltrade.com/brands/kubota" },
 };
 
 export const dynamic = "force-dynamic";

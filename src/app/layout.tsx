@@ -1,22 +1,75 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import WhatsAppButton from "@/components/layout/WhatsAppButton";
 import MobileBottomBar from "@/components/layout/MobileBottomBar";
+import JsonLd from "@/components/seo/JsonLd";
+
+const BASE = "https://wingsglobaltrade.com";
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Wings Global Trade",
+  "url": BASE,
+  "logo": `${BASE}/logo.png`,
+  "description": "Importador de maquinaria agrícola, camiones y vehículos comerciales desde Asia para Latinoamérica. Precio landed total — flete, aranceles y entrega incluidos — para Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay.",
+  "foundingDate": "2020",
+  "areaServed": ["PE", "BO", "CL", "PY", "AR", "UY"],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+51958381473",
+    "contactType": "sales",
+    "availableLanguage": "Spanish",
+    "contactOption": "TollFree",
+  },
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "PE",
+  },
+  "sameAs": [BASE],
+};
 
 export const metadata: Metadata = {
+  metadataBase: new URL(BASE),
   title: {
     default: "Wings Global Trade | Maquinaria desde Asia para Latinoamérica",
     template: "%s | Wings Global Trade",
   },
   description:
-    "34 tractores nuevos de New Holland, John Deere, Massey Ferguson y Kubota — cotizados con flete, aranceles y entrega hasta tu campo en Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay.",
-  keywords: ["tractores", "maquinaria agrícola", "importación", "New Holland", "John Deere", "Massey Ferguson", "Kubota", "Perú", "Bolivia", "Chile"],
+    "Tractores New Holland, John Deere, Massey Ferguson y Kubota — más 27 modelos de camiones KAMA. Importación directa desde Asia con precio landed total: flete, aranceles y entrega hasta tu campo. Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay.",
   openGraph: {
     type: "website",
     locale: "es_419",
     siteName: "Wings Global Trade",
+    url: BASE,
+    title: "Wings Global Trade | Maquinaria desde Asia para Latinoamérica",
+    description:
+      "Importación directa de tractores y camiones desde Asia. Precio landed total — sin costos ocultos. 6 países de entrega en Latinoamérica.",
+    images: [
+      {
+        url: `${BASE}/og-default.jpg`,
+        width: 1200,
+        height: 630,
+        alt: "Wings Global Trade — Maquinaria agrícola importada desde Asia para LATAM",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Wings Global Trade | Maquinaria desde Asia para Latinoamérica",
+    description:
+      "Tractores y camiones importados desde Asia. Precio landed total para Perú, Bolivia, Chile y más.",
+    images: [`${BASE}/og-default.jpg`],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large" },
+  },
+  alternates: {
+    canonical: BASE,
   },
 };
 
@@ -26,6 +79,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className="flex min-h-screen flex-col">
+        <JsonLd schema={organizationSchema} />
         <Header />
         <main className="flex-1 pb-16 md:pb-0">{children}</main>
         <Footer />

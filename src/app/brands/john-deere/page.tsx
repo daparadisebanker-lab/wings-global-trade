@@ -7,8 +7,9 @@ import { CURRENCY_COOKIE, DEFAULT_CURRENCY } from "@/lib/currencies";
 import { LANG_COOKIE, DEFAULT_LANG, getTranslations } from "@/lib/i18n";
 
 export const metadata: Metadata = {
-  title: "Tractores John Deere — Wings Global Trade",
-  description: "9 modelos de tractores John Deere series 5B, 5E, 6B y 6E. Rango 70–140 hp, fabricados para mercados en desarrollo. Precio landed con entrega en Latinoamérica.",
+  title: "Tractores John Deere en Perú y LATAM — Importación con Precio Landed | Wings Global Trade",
+  description: "9 modelos de tractores John Deere series 5B, 5E, 6B y 6E importados desde Asia. Rango 70–140 hp. Precio total con flete, aranceles y entrega para Perú, Bolivia, Chile y LATAM.",
+  alternates: { canonical: "https://wingsglobaltrade.com/brands/john-deere" },
 };
 
 export const dynamic = "force-dynamic";
