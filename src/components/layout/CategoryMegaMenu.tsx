@@ -44,29 +44,43 @@ export default function CategoryMegaMenu() {
           <div className="w-56 border-r border-white/8 py-3">
             {CATEGORIES.map((cat) => {
               const hasActive = cat.subtypes.some((s) => !s.comingSoon);
+              const isActive = activeCategory?.slug === cat.slug;
+              const baseClass = "flex items-center justify-between px-5 py-3.5 transition-colors";
+              if (hasActive) {
+                return (
+                  <div
+                    key={cat.slug}
+                    onMouseEnter={() => setActiveCategory(cat)}
+                    className={`${baseClass} cursor-pointer ${
+                      isActive
+                        ? "border-r-2 border-[#C4933F] bg-white/6 text-white"
+                        : "text-white/50 hover:bg-white/4 hover:text-white/80"
+                    }`}
+                  >
+                    <span className="text-sm font-medium" style={{ fontFamily: "var(--font-body)" }}>
+                      {cat.label}
+                    </span>
+                    <svg className="h-3 w-3 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                );
+              }
               return (
-                <div
+                <Link
                   key={cat.slug}
+                  href="/proximamente"
                   onMouseEnter={() => setActiveCategory(cat)}
-                  className={`flex cursor-pointer items-center justify-between px-5 py-3.5 transition-colors ${
-                    activeCategory?.slug === cat.slug
-                      ? "border-r-2 border-[#C4933F] bg-white/6 text-white"
-                      : hasActive
-                        ? "text-white/50 hover:bg-white/4 hover:text-white/80"
-                        : "text-white/25 cursor-default"
-                  }`}
+                  onClick={() => setIsOpen(false)}
+                  className={`${baseClass} text-white/25 hover:bg-white/4 hover:text-white/50`}
                 >
                   <span className="text-sm font-medium" style={{ fontFamily: "var(--font-body)" }}>
                     {cat.label}
                   </span>
-                  {hasActive ? (
-                    <svg className="h-3 w-3 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-                    </svg>
-                  ) : (
-                    <span className="text-[9px] font-semibold text-[#C4933F]/60 uppercase tracking-wide">Próx.</span>
-                  )}
-                </div>
+                  <span className="text-[9px] font-semibold uppercase tracking-wide text-[#C4933F]/60">
+                    Próx.
+                  </span>
+                </Link>
               );
             })}
           </div>

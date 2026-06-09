@@ -60,6 +60,30 @@ const TESTIMONIALS = [
     machine:  "New Holland SH1004 — 100 hp · Cabina",
     quote:    "Comparé tres opciones con el asesor y elegimos el modelo que mejor se adaptaba al terreno. El proceso de importación fue completamente transparente.",
   },
+  {
+    name:     "Carlos Méndez",
+    location: "Cochabamba, Bolivia",
+    machine:  "John Deere 5E 100 — 100 hp · 4WD",
+    quote:    "Pensé que importar directamente sería complicado. El asesor me guió paso a paso y el precio final incluía todo. Cinco meses después el tractor está en mi campo.",
+  },
+  {
+    name:     "María Teresa Quispe",
+    location: "Tarija, Bolivia",
+    machine:  "Massey Ferguson MF 385 — 85 hp",
+    quote:    "Cotizamos en tres distribuidores locales y ninguno pudo igualar el precio landed de Wings. La diferencia fue del 18% con mejores condiciones.",
+  },
+  {
+    name:     "Fernando Aguirre",
+    location: "Asunción, Paraguay",
+    machine:  "Kubota M954K — 95 hp · Serie M",
+    quote:    "El proceso por ZOFRATACNA fue transparente. Me enviaron los documentos de cada etapa. No tuve ninguna sorpresa en aduanas.",
+  },
+  {
+    name:     "Diego Castillo",
+    location: "Arequipa, Perú",
+    machine:  "New Holland TT75 — 75 hp · 2WD",
+    quote:    "Llevo tres temporadas con el tractor sin fallas. Y cuando tuve una consulta técnica, el soporte de Wings respondió el mismo día.",
+  },
 ];
 
 export default async function HomePage() {
@@ -129,7 +153,7 @@ export default async function HomePage() {
 
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
-              href="/contact"
+              href="/cotizar"
               className="rounded-full transition-opacity hover:opacity-90"
               style={{
                 fontFamily: "var(--font-body)",
@@ -143,7 +167,7 @@ export default async function HomePage() {
               Solicitar cotización
             </Link>
             <Link
-              href="/categories"
+              href="/agricultural/tractors"
               className="rounded-full border border-white/25 px-9 py-3.5 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-white/10"
               style={{ fontFamily: "var(--font-body)" }}
             >
@@ -206,7 +230,7 @@ export default async function HomePage() {
               </h2>
             </div>
             <Link
-              href="/categories"
+              href="/agricultural/tractors"
               className="hidden text-xs font-semibold uppercase tracking-widest text-white/40 underline-offset-4 hover:text-white hover:underline sm:block"
               style={{ fontFamily: "var(--font-body)" }}
             >
@@ -257,6 +281,75 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ── CÓMO FUNCIONA ────────────────────────────────────────────────── */}
+      <section className="bg-[#F8F6F0] py-20">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mb-14 text-center">
+            <p
+              className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C4933F]"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              El proceso
+            </p>
+            <h2
+              className="text-4xl font-semibold text-[#1C1A16] sm:text-5xl"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              Cómo funciona
+            </h2>
+          </div>
+          <div className="grid gap-10 sm:grid-cols-3">
+            {[
+              {
+                step: "01",
+                title: "Elige o descríbelo",
+                body: "Selecciona un modelo del catálogo o cuéntanos qué necesitas. Si no está en inventario, lo importamos directamente desde fábrica.",
+              },
+              {
+                step: "02",
+                title: "Cotización landed total",
+                body: "Recibes un precio único que incluye el tractor, flete internacional, aranceles, gestión aduanera y entrega en tu país. Sin sorpresas.",
+              },
+              {
+                step: "03",
+                title: "Entrega en tu campo",
+                body: "Coordinamos toda la logística desde fábrica hasta tu finca. Operamos desde ZOFRI (Chile) y ZOFRATACNA (Perú) hacia 6 países. Plazo estimado: 45–90 días.",
+              },
+            ].map((item) => (
+              <div key={item.step} className="relative border-t-2 border-[#C4933F]/20 pt-8">
+                <p
+                  className="mb-4 text-5xl font-semibold leading-none text-[#C4933F]/12"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  {item.step}
+                </p>
+                <h3
+                  className="mb-3 text-xl font-semibold text-[#1C1A16]"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  {item.title}
+                </h3>
+                <p
+                  className="text-sm leading-relaxed text-[#6B6560]"
+                  style={{ fontFamily: "var(--font-body)" }}
+                >
+                  {item.body}
+                </p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-12 text-center">
+            <Link
+              href="/cotizar"
+              className="inline-flex items-center gap-2 rounded-full bg-[#001E50] px-8 py-3.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              Solicitar cotización ahora →
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* ── DUAL-PATH DECISION ───────────────────────────────────────────── */}
       <section className="bg-[#001E50] py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -284,7 +377,7 @@ export default async function HomePage() {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <Link
-              href="/categories"
+              href="/agricultural/tractors"
               className="group relative overflow-hidden rounded-2xl bg-[#F8F6F0] p-8 transition-transform duration-300 hover:-translate-y-0.5"
             >
               <p
@@ -443,7 +536,7 @@ export default async function HomePage() {
           >
             Compradores verificados
           </p>
-          <div className="grid gap-12 sm:grid-cols-2 sm:gap-16">
+          <div className="grid gap-12 sm:grid-cols-2 sm:gap-16 lg:grid-cols-3">
             {TESTIMONIALS.map((item) => (
               <div key={item.name}>
                 <p

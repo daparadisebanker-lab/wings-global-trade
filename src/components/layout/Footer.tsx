@@ -10,9 +10,9 @@ const CATALOG_LINKS = [
 
 const IMPORT_LINKS = [
   { label: "Importación a pedido",   href: "/importacion"               },
+  { label: "Solicitar cotización",   href: "/cotizar"                   },
   { label: "Zonas Francas",          href: "/importacion#zonas-francas" },
-  { label: "Sourcing B2B con IA",    href: "/sourcing"                  },
-  { label: "Próximamente",           href: "/proximamente"              },
+  { label: "Hoja de ruta 2026",      href: "/proximamente"              },
   { label: "Hablar con un asesor",   href: "/contact"                   },
 ];
 
@@ -58,7 +58,7 @@ export default function Footer() {
             </div>
             <div className="flex flex-wrap gap-3">
               <Link
-                href="/categories"
+                href="/agricultural/tractors"
                 className="rounded-full border border-[#C4933F] px-6 py-2.5 text-xs font-semibold uppercase tracking-widest text-[#C4933F] transition-colors hover:bg-[#C4933F] hover:text-white"
                 style={{ fontFamily: "var(--font-body)" }}
               >

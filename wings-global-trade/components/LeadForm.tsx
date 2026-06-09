@@ -5,7 +5,7 @@ import { useFadeIn, useStaggerFadeIn } from "@/hooks/useFadeIn";
 
 const CALENDLY_URL = "https://calendly.com/PLACEHOLDER/30min";
 const WHATSAPP_URL =
-  "https://wa.me/51934987440?text=Hola%2C%20acabo%20de%20completar%20el%20formulario%20en%20su%20sitio%20web.%20Me%20gustar%C3%ADa%20hablar%20sobre%20mi%20proyecto%20de%20importaci%C3%B3n.";
+  "https://wa.me/51958381473?text=Hola%2C%20acabo%20de%20completar%20el%20formulario%20en%20su%20sitio%20web.%20Me%20gustar%C3%ADa%20hablar%20sobre%20mi%20proyecto%20de%20importaci%C3%B3n.";
 
 type FormData = { nombre: string; empresa: string; contacto: string };
 const EMPTY: FormData = { nombre: "", empresa: "", contacto: "" };

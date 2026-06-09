@@ -101,7 +101,34 @@ export default async function JohnDeerePage() {
           ))}
         </div>
 
-        <div className="mt-12 flex flex-col items-center gap-4">
+        {/* Other brands */}
+        <div className="mt-14 border-t border-[#E8E4DB] pt-10">
+          <p
+            className="mb-5 text-[10px] font-semibold uppercase tracking-[0.15em] text-[#C4933F]"
+            style={{ fontFamily: "var(--font-body)" }}
+          >
+            Otras marcas disponibles
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {[
+              { name: "New Holland", count: 14, slug: "new-holland" },
+              { name: "Massey Ferguson", count: 6, slug: "massey-ferguson" },
+              { name: "Kubota", count: 5, slug: "kubota" },
+            ].map((b) => (
+              <Link
+                key={b.slug}
+                href={`/brands/${b.slug}`}
+                className="flex items-center gap-2 rounded-full border border-[#E8E4DB] bg-white px-5 py-2.5 text-sm font-medium text-[#6B6560] transition-colors hover:border-[#C4933F] hover:text-[#C4933F]"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                {b.name}
+                <span className="text-[10px] font-semibold text-[#C4933F]">{b.count}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-8 flex flex-col items-center gap-4">
           <Link
             href="/brands"
             className="text-sm text-[#9B9590] transition-colors hover:text-[#C4933F]"

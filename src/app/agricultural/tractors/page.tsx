@@ -154,6 +154,24 @@ export default async function TractorsPage({ searchParams }: PageProps) {
 
           {/* Listing grid */}
           <div className="lg:col-span-3">
+
+            {/* Import CTA banner */}
+            <div className="mb-6 flex flex-col items-start justify-between gap-3 rounded-xl border border-[#C4933F]/20 bg-[#001240] px-5 py-4 sm:flex-row sm:items-center">
+              <p
+                className="text-sm text-white/60"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                ¿No encuentras exactamente lo que buscas?
+              </p>
+              <Link
+                href="/importacion"
+                className="flex-shrink-0 rounded-full bg-[#C4933F] px-4 py-2 text-xs font-semibold text-white transition-opacity hover:opacity-90"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                Importamos cualquier modelo →
+              </Link>
+            </div>
+
             {listings.length === 0 ? (
               <div className="flex flex-col items-center justify-center rounded-2xl border border-[#E8E4DB] bg-white py-24 text-center">
                 <p

@@ -31,14 +31,11 @@ export default function Header() {
             </Link>
 
             <Link
-              href="/sourcing"
-              className="flex items-center text-sm font-medium text-white/70 transition-colors hover:text-white"
+              href="/proximamente"
+              className="text-sm font-medium text-white/50 transition-colors hover:text-white"
               style={{ fontFamily: "var(--font-body)" }}
             >
-              Sourcing IA
-              <span className="ml-1.5 rounded-full bg-[#C4933F]/20 px-1.5 py-0.5 text-[9px] font-semibold text-[#C4933F]">
-                Nuevo
-              </span>
+              Hoja de ruta
             </Link>
           </nav>
 
@@ -55,7 +52,7 @@ export default function Header() {
               </svg>
             </Link>
             <Link
-              href="/contact"
+              href="/cotizar"
               className="rounded-full bg-[#C4933F] px-5 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#D4A855]"
               style={{ fontFamily: "var(--font-body)" }}
             >

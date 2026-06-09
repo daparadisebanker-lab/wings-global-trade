@@ -100,13 +100,22 @@ export default function TractorCard({
       {/* Body */}
       <div className="flex flex-1 flex-col p-5">
 
-        {/* Brand */}
-        <p
-          className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-[#C4933F]"
-          style={{ fontFamily: "var(--font-body)" }}
-        >
-          {listing.brand}
-        </p>
+        {/* Brand + availability */}
+        <div className="mb-1 flex items-center justify-between">
+          <p
+            className="text-[10px] font-semibold uppercase tracking-widest text-[#C4933F]"
+            style={{ fontFamily: "var(--font-body)" }}
+          >
+            {listing.brand}
+          </p>
+          <span
+            className="flex items-center gap-1 text-[9px] font-semibold text-[#4B9E5F]"
+            style={{ fontFamily: "var(--font-body)" }}
+          >
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#4B9E5F]" />
+            Disponible
+          </span>
+        </div>
 
         {/* Title */}
         <h3

@@ -22,7 +22,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/brands/massey-ferguson`,         lastModified: new Date(), changeFrequency: "weekly",  priority: 0.8 },
     { url: `${BASE}/brands/kubota`,                  lastModified: new Date(), changeFrequency: "weekly",  priority: 0.8 },
     { url: `${BASE}/importacion`,                    lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
-    { url: `${BASE}/sourcing`,                       lastModified: new Date(), changeFrequency: "monthly", priority: 0.6 },
+    { url: `${BASE}/cotizar`,                        lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/proximamente`,                   lastModified: new Date(), changeFrequency: "weekly",  priority: 0.7 },
     { url: `${BASE}/categories`,                     lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE}/about`,                          lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
