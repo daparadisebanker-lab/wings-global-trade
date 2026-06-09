@@ -8,8 +8,8 @@ export default function MobileSplash() {
   const [phase, setPhase] = useState<Phase>("visible");
 
   useEffect(() => {
-    const fadeStart = setTimeout(() => setPhase("fading"), 1750);
-    const unmount  = setTimeout(() => setPhase("gone"),   2200);
+    const fadeStart = setTimeout(() => setPhase("fading"), 2800);
+    const unmount  = setTimeout(() => setPhase("gone"),   3400);
     return () => {
       clearTimeout(fadeStart);
       clearTimeout(unmount);
@@ -23,17 +23,18 @@ export default function MobileSplash() {
       className="fixed inset-0 z-[9999] overflow-hidden bg-[#004389] md:hidden"
       style={{
         opacity:        phase === "fading" ? 0 : 1,
-        transition:     phase === "fading" ? "opacity 0.45s ease" : "none",
+        transform:      phase === "fading" ? "translateX(-28px)" : "translateX(0)",
+        transition:     phase === "fading" ? "opacity 0.55s cubic-bezier(0.4,0,1,1), transform 0.55s cubic-bezier(0.4,0,1,1)" : "none",
         pointerEvents:  phase === "fading" ? "none" : "auto",
       }}
     >
-      {/* Background — Ken Burns zoom out */}
+      {/* Background — very subtle parallax, no aggressive zoom */}
       <img
         src="/images/splah-hero.png"
         alt=""
         aria-hidden="true"
         className="absolute inset-0 h-full w-full object-cover object-center"
-        style={{ animation: "splash-zoom 2.4s ease-out forwards" }}
+        style={{ animation: "splash-drift 4.5s ease-out forwards" }}
       />
 
       {/* Gradient — sky clear at top, solid brand blue at bottom */}
@@ -73,12 +74,12 @@ export default function MobileSplash() {
       </div>
 
       <style>{`
-        @keyframes splash-zoom {
-          from { transform: scale(1.07); }
-          to   { transform: scale(1.00); }
+        @keyframes splash-drift {
+          from { transform: scale(1.03) translateX(6px); }
+          to   { transform: scale(1.00) translateX(0px); }
         }
         @keyframes splash-up {
-          from { opacity: 0; transform: translateY(16px); }
+          from { opacity: 0; transform: translateY(14px); }
           to   { opacity: 1; transform: translateY(0); }
         }
       `}</style>

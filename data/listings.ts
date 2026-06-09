@@ -39,6 +39,24 @@ const catalogListings: Listing[] = (
   details:      (p.details ?? {}) as Listing["details"],
 }));
 
+// ── Brand corrections — map factory manufacturer names to commercial brands ───
+// Wings sells the SinoHarvest / SNH / SH / TM / CD range under the
+// "New Holland" commercial brand. Supabase was seeded with the manufacturer name.
+// This map fixes data at the application layer until the SQL migration is applied.
+const BRAND_CORRECTIONS: Record<string, string> = {
+  SinoHarvest: "New Holland",
+};
+
+function normalizeListing(listing: Listing): Listing {
+  const corrected = BRAND_CORRECTIONS[listing.brand];
+  if (!corrected) return listing;
+  return {
+    ...listing,
+    brand: corrected,
+    title: listing.title.replace(/SinoHarvest/gi, corrected),
+  };
+}
+
 // ── Race a promise against a 1.5-second deadline ──────────────────────────────
 function withTimeout<T>(promise: PromiseLike<T>, ms = 1500): Promise<T> {
   return Promise.race([
@@ -111,7 +129,7 @@ export async function getListings(filters: ListingFilters = {}): Promise<Listing
     if (error) throw error;
 
     // Supplement with catalog entries not yet in Supabase (Supabase wins on ID collision)
-    const supabaseListings = (data ?? []) as Listing[];
+    const supabaseListings = (data ?? []).map(normalizeListing) as Listing[];
     const supabaseIds = new Set(supabaseListings.map((l) => l.id));
     const catalogSupplement = applyFilters(catalogListings, filters).filter(
       (l) => !supabaseIds.has(l.id)
@@ -132,7 +150,7 @@ export async function getListingById(id: string): Promise<Listing | null> {
       supabase.from("listings").select("*").eq("id", id).single()
     );
     if (error) throw error;
-    return data as Listing;
+    return normalizeListing(data as Listing);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     if (msg !== "supabase_timeout") console.error(`[listings] Failed to fetch ${id}:`, msg);
@@ -146,7 +164,9 @@ export async function getMakes(): Promise<string[]> {
     const supabase = await createClient();
     const { data, error } = await withTimeout(supabase.from("listings").select("brand"));
     if (error) throw error;
-    return Array.from(new Set((data ?? []).map((r) => r.brand))).sort();
+    return Array.from(
+      new Set((data ?? []).map((r) => BRAND_CORRECTIONS[r.brand] ?? r.brand))
+    ).sort();
   } catch {
     return Array.from(new Set(catalogListings.map((l) => l.brand))).sort();
   }
