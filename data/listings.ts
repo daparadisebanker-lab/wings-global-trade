@@ -109,7 +109,14 @@ export async function getListings(filters: ListingFilters = {}): Promise<Listing
 
     const { data, error } = await withTimeout(query);
     if (error) throw error;
-    return (data ?? []) as Listing[];
+
+    // Supplement with catalog entries not yet in Supabase (Supabase wins on ID collision)
+    const supabaseListings = (data ?? []) as Listing[];
+    const supabaseIds = new Set(supabaseListings.map((l) => l.id));
+    const catalogSupplement = applyFilters(catalogListings, filters).filter(
+      (l) => !supabaseIds.has(l.id)
+    );
+    return [...supabaseListings, ...catalogSupplement];
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     if (msg !== "supabase_timeout") console.error("[listings] Failed to fetch:", msg);
