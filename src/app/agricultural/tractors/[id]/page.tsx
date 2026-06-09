@@ -30,6 +30,56 @@ const COND: Record<string, string> = {
   refurbished: "Reacondicionado",
 };
 
+const BRAND_CONTEXT: Record<string, string> = {
+  "New Holland":      "fabricado por CNH Industrial",
+  "John Deere":       "fabricado por Deere & Company",
+  "Massey Ferguson":  "fabricado por AGCO Corporation",
+  "Kubota":           "fabricado por Kubota Corporation, Japón",
+};
+
+function buildNarrative(listing: NonNullable<Awaited<ReturnType<typeof getListingById>>>): string {
+  const hp   = listing.horsepower;
+  const brand = listing.brand;
+  const model = listing.model;
+  const cond  = listing.condition;
+  const year  = listing.year;
+  const hrs   = listing.hours_used;
+  const trans = listing.transmission;
+  const drive = listing.drive_type;
+
+  const powerClass =
+    hp == null      ? "tractor de trabajo"
+    : hp >= 130     ? "tractor de alta potencia"
+    : hp >= 80      ? "tractor de potencia media"
+    : hp >= 50      ? "tractor versátil"
+    : "tractor compacto";
+
+  const brandCtx = BRAND_CONTEXT[brand] ?? `fabricado por ${brand}`;
+
+  const condNote =
+    cond === "new"
+      ? "Disponible nuevo desde fábrica"
+      : cond === "refurbished"
+      ? "Reacondicionado a estándar de fábrica"
+      : hrs != null
+      ? `Con ${hrs.toLocaleString()} horas de uso verificadas`
+      : "Disponible para importación";
+
+  const configNote = [
+    drive ? drive : null,
+    trans ? `transmisión ${trans}` : null,
+    hp ? `${hp} hp` : null,
+  ].filter(Boolean).join(", ");
+
+  const yearNote = year ? ` ${year}` : "";
+
+  return [
+    `El ${brand} ${model}${yearNote} es un ${powerClass} ${brandCtx}, diseñado para operaciones agrícolas exigentes en suelos de labranza, cultivos en hilera y trabajo con implementos hidráulicos de tres puntos.`,
+    configNote ? `Configurado con ${configNote} — una combinación que garantiza rendimiento constante bajo carga completa en campo.` : "",
+    `${condNote}. Precio landed confirmado por escrito para Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay.`,
+  ].filter(Boolean).join(" ");
+}
+
 export default async function TractorDetailPage({ params }: Props) {
   const cookieStore = await cookies();
   const currency    = cookieStore.get(CURRENCY_COOKIE)?.value ?? DEFAULT_CURRENCY;
@@ -40,6 +90,8 @@ export default async function TractorDetailPage({ params }: Props) {
   const galleryImages = listing.images?.length ? listing.images : [PLACEHOLDER];
   const listingTitle  = `${listing.year ?? ""} ${listing.brand} ${listing.model}`.trim();
   const priceDisplay  = listing.price ? formatPrice(listing.price, currency) : null;
+
+  const narrative = buildNarrative(listing);
 
   const waNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "51934987440";
   const waLink   = `https://wa.me/${waNumber}?text=${encodeURIComponent(`Hola, estoy interesado en el ${listingTitle}. ¿Está disponible?`)}`;
@@ -149,6 +201,16 @@ export default async function TractorDetailPage({ params }: Props) {
               </p>
             </div>
 
+            {/* Product narrative */}
+            <div className="mt-8">
+              <p
+                className="text-sm leading-relaxed text-[#6B6560]"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                {narrative}
+              </p>
+            </div>
+
             {/* Quick specs */}
             {specs.length > 0 && (
               <div className="mt-8">
@@ -169,7 +231,7 @@ export default async function TractorDetailPage({ params }: Props) {
                       </dt>
                       <dd
                         className="mt-1.5 text-sm font-medium text-[#1C1A16]"
-                        style={{ fontFamily: "var(--font-body)" }}
+                        style={{ fontFamily: "var(--font-data)" }}
                       >
                         {s.value}
                       </dd>
@@ -223,13 +285,13 @@ export default async function TractorDetailPage({ params }: Props) {
               <div className="rounded-2xl border border-[#E8E4DB] bg-white p-5">
                 <ul className="space-y-2.5">
                   {[
-                    "Precio landed total: flete + aranceles + entrega",
-                    "Plazo estimado: 45–90 días desde confirmación",
-                    "Operamos desde ZOFRI y ZOFRATACNA",
-                    "Respondemos en menos de 24 h",
+                    "Un precio incluye: flete, aranceles y entrega en tu país",
+                    `Tractor confirmado con ficha técnica antes de pagar`,
+                    "Plazo: 45–90 días desde tu confirmación escrita",
+                    "Entregamos en 6 países · ZOFRI + ZOFRATACNA",
                   ].map((item) => (
-                    <li key={item} className="flex items-center gap-2.5 text-xs text-[#6B6560]" style={{ fontFamily: "var(--font-body)" }}>
-                      <div className="h-1 w-1 flex-shrink-0 rounded-full bg-[#C4933F]" />
+                    <li key={item} className="flex items-start gap-2.5 text-xs text-[#6B6560]" style={{ fontFamily: "var(--font-body)" }}>
+                      <div className="mt-1.5 h-1 w-1 flex-shrink-0 rounded-full bg-[#C4933F]" />
                       {item}
                     </li>
                   ))}

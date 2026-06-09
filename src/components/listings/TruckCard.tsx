@@ -14,7 +14,7 @@ function SpecRow({ label, value }: { label: string; value?: string | number | nu
   if (value == null || value === "") return null;
   return (
     <div>
-      <dt className="text-[10px] uppercase tracking-wide text-[#6B6560]"
+      <dt className="text-[9px] uppercase tracking-wider text-[#9B9590]"
         style={{ fontFamily: "var(--font-body)" }}>{label}</dt>
       <dd className="font-data font-medium text-[#1C1A16] text-xs mt-0.5 truncate">
         {value}
@@ -42,11 +42,10 @@ export default function TruckCard({
 
   const bev = isBEV(listing);
 
-  const fuelType = engine.fuel_type ?? null;
-  const engineModel = engine.model ?? null;
+  const fuelType      = engine.fuel_type ?? null;
+  const engineModel   = engine.model ?? null;
   const engineSubtitle = engineModel ?? fuelType ?? null;
 
-  // Fuel badge label
   let fuelBadge = fuelType ?? "—";
   if (fuelType?.includes("Eléctrico") || fuelType?.includes("BEV")) {
     fuelBadge = "BEV";
@@ -62,9 +61,12 @@ export default function TruckCard({
     ? `${(dims.gvw_kg / 1000).toFixed(1)}T`
     : null;
 
+  const heroPayload = specs.payload_t ?? null;
+  const heroRange   = bev && specs.range_km_wltp != null ? specs.range_km_wltp : null;
+
   return (
     <article
-      className={`group flex flex-col overflow-hidden rounded-2xl border border-[#E8E4DB] bg-white shadow-[0_2px_16px_rgba(0,0,0,0.06)] transition-shadow hover:shadow-[0_4px_24px_rgba(0,0,0,0.10)] ${bev ? "border-l-2 border-l-[#2DD4BF]" : ""}`}
+      className={`group flex flex-col overflow-hidden rounded-2xl border border-[#E8E4DB] bg-white shadow-[0_2px_16px_rgba(0,0,0,0.06)] transition-all duration-300 hover:shadow-[0_6px_28px_rgba(0,0,0,0.09)] hover:-translate-y-0.5 ${bev ? "border-l-2 border-l-[#2DD4BF]" : ""}`}
     >
       {/* Image */}
       <div className="relative aspect-[4/3] overflow-hidden bg-[#F8F6F0]">
@@ -72,12 +74,12 @@ export default function TruckCard({
           src={cover}
           alt={`${listing.brand} ${listing.model}`}
           fill
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
         {/* Fuel type badge */}
         <span
-          className={`absolute left-3 top-3 rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-widest ${fuelBadgeClass}`}
+          className={`absolute left-3 top-3 rounded-full px-2.5 py-1 text-[9px] font-semibold uppercase tracking-widest backdrop-blur-sm ${fuelBadgeClass}`}
           style={{ fontFamily: "var(--font-body)" }}
         >
           {fuelBadge}
@@ -85,7 +87,7 @@ export default function TruckCard({
         {/* Drive badge */}
         {listing.drive_type && (
           <span
-            className="absolute right-3 top-3 rounded-full bg-[#001E50]/80 px-2 py-1 text-[10px] font-semibold uppercase tracking-widest text-white"
+            className="absolute right-3 top-3 rounded-full bg-[#001E50]/80 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-widest text-white backdrop-blur-sm"
             style={{ fontFamily: "var(--font-body)" }}
           >
             {listing.drive_type}
@@ -96,22 +98,13 @@ export default function TruckCard({
       {/* Body */}
       <div className="flex flex-1 flex-col p-5">
 
-        {/* Brand + availability */}
-        <div className="mb-1 flex items-center justify-between">
-          <p
-            className="text-[10px] font-semibold uppercase tracking-widest text-[#C4933F]"
-            style={{ fontFamily: "var(--font-body)" }}
-          >
-            KAMA
-          </p>
-          <span
-            className="flex items-center gap-1 text-[9px] font-semibold text-[#4B9E5F]"
-            style={{ fontFamily: "var(--font-body)" }}
-          >
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#4B9E5F]" />
-            Disponible
-          </span>
-        </div>
+        {/* Brand eyebrow */}
+        <p
+          className="mb-1 text-[9px] font-semibold uppercase tracking-widest text-[#C4933F]"
+          style={{ fontFamily: "var(--font-body)" }}
+        >
+          KAMA
+        </p>
 
         {/* Title */}
         <h3
@@ -123,29 +116,65 @@ export default function TruckCard({
 
         {/* Engine subtitle */}
         {engineSubtitle && (
-          <p className="mb-3 truncate text-xs text-[#6B6560]"
+          <p className="mb-4 truncate text-xs text-[#6B6560]"
             style={{ fontFamily: "var(--font-body)" }}>{engineSubtitle}</p>
         )}
 
-        {/* Price → Quote only */}
-        <p
-          className="mb-4 text-[10px] font-semibold uppercase tracking-[0.1em] text-[#C4933F]"
-          style={{ fontFamily: "var(--font-body)" }}
-        >
-          Precio a consultar
-        </p>
+        {/* Hero spec — payload or BEV range as dominant signal */}
+        {(heroPayload != null || heroRange != null) && (
+          <div className="mb-4 flex items-baseline gap-2 border-b border-[#E8E4DB] pb-4">
+            {heroPayload != null && (
+              <>
+                <span
+                  className="text-4xl font-semibold leading-none text-[#1C1A16]"
+                  style={{ fontFamily: "var(--font-data)" }}
+                >
+                  {heroPayload}T
+                </span>
+                <span
+                  className="text-sm text-[#9B9590]"
+                  style={{ fontFamily: "var(--font-data)" }}
+                >
+                  carga útil
+                </span>
+              </>
+            )}
+            {heroRange != null && heroPayload == null && (
+              <>
+                <span
+                  className="text-4xl font-semibold leading-none text-[#1C1A16]"
+                  style={{ fontFamily: "var(--font-data)" }}
+                >
+                  {heroRange}
+                </span>
+                <span
+                  className="text-sm text-[#9B9590]"
+                  style={{ fontFamily: "var(--font-data)" }}
+                >
+                  km WLTP
+                </span>
+              </>
+            )}
+            {gvwDisplay && (
+              <>
+                <span className="text-[#E8E4DB] ml-1">·</span>
+                <span
+                  className="text-sm text-[#9B9590]"
+                  style={{ fontFamily: "var(--font-data)" }}
+                >
+                  GVW {gvwDisplay}
+                </span>
+              </>
+            )}
+          </div>
+        )}
 
         {/* Spec grid */}
-        <dl className="mb-5 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-[#E8E4DB] pt-4 text-xs">
+        <dl className="mb-5 grid grid-cols-2 gap-x-4 gap-y-3 text-xs">
           <SpecRow
             label="Potencia"
             value={listing.horsepower != null ? `${listing.horsepower} hp` : null}
           />
-          <SpecRow
-            label="Carga útil"
-            value={specs.payload_t != null ? `${specs.payload_t}T` : null}
-          />
-          <SpecRow label="GVW" value={gvwDisplay} />
           <SpecRow label="Combustible" value={fuelType} />
           {bev ? (
             <>
@@ -170,18 +199,27 @@ export default function TruckCard({
           )}
         </dl>
 
-        <Link
-          href={`/brands/kama/${serieSlug}/${listing.id}`}
-          className="mt-auto flex w-full items-center justify-center rounded-full bg-[#C4933F] py-3 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-[#D4A855]"
-          style={{ fontFamily: "var(--font-body)" }}
-        >
-          Solicitar cotización
-        </Link>
+        {/* CTA — cotización en 24 h */}
+        <div className="mt-auto space-y-2">
+          <Link
+            href={`/brands/kama/${serieSlug}/${listing.id}`}
+            className="flex w-full items-center justify-center rounded-full bg-[#C4933F] py-3 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-[#D4A855]"
+            style={{ fontFamily: "var(--font-body)" }}
+          >
+            Ver modelo
+          </Link>
+          <p
+            className="text-center text-[9px] text-[#9B9590]"
+            style={{ fontFamily: "var(--font-body)" }}
+          >
+            Cotización landed en 24 h · Sin compromiso
+          </p>
+        </div>
       </div>
 
-      {/* Wings import micro-CTA */}
-      <div className="border-t border-[#E8E4DB] px-5 pb-3 pt-2">
-        <p className="text-[10px] text-[#1C1A16]/35" style={{ fontFamily: "var(--font-body)" }}>
+      {/* Import escape valve */}
+      <div className="border-t border-[#E8E4DB] px-5 pb-3 pt-2.5">
+        <p className="text-[10px] text-[#6B6560]" style={{ fontFamily: "var(--font-body)" }}>
           ¿No es lo que buscas?{" "}
           <Link href="/importacion" className="font-semibold text-[#C4933F] hover:underline">
             Impórtalo →

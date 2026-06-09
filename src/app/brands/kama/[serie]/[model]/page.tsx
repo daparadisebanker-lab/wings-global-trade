@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { cookies } from "next/headers";
 import { getListingById } from "@data/listings";
+import ImageGallery from "@/components/listings/ImageGallery";
 import InquiryForm from "@/components/inquiries/InquiryForm";
 import { KAMA_SERIES, getSeriesBySlug } from "@/lib/kama-series";
 
@@ -31,6 +31,51 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export const dynamic = "force-dynamic";
+
+function buildTruckNarrative(
+  listing: NonNullable<Awaited<ReturnType<typeof getListingById>>>,
+  serie: NonNullable<ReturnType<typeof getSeriesBySlug>>,
+): string {
+  const d       = listing.details as any ?? {};
+  const engine  = d.engine ?? {};
+  const dims    = d.dimensions ?? {};
+  const specs   = d.specs ?? {};
+  const battery = d.battery ?? {};
+
+  const bev      = (engine.fuel_type ?? "").includes("Eléctrico") || (engine.fuel_type ?? "").includes("BEV");
+  const payload  = specs.payload_t;
+  const gvw      = dims.gvw_kg ? `${(dims.gvw_kg / 1000).toFixed(1)}T` : null;
+  const range    = bev && specs.range_km_wltp ? `${specs.range_km_wltp} km WLTP` : null;
+  const emission = !bev && engine.emission_standard ? engine.emission_standard : null;
+
+  const configParts = [
+    listing.horsepower ? `${listing.horsepower} hp` : null,
+    gvw ? `GVW ${gvw}` : null,
+    emission ? emission : null,
+  ].filter(Boolean).join(", ");
+
+  if (bev) {
+    return [
+      `El KAMA ${listing.model} es un camión de carga eléctrico (BEV) de la serie ${serie.label}, diseñado para distribución urbana de última milla con cero emisiones locales.`,
+      range ? `Autonomía de ${range} en ciclo WLTP — suficiente para múltiples rutas de reparto sin carga intermedia.` : "",
+      battery.capacity_kwh ? `Batería de ${battery.capacity_kwh} kWh${battery.brand ? ` ${battery.brand}` : ""} con garantía de fabricante. Disponible con precio landed total confirmado por escrito para Latinoamérica.` : "Disponible con precio landed total confirmado por escrito para Latinoamérica.",
+    ].filter(Boolean).join(" ");
+  }
+
+  const useCaseByLabel: Record<string, string> = {
+    "Mini Truck":   "distribución local, pequeños comercios y transporte de carga ligera",
+    "Pick-up":      "uso mixto comercial-personal, transporte de materiales y logística ligera",
+    "Medium Cargo": "transporte de carga seca entre ciudades y distribución regional",
+    "Heavy Cargo":  "transporte de carga pesada, materiales de construcción y logística de larga distancia",
+  };
+  const useCase = useCaseByLabel[serie.label] ?? "transporte de carga comercial";
+
+  return [
+    `El KAMA ${listing.model} es un camión de la serie ${serie.label} de Shandong KAMA Automobile Manufacturing, diseñado para ${useCase}.`,
+    configParts ? `Equipado con ${configParts} — cumple con las normas de circulación vigentes en los 6 países de entrega.` : "",
+    `Precio landed total confirmado por escrito: incluye flete desde fábrica, aranceles de importación y entrega en tu país. Plazo: 45–90 días desde tu confirmación.`,
+  ].filter(Boolean).join(" ");
+}
 
 function isBEV(d: any): boolean {
   const ft = d?.engine?.fuel_type ?? "";
@@ -84,8 +129,9 @@ export default async function KamaTruckDetailPage({ params }: PageProps) {
 
   const bev = isBEV(d);
 
-  const listingTitle = `KAMA ${listing.model}`;
-  const cover = listing.images?.[0] ?? TRUCK_PLACEHOLDER;
+  const listingTitle   = `KAMA ${listing.model}`;
+  const galleryImages  = listing.images?.length ? listing.images : [TRUCK_PLACEHOLDER];
+  const narrative      = buildTruckNarrative(listing, serie);
 
   const tiresLabel =
     tires.all ?? (tires.front && tires.rear ? `${tires.front} / ${tires.rear}` : tires.front ?? tires.rear ?? null);
@@ -117,17 +163,8 @@ export default async function KamaTruckDetailPage({ params }: PageProps) {
 
           {/* ── Left column ── */}
           <div>
-            {/* Hero image */}
-            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-[#E8E4DB]">
-              <Image
-                src={cover}
-                alt={listingTitle}
-                fill
-                priority
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, calc(100vw - 420px)"
-              />
-            </div>
+            {/* Image gallery */}
+            <ImageGallery images={galleryImages} alt={listingTitle} />
 
             {/* Identity */}
             <div className="mt-8">
@@ -169,6 +206,48 @@ export default async function KamaTruckDetailPage({ params }: PageProps) {
                   <circle cx="4" cy="4" r="3" />
                 </svg>
                 Precio incluye flete · aranceles · entrega
+              </p>
+            </div>
+
+            {/* BEV distinction strip */}
+            {bev && (
+              <div className="mt-6 flex flex-wrap items-center gap-4 rounded-xl border border-[#2DD4BF]/30 bg-[#001E50]/5 px-5 py-4">
+                <div className="flex items-center gap-2">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#2DD4BF">
+                    <path d="M13 2L4.5 13.5H11L10 22L20.5 10H14L13 2z"/>
+                  </svg>
+                  <span className="text-[10px] font-semibold uppercase tracking-widest text-[#2DD4BF]"
+                    style={{ fontFamily: "var(--font-body)" }}>
+                    Eléctrico BEV · Cero emisiones
+                  </span>
+                </div>
+                {specs.range_km_wltp != null && (
+                  <div className="flex items-baseline gap-1">
+                    <span className="font-data text-xl font-semibold text-[#1C1A16]">{specs.range_km_wltp}</span>
+                    <span className="text-xs text-[#9B9590]" style={{ fontFamily: "var(--font-data)" }}>km WLTP</span>
+                  </div>
+                )}
+                {battery.capacity_kwh != null && (
+                  <div className="flex items-baseline gap-1">
+                    <span className="font-data text-xl font-semibold text-[#1C1A16]">{battery.capacity_kwh}</span>
+                    <span className="text-xs text-[#9B9590]" style={{ fontFamily: "var(--font-data)" }}>kWh</span>
+                  </div>
+                )}
+                {battery.charging && (
+                  <span className="text-xs text-[#6B6560]" style={{ fontFamily: "var(--font-body)" }}>
+                    Carga: {battery.charging}
+                  </span>
+                )}
+              </div>
+            )}
+
+            {/* Product narrative */}
+            <div className="mt-8">
+              <p
+                className="text-sm leading-relaxed text-[#6B6560]"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                {narrative}
               </p>
             </div>
 
@@ -308,17 +387,17 @@ export default async function KamaTruckDetailPage({ params }: PageProps) {
               <div className="rounded-2xl border border-[#E8E4DB] bg-white p-5">
                 <ul className="space-y-2.5">
                   {[
-                    "Precio landed total: flete + aranceles + entrega",
-                    "Plazo estimado: 45–90 días desde confirmación",
-                    "Operamos desde ZOFRI y ZOFRATACNA",
-                    "Respondemos en menos de 24 h",
+                    "Un precio: flete + aranceles + entrega en tu país",
+                    `Camión confirmado con ficha técnica antes de pagar`,
+                    "Plazo: 45–90 días desde tu confirmación escrita",
+                    "Entregamos en 6 países · ZOFRI + ZOFRATACNA",
                   ].map((item) => (
                     <li
                       key={item}
-                      className="flex items-center gap-2.5 text-xs text-[#6B6560]"
+                      className="flex items-start gap-2.5 text-xs text-[#6B6560]"
                       style={{ fontFamily: "var(--font-body)" }}
                     >
-                      <div className="h-1 w-1 flex-shrink-0 rounded-full bg-[#C4933F]" />
+                      <div className="mt-1.5 h-1 w-1 flex-shrink-0 rounded-full bg-[#C4933F]" />
                       {item}
                     </li>
                   ))}
@@ -344,7 +423,7 @@ export default async function KamaTruckDetailPage({ params }: PageProps) {
         style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}
       >
         <Link
-          href={`/brands/kama/${serie.slug}`}
+          href="/cotizar"
           className="flex w-full items-center justify-center rounded-full bg-[#C4933F] py-3.5 text-xs font-semibold text-white transition-opacity hover:opacity-90"
           style={{ fontFamily: "var(--font-body)" }}
         >
