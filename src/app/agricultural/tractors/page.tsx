@@ -13,9 +13,11 @@ import { LANG_COOKIE, DEFAULT_LANG, getTranslations } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
+const AGRICULTURAL_BRANDS = ["New Holland", "John Deere", "Massey Ferguson", "Kubota"];
+
 export const metadata: Metadata = {
   title: "Tractores en venta — Wings Global Trade",
-  description: "34 modelos de tractores New Holland, John Deere, Massey Ferguson y Kubota con precio landed total. Entrega en Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay.",
+  description: "Tractores New Holland, John Deere, Massey Ferguson y Kubota con precio landed total. Entrega en Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay.",
 };
 
 interface PageProps {
@@ -39,7 +41,7 @@ export default async function TractorsPage({ searchParams }: PageProps) {
   const lang        = cookieStore.get(LANG_COOKIE)?.value     ?? DEFAULT_LANG;
 
   const filters: ListingFilters = {
-    brand:     searchParams.brand,
+    brand:     searchParams.brand || AGRICULTURAL_BRANDS,
     condition: searchParams.condition,
     country:   searchParams.country  || undefined,
     yearFrom:  searchParams.yearFrom ? Number(searchParams.yearFrom) : undefined,
@@ -154,6 +156,26 @@ export default async function TractorsPage({ searchParams }: PageProps) {
 
           {/* Listing grid */}
           <div className="lg:col-span-3">
+
+            {/* KAMA trucks banner */}
+            <div className="mb-4 flex flex-col items-start justify-between gap-3 rounded-xl border border-[#6BA3C8]/30 bg-[#001240] px-5 py-4 sm:flex-row sm:items-center">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-[#6BA3C8]"
+                  style={{ fontFamily: "var(--font-body)" }}>
+                  Nuevo en catálogo
+                </p>
+                <p className="text-sm text-white/70" style={{ fontFamily: "var(--font-body)" }}>
+                  27 modelos de camiones KAMA — combustión y eléctrico (BEV)
+                </p>
+              </div>
+              <Link
+                href="/camiones"
+                className="flex-shrink-0 rounded-full bg-[#6BA3C8] px-4 py-2 text-xs font-semibold text-white transition-opacity hover:opacity-90"
+                style={{ fontFamily: "var(--font-body)" }}
+              >
+                Ver camiones →
+              </Link>
+            </div>
 
             {/* Import CTA banner */}
             <div className="mb-6 flex flex-col items-start justify-between gap-3 rounded-xl border border-[#C4933F]/20 bg-[#001240] px-5 py-4 sm:flex-row sm:items-center">

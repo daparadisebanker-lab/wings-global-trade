@@ -23,6 +23,14 @@ export default function Header() {
             <CategoryMegaMenu />
 
             <Link
+              href="/camiones"
+              className="text-sm font-medium text-white/70 transition-colors hover:text-white"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              Camiones
+            </Link>
+
+            <Link
               href="/about"
               className="text-sm font-medium text-white/70 transition-colors hover:text-white"
               style={{ fontFamily: "var(--font-body)" }}

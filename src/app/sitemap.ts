@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getListings } from "@data/listings";
+import { KAMA_SERIES } from "@/lib/kama-series";
 
 const BASE = "https://wingsglobaltrade.com";
 
@@ -21,6 +22,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/brands/john-deere`,              lastModified: new Date(), changeFrequency: "weekly",  priority: 0.8 },
     { url: `${BASE}/brands/massey-ferguson`,         lastModified: new Date(), changeFrequency: "weekly",  priority: 0.8 },
     { url: `${BASE}/brands/kubota`,                  lastModified: new Date(), changeFrequency: "weekly",  priority: 0.8 },
+    { url: `${BASE}/camiones`,                        lastModified: new Date(), changeFrequency: "weekly",  priority: 0.9 },
+    { url: `${BASE}/brands/kama`,                    lastModified: new Date(), changeFrequency: "weekly",  priority: 0.8 },
+    ...KAMA_SERIES.map((s) => ({
+      url: `${BASE}/brands/kama/${s.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.7,
+    })),
     { url: `${BASE}/importacion`,                    lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/cotizar`,                        lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/proximamente`,                   lastModified: new Date(), changeFrequency: "weekly",  priority: 0.7 },
