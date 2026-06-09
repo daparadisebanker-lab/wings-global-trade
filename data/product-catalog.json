@@ -1,4 +1,4 @@
-﻿{
+{
   "source": {
     "fileName": "product catalog.pdf",
     "originalPath": "C:\\Users\\USER\\Downloads\\EURO GLOBAL CODE\\product catalog.pdf"
@@ -1432,6 +1432,1299 @@
           "wheelbase_mm": 2250,
           "ground_clearance_mm": 490,
           "turning_radius_m": 4.2
+        }
+      }
+    },
+    {
+      "id": "kama-w23s",
+      "title": "KAMA W23S",
+      "brand": "KAMA",
+      "model": "W23S",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA W23S es un camión ligero de doble cabina con motor de gasolina LJ4A16QG de 91 kW (122 hp), cumplimiento Euro-VI. Carga útil 1.5T, GVW 3,040 kg, caja de carga 3050×1750mm y transmisión 5+1 manual. Torque de 161 Nm a 3750–4250 rpm. ABS, dirección asistida, A/C y multimedia MP5 de serie. Opción RHD disponible.",
+      "images": [],
+      "horsepower": 122,
+      "transmission": "5+1 velocidades manual",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "model": "LJ4A16QG (LIUJI)",
+          "displacement_cc": null,
+          "fuel_type": "Gasolina (Euro-VI)",
+          "emission_standard": "Euro-VI",
+          "power_kw": 91,
+          "rated_hp": 122
+        },
+        "transmission_details": {
+          "type": "5+1 velocidades manual"
+        },
+        "dimensions": {
+          "length_mm": 5835,
+          "width_mm": 1840,
+          "height_mm": 2040,
+          "curb_weight_kg": 1540,
+          "gvw_kg": 3040,
+          "wheelbase_mm": 3600,
+          "cargo_box": "3050×1750×360mm"
+        },
+        "tires": {
+          "all": "185R14LT"
+        },
+        "specs": {
+          "payload_t": 1.5,
+          "max_speed_kmh": 100
+        }
+      }
+    },
+    {
+      "id": "kama-x11",
+      "title": "KAMA X11",
+      "brand": "KAMA",
+      "model": "X11",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA X11 es un camión ligero de cabina sencilla 1750mm con motor de gasolina LIUJI de 98 kW (131 hp) y 200 Nm de torque. Carga útil 2T, GVW 3,980 kg, caja de carga 3510×1860mm. Eje trasero de alta capacidad 2.5T, transmisión 5+1 manual. ABS, dirección asistida, A/C y MP5. Opción RHD disponible.",
+      "images": [],
+      "horsepower": 131,
+      "transmission": "5+1 velocidades manual",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "model": "LJ481Q6 (LIUJI)",
+          "displacement_cc": 1962,
+          "fuel_type": "Gasolina",
+          "emission_standard": "Euro-III",
+          "power_kw": 98,
+          "rated_hp": 131
+        },
+        "transmission_details": {
+          "type": "5+1 velocidades manual"
+        },
+        "dimensions": {
+          "length_mm": 5580,
+          "width_mm": 1950,
+          "height_mm": 2100,
+          "curb_weight_kg": 1980,
+          "gvw_kg": 3980,
+          "wheelbase_mm": 2900,
+          "cargo_box": "3510×1860×360mm"
+        },
+        "tires": {
+          "all": "185R14LT"
+        },
+        "specs": {
+          "payload_t": 2.0,
+          "max_speed_kmh": 100
+        }
+      }
+    },
+    {
+      "id": "kama-x12cng",
+      "title": "KAMA X12CNG",
+      "brand": "KAMA",
+      "model": "X12CNG",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA X12CNG es un camión ligero a gas natural (CNG) con motor LIUJI de 90 kW (121 hp), Euro-IV. Carga útil 2T, GVW 4,120 kg, caja de carga 3950×1750mm. Combustible CNG reduce costos operativos hasta un 40% frente a gasolina — ideal para distribución urbana. ABS, dirección asistida, A/C y MP5. Opción RHD disponible.",
+      "images": [],
+      "horsepower": 121,
+      "transmission": "5+1 velocidades manual",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "model": "LJ481QS6 (LIUJI)",
+          "displacement_cc": 1962,
+          "fuel_type": "GNC (Gas Natural Comprimido)",
+          "emission_standard": "Euro-IV",
+          "power_kw": 90,
+          "rated_hp": 121
+        },
+        "transmission_details": {
+          "type": "5+1 velocidades manual"
+        },
+        "dimensions": {
+          "length_mm": 5995,
+          "width_mm": 1840,
+          "height_mm": 2120,
+          "curb_weight_kg": 2120,
+          "gvw_kg": 4120,
+          "wheelbase_mm": 3180,
+          "cargo_box": "3950×1750×360mm"
+        },
+        "tires": {
+          "all": "185R14LT"
+        },
+        "specs": {
+          "payload_t": 2.0,
+          "max_speed_kmh": 100
+        }
+      }
+    },
+    {
+      "id": "kama-x32d",
+      "title": "KAMA X32D",
+      "brand": "KAMA",
+      "model": "X32D",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA X32D es un camión ligero diésel con motor Isuzu JE493ZLQ4 de 80 kW (107 hp) y 260 Nm de torque. Carga útil 2.5T, GVW 4,590 kg, caja de carga 3575×1750mm. Eje trasero de alta capacidad 2.5T para distribución de carga media. ABS, dirección asistida, A/C y MP5. Opción RHD disponible.",
+      "images": [],
+      "horsepower": 107,
+      "transmission": "5+1 velocidades manual",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "model": "JE493ZLQ4 (ISUZU)",
+          "displacement_cc": 2771,
+          "fuel_type": "Diésel (Euro-IV)",
+          "emission_standard": "Euro-IV",
+          "power_kw": 80,
+          "rated_hp": 107
+        },
+        "transmission_details": {
+          "type": "5+1 velocidades manual"
+        },
+        "dimensions": {
+          "length_mm": 5615,
+          "width_mm": 1840,
+          "height_mm": 2120,
+          "curb_weight_kg": 2090,
+          "gvw_kg": 4590,
+          "wheelbase_mm": 2850,
+          "cargo_box": "3575×1750×360mm"
+        },
+        "tires": {
+          "all": "6.00R15LT"
+        },
+        "specs": {
+          "payload_t": 2.5,
+          "max_speed_kmh": 100
+        }
+      }
+    },
+    {
+      "id": "kama-x33e",
+      "title": "KAMA X33E",
+      "brand": "KAMA",
+      "model": "X33E",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA X33E es la versión diésel Euro-V de la serie X con motor Weichai WP2.3 de 81 kW (109 hp) y 280 Nm de torque. Carga útil 2.5T, GVW 4,600 kg, batería 24V, ESC de serie. Caja de carga 3600×1750mm. Tecnología de control de estabilidad activa para mayor seguridad en carga. Opción RHD disponible.",
+      "images": [],
+      "horsepower": 109,
+      "transmission": "5+1 velocidades manual",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "model": "WP2.3O110E50 (WEICHAI)",
+          "displacement_cc": 2290,
+          "fuel_type": "Diésel (Euro-V)",
+          "emission_standard": "Euro-V",
+          "power_kw": 81,
+          "rated_hp": 109
+        },
+        "transmission_details": {
+          "type": "5+1 velocidades manual"
+        },
+        "dimensions": {
+          "length_mm": 5640,
+          "width_mm": 1840,
+          "height_mm": 2120,
+          "curb_weight_kg": 2100,
+          "gvw_kg": 4600,
+          "wheelbase_mm": 2850,
+          "cargo_box": "3600×1750×360mm"
+        },
+        "tires": {
+          "all": "185R15LT"
+        },
+        "specs": {
+          "payload_t": 2.5,
+          "max_speed_kmh": 100
+        }
+      }
+    },
+    {
+      "id": "kama-v12",
+      "title": "KAMA V12",
+      "brand": "KAMA",
+      "model": "V12",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA V12 es un mini camión de cabina sencilla 1715mm con motor de gasolina DAE de 77 kW (103 hp), Euro-VI. Carga útil 1.2T, GVW 2,700 kg, caja de carga 3180×1625mm. Perfil compacto para máxima maniobrabilidad en calles estrechas y zonas urbanas de acceso restringido. ABS, dirección asistida, A/C y MP5. Opción RHD disponible.",
+      "images": [],
+      "horsepower": 103,
+      "transmission": "5+1 velocidades manual",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "model": "DAM16KR (DAE)",
+          "displacement_cc": 1597,
+          "fuel_type": "Gasolina (Euro-VI)",
+          "emission_standard": "Euro-VI",
+          "power_kw": 77,
+          "rated_hp": 103
+        },
+        "transmission_details": {
+          "type": "5+1 velocidades manual"
+        },
+        "dimensions": {
+          "length_mm": 5460,
+          "width_mm": 1715,
+          "height_mm": 2100,
+          "curb_weight_kg": 1500,
+          "gvw_kg": 2700,
+          "wheelbase_mm": 3400,
+          "cargo_box": "3180×1625×360mm"
+        },
+        "tires": {
+          "all": "185R14LT"
+        },
+        "specs": {
+          "payload_t": 1.2,
+          "max_speed_kmh": 100
+        }
+      }
+    },
+    {
+      "id": "kama-v15",
+      "title": "KAMA V15",
+      "brand": "KAMA",
+      "model": "V15",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA V15 es el modelo tope de la serie V Mini Truck, con motor de gasolina DAE DAN20KR de 110 kW (148 hp) y 204 Nm de torque. Carga útil 1.5T, GVW 3,250 kg, caja de carga ampliada 3700×1820mm con 6 ruedas. Mayor potencia para terrenos exigentes y cargas densas. ABS, dirección asistida, A/C y MP5. Opción RHD disponible.",
+      "images": [],
+      "horsepower": 148,
+      "transmission": "5+1 velocidades manual",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "model": "DAN20KR (DAE)",
+          "displacement_cc": 1998,
+          "fuel_type": "Gasolina (Euro-VI)",
+          "emission_standard": "Euro-VI",
+          "power_kw": 110,
+          "rated_hp": 148
+        },
+        "transmission_details": {
+          "type": "5+1 velocidades manual"
+        },
+        "dimensions": {
+          "length_mm": 5995,
+          "width_mm": 1910,
+          "height_mm": 2090,
+          "curb_weight_kg": 1750,
+          "gvw_kg": 3250,
+          "wheelbase_mm": 3600,
+          "cargo_box": "3700×1820×360mm"
+        },
+        "tires": {
+          "all": "185R14LT"
+        },
+        "specs": {
+          "payload_t": 1.5,
+          "max_speed_kmh": 100
+        }
+      }
+    },
+    {
+      "id": "kama-m36f",
+      "title": "KAMA M36F",
+      "brand": "KAMA",
+      "model": "M36F",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA M36F es el único modelo diésel Euro-VI de la serie M3, con motor Weichai WP2.3Q110E50 de 110 kW (148 hp) y 300 Nm de torque. Carga útil 4T, GVW 5,580 kg, freno de aire, freno de estacionamiento de resorte, batería 12V. Cabina sencilla 1900mm, caja de carga 4160×2100mm. Transmisión 6+1 manual. Cumple los estándares de emisiones más exigentes para importación sin restricciones. Opción RHD disponible.",
+      "images": [],
+      "horsepower": 148,
+      "transmission": "6+1 velocidades manual",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "model": "WP2.3Q110E50 (WEICHAI)",
+          "displacement_cc": 2290,
+          "fuel_type": "Diésel (Euro-VI)",
+          "emission_standard": "Euro-VI",
+          "power_kw": 110,
+          "rated_hp": 148
+        },
+        "transmission_details": {
+          "type": "6+1 velocidades manual"
+        },
+        "dimensions": {
+          "length_mm": 5995,
+          "width_mm": 2200,
+          "height_mm": 2390,
+          "curb_weight_kg": 2580,
+          "gvw_kg": 5580,
+          "wheelbase_mm": 3360,
+          "cargo_box": "4160×2100×400mm"
+        },
+        "tires": {
+          "all": "7.00R16LT"
+        },
+        "specs": {
+          "payload_t": 4.0,
+          "max_speed_kmh": 100
+        }
+      }
+    },
+    {
+      "id": "kama-m61",
+      "title": "KAMA M61",
+      "brand": "KAMA",
+      "model": "M61",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA M61 es el modelo de gasolina de la serie M6 con cabina 1.5 postes de 2030mm. Motor G4BA de 110 kW (148 hp), carga útil 3.5T, GVW 6,320 kg, caja de carga 4300×2100×450mm. Freno hidráulico y batería 12V. ABS, dirección asistida, A/C y MP5. Ideal para distribución de carga media en zonas sin infraestructura diésel. Opción RHD disponible.",
+      "images": [],
+      "horsepower": 148,
+      "transmission": "5+1 velocidades manual",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "model": "G4BA (XG)",
+          "displacement_cc": 2693,
+          "fuel_type": "Gasolina",
+          "emission_standard": null,
+          "power_kw": 110,
+          "rated_hp": 148
+        },
+        "transmission_details": {
+          "type": "5+1 velocidades manual"
+        },
+        "dimensions": {
+          "length_mm": 6470,
+          "width_mm": 2280,
+          "height_mm": 2400,
+          "curb_weight_kg": 2820,
+          "gvw_kg": 6320,
+          "wheelbase_mm": 3600,
+          "cargo_box": "4300×2100×450mm"
+        },
+        "tires": {
+          "all": "7.50R16LT"
+        },
+        "specs": {
+          "payload_t": 3.5,
+          "max_speed_kmh": 100
+        }
+      }
+    },
+    {
+      "id": "kama-m69e",
+      "title": "KAMA M69E",
+      "brand": "KAMA",
+      "model": "M69E",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA M69E es el modelo heavy-duty de la serie M6, con motor Isuzu 4HK1-TCG60 de 150 kW (201 hp) y 647 Nm de torque. Carga útil 10T, GVW 14,870 kg, freno de aire con freno de resorte, batería 24V. Cabina 1.5 postes 2030mm, caja de carga 6250×2300×550mm. Transmisión 8+2 manual para operaciones de carga pesada. Neumáticos 245/70R19.5. Opción RHD disponible.",
+      "images": [],
+      "horsepower": 201,
+      "transmission": "8+2 velocidades manual",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "model": "4HK1-TCG60 (ISUZU)",
+          "displacement_cc": 5193,
+          "fuel_type": "Diésel (Euro-V)",
+          "emission_standard": "Euro-V",
+          "power_kw": 150,
+          "rated_hp": 201
+        },
+        "transmission_details": {
+          "type": "8+2 velocidades manual"
+        },
+        "dimensions": {
+          "length_mm": 8470,
+          "width_mm": 2480,
+          "height_mm": 2500,
+          "curb_weight_kg": 4870,
+          "gvw_kg": 14870,
+          "wheelbase_mm": 4800,
+          "cargo_box": "6250×2300×550mm"
+        },
+        "tires": {
+          "all": "245/70R19.5"
+        },
+        "specs": {
+          "payload_t": 10.0,
+          "max_speed_kmh": 100
+        }
+      }
+    },
+    {
+      "id": "kama-gm67e",
+      "title": "KAMA GM67E",
+      "brand": "KAMA",
+      "model": "GM67E",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA GM67E es un camión mediano de alta capacidad con motor Yunnei YNF40E1 de 125 kW (168 hp) y 600 Nm de torque. Carga útil 10T, GVW 16,620 kg, freno de aire, freno de estacionamiento de resorte, batería 24V. Cabina sencilla 2030mm, caja de carga de alta pared 4200×2300×800mm — ideal para cargas voluminosas. Transmisión 8+2 manual, neumáticos 9.00R20. Euro-V. Opción RHD disponible.",
+      "images": [],
+      "horsepower": 168,
+      "transmission": "8+2 velocidades manual",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "model": "YNF40E1 (YUNNEI)",
+          "displacement_cc": 3920,
+          "fuel_type": "Diésel (Euro-V)",
+          "emission_standard": "Euro-V",
+          "power_kw": 125,
+          "rated_hp": 168
+        },
+        "transmission_details": {
+          "type": "8+2 velocidades manual"
+        },
+        "dimensions": {
+          "length_mm": 6500,
+          "width_mm": 2440,
+          "height_mm": 2640,
+          "curb_weight_kg": 6620,
+          "gvw_kg": 16620,
+          "wheelbase_mm": 3600,
+          "cargo_box": "4200×2300×800mm"
+        },
+        "tires": {
+          "all": "9.00R20"
+        },
+        "specs": {
+          "payload_t": 10.0,
+          "max_speed_kmh": 100
+        }
+      }
+    },
+    {
+      "id": "kama-ew1",
+      "title": "KAMA EW1 Eléctrico",
+      "brand": "KAMA",
+      "model": "EW1",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA EW1 es un mini camión totalmente eléctrico (BEV) con motor INOVANCE de 35/70 kW (47/94 hp), batería LFP GOTION de 24 kWh y autonomía de 130 km WLTP. Cabina sencilla RHD 1600mm, caja de carga 3050×1600mm, GVW 2,100 kg, carga útil 1T. Carga rápida/lenta. ABS, dirección asistida, A/C de serie. Cero emisiones para distribución urbana.",
+      "images": [],
+      "horsepower": 47,
+      "transmission": "Eléctrico (automático)",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "fuel_type": "Eléctrico (BEV)",
+          "power_kw": 35,
+          "peak_power_kw": 70,
+          "rated_hp": 47,
+          "peak_hp": 94
+        },
+        "battery": {
+          "brand": "GOTION",
+          "type": "LiFePO4 (LFP)",
+          "capacity_kwh": 24.01,
+          "voltage_v": 358.4,
+          "charging": "Rápida/lenta"
+        },
+        "dimensions": {
+          "length_mm": 4140,
+          "width_mm": 1690,
+          "height_mm": 2030,
+          "curb_weight_kg": 1100,
+          "gvw_kg": 2100,
+          "wheelbase_mm": 2500,
+          "cargo_box": "3050×1600×360mm"
+        },
+        "tires": {
+          "all": "175R13LT"
+        },
+        "specs": {
+          "range_km_wltp": 130,
+          "max_speed_kmh": 90,
+          "payload_t": 1.0
+        }
+      }
+    },
+    {
+      "id": "kama-ew2",
+      "title": "KAMA EW2 Eléctrico",
+      "brand": "KAMA",
+      "model": "EW2",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA EW2 es un camión eléctrico (BEV) con motor INOVANCE de 35/70 kW (47/94 hp), batería LFP EVE de 38.64 kWh y autonomía de 200 km WLTP. Cabina sencilla RHD 1600mm, caja de carga 3050×1690mm, GVW 2,750 kg, carga útil 1.5T. Frenos disco/tambor. Cero emisiones para distribución interurbana.",
+      "images": [],
+      "horsepower": 47,
+      "transmission": "Eléctrico (automático)",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "fuel_type": "Eléctrico (BEV)",
+          "power_kw": 35,
+          "peak_power_kw": 70,
+          "rated_hp": 47,
+          "peak_hp": 94
+        },
+        "battery": {
+          "brand": "EVE",
+          "type": "LiFePO4 (LFP)",
+          "capacity_kwh": 38.64,
+          "voltage_v": 309.12,
+          "charging": "Rápida/lenta"
+        },
+        "dimensions": {
+          "length_mm": 4960,
+          "width_mm": 1780,
+          "height_mm": 2055,
+          "curb_weight_kg": 1250,
+          "gvw_kg": 2750,
+          "wheelbase_mm": 3050,
+          "cargo_box": "3050×1690×360mm"
+        },
+        "tires": {
+          "all": "195R14C"
+        },
+        "specs": {
+          "range_km_wltp": 200,
+          "max_speed_kmh": 90,
+          "payload_t": 1.5
+        }
+      }
+    },
+    {
+      "id": "kama-ev1",
+      "title": "KAMA EV1 Eléctrico",
+      "brand": "KAMA",
+      "model": "EV1",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA EV1 es un camión eléctrico (BEV) con motor Lincontrol de 35/70 kW (47/94 hp), batería LFP GOTION de 41.93 kWh y autonomía de 220 km WLTP. Carga útil 1.5T, GVW 3,150 kg, caja de carga 3300×1680mm. Compatible CCS2. ABS, dirección asistida, A/C y MP5. Ideal para distribución urbana de última milla.",
+      "images": [],
+      "horsepower": 47,
+      "transmission": "Eléctrico (automático)",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "fuel_type": "Eléctrico (BEV)",
+          "power_kw": 35,
+          "peak_power_kw": 70,
+          "rated_hp": 47,
+          "peak_hp": 94
+        },
+        "battery": {
+          "brand": "GOTION",
+          "type": "LiFePO4 (LFP)",
+          "capacity_kwh": 41.93,
+          "voltage_v": 332.8,
+          "charging": "Rápida/lenta"
+        },
+        "dimensions": {
+          "length_mm": 5595,
+          "width_mm": 1770,
+          "height_mm": 2070,
+          "curb_weight_kg": 1600,
+          "gvw_kg": 3150,
+          "wheelbase_mm": 3450,
+          "cargo_box": "3300×1680×360mm"
+        },
+        "tires": {
+          "all": "185R14LT"
+        },
+        "specs": {
+          "range_km_wltp": 220,
+          "max_speed_kmh": 90,
+          "payload_t": 1.5
+        }
+      }
+    },
+    {
+      "id": "kama-ev2",
+      "title": "KAMA EV2 Eléctrico",
+      "brand": "KAMA",
+      "model": "EV2",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA EV2 es un camión eléctrico (BEV) con batería CATL de 53.58 kWh y autonomía de 280 km WLTP — la mayor de la serie EW/EV. Motor Lincontrol de 35/70 kW (47/94 hp), carga útil 1.5T, GVW 3,150 kg, caja de carga 3300×1680mm. Compatible CCS2. Líder en autonomía para distribución interurbana.",
+      "images": [],
+      "horsepower": 47,
+      "transmission": "Eléctrico (automático)",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "fuel_type": "Eléctrico (BEV)",
+          "power_kw": 35,
+          "peak_power_kw": 70,
+          "rated_hp": 47,
+          "peak_hp": 94
+        },
+        "battery": {
+          "brand": "CATL",
+          "type": "LiFePO4 (LFP)",
+          "capacity_kwh": 53.58,
+          "voltage_v": 334.88,
+          "charging": "Rápida/lenta"
+        },
+        "dimensions": {
+          "length_mm": 5595,
+          "width_mm": 1770,
+          "height_mm": 2070,
+          "curb_weight_kg": 1650,
+          "gvw_kg": 3150,
+          "wheelbase_mm": 3450,
+          "cargo_box": "3300×1680×360mm"
+        },
+        "tires": {
+          "all": "185R14LT"
+        },
+        "specs": {
+          "range_km_wltp": 280,
+          "max_speed_kmh": 90,
+          "payload_t": 1.5
+        }
+      }
+    },
+    {
+      "id": "kama-ev3",
+      "title": "KAMA EV3 Eléctrico",
+      "brand": "KAMA",
+      "model": "EV3",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA EV3 es el modelo tope de la serie EV con motor Lincontrol de 35/70 kW (47/94 hp), batería LFP GOTION de 51.46 kWh y autonomía de 260 km WLTP. Carga útil 1.5T, 6 ruedas para mayor estabilidad, GVW 3,390 kg, caja de carga ampliada 3700×1820mm. Cabina 1910mm. Cero emisiones con mayor capacidad de carga.",
+      "images": [],
+      "horsepower": 47,
+      "transmission": "Eléctrico (automático)",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "fuel_type": "Eléctrico (BEV)",
+          "power_kw": 35,
+          "peak_power_kw": 70,
+          "rated_hp": 47,
+          "peak_hp": 94
+        },
+        "battery": {
+          "brand": "GOTION",
+          "type": "LiFePO4 (LFP)",
+          "capacity_kwh": 51.46,
+          "voltage_v": 384.0,
+          "charging": "Rápida/lenta"
+        },
+        "dimensions": {
+          "length_mm": 5595,
+          "width_mm": 1910,
+          "height_mm": 2120,
+          "curb_weight_kg": 1690,
+          "gvw_kg": 3390,
+          "wheelbase_mm": 3600,
+          "cargo_box": "3700×1820×360mm"
+        },
+        "tires": {
+          "all": "185R14LT"
+        },
+        "specs": {
+          "range_km_wltp": 260,
+          "max_speed_kmh": 90,
+          "payload_t": 1.5
+        }
+      }
+    },
+    {
+      "id": "kama-es6",
+      "title": "KAMA ES6 Eléctrico",
+      "brand": "KAMA",
+      "model": "ES6",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA ES6 es una furgoneta eléctrica de carga (BEV) con motor Lincontrol de 35/70 kW (47/94 hp), batería LFP GOTION de 41.93 kWh y autonomía de 220 km WLTP. Capacidad de carga 6m³, GVW 3,050 kg, carga útil 1.5T. Puertas corredizas laterales, compuertas traseras 270°. ESC, airbags dobles y AEBS conforme ECE. Ideal para logística urbana de última milla.",
+      "images": [],
+      "horsepower": 47,
+      "transmission": "Eléctrico (automático)",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "fuel_type": "Eléctrico (BEV)",
+          "power_kw": 35,
+          "peak_power_kw": 70,
+          "rated_hp": 47,
+          "peak_hp": 94
+        },
+        "battery": {
+          "brand": "GOTION",
+          "type": "LiFePO4 (LFP)",
+          "capacity_kwh": 41.93,
+          "voltage_v": 332.8,
+          "charging": "Rápida/lenta"
+        },
+        "dimensions": {
+          "length_mm": 5265,
+          "width_mm": 1715,
+          "height_mm": 2065,
+          "curb_weight_kg": 1600,
+          "gvw_kg": 3050,
+          "wheelbase_mm": 3050
+        },
+        "tires": {
+          "all": "185R14LT"
+        },
+        "specs": {
+          "range_km_wltp": 220,
+          "max_speed_kmh": 90,
+          "payload_t": 1.5
+        }
+      }
+    },
+    {
+      "id": "kama-esp6",
+      "title": "KAMA ESP6 Eléctrico",
+      "brand": "KAMA",
+      "model": "ESP6",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA ESP6 es una furgoneta de pasajeros eléctrica (BEV) con motor Lincontrol de 35/70 kW (47/94 hp), batería LFP CATL de 53.58 kWh y autonomía de 280 km WLTP. Capacidad 11 personas (2+3+3+3), GVW 3,050 kg. Puertas corredizas, compuertas 270°. ESC, airbags dobles y AEBS. Transporte escolar, turístico y corporativo de cero emisiones.",
+      "images": [],
+      "horsepower": 47,
+      "transmission": "Eléctrico (automático)",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "fuel_type": "Eléctrico (BEV)",
+          "power_kw": 35,
+          "peak_power_kw": 70,
+          "rated_hp": 47,
+          "peak_hp": 94
+        },
+        "battery": {
+          "brand": "CATL",
+          "type": "LiFePO4 (LFP)",
+          "capacity_kwh": 53.58,
+          "voltage_v": 334.88,
+          "charging": "Rápida/lenta"
+        },
+        "dimensions": {
+          "length_mm": 5265,
+          "width_mm": 1715,
+          "height_mm": 2065,
+          "curb_weight_kg": 1730,
+          "gvw_kg": 3050,
+          "wheelbase_mm": 3050
+        },
+        "tires": {
+          "all": "185R14LT"
+        },
+        "specs": {
+          "range_km_wltp": 280,
+          "max_speed_kmh": 90
+        },
+        "dims_seats": "11 personas (2+3+3+3)"
+      }
+    },
+    {
+      "id": "kama-es7",
+      "title": "KAMA ES7 Eléctrico",
+      "brand": "KAMA",
+      "model": "ES7",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA ES7 es una furgoneta eléctrica de carga (BEV) de cabina 1870mm con motor Lincontrol de 35/70 kW (47/94 hp), batería LFP GOTION de 41.93 kWh y autonomía de 220 km WLTP. Capacidad de carga 7m³, GVW 3,150 kg, carga útil 1.5T. Puertas corredizas, compuertas 270°. ESC, airbags dobles y AEBS.",
+      "images": [],
+      "horsepower": 47,
+      "transmission": "Eléctrico (automático)",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "fuel_type": "Eléctrico (BEV)",
+          "power_kw": 35,
+          "peak_power_kw": 70,
+          "rated_hp": 47,
+          "peak_hp": 94
+        },
+        "battery": {
+          "brand": "GOTION",
+          "type": "LiFePO4 (LFP)",
+          "capacity_kwh": 41.93,
+          "voltage_v": 332.8,
+          "charging": "Rápida/lenta"
+        },
+        "dimensions": {
+          "length_mm": 5265,
+          "width_mm": 1870,
+          "height_mm": 2060,
+          "curb_weight_kg": 1630,
+          "gvw_kg": 3150,
+          "wheelbase_mm": 3450
+        },
+        "tires": {
+          "all": "185R14LT"
+        },
+        "specs": {
+          "range_km_wltp": 220,
+          "max_speed_kmh": 90,
+          "payload_t": 1.5
+        }
+      }
+    },
+    {
+      "id": "kama-esp7",
+      "title": "KAMA ESP7 Eléctrico",
+      "brand": "KAMA",
+      "model": "ESP7",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA ESP7 es una furgoneta de pasajeros eléctrica (BEV) de cabina 1870mm con motor Lincontrol de 35/70 kW (47/94 hp), batería LFP CATL de 53.58 kWh y autonomía de 280 km WLTP. GVW 3,150 kg. Puertas corredizas, compuertas 270°. ESC, airbags dobles y AEBS conforme ECE.",
+      "images": [],
+      "horsepower": 47,
+      "transmission": "Eléctrico (automático)",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "fuel_type": "Eléctrico (BEV)",
+          "power_kw": 35,
+          "peak_power_kw": 70,
+          "rated_hp": 47,
+          "peak_hp": 94
+        },
+        "battery": {
+          "brand": "CATL",
+          "type": "LiFePO4 (LFP)",
+          "capacity_kwh": 53.58,
+          "voltage_v": 334.88,
+          "charging": "Rápida/lenta"
+        },
+        "dimensions": {
+          "length_mm": 5265,
+          "width_mm": 1870,
+          "height_mm": 2060,
+          "curb_weight_kg": 1750,
+          "gvw_kg": 3150,
+          "wheelbase_mm": 3450
+        },
+        "tires": {
+          "all": "185R14LT"
+        },
+        "specs": {
+          "range_km_wltp": 280,
+          "max_speed_kmh": 90
+        }
+      }
+    },
+    {
+      "id": "kama-es8",
+      "title": "KAMA ES8 Eléctrico",
+      "brand": "KAMA",
+      "model": "ES8",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA ES8 es la furgoneta eléctrica de carga de mayor GVW de la serie ES (BEV), con motor Lincontrol de 35/70 kW (47/94 hp), batería LFP GOTION de 41.93 kWh y autonomía de 200 km WLTP. GVW 3,350 kg, neumáticos reforzados 195/70R15LT. Puertas corredizas, compuertas 270°. ESC, airbags dobles y AEBS. Diseñada para cargas densas.",
+      "images": [],
+      "horsepower": 47,
+      "transmission": "Eléctrico (automático)",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "fuel_type": "Eléctrico (BEV)",
+          "power_kw": 35,
+          "peak_power_kw": 70,
+          "rated_hp": 47,
+          "peak_hp": 94
+        },
+        "battery": {
+          "brand": "GOTION",
+          "type": "LiFePO4 (LFP)",
+          "capacity_kwh": 41.93,
+          "voltage_v": 332.8,
+          "charging": "Rápida/lenta"
+        },
+        "dimensions": {
+          "length_mm": 5265,
+          "width_mm": 1870,
+          "height_mm": 2060,
+          "curb_weight_kg": 1760,
+          "gvw_kg": 3350,
+          "wheelbase_mm": 3450
+        },
+        "tires": {
+          "all": "195/70R15LT"
+        },
+        "specs": {
+          "range_km_wltp": 200,
+          "max_speed_kmh": 90,
+          "payload_t": 1.2
+        }
+      }
+    },
+    {
+      "id": "kama-esp8",
+      "title": "KAMA ESP8 Eléctrico",
+      "brand": "KAMA",
+      "model": "ESP8",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA ESP8 es la furgoneta de pasajeros eléctrica de mayor capacidad de la serie (BEV), con motor Lincontrol de 35/70 kW (47/94 hp), batería LFP CATL de 53.58 kWh y autonomía de 260 km WLTP. Capacidad 18 personas (2+4+4+4+4), GVW 3,350 kg, neumáticos 195/70R15LT. ESC, airbags dobles y AEBS conforme ECE. Transporte masivo de cero emisiones.",
+      "images": [],
+      "horsepower": 47,
+      "transmission": "Eléctrico (automático)",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "fuel_type": "Eléctrico (BEV)",
+          "power_kw": 35,
+          "peak_power_kw": 70,
+          "rated_hp": 47,
+          "peak_hp": 94
+        },
+        "battery": {
+          "brand": "CATL",
+          "type": "LiFePO4 (LFP)",
+          "capacity_kwh": 53.58,
+          "voltage_v": 334.88,
+          "charging": "Rápida/lenta"
+        },
+        "dimensions": {
+          "length_mm": 5265,
+          "width_mm": 1870,
+          "height_mm": 2060,
+          "curb_weight_kg": 1800,
+          "gvw_kg": 3350,
+          "wheelbase_mm": 3450
+        },
+        "tires": {
+          "all": "195/70R15LT"
+        },
+        "specs": {
+          "range_km_wltp": 260,
+          "max_speed_kmh": 90
+        },
+        "dims_seats": "18 personas (2+4+4+4+4)"
+      }
+    },
+    {
+      "id": "kama-ex1",
+      "title": "KAMA EX1 Eléctrico",
+      "brand": "KAMA",
+      "model": "EX1",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA EX1 es un camión eléctrico ligero (BEV) de cabina 1750mm con motor INOVANCE de 35/70 kW (47/94 hp), batería LFP EVE de 55.17 kWh y autonomía de 230 km WLTP. GVW 3,510 kg, caja de carga 4160×2100mm. Sistema de freno EHB, suministro de energía inversa. Enfriamiento líquido opcional. Carga rápida/lenta disponible.",
+      "images": [],
+      "horsepower": 47,
+      "transmission": "Eléctrico (automático)",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "fuel_type": "Eléctrico (BEV)",
+          "power_kw": 35,
+          "peak_power_kw": 70,
+          "rated_hp": 47,
+          "peak_hp": 94
+        },
+        "battery": {
+          "brand": "EVE",
+          "type": "LiFePO4 (LFP)",
+          "capacity_kwh": 55.17,
+          "voltage_v": 328.44,
+          "charging": "Rápida/lenta"
+        },
+        "dimensions": {
+          "length_mm": 5995,
+          "width_mm": 1950,
+          "height_mm": 2100,
+          "curb_weight_kg": 2010,
+          "gvw_kg": 3510,
+          "wheelbase_mm": 3180,
+          "cargo_box": "4160×2100×400mm"
+        },
+        "tires": {
+          "all": "185R15 6PR"
+        },
+        "specs": {
+          "range_km_wltp": 230,
+          "max_speed_kmh": 90
+        }
+      }
+    },
+    {
+      "id": "kama-ex2",
+      "title": "KAMA EX2 Eléctrico",
+      "brand": "KAMA",
+      "model": "EX2",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA EX2 es un camión eléctrico (BEV) de mayor potencia con motor INOVANCE de 50/105 kW (67/141 hp), batería LFP EVE de 66.54 kWh y autonomía de 290 km WLTP. GVW 5,250 kg, caja de carga 4160×2100mm, neumáticos reforzados 185R15 8PR. Sistema EHB y suministro de energía inversa. Motor de 105 kW pico para alta capacidad en pendientes.",
+      "images": [],
+      "horsepower": 67,
+      "transmission": "Eléctrico (automático)",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "fuel_type": "Eléctrico (BEV)",
+          "power_kw": 50,
+          "peak_power_kw": 105,
+          "rated_hp": 67,
+          "peak_hp": 141
+        },
+        "battery": {
+          "brand": "EVE",
+          "type": "LiFePO4 (LFP)",
+          "capacity_kwh": 66.54,
+          "voltage_v": 396.06,
+          "charging": "Rápida/lenta"
+        },
+        "dimensions": {
+          "length_mm": 5995,
+          "width_mm": 1950,
+          "height_mm": 2130,
+          "curb_weight_kg": 2200,
+          "gvw_kg": 5250,
+          "wheelbase_mm": 3180,
+          "cargo_box": "4160×2100×400mm"
+        },
+        "tires": {
+          "all": "185R15 8PR"
+        },
+        "specs": {
+          "range_km_wltp": 290,
+          "max_speed_kmh": 90
+        }
+      }
+    },
+    {
+      "id": "kama-em31",
+      "title": "KAMA EM31 Eléctrico",
+      "brand": "KAMA",
+      "model": "EM31",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA EM31 es un camión eléctrico de cabina amplia 1900mm (BEV) con motor DANA de 60/115 kW (80/154 hp), batería LFP EVE de 81.14 kWh y autonomía de 350 km WLTP. GVW 5,870 kg, caja de carga 4600×2300×450mm. Sistema EHB, frenos de disco delantero. Motor DANA de alta confiabilidad. Enfriamiento líquido opcional.",
+      "images": [],
+      "horsepower": 80,
+      "transmission": "Eléctrico (automático)",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "fuel_type": "Eléctrico (BEV)",
+          "power_kw": 60,
+          "peak_power_kw": 115,
+          "rated_hp": 80,
+          "peak_hp": 154
+        },
+        "battery": {
+          "brand": "EVE",
+          "type": "LiFePO4 (LFP)",
+          "capacity_kwh": 81.14,
+          "voltage_v": 540.96,
+          "charging": "Rápida/lenta"
+        },
+        "dimensions": {
+          "length_mm": 5995,
+          "width_mm": 2200,
+          "height_mm": 2390,
+          "curb_weight_kg": 2750,
+          "gvw_kg": 5870,
+          "wheelbase_mm": 3360,
+          "cargo_box": "4600×2300×450mm"
+        },
+        "tires": {
+          "all": "7.00R16LT"
+        },
+        "specs": {
+          "range_km_wltp": 350,
+          "max_speed_kmh": 90
+        }
+      }
+    },
+    {
+      "id": "kama-em32",
+      "title": "KAMA EM32 Eléctrico",
+      "brand": "KAMA",
+      "model": "EM32",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA EM32 es un camión eléctrico de cabina 1900mm (BEV) con motor DANA de 60/115 kW (80/154 hp), batería LFP CATL de 100.46 kWh y autonomía de 360 km WLTP — la mayor de la serie EX/EM. GVW aprox. 5,870 kg, caja de carga 4600×2300×450mm. Batería CATL de alta densidad energética. Sistema EHB, suministro de energía inversa.",
+      "images": [],
+      "horsepower": 80,
+      "transmission": "Eléctrico (automático)",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "fuel_type": "Eléctrico (BEV)",
+          "power_kw": 60,
+          "peak_power_kw": 115,
+          "rated_hp": 80,
+          "peak_hp": 154
+        },
+        "battery": {
+          "brand": "CATL",
+          "type": "LiFePO4 (LFP)",
+          "capacity_kwh": 100.46,
+          "voltage_v": 502.32,
+          "charging": "Rápida/lenta"
+        },
+        "dimensions": {
+          "length_mm": 5995,
+          "width_mm": 2200,
+          "height_mm": 2390,
+          "curb_weight_kg": 2870,
+          "gvw_kg": 5870,
+          "wheelbase_mm": 3360,
+          "cargo_box": "4600×2300×450mm"
+        },
+        "tires": {
+          "all": "7.00R16LT"
+        },
+        "specs": {
+          "range_km_wltp": 360,
+          "max_speed_kmh": 90
+        }
+      }
+    },
+    {
+      "id": "kama-em61",
+      "title": "KAMA EM61 Eléctrico",
+      "brand": "KAMA",
+      "model": "EM61",
+      "year": null,
+      "price": null,
+      "currency": "USD",
+      "condition": "new",
+      "location": null,
+      "country": "China",
+      "description": "El KAMA EM61 es el camión eléctrico (BEV) de mayor capacidad de la serie EX/EM, con motor DANA de 70/140 kW (94/188 hp), batería LFP GOTION de 141.3 kWh. Cabina 2030mm, GVW 8,000 kg, freno de aire con resorte de estacionamiento. Neumáticos 245/70R19.5. ABS, ESC y dirección asistida. Plataforma de cero emisiones para transporte pesado urbano.",
+      "images": [],
+      "horsepower": 94,
+      "transmission": "Eléctrico (automático)",
+      "drive_type": "RWD",
+      "details": {
+        "engine": {
+          "fuel_type": "Eléctrico (BEV)",
+          "power_kw": 70,
+          "peak_power_kw": 140,
+          "rated_hp": 94,
+          "peak_hp": 188
+        },
+        "battery": {
+          "brand": "GOTION",
+          "type": "LiFePO4 (LFP)",
+          "capacity_kwh": 141.3,
+          "voltage_v": 614.4,
+          "charging": "Rápida/lenta"
+        },
+        "dimensions": {
+          "length_mm": 6540,
+          "width_mm": 2470,
+          "height_mm": 2500,
+          "curb_weight_kg": 4000,
+          "gvw_kg": 8000,
+          "wheelbase_mm": 3600
+        },
+        "tires": {
+          "all": "245/70R19.5"
+        },
+        "specs": {
+          "range_km_wltp": null,
+          "max_speed_kmh": 90
         }
       }
     }
