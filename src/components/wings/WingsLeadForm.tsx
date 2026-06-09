@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useFadeIn, useStaggerFadeIn } from "@/hooks/useFadeIn";
@@ -46,7 +46,7 @@ export default function WingsLeadForm() {
   }
 
   return (
-    <section id="contacto" className="bg-[#F8F6F0] py-24 md:py-32">
+    <section id="contacto" className="bg-[#FAFAFA] py-24 md:py-32">
       <div className="max-w-7xl mx-auto px-6">
         <div ref={headerRef as React.RefObject<HTMLDivElement>} className="fade-up text-center mb-16">
           <p className="text-[#C4933F] text-[10px] font-semibold tracking-[0.12em] uppercase mb-5" style={{ fontFamily: "var(--font-body)" }}>
@@ -174,7 +174,7 @@ function Field({
         onChange={onChange}
         placeholder={placeholder}
         required={required}
-        className="w-full bg-[#F8F6F0] border border-[#E8E4DB] rounded-xl px-4 py-3 text-sm text-[#1C1A16] placeholder-[#6B6560]/50 focus:outline-none focus:border-[#C4933F] focus:ring-2 focus:ring-[#C4933F]/10 transition-all duration-200"
+        className="w-full bg-[#FAFAFA] border border-[#E8E4DB] rounded-xl px-4 py-3 text-sm text-[#1C1A16] placeholder-[#6B6560]/50 focus:outline-none focus:border-[#C4933F] focus:ring-2 focus:ring-[#C4933F]/10 transition-all duration-200"
         style={{ fontFamily: "var(--font-body)" }}
       />
     </div>

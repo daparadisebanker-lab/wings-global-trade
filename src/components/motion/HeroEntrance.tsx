@@ -46,7 +46,7 @@ export default function HeroEntrance() {
 
       {/* H1 — line 1 */}
       <motion.h1
-        className="text-5xl font-normal italic leading-tight text-white sm:text-7xl lg:text-[82px]"
+        className="text-5xl font-extrabold leading-none tracking-tight text-white sm:text-7xl lg:text-[82px]"
         style={{ fontFamily: "var(--font-display)" }}
         initial={{ opacity: 0, y: 36 }}
         animate={{ opacity: 1, y: 0 }}
@@ -54,9 +54,9 @@ export default function HeroEntrance() {
       >
         El distribuidor cotizó más.
         <br />
-        {/* H1 — line 2 (gold) */}
+        {/* H1 — line 2 */}
         <motion.span
-          style={{ color: "#F0A030" }}
+          style={{ color: "#C8D4E4" }}
           initial={{ opacity: 0, y: 36 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.75, delay: 0.52, ease }}

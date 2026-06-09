@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useCallback, useTransition, useRef, useState } from "react";
@@ -157,7 +157,7 @@ export default function FilterPanel({ makes, countries: _countries, t }: Props) 
           <select
             defaultValue={get("sort")}
             onChange={handleInstant("sort")}
-            className="w-full rounded-xl border border-[#E8E4DB] bg-[#F8F6F0] px-3 py-2 text-xs text-[#1C1A16] focus:border-[#C4933F] focus:outline-none"
+            className="w-full rounded-xl border border-[#E8E4DB] bg-[#FAFAFA] px-3 py-2 text-xs text-[#1C1A16] focus:border-[#C4933F] focus:outline-none"
             style={{ fontFamily: "var(--font-body)" }}
           >
             {SORT_OPTIONS.map((o) => (

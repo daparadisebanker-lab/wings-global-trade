@@ -5,7 +5,7 @@ import CategoryMegaMenu from "./CategoryMegaMenu";
 export default function Header() {
 
   return (
-    <header className="sticky top-0 z-50 bg-[#001E50]">
+    <header className="sticky top-0 z-50 bg-[#004389]">
       <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
 

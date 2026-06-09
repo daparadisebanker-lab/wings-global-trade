@@ -4,6 +4,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import WhatsAppButton from "@/components/layout/WhatsAppButton";
 import MobileBottomBar from "@/components/layout/MobileBottomBar";
+import MobileSplash from "@/components/mobile/MobileSplash";
 import JsonLd from "@/components/seo/JsonLd";
 
 const BASE = "https://wingsglobaltrade.com";
@@ -79,6 +80,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className="flex min-h-screen flex-col">
+        <MobileSplash />
         <JsonLd schema={organizationSchema} />
         <Header />
         <main className="flex-1 pb-16 md:pb-0">{children}</main>

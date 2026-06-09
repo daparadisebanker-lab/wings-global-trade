@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import Link from "next/link";
 
 const WA_URL = "https://wa.me/51958381473";
@@ -6,7 +6,7 @@ const WA_URL = "https://wa.me/51958381473";
 export default function MobileBottomBar() {
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-40 flex border-t border-white/10 bg-[#001E50] md:hidden"
+      className="fixed bottom-0 left-0 right-0 z-40 flex border-t border-white/10 bg-[#004389] md:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <Link

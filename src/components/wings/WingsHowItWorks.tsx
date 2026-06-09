@@ -69,7 +69,7 @@ export default function WingsHowItWorks() {
   const gridRef   = useStaggerFadeIn(100);
 
   return (
-    <section id="como-funciona" className="bg-[#F8F6F0] py-24 md:py-32">
+    <section id="como-funciona" className="bg-[#FAFAFA] py-24 md:py-32">
       <div className="max-w-7xl mx-auto px-6">
         <div ref={headerRef as React.RefObject<HTMLDivElement>} className="fade-up text-center mb-20">
           <p className="text-[#C4933F] text-[10px] font-semibold tracking-[0.12em] uppercase mb-5" style={{ fontFamily: "var(--font-body)" }}>
@@ -110,7 +110,7 @@ export default function WingsHowItWorks() {
                 <p className="text-[#6B6560] text-base leading-relaxed" style={{ fontFamily: "var(--font-body)" }}>{step.body}</p>
               </div>
 
-              <div className="border-t border-[#F0EDE6] bg-[#F8F6F0] px-8 py-6">
+              <div className="border-t border-[#E8EAED] bg-[#FAFAFA] px-8 py-6">
                 <p className="text-[#C4933F] text-xs font-medium tracking-[0.15em] uppercase mb-4" style={{ fontFamily: "var(--font-body)" }}>
                   {step.panel.label}
                 </p>

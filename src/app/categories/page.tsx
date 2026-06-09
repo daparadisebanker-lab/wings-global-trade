@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -50,7 +50,7 @@ export default function CategoriesPage() {
   return (
     <>
       {/* ── DUAL PATH HERO ─────────────────────────────────────────────── */}
-      <section className="bg-[#001E50] py-20 md:py-28">
+      <section className="bg-[#004389] py-20 md:py-28">
         <div className="max-w-7xl mx-auto px-6">
 
           <div ref={heroRef as React.RefObject<HTMLDivElement>} className="fade-up text-center mb-14">
@@ -97,7 +97,7 @@ export default function CategoriesPage() {
                   <Link
                     key={cat.slug}
                     href={cat.href}
-                    className="text-xs font-medium px-3 py-1.5 rounded-full bg-[#F8F6F0] border border-[#E8E4DB] text-[#1C1A16] hover:bg-[#001E50] hover:text-white hover:border-[#001E50] transition-colors duration-150"
+                    className="text-xs font-medium px-3 py-1.5 rounded-full bg-[#FAFAFA] border border-[#E8E4DB] text-[#1C1A16] hover:bg-[#004389] hover:text-white hover:border-[#004389] transition-colors duration-150"
                     style={{ fontFamily: "var(--font-body)" }}
                   >
                     {cat.shortLabel}
@@ -161,7 +161,7 @@ export default function CategoriesPage() {
       </section>
 
       {/* ── CATALOG SECTION ─────────────────────────────────────────────── */}
-      <section className="bg-[#F8F6F0] py-20 md:py-28">
+      <section className="bg-[#FAFAFA] py-20 md:py-28">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
             <div>
@@ -202,7 +202,7 @@ export default function CategoriesPage() {
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#001E50]/90 via-[#001E50]/40 to-[#001E50]/10" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#004389]/90 via-[#004389]/40 to-[#004389]/10" />
                   <div className="absolute inset-0 p-6 flex flex-col justify-end">
                     <p className="text-[#C4933F] text-[10px] font-semibold tracking-[0.15em] uppercase mb-1.5"
                       style={{ fontFamily: "var(--font-body)" }}>
@@ -275,7 +275,7 @@ export default function CategoriesPage() {
 
               <Link
                 href="/importacion"
-                className="inline-flex items-center gap-2 bg-[#001E50] hover:bg-[#001E50]/90 text-white font-semibold px-8 py-3.5 rounded-full text-sm transition-colors duration-200"
+                className="inline-flex items-center gap-2 bg-[#004389] hover:bg-[#004389]/90 text-white font-semibold px-8 py-3.5 rounded-full text-sm transition-colors duration-200"
                 style={{ fontFamily: "var(--font-body)" }}
               >
                 Ver servicio completo
@@ -288,7 +288,7 @@ export default function CategoriesPage() {
             {/* Right: hub cards */}
             <div className="space-y-4">
               {HUBS.map((h) => (
-                <div key={h.hub} className="bg-[#F8F6F0] rounded-2xl p-6 border border-[#E8E4DB]">
+                <div key={h.hub} className="bg-[#FAFAFA] rounded-2xl p-6 border border-[#E8E4DB]">
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <p className="text-[#C4933F] text-xs font-semibold tracking-[0.12em] uppercase mb-1"
@@ -317,7 +317,7 @@ export default function CategoriesPage() {
                   </div>
                 </div>
               ))}
-              <div className="bg-[#001E50] rounded-2xl p-6">
+              <div className="bg-[#004389] rounded-2xl p-6">
                 <p className="text-white text-sm font-semibold mb-1" style={{ fontFamily: "var(--font-body)" }}>
                   Cotización en menos de 48 horas
                 </p>
@@ -331,7 +331,7 @@ export default function CategoriesPage() {
       </section>
 
       {/* ── SHARED TRUST LAYER ──────────────────────────────────────────── */}
-      <section className="bg-[#001E50] py-20 md:py-28">
+      <section className="bg-[#004389] py-20 md:py-28">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <p className="text-[#C4933F] text-[10px] font-semibold tracking-[0.12em] uppercase mb-4"
@@ -373,7 +373,7 @@ export default function CategoriesPage() {
       </section>
 
       {/* ── UNIFIED CONTACT CTA ─────────────────────────────────────────── */}
-      <section className="bg-[#F8F6F0] py-20 md:py-28">
+      <section className="bg-[#FAFAFA] py-20 md:py-28">
         <div className="max-w-4xl mx-auto px-6">
           <div ref={ctaRef as React.RefObject<HTMLDivElement>} className="fade-up text-center mb-12">
             <p className="text-[#C4933F] text-[10px] font-semibold tracking-[0.12em] uppercase mb-4"
@@ -427,7 +427,7 @@ export default function CategoriesPage() {
             {/* CTA B — Import path */}
             <Link
               href="/importacion#contacto"
-              className="group bg-[#001E50] rounded-2xl p-8 hover:bg-[#001240] transition-all duration-200 block"
+              className="group bg-[#004389] rounded-2xl p-8 hover:bg-[#062663] transition-all duration-200 block"
             >
               <div className="w-10 h-10 rounded-xl bg-[#C4933F]/20 flex items-center justify-center mb-5">
                 <svg width="18" height="18" fill="none" stroke="#C4933F" strokeWidth={1.5} viewBox="0 0 24 24">

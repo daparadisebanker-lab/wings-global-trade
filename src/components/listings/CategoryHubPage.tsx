@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import Image from "next/image";
 import type { Category } from "@/lib/categories";
 
@@ -13,10 +13,10 @@ export default function CategoryHubPage({ category, comingSoonExtra = [] }: Prop
   const allComingSoon   = [...comingSoonItems, ...comingSoonExtra];
 
   return (
-    <div className="min-h-screen bg-[#F8F6F0]">
+    <div className="min-h-screen bg-[#FAFAFA]">
 
       {/* Page header — navy */}
-      <div className="bg-[#001E50] py-16">
+      <div className="bg-[#004389] py-16">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <p
             className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
@@ -100,7 +100,7 @@ export default function CategoryHubPage({ category, comingSoonExtra = [] }: Prop
                       className="object-cover transition-transform duration-700 group-hover:scale-105"
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
-                    <div className="absolute inset-0 bg-[#001E50]/55 transition-colors duration-300 group-hover:bg-[#001E50]/70" />
+                    <div className="absolute inset-0 bg-[#004389]/55 transition-colors duration-300 group-hover:bg-[#004389]/70" />
                     <div className="absolute inset-0 flex flex-col justify-end p-6">
                       <p
                         className="text-xl font-semibold text-white"
@@ -130,7 +130,7 @@ export default function CategoryHubPage({ category, comingSoonExtra = [] }: Prop
 
         {/* Import CTA when no active inventory */}
         {activeSubtypes.length === 0 && (
-          <div className="mb-10 rounded-2xl bg-[#001240] px-8 py-10">
+          <div className="mb-10 rounded-2xl bg-[#062663] px-8 py-10">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p
@@ -195,7 +195,7 @@ export default function CategoryHubPage({ category, comingSoonExtra = [] }: Prop
                     className="object-cover grayscale"
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
-                  <div className="absolute inset-0 bg-[#001E50]/70" />
+                  <div className="absolute inset-0 bg-[#004389]/70" />
                   <div className="absolute inset-0 flex flex-col justify-end p-6">
                     <p
                       className="text-lg font-semibold text-white/50"

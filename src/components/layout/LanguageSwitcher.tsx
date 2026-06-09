@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRouter } from "next/navigation";
 import { SUPPORTED_LANGUAGES, LANG_COOKIE } from "@/lib/i18n";
@@ -20,7 +20,7 @@ export default function LanguageSwitcher({ current }: { current: string }) {
       aria-label="Select language"
     >
       {SUPPORTED_LANGUAGES.map((l) => (
-        <option key={l.code} value={l.code} className="bg-[#001E50] text-white">
+        <option key={l.code} value={l.code} className="bg-[#004389] text-white">
           {l.label}
         </option>
       ))}

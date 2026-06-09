@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 
@@ -8,7 +8,7 @@ interface Props {
 }
 
 const fieldClass =
-  "w-full rounded-xl border border-[#E8E4DB] bg-[#F8F6F0] px-3 py-2.5 text-sm text-[#1C1A16] focus:border-[#C4933F] focus:outline-none";
+  "w-full rounded-xl border border-[#E8E4DB] bg-[#FAFAFA] px-3 py-2.5 text-sm text-[#1C1A16] focus:border-[#C4933F] focus:outline-none";
 
 type Status = "idle" | "loading" | "success" | "error";
 
@@ -43,7 +43,7 @@ export default function InquiryForm({ listingId, listingTitle }: Props) {
 
   if (status === "success") {
     return (
-      <div className="rounded-2xl bg-[#001E50] p-6 text-center">
+      <div className="rounded-2xl bg-[#004389] p-6 text-center">
         <div className="mb-3 flex justify-center">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#C4933F]">
             <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

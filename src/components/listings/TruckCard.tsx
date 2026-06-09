@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import Image from "next/image";
 import type { Listing } from "@/types";
 
@@ -54,7 +54,7 @@ export default function TruckCard({
   }
 
   const fuelBadgeClass = bev
-    ? "bg-[#001E50] text-[#2DD4BF]"
+    ? "bg-[#004389] text-[#2DD4BF]"
     : "bg-[#1C1A16] text-white";
 
   const gvwDisplay = dims.gvw_kg != null
@@ -69,7 +69,7 @@ export default function TruckCard({
       className={`group flex flex-col overflow-hidden rounded-2xl border border-[#E8E4DB] bg-white shadow-[0_2px_16px_rgba(0,0,0,0.06)] transition-all duration-300 hover:shadow-[0_6px_28px_rgba(0,0,0,0.09)] hover:-translate-y-0.5 ${bev ? "border-l-2 border-l-[#2DD4BF]" : ""}`}
     >
       {/* Image */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-[#F8F6F0]">
+      <div className="relative aspect-[4/3] overflow-hidden bg-[#FAFAFA]">
         <Image
           src={cover}
           alt={`${listing.brand} ${listing.model}`}
@@ -87,7 +87,7 @@ export default function TruckCard({
         {/* Drive badge */}
         {listing.drive_type && (
           <span
-            className="absolute right-3 top-3 rounded-full bg-[#001E50]/80 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-widest text-white backdrop-blur-sm"
+            className="absolute right-3 top-3 rounded-full bg-[#004389]/80 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-widest text-white backdrop-blur-sm"
             style={{ fontFamily: "var(--font-body)" }}
           >
             {listing.drive_type}

@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import HorizontalSubtypeSwitcher from "./HorizontalSubtypeSwitcher";
 import { CATEGORIES } from "@/lib/categories";
 
@@ -18,10 +18,10 @@ export default function ComingSoonCategory({ categorySlug, activeSlug }: Props) 
   const displayTitle = subtype?.label ?? category?.label ?? "Próximamente";
 
   return (
-    <div className="min-h-screen bg-[#F8F6F0]">
+    <div className="min-h-screen bg-[#FAFAFA]">
 
       {/* Page header */}
-      <div className="bg-[#001E50] py-16">
+      <div className="bg-[#004389] py-16">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <p
             className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"

@@ -9,11 +9,11 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // ── Wings brand palette (primary going forward) ──────────────────
+        // ── Wings site palette ───────────────────────────────────────────
         navy: {
-          DEFAULT: "#001E50",
-          light:   "#0A2D6E",
-          deep:    "#001240",
+          DEFAULT: "#004389",
+          light:   "#1459A8",
+          deep:    "#062663",
         },
         gold: {
           DEFAULT: "#C4933F",
@@ -21,9 +21,19 @@ const config: Config = {
           light:   "#F0E4CC",
         },
         charcoal: "#1C1A16",
-        "warm-white": "#F8F6F0",
-        "warm-gray":  "#E8E4DB",
-        "mid-gray":   "#6B6560",
+        "warm-white": "#FAFAFA",
+        "warm-gray":  "#DDE3EA",
+        "mid-gray":   "#495C6B",
+
+        // ── Wings brandbook palette (6 official blues) ───────────────────
+        brand: {
+          imperial:  "#004389",
+          madison:   "#062663",
+          ada:       "#3A498D",
+          meteorito: "#495C6B",
+          campestre: "#76A1B2",
+          tierno:    "#C8D4E4",
+        },
 
         // ── Legacy brown/cream (kept during phase-by-phase migration) ────
         brown: {
@@ -47,13 +57,13 @@ const config: Config = {
         },
       },
       fontFamily: {
-        // ── Wings brand fonts (primary going forward) ────────────────────
-        display: ["Cormorant Garamond", "Georgia", "serif"],
+        // ── Swiss system — single typeface family, weight hierarchy ──────
+        display: ["Flexo", "system-ui", "sans-serif"],
         body:    ["Flexo", "system-ui", "sans-serif"],
         data:    ["DM Mono", "monospace"],
         // ── Legacy (kept during migration) ──────────────────────────────
         sans:    ["Flexo", "Inter", "system-ui", "sans-serif"],
-        serif:   ["Cormorant Garamond", "Playfair Display", "Georgia", "serif"],
+        serif:   ["Flexo", "system-ui", "sans-serif"],
       },
       borderRadius: {
         "2xl": "1rem",

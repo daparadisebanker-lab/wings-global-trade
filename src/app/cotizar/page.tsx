@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState } from "react";
 import Link from "next/link";
 
@@ -58,7 +58,7 @@ export default function CotizarPage() {
       `Hola, acabo de solicitar cotización en wingsglobaltrade.com. Producto: ${form.product}. País: ${form.country}.`
     );
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#F8F6F0] px-6 py-24">
+      <div className="flex min-h-screen items-center justify-center bg-[#FAFAFA] px-6 py-24">
         <div className="w-full max-w-md text-center">
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[#C4933F]/10">
             <svg width="28" height="28" fill="none" stroke="#C4933F" strokeWidth={2} viewBox="0 0 24 24">
@@ -104,10 +104,10 @@ export default function CotizarPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F6F0] pb-20 md:pb-0">
+    <div className="min-h-screen bg-[#FAFAFA] pb-20 md:pb-0">
 
       {/* Header */}
-      <div className="bg-[#001E50] py-10">
+      <div className="bg-[#004389] py-10">
         <div className="mx-auto max-w-2xl px-6 lg:px-8">
           <p
             className="mb-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-[#C4933F]"
@@ -322,7 +322,7 @@ export default function CotizarPage() {
             </div>
 
             {/* Trust signals */}
-            <div className="rounded-xl bg-[#001E50]/5 p-4">
+            <div className="rounded-xl bg-[#004389]/5 p-4">
               <ul className="space-y-1.5">
                 {[
                   "Respondemos en menos de 24 horas",

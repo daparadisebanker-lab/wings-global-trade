@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -30,7 +30,7 @@ export default function MobileMenu() {
         )}
       </button>
 
-      <div className={`absolute left-0 right-0 top-full z-50 max-h-[calc(100vh-4rem)] overflow-y-auto bg-[#001240] px-6 pb-8 md:hidden transition-all duration-200 ease-out ${open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none"}`}>
+      <div className={`absolute left-0 right-0 top-full z-50 max-h-[calc(100vh-4rem)] overflow-y-auto bg-[#062663] px-6 pb-8 md:hidden transition-all duration-200 ease-out ${open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none"}`}>
           <nav className="flex flex-col pt-3">
 
             {/* ── Dual business model cards ─────────────────────────── */}

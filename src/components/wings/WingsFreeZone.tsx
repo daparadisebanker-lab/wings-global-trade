@@ -36,7 +36,7 @@ export default function WingsFreeZone() {
   const benefitsRef = useStaggerFadeIn(70);
 
   return (
-    <section id="zonas-francas" className="bg-[#F8F6F0] py-24 md:py-32">
+    <section id="zonas-francas" className="bg-[#FAFAFA] py-24 md:py-32">
       <div className="max-w-7xl mx-auto px-6">
         <div ref={headerRef as React.RefObject<HTMLDivElement>} className="fade-up text-center mb-16">
           <p className="text-[#C4933F] text-[10px] font-semibold tracking-[0.12em] uppercase mb-5" style={{ fontFamily: "var(--font-body)" }}>
@@ -62,7 +62,7 @@ export default function WingsFreeZone() {
             alt="Free trade zone warehouse"
             className="w-full h-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#001E50]/60 via-transparent to-[#001E50]/30" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#004389]/60 via-transparent to-[#004389]/30" />
           <div className="absolute bottom-6 left-8">
             <p className="text-white/50 text-xs font-medium tracking-[0.18em] uppercase" style={{ fontFamily: "var(--font-body)" }}>
               ZOFRI · Iquique, Chile
@@ -88,7 +88,7 @@ export default function WingsFreeZone() {
                       {hub.city}
                     </h3>
                   </div>
-                  <span className="text-[#6B6560] text-xs font-mono bg-[#F8F6F0] px-3 py-1.5 rounded-full">
+                  <span className="text-[#6B6560] text-xs font-mono bg-[#FAFAFA] px-3 py-1.5 rounded-full">
                     {hub.coordinates}
                   </span>
                 </div>

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { cookies } from "next/headers";
@@ -174,7 +174,7 @@ export default async function KamaTruckDetailPage({ params }: PageProps) {
     <>
       <JsonLd schema={productSchema} />
       <JsonLd schema={breadcrumbSchema} />
-    <div className="min-h-screen bg-[#F8F6F0]">
+    <div className="min-h-screen bg-[#FAFAFA]">
       <div className="mx-auto max-w-7xl px-6 py-8 lg:px-8">
 
         {/* Breadcrumb */}
@@ -248,7 +248,7 @@ export default async function KamaTruckDetailPage({ params }: PageProps) {
 
             {/* BEV distinction strip */}
             {bev && (
-              <div className="mt-6 flex flex-wrap items-center gap-4 rounded-xl border border-[#2DD4BF]/30 bg-[#001E50]/5 px-5 py-4">
+              <div className="mt-6 flex flex-wrap items-center gap-4 rounded-xl border border-[#2DD4BF]/30 bg-[#004389]/5 px-5 py-4">
                 <div className="flex items-center gap-2">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="#2DD4BF">
                     <path d="M13 2L4.5 13.5H11L10 22L20.5 10H14L13 2z"/>
@@ -456,7 +456,7 @@ export default async function KamaTruckDetailPage({ params }: PageProps) {
 
       {/* Sticky mobile CTA bar */}
       <div
-        className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/10 bg-[#001E50] px-4 py-3 md:hidden"
+        className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/10 bg-[#004389] px-4 py-3 md:hidden"
         style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}
       >
         <Link

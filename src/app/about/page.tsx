@@ -58,10 +58,10 @@ const MARKETS = [
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-[#F8F6F0]">
+    <div className="min-h-screen bg-[#FAFAFA]">
 
       {/* Header */}
-      <div className="bg-[#001E50] py-20">
+      <div className="bg-[#004389] py-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="max-w-3xl">
             <p
@@ -248,7 +248,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA */}
-      <section className="bg-[#001E50] py-16">
+      <section className="bg-[#004389] py-16">
         <div className="mx-auto max-w-2xl px-6 text-center">
           <h2
             className="text-2xl font-semibold text-white"

@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import Image from "next/image";
 import { type Category } from "@/lib/categories";
 
@@ -27,8 +27,8 @@ export default function HorizontalSubtypeSwitcher({ category, activeSlug }: Prop
                   href={sub.href}
                   className={`group flex items-center gap-2.5 whitespace-nowrap rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-widest transition-colors duration-200 ${
                     isActive
-                      ? "bg-[#001E50] text-white"
-                      : "text-[#6B6560] hover:bg-[#F8F6F0] hover:text-[#1C1A16]"
+                      ? "bg-[#004389] text-white"
+                      : "text-[#6B6560] hover:bg-[#FAFAFA] hover:text-[#1C1A16]"
                   }`}
                   style={{ fontFamily: "var(--font-body)" }}
                 >

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { Suspense } from "react";
@@ -65,10 +65,10 @@ export default async function TractorsPage({ searchParams }: PageProps) {
   const activeFilterCount = Object.values(filters).filter(Boolean).length;
 
   return (
-    <div className="min-h-screen bg-[#F8F6F0]">
+    <div className="min-h-screen bg-[#FAFAFA]">
 
       {/* Page header */}
-      <div className="bg-[#001E50] py-10">
+      <div className="bg-[#004389] py-10">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <nav
             className="mb-4 flex items-center gap-2 text-xs text-white/30"
@@ -160,7 +160,7 @@ export default async function TractorsPage({ searchParams }: PageProps) {
           <div className="lg:col-span-3">
 
             {/* KAMA trucks banner */}
-            <div className="mb-4 flex flex-col items-start justify-between gap-3 rounded-xl border border-[#6BA3C8]/30 bg-[#001240] px-5 py-4 sm:flex-row sm:items-center">
+            <div className="mb-4 flex flex-col items-start justify-between gap-3 rounded-xl border border-[#6BA3C8]/30 bg-[#062663] px-5 py-4 sm:flex-row sm:items-center">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-widest text-[#6BA3C8]"
                   style={{ fontFamily: "var(--font-body)" }}>
@@ -180,7 +180,7 @@ export default async function TractorsPage({ searchParams }: PageProps) {
             </div>
 
             {/* Import CTA banner */}
-            <div className="mb-6 flex flex-col items-start justify-between gap-3 rounded-xl border border-[#C4933F]/20 bg-[#001240] px-5 py-4 sm:flex-row sm:items-center">
+            <div className="mb-6 flex flex-col items-start justify-between gap-3 rounded-xl border border-[#C4933F]/20 bg-[#062663] px-5 py-4 sm:flex-row sm:items-center">
               <p
                 className="text-sm text-white/60"
                 style={{ fontFamily: "var(--font-body)" }}
@@ -242,13 +242,13 @@ export default async function TractorsPage({ searchParams }: PageProps) {
                   ← Anterior
                 </button>
                 <button
-                  className="rounded-xl border border-[#001E50] bg-[#001E50] px-4 py-2 text-sm font-semibold text-white"
+                  className="rounded-xl border border-[#004389] bg-[#004389] px-4 py-2 text-sm font-semibold text-white"
                   style={{ fontFamily: "var(--font-body)" }}
                 >
                   1
                 </button>
                 <button
-                  className="rounded-xl border border-[#E8E4DB] bg-white px-4 py-2 text-sm text-[#6B6560] hover:bg-[#F8F6F0]"
+                  className="rounded-xl border border-[#E8E4DB] bg-white px-4 py-2 text-sm text-[#6B6560] hover:bg-[#FAFAFA]"
                   style={{ fontFamily: "var(--font-body)" }}
                 >
                   Siguiente →

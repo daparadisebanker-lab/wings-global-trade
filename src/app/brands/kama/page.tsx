@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import TruckCard from "@/components/listings/TruckCard";
@@ -22,10 +22,10 @@ export default async function KamaBrandPage() {
   const listingById = Object.fromEntries(allKama.map((l) => [l.id, l]));
 
   return (
-    <div className="min-h-screen bg-[#F8F6F0]">
+    <div className="min-h-screen bg-[#FAFAFA]">
 
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
-      <div className="relative overflow-hidden bg-[#001E50]">
+      <div className="relative overflow-hidden bg-[#004389]">
         <div className="absolute inset-0 opacity-[0.04]"
           style={{ backgroundImage: "radial-gradient(circle at 75% 40%, #C4933F 0%, transparent 55%)" }} />
         <div className="relative mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16">
@@ -78,7 +78,7 @@ export default async function KamaBrandPage() {
               <a
                 key={serie.slug}
                 href={`#serie-${serie.slug}`}
-                className="flex-shrink-0 rounded-full border border-[#E8E4DB] bg-[#F8F6F0] px-3.5 py-1.5 text-[10px] font-semibold text-[#6B6560] transition-colors hover:border-[#C4933F]/50 hover:text-[#C4933F] whitespace-nowrap"
+                className="flex-shrink-0 rounded-full border border-[#E8E4DB] bg-[#FAFAFA] px-3.5 py-1.5 text-[10px] font-semibold text-[#6B6560] transition-colors hover:border-[#C4933F]/50 hover:text-[#C4933F] whitespace-nowrap"
                 style={{ fontFamily: "var(--font-body)" }}
               >
                 {serie.label}

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function SourcingPage() {
   return (
     <main
-      className="flex min-h-screen flex-col items-center justify-center bg-[#001E50] px-6 py-24 text-center"
+      className="flex min-h-screen flex-col items-center justify-center bg-[#004389] px-6 py-24 text-center"
     >
       {/* Eyebrow badge */}
       <span

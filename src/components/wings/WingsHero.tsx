@@ -1,6 +1,6 @@
-export default function WingsHero() {
+﻿export default function WingsHero() {
   return (
-    <section className="relative min-h-[92vh] bg-[#001E50] flex flex-col items-center justify-center text-center overflow-hidden">
+    <section className="relative min-h-[92vh] bg-[#004389] flex flex-col items-center justify-center text-center overflow-hidden">
       {/* Background image */}
       <div className="absolute inset-0">
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -10,8 +10,8 @@ export default function WingsHero() {
           className="w-full h-full object-cover object-center"
           aria-hidden="true"
         />
-        <div className="absolute inset-0 bg-[#001E50]/75" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#001E50]/20 via-[#001E50]/40 to-[#001E50]/80" />
+        <div className="absolute inset-0 bg-[#004389]/75" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#004389]/20 via-[#004389]/40 to-[#004389]/80" />
       </div>
 
       <div className="relative max-w-5xl mx-auto px-6 py-28 md:py-36">
@@ -82,7 +82,7 @@ export default function WingsHero() {
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#001E50] via-[#001E50]/60 to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#004389] via-[#004389]/60 to-transparent pointer-events-none" />
     </section>
   );
 }

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
@@ -23,11 +23,11 @@ export async function POST(req: NextRequest) {
 
       const html = `
         <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;color:#1C1A16">
-          <div style="background:#001E50;padding:24px 32px">
+          <div style="background:#004389;padding:24px 32px">
             <p style="margin:0;font-size:11px;letter-spacing:0.2em;color:#C4933F;text-transform:uppercase">Wings Global Trade</p>
             <h1 style="margin:6px 0 0;font-size:22px;color:#ffffff">Nueva solicitud de importación</h1>
           </div>
-          <div style="background:#F8F6F0;padding:32px">
+          <div style="background:#FAFAFA;padding:32px">
             <table style="width:100%;border-collapse:collapse;font-size:14px">
               <tr><td style="padding:10px 0;border-bottom:1px solid #E8E4DB;color:#6B6560;width:140px">Nombre</td>
                   <td style="padding:10px 0;border-bottom:1px solid #E8E4DB;font-weight:600">${nombre}</td></tr>

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { getListings } from "@data/listings";
@@ -123,7 +123,7 @@ export default async function HomePage() {
         The buyer must understand the mechanism before they can evaluate the offer.
         Psychological trigger: Fogg Behavior Model — reduce complexity before asking for action.
       */}
-      <section className="bg-[#F8F6F0] py-20">
+      <section className="bg-[#FAFAFA] py-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <AnimateIn className="mb-14 text-center">
             <p
@@ -199,7 +199,7 @@ export default async function HomePage() {
         before products. Buyer now understands how it works and chooses their path.
         Psychological trigger: Choice Architecture — two clear paths, no decision paralysis.
       */}
-      <section className="bg-[#001E50] py-24">
+      <section className="bg-[#004389] py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <AnimateIn className="mb-14 text-center">
             <p
@@ -227,7 +227,7 @@ export default async function HomePage() {
             <StaggerItem>
               <Link
                 href="/categories"
-                className="group relative block overflow-hidden rounded-2xl bg-[#F8F6F0] p-8 transition-transform duration-300 hover:-translate-y-0.5"
+                className="group relative block overflow-hidden rounded-2xl bg-[#FAFAFA] p-8 transition-transform duration-300 hover:-translate-y-0.5"
               >
                 <p
                   className="mb-4 text-[9px] font-semibold uppercase tracking-[0.2em] text-[#C4933F]"
@@ -269,7 +269,7 @@ export default async function HomePage() {
             <StaggerItem>
               <Link
                 href="/importacion"
-                className="group relative block overflow-hidden rounded-2xl bg-[#001240] p-8 transition-transform duration-300 hover:-translate-y-0.5"
+                className="group relative block overflow-hidden rounded-2xl bg-[#062663] p-8 transition-transform duration-300 hover:-translate-y-0.5"
               >
                 <p
                   className="mb-4 text-[9px] font-semibold uppercase tracking-[0.2em] text-[#C4933F]"
@@ -367,10 +367,9 @@ export default async function HomePage() {
                   >
                     {item.machine}
                   </p>
-                  {/* Quote in Cormorant italic — authoritative editorial weight */}
                   <p
-                    className="text-2xl font-normal leading-snug text-[#1C1A16] sm:text-3xl"
-                    style={{ fontFamily: "var(--font-display)", fontStyle: "italic" }}
+                    className="text-2xl font-semibold leading-snug text-[#1C1A16] sm:text-3xl"
+                    style={{ fontFamily: "var(--font-display)" }}
                   >
                     &ldquo;{item.quote}&rdquo;
                   </p>
@@ -458,7 +457,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── CATEGORY CARDS — BROWSE BY TYPE ───────────────────────────────── */}
-      <section className="bg-[#F8F6F0] py-20">
+      <section className="bg-[#FAFAFA] py-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <AnimateIn className="mb-10 flex items-end justify-between">
             <div>
@@ -498,7 +497,7 @@ export default async function HomePage() {
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                     sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#001240]/90 via-[#001E50]/30 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#062663]/90 via-[#004389]/30 to-transparent" />
                   <div className="absolute inset-x-0 bottom-0 p-5">
                     <p
                       className="text-[9px] font-semibold uppercase tracking-[0.15em] text-[#C4933F]"
@@ -535,7 +534,7 @@ export default async function HomePage() {
       */}
       <StatsBar />
 
-      <section className="border-t border-[#E8E4DB] bg-[#F8F6F0] py-16">
+      <section className="border-t border-[#E8E4DB] bg-[#FAFAFA] py-16">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <AnimateIn className="mb-10">
             <p
@@ -575,7 +574,7 @@ export default async function HomePage() {
                   <Link
                     key={b.name}
                     href={href}
-                    className="group flex flex-col items-center justify-center gap-0 bg-white px-6 py-10 transition-all hover:bg-[#001E50]"
+                    className="group flex flex-col items-center justify-center gap-0 bg-white px-6 py-10 transition-all hover:bg-[#004389]"
                   >
                     <span
                       className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#C4933F] opacity-70 transition-opacity group-hover:opacity-100"
@@ -604,22 +603,22 @@ export default async function HomePage() {
         el margen del distribuidor."
         Goal Gradient Effect: the buyer is at the bottom — one step left.
       */}
-      <section className="bg-[#001E50] py-28">
+      <section className="bg-[#004389] py-28">
         <div className="mx-auto max-w-3xl px-6 text-center lg:px-8">
           <AnimateIn>
             <p
-              className="mb-4 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C4933F]"
+              className="mb-4 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#76A1B2]"
               style={{ fontFamily: "var(--font-body)" }}
             >
               El siguiente paso
             </p>
             <h2
-              className="text-4xl font-normal italic leading-tight text-white sm:text-5xl lg:text-6xl"
+              className="text-4xl font-extrabold leading-none tracking-tight text-white sm:text-5xl lg:text-6xl"
               style={{ fontFamily: "var(--font-display)" }}
             >
               Tu cotización landed
               <br />
-              <span style={{ color: "#F0A030" }}>en 24 horas.</span>
+              <span style={{ color: "#C8D4E4" }}>en 24 horas.</span>
             </h2>
             <p
               className="mx-auto mt-6 max-w-lg text-sm leading-relaxed text-white/60"

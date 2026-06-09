@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -39,10 +39,10 @@ const BRANDS = [
 
 export default function BrandsPage() {
   return (
-    <div className="min-h-screen bg-[#F8F6F0]">
+    <div className="min-h-screen bg-[#FAFAFA]">
 
       {/* Hero */}
-      <div className="bg-[#001E50] py-12">
+      <div className="bg-[#004389] py-12">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <nav
             className="mb-4 flex items-center gap-2 text-xs text-white/30"
@@ -96,9 +96,9 @@ export default function BrandsPage() {
                     {brand.name}
                   </h2>
                 </div>
-                <div className="rounded-xl bg-[#F8F6F0] px-4 py-2 text-center flex-shrink-0">
+                <div className="rounded-xl bg-[#FAFAFA] px-4 py-2 text-center flex-shrink-0">
                   <p
-                    className="text-2xl font-semibold text-[#001E50]"
+                    className="text-2xl font-semibold text-[#004389]"
                     style={{ fontFamily: "var(--font-display)" }}
                   >
                     {brand.count}

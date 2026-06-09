@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -8,8 +8,8 @@ export const metadata: Metadata = {
 
 export default function PressPage() {
   return (
-    <div className="min-h-screen bg-[#F8F6F0]">
-      <div className="bg-[#001E50] py-20">
+    <div className="min-h-screen bg-[#FAFAFA]">
+      <div className="bg-[#004389] py-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <p
             className="mb-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -38,7 +38,7 @@ export default function CategoryMegaMenu() {
       </Link>
 
       {isOpen && (
-        <div className="absolute left-0 top-full z-[100] flex w-[780px] -translate-x-4 overflow-hidden rounded-2xl border border-white/10 bg-[#001240] shadow-[0_24px_64px_rgba(0,0,0,0.4)]">
+        <div className="absolute left-0 top-full z-[100] flex w-[780px] -translate-x-4 overflow-hidden rounded-2xl border border-white/10 bg-[#062663] shadow-[0_24px_64px_rgba(0,0,0,0.4)]">
 
           {/* Sidebar */}
           <div className="w-56 border-r border-white/8 py-3">

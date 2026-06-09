@@ -135,7 +135,7 @@ export default async function TractorDetailPage({ params }: Props) {
     <>
       <JsonLd schema={productSchema} />
       <JsonLd schema={breadcrumbSchema} />
-    <div className="min-h-screen bg-[#F8F6F0]">
+    <div className="min-h-screen bg-[#FAFAFA]">
       <div className="mx-auto max-w-7xl px-6 py-8 lg:px-8">
 
         {/* Breadcrumb */}
@@ -353,7 +353,7 @@ export default async function TractorDetailPage({ params }: Props) {
                 href={waLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex w-full items-center justify-center gap-2.5 rounded-2xl bg-[#001E50] py-4 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                className="flex w-full items-center justify-center gap-2.5 rounded-2xl bg-[#004389] py-4 text-sm font-semibold text-white transition-opacity hover:opacity-90"
                 style={{ fontFamily: "var(--font-body)" }}
               >
                 <svg className="h-4 w-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
@@ -395,7 +395,7 @@ export default async function TractorDetailPage({ params }: Props) {
 
       {/* Sticky mobile CTA bar */}
       <div
-        className="fixed bottom-0 left-0 right-0 z-40 flex gap-2 border-t border-white/10 bg-[#001E50] px-4 py-3 md:hidden"
+        className="fixed bottom-0 left-0 right-0 z-40 flex gap-2 border-t border-white/10 bg-[#004389] px-4 py-3 md:hidden"
         style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}
       >
         <a
@@ -422,7 +422,7 @@ export default async function TractorDetailPage({ params }: Props) {
       {/* Wings Import CTA */}
       <div
         className="mt-16 rounded-2xl px-8 py-12"
-        style={{ background: "#001240" }}
+        style={{ background: "#062663" }}
       >
         <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
           <div>

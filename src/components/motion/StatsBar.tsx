@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useInView } from "framer-motion";
 import { useRef } from "react";
@@ -16,7 +16,7 @@ export default function StatsBar() {
   const isInView = useInView(ref, { once: true, margin: "-60px" });
 
   return (
-    <section className="bg-[#001E50] py-14">
+    <section className="bg-[#004389] py-14">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <dl
           ref={ref}
@@ -28,12 +28,12 @@ export default function StatsBar() {
           }}
         >
           {STATS.map((s, i) => (
-            <div key={s.label} className="border-l-2 border-[#C4933F] pl-6">
+            <div key={s.label} className="border-l-2 border-white/20 pl-6">
               <dd
                 className={
                   i === 0
-                    ? "text-5xl font-normal italic text-[#C4933F]"
-                    : "text-4xl font-semibold text-[#C4933F]"
+                    ? "text-5xl font-extrabold tracking-tight text-white"
+                    : "text-4xl font-bold tracking-tight text-white"
                 }
                 style={{ fontFamily: "var(--font-display)" }}
               >

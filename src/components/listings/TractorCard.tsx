@@ -1,11 +1,11 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import Image from "next/image";
 import type { Listing } from "@/types";
 import type { Translations } from "@/lib/i18n";
 import { ts } from "@/lib/specs-i18n";
 
 const conditionStyles: Record<Listing["condition"], string> = {
-  new:         "bg-[#001E50] text-white",
+  new:         "bg-[#004389] text-white",
   used:        "bg-[#C4933F]/15 text-[#C4933F]",
   refurbished: "bg-[#E8E4DB] text-[#6B6560]",
 };
@@ -78,7 +78,7 @@ export default function TractorCard({
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-[#E8E4DB] bg-white shadow-[0_2px_16px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-[0_6px_28px_rgba(0,0,0,0.09)] hover:-translate-y-0.5">
 
       {/* Image */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-[#F8F6F0]">
+      <div className="relative aspect-[4/3] overflow-hidden bg-[#FAFAFA]">
         <Image
           src={cover}
           alt={`${listing.brand} ${listing.model}`}
@@ -96,7 +96,7 @@ export default function TractorCard({
         {/* Drive badge */}
         {driveType && (
           <span
-            className="absolute right-3 top-3 rounded-full bg-[#001E50]/80 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-widest text-white backdrop-blur-sm"
+            className="absolute right-3 top-3 rounded-full bg-[#004389]/80 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-widest text-white backdrop-blur-sm"
             style={{ fontFamily: "var(--font-body)" }}
           >
             {driveType}

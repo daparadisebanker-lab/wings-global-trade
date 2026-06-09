@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
@@ -362,7 +362,7 @@ export default function ListingForm({ mode, listing }: Props) {
             type="button"
             onClick={handleSave}
             disabled={isPending}
-            className="inline-flex items-center gap-2 rounded-md bg-[#001E50] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#002a6e] disabled:opacity-60 transition-colors"
+            className="inline-flex items-center gap-2 rounded-md bg-[#004389] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#1459A8] disabled:opacity-60 transition-colors"
           >
             {isPending ? (
               <>
@@ -542,7 +542,7 @@ export default function ListingForm({ mode, listing }: Props) {
           type="button"
           onClick={handleSave}
           disabled={isPending}
-          className="inline-flex items-center gap-2 rounded-md bg-[#001E50] px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#002a6e] disabled:opacity-60 transition-colors"
+          className="inline-flex items-center gap-2 rounded-md bg-[#004389] px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#1459A8] disabled:opacity-60 transition-colors"
         >
           {isPending ? "Saving…" : mode === "create" ? "Create Listing" : "Save Changes"}
         </button>

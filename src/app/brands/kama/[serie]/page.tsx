@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
@@ -44,10 +44,10 @@ export default async function KamaSeriesPage({ params }: PageProps) {
   const nextSerie = currentIndex < KAMA_SERIES.length - 1 ? KAMA_SERIES[currentIndex + 1] : null;
 
   return (
-    <div className="min-h-screen bg-[#F8F6F0]">
+    <div className="min-h-screen bg-[#FAFAFA]">
 
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
-      <div className="bg-[#001E50] py-12">
+      <div className="bg-[#004389] py-12">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
 
           <nav className="mb-4 flex items-center gap-2 text-xs text-white/30" style={{ fontFamily: "var(--font-body)" }}>

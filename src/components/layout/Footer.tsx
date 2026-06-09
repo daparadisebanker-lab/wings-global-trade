@@ -40,7 +40,7 @@ export default function Footer() {
     <footer>
 
       {/* ── ZONE 1: CTA STRIP ─────────────────────────────────────────────── */}
-      <div className="bg-[#001240]">
+      <div className="bg-[#062663]">
         <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -78,16 +78,16 @@ export default function Footer() {
       </div>
 
       {/* ── ZONE 2: LINK GRID ─────────────────────────────────────────────── */}
-      <div className="bg-[#001E50]">
+      <div className="bg-[#004389]">
         <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
           <div className="grid grid-cols-2 gap-10 lg:grid-cols-4">
 
-            {/* Column 1 — Catalog (gold accent) */}
+            {/* Column 1 — Catalog */}
             <div>
               <div className="mb-5 flex items-center gap-2">
-                <div className="h-1.5 w-1.5 rounded-full bg-[#C4933F] flex-shrink-0" />
+                <div className="h-1.5 w-1.5 rounded-full bg-[#76A1B2] flex-shrink-0" />
                 <h3
-                  className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#C4933F]"
+                  className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#76A1B2]"
                   style={{ fontFamily: "var(--font-body)" }}
                 >
                   Catálogo
@@ -108,12 +108,12 @@ export default function Footer() {
               </ul>
             </div>
 
-            {/* Column 2 — Import Services (steel-blue accent) */}
+            {/* Column 2 — Import Services */}
             <div>
               <div className="mb-5 flex items-center gap-2">
-                <div className="h-1.5 w-1.5 rounded-full bg-[#6BA3C8] flex-shrink-0" />
+                <div className="h-1.5 w-1.5 rounded-full bg-[#76A1B2] flex-shrink-0" />
                 <h3
-                  className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#6BA3C8]"
+                  className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#76A1B2]"
                   style={{ fontFamily: "var(--font-body)" }}
                 >
                   Importación
@@ -185,7 +185,7 @@ export default function Footer() {
       </div>
 
       {/* ── ZONE 3: LEGAL BAR ─────────────────────────────────────────────── */}
-      <div className="bg-[#001E50] border-t border-white/8">
+      <div className="bg-[#004389] border-t border-white/8">
         <div className="mx-auto max-w-7xl px-6 py-7 lg:px-8">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
 

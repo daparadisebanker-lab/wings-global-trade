@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import type { Listing } from "@/types";
 
@@ -36,7 +36,7 @@ export default async function AdminDashboard() {
         </div>
         <Link
           href="/admin/listings/new"
-          className="inline-flex items-center gap-2 rounded-md bg-[#001E50] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#002a6e] transition-colors"
+          className="inline-flex items-center gap-2 rounded-md bg-[#004389] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#1459A8] transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -92,7 +92,7 @@ export default async function AdminDashboard() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
             </svg>
             <p className="mt-3 text-sm text-gray-500">No products yet.</p>
-            <Link href="/admin/listings/new" className="mt-4 inline-block text-sm font-medium text-[#001E50] hover:underline">
+            <Link href="/admin/listings/new" className="mt-4 inline-block text-sm font-medium text-[#004389] hover:underline">
               Add your first product →
             </Link>
           </div>
@@ -143,7 +143,7 @@ export default async function AdminDashboard() {
                     <td className="py-3.5 pl-3 pr-4 sm:pr-6 text-right">
                       <Link
                         href={`/admin/listings/${listing.id}`}
-                        className="text-sm font-medium text-[#001E50] hover:text-[#002a6e]"
+                        className="text-sm font-medium text-[#004389] hover:text-[#1459A8]"
                       >
                         Edit
                       </Link>

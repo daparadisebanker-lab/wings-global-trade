@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { KAMA_SERIES, KAMA_GROUPS } from "@/lib/kama-series";
 
@@ -28,10 +28,10 @@ export default function CamionesPage() {
   const seriesBySlug = Object.fromEntries(KAMA_SERIES.map((s) => [s.slug, s]));
 
   return (
-    <div className="min-h-screen bg-[#F8F6F0]">
+    <div className="min-h-screen bg-[#FAFAFA]">
 
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
-      <div className="relative overflow-hidden bg-[#001E50]">
+      <div className="relative overflow-hidden bg-[#004389]">
         {/* Gold radial glow */}
         <div className="absolute inset-0 opacity-[0.08]"
           style={{ backgroundImage: "radial-gradient(circle at 70% 50%, #C4933F 0%, transparent 55%)" }} />
@@ -201,12 +201,12 @@ export default function CamionesPage() {
                       <div className="flex gap-1">
                         {serie.modelIds.slice(0, 4).map((id) => (
                           <span key={id}
-                            className="font-data rounded-full border border-[#E8E4DB] bg-[#F8F6F0] px-2 py-0.5 text-[9px] font-semibold text-[#6B6560]">
+                            className="font-data rounded-full border border-[#E8E4DB] bg-[#FAFAFA] px-2 py-0.5 text-[9px] font-semibold text-[#6B6560]">
                             {id.replace("kama-","").toUpperCase()}
                           </span>
                         ))}
                         {serie.modelIds.length > 4 && (
-                          <span className="rounded-full border border-[#E8E4DB] bg-[#F8F6F0] px-2 py-0.5 text-[9px] font-semibold text-[#9B9590]"
+                          <span className="rounded-full border border-[#E8E4DB] bg-[#FAFAFA] px-2 py-0.5 text-[9px] font-semibold text-[#9B9590]"
                             style={{ fontFamily: "var(--font-body)" }}>
                             +{serie.modelIds.length - 4}
                           </span>
@@ -244,7 +244,7 @@ export default function CamionesPage() {
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/brands/kama"
-                className="rounded-full bg-[#001E50] px-6 py-2.5 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-[#0A2D6E]"
+                className="rounded-full bg-[#004389] px-6 py-2.5 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-[#1459A8]"
                 style={{ fontFamily: "var(--font-body)" }}
               >
                 Catálogo completo

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
@@ -29,7 +29,7 @@ interface Props {
 const PLACEHOLDER = "https://images.unsplash.com/photo-1598520106830-8c45c2035460?w=800&q=80";
 
 const condStyles: Record<string, string> = {
-  new:         "bg-[#001E50] text-white",
+  new:         "bg-[#004389] text-white",
   used:        "bg-[#C4933F] text-white",
   refurbished: "bg-[#E8E4DB] text-[#1C1A16]",
 };

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -83,7 +83,7 @@ const COMING_SOON_ITEMS = [
 ];
 
 const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
-  "en preparación": { bg: "bg-[#001E50]/8 border border-[#001E50]/15", text: "text-[#001E50]" },
+  "en preparación": { bg: "bg-[#004389]/8 border border-[#004389]/15", text: "text-[#004389]" },
   "próximamente":   { bg: "bg-[#C4933F]/10 border border-[#C4933F]/20", text: "text-[#C4933F]" },
   "muy pronto":     { bg: "bg-[#C4933F]/20 border border-[#C4933F]/40", text: "text-[#C4933F]" },
 };
@@ -101,10 +101,10 @@ export default function ProximamentePage() {
   const platformItems = COMING_SOON_ITEMS.filter((i) => i.category === "Plataforma");
 
   return (
-    <div className="min-h-screen bg-[#F8F6F0]">
+    <div className="min-h-screen bg-[#FAFAFA]">
 
       {/* Hero */}
-      <div className="bg-[#001E50] py-20">
+      <div className="bg-[#004389] py-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-8 text-center">
           <span
             className="mb-6 inline-block rounded-full border border-[#C4933F] px-4 py-1 text-xs tracking-wide text-[#C4933F]"
@@ -375,7 +375,7 @@ export default function ProximamentePage() {
         </div>
 
         {/* Bottom CTA */}
-        <div className="mt-16 rounded-2xl bg-[#001E50] px-8 py-12 text-center">
+        <div className="mt-16 rounded-2xl bg-[#004389] px-8 py-12 text-center">
           <p
             className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
             style={{ fontFamily: "var(--font-body)" }}

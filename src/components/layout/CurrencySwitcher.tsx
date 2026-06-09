@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRouter } from "next/navigation";
 import { CURRENCIES, CURRENCY_COOKIE } from "@/lib/currencies";
@@ -20,7 +20,7 @@ export default function CurrencySwitcher({ current }: { current: string }) {
       aria-label="Select currency"
     >
       {Object.values(CURRENCIES).map((c) => (
-        <option key={c.code} value={c.code} className="bg-[#001E50] text-white">
+        <option key={c.code} value={c.code} className="bg-[#004389] text-white">
           {c.symbol} {c.code}
         </option>
       ))}

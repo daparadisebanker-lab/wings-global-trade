@@ -29,7 +29,7 @@ const TIMELINE_OPTIONS = [
 ];
 
 const fieldClass =
-  "w-full rounded-xl border border-[#E8E4DB] bg-[#F8F6F0] px-3 py-2.5 text-sm text-[#1C1A16] focus:border-[#C4933F] focus:outline-none";
+  "w-full rounded-xl border border-[#E8E4DB] bg-[#FAFAFA] px-3 py-2.5 text-sm text-[#1C1A16] focus:border-[#C4933F] focus:outline-none";
 const labelClass =
   "mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.12em] text-[#6B6560]";
 
@@ -406,7 +406,7 @@ export default function ContactTracks() {
         <div className="space-y-5">
 
           {/* WhatsApp */}
-          <div className="rounded-2xl bg-[#001E50] p-7 text-white">
+          <div className="rounded-2xl bg-[#004389] p-7 text-white">
             <p
               className="mb-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
               style={{ fontFamily: "var(--font-body)" }}

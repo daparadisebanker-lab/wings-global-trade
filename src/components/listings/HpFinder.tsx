@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -42,9 +42,9 @@ export default function HpFinder() {
             className="w-full border-0 bg-transparent px-5 pb-4 pt-1 text-sm text-white focus:outline-none"
             style={{ fontFamily: "var(--font-body)" }}
           >
-            <option value="" className="bg-[#001240] text-white">¿Cuántas hectáreas?</option>
+            <option value="" className="bg-[#062663] text-white">¿Cuántas hectáreas?</option>
             {HECTARE_RANGES.map((r) => (
-              <option key={r.label} value={r.label} className="bg-[#001240] text-white">
+              <option key={r.label} value={r.label} className="bg-[#062663] text-white">
                 {r.label}
               </option>
             ))}
@@ -62,9 +62,9 @@ export default function HpFinder() {
             className="w-full border-0 bg-transparent px-5 pb-4 pt-1 text-sm text-white focus:outline-none"
             style={{ fontFamily: "var(--font-body)" }}
           >
-            <option value="" className="bg-[#001240] text-white">Todas las marcas</option>
+            <option value="" className="bg-[#062663] text-white">Todas las marcas</option>
             {BRANDS.map((b) => (
-              <option key={b} value={b} className="bg-[#001240] text-white">{b}</option>
+              <option key={b} value={b} className="bg-[#062663] text-white">{b}</option>
             ))}
           </select>
         </div>

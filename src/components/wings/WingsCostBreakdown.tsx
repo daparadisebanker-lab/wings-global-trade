@@ -18,7 +18,7 @@ export default function WingsCostBreakdown() {
   const rightRef  = useFadeIn();
 
   return (
-    <section className="bg-[#F8F6F0] py-28 md:py-36">
+    <section className="bg-[#FAFAFA] py-28 md:py-36">
       <div className="max-w-7xl mx-auto px-6">
         <div ref={headerRef as React.RefObject<HTMLDivElement>} className="fade-up text-center mb-16">
           <p className="text-[#C4933F] text-[10px] font-semibold tracking-[0.12em] uppercase mb-5" style={{ fontFamily: "var(--font-body)" }}>
@@ -41,7 +41,7 @@ export default function WingsCostBreakdown() {
             {COST_ITEMS.map((item, i) => (
               <div
                 key={item.n}
-                className={`stagger-item flex gap-5 px-7 py-5 ${i < COST_ITEMS.length - 1 ? "border-b border-[#F8F6F0]" : ""} ${i % 2 === 1 ? "bg-[#FDFCFB]" : ""}`}
+                className={`stagger-item flex gap-5 px-7 py-5 ${i < COST_ITEMS.length - 1 ? "border-b border-[#FAFAFA]" : ""} ${i % 2 === 1 ? "bg-[#F5F5F5]" : ""}`}
               >
                 <span className="text-[#C4933F] text-xs font-mono tracking-widest mt-0.5 flex-shrink-0 w-6">
                   {item.n}
