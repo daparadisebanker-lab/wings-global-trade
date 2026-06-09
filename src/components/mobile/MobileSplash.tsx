@@ -29,7 +29,7 @@ export default function MobileSplash() {
     >
       {/* Background — Ken Burns zoom out */}
       <img
-        src="/images/splash-hero.jpg"
+        src="/images/splah-hero.png"
         alt=""
         aria-hidden="true"
         className="absolute inset-0 h-full w-full object-cover object-center"
