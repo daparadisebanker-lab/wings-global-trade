@@ -1,17 +1,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { Listing } from "@/types";
-import type { Translations } from "@/lib/i18n";
-import { ts } from "@/lib/specs-i18n";
 
-const conditionStyles: Record<Listing["condition"], string> = {
-  new:         "bg-[#001E50] text-white",
-  used:        "bg-[#C4933F] text-white",
-  refurbished: "bg-[#E8E4DB] text-[#1C1A16]",
-};
+const TRUCK_PLACEHOLDER =
+  "https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=800&q=80";
 
-const PLACEHOLDER =
-  "https://images.unsplash.com/photo-1598520106830-8c45c2035460?w=800&q=80";
+function isBEV(listing: Listing): boolean {
+  const fuelType = (listing.details as any)?.engine?.fuel_type ?? "";
+  return fuelType.includes("Eléctrico") || fuelType.includes("BEV");
+}
 
 function SpecRow({ label, value }: { label: string; value?: string | number | null }) {
   if (value == null || value === "") return null;
@@ -19,57 +16,56 @@ function SpecRow({ label, value }: { label: string; value?: string | number | nu
     <div>
       <dt className="text-[10px] uppercase tracking-wide text-[#6B6560]"
         style={{ fontFamily: "var(--font-body)" }}>{label}</dt>
-      <dd className="mt-0.5 truncate font-medium text-[#1C1A16]"
-        style={{ fontFamily: "var(--font-body)" }}>{value}</dd>
+      <dd className="font-data font-medium text-[#1C1A16] text-xs mt-0.5 truncate">
+        {value}
+      </dd>
     </div>
   );
 }
 
-export default function TractorCard({
+export default function TruckCard({
   listing,
+  serieSlug,
   currency = "USD",
-  t,
-  lang = "es",
 }: {
   listing: Listing;
+  serieSlug: string;
   currency?: string;
-  t?: Translations;
-  lang?: string;
 }) {
-  const cover   = listing.images?.[0] ?? PLACEHOLDER;
-  const details = listing.details ?? {};
-  const engine  = details.engine ?? {};
-  const trans   = details.transmission_details ?? {};
-  const pto     = details.pto ?? {};
-  const tires   = details.tires ?? {};
-  const dims    = details.dimensions ?? {};
+  const cover    = listing.images?.[0] ?? TRUCK_PLACEHOLDER;
+  const d        = listing.details as any ?? {};
+  const engine   = d.engine ?? {};
+  const dims     = d.dimensions ?? {};
+  const specs    = d.specs ?? {};
+  const battery  = d.battery ?? {};
+  const tires    = d.tires ?? {};
 
-  const condLabel: Record<Listing["condition"], string> = {
-    new:         t?.condLabelNew         ?? "Nuevo",
-    used:        t?.condLabelUsed        ?? "Usado",
-    refurbished: t?.condLabelRefurbished ?? "Reacondicionado",
-  };
+  const bev = isBEV(listing);
 
-  const title = [listing.year || null, listing.model].filter(Boolean).join(" ");
-  const driveType  = listing.drive_type ?? trans.drive_type;
-  const engineLabel = [engine.manufacturer, engine.model].filter(Boolean).join(" ") || null;
-  const transLabel =
-    listing.transmission ??
-    (trans.forward_gears != null && trans.reverse_gears != null
-      ? `${trans.forward_gears}F / ${trans.reverse_gears}R`
-      : null);
-  const ptoLabel    = pto.rear_pto_rpm ? `${pto.rear_pto_rpm} rpm` : null;
-  const tiresLabel  =
-    tires.front && tires.rear
-      ? `${tires.front} / ${tires.rear}`
-      : tires.front ?? tires.rear ?? null;
-  const weightLabel = dims.operating_weight_kg
-    ? `${dims.operating_weight_kg.toLocaleString()} kg`
+  const fuelType = engine.fuel_type ?? null;
+  const engineModel = engine.model ?? null;
+  const engineSubtitle = engineModel ?? fuelType ?? null;
+
+  // Fuel badge label
+  let fuelBadge = fuelType ?? "—";
+  if (fuelType?.includes("Eléctrico") || fuelType?.includes("BEV")) {
+    fuelBadge = "BEV";
+  } else if (engine.emission_standard) {
+    fuelBadge = engine.emission_standard;
+  }
+
+  const fuelBadgeClass = bev
+    ? "bg-[#001E50] text-[#2DD4BF]"
+    : "bg-[#1C1A16] text-white";
+
+  const gvwDisplay = dims.gvw_kg != null
+    ? `${(dims.gvw_kg / 1000).toFixed(1)}T`
     : null;
 
   return (
-    <article className="group flex flex-col overflow-hidden rounded-2xl border border-[#E8E4DB] bg-white shadow-[0_2px_16px_rgba(0,0,0,0.06)] transition-shadow hover:shadow-[0_4px_24px_rgba(0,0,0,0.10)]">
-
+    <article
+      className={`group flex flex-col overflow-hidden rounded-2xl border border-[#E8E4DB] bg-white shadow-[0_2px_16px_rgba(0,0,0,0.06)] transition-shadow hover:shadow-[0_4px_24px_rgba(0,0,0,0.10)] ${bev ? "border-l-2 border-l-[#2DD4BF]" : ""}`}
+    >
       {/* Image */}
       <div className="relative aspect-[4/3] overflow-hidden bg-[#F8F6F0]">
         <Image
@@ -79,20 +75,20 @@ export default function TractorCard({
           className="object-cover transition-transform duration-500 group-hover:scale-105"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
-        {/* Condition badge */}
+        {/* Fuel type badge */}
         <span
-          className={`absolute left-3 top-3 rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-widest ${conditionStyles[listing.condition]}`}
+          className={`absolute left-3 top-3 rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-widest ${fuelBadgeClass}`}
           style={{ fontFamily: "var(--font-body)" }}
         >
-          {condLabel[listing.condition]}
+          {fuelBadge}
         </span>
         {/* Drive badge */}
-        {driveType && (
+        {listing.drive_type && (
           <span
             className="absolute right-3 top-3 rounded-full bg-[#001E50]/80 px-2 py-1 text-[10px] font-semibold uppercase tracking-widest text-white"
             style={{ fontFamily: "var(--font-body)" }}
           >
-            {driveType}
+            {listing.drive_type}
           </span>
         )}
       </div>
@@ -106,7 +102,7 @@ export default function TractorCard({
             className="text-[10px] font-semibold uppercase tracking-widest text-[#C4933F]"
             style={{ fontFamily: "var(--font-body)" }}
           >
-            {listing.brand}
+            KAMA
           </p>
           <span
             className="flex items-center gap-1 text-[9px] font-semibold text-[#4B9E5F]"
@@ -122,13 +118,13 @@ export default function TractorCard({
           className="mb-1 text-xl font-semibold leading-snug text-[#1C1A16]"
           style={{ fontFamily: "var(--font-display)" }}
         >
-          {title}
+          {listing.model}
         </h3>
 
         {/* Engine subtitle */}
-        {engineLabel && (
+        {engineSubtitle && (
           <p className="mb-3 truncate text-xs text-[#6B6560]"
-            style={{ fontFamily: "var(--font-body)" }}>{engineLabel}</p>
+            style={{ fontFamily: "var(--font-body)" }}>{engineSubtitle}</p>
         )}
 
         {/* Price → Quote only */}
@@ -142,25 +138,44 @@ export default function TractorCard({
         {/* Spec grid */}
         <dl className="mb-5 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-[#E8E4DB] pt-4 text-xs">
           <SpecRow
-            label={t?.cardPower ?? "Potencia"}
-            value={listing.horsepower != null ? `${listing.horsepower} ${t?.hpUnit ?? "hp"}` : null}
+            label="Potencia"
+            value={listing.horsepower != null ? `${listing.horsepower} hp` : null}
           />
           <SpecRow
-            label={t?.cardHours ?? "Horas"}
-            value={listing.hours_used != null ? `${listing.hours_used.toLocaleString()} ${t?.hrsUnit ?? "hrs"}` : null}
+            label="Carga útil"
+            value={specs.payload_t != null ? `${specs.payload_t}T` : null}
           />
-          <SpecRow label={ts("Transmission", lang)} value={transLabel} />
-          <SpecRow label={ts("PTO (Power Take-Off)", lang)} value={ptoLabel} />
-          <SpecRow label={ts("Tires", lang)} value={tiresLabel} />
-          <SpecRow label={ts("Operating weight", lang)} value={weightLabel} />
+          <SpecRow label="GVW" value={gvwDisplay} />
+          <SpecRow label="Combustible" value={fuelType} />
+          {bev ? (
+            <>
+              <SpecRow
+                label="Autonomía"
+                value={specs.range_km_wltp != null ? `${specs.range_km_wltp} km WLTP` : null}
+              />
+              <SpecRow
+                label="Batería"
+                value={
+                  battery.capacity_kwh != null
+                    ? `${battery.capacity_kwh} kWh${battery.brand ? ` (${battery.brand})` : ""}`
+                    : null
+                }
+              />
+            </>
+          ) : (
+            <>
+              <SpecRow label="Transmisión" value={listing.transmission} />
+              <SpecRow label="Norma" value={engine.emission_standard} />
+            </>
+          )}
         </dl>
 
         <Link
-          href={`/agricultural/tractors/${listing.id}`}
+          href={`/brands/kama/${serieSlug}/${listing.id}`}
           className="mt-auto flex w-full items-center justify-center rounded-full bg-[#C4933F] py-3 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-[#D4A855]"
           style={{ fontFamily: "var(--font-body)" }}
         >
-          {t?.cardViewDetails ?? "Solicitar cotización"}
+          Solicitar cotización
         </Link>
       </div>
 

@@ -2,10 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cookies } from "next/headers";
-import TractorCard from "@/components/listings/TractorCard";
+import TruckCard from "@/components/listings/TruckCard";
 import { getListings } from "@data/listings";
 import { CURRENCY_COOKIE, DEFAULT_CURRENCY } from "@/lib/currencies";
-import { LANG_COOKIE, DEFAULT_LANG, getTranslations } from "@/lib/i18n";
 import { KAMA_SERIES, getSeriesBySlug } from "@/lib/kama-series";
 
 interface PageProps {
@@ -33,12 +32,8 @@ export default async function KamaSeriesPage({ params }: PageProps) {
 
   const cookieStore = await cookies();
   const currency    = cookieStore.get(CURRENCY_COOKIE)?.value ?? DEFAULT_CURRENCY;
-  const lang        = cookieStore.get(LANG_COOKIE)?.value     ?? DEFAULT_LANG;
 
-  const [t, allKama] = await Promise.all([
-    getTranslations(lang),
-    getListings({ brand: "KAMA" }),
-  ]);
+  const allKama = await getListings({ brand: "KAMA" });
 
   const listings = serie.modelIds
     .map((id) => allKama.find((l) => l.id === id))
@@ -101,7 +96,7 @@ export default async function KamaSeriesPage({ params }: PageProps) {
               { value: serie.gvwRange, label: "GVW" },
             ].map((s) => (
               <div key={s.label}>
-                <p className="text-xl font-semibold text-[#C4933F]" style={{ fontFamily: "var(--font-display)" }}>
+                <p className="font-data text-xl font-semibold text-[#C4933F]">
                   {s.value}
                 </p>
                 <p className="text-[10px] font-semibold uppercase tracking-wide text-white/30" style={{ fontFamily: "var(--font-body)" }}>
@@ -119,12 +114,11 @@ export default async function KamaSeriesPage({ params }: PageProps) {
         {listings.length > 0 ? (
           <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {listings.map((listing) => (
-              <TractorCard
+              <TruckCard
                 key={listing.id}
                 listing={listing}
+                serieSlug={serie.slug}
                 currency={currency}
-                t={t}
-                lang={lang}
               />
             ))}
           </div>

@@ -119,7 +119,35 @@ export default async function HomePage() {
           className="absolute inset-0 opacity-20"
           style={{ background: "radial-gradient(ellipse at 60% 30%, #C4933F 0%, transparent 60%)" }}
         />
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#F8F6F0] to-transparent" />
+        {/* Trade route motif: Asia → LATAM */}
+        <svg
+          className="absolute inset-0 h-full w-full pointer-events-none"
+          style={{ opacity: 0.07 }}
+          viewBox="0 0 1440 900"
+          preserveAspectRatio="xMidYMid slice"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          {/* Origin point — East Asia */}
+          <circle cx="1150" cy="350" r="4" fill="#C4933F" opacity="1" />
+          <circle cx="1150" cy="350" r="12" fill="none" stroke="#C4933F" strokeWidth="1" opacity="0.5" />
+          {/* Destination points — LATAM */}
+          <circle cx="320" cy="500" r="3" fill="white" opacity="0.8" />
+          <circle cx="290" cy="540" r="3" fill="white" opacity="0.8" />
+          <circle cx="340" cy="580" r="3" fill="white" opacity="0.8" />
+          <circle cx="370" cy="460" r="3" fill="white" opacity="0.8" />
+          <circle cx="250" cy="510" r="3" fill="white" opacity="0.8" />
+          {/* Route arcs */}
+          <path d="M1150,350 C900,200 600,300 320,500" fill="none" stroke="white" strokeWidth="1" strokeDasharray="6,4" opacity="0.6" />
+          <path d="M1150,350 C880,180 580,320 290,540" fill="none" stroke="white" strokeWidth="1" strokeDasharray="6,4" opacity="0.5" />
+          <path d="M1150,350 C870,220 560,380 340,580" fill="none" stroke="white" strokeWidth="1" strokeDasharray="6,4" opacity="0.5" />
+          <path d="M1150,350 C910,160 620,280 370,460" fill="none" stroke="white" strokeWidth="1" strokeDasharray="6,4" opacity="0.4" />
+          <path d="M1150,350 C860,240 540,340 250,510" fill="none" stroke="white" strokeWidth="1" strokeDasharray="6,4" opacity="0.4" />
+          {/* Subtle grid lines */}
+          <line x1="0" y1="300" x2="1440" y2="300" stroke="white" strokeWidth="0.5" opacity="0.2" />
+          <line x1="0" y1="500" x2="1440" y2="500" stroke="white" strokeWidth="0.5" opacity="0.2" />
+          <line x1="720" y1="0" x2="720" y2="900" stroke="white" strokeWidth="0.5" opacity="0.2" />
+        </svg>
 
         <div className="relative z-10 mx-auto w-full max-w-5xl px-6 py-28 text-center lg:px-8">
           <div
@@ -135,7 +163,7 @@ export default async function HomePage() {
           </div>
 
           <h1
-            className="text-5xl font-semibold leading-tight text-white drop-shadow-sm sm:text-6xl lg:text-7xl"
+            className="text-5xl font-normal italic leading-tight text-white sm:text-7xl lg:text-[88px]"
             style={{ fontFamily: "var(--font-display)" }}
           >
             Maquinaria de Asia
@@ -261,10 +289,10 @@ export default async function HomePage() {
       <section className="bg-[#001E50] py-14">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <dl className="grid grid-cols-2 gap-10 lg:grid-cols-4">
-            {stats.map((s) => (
+            {stats.map((s, i) => (
               <div key={s.label} className="border-l-2 border-[#C4933F] pl-6">
                 <dd
-                  className="text-4xl font-semibold text-[#C4933F]"
+                  className={i === 0 ? "text-5xl font-normal italic text-[#C4933F]" : "text-4xl font-semibold text-[#C4933F]"}
                   style={{ fontFamily: "var(--font-display)" }}
                 >
                   {s.value}
@@ -485,13 +513,11 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
-            {CATEGORIES.map((cat, i) => (
+            {CATEGORIES.map((cat) => (
               <Link
                 key={cat.slug}
                 href={cat.href}
-                className={`group relative overflow-hidden rounded-2xl ${
-                  i < 3 ? "h-72" : "h-56"
-                } md:h-72`}
+                className="group relative overflow-hidden rounded-2xl h-64 md:h-72"
               >
                 <Image
                   src={`https://images.unsplash.com/${CAT_IMAGES[cat.slug]}?w=600&q=80`}
@@ -604,19 +630,19 @@ export default async function HomePage() {
               <Link
                 key={b.name}
                 href={href}
-                className="group flex flex-col items-center justify-center bg-white px-6 py-10 transition-colors hover:bg-[#001E50]"
+                className="group flex flex-col items-center justify-center gap-0 bg-white px-6 py-10 transition-all hover:bg-[#001E50]"
               >
                 <span
-                  className="text-lg font-semibold text-[#6B6560] transition-colors group-hover:text-white"
-                  style={{ fontFamily: "var(--font-display)" }}
-                >
-                  {b.name}
-                </span>
-                <span
-                  className="mt-1 text-xs text-[#C4933F] opacity-0 transition-opacity group-hover:opacity-100"
+                  className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#C4933F] opacity-70 transition-opacity group-hover:opacity-100"
                   style={{ fontFamily: "var(--font-body)" }}
                 >
                   {b.count} modelos
+                </span>
+                <span
+                  className="mt-2 text-xl font-semibold text-[#6B6560] transition-colors group-hover:text-white"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  {b.name}
                 </span>
               </Link>
               );

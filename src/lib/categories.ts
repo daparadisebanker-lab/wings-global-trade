@@ -42,8 +42,10 @@ export const CATEGORIES: Category[] = [
     shortLabel: "Camiones",
     slug: "trucks",
     href: "/trucks",
-    description: "Camiones tractores, volquetes, plataformas, cisternas y refrigerados — nuevos y usados de China y Asia.",
+    description: "27 modelos KAMA disponibles — camiones de combustión y eléctricos (BEV) con precio landed total para toda Latinoamérica.",
     subtypes: [
+      { label: "Camiones KAMA — Catálogo activo", href: "/camiones", count: "27", unsplashId: "photo-1601584115197-04ecc0da31d7", icon: "/icons/trucks/day-cab.svg" },
+      { label: "Ver por serie (9 series)", href: "/brands/kama", count: "9 series", unsplashId: "photo-1601584115197-04ecc0da31d7", icon: "/icons/trucks/sleeper-cab.svg" },
       { label: "Camión Tractor (Cabina Simple)",     href: "/trucks/tractor-trucks-day",        count: "1,200", unsplashId: "photo-1601584115197-04ecc0da31d7", icon: "/icons/trucks/day-cab.svg",               comingSoon: true },
       { label: "Camión Tractor (Cabina Dormitorio)", href: "/trucks/tractor-trucks-sleeper",    count: "3,000", unsplashId: "photo-1601584115197-04ecc0da31d7", icon: "/icons/trucks/sleeper-cab.svg",            comingSoon: true },
       { label: "Volquete (Rígido)",                  href: "/trucks/dump-trucks-rigid",         count: "1,800", unsplashId: "photo-1504307651254-35680f356dfd", icon: "/icons/trucks/rigid-dump.svg",             comingSoon: true },

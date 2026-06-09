@@ -73,7 +73,7 @@ export default function MobileMenu() {
             </p>
 
             {CATEGORIES.map((cat) =>
-              cat.subtypes.length > 0 ? (
+              cat.subtypes.some(s => !s.comingSoon) ? (
                 <div key={cat.slug} className="border-b border-white/8">
                   <button
                     onClick={() => toggleCat(cat.slug)}
@@ -91,7 +91,7 @@ export default function MobileMenu() {
 
                   {openCat === cat.slug && (
                     <div className="grid grid-cols-1 gap-1 pb-4">
-                      {cat.subtypes.map((sub) => (
+                      {cat.subtypes.filter((s) => !s.comingSoon).map((sub) => (
                         <Link
                           key={sub.href}
                           href={sub.href}
@@ -136,15 +136,6 @@ export default function MobileMenu() {
             )}
 
             {/* ── Secondary links ───────────────────────────────────── */}
-            <Link
-              href="/camiones"
-              onClick={close}
-              className="flex items-center justify-between border-b border-white/8 py-3.5 text-sm font-semibold text-white/80 hover:text-white"
-              style={{ fontFamily: "var(--font-body)" }}
-            >
-              <span>Camiones KAMA</span>
-              <span className="rounded-full bg-[#6BA3C8]/20 px-2 py-0.5 text-[9px] font-semibold text-[#6BA3C8]">27</span>
-            </Link>
             <Link
               href="/about"
               onClick={close}

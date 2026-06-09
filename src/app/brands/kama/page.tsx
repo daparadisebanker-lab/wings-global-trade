@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { cookies } from "next/headers";
-import TractorCard from "@/components/listings/TractorCard";
+import TruckCard from "@/components/listings/TruckCard";
 import { getListings } from "@data/listings";
 import { CURRENCY_COOKIE, DEFAULT_CURRENCY } from "@/lib/currencies";
-import { LANG_COOKIE, DEFAULT_LANG, getTranslations } from "@/lib/i18n";
 import { KAMA_SERIES } from "@/lib/kama-series";
 
 export const metadata: Metadata = {
@@ -17,12 +16,8 @@ export const dynamic = "force-dynamic";
 export default async function KamaBrandPage() {
   const cookieStore = await cookies();
   const currency    = cookieStore.get(CURRENCY_COOKIE)?.value ?? DEFAULT_CURRENCY;
-  const lang        = cookieStore.get(LANG_COOKIE)?.value     ?? DEFAULT_LANG;
 
-  const [t, allKama] = await Promise.all([
-    getTranslations(lang),
-    getListings({ brand: "KAMA" }),
-  ]);
+  const allKama = await getListings({ brand: "KAMA" });
 
   const listingById = Object.fromEntries(allKama.map((l) => [l.id, l]));
 
@@ -173,12 +168,11 @@ export default async function KamaBrandPage() {
               {models.length > 0 ? (
                 <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
                   {models.map((listing) => (
-                    <TractorCard
+                    <TruckCard
                       key={listing.id}
                       listing={listing}
+                      serieSlug={serie.slug}
                       currency={currency}
-                      t={t}
-                      lang={lang}
                     />
                   ))}
                 </div>

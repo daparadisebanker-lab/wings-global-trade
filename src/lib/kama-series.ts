@@ -24,7 +24,7 @@ export const KAMA_SERIES: KamaSeries[] = [
     hpRange: "122 hp",
     badge: "Euro-VI",
     gvwRange: "3,040 kg",
-    accent: "#4B9E5F",
+    accent: "#C4933F",
   },
   {
     slug: "x",
@@ -36,7 +36,7 @@ export const KAMA_SERIES: KamaSeries[] = [
     payload: "2–2.5T",
     hpRange: "107–131 hp",
     gvwRange: "hasta 4,600 kg",
-    accent: "#6BA3C8",
+    accent: "#C4933F",
   },
   {
     slug: "v",
@@ -62,7 +62,7 @@ export const KAMA_SERIES: KamaSeries[] = [
     hpRange: "148 hp",
     badge: "Euro-VI",
     gvwRange: "5,580 kg",
-    accent: "#8B9E6F",
+    accent: "#C4933F",
   },
   {
     slug: "m6",
@@ -74,7 +74,7 @@ export const KAMA_SERIES: KamaSeries[] = [
     payload: "3.5–10T",
     hpRange: "148–201 hp",
     gvwRange: "6,320–14,870 kg",
-    accent: "#9B8EC4",
+    accent: "#C4933F",
   },
   {
     slug: "gm",
@@ -87,7 +87,7 @@ export const KAMA_SERIES: KamaSeries[] = [
     hpRange: "168 hp",
     badge: "Euro-V",
     gvwRange: "16,620 kg",
-    accent: "#C4703F",
+    accent: "#C4933F",
   },
   {
     slug: "ew-ev",
@@ -100,7 +100,7 @@ export const KAMA_SERIES: KamaSeries[] = [
     hpRange: "35 kW / 70 kW pico",
     badge: "BEV",
     gvwRange: "2,100–3,390 kg",
-    accent: "#25D366",
+    accent: "#2DD4BF",
   },
   {
     slug: "es-esp",

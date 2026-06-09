@@ -50,6 +50,7 @@ const config: Config = {
         // ── Wings brand fonts (primary going forward) ────────────────────
         display: ["Cormorant Garamond", "Georgia", "serif"],
         body:    ["Flexo", "system-ui", "sans-serif"],
+        data:    ["DM Mono", "monospace"],
         // ── Legacy (kept during migration) ──────────────────────────────
         sans:    ["Flexo", "Inter", "system-ui", "sans-serif"],
         serif:   ["Cormorant Garamond", "Playfair Display", "Georgia", "serif"],

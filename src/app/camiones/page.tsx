@@ -7,13 +7,21 @@ export const metadata: Metadata = {
   description: "27 modelos de camiones y furgonetas KAMA disponibles para importación: W, X, V, M3, M6, GM, EW/EV, ES/ESP, EX/EM. Combustión y eléctrico (BEV). Entrega en LATAM con precio landed total.",
 };
 
-const FUEL_ICON: Record<string, string> = {
-  "Gasolina": "⛽",
-  "Gas / GNC / Diésel": "⛽",
-  "Gas / Diésel": "⛽",
-  "Diésel": "⛽",
-  "Eléctrico (BEV)": "⚡",
-};
+function CombustionIcon({ color }: { color: string }) {
+  return (
+    <svg width="11" height="11" viewBox="0 0 24 24" fill={color} xmlns="http://www.w3.org/2000/svg" className="inline-block">
+      <path d="M12 2C8.5 2 7 5.5 7 8c0 2.2 1.2 3.9 2.5 5.2C10.8 14.5 11 15.2 11 16v1h2v-1c0-.8.2-1.5 1.5-2.8C15.8 11.9 17 10.2 17 8c0-2.5-1.5-6-5-6zm-1 17h2v1a1 1 0 01-2 0v-1z"/>
+    </svg>
+  );
+}
+
+function ElectricIcon({ color }: { color: string }) {
+  return (
+    <svg width="11" height="11" viewBox="0 0 24 24" fill={color} xmlns="http://www.w3.org/2000/svg" className="inline-block">
+      <path d="M13 2L4.5 13.5H11L10 22L20.5 10H14L13 2z"/>
+    </svg>
+  );
+}
 
 export default function CamionesPage() {
   const seriesBySlug = Object.fromEntries(KAMA_SERIES.map((s) => [s.slug, s]));
@@ -23,8 +31,17 @@ export default function CamionesPage() {
 
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
       <div className="relative overflow-hidden bg-[#001E50]">
-        <div className="absolute inset-0 opacity-[0.04]"
-          style={{ backgroundImage: "radial-gradient(circle at 70% 50%, #C4933F 0%, transparent 60%)" }} />
+        {/* Gold radial glow */}
+        <div className="absolute inset-0 opacity-[0.08]"
+          style={{ backgroundImage: "radial-gradient(circle at 70% 50%, #C4933F 0%, transparent 55%)" }} />
+        {/* Dot grid texture */}
+        <div
+          className="absolute inset-0 opacity-[0.06]"
+          style={{
+            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)",
+            backgroundSize: "28px 28px"
+          }}
+        />
         <div className="relative mx-auto max-w-7xl px-6 py-16 lg:px-8 lg:py-24">
 
           <nav className="mb-6 flex items-center gap-2 text-xs text-white/30" style={{ fontFamily: "var(--font-body)" }}>
@@ -55,7 +72,7 @@ export default function CamionesPage() {
               { value: "360 km", label: "Autonomía BEV máx." },
             ].map((s) => (
               <div key={s.label}>
-                <p className="text-2xl font-semibold text-[#C4933F]" style={{ fontFamily: "var(--font-display)" }}>
+                <p className="font-data text-2xl font-semibold text-[#C4933F]">
                   {s.value}
                 </p>
                 <p className="text-[10px] font-semibold uppercase tracking-wide text-white/30" style={{ fontFamily: "var(--font-body)" }}>
@@ -136,7 +153,11 @@ export default function CamionesPage() {
                       <div>
                         <p className="text-[10px] font-semibold uppercase tracking-[0.12em]"
                           style={{ fontFamily: "var(--font-body)", color: serie.accent }}>
-                          {FUEL_ICON[serie.fuel] ?? "🚛"} {serie.fuel}
+                          {serie.fuel.includes("Eléctrico") || serie.fuel.includes("BEV")
+                            ? <ElectricIcon color={serie.accent} />
+                            : <CombustionIcon color={serie.accent} />
+                          }{" "}
+                          {serie.fuel}
                         </p>
                         <h3 className="mt-0.5 text-xl font-semibold text-[#1C1A16]"
                           style={{ fontFamily: "var(--font-display)" }}>
@@ -168,7 +189,7 @@ export default function CamionesPage() {
                           <p className="text-[9px] uppercase tracking-wide text-[#9B9590]" style={{ fontFamily: "var(--font-body)" }}>
                             {spec.label}
                           </p>
-                          <p className="text-xs font-semibold text-[#1C1A16]" style={{ fontFamily: "var(--font-body)" }}>
+                          <p className="font-data text-xs font-semibold text-[#1C1A16]">
                             {spec.value}
                           </p>
                         </div>
@@ -179,8 +200,7 @@ export default function CamionesPage() {
                       <div className="flex gap-1">
                         {serie.modelIds.slice(0, 4).map((id) => (
                           <span key={id}
-                            className="rounded-full border border-[#E8E4DB] bg-[#F8F6F0] px-2 py-0.5 text-[9px] font-semibold text-[#6B6560]"
-                            style={{ fontFamily: "var(--font-body)" }}>
+                            className="font-data rounded-full border border-[#E8E4DB] bg-[#F8F6F0] px-2 py-0.5 text-[9px] font-semibold text-[#6B6560]">
                             {id.replace("kama-","").toUpperCase()}
                           </span>
                         ))}
