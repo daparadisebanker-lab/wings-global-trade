@@ -6,6 +6,11 @@ import FeaturedCarousel from "@/components/listings/FeaturedCarousel";
 import { DEFAULT_CURRENCY } from "@/lib/currencies";
 import { DEFAULT_LANG, getTranslations } from "@/lib/i18n";
 import { CATEGORIES } from "@/lib/categories";
+import HeroEntrance from "@/components/motion/HeroEntrance";
+import HeroSVGRoutes from "@/components/motion/HeroSVGRoutes";
+import StatsBar from "@/components/motion/StatsBar";
+import AnimateIn from "@/components/motion/AnimateIn";
+import { StaggerWrapper, StaggerItem } from "@/components/motion/Stagger";
 
 export const metadata: Metadata = {
   title: "Wings Global Trade | Maquinaria desde Asia para Latinoamérica",
@@ -20,25 +25,6 @@ const CAT_IMAGES: Record<string, string> = {
   "industrial":   "photo-1504307651254-35680f356dfd",
   "spare-parts":  "photo-1596813362035-d3c3e042a763",
 };
-
-const TRUST_BADGES = [
-  {
-    title: "Precio Landed Total",
-    body:  "Flete, aranceles y entrega incluidos en tu cotización",
-  },
-  {
-    title: "Sin intermediarios",
-    body:  "Acceso directo a fabricantes verificados en China",
-  },
-  {
-    title: "Entrega en 6 países",
-    body:  "Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay",
-  },
-  {
-    title: "Asesoría en español",
-    body:  "Un consultor real, no un bot",
-  },
-];
 
 const BRANDS = [
   { name: "New Holland",     count: 14 },
@@ -96,13 +82,6 @@ export default async function HomePage() {
   ]);
   const listings = allListings.slice(0, 6);
 
-  const stats = [
-    { value: "34",     label: "Modelos disponibles" },
-    { value: "50–140", label: "Rango de potencia (hp)" },
-    { value: "4",      label: "Marcas de fábrica" },
-    { value: "6",      label: "Países atendidos" },
-  ];
-
   return (
     <>
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
@@ -114,114 +93,17 @@ export default async function HomePage() {
           className="object-cover"
           priority
         />
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.55) 100%)' }} />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.55) 100%)" }} />
         <div
-          className="absolute inset-0 opacity-20"
+          className="absolute inset-0 hero-glow-ambient"
           style={{ background: "radial-gradient(ellipse at 60% 30%, #C4933F 0%, transparent 60%)" }}
         />
-        {/* Trade route motif: Asia → LATAM */}
-        <svg
-          className="absolute inset-0 h-full w-full pointer-events-none"
-          style={{ opacity: 0.07 }}
-          viewBox="0 0 1440 900"
-          preserveAspectRatio="xMidYMid slice"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true"
-        >
-          {/* Origin point — East Asia */}
-          <circle cx="1150" cy="350" r="4" fill="#C4933F" opacity="1" />
-          <circle cx="1150" cy="350" r="12" fill="none" stroke="#C4933F" strokeWidth="1" opacity="0.5" />
-          {/* Destination points — LATAM */}
-          <circle cx="320" cy="500" r="3" fill="white" opacity="0.8" />
-          <circle cx="290" cy="540" r="3" fill="white" opacity="0.8" />
-          <circle cx="340" cy="580" r="3" fill="white" opacity="0.8" />
-          <circle cx="370" cy="460" r="3" fill="white" opacity="0.8" />
-          <circle cx="250" cy="510" r="3" fill="white" opacity="0.8" />
-          {/* Route arcs */}
-          <path d="M1150,350 C900,200 600,300 320,500" fill="none" stroke="white" strokeWidth="1" strokeDasharray="6,4" opacity="0.6" />
-          <path d="M1150,350 C880,180 580,320 290,540" fill="none" stroke="white" strokeWidth="1" strokeDasharray="6,4" opacity="0.5" />
-          <path d="M1150,350 C870,220 560,380 340,580" fill="none" stroke="white" strokeWidth="1" strokeDasharray="6,4" opacity="0.5" />
-          <path d="M1150,350 C910,160 620,280 370,460" fill="none" stroke="white" strokeWidth="1" strokeDasharray="6,4" opacity="0.4" />
-          <path d="M1150,350 C860,240 540,340 250,510" fill="none" stroke="white" strokeWidth="1" strokeDasharray="6,4" opacity="0.4" />
-          {/* Subtle grid lines */}
-          <line x1="0" y1="300" x2="1440" y2="300" stroke="white" strokeWidth="0.5" opacity="0.2" />
-          <line x1="0" y1="500" x2="1440" y2="500" stroke="white" strokeWidth="0.5" opacity="0.2" />
-          <line x1="720" y1="0" x2="720" y2="900" stroke="white" strokeWidth="0.5" opacity="0.2" />
-        </svg>
 
-        <div className="relative z-10 mx-auto w-full max-w-5xl px-6 py-28 text-center lg:px-8">
-          <div
-            className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-2"
-            style={{ background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(4px)' }}
-          >
-            <span
-              className="text-[11px] font-medium tracking-widest text-white"
-              style={{ fontFamily: "var(--font-body)" }}
-            >
-              Perú · Bolivia · Chile · Paraguay · Argentina · Uruguay
-            </span>
-          </div>
+        {/* Animated trade route SVG */}
+        <HeroSVGRoutes />
 
-          <h1
-            className="text-5xl font-normal italic leading-tight text-white sm:text-7xl lg:text-[88px]"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            Maquinaria de Asia
-            <br />
-            <span style={{ color: '#F0A030' }}>con precio landed y entrega garantizada.</span>
-          </h1>
-
-          <p
-            className="mx-auto mt-6 max-w-2xl text-lg font-light leading-relaxed text-white/80"
-            style={{ fontFamily: "var(--font-body)", textShadow: '0 1px 6px rgba(0,0,0,0.7)' }}
-          >
-            Tractores, camiones, buses y equipos industriales — importados directamente
-            de fábrica con flete, aranceles y entrega incluidos en cada cotización.
-          </p>
-
-          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link
-              href="/cotizar"
-              className="rounded-full transition-opacity hover:opacity-90"
-              style={{
-                fontFamily: "var(--font-body)",
-                backgroundColor: '#F0A030',
-                color: '#1a1a1a',
-                padding: '14px 32px',
-                fontWeight: 500,
-                fontSize: '0.9rem',
-              }}
-            >
-              Solicitar cotización
-            </Link>
-            <Link
-              href="/agricultural/tractors"
-              className="rounded-full border border-white/25 px-9 py-3.5 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-white/10"
-              style={{ fontFamily: "var(--font-body)" }}
-            >
-              Ver catálogo
-            </Link>
-          </div>
-
-          <div className="mt-16 grid grid-cols-2 gap-x-8 gap-y-6 lg:grid-cols-4">
-            {TRUST_BADGES.map((b) => (
-              <div key={b.title} className="border-l-2 border-[#C4933F]/40 pl-4 text-left">
-                <p
-                  className="text-sm font-semibold text-white"
-                  style={{ fontFamily: "var(--font-body)" }}
-                >
-                  {b.title}
-                </p>
-                <p
-                  className="mt-1.5 text-xs leading-relaxed text-white/50"
-                  style={{ fontFamily: "var(--font-body)" }}
-                >
-                  {b.body}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* Animated hero content */}
+        <HeroEntrance />
 
         {/* Scroll indicator */}
         <div className="hero-scroll-indicator absolute bottom-8 left-1/2 z-10 -translate-x-1/2 text-white">
@@ -242,7 +124,7 @@ export default async function HomePage() {
       >
         <div className="absolute inset-0 bg-[#1C1A16]/85" />
         <div className="relative z-10 mx-auto max-w-5xl px-6 lg:px-8">
-          <div className="mb-10 flex items-end justify-between">
+          <AnimateIn className="mb-10 flex items-end justify-between">
             <div>
               <p
                 className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
@@ -264,7 +146,7 @@ export default async function HomePage() {
             >
               Ver catálogo completo →
             </Link>
-          </div>
+          </AnimateIn>
 
           <FeaturedCarousel
             listings={listings}
@@ -286,33 +168,12 @@ export default async function HomePage() {
       </section>
 
       {/* ── STATS BAR ─────────────────────────────────────────────────────── */}
-      <section className="bg-[#001E50] py-14">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <dl className="grid grid-cols-2 gap-10 lg:grid-cols-4">
-            {stats.map((s, i) => (
-              <div key={s.label} className="border-l-2 border-[#C4933F] pl-6">
-                <dd
-                  className={i === 0 ? "text-5xl font-normal italic text-[#C4933F]" : "text-4xl font-semibold text-[#C4933F]"}
-                  style={{ fontFamily: "var(--font-display)" }}
-                >
-                  {s.value}
-                </dd>
-                <dt
-                  className="mt-1 text-xs uppercase tracking-widest text-white/40"
-                  style={{ fontFamily: "var(--font-body)" }}
-                >
-                  {s.label}
-                </dt>
-              </div>
-            ))}
-          </dl>
-        </div>
-      </section>
+      <StatsBar />
 
       {/* ── CÓMO FUNCIONA ────────────────────────────────────────────────── */}
       <section className="bg-[#F8F6F0] py-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mb-14 text-center">
+          <AnimateIn className="mb-14 text-center">
             <p
               className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C4933F]"
               style={{ fontFamily: "var(--font-body)" }}
@@ -325,8 +186,9 @@ export default async function HomePage() {
             >
               Cómo funciona
             </h2>
-          </div>
-          <div className="grid gap-10 sm:grid-cols-3">
+          </AnimateIn>
+
+          <StaggerWrapper className="grid gap-10 sm:grid-cols-3">
             {[
               {
                 step: "01",
@@ -344,29 +206,32 @@ export default async function HomePage() {
                 body: "Coordinamos toda la logística desde fábrica hasta tu finca. Operamos desde ZOFRI (Chile) y ZOFRATACNA (Perú) hacia 6 países. Plazo estimado: 45–90 días.",
               },
             ].map((item) => (
-              <div key={item.step} className="relative border-t-2 border-[#C4933F]/20 pt-8">
-                <p
-                  className="mb-4 text-5xl font-semibold leading-none text-[#C4933F]/12"
-                  style={{ fontFamily: "var(--font-display)" }}
-                >
-                  {item.step}
-                </p>
-                <h3
-                  className="mb-3 text-xl font-semibold text-[#1C1A16]"
-                  style={{ fontFamily: "var(--font-display)" }}
-                >
-                  {item.title}
-                </h3>
-                <p
-                  className="text-sm leading-relaxed text-[#6B6560]"
-                  style={{ fontFamily: "var(--font-body)" }}
-                >
-                  {item.body}
-                </p>
-              </div>
+              <StaggerItem key={item.step}>
+                <div className="relative border-t-2 border-[#C4933F]/20 pt-8">
+                  <p
+                    className="mb-4 text-5xl font-semibold leading-none text-[#C4933F]/12"
+                    style={{ fontFamily: "var(--font-display)" }}
+                  >
+                    {item.step}
+                  </p>
+                  <h3
+                    className="mb-3 text-xl font-semibold text-[#1C1A16]"
+                    style={{ fontFamily: "var(--font-display)" }}
+                  >
+                    {item.title}
+                  </h3>
+                  <p
+                    className="text-sm leading-relaxed text-[#6B6560]"
+                    style={{ fontFamily: "var(--font-body)" }}
+                  >
+                    {item.body}
+                  </p>
+                </div>
+              </StaggerItem>
             ))}
-          </div>
-          <div className="mt-12 text-center">
+          </StaggerWrapper>
+
+          <AnimateIn className="mt-12 text-center" delay={0.2}>
             <Link
               href="/cotizar"
               className="inline-flex items-center gap-2 rounded-full bg-[#001E50] px-8 py-3.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
@@ -374,14 +239,14 @@ export default async function HomePage() {
             >
               Solicitar cotización ahora →
             </Link>
-          </div>
+          </AnimateIn>
         </div>
       </section>
 
       {/* ── DUAL-PATH DECISION ───────────────────────────────────────────── */}
       <section className="bg-[#001E50] py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mb-14 text-center">
+          <AnimateIn className="mb-14 text-center">
             <p
               className="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#C4933F]"
               style={{ fontFamily: "var(--font-body)" }}
@@ -401,94 +266,98 @@ export default async function HomePage() {
               Compra del inventario existente o importa cualquier producto desde Asia.
               El mismo equipo, la misma garantía de precio landed.
             </p>
-          </div>
+          </AnimateIn>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Link
-              href="/agricultural/tractors"
-              className="group relative overflow-hidden rounded-2xl bg-[#F8F6F0] p-8 transition-transform duration-300 hover:-translate-y-0.5"
-            >
-              <p
-                className="mb-4 text-[9px] font-semibold uppercase tracking-[0.2em] text-[#C4933F]"
-                style={{ fontFamily: "var(--font-body)" }}
+          <StaggerWrapper className="grid gap-4 sm:grid-cols-2" stagger={0.12}>
+            <StaggerItem>
+              <Link
+                href="/agricultural/tractors"
+                className="group relative block overflow-hidden rounded-2xl bg-[#F8F6F0] p-8 transition-transform duration-300 hover:-translate-y-0.5"
               >
-                Catálogo propio
-              </p>
-              <h3
-                className="text-3xl font-semibold text-[#1C1A16] sm:text-4xl"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                Maquinaria disponible en inventario
-              </h3>
-              <p
-                className="mt-4 text-sm leading-relaxed text-[#6B6560]"
-                style={{ fontFamily: "var(--font-body)" }}
-              >
-                34 modelos listos para cotizar — tractores de New Holland, John Deere,
-                Massey Ferguson y Kubota. Precio landed confirmado.
-              </p>
-              <div className="mt-8 flex items-center gap-2">
-                <span
-                  className="text-xs font-semibold uppercase tracking-widest text-[#C4933F]"
+                <p
+                  className="mb-4 text-[9px] font-semibold uppercase tracking-[0.2em] text-[#C4933F]"
                   style={{ fontFamily: "var(--font-body)" }}
                 >
-                  Explorar catálogo
-                </span>
-                <svg
-                  className="h-3.5 w-3.5 text-[#C4933F] transition-transform duration-200 group-hover:translate-x-1"
-                  fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                  Catálogo propio
+                </p>
+                <h3
+                  className="text-3xl font-semibold text-[#1C1A16] sm:text-4xl"
+                  style={{ fontFamily: "var(--font-display)" }}
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
-            </Link>
-
-            <Link
-              href="/importacion"
-              className="group relative overflow-hidden rounded-2xl bg-[#001240] p-8 transition-transform duration-300 hover:-translate-y-0.5"
-            >
-              <p
-                className="mb-4 text-[9px] font-semibold uppercase tracking-[0.2em] text-[#C4933F]"
-                style={{ fontFamily: "var(--font-body)" }}
-              >
-                Servicio de importación
-              </p>
-              <h3
-                className="text-3xl font-semibold text-white sm:text-4xl"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                Importa cualquier producto desde Asia
-              </h3>
-              <p
-                className="mt-4 text-sm leading-relaxed text-white/50"
-                style={{ fontFamily: "var(--font-body)" }}
-              >
-                ¿Tu producto no está en el catálogo? Lo gestionamos desde fábrica
-                hasta tu aduana — selección, negociación, flete y documentación.
-              </p>
-              <div className="mt-8 flex items-center gap-2">
-                <span
-                  className="text-xs font-semibold uppercase tracking-widest text-[#C4933F]"
+                  Maquinaria disponible en inventario
+                </h3>
+                <p
+                  className="mt-4 text-sm leading-relaxed text-[#6B6560]"
                   style={{ fontFamily: "var(--font-body)" }}
                 >
-                  Conocer el servicio
-                </span>
-                <svg
-                  className="h-3.5 w-3.5 text-[#C4933F] transition-transform duration-200 group-hover:translate-x-1"
-                  fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                  34 modelos listos para cotizar — tractores de New Holland, John Deere,
+                  Massey Ferguson y Kubota. Precio landed confirmado.
+                </p>
+                <div className="mt-8 flex items-center gap-2">
+                  <span
+                    className="text-xs font-semibold uppercase tracking-widest text-[#C4933F]"
+                    style={{ fontFamily: "var(--font-body)" }}
+                  >
+                    Explorar catálogo
+                  </span>
+                  <svg
+                    className="h-3.5 w-3.5 text-[#C4933F] transition-transform duration-200 group-hover:translate-x-1"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </Link>
+            </StaggerItem>
+
+            <StaggerItem>
+              <Link
+                href="/importacion"
+                className="group relative block overflow-hidden rounded-2xl bg-[#001240] p-8 transition-transform duration-300 hover:-translate-y-0.5"
+              >
+                <p
+                  className="mb-4 text-[9px] font-semibold uppercase tracking-[0.2em] text-[#C4933F]"
+                  style={{ fontFamily: "var(--font-body)" }}
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
-            </Link>
-          </div>
+                  Servicio de importación
+                </p>
+                <h3
+                  className="text-3xl font-semibold text-white sm:text-4xl"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  Importa cualquier producto desde Asia
+                </h3>
+                <p
+                  className="mt-4 text-sm leading-relaxed text-white/50"
+                  style={{ fontFamily: "var(--font-body)" }}
+                >
+                  ¿Tu producto no está en el catálogo? Lo gestionamos desde fábrica
+                  hasta tu aduana — selección, negociación, flete y documentación.
+                </p>
+                <div className="mt-8 flex items-center gap-2">
+                  <span
+                    className="text-xs font-semibold uppercase tracking-widest text-[#C4933F]"
+                    style={{ fontFamily: "var(--font-body)" }}
+                  >
+                    Conocer el servicio
+                  </span>
+                  <svg
+                    className="h-3.5 w-3.5 text-[#C4933F] transition-transform duration-200 group-hover:translate-x-1"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </Link>
+            </StaggerItem>
+          </StaggerWrapper>
         </div>
       </section>
 
       {/* ── CATEGORY CARDS ────────────────────────────────────────────────── */}
       <section className="bg-[#F8F6F0] py-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mb-10 flex items-end justify-between">
+          <AnimateIn className="mb-10 flex items-end justify-between">
             <div>
               <p
                 className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
@@ -510,100 +379,106 @@ export default async function HomePage() {
             >
               Ver todas →
             </Link>
-          </div>
+          </AnimateIn>
 
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
+          <StaggerWrapper className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5" stagger={0.07}>
             {CATEGORIES.map((cat) => (
-              <Link
-                key={cat.slug}
-                href={cat.href}
-                className="group relative overflow-hidden rounded-2xl h-64 md:h-72"
-              >
-                <Image
-                  src={`https://images.unsplash.com/${CAT_IMAGES[cat.slug]}?w=600&q=80`}
-                  alt={cat.label}
-                  fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#001240]/90 via-[#001E50]/30 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 p-5">
-                  <p
-                    className="text-[9px] font-semibold uppercase tracking-[0.15em] text-[#C4933F]"
-                    style={{ fontFamily: "var(--font-body)" }}
-                  >
-                    {cat.subtypes.length} subcategorías
-                  </p>
-                  <p
-                    className="mt-1 text-lg font-semibold leading-tight text-white"
-                    style={{ fontFamily: "var(--font-display)" }}
-                  >
-                    {cat.shortLabel}
-                  </p>
-                  <p
-                    className="mt-1.5 text-[10px] font-semibold text-white/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                    style={{ fontFamily: "var(--font-body)" }}
-                  >
-                    Explorar →
-                  </p>
-                </div>
-              </Link>
+              <StaggerItem key={cat.slug}>
+                <Link
+                  href={cat.href}
+                  className="group relative block overflow-hidden rounded-2xl h-64 md:h-72"
+                >
+                  <Image
+                    src={`https://images.unsplash.com/${CAT_IMAGES[cat.slug]}?w=600&q=80`}
+                    alt={cat.label}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#001240]/90 via-[#001E50]/30 to-transparent" />
+                  <div className="absolute inset-x-0 bottom-0 p-5">
+                    <p
+                      className="text-[9px] font-semibold uppercase tracking-[0.15em] text-[#C4933F]"
+                      style={{ fontFamily: "var(--font-body)" }}
+                    >
+                      {cat.subtypes.length} subcategorías
+                    </p>
+                    <p
+                      className="mt-1 text-lg font-semibold leading-tight text-white"
+                      style={{ fontFamily: "var(--font-display)" }}
+                    >
+                      {cat.shortLabel}
+                    </p>
+                    <p
+                      className="mt-1.5 text-[10px] font-semibold text-white/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                      style={{ fontFamily: "var(--font-body)" }}
+                    >
+                      Explorar →
+                    </p>
+                  </div>
+                </Link>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerWrapper>
         </div>
       </section>
 
-      {/* ── TESTIMONIALS — typographic, no photos ─────────────────────────── */}
+      {/* ── TESTIMONIALS ──────────────────────────────────────────────────── */}
       <section className="bg-white py-20">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <p
-            className="mb-16 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
-            style={{ fontFamily: "var(--font-body)" }}
-          >
-            Compradores verificados
-          </p>
-          <div className="grid gap-12 sm:grid-cols-2 sm:gap-16 lg:grid-cols-3">
+          <AnimateIn>
+            <p
+              className="mb-16 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              Compradores verificados
+            </p>
+          </AnimateIn>
+
+          <StaggerWrapper className="grid gap-12 sm:grid-cols-2 sm:gap-16 lg:grid-cols-3" stagger={0.09}>
             {TESTIMONIALS.map((item) => (
-              <div key={item.name}>
-                <p
-                  className="text-3xl font-semibold leading-snug text-[#1C1A16] sm:text-4xl"
-                  style={{ fontFamily: "var(--font-display)", fontStyle: "italic" }}
-                >
-                  &ldquo;{item.quote}&rdquo;
-                </p>
-                <div className="mt-8 flex items-center gap-4">
-                  <div className="h-px flex-1 bg-[#E8E4DB]" />
-                  <div className="text-right">
-                    <p
-                      className="text-sm font-semibold text-[#1C1A16]"
-                      style={{ fontFamily: "var(--font-body)" }}
-                    >
-                      {item.name}
-                    </p>
-                    <p
-                      className="mt-0.5 text-[10px] font-semibold uppercase tracking-widest text-[#C4933F]"
-                      style={{ fontFamily: "var(--font-body)" }}
-                    >
-                      {item.location}
-                    </p>
-                    <p
-                      className="mt-1 text-xs text-[#9B9590]"
-                      style={{ fontFamily: "var(--font-body)" }}
-                    >
-                      {item.machine}
-                    </p>
+              <StaggerItem key={item.name}>
+                <div>
+                  <p
+                    className="text-3xl font-semibold leading-snug text-[#1C1A16] sm:text-4xl"
+                    style={{ fontFamily: "var(--font-display)", fontStyle: "italic" }}
+                  >
+                    &ldquo;{item.quote}&rdquo;
+                  </p>
+                  <div className="mt-8 flex items-center gap-4">
+                    <div className="h-px flex-1 bg-[#E8E4DB]" />
+                    <div className="text-right">
+                      <p
+                        className="text-sm font-semibold text-[#1C1A16]"
+                        style={{ fontFamily: "var(--font-body)" }}
+                      >
+                        {item.name}
+                      </p>
+                      <p
+                        className="mt-0.5 text-[10px] font-semibold uppercase tracking-widest text-[#C4933F]"
+                        style={{ fontFamily: "var(--font-body)" }}
+                      >
+                        {item.location}
+                      </p>
+                      <p
+                        className="mt-1 text-xs text-[#9B9590]"
+                        style={{ fontFamily: "var(--font-body)" }}
+                      >
+                        {item.machine}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerWrapper>
         </div>
       </section>
 
       {/* ── BRANDS ────────────────────────────────────────────────────────── */}
       <section className="border-t border-[#E8E4DB] bg-[#F8F6F0] py-16">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mb-10">
+          <AnimateIn className="mb-10">
             <p
               className="mb-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
               style={{ fontFamily: "var(--font-body)" }}
@@ -616,41 +491,45 @@ export default async function HomePage() {
             >
               Marcas disponibles en el catálogo
             </h2>
-          </div>
-          <div className="grid grid-cols-2 gap-px border border-[#E8E4DB] bg-[#E8E4DB] sm:grid-cols-4">
-            {BRANDS.map((b) => {
-              const slugMap: Record<string, string> = {
-                "New Holland": "new-holland",
-                "John Deere": "john-deere",
-                "Massey Ferguson": "massey-ferguson",
-                "Kubota": "kubota",
-              };
-              const href = slugMap[b.name] ? `/brands/${slugMap[b.name]}` : `/agricultural/tractors?brand=${encodeURIComponent(b.name)}`;
-              return (
-              <Link
-                key={b.name}
-                href={href}
-                className="group flex flex-col items-center justify-center gap-0 bg-white px-6 py-10 transition-all hover:bg-[#001E50]"
-              >
-                <span
-                  className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#C4933F] opacity-70 transition-opacity group-hover:opacity-100"
-                  style={{ fontFamily: "var(--font-body)" }}
-                >
-                  {b.count} modelos
-                </span>
-                <span
-                  className="mt-2 text-xl font-semibold text-[#6B6560] transition-colors group-hover:text-white"
-                  style={{ fontFamily: "var(--font-display)" }}
-                >
-                  {b.name}
-                </span>
-              </Link>
-              );
-            })}
-          </div>
+          </AnimateIn>
+
+          <AnimateIn delay={0.15}>
+            <div className="grid grid-cols-2 gap-px border border-[#E8E4DB] bg-[#E8E4DB] sm:grid-cols-4">
+              {BRANDS.map((b) => {
+                const slugMap: Record<string, string> = {
+                  "New Holland":     "new-holland",
+                  "John Deere":      "john-deere",
+                  "Massey Ferguson": "massey-ferguson",
+                  "Kubota":          "kubota",
+                };
+                const href = slugMap[b.name]
+                  ? `/brands/${slugMap[b.name]}`
+                  : `/agricultural/tractors?brand=${encodeURIComponent(b.name)}`;
+                return (
+                  <Link
+                    key={b.name}
+                    href={href}
+                    className="group flex flex-col items-center justify-center gap-0 bg-white px-6 py-10 transition-all hover:bg-[#001E50]"
+                  >
+                    <span
+                      className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#C4933F] opacity-70 transition-opacity group-hover:opacity-100"
+                      style={{ fontFamily: "var(--font-body)" }}
+                    >
+                      {b.count} modelos
+                    </span>
+                    <span
+                      className="mt-2 text-xl font-semibold text-[#6B6560] transition-colors group-hover:text-white"
+                      style={{ fontFamily: "var(--font-display)" }}
+                    >
+                      {b.name}
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+          </AnimateIn>
         </div>
       </section>
-
     </>
   );
 }

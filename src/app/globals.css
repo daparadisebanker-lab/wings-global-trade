@@ -160,3 +160,22 @@
 .hero-scroll-indicator {
   animation: hero-scroll 2s ease-in-out infinite;
 }
+
+/* ── Ambient hero gold glow pulse ───────────────────────────────────────── */
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.18; }
+  50%       { opacity: 0.28; }
+}
+.hero-glow-ambient {
+  animation: glow-pulse 6s ease-in-out infinite;
+}
+
+/* ── Reduced motion — disable all animations ────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  /* Framer Motion: instant settle — handled by the library's built-in support */
+}

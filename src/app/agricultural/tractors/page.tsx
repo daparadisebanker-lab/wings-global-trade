@@ -53,12 +53,13 @@ export default async function TractorsPage({ searchParams }: PageProps) {
     sort:      searchParams.sort     || undefined,
   };
 
-  const [t, listings, makes, countries] = await Promise.all([
+  const [t, listings, allMakes, countries] = await Promise.all([
     getTranslations(lang),
     getListings(filters),
     getMakes(),
     getCountries(),
   ]);
+  const makes = allMakes.filter((m) => AGRICULTURAL_BRANDS.includes(m));
 
   const activeFilterCount = Object.values(filters).filter(Boolean).length;
 
