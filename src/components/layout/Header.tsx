@@ -12,9 +12,9 @@ export default function Header() {
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
             <img
-              src="/wings-logo2.svg"
+              src="/wings-logo-complete.svg"
               alt="Wings Global Trade"
-              className="h-10 w-auto brightness-0 invert md:h-12"
+              className="h-9 w-auto brightness-0 invert md:h-10"
             />
           </Link>
 

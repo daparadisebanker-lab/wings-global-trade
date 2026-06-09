@@ -130,16 +130,6 @@ export default async function TractorDetailPage({ params }: Props) {
   const waNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "51934987440";
   const waLink   = `https://wa.me/${waNumber}?text=${encodeURIComponent(`Hola, estoy interesado en el ${listingTitle}. ¿Está disponible?`)}`;
 
-  const specs = [
-    { label: "Marca",       value: listing.brand },
-    { label: "Año",         value: listing.year },
-    { label: "Condición",   value: condLabel },
-    { label: "Potencia",    value: listing.horsepower ? `${listing.horsepower} hp` : "—" },
-    { label: "Horas de uso",value: listing.hours_used != null ? `${listing.hours_used.toLocaleString()} hrs` : "—" },
-    { label: "Transmisión", value: listing.transmission ?? "—" },
-    { label: "Tracción",    value: listing.drive_type ?? "—" },
-    { label: "País",        value: listing.country ?? "—" },
-  ].filter((s) => s.value && s.value !== "—");
 
   return (
     <>
@@ -208,27 +198,112 @@ export default async function TractorDetailPage({ params }: Props) {
               )}
             </div>
 
+            {/* Hero spec anchor — dominant performance signal */}
+            {listing.horsepower != null && (
+              <div className="mt-5 flex flex-wrap items-end gap-6">
+                <div className="flex items-baseline gap-1.5">
+                  <span
+                    className="text-[64px] font-semibold leading-none tracking-tight text-[#1C1A16]"
+                    style={{ fontFamily: "var(--font-data)" }}
+                  >
+                    {listing.horsepower}
+                  </span>
+                  <span
+                    className="mb-1.5 text-lg text-[#9B9590]"
+                    style={{ fontFamily: "var(--font-data)" }}
+                  >
+                    hp
+                  </span>
+                </div>
+                <div className="flex flex-wrap items-end gap-4 pb-1">
+                  {listing.drive_type && (
+                    <div className="flex flex-col border-l border-[#E8E4DB] pl-4">
+                      <span
+                        className="text-base font-semibold text-[#1C1A16]"
+                        style={{ fontFamily: "var(--font-data)" }}
+                      >
+                        {listing.drive_type}
+                      </span>
+                      <span
+                        className="text-[10px] uppercase tracking-widest text-[#9B9590]"
+                        style={{ fontFamily: "var(--font-body)" }}
+                      >
+                        tracción
+                      </span>
+                    </div>
+                  )}
+                  {listing.transmission && (
+                    <div className="flex flex-col border-l border-[#E8E4DB] pl-4">
+                      <span
+                        className="text-base font-semibold text-[#1C1A16]"
+                        style={{ fontFamily: "var(--font-data)" }}
+                      >
+                        {listing.transmission}
+                      </span>
+                      <span
+                        className="text-[10px] uppercase tracking-widest text-[#9B9590]"
+                        style={{ fontFamily: "var(--font-body)" }}
+                      >
+                        transmisión
+                      </span>
+                    </div>
+                  )}
+                  {listing.hours_used != null && (
+                    <div className="flex flex-col border-l border-[#E8E4DB] pl-4">
+                      <span
+                        className="text-base font-semibold text-[#1C1A16]"
+                        style={{ fontFamily: "var(--font-data)" }}
+                      >
+                        {listing.hours_used.toLocaleString()}
+                        <span className="ml-1 text-sm font-normal text-[#9B9590]">hrs</span>
+                      </span>
+                      <span
+                        className="text-[10px] uppercase tracking-widest text-[#9B9590]"
+                        style={{ fontFamily: "var(--font-body)" }}
+                      >
+                        horas
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Price row */}
-            <div className="mt-6 border-b border-[#E8E4DB] pb-6">
-              <div className="flex items-baseline justify-between">
-                {priceDisplay ? (
-                  <p className="text-3xl font-semibold text-[#1C1A16]" style={{ fontFamily: "var(--font-display)" }}>
-                    {priceDisplay}
+            <div className="mt-5 border-b border-[#E8E4DB] pb-6">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p
+                    className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#9B9590]"
+                    style={{ fontFamily: "var(--font-body)" }}
+                  >
+                    Precio landed total
                   </p>
-                ) : (
-                  <p className="text-xl font-medium text-[#6B6560]" style={{ fontFamily: "var(--font-display)" }}>
-                    Precio a consultar
-                  </p>
-                )}
+                  {priceDisplay ? (
+                    <p
+                      className="mt-0.5 text-3xl font-semibold text-[#1C1A16]"
+                      style={{ fontFamily: "var(--font-data)" }}
+                    >
+                      {priceDisplay}
+                    </p>
+                  ) : (
+                    <p
+                      className="mt-0.5 text-2xl font-semibold text-[#1C1A16]"
+                      style={{ fontFamily: "var(--font-display)" }}
+                    >
+                      Cotización en 24 h
+                    </p>
+                  )}
+                </div>
                 <span
-                  className="text-xs font-semibold uppercase tracking-widest text-[#9B9590]"
+                  className="mt-1 rounded-full border border-[#E8E4DB] px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-[#6B6560]"
                   style={{ fontFamily: "var(--font-body)" }}
                 >
                   {condLabel}
                 </span>
               </div>
               <p
-                className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-[#C4933F]/20 bg-[#C4933F]/5 px-3 py-1 text-[10px] font-semibold text-[#C4933F]"
+                className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-[#C4933F]/20 bg-[#C4933F]/5 px-3 py-1 text-[10px] font-semibold text-[#C4933F]"
                 style={{ fontFamily: "var(--font-body)" }}
               >
                 <svg className="h-2.5 w-2.5 flex-shrink-0" fill="currentColor" viewBox="0 0 8 8">
@@ -241,44 +316,14 @@ export default async function TractorDetailPage({ params }: Props) {
             {/* Product narrative */}
             <div className="mt-8">
               <p
-                className="text-sm leading-relaxed text-[#6B6560]"
+                className="text-[14px] leading-[1.7] text-[#6B6560]"
                 style={{ fontFamily: "var(--font-body)" }}
               >
                 {narrative}
               </p>
             </div>
 
-            {/* Quick specs */}
-            {specs.length > 0 && (
-              <div className="mt-8">
-                <p
-                  className="mb-5 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#9B9590]"
-                  style={{ fontFamily: "var(--font-body)" }}
-                >
-                  Especificaciones
-                </p>
-                <dl className="grid grid-cols-2 gap-x-8 gap-y-5 sm:grid-cols-4">
-                  {specs.map((s) => (
-                    <div key={s.label}>
-                      <dt
-                        className="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#C4933F]"
-                        style={{ fontFamily: "var(--font-body)" }}
-                      >
-                        {s.label}
-                      </dt>
-                      <dd
-                        className="mt-1.5 text-sm font-medium text-[#1C1A16]"
-                        style={{ fontFamily: "var(--font-data)" }}
-                      >
-                        {s.value}
-                      </dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
-            )}
-
-            {/* Full technical spec sheet */}
+            {/* Technical specs — card grid */}
             <TechnicalSpecs listing={listing} />
           </div>
 

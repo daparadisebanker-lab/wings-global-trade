@@ -193,9 +193,9 @@ export default function Footer() {
             <div className="flex flex-col gap-2">
               <Link href="/" className="inline-block">
                 <img
-                  src="/wings-logo2.svg"
+                  src="/wings-logo-complete.svg"
                   alt="Wings Global Trade"
-                  className="h-6 w-auto brightness-0 invert opacity-60"
+                  className="h-7 w-auto brightness-0 invert opacity-60"
                 />
               </Link>
               <p
