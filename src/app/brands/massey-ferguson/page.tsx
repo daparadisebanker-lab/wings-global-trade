@@ -8,7 +8,7 @@ import { LANG_COOKIE, DEFAULT_LANG, getTranslations } from "@/lib/i18n";
 
 export const metadata: Metadata = {
   title: "Tractores Massey Ferguson en Perú y LATAM — Importación Directa | Wings Global Trade",
-  description: "4 modelos de tractores Massey Ferguson (AGCO) importados desde Asia. Rango 100–120 hp. Precio landed total con flete, aranceles y entrega para Perú, Bolivia, Chile y más.",
+  description: "4 modelos de tractores Massey Ferguson importados desde Asia. Rango 100–120 hp. Precio landed total con flete, aranceles y entrega para Perú, Bolivia, Chile y más.",
   alternates: { canonical: "https://wingsglobaltrade.com/brands/massey-ferguson" },
 };
 
@@ -59,7 +59,7 @@ export default async function MasseyFergusonPage() {
             className="mt-2 max-w-lg text-sm text-white/40"
             style={{ fontFamily: "var(--font-body)" }}
           >
-            Tractores AGCO de alta fiabilidad — el equilibrio entre tecnología y costo operativo para fincas latinoamericanas.
+            Tractores Massey Ferguson de alta fiabilidad — el equilibrio entre tecnología y costo operativo para fincas latinoamericanas.
           </p>
 
           {/* Stats bar */}

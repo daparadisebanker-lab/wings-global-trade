@@ -26,7 +26,7 @@ const BRANDS = [
     slug: "massey-ferguson",
     count: 4,
     hpRange: "100–120 hp",
-    description: "Tractores AGCO de alta fiabilidad. Rango 100–120 hp para fincas latinoamericanas.",
+    description: "Tractores Massey Ferguson de alta fiabilidad. Rango 100–120 hp para fincas latinoamericanas.",
   },
   {
     name: "Kubota",
