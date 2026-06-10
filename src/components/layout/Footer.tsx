@@ -51,11 +51,11 @@ export default function Footer() {
               <img
                 src="/wings-logo-complete.svg"
                 alt="Wings Global Trade"
-                className="h-7 w-auto brightness-0 invert opacity-60"
+                className="h-10 w-auto brightness-0 invert opacity-80"
               />
             </Link>
             <p
-              className="max-w-xs text-xs leading-relaxed text-white/30"
+              className="max-w-xs text-justify text-xs leading-relaxed text-white/30"
               style={{ fontFamily: "var(--font-body)" }}
             >
               Catálogo propio e importación gestionada para las zonas francas de Latinoamérica.
@@ -301,6 +301,9 @@ export default function Footer() {
         </div>
 
       </FooterExpand>
+
+      {/* Spacer: lifts all footer content above the fixed mobile bottom bar */}
+      <div className="h-16 md:hidden" aria-hidden="true" />
 
     </footer>
   );

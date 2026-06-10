@@ -1,5 +1,6 @@
 ﻿"use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useFadeIn, useStaggerFadeIn } from "@/hooks/useFadeIn";
@@ -39,6 +40,263 @@ const HUBS = [
     markets: ["Perú", "Bolivia (ruta andina)"],
   },
 ];
+
+function CatalogSwitcher() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const cat = CATEGORIES[activeIndex];
+  const activeSubtypes = cat.subtypes.filter((s) => !s.comingSoon);
+  const comingSoonSubtypes = cat.subtypes.filter((s) => s.comingSoon);
+
+  return (
+    <div className="flex flex-col lg:flex-row gap-0 min-h-[600px]">
+
+      {/* ── TAB LIST — mobile: horizontal scroll strip; desktop: left column ── */}
+      <div className="lg:w-[35%] flex-shrink-0">
+        {/* Mobile: horizontal scrollable strip */}
+        <div className="lg:hidden flex overflow-x-auto gap-0 border-b border-[#E8E4DB] pb-0 no-scrollbar">
+          {CATEGORIES.map((c, i) => {
+            const activeSubs = c.subtypes.filter((s) => !s.comingSoon).length;
+            const isActive = i === activeIndex;
+            return (
+              <button
+                key={c.slug}
+                onClick={() => setActiveIndex(i)}
+                className={`flex-shrink-0 px-5 py-4 text-left border-b-[3px] transition-all duration-150 ${
+                  isActive
+                    ? "border-[#C4933F]"
+                    : "border-transparent"
+                }`}
+              >
+                <span
+                  className={`block text-xs font-semibold whitespace-nowrap transition-opacity duration-150 ${
+                    isActive ? "text-[#1C1A16] opacity-100" : "text-[#6B6560] opacity-50"
+                  }`}
+                  style={{ fontFamily: "var(--font-body)" }}
+                >
+                  {c.shortLabel}
+                </span>
+                <span
+                  className={`block text-[10px] mt-0.5 whitespace-nowrap transition-opacity duration-150 ${
+                    isActive ? "text-[#C4933F] opacity-100" : "text-[#6B6560] opacity-50"
+                  }`}
+                  style={{ fontFamily: "var(--font-data)" }}
+                >
+                  {activeSubs > 0 ? `${activeSubs} activa${activeSubs !== 1 ? "s" : ""}` : "Próximamente"}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Desktop: vertical tab list */}
+        <div className="hidden lg:flex flex-col border-r border-[#E8E4DB] h-full pr-0">
+          {CATEGORIES.map((c, i) => {
+            const activeSubs = c.subtypes.filter((s) => !s.comingSoon).length;
+            const isActive = i === activeIndex;
+            return (
+              <button
+                key={c.slug}
+                onClick={() => setActiveIndex(i)}
+                className={`group w-full text-left px-7 py-5 border-l-[3px] border-b border-[#E8E4DB] last:border-b-0 transition-all duration-150 ${
+                  isActive
+                    ? "border-l-[#C4933F] bg-white"
+                    : "border-l-transparent bg-transparent hover:bg-white/60"
+                }`}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p
+                      className={`text-[10px] font-semibold tracking-[0.14em] uppercase mb-1 transition-opacity duration-150 ${
+                        isActive ? "text-[#C4933F] opacity-100" : "text-[#C4933F] opacity-40"
+                      }`}
+                      style={{ fontFamily: "var(--font-body)" }}
+                    >
+                      {String(i + 1).padStart(2, "0")}
+                    </p>
+                    <p
+                      className={`text-base font-semibold tracking-tight leading-tight transition-opacity duration-150 ${
+                        isActive ? "text-[#1C1A16] opacity-100" : "text-[#1C1A16] opacity-50"
+                      }`}
+                      style={{ fontFamily: "var(--font-display)" }}
+                    >
+                      {c.label}
+                    </p>
+                  </div>
+                  <span
+                    className={`flex-shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded-full mt-1 transition-all duration-150 ${
+                      activeSubs > 0
+                        ? isActive
+                          ? "bg-[#C4933F]/10 text-[#C4933F]"
+                          : "bg-[#E8E4DB] text-[#6B6560] opacity-50"
+                        : isActive
+                          ? "bg-[#004389]/10 text-[#004389]"
+                          : "bg-[#E8E4DB] text-[#6B6560] opacity-50"
+                    }`}
+                    style={{ fontFamily: "var(--font-data)" }}
+                  >
+                    {activeSubs > 0
+                      ? `${activeSubs} activa${activeSubs !== 1 ? "s" : ""}`
+                      : "Próximamente"}
+                  </span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── CONTENT PANEL ──────────────────────────────────────────────────── */}
+      <div className="flex-1 bg-white lg:border-r-0 p-6 md:p-8 lg:p-10 flex flex-col gap-8">
+
+        {/* Header */}
+        <div>
+          <p
+            className="text-[#C4933F] text-[10px] font-semibold tracking-[0.15em] uppercase mb-3"
+            style={{ fontFamily: "var(--font-body)" }}
+          >
+            {String(activeIndex + 1).padStart(2, "0")} — {cat.shortLabel}
+          </p>
+          <h3
+            className="text-[#1C1A16] text-3xl md:text-4xl font-semibold tracking-tight leading-tight mb-3"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            {cat.label}
+          </h3>
+          <p
+            className="text-[#6B6560] text-sm leading-relaxed max-w-xl"
+            style={{ fontFamily: "var(--font-body)" }}
+          >
+            {cat.description}
+          </p>
+        </div>
+
+        {/* Active subtypes */}
+        {activeSubtypes.length > 0 && (
+          <div>
+            <p
+              className="text-[#1C1A16] text-[10px] font-semibold tracking-[0.14em] uppercase mb-4"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              Disponible ahora
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
+              {activeSubtypes.map((sub) => (
+                <Link
+                  key={sub.href}
+                  href={sub.href}
+                  className="group flex flex-col gap-3 bg-[#FAFAFA] hover:bg-white border border-[#E8E4DB] hover:border-[#C4933F] rounded-xl p-4 transition-all duration-150 hover:shadow-[0_2px_16px_rgba(196,147,63,0.10)]"
+                >
+                  {sub.icon ? (
+                    <div className="w-8 h-8 relative flex-shrink-0">
+                      <Image
+                        src={sub.icon}
+                        alt={sub.label}
+                        fill
+                        className="object-contain"
+                        sizes="32px"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-8 h-8 rounded-lg bg-[#C4933F]/10 flex items-center justify-center flex-shrink-0">
+                      <div className="w-2 h-2 rounded-full bg-[#C4933F]" />
+                    </div>
+                  )}
+                  <div>
+                    <p
+                      className="text-[#1C1A16] text-sm font-semibold leading-snug mb-1"
+                      style={{ fontFamily: "var(--font-body)" }}
+                    >
+                      {sub.label}
+                    </p>
+                    <p
+                      className="text-[#C4933F] text-[11px] font-medium"
+                      style={{ fontFamily: "var(--font-data)" }}
+                    >
+                      {sub.count}
+                    </p>
+                  </div>
+                  <span
+                    className="mt-auto inline-flex items-center gap-1 text-[10px] font-semibold text-[#004389] group-hover:gap-2 transition-all duration-150"
+                    style={{ fontFamily: "var(--font-body)" }}
+                  >
+                    Ver
+                    <svg width="9" height="9" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Coming-soon subtypes */}
+        {comingSoonSubtypes.length > 0 && (
+          <div>
+            <p
+              className="text-[#1C1A16] text-[10px] font-semibold tracking-[0.14em] uppercase mb-4"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              Próximamente
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
+              {comingSoonSubtypes.map((sub) => (
+                <div
+                  key={sub.href}
+                  className="flex flex-col gap-3 bg-[#FAFAFA] border border-[#E8E4DB] rounded-xl p-4 opacity-40 cursor-not-allowed"
+                >
+                  {sub.icon ? (
+                    <div className="w-8 h-8 relative flex-shrink-0">
+                      <Image
+                        src={sub.icon}
+                        alt={sub.label}
+                        fill
+                        className="object-contain grayscale"
+                        sizes="32px"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-8 h-8 rounded-lg bg-[#E8E4DB] flex items-center justify-center flex-shrink-0">
+                      <div className="w-2 h-2 rounded-full bg-[#6B6560]" />
+                    </div>
+                  )}
+                  <div>
+                    <p
+                      className="text-[#1C1A16] text-sm font-semibold leading-snug mb-1"
+                      style={{ fontFamily: "var(--font-body)" }}
+                    >
+                      {sub.label}
+                    </p>
+                    <span
+                      className="inline-block text-[10px] font-semibold tracking-[0.1em] uppercase bg-[#E8E4DB] text-[#6B6560] px-2 py-0.5 rounded-full"
+                      style={{ fontFamily: "var(--font-body)" }}
+                    >
+                      Próximamente
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* CTA row */}
+        <div className="mt-auto pt-4 border-t border-[#E8E4DB]">
+          <Link
+            href={cat.href}
+            className="inline-flex items-center gap-2 bg-[#004389] hover:bg-[#004389]/90 text-white font-semibold px-7 py-3 rounded-full text-sm transition-colors duration-200"
+            style={{ fontFamily: "var(--font-body)" }}
+          >
+            Explorar {cat.shortLabel}
+            <svg width="13" height="13" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function CategoriesPage() {
   const heroRef    = useFadeIn();
@@ -182,53 +440,11 @@ export default function CategoriesPage() {
             </p>
           </div>
 
-          <div ref={catalogRef as React.RefObject<HTMLDivElement>} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {CATEGORIES.map((cat) => {
-              const img = cat.subtypes[0]?.unsplashId
-                ? `https://images.unsplash.com/${cat.subtypes[0].unsplashId}?w=700&q=80`
-                : null;
-              return (
-                <Link
-                  key={cat.slug}
-                  href={cat.href}
-                  className="stagger-item group relative h-64 overflow-hidden rounded-2xl block"
-                >
-                  {img && (
-                    <Image
-                      src={img}
-                      alt={cat.label}
-                      fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#004389]/90 via-[#004389]/40 to-[#004389]/10" />
-                  <div className="absolute inset-0 p-6 flex flex-col justify-end">
-                    <p className="text-[#C4933F] text-[10px] font-semibold tracking-[0.15em] uppercase mb-1.5"
-                      style={{ fontFamily: "var(--font-body)" }}>
-                      {cat.subtypes.filter((s) => !s.comingSoon).length > 0
-                        ? `${cat.subtypes.filter((s) => !s.comingSoon).length} activa${cat.subtypes.filter((s) => !s.comingSoon).length !== 1 ? "s" : ""}`
-                        : "Próximamente"}
-                    </p>
-                    <h3
-                      className="text-white text-2xl font-semibold tracking-tight mb-3"
-                      style={{ fontFamily: "var(--font-display)" }}
-                    >
-                      {cat.shortLabel}
-                    </h3>
-                    <span
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#C4933F] group-hover:gap-3 transition-all duration-200"
-                      style={{ fontFamily: "var(--font-body)" }}
-                    >
-                      Explorar
-                      <svg width="11" height="11" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
-                      </svg>
-                    </span>
-                  </div>
-                </Link>
-              );
-            })}
+          <div
+            ref={catalogRef as React.RefObject<HTMLDivElement>}
+            className="stagger-item rounded-2xl border border-[#E8E4DB] overflow-hidden"
+          >
+            <CatalogSwitcher />
           </div>
         </div>
       </section>

@@ -78,7 +78,7 @@ export default function TractorCard({
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-[#E8E4DB] bg-white shadow-[0_2px_16px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-[0_6px_28px_rgba(0,0,0,0.09)] hover:-translate-y-0.5">
 
       {/* Image */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-[#FAFAFA]">
+      <div className="relative aspect-square overflow-hidden bg-[#FAFAFA]">
         <Image
           src={cover}
           alt={`${listing.brand} ${listing.model}`}

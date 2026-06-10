@@ -1,6 +1,6 @@
 ﻿import Link from "next/link";
 import Image from "next/image";
-import type { Category } from "@/lib/categories";
+import type { Category, SubType } from "@/lib/categories";
 
 interface Props {
   category:         Category;
@@ -183,35 +183,40 @@ export default function CategoryHubPage({ category, comingSoonExtra = [] }: Prop
               </div>
             )}
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {allComingSoon.map((item) => (
-                <div
-                  key={item.label}
-                  className="relative h-48 overflow-hidden rounded-2xl cursor-default"
-                >
-                  <Image
-                    src={`https://images.unsplash.com/${item.unsplashId}?w=600&q=80`}
-                    alt={item.label}
-                    fill
-                    className="object-cover grayscale"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  />
-                  <div className="absolute inset-0 bg-[#004389]/70" />
-                  <div className="absolute inset-0 flex flex-col justify-end p-6">
+              {allComingSoon.map((item) => {
+                const icon = (item as SubType).icon;
+                return (
+                  <div
+                    key={item.label}
+                    className="flex flex-col items-center justify-center rounded-2xl border border-[#E8E4DB] bg-white px-6 py-8 text-center opacity-50 cursor-default"
+                  >
+                    {icon ? (
+                      <div className="relative mb-5 h-16 w-24">
+                        <Image
+                          src={icon}
+                          alt={item.label}
+                          fill
+                          className="object-contain grayscale"
+                        />
+                      </div>
+                    ) : (
+                      <div className="mb-5 h-16 w-24 rounded-xl bg-[#E8E4DB]" />
+                    )}
                     <p
-                      className="text-lg font-semibold text-white/50"
+                      className="text-base font-semibold text-[#1C1A16]"
                       style={{ fontFamily: "var(--font-display)" }}
                     >
                       {item.label}
                     </p>
                     <span
-                      className="mt-1 inline-block text-[10px] font-semibold uppercase tracking-widest text-[#C4933F]/60"
+                      className="mt-2 inline-block rounded-full border border-[#C4933F]/40 px-3 py-1 text-[9px] font-semibold uppercase tracking-widest text-[#C4933F]"
                       style={{ fontFamily: "var(--font-body)" }}
                     >
                       Próximamente
                     </span>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
