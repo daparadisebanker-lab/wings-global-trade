@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     url: BASE,
     title: "Wings Global Trade | Maquinaria desde Asia para Latinoamérica",
     description:
-      "Importación directa de tractores y camiones desde Asia. Precio landed total — sin costos ocultos. 6 países de entrega en Latinoamérica.",
+      "Importación directa de tractores y camiones desde Asia. Precio landed total — sin costos ocultos. 12 países de entrega en Latinoamérica.",
     images: [
       {
         url: `${BASE}/og-default.jpg`,

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 const STATS = [
   { value: "200+",     label: "Importaciones completadas" },
   { value: "61",       label: "Modelos en catálogo"       },
-  { value: "6",        label: "Países de entrega"         },
+  { value: "12",       label: "Países de entrega"         },
   { value: "45–90d",   label: "Plazo confirmado por escrito" },
 ];
 
@@ -54,6 +54,7 @@ const HOW = [
 
 const MARKETS = [
   "Perú", "Bolivia", "Chile", "Paraguay", "Argentina", "Uruguay",
+  "Guatemala", "El Salvador", "Honduras", "Nicaragua", "Costa Rica", "Panamá",
 ];
 
 export default function AboutPage() {
@@ -80,7 +81,7 @@ export default function AboutPage() {
               className="mt-6 max-w-2xl text-base leading-relaxed text-white/60"
               style={{ fontFamily: "var(--font-body)" }}
             >
-              Conectamos compradores en 6 países directamente con fabricantes verificados en Asia — con flete internacional, aranceles y entrega en destino incluidos en un solo precio, firmado por escrito antes de que confirmes nada.
+              Conectamos compradores en 12 países de Latinoamérica directamente con fabricantes verificados en Asia — con flete internacional, aranceles y entrega en destino incluidos en un solo precio, firmado por escrito antes de que confirmes nada.
             </p>
           </div>
         </div>
@@ -225,7 +226,7 @@ export default function AboutPage() {
             className="mb-8 text-2xl font-semibold text-[#1C1A16]"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            Entregamos en 6 países de Latinoamérica.
+            Entregamos en 12 países de Latinoamérica.
           </h2>
           <div className="flex flex-wrap gap-3">
             {MARKETS.map((m) => (

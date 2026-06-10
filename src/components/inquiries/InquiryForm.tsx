@@ -18,7 +18,7 @@ export default function InquiryForm({ listingId, listingTitle }: Props) {
     name: "",
     phone: "",
     email: "",
-    message: `Hola, estoy interesado en el ${listingTitle}. ¿Está disponible?`,
+    message: `Hola, quisiera cotizar el ${listingTitle} con precio landed total (flete, aranceles y entrega a mi país). ¿Está disponible?`,
   });
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
@@ -104,7 +104,7 @@ export default function InquiryForm({ listingId, listingTitle }: Props) {
         className="w-full rounded-full bg-[#C4933F] py-3 text-xs font-semibold uppercase tracking-widest text-white transition-colors hover:bg-[#D4A855] disabled:opacity-60"
         style={{ fontFamily: "var(--font-body)" }}
       >
-        {status === "loading" ? "Enviando…" : "Consultar disponibilidad"}
+        {status === "loading" ? "Enviando…" : "Recibir cotización en 24 h"}
       </button>
     </form>
   );

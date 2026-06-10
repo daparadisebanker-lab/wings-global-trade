@@ -16,7 +16,11 @@ interface FormData {
 }
 
 const EMPTY: FormData = { product: "", country: "", name: "", contact: "", company: "" };
-const COUNTRIES = ["Perú", "Bolivia", "Chile", "Paraguay", "Argentina", "Uruguay", "Otro"];
+const COUNTRIES = [
+  "Perú", "Bolivia", "Chile", "Paraguay", "Argentina", "Uruguay",
+  "Guatemala", "El Salvador", "Honduras", "Nicaragua", "Costa Rica", "Panamá",
+  "Otro",
+];
 
 export default function CotizarPage() {
   const [step, setStep] = useState<Step>(1);

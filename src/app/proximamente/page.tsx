@@ -77,7 +77,7 @@ const COMING_SOON_ITEMS = [
     category: "Plataforma",
     title: "Rutas por País",
     description: "Guías de importación personalizadas por destino: aranceles exactos, documentos requeridos, tiempos de tránsito y contactos locales para Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay.",
-    features: ["Guía de importación Perú", "Guía de importación Bolivia", "Guía de importación Chile", "Todos los 6 países de cobertura"],
+    features: ["Guía de importación Perú", "Guía de importación Bolivia", "Guía de importación Chile", "Los 12 países de cobertura"],
     status: "próximamente",
   },
 ];

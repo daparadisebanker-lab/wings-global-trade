@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = `${listing.brand} ${listing.model}${listing.year ? ` ${listing.year}` : ""}`;
   return {
     title: `${title} — Precio de Importación con Flete y Aranceles | Wings Global Trade`,
-    description: `${listing.brand} ${listing.model}${listing.year ? ` (${listing.year})` : ""} — ${listing.horsepower ?? "—"} hp. Importación directa con precio landed total para Perú, Bolivia, Chile y LATAM. Sin costos ocultos.`,
+    description: `${listing.brand} ${listing.model}${listing.year ? ` (${listing.year})` : ""} — ${listing.horsepower ?? "—"} hp. Importación directa con precio landed total para toda Latinoamérica — Sudamérica y Centroamérica. Flete, aranceles y entrega incluidos.`,
     alternates: { canonical: `${BASE}/agricultural/tractors/${params.id}` },
   };
 }
@@ -81,7 +81,7 @@ function buildNarrative(listing: NonNullable<Awaited<ReturnType<typeof getListin
   return [
     `El ${brand} ${model}${yearNote} es un ${powerClass} ${brandCtx}, diseñado para operaciones agrícolas exigentes en suelos de labranza, cultivos en hilera y trabajo con implementos hidráulicos de tres puntos.`,
     configNote ? `Configurado con ${configNote} — una combinación que garantiza rendimiento constante bajo carga completa en campo.` : "",
-    `${condNote}. Precio landed confirmado por escrito para Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay.`,
+    `${condNote}. Precio landed confirmado por escrito para toda Latinoamérica — Sudamérica y Centroamérica.`,
   ].filter(Boolean).join(" ");
 }
 
@@ -127,15 +127,15 @@ export default async function TractorDetailPage({ params }: Props) {
     ],
   };
 
-  const waNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "51934987440";
-  const waLink   = `https://wa.me/${waNumber}?text=${encodeURIComponent(`Hola, estoy interesado en el ${listingTitle}. ¿Está disponible?`)}`;
+  const waNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "51958381473";
+  const waLink   = `https://wa.me/${waNumber}?text=${encodeURIComponent(`Hola, quisiera cotizar el ${listingTitle} con precio landed total (flete, aranceles y entrega a mi país). ¿Me pueden ayudar?`)}`;
 
 
   return (
     <>
       <JsonLd schema={productSchema} />
       <JsonLd schema={breadcrumbSchema} />
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#FAFAFA] pb-32 md:pb-0">
       <div className="mx-auto max-w-7xl px-6 py-8 lg:px-8">
 
         {/* Breadcrumb */}
@@ -340,10 +340,11 @@ export default async function TractorDetailPage({ params }: Props) {
                   Solicitar cotización
                 </h2>
                 <p
-                  className="mb-5 text-xs text-[#9B9590]"
+                  className="mb-5 text-xs leading-relaxed text-[#9B9590]"
                   style={{ fontFamily: "var(--font-body)" }}
                 >
-                  Respondemos en menos de 24 horas.
+                  Un solo precio: máquina, flete, aranceles y entrega. Respuesta
+                  en menos de 24 horas, sin compromiso de compra.
                 </p>
                 <InquiryForm listingId={listing.id} listingTitle={listingTitle} />
               </div>
@@ -370,7 +371,7 @@ export default async function TractorDetailPage({ params }: Props) {
                     "Un precio incluye: flete, aranceles y entrega en tu país",
                     `Tractor confirmado con ficha técnica antes de pagar`,
                     "Plazo: 45–90 días desde tu confirmación escrita",
-                    "Entregamos en 6 países · ZOFRI + ZOFRATACNA",
+                    "Entregamos en 12 países de Latinoamérica · ZOFRI + ZOFRATACNA",
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-2.5 text-xs text-[#6B6560]" style={{ fontFamily: "var(--font-body)" }}>
                       <div className="mt-1.5 h-1 w-1 flex-shrink-0 rounded-full bg-[#C4933F]" />
@@ -393,10 +394,11 @@ export default async function TractorDetailPage({ params }: Props) {
         </div>
       </div>
 
-      {/* Sticky mobile CTA bar */}
+      {/* Model-specific action bar — floats above the site-wide bottom nav
+          (offset by its height) on a white surface so two bars never merge. */}
       <div
-        className="fixed bottom-0 left-0 right-0 z-40 flex gap-2 border-t border-white/10 bg-[#004389] px-4 py-3 md:hidden"
-        style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}
+        className="fixed left-0 right-0 z-40 flex gap-2 border-t border-[#E8E4DB] bg-white px-4 py-3 shadow-[0_-6px_20px_rgba(0,0,0,0.07)] md:hidden"
+        style={{ bottom: "calc(56px + env(safe-area-inset-bottom))" }}
       >
         <a
           href={waLink}
@@ -415,7 +417,7 @@ export default async function TractorDetailPage({ params }: Props) {
           className="flex flex-1 items-center justify-center rounded-full bg-[#C4933F] py-3 text-xs font-semibold text-white transition-opacity hover:opacity-90"
           style={{ fontFamily: "var(--font-body)" }}
         >
-          Solicitar cotización
+          Cotizar este modelo
         </Link>
       </div>
 

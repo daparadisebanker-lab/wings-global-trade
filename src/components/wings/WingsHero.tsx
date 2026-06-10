@@ -38,7 +38,7 @@
           style={{ fontFamily: "var(--font-body)", fontWeight: 300 }}
         >
           Un asesor gestiona el proveedor, el flete, la zona franca y los aranceles — y te entrega un solo número
-          firmado antes de que confirmes cualquier compra. Entregamos en 6 países.
+          firmado antes de que confirmes cualquier compra. Entregamos en 12 países de Latinoamérica.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -63,7 +63,7 @@
 
         <div className="mt-20 pt-12 border-t border-white/8 grid grid-cols-2 sm:grid-cols-4 gap-8">
           {[
-            { n: "6",     label: "países atendidos",    sub: "Perú, Bolivia, Chile, Paraguay, Argentina, Uruguay" },
+            { n: "12",    label: "países atendidos",    sub: "Sudamérica y Centroamérica" },
             { n: "2",     label: "hubs zona franca",    sub: "ZOFRI Iquique + ZOFRATACNA Tacna" },
             { n: "24 h",  label: "cotización landed",   sub: "Con aranceles, flete y entrega incluidos" },
             { n: "100%",  label: "en español",          sub: "Asesoría, documentos y soporte" },

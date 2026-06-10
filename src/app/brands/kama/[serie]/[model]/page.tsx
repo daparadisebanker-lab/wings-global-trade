@@ -76,7 +76,7 @@ function buildTruckNarrative(
 
   return [
     `El KAMA ${listing.model} es un camión de la serie ${serie.label} de Shandong KAMA Automobile Manufacturing, diseñado para ${useCase}.`,
-    configParts ? `Equipado con ${configParts} — cumple con las normas de circulación vigentes en los 6 países de entrega.` : "",
+    configParts ? `Equipado con ${configParts} — cumple con las normas de circulación vigentes en los 12 países de entrega.` : "",
     `Precio landed total confirmado por escrito: incluye flete desde fábrica, aranceles de importación y entrega en tu país. Plazo: 45–90 días desde tu confirmación.`,
   ].filter(Boolean).join(" ");
 }
@@ -174,7 +174,7 @@ export default async function KamaTruckDetailPage({ params }: PageProps) {
     <>
       <JsonLd schema={productSchema} />
       <JsonLd schema={breadcrumbSchema} />
-    <div className="min-h-screen bg-[#FAFAFA]">
+    <div className="min-h-screen bg-[#FAFAFA] pb-32 md:pb-0">
       <div className="mx-auto max-w-7xl px-6 py-8 lg:px-8">
 
         {/* Breadcrumb */}
@@ -427,7 +427,7 @@ export default async function KamaTruckDetailPage({ params }: PageProps) {
                     "Un precio: flete + aranceles + entrega en tu país",
                     `Camión confirmado con ficha técnica antes de pagar`,
                     "Plazo: 45–90 días desde tu confirmación escrita",
-                    "Entregamos en 6 países · ZOFRI + ZOFRATACNA",
+                    "Entregamos en 12 países · ZOFRI + ZOFRATACNA",
                   ].map((item) => (
                     <li
                       key={item}
@@ -456,8 +456,8 @@ export default async function KamaTruckDetailPage({ params }: PageProps) {
 
       {/* Sticky mobile CTA bar */}
       <div
-        className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/10 bg-[#004389] px-4 py-3 md:hidden"
-        style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}
+        className="fixed left-0 right-0 z-40 border-t border-[#E8E4DB] bg-white px-4 py-3 shadow-sm md:hidden"
+        style={{ bottom: "calc(56px + env(safe-area-inset-bottom))" }}
       >
         <Link
           href="/cotizar"

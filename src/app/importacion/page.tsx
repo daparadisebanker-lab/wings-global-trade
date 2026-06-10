@@ -90,7 +90,7 @@ const faqSchema = {
       "name": "¿En qué países entrega Wings Global Trade?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Wings Global Trade entrega en 6 países de Latinoamérica: Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay. Los dos hubs logísticos son ZOFRI (Iquique, Chile) para el corredor sur-andino y ZOFRATACNA (Tacna, Perú) para entregas directas al sur del Perú y Bolivia.",
+        "text": "Wings Global Trade entrega en 12 países de Latinoamérica. En Sudamérica: Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay. En Centroamérica: Guatemala, El Salvador, Honduras, Nicaragua, Costa Rica y Panamá. Los dos hubs logísticos son ZOFRI (Iquique, Chile) para el corredor sur-andino y ZOFRATACNA (Tacna, Perú) para entregas directas al sur del Perú y Bolivia.",
       },
     },
     {
