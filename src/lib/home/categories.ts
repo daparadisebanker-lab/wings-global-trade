@@ -1,54 +1,50 @@
-// Category model + data (WINGS_HOME_SPEC.md §6.3)
+// Category model + data for the homepage category windows.
+// These are the site's REAL catalog categories with working routes — not
+// abstract labels. Imagery: branded photography where it exists, the same
+// production Unsplash set the previous homepage shipped with elsewhere.
 
 export interface Category {
   id: string;
   label: string; // es-PE display label
-  image: string; // /images/categories/{id}.jpg, 3:4, min 1600px tall
-  alt: string;   // descriptive Spanish alt text
-  /** Placeholder gradient (§8) — used until real photography is supplied.
-   *  Derived exclusively from --color-harbor and --color-graphite. */
-  placeholder: string;
+  href: string;  // real catalog route
+  image: string;
+  alt: string;
 }
 
 export const categories: Category[] = [
   {
-    id: "agricolas",
-    label: "Agrícolas",
-    image: "/images/categories/agricolas.jpg",
-    alt: "Tractor agrícola trabajando un campo de cultivo en el valle",
-    placeholder:
-      "linear-gradient(135deg, var(--color-harbor) 0%, var(--color-graphite) 100%)",
+    id: "agricultural",
+    label: "Agrícola",
+    href: "/agricultural",
+    image: "/images/splah-hero.png",
+    alt: "Tractor New Holland en campo al amanecer",
   },
   {
-    id: "pesadas",
-    label: "Pesadas",
-    image: "/images/categories/pesadas.jpg",
-    alt: "Excavadora de orugas en obra de movimiento de tierras",
-    placeholder:
-      "linear-gradient(160deg, var(--color-graphite) 0%, var(--color-harbor) 85%)",
+    id: "trucks",
+    label: "Camiones",
+    href: "/trucks",
+    image: "https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=1600&q=80",
+    alt: "Camión de carga pesada en carretera",
   },
   {
-    id: "industriales",
-    label: "Industriales",
-    image: "/images/categories/industriales.jpg",
-    alt: "Montacargas operando en almacén industrial",
-    placeholder:
-      "linear-gradient(115deg, var(--color-graphite) 10%, var(--color-harbor) 60%, var(--color-graphite) 100%)",
+    id: "buses",
+    label: "Buses",
+    href: "/buses",
+    image: "https://images.unsplash.com/photo-1570125909517-53cb21c89ff2?w=1600&q=80",
+    alt: "Bus interprovincial de pasajeros",
   },
   {
-    id: "pesca",
-    label: "Pesca",
-    image: "/images/categories/pesca.jpg",
-    alt: "Equipamiento de cubierta para embarcación pesquera",
-    placeholder:
-      "linear-gradient(200deg, var(--color-harbor) 0%, var(--color-graphite) 70%)",
+    id: "industrial",
+    label: "Industrial",
+    href: "/industrial",
+    image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1600&q=80",
+    alt: "Maquinaria industrial pesada en obra",
   },
   {
-    id: "mineria",
-    label: "Minería",
-    image: "/images/categories/mineria.jpg",
-    alt: "Camión minero de gran tonelaje en tajo abierto",
-    placeholder:
-      "linear-gradient(145deg, var(--color-graphite) 0%, var(--color-graphite) 40%, var(--color-harbor) 100%)",
+    id: "spare-parts",
+    label: "Repuestos",
+    href: "/spare-parts",
+    image: "https://images.unsplash.com/photo-1596813362035-d3c3e042a763?w=1600&q=80",
+    alt: "Repuestos y componentes de maquinaria",
   },
 ];

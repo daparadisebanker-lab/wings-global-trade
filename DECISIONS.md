@@ -1,5 +1,16 @@
 # DECISIONS.md — WINGS Homepage Build
 
+## Revision 2 — de-wireframing merge (visual-audit COMBINED pass)
+
+- **Real logo recollected** — the typed Archivo "WINGS" wordmark is replaced by the actual lockup (`/wings-logo-complete.svg`, single-fill navy) in the hero, header, FixedBar, and container stencil; white variant via `brightness(0) invert(1)`, navy restored over light header theme. The FLIP handoff mechanics are unchanged — only the node carrying the mark changed.
+- **Harbor token re-pointed to brand navy `#004389`** — one brand blue across logo, photography (New Holland machines are this blue), and panels; the desaturated `#16344F` created a second, unowned blue.
+- **Photography replaces wireframe constructions** — hero uses `splah-hero.png` (golden-hour tractor) under an ink scrim; ContainerReveal sits on `hero-bg.png` (container port) at graphite 78% tint; TransitionBand's line-art tractor is replaced by the real SNH704 side-profile cutout (faces left, its direction of travel; wheel-rotation detail retired with the illustration).
+- **Categories are now the site's real catalog** — Agrícola/Camiones/Buses/Industrial/Repuestos with working routes and the production imagery set; the spec's abstract labels (pesca/minería) had no catalog behind them. Preview label links to the category route.
+- **Commercial content restored** — FeaturedMachinery (6 live listings, photography-first) and TrustSection (live model/brand counts, 3 verified-buyer quotes, factory-brand grid) re-add the previous homepage's proof layer, recast in the new token/type system.
+- **Grid formalized** — `.wings-container` (1400px max, fluid margins) + `.wings-grid` (12 col / 24px gutter) govern all content sections.
+- **`bg-white` allowed inside product cards only** — the catalog plates are shot on white; the image area matches the plate. Not a token, recorded as a deliberate exception.
+- **Pinned-scroll budget unchanged** — hero 100 + container 200 + logistics 100 = 400vh.
+
 Judgment calls made outside the explicit text of `WINGS_HOME_SPEC.md` (§1
 requires every such call recorded here with a one-line rationale).
 

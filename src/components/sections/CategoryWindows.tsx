@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { categories as defaultCategories, type Category } from "@/lib/home/categories";
 import { ensureGsap, prefersReducedMotion } from "@/lib/home/animation";
@@ -15,11 +16,10 @@ type Props = {
 };
 
 /**
- * CategoryWindows (§6.3). 50/50 dual panel ≥1024px, stacked below. Hover or
- * focus on an index row crossfades the preview panel; idle 5s auto-advances;
- * any interaction suspends auto-advance for 10s. Reusable on the category
- * sub-page via props. Until photography exists, previews are the §8
- * placeholder gradients (harbor/graphite only) — nothing to preload yet.
+ * CategoryWindows. 50/50 dual panel ≥1024px, stacked below. The index lists
+ * the site's REAL catalog categories; the preview crossfades real photography.
+ * Hover/focus sets the active category; idle 5s auto-advances; interaction
+ * suspends auto-advance for 10s. The active label links to the category route.
  */
 export default function CategoryWindows({
   categories = defaultCategories,
@@ -56,7 +56,7 @@ export default function CategoryWindows({
     });
   }, [activeId]);
 
-  // Auto-advance with interaction suspension (§6.3). Off under reduced motion.
+  // Auto-advance with interaction suspension. Off under reduced motion.
   useEffect(() => {
     if (reduced) return;
     const tick = window.setInterval(() => {
@@ -120,11 +120,11 @@ export default function CategoryWindows({
 
         <div className="mt-12">
           <Link
-            href="/categorias"
+            href="/categories"
             className="inline-block border border-paper px-8 py-3 uppercase tracking-[0.16em] text-paper transition-colors duration-200 hover:bg-paper hover:text-harbor"
             style={{ fontFamily: "var(--font-data)", fontSize: "var(--type-data)" }}
           >
-            Ver categorías
+            Ver catálogo completo
           </Link>
         </div>
       </div>
@@ -138,24 +138,41 @@ export default function CategoryWindows({
               if (el) layerRefs.current.set(cat.id, el);
               else layerRefs.current.delete(cat.id);
             }}
-            role="img"
-            aria-label={cat.alt}
             aria-hidden={cat.id !== activeId}
             className="absolute inset-0"
-            style={{
-              background: cat.placeholder,
-              opacity: cat.id === firstId ? 1 : 0,
-            }}
-          />
+            style={{ opacity: cat.id === firstId ? 1 : 0 }}
+          >
+            <Image
+              src={cat.image}
+              alt={cat.alt}
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover"
+            />
+          </div>
         ))}
         <div className="wings-scrim pointer-events-none absolute inset-0" />
         <div className="absolute inset-x-0 bottom-0 p-8 lg:p-12">
-          <p
-            className="wings-display m-0 uppercase text-paper"
-            style={{ fontSize: "var(--type-title)", lineHeight: 1 }}
-          >
-            {active?.label}
-          </p>
+          {active && (
+            <Link
+              href={active.href}
+              className="group inline-block"
+              aria-label={`Ver categoría ${active.label}`}
+            >
+              <span
+                className="wings-display block uppercase text-paper underline-offset-8 group-hover:underline"
+                style={{ fontSize: "var(--type-title)", lineHeight: 1 }}
+              >
+                {active.label}
+              </span>
+              <span
+                className="mt-3 inline-block uppercase tracking-[0.2em] text-steel transition-colors duration-200 group-hover:text-paper"
+                style={{ fontFamily: "var(--font-data)", fontSize: "var(--type-data)" }}
+              >
+                Explorar →
+              </span>
+            </Link>
+          )}
         </div>
       </div>
     </section>

@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
-import WingsWordmark from "@/components/primitives/WingsWordmark";
+import WingsLogo from "@/components/primitives/WingsLogo";
 
 /**
- * Locking header (§6.2). Always position: fixed — visually empty (transparent,
- * wordmark hidden) until the hero FLIP handoff completes, which reads as the
- * header "mounting" at the end of the hero pin. Theme (transparent-over-dark /
+ * Locking header. Always position: fixed — visually empty (transparent, logo
+ * hidden) until the hero FLIP handoff completes, which reads as the header
+ * "mounting" at the end of the hero pin. Theme (transparent-over-dark /
  * paper-over-light) is driven by [data-theme] on the page root, set here via
  * IntersectionObserver over the section [data-theme-section] markers — no
  * scroll-position math.
@@ -39,13 +39,9 @@ export default function SiteHeader() {
 
   return (
     <header className="wings-header fixed inset-x-0 top-0 z-[90] flex h-16 items-center px-6">
-      {/* 38px font-size ≈ 28px cap height in Archivo; the hero FLIP pixel-matches
-          against this node's measured rect, so the handoff is exact. */}
-      <WingsWordmark
-        data-header-wordmark
-        className="opacity-0"
-        style={{ fontSize: "38px" }}
-      />
+      {/* The hero FLIP pixel-matches against this node's measured rect.
+          data-header-logo-img switches white↔navy with the header theme. */}
+      <WingsLogo data-header-wordmark height={36} className="opacity-0 wings-header-logo" />
     </header>
   );
 }

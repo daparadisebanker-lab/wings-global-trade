@@ -1,10 +1,10 @@
 import Link from "next/link";
-import WingsWordmark from "@/components/primitives/WingsWordmark";
+import WingsLogo from "@/components/primitives/WingsLogo";
 
 /**
- * Bottom conversion bar (§6.6). Renders from first paint — no entrance
- * animation. The only filled button on the page; oxide is sanctioned here.
- * Hover darkens oxide ~8% via brightness so no second color value exists.
+ * Bottom conversion bar. Renders from first paint — no entrance animation.
+ * The only filled button on the page; oxide is sanctioned here. Hover darkens
+ * oxide ~8% via brightness so no second color value exists.
  */
 export default function FixedBar() {
   return (
@@ -13,8 +13,7 @@ export default function FixedBar() {
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <div className="flex h-14 items-center justify-between pl-6">
-        {/* 22px font-size ≈ 16px cap height */}
-        <WingsWordmark className="text-paper" style={{ fontSize: "22px" }} />
+        <WingsLogo height={26} tone="white" />
         <Link
           href="/cotizacion"
           className="flex h-14 items-center bg-oxide px-8 uppercase tracking-[0.12em] text-paper transition-[filter] duration-200 hover:brightness-[0.92]"
