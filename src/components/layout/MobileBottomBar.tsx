@@ -40,9 +40,10 @@ export default function MobileBottomBar() {
 
   // Product detail pages carry their own FloatingModelActions CTA — no bar needed.
   const segments = pathname.split("/").filter(Boolean);
-  if (segments.length >= 3) return null;
+  const hidden = segments.length >= 3;
 
   useEffect(() => {
+    if (hidden) return;
     let raf = 0;
 
     const sample = () => {
@@ -74,7 +75,9 @@ export default function MobileBottomBar() {
       window.removeEventListener("scroll", queue);
       window.removeEventListener("resize", queue);
     };
-  }, [pathname]);
+  }, [pathname, hidden]);
+
+  if (hidden) return null;
 
   const itemClass = (active: boolean) =>
     `group flex min-h-[48px] flex-1 flex-col items-center justify-center gap-1 pb-1.5 pt-2 transition-colors duration-200 active:text-gold ${
