@@ -12,7 +12,7 @@ const SERVICE_FEATURES = [
   },
   {
     label: "Dos hubs en zona franca",
-    detail: "ZOFRI en Iquique y ZOFRATACNA en Tacna como plataformas logísticas para 6 países de la región.",
+    detail: "ZOFRI en Iquique y ZOFRATACNA en Tacna como plataformas logísticas para Sudamérica y Centroamérica.",
   },
   {
     label: "Asesoría 100% en español",
@@ -21,8 +21,8 @@ const SERVICE_FEATURES = [
 ];
 
 const TRUST_STATS = [
-  { n: "6",    label: "Países atendidos",  sub: "Perú, Bolivia, Chile, Paraguay, Argentina, Uruguay" },
-  { n: "48 h", label: "Cotización landed", sub: "Con aranceles, flete y entrega incluidos" },
+  { n: "12",   label: "Países atendidos",  sub: "Sudamérica y Centroamérica" },
+  { n: "24 h", label: "Cotización landed", sub: "Con aranceles, flete y entrega incluidos" },
   { n: "2",    label: "Hubs zona franca",  sub: "ZOFRI Iquique · ZOFRATACNA Tacna" },
   { n: "100%", label: "En español",        sub: "Asesoría, documentos y soporte" },
 ];
@@ -67,7 +67,7 @@ export default function CategoriesPage() {
             <p className="text-white/55 text-lg mt-5 max-w-xl mx-auto leading-relaxed"
               style={{ fontFamily: "var(--font-body)" }}>
               Operamos como proveedor directo con inventario propio y como socio de importación
-              para terceros. La misma infraestructura, dos caminos distintos.
+              para terceros. En ambos casos, un solo precio landed: máquina, flete, aduana y entrega.
             </p>
           </div>
 
@@ -135,7 +135,7 @@ export default function CategoriesPage() {
                 la entrega en tu ciudad, con precio landed total confirmado antes de decidir.
               </p>
               <div className="flex flex-wrap gap-2 mb-8">
-                {["ZOFRI Iquique", "ZOFRATACNA Tacna", "48 h cotización", "6 países"].map((badge) => (
+                {["ZOFRI Iquique", "ZOFRATACNA Tacna", "Cotización en 24 h", "12 países"].map((badge) => (
                   <span
                     key={badge}
                     className="text-xs font-medium px-3 py-1.5 rounded-full bg-white/8 border border-white/15 text-white/70"
@@ -253,8 +253,8 @@ export default function CategoriesPage() {
               <p className="text-[#6B6560] text-lg leading-relaxed mb-10"
                 style={{ fontFamily: "var(--font-body)" }}>
                 Nuestras relaciones directas con fabricantes en Asia, hubs en zona franca y conocimiento
-                aduanero en 6 países están disponibles como servicio para tu empresa. Tú defines el producto;
-                nosotros gestionamos el resto.
+                aduanero en 12 países de Sudamérica y Centroamérica están disponibles como servicio para tu
+                empresa. Tú defines el producto; nosotros gestionamos el resto.
               </p>
 
               <div ref={featsRef as React.RefObject<HTMLDivElement>} className="space-y-5 mb-10">
@@ -319,7 +319,7 @@ export default function CategoriesPage() {
               ))}
               <div className="bg-[#004389] rounded-2xl p-6">
                 <p className="text-white text-sm font-semibold mb-1" style={{ fontFamily: "var(--font-body)" }}>
-                  Cotización en menos de 48 horas
+                  Cotización en menos de 24 horas
                 </p>
                 <p className="text-white/50 text-xs leading-relaxed" style={{ fontFamily: "var(--font-body)" }}>
                   Precio landed completo — aranceles, aduana y flete interior incluidos — antes de que tomes la decisión de comprar.
@@ -411,7 +411,7 @@ export default function CategoriesPage() {
               </h3>
               <p className="text-[#6B6560] text-sm leading-relaxed mb-6"
                 style={{ fontFamily: "var(--font-body)" }}>
-                Tengo interés en maquinaria del inventario propio y quiero recibir una cotización con precio landed a mi país.
+                Tengo interés en maquinaria del inventario propio y quiero recibir una cotización con precio landed a mi país. Respuesta en 24 horas, sin compromiso.
               </p>
               <span
                 className="inline-flex items-center gap-2 text-[#C4933F] text-xs font-semibold group-hover:gap-3 transition-all duration-200"

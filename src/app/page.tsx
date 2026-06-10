@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { getListings } from "@data/listings";
-import { archivo, inter, plexMono } from "@/lib/home/fonts";
 import SiteHeader from "@/components/chrome/SiteHeader";
 import FixedBar from "@/components/chrome/FixedBar";
 import Hero from "@/components/sections/Hero";
-import TransitionBand from "@/components/sections/TransitionBand";
+import CoverageBand from "@/components/sections/CoverageBand";
 import CategoryWindows from "@/components/sections/CategoryWindows";
 import FeaturedMachinery from "@/components/sections/FeaturedMachinery";
 import ContainerReveal from "@/components/sections/ContainerReveal";
@@ -55,7 +54,7 @@ export default async function HomePage() {
   const stats = [
     { value: String(listings.length), label: "Modelos disponibles" },
     { value: String(brandCounts.size), label: "Marcas de fábrica" },
-    { value: "6", label: "Países atendidos" },
+    { value: "12", label: "Países atendidos" },
     { value: "45–90", label: "Días puerta a planta" },
   ];
 
@@ -63,11 +62,11 @@ export default async function HomePage() {
     <div
       data-page="wings-home"
       data-theme="dark"
-      className={`${archivo.variable} ${inter.variable} ${plexMono.variable} relative pb-0 md:pb-[calc(56px_+_env(safe-area-inset-bottom))]`}
+      className="relative pb-0 md:pb-[calc(56px_+_env(safe-area-inset-bottom))]"
     >
       <SiteHeader />
       <Hero />
-      <TransitionBand />
+      <CoverageBand />
       <CategoryWindows />
       <FeaturedMachinery listings={featured} />
       <ContainerReveal />

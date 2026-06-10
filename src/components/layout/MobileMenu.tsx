@@ -16,7 +16,7 @@ export default function MobileMenu() {
     <>
       <button
         onClick={() => setOpen((o) => !o)}
-        className="p-2 text-white/70 hover:text-white md:hidden"
+        className="p-2 text-[rgba(244,242,237,0.7)] hover:text-[#F4F2ED] md:hidden"
         aria-label="Toggle menu"
       >
         {open ? (
@@ -30,7 +30,15 @@ export default function MobileMenu() {
         )}
       </button>
 
-      <div className={`absolute left-0 right-0 top-full z-50 max-h-[calc(100vh-4rem)] overflow-y-auto bg-[#062663] px-6 pb-8 md:hidden transition-all duration-200 ease-out ${open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none"}`}>
+      <div
+        className={`absolute left-0 right-0 top-full z-50 max-h-[calc(100vh-4rem)] overflow-y-auto px-6 pb-8 md:hidden transition-all duration-200 ease-out ${open ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 -translate-y-2 pointer-events-none"}`}
+        style={{
+          backgroundColor: "rgba(6,38,99,0.97)",
+          WebkitBackdropFilter: "blur(12px)",
+          backdropFilter: "blur(12px)",
+          borderBottom: "1px solid rgba(255,255,255,0.14)",
+        }}
+      >
           <nav className="flex flex-col pt-3">
 
             {/* ── Dual business model cards ─────────────────────────── */}

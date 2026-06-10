@@ -45,11 +45,7 @@
   --color-harbor:   #004389; /* aligned to the Wings logo navy — one brand blue */
   --color-graphite: #2B2D30;
   --color-steel:    #93A1AD;
-  --color-oxide:    #BD4F12;
-
-  --font-display-v2: var(--font-archivo);
-  --font-body-v2:    var(--font-inter);
-  --font-data-v2:    var(--font-ibm-plex-mono);
+  --color-oxide:    #C4933F; /* re-pointed to brand gold — one accent across the whole site */
 
   --type-hero:   clamp(96px, 18vw, 280px);
   --type-title:  clamp(40px, 5vw, 72px);
@@ -251,23 +247,26 @@
   --wm-tile-panel: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='140'%3E%3Ctext x='140' y='70' text-anchor='middle' dominant-baseline='middle' font-family='Arial, Helvetica, sans-serif' font-size='44' font-weight='800' letter-spacing='4' fill='none' stroke='%23F4F2ED' stroke-opacity='0.12' stroke-width='1'%3EWINGS%3C/text%3E%3C/svg%3E");
 }
 
-/* Scope — fonts and base styles apply only inside the new homepage so the
-   brandbook system (Flexo / navy / gold) on inner pages is untouched. */
+/* Scope — the homepage inherits the site typography (Flexo / DM Mono from
+   :root) so type is consistent across the whole platform. */
 [data-page="wings-home"] {
-  --font-display: var(--font-archivo), system-ui, sans-serif;
-  --font-body:    var(--font-inter), system-ui, sans-serif;
-  --font-data:    var(--font-ibm-plex-mono), ui-monospace, monospace;
-
   font-family: var(--font-body);
   font-size: var(--type-body);
   background-color: var(--color-ink);
   color: var(--color-paper);
 }
 
-/* Display face — Archivo at full expansion (wdth 125) */
+/* Display face — Flexo Heavy, same Swiss system as the rest of the site */
 [data-page="wings-home"] .wings-display {
   font-family: var(--font-display);
-  font-stretch: 125%;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* Outlined display type — coverage band second row */
+[data-page="wings-home"] .wings-text-outline {
+  -webkit-text-stroke: 1.5px var(--color-harbor);
+  color: transparent;
 }
 
 /* Focus ring — required by §9 accessibility criteria */
@@ -377,13 +376,4 @@
 }
 [data-page="wings-home"] .wings-drawer-hairline {
   background: rgba(147, 161, 173, 0.25); /* --color-steel @ 25% */
-}
-
-/* Transition-band tractor — under prefers-reduced-motion the GSAP scene never
-   runs (createScene guard), so the cutout rests dead-center via CSS instead
-   of sitting at its GSAP start position. */
-@media (prefers-reduced-motion: reduce) {
-  [data-page="wings-home"] .wings-band-tractor {
-    transform: translate(-50%, -50%);
-  }
 }

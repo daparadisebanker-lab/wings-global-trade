@@ -17,7 +17,7 @@ const organizationSchema = {
   "logo": `${BASE}/logo.png`,
   "description": "Importador de maquinaria agrícola, camiones y vehículos comerciales desde Asia para Latinoamérica. Precio landed total — flete, aranceles y entrega incluidos — para Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay.",
   "foundingDate": "2020",
-  "areaServed": ["PE", "BO", "CL", "PY", "AR", "UY"],
+  "areaServed": ["PE", "BO", "CL", "PY", "AR", "UY", "GT", "SV", "HN", "NI", "CR", "PA"],
   "contactPoint": {
     "@type": "ContactPoint",
     "telephone": "+51958381473",

@@ -24,7 +24,7 @@ export default function CategoryMegaMenu() {
       <Link
         href="/categories"
         className={`flex items-center gap-[6px] py-5 text-sm font-medium transition-colors ${
-          isOpen ? "text-white" : "text-white/70 hover:text-white"
+          isOpen ? "text-[#F4F2ED]" : "text-[rgba(244,242,237,0.7)] hover:text-[#F4F2ED]"
         }`}
         style={{ fontFamily: "var(--font-body)" }}
       >
@@ -38,7 +38,15 @@ export default function CategoryMegaMenu() {
       </Link>
 
       {isOpen && (
-        <div className="absolute left-0 top-full z-[100] flex w-[780px] -translate-x-4 overflow-hidden rounded-2xl border border-white/10 bg-[#062663] shadow-[0_24px_64px_rgba(0,0,0,0.4)]">
+        <div
+          className="absolute left-0 top-full z-[100] flex w-[780px] -translate-x-4 overflow-hidden rounded-2xl shadow-[0_24px_64px_rgba(0,0,0,0.4)]"
+          style={{
+            backgroundColor: "rgba(6,38,99,0.97)",
+            WebkitBackdropFilter: "blur(12px)",
+            backdropFilter: "blur(12px)",
+            border: "1px solid rgba(255,255,255,0.14)",
+          }}
+        >
 
           {/* Sidebar */}
           <div className="w-56 border-r border-white/8 py-3">

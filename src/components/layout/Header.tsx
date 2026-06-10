@@ -1,11 +1,44 @@
-﻿import Link from "next/link";
+"use client";
+
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import MobileMenu from "./MobileMenu";
 import CategoryMegaMenu from "./CategoryMegaMenu";
 
 export default function Header() {
+  const [scrolled, setScrolled] = useState(false);
+  const ticking = useRef(false);
+
+  useEffect(() => {
+    const onScroll = () => {
+      if (ticking.current) return;
+      ticking.current = true;
+      requestAnimationFrame(() => {
+        setScrolled(window.scrollY > 16);
+        ticking.current = false;
+      });
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-50 bg-[#004389]">
+    <header
+      className="sticky top-0 z-50"
+      style={{
+        backgroundColor: scrolled
+          ? "rgba(0,67,137,0.95)"
+          : "rgba(0,67,137,0.80)",
+        WebkitBackdropFilter: "blur(12px)",
+        backdropFilter: "blur(12px)",
+        borderBottom: scrolled
+          ? "1px solid rgba(255,255,255,0.14)"
+          : "1px solid rgba(255,255,255,0)",
+        transition:
+          "background-color 300ms cubic-bezier(0.4,0,0.2,1), border-color 300ms cubic-bezier(0.4,0,0.2,1)",
+      }}
+    >
       <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
 
@@ -24,7 +57,7 @@ export default function Header() {
 
             <Link
               href="/about"
-              className="text-sm font-medium text-white/70 transition-colors hover:text-white"
+              className="text-sm font-medium text-[rgba(244,242,237,0.7)] transition-colors hover:text-[#F4F2ED]"
               style={{ fontFamily: "var(--font-body)" }}
             >
               Nosotros
@@ -32,7 +65,7 @@ export default function Header() {
 
             <Link
               href="/proximamente"
-              className="text-sm font-medium text-white/50 transition-colors hover:text-white"
+              className="text-sm font-medium text-[rgba(244,242,237,0.5)] transition-colors hover:text-[#F4F2ED]"
               style={{ fontFamily: "var(--font-body)" }}
             >
               Hoja de ruta
@@ -43,7 +76,7 @@ export default function Header() {
           <div className="hidden items-center gap-2 md:flex">
             <Link
               href="/importacion"
-              className="flex items-center gap-1.5 rounded-full border-[1.5px] border-white/20 px-5 py-2 text-xs font-semibold text-white/75 transition-colors hover:border-white/40 hover:bg-white/10 hover:text-white"
+              className="flex items-center gap-1.5 rounded-full border-[1.5px] border-[rgba(244,242,237,0.22)] px-5 py-2 text-xs font-semibold text-[rgba(244,242,237,0.8)] transition-colors hover:border-[rgba(244,242,237,0.45)] hover:bg-[rgba(244,242,237,0.06)] hover:text-[#F4F2ED]"
               style={{ fontFamily: "var(--font-body)" }}
             >
               Importar desde Asia
@@ -64,9 +97,6 @@ export default function Header() {
           <MobileMenu />
         </div>
       </div>
-
-      {/* Bottom border */}
-      <div className="border-b border-white/8" />
     </header>
   );
 }

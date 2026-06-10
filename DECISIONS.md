@@ -1,5 +1,14 @@
 # DECISIONS.md — WINGS Homepage Build
 
+## Revision 4 — coverage band, platform-consistent type/color, navy-adaptive chrome
+
+- **Tractor crossing retired → CoverageBand** — bold-typography statement of geographic scope: "TODA LATINOAMÉRICA" headline + two oversized country rows (South America solid navy, Central America outlined) counter-scrubbing horizontally. Coverage expanded from 6 to 12 countries (added GT, SV, HN, NI, CR, PA — also in the org schema areaServed and the homepage stats).
+- **Homepage typography = site typography** — Archivo/Inter/IBM Plex Mono removed (files deleted); the homepage now inherits Flexo + DM Mono from :root. `.wings-display` = Flexo Heavy (800), -0.02em.
+- **Accent unified on brand gold** — `--color-oxide` re-pointed `#BD4F12 → #C4933F`; CTA, active states, container, and focus ring now match the platform's gold. Token name kept to avoid a mass rename; recorded as alias.
+- **Bottom bar: navy-adaptive, not ink** (user direction superseding rev-3 ink glass) — brand navy by default; when the sampled background behind it is blue-family (elementFromPoint + computed-background walk, rAF-throttled), it inverts to warm-white with navy icons; pressed/active state is gold. Works on every route with no page markup.
+- **Inner Header: navy glass** — the requested "ink-glass carry-over" was reinterpreted after the bar feedback: same glass treatment (blur, hairline, scroll densification 0.80→0.95) in brand navy instead of black; mega-menu/mobile-menu panels follow in deep-navy glass.
+- **Conversion journey pass: partial** — /categories copy aligned (12 países, 24h promise, landed-price restated); detail/cotizar pages pending (sub-agents were cut off by session limits).
+
 ## Revision 3 — navigation restoration + chrome unification (4-skill BUILD pass, 2 parallel agents)
 
 - **Bottom menu site-wide again, ink glass** — MobileBottomBar now renders on every route including `/` (moved outside the LegacyChrome gate). Background changed from solid navy to rgba-ink @ 94% + 12px blur + top hairline: legible over navy, white, and photography — the navy-on-navy failure can't recur. Gained a 4th item (Cotizar), 1px vertical dividers between items (30px fixed — % heights collapse in auto-height flex), gold active-route bar + aria-current, 48px tap targets.
