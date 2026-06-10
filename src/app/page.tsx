@@ -39,14 +39,14 @@ export default async function HomePage() {
     if (!perBrand.has(l.brand)) perBrand.set(l.brand, []);
     perBrand.get(l.brand)!.push(l);
   }
-  for (const [, arr] of perBrand) {
+  perBrand.forEach((arr) => {
     arr.sort((a, b) => {
       const aImg = (a.images?.length ?? 0) > 0;
       const bImg = (b.images?.length ?? 0) > 0;
       if (aImg !== bImg) return aImg ? -1 : 1;
       return (b.horsepower ?? 0) - (a.horsepower ?? 0);
     });
-  }
+  });
   const featured: typeof listings = [];
   for (let round = 0; round < 2 && featured.length < 6; round++) {
     for (const brand of brandOrder) {
