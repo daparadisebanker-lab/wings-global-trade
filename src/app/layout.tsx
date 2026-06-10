@@ -3,7 +3,7 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import MobileBottomBar from "@/components/layout/MobileBottomBar";
-import MobileSplash from "@/components/mobile/MobileSplash";
+import SplashScreen from "@/components/chrome/SplashScreen";
 import LegacyChrome from "@/components/layout/LegacyChrome";
 import JsonLd from "@/components/seo/JsonLd";
 
@@ -80,7 +80,7 @@ export default function RootLayout({
   return (
     <html lang="es-PE">
       <body className="flex min-h-screen flex-col">
-        <MobileSplash />
+        <SplashScreen />
         <JsonLd schema={organizationSchema} />
         {/* Brandbook chrome hides on "/" — the homepage carries its own
             chrome (SiteHeader / FixedBar) per WINGS_HOME_SPEC.md */}
