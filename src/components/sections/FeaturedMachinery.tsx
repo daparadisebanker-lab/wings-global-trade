@@ -2,6 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Listing } from "@/types";
 
+const BRAND_SLUGS: Record<string, string> = {
+  "New Holland":      "/brands/new-holland",
+  "John Deere":       "/brands/john-deere",
+  "Massey Ferguson":  "/brands/massey-ferguson",
+  "Kubota":           "/brands/kubota",
+};
+
 const fmt = new Intl.NumberFormat("es-PE", {
   style: "currency",
   currency: "USD",
@@ -27,7 +34,7 @@ export default function FeaturedMachinery({ listings }: Props) {
               className="mb-3 uppercase tracking-[0.22em] text-graphite"
               style={{ fontFamily: "var(--font-data)", fontSize: "var(--type-data)" }}
             >
-              Catálogo activo
+              Catálogo activo · 4 marcas
             </p>
             <h2
               className="wings-display m-0 uppercase"
@@ -74,18 +81,26 @@ export default function FeaturedMachinery({ listings }: Props) {
                 )}
               </div>
               <div className="border-t border-steel p-5">
-                <p
-                  className="m-0 mb-2 uppercase tracking-[0.18em] text-graphite"
-                  style={{ fontFamily: "var(--font-data)", fontSize: "var(--type-data)" }}
-                >
-                  {l.horsepower ? `${l.horsepower} hp` : l.brand}
-                  {l.year ? ` · ${l.year}` : ""}
-                </p>
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <p
+                    className="m-0 uppercase tracking-[0.18em] text-graphite"
+                    style={{ fontFamily: "var(--font-data)", fontSize: "var(--type-data)" }}
+                  >
+                    {l.horsepower ? `${l.horsepower} hp` : ""}
+                    {l.year ? ` · ${l.year}` : ""}
+                  </p>
+                  <span
+                    className="border border-steel px-2 py-0.5 uppercase tracking-[0.12em] text-graphite"
+                    style={{ fontFamily: "var(--font-data)", fontSize: "9px" }}
+                  >
+                    {l.brand}
+                  </span>
+                </div>
                 <h3
                   className="wings-display m-0 mb-3 uppercase"
                   style={{ fontSize: "clamp(18px, 1.6vw, 24px)", lineHeight: 1.15 }}
                 >
-                  {l.brand} {l.model}
+                  {l.model}
                 </h3>
                 <p
                   className="m-0 text-ink"
@@ -96,6 +111,37 @@ export default function FeaturedMachinery({ listings }: Props) {
               </div>
             </Link>
           ))}
+        </div>
+
+        {/* Brands footer strip */}
+        <div className="mt-16 flex flex-wrap items-center justify-between gap-y-8 border-t border-steel pt-10">
+          <div>
+            <p
+              className="mb-4 uppercase tracking-[0.22em] text-graphite"
+              style={{ fontFamily: "var(--font-data)", fontSize: "var(--type-data)" }}
+            >
+              Marcas disponibles
+            </p>
+            <div className="flex flex-wrap gap-3">
+              {Object.entries(BRAND_SLUGS).map(([name, href]) => (
+                <Link
+                  key={name}
+                  href={href}
+                  className="border border-steel px-4 py-2 uppercase tracking-[0.14em] text-graphite transition-colors duration-200 hover:border-ink hover:text-ink"
+                  style={{ fontFamily: "var(--font-data)", fontSize: "10px" }}
+                >
+                  {name}
+                </Link>
+              ))}
+            </div>
+          </div>
+          <Link
+            href="/brands"
+            className="border border-oxide px-7 py-3 uppercase tracking-[0.16em] text-oxide transition-colors duration-200 hover:bg-oxide hover:text-paper"
+            style={{ fontFamily: "var(--font-data)", fontSize: "var(--type-data)" }}
+          >
+            Ver todas las marcas →
+          </Link>
         </div>
       </div>
     </section>

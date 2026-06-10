@@ -32,11 +32,29 @@ const BRAND_ROUTES: Record<string, string> = {
 export default async function HomePage() {
   const listings = await getListings();
 
-  // Featured: prefer listings with photography, newest catalog order.
-  const featured = [
-    ...listings.filter((l) => (l.images?.length ?? 0) > 0),
-    ...listings.filter((l) => (l.images?.length ?? 0) === 0),
-  ].slice(0, 6);
+  // Featured: interleave up to 2 per brand (images-first, HP-desc within brand).
+  const brandOrder = ["New Holland", "John Deere", "Kubota", "Massey Ferguson"];
+  const perBrand = new Map<string, typeof listings>();
+  for (const l of listings) {
+    if (!perBrand.has(l.brand)) perBrand.set(l.brand, []);
+    perBrand.get(l.brand)!.push(l);
+  }
+  for (const [, arr] of perBrand) {
+    arr.sort((a, b) => {
+      const aImg = (a.images?.length ?? 0) > 0;
+      const bImg = (b.images?.length ?? 0) > 0;
+      if (aImg !== bImg) return aImg ? -1 : 1;
+      return (b.horsepower ?? 0) - (a.horsepower ?? 0);
+    });
+  }
+  const featured: typeof listings = [];
+  for (let round = 0; round < 2 && featured.length < 6; round++) {
+    for (const brand of brandOrder) {
+      if (featured.length >= 6) break;
+      const arr = perBrand.get(brand) ?? [];
+      if (arr.length > round) featured.push(arr[round]);
+    }
+  }
 
   const brandCounts = new Map<string, number>();
   for (const l of listings) {

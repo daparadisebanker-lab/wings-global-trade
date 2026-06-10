@@ -45,7 +45,7 @@ export default function CategoryWindows({
         el.style.opacity = String(opacity);
       } else {
         const { gsap } = ensureGsap();
-        gsap.to(el, { opacity, duration: 0.4, ease: "power1.inOut", overwrite: true });
+        gsap.to(el, { opacity, duration: 0.15, ease: "power1.inOut", overwrite: true });
       }
     });
   }, [activeId]);
@@ -137,7 +137,7 @@ export default function CategoryWindows({
 
           {/* Progress bar — restarts on each activeId change via key */}
           {!reduced && (
-            <div className="mb-6 h-px overflow-hidden bg-steel/20">
+            <div className="mb-6 h-[3px] overflow-hidden bg-steel/20">
               <div
                 key={activeId}
                 className="h-full origin-left bg-oxide"
