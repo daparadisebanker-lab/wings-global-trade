@@ -35,6 +35,14 @@ const config: Config = {
           tierno:    "#C8D4E4",
         },
 
+        // ── Homepage v2 palette — values live in globals.css :root tokens ──
+        ink:      "var(--color-ink)",
+        paper:    "var(--color-paper)",
+        harbor:   "var(--color-harbor)",
+        graphite: "var(--color-graphite)",
+        steel:    "var(--color-steel)",
+        oxide:    "var(--color-oxide)",
+
         // ── Legacy brown/cream (kept during phase-by-phase migration) ────
         brown: {
           50:  "#FAF7F4",
@@ -61,6 +69,10 @@ const config: Config = {
         display: ["Flexo", "system-ui", "sans-serif"],
         body:    ["Flexo", "system-ui", "sans-serif"],
         data:    ["DM Mono", "monospace"],
+        // ── Homepage v2 fonts ────────────────────────────────────────────
+        "display-v2": ["var(--font-archivo)", "system-ui", "sans-serif"],
+        "body-v2":    ["var(--font-inter)", "system-ui", "sans-serif"],
+        "data-v2":    ["var(--font-ibm-plex-mono)", "monospace"],
         // ── Legacy (kept during migration) ──────────────────────────────
         sans:    ["Flexo", "Inter", "system-ui", "sans-serif"],
         serif:   ["Flexo", "system-ui", "sans-serif"],

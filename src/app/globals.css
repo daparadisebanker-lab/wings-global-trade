@@ -38,6 +38,28 @@
   --color-brand-meteorito: #495C6B;
   --color-brand-campestre: #76A1B2;
   --color-brand-tierno:    #C8D4E4;
+
+  /* ── Homepage v2 design tokens ──────────────────────────────────────── */
+  --color-ink:      #0B0C0E;
+  --color-paper:    #F4F2ED;
+  --color-harbor:   #16344F;
+  --color-graphite: #2B2D30;
+  --color-steel:    #93A1AD;
+  --color-oxide:    #BD4F12;
+
+  --font-display-v2: var(--font-archivo);
+  --font-body-v2:    var(--font-inter);
+  --font-data-v2:    var(--font-ibm-plex-mono);
+
+  --type-hero:   clamp(96px, 18vw, 280px);
+  --type-title:  clamp(40px, 5vw, 72px);
+  --type-lead:   clamp(18px, 1.4vw, 22px);
+  --type-body:   16px;
+  --type-data:   13px;
+
+  --ease-standard: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --duration-fast: 200ms;
+  --duration-base: 400ms;
 }
 
 /* ── Base ────────────────────────────────────────────────────────────────── */
@@ -211,4 +233,103 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   WINGS HOMEPAGE — design tokens & scoped system (WINGS_HOME_SPEC.md §4)
+   These are the ONLY color values permitted on the homepage. Oxide appears in
+   exactly four sanctioned contexts: fixed CTA, active states, container,
+   :focus-visible ring (§9).
+   ════════════════════════════════════════════════════════════════════════════ */
+/* Color / type / motion tokens are declared once in the :root block at the
+   top of this file ("Homepage v2 design tokens"). */
+:root {
+  /* Tiled outline-wordmark textures (data URIs live here so component files
+     never contain a hex literal) */
+  --wm-tile-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='160'%3E%3Ctext x='160' y='80' text-anchor='middle' dominant-baseline='middle' font-family='Arial, Helvetica, sans-serif' font-size='52' font-weight='800' letter-spacing='4' fill='none' stroke='%23F4F2ED' stroke-opacity='0.06' stroke-width='1'%3EWINGS%3C/text%3E%3C/svg%3E");
+  --wm-tile-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='160'%3E%3Ctext x='160' y='80' text-anchor='middle' dominant-baseline='middle' font-family='Arial, Helvetica, sans-serif' font-size='52' font-weight='800' letter-spacing='4' fill='none' stroke='%230B0C0E' stroke-opacity='0.04' stroke-width='1'%3EWINGS%3C/text%3E%3C/svg%3E");
+  --wm-tile-panel: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='140'%3E%3Ctext x='140' y='70' text-anchor='middle' dominant-baseline='middle' font-family='Arial, Helvetica, sans-serif' font-size='44' font-weight='800' letter-spacing='4' fill='none' stroke='%23F4F2ED' stroke-opacity='0.12' stroke-width='1'%3EWINGS%3C/text%3E%3C/svg%3E");
+}
+
+/* Scope — fonts and base styles apply only inside the new homepage so the
+   brandbook system (Flexo / navy / gold) on inner pages is untouched. */
+[data-page="wings-home"] {
+  --font-display: var(--font-archivo), system-ui, sans-serif;
+  --font-body:    var(--font-inter), system-ui, sans-serif;
+  --font-data:    var(--font-ibm-plex-mono), ui-monospace, monospace;
+
+  font-family: var(--font-body);
+  font-size: var(--type-body);
+  background-color: var(--color-ink);
+  color: var(--color-paper);
+}
+
+/* Display face — Archivo at full expansion (wdth 125) */
+[data-page="wings-home"] .wings-display {
+  font-family: var(--font-display);
+  font-stretch: 125%;
+}
+
+/* Focus ring — required by §9 accessibility criteria */
+[data-page="wings-home"] :focus-visible {
+  outline: 2px solid var(--color-oxide);
+  outline-offset: 2px;
+}
+
+/* Header theme — driven by [data-theme] on the page root via IntersectionObserver */
+[data-page="wings-home"] .wings-header {
+  background: transparent;
+  color: var(--color-paper);
+  transition: background-color var(--duration-base) var(--ease-standard),
+              color var(--duration-base) var(--ease-standard);
+}
+[data-page="wings-home"][data-theme="light"] .wings-header {
+  background: rgba(244, 242, 237, 0.92); /* --color-paper @ 92% */
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: var(--color-ink);
+}
+
+/* Watermark texture (§6.7) — applied as a fixed-attachment tiled background on
+   each section (a z:-1 fixed element would be fully occluded by opaque section
+   backgrounds; see DECISIONS.md). */
+[data-page="wings-home"] .wings-wm-dark {
+  background-image: var(--wm-tile-dark);
+  background-attachment: fixed;
+  background-repeat: repeat;
+  background-size: 320px auto;
+}
+[data-page="wings-home"] .wings-wm-light {
+  background-image: var(--wm-tile-light);
+  background-attachment: fixed;
+  background-repeat: repeat;
+  background-size: 320px auto;
+}
+
+/* Panel A index texture (§6.3) — 280px tile, paper stroke @ 12% */
+[data-page="wings-home"] .wings-wm-panel {
+  background-image: var(--wm-tile-panel);
+  background-repeat: repeat;
+  background-size: 280px auto;
+}
+
+/* Bottom-up scrim for the category preview panel (§6.3) — ink 60% → transparent at 50% */
+[data-page="wings-home"] .wings-scrim {
+  background: linear-gradient(to top, rgba(11, 12, 14, 0.6) 0%, rgba(11, 12, 14, 0) 50%);
+}
+
+/* Container corrugation (§6.4) — 4px ridge rhythm over the oxide body.
+   Sits ABOVE the stenciled wordmark so ridges visibly interrupt letterforms. */
+[data-page="wings-home"] .wings-corrugation {
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(11, 12, 14, 0.30) 0px,
+    rgba(11, 12, 14, 0.30) 1px,
+    rgba(11, 12, 14, 0.00) 1px,
+    rgba(11, 12, 14, 0.00) 4px,
+    rgba(244, 242, 237, 0.10) 4px,
+    rgba(244, 242, 237, 0.10) 5px,
+    rgba(11, 12, 14, 0.00) 5px,
+    rgba(11, 12, 14, 0.00) 8px
+  );
 }

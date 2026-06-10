@@ -5,6 +5,7 @@ import Footer from "@/components/layout/Footer";
 import WhatsAppButton from "@/components/layout/WhatsAppButton";
 import MobileBottomBar from "@/components/layout/MobileBottomBar";
 import MobileSplash from "@/components/mobile/MobileSplash";
+import LegacyChrome from "@/components/layout/LegacyChrome";
 import JsonLd from "@/components/seo/JsonLd";
 
 const BASE = "https://wingsglobaltrade.com";
@@ -78,15 +79,21 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es">
+    <html lang="es-PE">
       <body className="flex min-h-screen flex-col">
         <MobileSplash />
         <JsonLd schema={organizationSchema} />
-        <Header />
+        {/* Brandbook chrome hides on "/" — the homepage carries its own
+            chrome (SiteHeader / FixedBar) per WINGS_HOME_SPEC.md */}
+        <LegacyChrome>
+          <Header />
+        </LegacyChrome>
         <main className="flex-1 pb-16 md:pb-0">{children}</main>
-        <Footer />
-        <WhatsAppButton />
-        <MobileBottomBar />
+        <LegacyChrome>
+          <Footer />
+          <WhatsAppButton />
+          <MobileBottomBar />
+        </LegacyChrome>
       </body>
     </html>
   );
