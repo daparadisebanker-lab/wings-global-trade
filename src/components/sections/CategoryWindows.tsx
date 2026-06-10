@@ -24,6 +24,7 @@ export default function CategoryWindows({
   const reduced = useReducedMotion();
 
   const layerRefs = useRef(new Map<string, HTMLDivElement>());
+  const mobileLayerRefs = useRef(new Map<string, HTMLDivElement>());
   const suspendUntil = useRef(0);
   const lastAdvance = useRef(Date.now());
   const activeRef = useRef(activeId);
@@ -37,16 +38,18 @@ export default function CategoryWindows({
     suspendUntil.current = Date.now() + SUSPEND_MS;
   };
 
-  // Crossfade image layers on active category change.
+  // Crossfade image layers on active category change — runs for both viewport sizes.
   useEffect(() => {
-    layerRefs.current.forEach((el, id) => {
-      const opacity = id === activeId ? 1 : 0;
-      if (prefersReducedMotion()) {
-        el.style.opacity = String(opacity);
-      } else {
-        const { gsap } = ensureGsap();
-        gsap.to(el, { opacity, duration: 0.15, ease: "power1.inOut", overwrite: true });
-      }
+    [layerRefs.current, mobileLayerRefs.current].forEach((refMap) => {
+      refMap.forEach((el, id) => {
+        const opacity = id === activeId ? 1 : 0;
+        if (prefersReducedMotion()) {
+          el.style.opacity = String(opacity);
+        } else {
+          const { gsap } = ensureGsap();
+          gsap.to(el, { opacity, duration: 0.15, ease: "power1.inOut", overwrite: true });
+        }
+      });
     });
   }, [activeId]);
 
@@ -68,14 +71,35 @@ export default function CategoryWindows({
   const active = categories.find((c) => c.id === activeId) ?? categories[0];
   const activeIdx = categories.findIndex((c) => c.id === activeId);
 
-  // Shared ref callback — registers each image layer by category ID.
+  // Ref callbacks — separate maps for mobile and desktop so GSAP can target each independently.
   const setLayerRef = (id: string) => (el: HTMLDivElement | null) => {
     if (el) layerRefs.current.set(id, el);
     else layerRefs.current.delete(id);
   };
+  const setMobileLayerRef = (id: string) => (el: HTMLDivElement | null) => {
+    if (el) mobileLayerRefs.current.set(id, el);
+    else mobileLayerRefs.current.delete(id);
+  };
 
-  // Image layers rendered once — shared between mobile and desktop layouts
-  // via absolute positioning inside each respective container.
+  const mobileImageLayers = categories.map((cat) => (
+    <div
+      key={cat.id}
+      ref={setMobileLayerRef(cat.id)}
+      aria-hidden={cat.id !== activeId}
+      className="absolute inset-0"
+      style={{ opacity: cat.id === firstId ? 1 : 0 }}
+    >
+      <Image
+        src={cat.image}
+        alt={cat.alt}
+        fill
+        sizes="100vw"
+        className="object-cover"
+        priority={cat.id === firstId}
+      />
+    </div>
+  ));
+
   const imageLayers = categories.map((cat) => (
     <div
       key={cat.id}
@@ -88,7 +112,7 @@ export default function CategoryWindows({
         src={cat.image}
         alt={cat.alt}
         fill
-        sizes="(max-width: 1024px) 100vw, 50vw"
+        sizes="50vw"
         className="object-cover"
         priority={cat.id === firstId}
       />
@@ -111,7 +135,7 @@ export default function CategoryWindows({
         onFocus={suspend}
       >
         {/* Background image layers */}
-        <div className="absolute inset-0">{imageLayers}</div>
+        <div className="absolute inset-0">{mobileImageLayers}</div>
 
         {/* Gradient: dark at bottom for text, lighter top-to-mid */}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-harbor from-30% via-harbor/75 via-60% to-harbor/25" />
