@@ -204,6 +204,12 @@
   transform: translateY(0);
 }
 
+/* ── Category progress bar (mobile CategoryWindows) ─────────────────────── */
+@keyframes progressFill {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
 /* ── Hero scroll indicator ───────────────────────────────────────────────── */
 @keyframes hero-scroll {
   0%, 100% { opacity: 0.3; transform: translateY(-4px); }
