@@ -18,7 +18,7 @@ export const categories: Category[] = [
     label: "Agrícola",
     description: "Tractores · 50 a 140 hp",
     href: "/agricultural",
-    image: "/images/splah-hero.png",
+    image: "/images/categories/agricola.png",
     alt: "Tractor New Holland en campo al amanecer",
   },
   {
@@ -26,7 +26,7 @@ export const categories: Category[] = [
     label: "Camiones",
     description: "Carga ligera a pesada",
     href: "/trucks",
-    image: "https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=1600&q=80",
+    image: "/images/categories/camiones.png",
     alt: "Camión de carga pesada en carretera",
   },
   {
@@ -34,7 +34,7 @@ export const categories: Category[] = [
     label: "Buses",
     description: "Urbanos e interurbanos",
     href: "/buses",
-    image: "https://images.unsplash.com/photo-1570125909517-53cb21c89ff2?w=1600&q=80",
+    image: "/images/categories/buses.png",
     alt: "Bus interprovincial de pasajeros",
   },
   {
@@ -42,7 +42,7 @@ export const categories: Category[] = [
     label: "Industrial",
     description: "Excavadoras y montacargas",
     href: "/industrial",
-    image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1600&q=80",
+    image: "/images/categories/industrial.png",
     alt: "Maquinaria industrial pesada en obra",
   },
   {
@@ -50,7 +50,7 @@ export const categories: Category[] = [
     label: "Repuestos",
     description: "Motores · cajas · turbo",
     href: "/spare-parts",
-    image: "https://images.unsplash.com/photo-1596813362035-d3c3e042a763?w=1600&q=80",
+    image: "/images/categories/repuestos.png",
     alt: "Repuestos y componentes de maquinaria",
   },
 ];
