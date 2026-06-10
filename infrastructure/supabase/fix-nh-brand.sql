@@ -1,4 +1,10 @@
 -- ─────────────────────────────────────────────────────────────────────────────
+-- ✅ APPLIED 2026-06-09 directly to the Euro Global Supabase project
+--    (rsstxmptehndaipscaou) via MCP, in a generalized form that also covered
+--    9 newer CD/DF-series models seeded after this file was written.
+--    Verified: 0 SinoHarvest rows, 28 New Holland, 14 with hero images,
+--    T1104 ID renamed, all conditions 'used'. Do not re-run; kept for record.
+-- ─────────────────────────────────────────────────────────────────────────────
 -- MIGRATION: Fix New Holland brand, images, and T1104 ID
 -- Wings sells the entire SinoHarvest / SNH / SH / TM / CD range under the
 -- commercial "New Holland" brand name. Supabase was seeded with the factory
