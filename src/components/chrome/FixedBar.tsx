@@ -4,12 +4,13 @@ import WingsLogo from "@/components/primitives/WingsLogo";
 /**
  * Bottom conversion bar. Renders from first paint — no entrance animation.
  * The only filled button on the page; oxide is sanctioned here. Hover darkens
- * oxide ~8% via brightness so no second color value exists.
+ * oxide ~8% via brightness so no second color value exists. Desktop-only —
+ * the site-wide mobile bottom menu (root layout) takes its place below md.
  */
 export default function FixedBar() {
   return (
     <div
-      className="fixed inset-x-0 bottom-0 z-[100] border-t border-graphite bg-ink"
+      className="fixed inset-x-0 bottom-0 z-[100] hidden border-t border-graphite bg-ink md:block"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <div className="flex h-14 items-center justify-between pl-6">

@@ -1,51 +1,120 @@
-﻿"use client";
+"use client";
+
+import { Fragment } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  IconCatalog,
+  IconImport,
+  IconQuote,
+  IconWhatsApp,
+} from "@/components/icons";
 
 const WA_URL = "https://wa.me/51958381473";
 
-export default function MobileBottomBar() {
+const ITEMS = [
+  { label: "Catálogo", href: "/categories", Icon: IconCatalog },
+  { label: "Importar", href: "/importacion", Icon: IconImport },
+  { label: "Cotizar", href: "/cotizar", Icon: IconQuote },
+] as const;
+
+function ItemBody({
+  Icon,
+  label,
+  active,
+  withDot,
+}: {
+  Icon: (props: React.SVGProps<SVGSVGElement>) => React.ReactElement;
+  label: string;
+  active?: boolean;
+  withDot?: boolean;
+}) {
   return (
-    <div
-      className="fixed bottom-0 left-0 right-0 z-40 flex border-t border-white/10 bg-[#004389] md:hidden"
-      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+    <>
+      <span className="relative">
+        <Icon className="h-[22px] w-[22px]" />
+        {withDot && (
+          <span
+            className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full"
+            style={{ backgroundColor: "#25D366" }}
+            aria-hidden="true"
+          />
+        )}
+      </span>
+      <span
+        className="text-[9.5px] font-semibold uppercase tracking-[0.14em]"
+        style={{ fontFamily: "var(--font-body)" }}
+      >
+        {label}
+      </span>
+      {/* active/hover accent bar */}
+      <span
+        aria-hidden="true"
+        className={`h-0.5 w-4 rounded-full transition-opacity duration-200 ${
+          active ? "opacity-100" : "opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100"
+        }`}
+        style={{ backgroundColor: "#C4933F" }}
+      />
+    </>
+  );
+}
+
+export default function MobileBottomBar() {
+  const pathname = usePathname();
+
+  const itemClass = (active: boolean) =>
+    `group flex min-h-[48px] flex-1 flex-col items-center justify-center gap-1 pb-1.5 pt-2 transition-colors duration-200 ${
+      active
+        ? "text-[#F4F2ED]"
+        : "text-[rgba(244,242,237,0.62)] hover:text-[#F4F2ED] focus-visible:text-[#F4F2ED]"
+    }`;
+
+  // 30px ≈ 55% of the ~56px bar — a % height would collapse in an
+  // auto-height flex row, so the divider height is fixed.
+  const divider = (
+    <span
+      aria-hidden="true"
+      className="h-[30px] w-px self-center"
+      style={{ backgroundColor: "rgba(244,242,237,0.12)" }}
+    />
+  );
+
+  return (
+    <nav
+      aria-label="Navegación inferior"
+      className="fixed bottom-0 left-0 right-0 z-40 flex md:hidden"
+      style={{
+        paddingBottom: "env(safe-area-inset-bottom)",
+        backgroundColor: "rgba(11,12,14,0.94)",
+        WebkitBackdropFilter: "blur(12px)",
+        backdropFilter: "blur(12px)",
+        borderTop: "1px solid rgba(244,242,237,0.14)",
+      }}
     >
-      <Link
-        href="/agricultural/tractors"
-        className="flex flex-1 flex-col items-center justify-center gap-1 py-2.5 text-white/50 transition-colors hover:text-white"
-      >
-        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
-        </svg>
-        <span className="text-[9px] font-semibold uppercase tracking-wide" style={{ fontFamily: "var(--font-body)" }}>
-          Catálogo
-        </span>
-      </Link>
-
-      <Link
-        href="/importacion"
-        className="flex flex-1 flex-col items-center justify-center gap-1 py-2.5 text-white/50 transition-colors hover:text-white"
-      >
-        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 7.5h-.75A2.25 2.25 0 004.5 9.75v7.5a2.25 2.25 0 002.25 2.25h7.5a2.25 2.25 0 002.25-2.25v-7.5a2.25 2.25 0 00-2.25-2.25h-.75m-6 3.75l3 3m0 0l3-3m-3 3V1.5m6 9h.75a2.25 2.25 0 012.25 2.25v7.5a2.25 2.25 0 01-2.25 2.25h-7.5a2.25 2.25 0 01-2.25-2.25v-.75" />
-        </svg>
-        <span className="text-[9px] font-semibold uppercase tracking-wide" style={{ fontFamily: "var(--font-body)" }}>
-          Importar
-        </span>
-      </Link>
-
+      {ITEMS.map(({ label, href, Icon }, i) => {
+        const active = pathname.startsWith(href);
+        return (
+          <Fragment key={href}>
+            {i > 0 && divider}
+            <Link
+              href={href}
+              aria-current={active ? "page" : undefined}
+              className={itemClass(active)}
+            >
+              <ItemBody Icon={Icon} label={label} active={active} />
+            </Link>
+          </Fragment>
+        );
+      })}
+      {divider}
       <a
         href={WA_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex flex-1 flex-col items-center justify-center gap-1 py-2.5 text-white/50 transition-colors hover:text-white"
+        className={itemClass(false)}
       >
-        <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-        </svg>
-        <span className="text-[9px] font-semibold uppercase tracking-wide" style={{ fontFamily: "var(--font-body)" }}>
-          WhatsApp
-        </span>
+        <ItemBody Icon={IconWhatsApp} label="WhatsApp" withDot />
       </a>
-    </div>
+    </nav>
   );
 }

@@ -63,8 +63,7 @@ export default async function HomePage() {
     <div
       data-page="wings-home"
       data-theme="dark"
-      className={`${archivo.variable} ${inter.variable} ${plexMono.variable} relative`}
-      style={{ paddingBottom: "calc(56px + env(safe-area-inset-bottom))" }}
+      className={`${archivo.variable} ${inter.variable} ${plexMono.variable} relative pb-0 md:pb-[calc(56px_+_env(safe-area-inset-bottom))]`}
     >
       <SiteHeader />
       <Hero />

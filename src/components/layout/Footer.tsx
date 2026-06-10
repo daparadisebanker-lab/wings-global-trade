@@ -1,4 +1,6 @@
-﻿import Link from "next/link";
+import Link from "next/link";
+import FooterExpand from "@/components/layout/FooterExpand";
+import { IconPhone } from "@/components/icons";
 
 const CATALOG_LINKS = [
   { label: "Tractores",              href: "/agricultural/tractors" },
@@ -37,49 +39,102 @@ const MARKETS = ["Perú", "Bolivia", "Chile", "Paraguay", "Argentina", "Uruguay"
 
 export default function Footer() {
   return (
-    <footer>
+    <footer className="bg-[#004389]">
 
-      {/* ── ZONE 1: CTA STRIP ─────────────────────────────────────────────── */}
-      <div className="bg-[#062663]">
-        <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p
-                className="text-lg font-semibold text-white leading-snug"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                Dos caminos, una decisión.
-              </p>
-              <p
-                className="mt-1 text-sm text-white/45"
-                style={{ fontFamily: "var(--font-body)" }}
-              >
-                Catálogo propio o importación gestionada — dinos qué necesitas.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Link
-                href="/categories"
-                className="rounded-full border border-[#C4933F] px-6 py-2.5 text-xs font-semibold uppercase tracking-widest text-[#C4933F] transition-colors hover:bg-[#C4933F] hover:text-white"
-                style={{ fontFamily: "var(--font-body)" }}
-              >
-                Explorar catálogo
-              </Link>
-              <Link
-                href="/importacion"
-                className="rounded-full border border-white/20 bg-white/8 px-6 py-2.5 text-xs font-semibold uppercase tracking-widest text-white/80 transition-colors hover:border-white/40 hover:bg-white/12 hover:text-white"
-                style={{ fontFamily: "var(--font-body)" }}
-              >
-                Servicio de importación
-              </Link>
-            </div>
+      {/* ── COMPACT BAND — always visible ─────────────────────────────────── */}
+      <div className="mx-auto max-w-7xl px-6 py-6 lg:px-8">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+
+          {/* Logo + descriptor */}
+          <div className="flex flex-col gap-1.5">
+            <Link href="/" className="inline-block">
+              <img
+                src="/wings-logo-complete.svg"
+                alt="Wings Global Trade"
+                className="h-7 w-auto brightness-0 invert opacity-60"
+              />
+            </Link>
+            <p
+              className="max-w-xs text-xs leading-relaxed text-white/30"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              Catálogo propio e importación gestionada para las zonas francas de Latinoamérica.
+            </p>
           </div>
+
+          {/* Direct contact */}
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5">
+            <a
+              href="tel:+51958381473"
+              className="flex items-center gap-2 text-xs text-white/45 transition-colors hover:text-white"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              <IconPhone className="h-3.5 w-3.5" />
+              +51 958 381 473
+            </a>
+            <a
+              href="mailto:ventas@wingsglobaltrade.com"
+              className="text-xs text-white/45 transition-colors hover:text-white"
+              style={{ fontFamily: "var(--font-body)" }}
+            >
+              ventas@wingsglobaltrade.com
+            </a>
+          </div>
+
+          {/* Legal */}
+          <p
+            className="text-xs text-white/20"
+            style={{ fontFamily: "var(--font-body)" }}
+          >
+            &copy; {new Date().getFullYear()} Wings Global Trade. Todos los derechos reservados.
+          </p>
+
         </div>
       </div>
 
-      {/* ── ZONE 2: LINK GRID ─────────────────────────────────────────────── */}
-      <div className="bg-[#004389]">
-        <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+      {/* ── EXPANDABLE REGION — toggle + long content ─────────────────────── */}
+      <FooterExpand>
+
+        {/* CTA strip */}
+        <div className="bg-[#062663]">
+          <div className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
+            <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p
+                  className="text-lg font-semibold text-white leading-snug"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  Dos caminos, una decisión.
+                </p>
+                <p
+                  className="mt-1 text-sm text-white/45"
+                  style={{ fontFamily: "var(--font-body)" }}
+                >
+                  Catálogo propio o importación gestionada — dinos qué necesitas.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="/categories"
+                  className="rounded-full border border-[#C4933F] px-6 py-2.5 text-xs font-semibold uppercase tracking-widest text-[#C4933F] transition-colors hover:bg-[#C4933F] hover:text-white"
+                  style={{ fontFamily: "var(--font-body)" }}
+                >
+                  Explorar catálogo
+                </Link>
+                <Link
+                  href="/importacion"
+                  className="rounded-full border border-white/20 bg-white/8 px-6 py-2.5 text-xs font-semibold uppercase tracking-widest text-white/80 transition-colors hover:border-white/40 hover:bg-white/12 hover:text-white"
+                  style={{ fontFamily: "var(--font-body)" }}
+                >
+                  Servicio de importación
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Link grid */}
+        <div className="mx-auto max-w-7xl px-6 py-14 lg:px-8">
           <div className="grid grid-cols-2 gap-10 lg:grid-cols-4">
 
             {/* Column 1 — Catalog */}
@@ -182,68 +237,41 @@ export default function Footer() {
 
           </div>
         </div>
-      </div>
 
-      {/* ── ZONE 3: LEGAL BAR ─────────────────────────────────────────────── */}
-      <div className="bg-[#004389] border-t border-white/8">
-        <div className="mx-auto max-w-7xl px-6 py-7 lg:px-8">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+        {/* Hubs, markets + legal links */}
+        <div className="border-t border-white/8">
+          <div className="mx-auto max-w-7xl px-6 py-7 lg:px-8">
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
 
-            {/* Logo + tagline */}
-            <div className="flex flex-col gap-2">
-              <Link href="/" className="inline-block">
-                <img
-                  src="/wings-logo-complete.svg"
-                  alt="Wings Global Trade"
-                  className="h-7 w-auto brightness-0 invert opacity-60"
-                />
-              </Link>
-              <p
-                className="text-xs text-white/30 max-w-xs leading-relaxed"
-                style={{ fontFamily: "var(--font-body)" }}
-              >
-                Catálogo propio e importación gestionada para las zonas francas de Latinoamérica.
-              </p>
-            </div>
-
-            {/* Hub + market tags */}
-            <div className="flex flex-col gap-2">
-              <p
-                className="text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25"
-                style={{ fontFamily: "var(--font-body)" }}
-              >
-                Hubs operativos
-              </p>
-              <div className="flex flex-wrap gap-x-4 gap-y-1">
-                <span className="text-xs text-white/40" style={{ fontFamily: "var(--font-body)" }}>
-                  ZOFRI · Iquique, Chile
-                </span>
-                <span className="text-white/20 text-xs">|</span>
-                <span className="text-xs text-white/40" style={{ fontFamily: "var(--font-body)" }}>
-                  ZOFRATACNA · Tacna, Perú
-                </span>
-              </div>
-              <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1">
-                {MARKETS.map((m) => (
-                  <span
-                    key={m}
-                    className="text-[10px] font-medium tracking-wide text-white/20"
-                    style={{ fontFamily: "var(--font-body)" }}
-                  >
-                    {m}
+              <div className="flex flex-col gap-2">
+                <p
+                  className="text-[10px] font-semibold uppercase tracking-[0.12em] text-white/25"
+                  style={{ fontFamily: "var(--font-body)" }}
+                >
+                  Hubs operativos
+                </p>
+                <div className="flex flex-wrap gap-x-4 gap-y-1">
+                  <span className="text-xs text-white/40" style={{ fontFamily: "var(--font-body)" }}>
+                    ZOFRI · Iquique, Chile
                   </span>
-                ))}
+                  <span className="text-white/20 text-xs">|</span>
+                  <span className="text-xs text-white/40" style={{ fontFamily: "var(--font-body)" }}>
+                    ZOFRATACNA · Tacna, Perú
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1">
+                  {MARKETS.map((m) => (
+                    <span
+                      key={m}
+                      className="text-[10px] font-medium tracking-wide text-white/20"
+                      style={{ fontFamily: "var(--font-body)" }}
+                    >
+                      {m}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* Legal */}
-            <div className="flex flex-col items-start gap-2 lg:items-end">
-              <p
-                className="text-xs text-white/20"
-                style={{ fontFamily: "var(--font-body)" }}
-              >
-                &copy; {new Date().getFullYear()} Wings Global Trade. Todos los derechos reservados.
-              </p>
               <div className="flex items-center gap-4">
                 <Link
                   href="#"
@@ -267,11 +295,12 @@ export default function Footer() {
                   Admin
                 </Link>
               </div>
-            </div>
 
+            </div>
           </div>
         </div>
-      </div>
+
+      </FooterExpand>
 
     </footer>
   );

@@ -1,5 +1,16 @@
 # DECISIONS.md — WINGS Homepage Build
 
+## Revision 3 — navigation restoration + chrome unification (4-skill BUILD pass, 2 parallel agents)
+
+- **Bottom menu site-wide again, ink glass** — MobileBottomBar now renders on every route including `/` (moved outside the LegacyChrome gate). Background changed from solid navy to rgba-ink @ 94% + 12px blur + top hairline: legible over navy, white, and photography — the navy-on-navy failure can't recur. Gained a 4th item (Cotizar), 1px vertical dividers between items (30px fixed — % heights collapse in auto-height flex), gold active-route bar + aria-current, 48px tap targets.
+- **Custom icon set** (`components/icons/`) — 24-grid, 1.5px stroke, currentColor, machinery/trade vocabulary (module-grid catalog, crane-and-container import, signed-document quote). WhatsApp keeps the official glyph + a 6px #25D366 status dot — the only echo of the retired green bubble.
+- **WhatsAppButton deleted** — redundant with the bar's WhatsApp item; floating bubble competed with the fixed CTA.
+- **Side drawer restored** (`chrome/SideDrawer.tsx`) — homepage header gains a Menú trigger (asymmetric two-line mark); panel slides from the right (420px, ink, 420ms standard ease), carries the five real categories in the CategoryWindows row language, secondary links, and a pinned oxide Cotizar + WhatsApp block. Body scroll lock, Escape/scrim close, focus capture/return; rendered as a sibling of the header so its z-index isn't capped by the header's stacking context.
+- **Header logo 36 → 48px, header 64 → 80px** — legibility; the hero FLIP re-measures the target so the handoff adapts automatically.
+- **Tractor: full-page crossing** — band 80vh, cutout up to 88vw/880px; enters fully off-screen right, exits fully off-screen left ("disappears" by leaving), scrubbed across the band's entire viewport traversal (`top bottom → bottom top`). Reduced motion parks it centered via a scoped CSS rule.
+- **FixedBar desktop-only** — below md the site-wide bottom menu is the single bottom layer; two stacked bars would be hostile. Homepage wrapper padding made responsive accordingly.
+- **Footer collapsible** — compact always-visible band (logo, descriptor, phone/email, ©, "Más información" toggle); the long link grid expands via the grid-template-rows 0fr→1fr transition (no max-height hacks). No links removed.
+
 ## Revision 2 — de-wireframing merge (visual-audit COMBINED pass)
 
 - **Real logo recollected** — the typed Archivo "WINGS" wordmark is replaced by the actual lockup (`/wings-logo-complete.svg`, single-fill navy) in the hero, header, FixedBar, and container stencil; white variant via `brightness(0) invert(1)`, navy restored over light header theme. The FLIP handoff mechanics are unchanged — only the node carrying the mark changed.

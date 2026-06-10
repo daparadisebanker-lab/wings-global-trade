@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import WhatsAppButton from "@/components/layout/WhatsAppButton";
 import MobileBottomBar from "@/components/layout/MobileBottomBar";
 import MobileSplash from "@/components/mobile/MobileSplash";
 import LegacyChrome from "@/components/layout/LegacyChrome";
@@ -91,9 +90,8 @@ export default function RootLayout({
         <main className="flex-1 pb-16 md:pb-0">{children}</main>
         <LegacyChrome>
           <Footer />
-          <WhatsAppButton />
-          <MobileBottomBar />
         </LegacyChrome>
+        <MobileBottomBar />
       </body>
     </html>
   );
