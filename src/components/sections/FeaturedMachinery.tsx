@@ -60,7 +60,7 @@ export default function FeaturedMachinery({ listings }: Props) {
               className="group col-span-12 border border-steel transition-colors duration-200 hover:border-ink md:col-span-6 lg:col-span-4"
             >
               {/* product plates are shot on white — the image area matches */}
-              <div className="relative aspect-[4/3] overflow-hidden bg-white">
+              <div className="relative aspect-square overflow-hidden bg-white">
                 {l.images?.[0] ? (
                   <Image
                     src={l.images[0]}
