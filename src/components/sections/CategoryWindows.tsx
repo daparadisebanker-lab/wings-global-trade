@@ -100,7 +100,7 @@ export default function CategoryWindows({
     </div>
   ));
 
-  const imageLayers = categories.map((cat) => (
+  const desktopImageLayers = categories.map((cat) => (
     <div
       key={cat.id}
       ref={setLayerRef(cat.id)}
@@ -109,10 +109,10 @@ export default function CategoryWindows({
       style={{ opacity: cat.id === firstId ? 1 : 0 }}
     >
       <Image
-        src={cat.image}
+        src={cat.desktopImage ?? cat.image}
         alt={cat.alt}
         fill
-        sizes="50vw"
+        sizes="100vw"
         className="object-cover"
         priority={cat.id === firstId}
       />
@@ -231,86 +231,119 @@ export default function CategoryWindows({
 
       {/* ─────────────────────────────────────────────────────────────────────
           DESKTOP LAYOUT  (hidden below lg)
-          Original 50/50 split: text list left, crossfading image right.
+          Full-viewport background image — mirrors mobile layout.
+          Left overlay: vertical category list.
+          Bottom-right: active category name + description + CTA.
       ───────────────────────────────────────────────────────────────────── */}
       <section
         data-theme-section="dark"
-        className="hidden min-h-[100svh] lg:grid lg:grid-cols-2"
+        className="relative hidden min-h-[100svh] flex-col overflow-hidden lg:flex"
         onPointerMove={suspend}
         onPointerDown={suspend}
         onKeyDown={suspend}
         onFocus={suspend}
       >
-        {/* Panel A — index */}
-        <div className="wings-wm-panel flex flex-col justify-center bg-harbor px-16 py-20">
+        {/* Background image layers — full bleed */}
+        <div className="absolute inset-0">{desktopImageLayers}</div>
+
+        {/* Bottom-to-top gradient — same as mobile */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-harbor from-30% via-harbor/75 via-60% to-harbor/25" />
+
+        {/* Left vignette for category list legibility */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-[420px] bg-gradient-to-r from-harbor/70 to-transparent" />
+
+        {/* Top bar */}
+        <div className="relative z-10 flex items-center justify-between px-16 pt-24">
           <p
-            className="mb-10 uppercase tracking-[0.22em] text-steel"
-            style={{ fontFamily: "var(--font-data)", fontSize: "var(--type-data)" }}
+            className="uppercase tracking-[0.22em] text-steel"
+            style={{ fontFamily: "var(--font-data)", fontSize: "11px" }}
           >
-            Soluciones globales en maquinaria
+            Categorías
           </p>
-
-          <ul className="m-0 list-none p-0">
-            {categories.map((cat) => {
-              const isActive = cat.id === activeId;
-              return (
-                <li key={cat.id}>
-                  <button
-                    type="button"
-                    onMouseEnter={() => activate(cat.id)}
-                    onFocus={() => activate(cat.id)}
-                    onClick={() => activate(cat.id)}
-                    aria-pressed={isActive}
-                    className={`wings-display block w-full border-l-[3px] py-3 pl-5 text-left uppercase transition-colors duration-200 ${
-                      isActive
-                        ? "border-oxide text-paper"
-                        : "border-transparent text-steel hover:text-paper"
-                    }`}
-                    style={{ fontSize: "clamp(28px, 3vw, 44px)", lineHeight: 1.1 }}
-                  >
-                    {cat.label}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-
-          <div className="mt-12">
-            <Link
-              href="/categories"
-              className="inline-block border border-paper px-8 py-3 uppercase tracking-[0.16em] text-paper transition-colors duration-200 hover:bg-paper hover:text-harbor"
-              style={{ fontFamily: "var(--font-data)", fontSize: "var(--type-data)" }}
-            >
-              Ver catálogo completo
-            </Link>
-          </div>
+          <p
+            className="tabular-nums text-steel/60"
+            style={{ fontFamily: "var(--font-data)", fontSize: "10px" }}
+          >
+            {String(activeIdx + 1).padStart(2, "0")} / {String(categories.length).padStart(2, "0")}
+          </p>
         </div>
 
-        {/* Panel B — crossfading preview */}
-        <div className="relative overflow-hidden bg-graphite">
-          {imageLayers}
-          <div className="wings-scrim pointer-events-none absolute inset-0" />
-          <div className="absolute inset-x-0 bottom-0 p-12">
-            {active && (
+        {/* Main content row */}
+        <div className="relative z-10 flex flex-1">
+
+          {/* Left — vertical category list */}
+          <div className="flex w-72 flex-col justify-center px-16 py-12 xl:w-80">
+            <ul className="m-0 list-none p-0">
+              {categories.map((cat) => {
+                const isActive = cat.id === activeId;
+                return (
+                  <li key={cat.id}>
+                    <button
+                      type="button"
+                      onMouseEnter={() => activate(cat.id)}
+                      onFocus={() => activate(cat.id)}
+                      onClick={() => { activate(cat.id); suspend(); }}
+                      aria-pressed={isActive}
+                      className={`wings-display block w-full border-l-[3px] py-2.5 pl-5 text-left uppercase transition-colors duration-200 ${
+                        isActive
+                          ? "border-oxide text-paper"
+                          : "border-transparent text-steel/50 hover:text-paper/80"
+                      }`}
+                      style={{ fontSize: "clamp(20px, 2vw, 30px)", lineHeight: 1.2 }}
+                    >
+                      {cat.label}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+
+            <div className="mt-10">
               <Link
-                href={active.href}
-                className="group inline-block"
-                aria-label={`Ver categoría ${active.label}`}
+                href="/categories"
+                className="inline-block border border-paper/20 px-6 py-2.5 uppercase tracking-[0.14em] text-paper/50 transition-colors duration-200 hover:border-paper/40 hover:text-paper/80"
+                style={{ fontFamily: "var(--font-data)", fontSize: "var(--type-data)" }}
               >
-                <span
-                  className="wings-display block uppercase text-paper underline-offset-8 group-hover:underline"
-                  style={{ fontSize: "var(--type-title)", lineHeight: 1 }}
-                >
-                  {active.label}
-                </span>
-                <span
-                  className="mt-3 inline-block uppercase tracking-[0.2em] text-steel transition-colors duration-200 group-hover:text-paper"
-                  style={{ fontFamily: "var(--font-data)", fontSize: "var(--type-data)" }}
-                >
-                  Explorar →
-                </span>
+                Ver catálogo completo
               </Link>
+            </div>
+          </div>
+
+          {/* Right — active category detail pushed to bottom */}
+          <div className="flex flex-1 flex-col justify-end px-16 pb-16">
+            {!reduced && (
+              <div className="mb-6 h-[3px] w-20 overflow-hidden bg-steel/20">
+                <div
+                  key={activeId}
+                  className="h-full origin-left bg-oxide"
+                  style={{ animation: `progressFill ${AUTO_ADVANCE_MS}ms linear forwards` }}
+                />
+              </div>
             )}
+
+            <h2
+              className="wings-display uppercase leading-none text-paper"
+              style={{ fontSize: "clamp(52px, 7vw, 96px)" }}
+            >
+              {active?.label}
+            </h2>
+
+            {active?.description && (
+              <p
+                className="mt-3 text-steel/80"
+                style={{ fontFamily: "var(--font-data)", fontSize: "12px", letterSpacing: "0.1em" }}
+              >
+                {active.description}
+              </p>
+            )}
+
+            <Link
+              href={active?.href ?? "/categories"}
+              className="mt-4 inline-block uppercase tracking-[0.2em] text-paper/70 transition-colors duration-200 hover:text-paper"
+              style={{ fontFamily: "var(--font-data)", fontSize: "11px" }}
+            >
+              Explorar →
+            </Link>
           </div>
         </div>
       </section>

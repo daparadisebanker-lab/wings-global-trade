@@ -38,6 +38,10 @@ export default function MobileBottomBar() {
   const navRef = useRef<HTMLElement>(null);
   const [inverse, setInverse] = useState(false);
 
+  // Product detail pages carry their own FloatingModelActions CTA — no bar needed.
+  const segments = pathname.split("/").filter(Boolean);
+  if (segments.length >= 3) return null;
+
   useEffect(() => {
     let raf = 0;
 

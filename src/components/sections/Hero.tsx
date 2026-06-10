@@ -106,7 +106,7 @@ export default function Hero() {
       className="relative flex h-[100svh] items-center justify-center overflow-hidden bg-ink"
     >
       <Image
-        src="/images/splah-hero.png"
+        src="/Desktop Home/Home Intro.png"
         alt="Tractor New Holland importado por Wings en campo al amanecer"
         fill
         priority
