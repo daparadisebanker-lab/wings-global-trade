@@ -38,3 +38,6 @@ next-env.d.ts
 Euro-Global-claude-nextjs-14-typescript-setup-WYGxI/
 
 .vercel
+
+# claude code
+.claude/
