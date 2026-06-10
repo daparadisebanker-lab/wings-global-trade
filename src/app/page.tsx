@@ -33,9 +33,13 @@ export default async function HomePage() {
   const listings = await getListings();
 
   // Featured: interleave up to 2 per brand (images-first, HP-desc within brand).
+  // Explicit exclusions: models that should not appear on the homepage grid.
+  const FEATURED_EXCLUDE = new Set(["john-deere-6e1404"]);
+
   const brandOrder = ["New Holland", "John Deere", "Kubota", "Massey Ferguson"];
   const perBrand = new Map<string, typeof listings>();
   for (const l of listings) {
+    if (FEATURED_EXCLUDE.has(l.id)) continue;
     if (!perBrand.has(l.brand)) perBrand.set(l.brand, []);
     perBrand.get(l.brand)!.push(l);
   }
