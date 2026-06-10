@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import WingsHero          from "@/components/wings/WingsHero";
-import WingsHowItWorks    from "@/components/wings/WingsHowItWorks";
+import WingsProcessScroll from "@/components/wings/WingsProcessScroll";
 import WingsWhyWings      from "@/components/wings/WingsWhyWings";
 import WingsCorridors     from "@/components/wings/WingsCorridors";
 import WingsFreeZone      from "@/components/wings/WingsFreeZone";
@@ -119,7 +119,7 @@ export default function ImportacionPage() {
       <JsonLd schema={faqSchema} />
       <JsonLd schema={breadcrumbSchema} />
       <WingsHero />
-      <WingsHowItWorks />
+      <WingsProcessScroll />
       <WingsWhyWings />
       <WingsCorridors />
       <WingsFreeZone />
