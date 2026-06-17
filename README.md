@@ -1,49 +1,71 @@
-# Euro Global Machinery Portal
+# Wings Global Trade
 
-Professional marketplace for agricultural and industrial machinery.
+B2B trade intelligence and inquiry platform for Latin American importers.
+Two flows, one platform: a curated **Catalog** (inquiry → lead) and the
+**Accio Engine** (AI chat → TPR → CIF estimate → qualified lead). No cart,
+no checkout, no auth — a CRM intake pipeline.
 
-## Project Structure
+> Precisión. Proximidad. Confianza.
 
-The project is organized into logical buckets for clean architecture and team collaboration:
+## Stack
 
-### 📂 `src/`
-The core application source code (Next.js 14+).
-- `/app`: Hierarchical routing organized by machinery category (`agricultural`, `trucks`, `buses`, `industrial`).
-- `/components`: Reusable UI components.
-- `/lib`: Shared utilities and configurations (including `categories.ts`).
-- `/types`: TypeScript definitions.
+Next.js 15 (App Router) · TypeScript · Tailwind CSS v3 · Supabase · Claude API
+(`claude-haiku-4-5` chat, `claude-sonnet-4-6` estimation) · Resend · Twilio
+WhatsApp · Framer Motion · Zod · pnpm.
 
-### 📂 `data/`
-Static data assets and catalogs.
-- `product-catalog.json`: The master machinery database.
-- `listings.ts`: Server-side data fetching logic.
+## Getting started
 
-### 📂 `infrastructure/`
-Tools and configuration for external services.
-- `/supabase`: SQL schemas, seeds, and storage setup.
-- `/scripts`: Python and TS utilities for data processing and catalog management.
+```bash
+pnpm install
+cp .env.local.example .env.local   # fill in real values
+pnpm dev
+```
 
-### 📂 `documentation/`
-Architectural analysis, design guides, and project notes.
+The app runs **without** Supabase/Claude/Resend/Twilio configured: it falls
+back to `src/data/seed.json` for the catalog and to a deterministic mock for
+the Accio chat, and notifications log to the console. This makes the full UI
+testable offline. Configure the env vars to enable the live integrations.
 
-### 📂 `legacy/`
-Archived setup files and previous versions of the codebase.
+## Environment variables
 
-### 📂 `public/`
-Static assets served by the application.
-- `/icons`: Technical SVG line-art icons.
-- `/images`: High-quality product photography.
+See `.env.local.example`. Required for full functionality:
 
-## Getting Started
+- `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
+- `ANTHROPIC_API_KEY`
+- `RESEND_API_KEY`, `WINGS_OPS_EMAIL`
+- `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_WHATSAPP_FROM`, `WINGS_OPS_WHATSAPP`
 
-1.  Install dependencies: `npm install`
-2.  Run dev server: `npm run dev`
-3.  Build for production: `npm run build`
+Notifications only fire real WhatsApp/email when `VERCEL_ENV === 'production'`.
 
-## Catalog Management
+## Database
 
-To update the machinery catalog:
-1.  Edit `data/product-catalog.json`.
-2.  Run `python infrastructure/scripts/fix-catalog.py` to normalize data.
-3.  Run `python infrastructure/scripts/generate-sql-seed.py` to generate the Supabase seed.
-4.  Apply the seed in the Supabase SQL editor using `infrastructure/supabase/seed-catalog.sql`.
+Apply the migrations in `supabase/migrations/` (in order) to a Supabase
+project:
+
+```bash
+# via Supabase CLI
+supabase db push
+# or paste 0001_initial_schema.sql then 0002_seed.sql into the SQL editor
+```
+
+- `0001_initial_schema.sql` — tables, enums, indexes, RLS, triggers
+- `0002_seed.sql` — 5 categories + sample products (idempotent)
+
+RLS: `categories` and `products` are public-read; `leads`, `accio_projects`,
+and `notification_log` are server-only (service role key, via API routes).
+
+## Architecture
+
+- `src/app/api/**` — 8 route handlers (categories, products, products/[slug],
+  leads/catalog, leads/contact, accio/chat, accio/estimate, accio/submit)
+- `src/lib/cif-calculator.ts` — deterministic CIF engine
+- `src/lib/claude.ts` — Anthropic client + `ACCIO_SYSTEM_PROMPT` + JSON-block
+  extraction; `claude.client.ts` holds the client-safe greeting
+- `src/lib/catalog-data.ts` — Supabase reads with seed fallback
+- `src/lib/notifications/**` — Twilio + Resend senders (fire-and-forget)
+
+## Build
+
+```bash
+pnpm build   # zero TypeScript errors, 16 routes
+```

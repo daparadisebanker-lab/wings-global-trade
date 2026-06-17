@@ -1,93 +1,84 @@
-import type { Config } from "tailwindcss";
+import type { Config } from 'tailwindcss'
 
 const config: Config = {
-  content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-  ],
+  content: ['./src/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
-        // ── Wings site palette ───────────────────────────────────────────
-        navy: {
-          DEFAULT: "#004389",
-          light:   "#1459A8",
-          deep:    "#062663",
-        },
+        navy: { DEFAULT: '#001E50', light: '#002266', dark: '#001040' },
         gold: {
-          DEFAULT: "#C4933F",
-          hover:   "#D4A855",
-          light:   "#F0E4CC",
+          DEFAULT: '#C4933F',
+          hover: '#B8842E',
+          active: '#A6751A',
+          subtle: 'rgba(196,147,63,0.12)',
         },
-        charcoal: "#1C1A16",
-        "warm-white": "#FAFAFA",
-        "warm-gray":  "#DDE3EA",
-        "mid-gray":   "#495C6B",
-
-        // ── Wings brandbook palette (6 official blues) ───────────────────
-        brand: {
-          imperial:  "#004389",
-          madison:   "#062663",
-          ada:       "#3A498D",
-          meteorito: "#495C6B",
-          campestre: "#76A1B2",
-          tierno:    "#C8D4E4",
-        },
-
-        // ── Homepage v2 palette — values live in globals.css :root tokens ──
-        ink:      "var(--color-ink)",
-        paper:    "var(--color-paper)",
-        harbor:   "var(--color-harbor)",
-        graphite: "var(--color-graphite)",
-        steel:    "var(--color-steel)",
-        oxide:    "var(--color-oxide)",
-
-        // ── Legacy brown/cream (kept during phase-by-phase migration) ────
-        brown: {
-          50:  "#FAF7F4",
-          100: "#F2EBE2",
-          200: "#E3D4C3",
-          300: "#CEBA9E",
-          400: "#B49878",
-          500: "#96755A",
-          600: "#7A5640",
-          700: "#5C3D2A",
-          800: "#3D2614",
-          900: "#1E1008",
-        },
-        cream: {
-          DEFAULT: "#F5EFE6",
-          50:  "#FDFBF8",
-          100: "#F5EFE6",
-          200: "#EAE0D0",
-          300: "#DDD0BC",
-        },
+        'warm-white': '#F8F6F0',
+        'chat-user': '#F0EDE6',
+        // New Phase 2A tokens (additive — per ENRICHED_SPEC §2.1)
+        'gold-subtle': 'rgba(196,147,63,0.12)',
+        'surface-overlay': 'rgba(0,30,80,0.72)',
+        'border-focus': 'rgba(196,147,63,0.40)',
+        'navy-light': '#002266',
+        'navy-dark': '#001040',
+        // Legacy flat aliases — preserved for backward compat
+        'gold-hover': '#B8842E',
+        'gold-active': '#A6751A',
+        'surface-card': '#FFFFFF',
+        'surface-card-navy': '#002266',
+        'surface-chat-user': '#F0EDE6',
+        'surface-chat-ai': '#FFFFFF',
+        'text-muted': '#6B7280',
+        'text-muted-inverse': '#94A3B8',
+        'text-mono': '#374151',
+        'border-default': '#E5E7EB',
+        'whatsapp': '#25D366',
+        'status-new': '#C4933F',
+        'status-contacted': '#2563EB',
+        'status-qualified': '#16A34A',
+        'status-closed-won': '#15803D',
+        'status-closed-lost': '#6B7280',
+        'indicator-pending': '#D1D5DB',
+        'indicator-minimum': '#F59E0B',
+        'indicator-complete': '#16A34A',
       },
       fontFamily: {
-        // ── Swiss system — single typeface family, weight hierarchy ──────
-        display: ["Flexo", "system-ui", "sans-serif"],
-        body:    ["Flexo", "system-ui", "sans-serif"],
-        data:    ["DM Mono", "monospace"],
-        // ── Homepage v2 fonts ────────────────────────────────────────────
-        "display-v2": ["var(--font-archivo)", "system-ui", "sans-serif"],
-        "body-v2":    ["var(--font-inter)", "system-ui", "sans-serif"],
-        "data-v2":    ["var(--font-ibm-plex-mono)", "monospace"],
-        // ── Legacy (kept during migration) ──────────────────────────────
-        sans:    ["Flexo", "Inter", "system-ui", "sans-serif"],
-        serif:   ["Flexo", "system-ui", "sans-serif"],
+        display: ['var(--font-display)', 'Georgia', 'serif'],
+        body: ['var(--font-body)', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-mono)', 'Courier New', 'monospace'],
       },
-      borderRadius: {
-        "2xl": "1rem",
-        "3xl": "1.5rem",
+      fontSize: {
+        // Display scale — Cormorant Garamond (per ENRICHED_SPEC §2.2)
+        'display-xl': ['clamp(3rem,5vw,5rem)', { lineHeight: '1.05', letterSpacing: '-0.02em' }],
+        'display-lg': ['clamp(2.25rem,4vw,3.75rem)', { lineHeight: '1.1', letterSpacing: '-0.015em' }],
+        'display-md': ['clamp(1.875rem,3vw,2.5rem)', { lineHeight: '1.15', letterSpacing: '-0.01em' }],
+        'display-sm': ['clamp(1.5rem,2.5vw,2rem)', { lineHeight: '1.2', letterSpacing: '0' }],
+        // Body scale — Flexo
+        'body-lg': ['1.125rem', { lineHeight: '1.6', letterSpacing: '0' }],
+        'body-md': ['1rem', { lineHeight: '1.5', letterSpacing: '0' }],
+        'body-sm': ['0.875rem', { lineHeight: '1.45', letterSpacing: '0' }],
+        // Label scale — Flexo medium
+        'label-lg': ['0.875rem', { lineHeight: '1', letterSpacing: '0.01em' }],
+        'label-md': ['0.8125rem', { lineHeight: '1', letterSpacing: '0.01em' }],
+        'label-sm': ['0.75rem', { lineHeight: '1', letterSpacing: '0.08em' }],
+        // Mono scale — DM Mono
+        'mono-lg': ['1rem', { lineHeight: '1.3', letterSpacing: '0' }],
+        'mono-md': ['0.875rem', { lineHeight: '1.4', letterSpacing: '0' }],
+        'mono-sm': ['0.75rem', { lineHeight: '1.4', letterSpacing: '0' }],
+      },
+      letterSpacing: {
+        'widest-2': '0.08em',
       },
       boxShadow: {
-        card: "0 2px 16px rgba(0, 0, 0, 0.06)",
-        "card-md": "0 2px 24px rgba(0, 0, 0, 0.08)",
+        card: '0 1px 3px rgba(0,0,32,0.06)',
+        'card-hover': '0 4px 12px rgba(0,0,32,0.10)',
+      },
+      borderRadius: {
+        wings: '2px',
+        'wings-card': '4px',
       },
     },
   },
   plugins: [],
-};
+}
 
-export default config;
+export default config

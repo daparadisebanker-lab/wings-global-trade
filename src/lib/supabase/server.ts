@@ -1,29 +1,31 @@
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+// src/lib/supabase/server.ts
+// Server-side client using the service role key. Used ONLY in API routes.
+// Bypasses RLS — never import this into client components.
 
-export async function createClient() {
-  const cookieStore = await cookies()
+import { createClient as createSupabaseClient, type SupabaseClient } from '@supabase/supabase-js'
 
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
-          } catch {
-            // The `setAll` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
-          }
-        },
-      },
-    }
-  )
+let cached: SupabaseClient | null = null
+
+/**
+ * Returns a service-role Supabase client, or null when env vars are absent.
+ * Callers must handle the null case (e.g. dev without a live database).
+ */
+export function createServiceClient(): SupabaseClient | null {
+  if (cached) return cached
+
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!url || !serviceKey) {
+    return null
+  }
+
+  cached = createSupabaseClient(url, serviceKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  })
+  return cached
+}
+
+export function isServiceConfigured(): boolean {
+  return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY)
 }

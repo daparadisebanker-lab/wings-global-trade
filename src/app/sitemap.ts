@@ -1,58 +1,58 @@
-import type { MetadataRoute } from "next";
-import { getListings } from "@data/listings";
-import { KAMA_SERIES } from "@/lib/kama-series";
+import type { MetadataRoute } from 'next'
+import { getCategories, getProducts } from '@/lib/catalog-data'
 
-const BASE = "https://wingsglobaltrade.com";
+const BASE = 'https://wingsglobaltrade.com'
+const buildDate = new Date().toISOString().split('T')[0]
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const listings = await getListings();
+  const categories = await getCategories()
+  const { products } = await getProducts({ limit: 500 })
+  const categoryBySlugId = new Map(categories.map((c) => [c.id, c.slug]))
 
-  const tractorUrls: MetadataRoute.Sitemap = listings
-    .filter((l) => l.brand !== "KAMA")
-    .map((l) => ({
-      url: `${BASE}/agricultural/tractors/${l.id}`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.8,
-    }));
+  // Static routes with priority and changeFrequency per seo-agent.md spec
+  const staticRoutes: MetadataRoute.Sitemap = [
+    {
+      url: `${BASE}/`,
+      priority: 1.0,
+      changeFrequency: 'weekly',
+      lastModified: buildDate,
+    },
+    {
+      url: `${BASE}/accio`,
+      priority: 0.9,
+      changeFrequency: 'monthly',
+      lastModified: buildDate,
+    },
+    {
+      url: `${BASE}/nosotros`,
+      priority: 0.5,
+      changeFrequency: 'monthly',
+      lastModified: buildDate,
+    },
+    {
+      url: `${BASE}/contacto`,
+      priority: 0.5,
+      changeFrequency: 'monthly',
+      lastModified: buildDate,
+    },
+  ]
 
-  const kamaModelUrls: MetadataRoute.Sitemap = KAMA_SERIES.flatMap((s) =>
-    s.modelIds.map((id) => ({
-      url: `${BASE}/brands/kama/${s.slug}/${id}`,
-      lastModified: new Date(),
-      changeFrequency: "weekly" as const,
-      priority: 0.7,
-    }))
-  );
+  // Category pages with priority 0.8 and weekly change frequency
+  const categoryRoutes: MetadataRoute.Sitemap = categories.map((c) => ({
+    url: `${BASE}/catalogo/${c.slug}`,
+    priority: 0.8,
+    changeFrequency: 'weekly' as const,
+    lastModified: buildDate,
+  }))
 
-  const kamaSeriesUrls: MetadataRoute.Sitemap = KAMA_SERIES.map((s) => ({
-    url: `${BASE}/brands/kama/${s.slug}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-    priority: 0.75,
-  }));
+  // Product detail pages with priority 0.7 and monthly change frequency
+  // Products are already filtered by is_active: true in getProducts()
+  const productRoutes: MetadataRoute.Sitemap = products.map((p) => ({
+    url: `${BASE}/catalogo/${categoryBySlugId.get(p.category_id) ?? 'maquinaria-agricola'}/${p.slug}`,
+    priority: 0.7,
+    changeFrequency: 'monthly' as const,
+    lastModified: p.updated_at ? p.updated_at.split('T')[0] : buildDate,
+  }))
 
-  return [
-    // Core pages
-    { url: BASE,                                     lastModified: new Date(), changeFrequency: "weekly",  priority: 1.0  },
-    { url: `${BASE}/agricultural/tractors`,          lastModified: new Date(), changeFrequency: "daily",   priority: 0.95 },
-    { url: `${BASE}/camiones`,                       lastModified: new Date(), changeFrequency: "weekly",  priority: 0.9  },
-    { url: `${BASE}/importacion`,                    lastModified: new Date(), changeFrequency: "monthly", priority: 0.85 },
-    { url: `${BASE}/cotizar`,                        lastModified: new Date(), changeFrequency: "monthly", priority: 0.85 },
-    // Brand hubs
-    { url: `${BASE}/brands`,                         lastModified: new Date(), changeFrequency: "weekly",  priority: 0.8  },
-    { url: `${BASE}/brands/new-holland`,             lastModified: new Date(), changeFrequency: "weekly",  priority: 0.85 },
-    { url: `${BASE}/brands/john-deere`,              lastModified: new Date(), changeFrequency: "weekly",  priority: 0.85 },
-    { url: `${BASE}/brands/massey-ferguson`,         lastModified: new Date(), changeFrequency: "weekly",  priority: 0.85 },
-    { url: `${BASE}/brands/kubota`,                  lastModified: new Date(), changeFrequency: "weekly",  priority: 0.85 },
-    { url: `${BASE}/brands/kama`,                    lastModified: new Date(), changeFrequency: "weekly",  priority: 0.85 },
-    // KAMA series
-    ...kamaSeriesUrls,
-    // Trust & info pages
-    { url: `${BASE}/about`,                          lastModified: new Date(), changeFrequency: "monthly", priority: 0.7  },
-    { url: `${BASE}/categories`,                     lastModified: new Date(), changeFrequency: "monthly", priority: 0.5  },
-    // Product detail pages
-    ...tractorUrls,
-    ...kamaModelUrls,
-  ];
+  return [...staticRoutes, ...categoryRoutes, ...productRoutes]
 }

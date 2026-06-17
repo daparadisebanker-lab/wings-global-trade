@@ -1,8 +1,0 @@
-User-agent: *
-Allow: /
-
-# Block admin and internal routes
-Disallow: /admin/
-Disallow: /api/
-
-Sitemap: https://wingsglobaltrade.com/sitemap.xml

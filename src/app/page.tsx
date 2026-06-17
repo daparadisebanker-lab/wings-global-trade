@@ -1,100 +1,81 @@
-import type { Metadata } from "next";
-import { getListings } from "@data/listings";
-import SiteHeader from "@/components/chrome/SiteHeader";
-import FixedBar from "@/components/chrome/FixedBar";
-import Hero from "@/components/sections/Hero";
-import CoverageBand from "@/components/sections/CoverageBand";
-import CategoryWindows from "@/components/sections/CategoryWindows";
-import FeaturedMachinery from "@/components/sections/FeaturedMachinery";
-import ContainerReveal from "@/components/sections/ContainerReveal";
-import LogisticsSequence from "@/components/sections/LogisticsSequence";
-import TrustSection from "@/components/sections/TrustSection";
+// src/app/page.tsx
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import { getCategories } from '@/lib/catalog-data'
+import { HeroSection } from '@/components/features/homepage/HeroSection'
+import { CategoryGrid } from '@/components/features/homepage/CategoryGrid'
+import { TrustBar } from '@/components/features/homepage/TrustBar'
+import { MarketMap } from '@/components/features/homepage/MarketMap'
+import { SectionBlock } from '@/components/features/shared/SectionBlock'
+import { Button } from '@/components/ui/button'
+import { JsonLd } from '@/components/seo/JsonLd'
+import { websiteSchema } from '@/lib/schema'
 
 export const metadata: Metadata = {
-  title: "Wings | Importación de Maquinaria desde Zona Franca — Tacna / Iquique",
+  title: 'Wings Global Trade — Importación B2B para LATAM',
   description:
-    "Importación de maquinaria agrícola, camiones, buses e industrial desde zona franca (ZofraTacna / ZOFRI). De puerto a planta. Solicita tu cotización.",
-  alternates: { canonical: "https://wingsglobaltrade.com" },
-};
+    'Importa maquinaria agrícola, camiones, buses y equipamiento industrial para América Latina. Catálogo curado y Motor Accio para zona franca. Wings Global Trade.',
+  openGraph: {
+    title: 'Wings Global Trade — Importación B2B para LATAM',
+    description:
+      'Importa maquinaria agrícola, camiones, buses y equipamiento industrial para América Latina. Catálogo curado y Motor Accio para zona franca. Wings Global Trade.',
+    locale: 'es_PE',
+    type: 'website',
+    url: 'https://wingsglobaltrade.com/',
+  },
+  alternates: {
+    canonical: 'https://wingsglobaltrade.com/',
+  },
+}
 
-const BRAND_ROUTES: Record<string, string> = {
-  "New Holland": "/brands/new-holland",
-  "John Deere": "/brands/john-deere",
-  "Massey Ferguson": "/brands/massey-ferguson",
-  Kubota: "/brands/kubota",
-};
-
-/**
- * Homepage — the scroll-narrative spine of the spec build merged with the
- * real brand (actual logo, brand photography) and the previous homepage's
- * commercial content (live inventory, operation numbers, buyers, brands).
- */
 export default async function HomePage() {
-  const listings = await getListings();
-
-  // Featured: interleave up to 2 per brand (images-first, HP-desc within brand).
-  // Explicit exclusions: models that should not appear on the homepage grid.
-  const FEATURED_EXCLUDE = new Set(["john-deere-6e1404"]);
-
-  const brandOrder = ["New Holland", "John Deere", "Kubota", "Massey Ferguson"];
-  const perBrand = new Map<string, typeof listings>();
-  for (const l of listings) {
-    if (FEATURED_EXCLUDE.has(l.id)) continue;
-    if (!perBrand.has(l.brand)) perBrand.set(l.brand, []);
-    perBrand.get(l.brand)!.push(l);
-  }
-  perBrand.forEach((arr) => {
-    arr.sort((a, b) => {
-      const aImg = (a.images?.length ?? 0) > 0;
-      const bImg = (b.images?.length ?? 0) > 0;
-      if (aImg !== bImg) return aImg ? -1 : 1;
-      return (b.horsepower ?? 0) - (a.horsepower ?? 0);
-    });
-  });
-  const featured: typeof listings = [];
-  for (let round = 0; round < 2 && featured.length < 6; round++) {
-    for (const brand of brandOrder) {
-      if (featured.length >= 6) break;
-      const arr = perBrand.get(brand) ?? [];
-      if (arr.length > round) featured.push(arr[round]);
-    }
-  }
-
-  const brandCounts = new Map<string, number>();
-  for (const l of listings) {
-    brandCounts.set(l.brand, (brandCounts.get(l.brand) ?? 0) + 1);
-  }
-  const brands = Array.from(brandCounts.entries())
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5)
-    .map(([name, count]) => ({
-      name,
-      count,
-      href: BRAND_ROUTES[name] ?? "/agricultural/tractors",
-    }));
-
-  const stats = [
-    { value: String(listings.length), label: "Modelos disponibles" },
-    { value: String(brandCounts.size), label: "Marcas de fábrica" },
-    { value: "12", label: "Países atendidos" },
-    { value: "45–90", label: "Días puerta a planta" },
-  ];
+  const categories = await getCategories()
 
   return (
-    <div
-      data-page="wings-home"
-      data-theme="dark"
-      className="relative pb-0 md:pb-[calc(56px_+_env(safe-area-inset-bottom))]"
-    >
-      <SiteHeader />
-      <Hero />
-      <CoverageBand />
-      <CategoryWindows />
-      <FeaturedMachinery listings={featured} />
-      <ContainerReveal />
-      <LogisticsSequence />
-      <TrustSection stats={stats} brands={brands} />
-      <FixedBar />
-    </div>
-  );
+    <>
+      <JsonLd data={websiteSchema()} />
+
+      {/* Hero — navy */}
+      <HeroSection />
+
+      {/* Category grid — warm-white */}
+      <SectionBlock theme="warm-white">
+        <CategoryGrid categories={categories} />
+      </SectionBlock>
+
+      {/* Trust bar — navy */}
+      <SectionBlock theme="navy">
+        <div className="mb-10">
+          <h2 className="font-display text-display-sm font-semibold text-warm-white">
+            Una operación construida sobre credenciales verificables
+          </h2>
+        </div>
+        <TrustBar />
+      </SectionBlock>
+
+      {/* Market map — warm-white */}
+      <SectionBlock theme="warm-white">
+        <MarketMap />
+      </SectionBlock>
+
+      {/* Motor Accio CTA — navy (merges into footer) */}
+      <SectionBlock theme="navy">
+        <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
+          <div className="max-w-xl">
+            <h2 className="font-display text-display-md font-semibold text-warm-white">
+              El precio CIF antes de la primera llamada.
+            </h2>
+            <p className="mt-3 font-body text-body-lg text-text-muted-inverse">
+              El Motor Accio reúne tu Requisito Técnico de Producto y calcula un estimado CIF real
+              — vía ZOFRATACNA (Tacna, Perú) o ZOFRI (Iquique, Chile). Sin llamadas previas.
+            </p>
+          </div>
+          {/* Per ENRICHED_SPEC §3.4 — Accio tile CTA exact string */}
+          <Link href="/accio">
+            <Button size="lg">Calcular mi importación</Button>
+          </Link>
+        </div>
+      </SectionBlock>
+    </>
+  )
 }

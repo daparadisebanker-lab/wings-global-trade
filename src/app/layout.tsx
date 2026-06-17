@@ -1,98 +1,64 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import MobileBottomBar from "@/components/layout/MobileBottomBar";
-import SplashScreen from "@/components/chrome/SplashScreen";
-import LegacyChrome from "@/components/layout/LegacyChrome";
-import JsonLd from "@/components/seo/JsonLd";
+// src/app/layout.tsx
+import type { Metadata } from 'next'
+import { Cormorant_Garamond, DM_Mono } from 'next/font/google'
+import './globals.css'
 
-const BASE = "https://wingsglobaltrade.com";
+import { getCategories } from '@/lib/catalog-data'
+import { SiteNav } from '@/components/features/navigation/SiteNav'
+import { Footer } from '@/components/features/navigation/Footer'
+import { ToastProvider } from '@/components/ui/toast'
+import { WINGS_TAGLINE } from '@/lib/constants'
+import { JsonLd } from '@/components/seo/JsonLd'
+import { organizationSchema } from '@/lib/schema'
 
-const organizationSchema = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "Wings Global Trade",
-  "url": BASE,
-  "logo": `${BASE}/logo.png`,
-  "description": "Importador de maquinaria agrícola, camiones y vehículos comerciales desde Asia para Latinoamérica. Precio landed total — flete, aranceles y entrega incluidos — para Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay.",
-  "foundingDate": "2020",
-  "areaServed": ["PE", "BO", "CL", "PY", "AR", "UY", "GT", "SV", "HN", "NI", "CR", "PA"],
-  "contactPoint": {
-    "@type": "ContactPoint",
-    "telephone": "+51958381473",
-    "contactType": "sales",
-    "availableLanguage": "Spanish",
-    "contactOption": "TollFree",
-  },
-  "address": {
-    "@type": "PostalAddress",
-    "addressCountry": "PE",
-  },
-  "sameAs": [BASE],
-};
+const cormorant = Cormorant_Garamond({
+  subsets: ['latin'],
+  weight: ['300', '400', '600'],
+  variable: '--font-display',
+  display: 'swap',
+})
+
+const dmMono = DM_Mono({
+  subsets: ['latin'],
+  weight: ['300', '400', '500'],
+  variable: '--font-mono',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
-  metadataBase: new URL(BASE),
+  metadataBase: new URL('https://wingsglobaltrade.com'),
   title: {
-    default: "Wings Global Trade | Maquinaria desde Asia para Latinoamérica",
-    template: "%s | Wings Global Trade",
+    default: 'Wings Global Trade — Importación B2B para LATAM',
+    template: '%s — Wings Global Trade',
   },
   description:
-    "Tractores New Holland, John Deere, Massey Ferguson y Kubota — más 27 modelos de camiones KAMA. Importación directa desde Asia con precio landed total: flete, aranceles y entrega hasta tu campo. Perú, Bolivia, Chile, Paraguay, Argentina y Uruguay.",
+    'Maquinaria agrícola, camiones, buses y equipo industrial. Importación directa con gestión en zona franca ZOFRATACNA y ZOFRI. Consulta sin registro.',
   openGraph: {
-    type: "website",
-    locale: "es_419",
-    siteName: "Wings Global Trade",
-    url: BASE,
-    title: "Wings Global Trade | Maquinaria desde Asia para Latinoamérica",
+    title: 'Wings Global Trade — Importación B2B para LATAM',
     description:
-      "Importación directa de tractores y camiones desde Asia. Precio landed total — sin costos ocultos. 12 países de entrega en Latinoamérica.",
-    images: [
-      {
-        url: `${BASE}/og-default.jpg`,
-        width: 1200,
-        height: 630,
-        alt: "Wings Global Trade — Maquinaria agrícola importada desde Asia para LATAM",
-      },
-    ],
+      'Maquinaria agrícola, camiones, buses y equipo industrial. Importación directa con gestión en zona franca ZOFRATACNA y ZOFRI. Consulta sin registro.',
+    locale: 'es_PE',
+    type: 'website',
+    url: 'https://wingsglobaltrade.com',
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "Wings Global Trade | Maquinaria desde Asia para Latinoamérica",
-    description:
-      "Tractores y camiones importados desde Asia. Precio landed total para Perú, Bolivia, Chile y más.",
-    images: [`${BASE}/og-default.jpg`],
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true, "max-image-preview": "large" },
-  },
-  alternates: {
-    canonical: BASE,
-  },
-};
+  robots: { index: true, follow: true },
+}
 
-export default function RootLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const categories = await getCategories()
+
   return (
-    <html lang="es-PE">
-      <body className="flex min-h-screen flex-col">
-        <SplashScreen />
-        <JsonLd schema={organizationSchema} />
-        {/* Brandbook chrome hides on "/" — the homepage carries its own
-            chrome (SiteHeader / FixedBar) per WINGS_HOME_SPEC.md */}
-        <LegacyChrome>
-          <Header />
-        </LegacyChrome>
-        <main className="flex-1 pb-16 md:pb-0">{children}</main>
-        <LegacyChrome>
-          <Footer />
-        </LegacyChrome>
-        <MobileBottomBar />
+    <html lang="es" className={`${cormorant.variable} ${dmMono.variable}`}>
+      <head>
+        <JsonLd data={organizationSchema()} />
+      </head>
+      <body className="font-body antialiased">
+        <ToastProvider>
+          <SiteNav categories={categories} />
+          <main className="min-h-screen">{children}</main>
+          <Footer categories={categories} />
+        </ToastProvider>
       </body>
     </html>
-  );
+  )
 }
