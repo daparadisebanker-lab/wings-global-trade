@@ -31,7 +31,7 @@ export function WhatsAppButton({
       target="_blank"
       rel="noopener noreferrer"
       className={cn(
-        'inline-flex items-center gap-2 rounded-wings px-4 py-2 font-body text-sm font-medium transition-colors',
+        'inline-flex items-center gap-2 rounded-wings px-5 py-3 font-mono text-[11px] uppercase tracking-[0.10em] transition-colors',
         variant === 'gold'
           ? 'bg-gold text-navy hover:bg-gold-hover'
           : 'bg-whatsapp text-white hover:brightness-95',

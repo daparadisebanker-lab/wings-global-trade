@@ -2,17 +2,31 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { getCategories, getCategoryBySlug, getProducts } from '@/lib/catalog-data'
-import { PageHero } from '@/components/features/shared/PageHero'
+import {
+  getCategories,
+  getCategoryBySlug,
+  getProducts,
+  getSubcategories,
+} from '@/lib/catalog-data'
 import { CategoryNav } from '@/components/features/catalog/CategoryNav'
 import { ProductGrid } from '@/components/features/catalog/ProductGrid'
+import { FilterSidebar } from '@/components/features/catalog/FilterSidebar'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { breadcrumbSchema } from '@/lib/schema'
-import { Button } from '@/components/ui/button'
+import { MisterDeadEnd } from '@/components/features/shared/MisterDeadEnd'
+import { cn } from '@/lib/utils'
 
 interface PageProps {
   params: Promise<{ category: string }>
-  searchParams: Promise<{ q?: string }>
+  searchParams: Promise<{
+    q?: string
+    sub?: string
+    hp?: string
+    traction?: string
+    transmission?: string
+    brand?: string
+  }>
 }
 
 // SEO metadata per category
@@ -52,6 +66,18 @@ const CATEGORY_SEO: Record<
   },
 }
 
+/** Filter param keys that appear in searchParams and in the chips row */
+const FILTER_KEYS = ['hp', 'traction', 'transmission', 'brand'] as const
+type FilterKey = (typeof FILTER_KEYS)[number]
+
+/** Human-readable label per filter key */
+const FILTER_LABELS: Record<FilterKey, string> = {
+  hp: 'HP',
+  traction: 'Tracción',
+  transmission: 'Transmisión',
+  brand: 'Marca',
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { category } = await params
   const cat = await getCategoryBySlug(category)
@@ -82,17 +108,26 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function CategoryPage({ params, searchParams }: PageProps) {
+  // Next.js 15 — both params and searchParams are Promises
   const { category } = await params
-  const { q } = await searchParams
+  const { q, sub, hp, traction, transmission, brand } = await searchParams
 
   const cat = await getCategoryBySlug(category)
   if (!cat) notFound()
 
-  const categories = await getCategories()
-  const { products } = await getProducts({ category, q })
+  const [categories, subcategories, { products }] = await Promise.all([
+    getCategories(),
+    getSubcategories(category),
+    getProducts({ category, q, sub, hp, traction, transmission, brand }),
+  ])
 
   const seoMeta = CATEGORY_SEO[category]
   const markets = seoMeta?.markets ?? 'China, Japón y Tailandia'
+
+  // Collect unique source markets from returned products for the data strip
+  const productMarkets = Array.from(
+    new Set(products.flatMap((p) => p.source_markets)),
+  ).join(', ')
 
   const breadcrumbs = [
     { name: 'Inicio', url: 'https://wingsglobaltrade.com' },
@@ -100,40 +135,194 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
     { name: cat.name_es, url: `https://wingsglobaltrade.com/catalogo/${category}` },
   ]
 
+  // Build active filters map for chips row
+  const activeFilters: Record<FilterKey, string | undefined> = {
+    hp,
+    traction,
+    transmission,
+    brand,
+  }
+  const hasActiveFilters = FILTER_KEYS.some((k) => Boolean(activeFilters[k]))
+
+  // Defined-only filters for FilterSidebar (which requires Record<string, string>)
+  const definedFilters: Record<string, string> = Object.fromEntries(
+    FILTER_KEYS.filter((k) => activeFilters[k] !== undefined).map((k) => [k, activeFilters[k] as string]),
+  )
+
+  /** Build a URL that removes a single filter param while preserving all others */
+  function buildRemoveFilterUrl(removeKey: FilterKey): string {
+    const params = new URLSearchParams()
+    if (q) params.set('q', q)
+    if (sub) params.set('sub', sub)
+    for (const key of FILTER_KEYS) {
+      if (key !== removeKey && activeFilters[key]) {
+        params.set(key, activeFilters[key]!)
+      }
+    }
+    const qs = params.toString()
+    return `/catalogo/${category}${qs ? `?${qs}` : ''}`
+  }
+
+  /** Build subcategory tab URL, preserving active filter params */
+  function buildSubUrl(subSlug: string | null): string {
+    const params = new URLSearchParams()
+    if (q) params.set('q', q)
+    if (subSlug) params.set('sub', subSlug)
+    if (hp) params.set('hp', hp)
+    if (traction) params.set('traction', traction)
+    if (transmission) params.set('transmission', transmission)
+    if (brand) params.set('brand', brand)
+    const qs = params.toString()
+    return `/catalogo/${category}${qs ? `?${qs}` : ''}`
+  }
+
   return (
     <>
       <JsonLd data={breadcrumbSchema(breadcrumbs)} />
 
-      {/* Per ENRICHED_SPEC §3.3 — Catálogo H1 pattern: "Catálogo Wings — [Categoría]" */}
-      <PageHero
-        eyebrow="Catálogo"
-        title={`Catálogo Wings — ${cat.name_es}`}
-        subtitle={`${products.length} modelos de origen ${markets}. Solicitud de consulta sin cuenta requerida.`}
-      />
+      {/* ── Editorial Hero (Task 10) ─────────────────────────────────────── */}
+      <header className="hero-mesh hero-grain relative overflow-hidden px-6 pb-20 pt-36 text-warm-white md:px-10 md:pb-28 md:pt-48">
+        <div className="relative z-[1] mx-auto w-full max-w-6xl">
+          {/* Eyebrow */}
+          <p className="mb-4 font-mono text-[10px] uppercase tracking-widest-3 text-gold/80">
+            CATÁLOGO · WINGS GLOBAL TRADE
+          </p>
 
+          {/* Title */}
+          <h1 className="font-display text-display-lg font-light">{cat.name_es}</h1>
+
+          {/* Subtitle */}
+          <p className="mt-5 max-w-2xl font-body text-body-lg text-warm-white/55">
+            {products.length} modelos disponibles · Importación desde {markets}. Consulta técnica
+            sin cuenta requerida.
+          </p>
+
+          {/* Data strip — Alibaba intelligence layer */}
+          <div className="mt-8 border-t border-warm-white/10 pt-5">
+            <p className="font-mono text-[10px] uppercase tracking-widest-3 text-gold/60">
+              {products.length} modelos
+              {productMarkets ? ` · ${productMarkets}` : ''}
+              {markets ? ` · ${markets}` : ''}
+            </p>
+          </div>
+        </div>
+      </header>
+
+      {/* ── Content area ────────────────────────────────────────────────── */}
       <div className="bg-warm-white px-6 py-12 md:px-10">
         <div className="mx-auto w-full max-w-6xl">
-          <div className="mb-10">
+
+          {/* Breadcrumb (Task 7) */}
+          <Breadcrumb
+            items={[
+              { label: 'Inicio', href: '/' },
+              { label: 'Catálogo', href: '/catalogo' },
+              { label: cat.name_es },
+            ]}
+            className="mb-8"
+          />
+
+          {/* Category nav */}
+          <div className="mb-6">
             <CategoryNav categories={categories} activeSlug={cat.slug} />
           </div>
-          <ProductGrid products={products} category={cat} />
 
-          <div className="mt-16 rounded-wings-card border border-border-default bg-white p-8 text-center">
-            <p className="font-mono text-label-sm uppercase tracking-widest-2 text-gold">
-              Mister · Asistente IA
-            </p>
-            <h3 className="mt-2 font-display text-display-sm font-semibold text-navy">
-              ¿Volumen mayor o especificaciones particulares?
-            </h3>
-            <p className="mx-auto mt-3 max-w-lg font-body text-body-md text-text-muted">
-              Mister te ayuda a importar desde China y a nacionalizar en destino — cotización CIF,
-              aranceles, zona franca. Sin llamadas previas.
-            </p>
-            <div className="mt-6">
-              <Link href="/mister">
-                <Button>Hablar con Mister</Button>
+          {/* Subcategory tabs (Task 3) */}
+          {subcategories.length > 0 && (
+            <nav
+              aria-label="Subcategorías"
+              className="no-scrollbar -mx-6 mb-8 flex gap-0 overflow-x-auto border-b border-[rgba(0,30,80,0.06)] px-6 md:mx-0 md:px-0"
+            >
+              {/* "All" tab */}
+              <Link
+                href={buildSubUrl(null)}
+                aria-current={!sub ? 'page' : undefined}
+                className={cn(
+                  'shrink-0 pb-3 pr-6 font-mono text-[11px] uppercase tracking-nav transition-colors',
+                  !sub
+                    ? 'border-b-2 border-gold text-gold'
+                    : 'border-b-2 border-transparent text-text-muted hover:text-navy',
+                )}
+              >
+                Todos
+              </Link>
+
+              {subcategories.map((sc) => {
+                const isActive = sub === sc.slug
+                return (
+                  <Link
+                    key={sc.id}
+                    href={buildSubUrl(sc.slug)}
+                    aria-current={isActive ? 'page' : undefined}
+                    className={cn(
+                      'shrink-0 pb-3 pr-6 font-mono text-[11px] uppercase tracking-nav transition-colors',
+                      isActive
+                        ? 'border-b-2 border-gold text-gold'
+                        : 'border-b-2 border-transparent text-text-muted hover:text-navy',
+                    )}
+                  >
+                    {sc.name_es}
+                  </Link>
+                )
+              })}
+            </nav>
+          )}
+
+          {/* Active filters chips row */}
+          {hasActiveFilters && (
+            <div className="mb-6 flex flex-wrap items-center gap-2">
+              <span className="font-mono text-[10px] uppercase tracking-widest-2 text-text-muted">
+                Filtros:
+              </span>
+              {FILTER_KEYS.map((key) => {
+                const value = activeFilters[key]
+                if (!value) return null
+                return (
+                  <Link
+                    key={key}
+                    href={buildRemoveFilterUrl(key)}
+                    className="flex items-center gap-1.5 rounded border border-gold/30 bg-gold-subtle px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest-2 text-navy transition-colors hover:border-gold/60"
+                    title={`Eliminar filtro ${FILTER_LABELS[key]}`}
+                  >
+                    {FILTER_LABELS[key]}: {value}
+                    <span aria-hidden="true" className="text-text-muted">
+                      ×
+                    </span>
+                  </Link>
+                )
+              })}
+
+              {/* Clear all */}
+              <Link
+                href={`/catalogo/${category}${q ? `?q=${q}` : ''}`}
+                className="font-mono text-[10px] uppercase tracking-widest-2 text-text-muted underline-offset-2 hover:text-navy hover:underline"
+              >
+                Limpiar todo
               </Link>
             </div>
+          )}
+
+          {/* Main content: filter sidebar + product grid */}
+          {hasActiveFilters ? (
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-[220px_1fr]">
+              <aside>
+                <FilterSidebar
+                  categorySlug={category}
+                  activeFilters={definedFilters}
+                  facets={{}}
+                />
+              </aside>
+              <div>
+                <ProductGrid products={products} category={cat} />
+              </div>
+            </div>
+          ) : (
+            <ProductGrid products={products} category={cat} />
+          )}
+
+          {/* ── Mister dead-end CTA (Task 20) ────────────────────────────── */}
+          <div className="mt-16">
+            <MisterDeadEnd context="category-bottom" />
           </div>
         </div>
       </div>

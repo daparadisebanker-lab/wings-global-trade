@@ -4,10 +4,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useToast } from '@/components/ui/toast'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Button } from '@/components/ui/button'
-import { SLIDE_UP } from '@/lib/motion'
+import { REVEAL } from '@/lib/motion'
 
 interface Values {
   full_name: string
@@ -63,45 +60,89 @@ export function ContactForm() {
   if (status === 'success') {
     return (
       <motion.div
-        variants={SLIDE_UP}
-        initial="initial"
-        animate="animate"
-        className="rounded-wings-card border border-border-default bg-surface-card p-8 text-center"
+        variants={REVEAL}
+        initial="hidden"
+        animate="visible"
+        className="py-12"
       >
-        <h3 className="font-display text-2xl font-semibold text-navy">Mensaje recibido.</h3>
-        <p className="mt-2 font-body text-base text-text-muted">
-          El equipo de Wings te responderá pronto.
+        <div className="wings-rule mb-8" />
+        <h3 className="font-display text-display-sm font-light text-navy leading-tight">
+          Mensaje recibido.
+        </h3>
+        <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.15em] text-navy/40">
+          El equipo de Wings responderá en menos de 24 horas.
         </p>
       </motion.div>
     )
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-wings-card border border-border-default bg-surface-card p-6">
-      <div className="space-y-4">
-        <Field label="Nombre completo" error={errors.full_name} required>
-          <Input value={values.full_name} onChange={(e) => set('full_name', e.target.value)} hasError={Boolean(errors.full_name)} autoComplete="name" />
-        </Field>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Field label="Email" error={errors.email} required>
-            <Input type="email" value={values.email} onChange={(e) => set('email', e.target.value)} hasError={Boolean(errors.email)} autoComplete="email" />
-          </Field>
-          <Field label="Teléfono">
-            <Input value={values.phone} onChange={(e) => set('phone', e.target.value)} autoComplete="tel" />
-          </Field>
-        </div>
-        <Field label="Mensaje" error={errors.message} required>
-          <Textarea value={values.message} onChange={(e) => set('message', e.target.value)} hasError={Boolean(errors.message)} />
-        </Field>
+    <form onSubmit={handleSubmit} className="space-y-0">
+      <LineField label="Nombre completo" error={errors.full_name} required>
+        <LineInput
+          value={values.full_name}
+          onChange={(e) => set('full_name', e.target.value)}
+          hasError={Boolean(errors.full_name)}
+          autoComplete="name"
+          placeholder="Tu nombre"
+        />
+      </LineField>
+
+      <div className="grid grid-cols-1 gap-0 sm:grid-cols-2 sm:gap-8">
+        <LineField label="Email" error={errors.email} required>
+          <LineInput
+            type="email"
+            value={values.email}
+            onChange={(e) => set('email', e.target.value)}
+            hasError={Boolean(errors.email)}
+            autoComplete="email"
+            placeholder="correo@empresa.com"
+          />
+        </LineField>
+        <LineField label="Teléfono">
+          <LineInput
+            value={values.phone}
+            onChange={(e) => set('phone', e.target.value)}
+            autoComplete="tel"
+            placeholder="+51 999 000 000"
+          />
+        </LineField>
       </div>
-      <Button type="submit" className="mt-6 w-full" isLoading={status === 'submitting'} size="lg">
-        Enviar mensaje
-      </Button>
+
+      <LineField label="Mensaje" error={errors.message} required>
+        <LineTextarea
+          value={values.message}
+          onChange={(e) => set('message', e.target.value)}
+          hasError={Boolean(errors.message)}
+          placeholder="Describe brevemente tu consulta de importación…"
+          rows={4}
+        />
+      </LineField>
+
+      <div className="pt-10">
+        <button
+          type="submit"
+          disabled={status === 'submitting'}
+          className="inline-flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.12em] text-navy disabled:opacity-40 transition-opacity group"
+        >
+          {status === 'submitting' ? (
+            <>
+              <span className="h-3.5 w-3.5 animate-spin rounded-full border border-navy/40 border-t-navy" aria-hidden />
+              Enviando…
+            </>
+          ) : (
+            <>
+              <span className="h-px w-8 bg-gold transition-all duration-300 group-hover:w-12" aria-hidden />
+              Enviar mensaje
+            </>
+          )}
+        </button>
+      </div>
     </form>
   )
 }
 
-function Field({
+function LineField({
   label,
   error,
   required,
@@ -113,13 +154,51 @@ function Field({
   children: React.ReactNode
 }) {
   return (
-    <div>
-      <label className="mb-1.5 block font-body text-sm font-medium text-navy">
+    <div className="py-6 border-b border-[rgba(0,30,80,0.08)] first:border-t first:border-t-[rgba(0,30,80,0.08)]">
+      <label className="block font-mono text-[9px] uppercase tracking-[0.18em] text-navy/40 mb-3">
         {label}
-        {required && <span className="text-gold"> *</span>}
+        {required && <span className="text-gold/60 ml-1">*</span>}
       </label>
       {children}
-      {error && <p className="mt-1 font-body text-xs text-[#DC2626]">{error}</p>}
+      {error && (
+        <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#DC2626]/70">{error}</p>
+      )}
     </div>
+  )
+}
+
+function LineInput({
+  hasError,
+  className,
+  ...props
+}: React.InputHTMLAttributes<HTMLInputElement> & { hasError?: boolean }) {
+  return (
+    <input
+      className={[
+        'w-full bg-transparent font-body text-base text-navy outline-none placeholder:text-navy/25',
+        'transition-colors duration-200',
+        hasError ? 'placeholder:text-[#DC2626]/40' : '',
+        className ?? '',
+      ].join(' ')}
+      {...props}
+    />
+  )
+}
+
+function LineTextarea({
+  hasError,
+  className,
+  ...props
+}: React.TextareaHTMLAttributes<HTMLTextAreaElement> & { hasError?: boolean }) {
+  return (
+    <textarea
+      className={[
+        'w-full resize-none bg-transparent font-body text-base text-navy outline-none placeholder:text-navy/25',
+        'transition-colors duration-200',
+        hasError ? 'placeholder:text-[#DC2626]/40' : '',
+        className ?? '',
+      ].join(' ')}
+      {...props}
+    />
   )
 }

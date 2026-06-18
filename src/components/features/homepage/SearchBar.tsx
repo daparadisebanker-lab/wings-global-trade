@@ -25,15 +25,15 @@ export function SearchBar({ onNavy = true }: SearchBarProps) {
   return (
     <form onSubmit={handleSubmit} className="w-full">
       <div
-        className={`flex items-center gap-3 rounded-full border px-5 py-3 transition-shadow focus-within:shadow-[0_0_0_3px_rgba(196,147,63,0.25)] ${
+        className={`relative flex items-center border transition-shadow focus-within:shadow-[0_0_0_2px_rgba(196,147,63,0.25)] ${
           onNavy
-            ? 'border-[rgba(248,246,240,0.2)] bg-white/[0.06]'
-            : 'border-border-default bg-white'
+            ? 'border-warm-white/[0.15] bg-warm-white/[0.05]'
+            : 'border-[rgba(0,30,80,0.12)] bg-transparent'
         }`}
       >
         <svg
           viewBox="0 0 20 20"
-          className={`h-5 w-5 shrink-0 ${onNavy ? 'text-gold' : 'text-text-muted'}`}
+          className={`ml-4 h-4 w-4 shrink-0 ${onNavy ? 'text-gold/60' : 'text-navy/30'}`}
           fill="none"
           stroke="currentColor"
           strokeWidth="1.5"
@@ -48,16 +48,24 @@ export function SearchBar({ onNavy = true }: SearchBarProps) {
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Busca maquinaria, camiones, equipos industriales..."
           aria-label="Buscar productos o iniciar una importación personalizada"
-          className={`w-full bg-transparent font-body text-base outline-none ${
-            onNavy ? 'text-warm-white placeholder:text-[#94A3B8]' : 'text-navy placeholder:text-[#9CA3AF]'
+          className={`w-full bg-transparent py-4 pl-3 pr-2 font-body text-sm outline-none ${
+            onNavy
+              ? 'text-warm-white placeholder:text-warm-white/30'
+              : 'text-navy placeholder:text-navy/25'
           }`}
         />
         <button
           type="submit"
           disabled={isLoading}
-          className="shrink-0 rounded-full bg-gold px-5 py-1.5 font-body text-sm font-medium text-navy transition-colors hover:bg-gold-hover disabled:opacity-50"
+          className={`shrink-0 self-stretch border-l px-4 sm:px-6 font-mono text-[11px] uppercase tracking-[0.10em] transition-colors disabled:opacity-50 ${
+            onNavy
+              ? 'border-warm-white/[0.12] text-warm-white/50 hover:bg-gold hover:border-gold hover:text-navy'
+              : 'border-[rgba(0,30,80,0.08)] text-navy/40 hover:bg-gold hover:border-gold hover:text-navy'
+          }`}
+          aria-label="Buscar"
         >
-          Buscar
+          <span className="sm:hidden" aria-hidden>→</span>
+          <span className="hidden sm:inline">Buscar</span>
         </button>
       </div>
     </form>

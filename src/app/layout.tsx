@@ -7,6 +7,8 @@ import { getCategories } from '@/lib/catalog-data'
 import { SiteNav } from '@/components/features/navigation/SiteNav'
 import { Footer } from '@/components/features/navigation/Footer'
 import { ToastProvider } from '@/components/ui/toast'
+import { CompareBar } from '@/components/features/catalog/CompareBar'
+import { MultiInquiryPanel } from '@/components/features/catalog/MultiInquiryPanel'
 import { WINGS_TAGLINE } from '@/lib/constants'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { organizationSchema } from '@/lib/schema'
@@ -57,6 +59,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <SiteNav categories={categories} />
           <main className="min-h-screen">{children}</main>
           <Footer categories={categories} />
+          <CompareBar />
+          <MultiInquiryPanel />
         </ToastProvider>
       </body>
     </html>

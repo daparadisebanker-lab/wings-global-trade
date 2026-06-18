@@ -7,7 +7,7 @@ export function organizationSchema() {
     '@type': 'Organization',
     name: 'Wings Global Trade',
     url: 'https://wingsglobaltrade.com',
-    logo: 'https://wingsglobaltrade.com/images/logo.svg',
+    logo: 'https://wingsglobaltrade.com/wings-logo.svg',
     description:
       'Plataforma B2B de importación de maquinaria, vehículos y equipo industrial para América Latina. Gestión en zona franca ZOFRATACNA (Tacna, Perú) y ZOFRI (Iquique, Chile).',
     slogan: 'Precisión. Proximidad. Confianza.',

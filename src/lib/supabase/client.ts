@@ -4,9 +4,15 @@
 
 import { createBrowserClient } from '@supabase/ssr'
 
+// Strip UTF-8 BOM (U+FEFF) that PowerShell pipe encoding can inject into env vars.
+function clean(s: string | undefined): string | undefined {
+  if (!s) return s
+  return s.charCodeAt(0) === 0xfeff ? s.slice(1) : s
+}
+
 export function createClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  const url = clean(process.env.NEXT_PUBLIC_SUPABASE_URL)
+  const anonKey = clean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
 
   if (!url || !anonKey) {
     throw new Error('Supabase public environment variables are not configured.')

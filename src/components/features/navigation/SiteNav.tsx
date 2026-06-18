@@ -1,12 +1,12 @@
 // src/components/features/navigation/SiteNav.tsx
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import type { Category } from '@/types/database'
 import { cn } from '@/lib/utils'
-import { NavCategoryDropdown } from '@/components/features/navigation/NavCategoryDropdown'
+import { MegaMenu } from '@/components/features/navigation/MegaMenu'
 import { MobileMenu } from '@/components/features/navigation/MobileMenu'
 import { WhatsAppButton } from '@/components/features/shared/WhatsAppButton'
 
@@ -23,11 +23,27 @@ const LINKS = [
 
 export function SiteNav({ categories }: SiteNavProps) {
   const [scrolled, setScrolled] = useState(false)
+  const [hidden, setHidden] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [menuHovered, setMenuHovered] = useState(false)
+  const [scrollProgress, setScrollProgress] = useState(0)
   const pathname = usePathname()
+  const prevY = useRef(0)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20)
+    const onScroll = () => {
+      const curr = window.scrollY
+      setScrolled(curr > 20)
+      // Hide when scrolling down past 100px, reveal on scroll up or near top
+      if (curr < 80) {
+        setHidden(false)
+      } else {
+        setHidden(curr > prevY.current)
+      }
+      prevY.current = curr
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight
+      setScrollProgress(docHeight > 0 ? curr / docHeight : 0)
+    }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
@@ -41,20 +57,66 @@ export function SiteNav({ categories }: SiteNavProps) {
     <>
       <header
         className={cn(
-          'fixed inset-x-0 top-0 z-50 transition-colors duration-200',
-          solid ? 'bg-navy/95 backdrop-blur-sm' : 'bg-transparent',
+          'fixed inset-x-0 top-0 z-50 transition-all duration-300',
+          solid
+            ? 'bg-[#000C1F]/95 backdrop-blur-md border-b border-warm-white/[0.07]'
+            : 'bg-transparent',
+          hidden && !menuOpen && '-translate-y-full',
         )}
+        onMouseLeave={() => setMenuHovered(false)}
       >
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-6 md:h-16 md:px-10">
-          <Link href="/" className="font-display text-xl font-semibold text-warm-white">
-            Wings<span className="text-gold"> Global Trade</span>
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 md:h-18 md:px-10">
+          <Link href="/" className="flex items-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/wings-logo.svg"
+              alt="Wings Global Trade"
+              className="h-8 w-auto brightness-0 invert md:h-10"
+            />
           </Link>
 
           <nav className="hidden items-center gap-8 lg:flex">
             {LINKS.slice(0, 1).map((l) => (
               <NavLink key={l.href} {...l} active={pathname === l.href} />
             ))}
-            <NavCategoryDropdown categories={categories} />
+
+            {/* Catálogo trigger — shows chevron + opens mega-menu on hover */}
+            <div
+              className="relative"
+              onMouseEnter={() => setMenuHovered(true)}
+            >
+              <Link
+                href="/catalogo"
+                className={cn(
+                  'flex items-center gap-1 font-mono text-[11px] uppercase tracking-nav text-warm-white/70 transition-colors hover:text-warm-white',
+                  (pathname?.startsWith('/catalogo')) && 'text-warm-white after:absolute after:bottom-[-2px] after:left-0 after:w-full after:h-px after:bg-gold',
+                )}
+                onFocus={() => setMenuHovered(true)}
+              >
+                Catálogo
+                {/* Chevron icon */}
+                <svg
+                  width="10"
+                  height="10"
+                  viewBox="0 0 10 10"
+                  fill="none"
+                  aria-hidden="true"
+                  className={cn(
+                    'transition-transform duration-200',
+                    menuHovered && 'rotate-180',
+                  )}
+                >
+                  <path
+                    d="M2 3.5L5 6.5L8 3.5"
+                    stroke="currentColor"
+                    strokeWidth="1.25"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </Link>
+            </div>
+
             {LINKS.slice(1).map((l) => (
               <NavLink key={l.href} {...l} active={pathname === l.href} />
             ))}
@@ -63,7 +125,7 @@ export function SiteNav({ categories }: SiteNavProps) {
           <div className="hidden items-center gap-4 lg:flex">
             <Link
               href="/contacto"
-              className="font-body text-sm text-warm-white transition-colors hover:text-gold"
+              className="font-mono text-[11px] uppercase tracking-nav text-warm-white/70 transition-colors duration-200 hover:text-warm-white"
             >
               Contacto
             </Link>
@@ -89,7 +151,20 @@ export function SiteNav({ categories }: SiteNavProps) {
             </div>
           </button>
         </div>
+
+        {/* Mega-menu panel — sits inside <header> so mouse enter/leave is unified */}
+        <div className="hidden lg:block">
+          <MegaMenu categories={categories} open={menuHovered} />
+        </div>
+
+        {/* Scroll progress indicator */}
+        <div
+          className="absolute bottom-0 left-0 h-px bg-gold transition-none"
+          style={{ width: `${scrollProgress * 100}%` }}
+          aria-hidden
+        />
       </header>
+
       <MobileMenu open={menuOpen} onClose={() => setMenuOpen(false)} categories={categories} />
     </>
   )
@@ -100,8 +175,8 @@ function NavLink({ href, label, active }: { href: string; label: string; active:
     <Link
       href={href}
       className={cn(
-        'font-body text-sm text-warm-white transition-colors hover:text-gold',
-        active && 'underline decoration-gold decoration-2 underline-offset-4',
+        'font-mono text-[11px] uppercase tracking-nav text-warm-white/70 transition-colors duration-200 hover:text-warm-white relative',
+        active && 'text-warm-white after:absolute after:bottom-[-2px] after:left-0 after:w-full after:h-px after:bg-gold',
       )}
     >
       {label}

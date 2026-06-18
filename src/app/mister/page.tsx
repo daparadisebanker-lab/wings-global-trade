@@ -28,9 +28,9 @@ export default async function MisterPage({
 }) {
   const { context } = await searchParams
   return (
-    <>
+    <div className="bg-[#000C1F] min-h-screen">
       <JsonLd data={faqSchema(WINGS_FAQS)} />
       <AccioChat initialContext={context} />
-    </>
+    </div>
   )
 }

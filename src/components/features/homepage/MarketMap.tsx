@@ -148,7 +148,7 @@ export function MarketMap() {
           <p className="mb-3 font-mono text-xs uppercase tracking-widest-2 text-gold">
             Presencia regional
           </p>
-          <h2 className="font-display text-display-md font-semibold text-navy">
+          <h2 className="font-display text-display-md font-light text-navy">
             Siete mercados, dos zonas francas, una operación
           </h2>
           <p className="mt-4 max-w-md font-body text-base text-text-muted">
@@ -175,7 +175,7 @@ export function MarketMap() {
           className="flex flex-col items-center"
         >
           {/* Source market labels — DM Mono, 10px, gray */}
-          <div className="mb-3 flex items-center gap-3 font-mono text-[10px] text-[#6B7280]">
+          <div className="mb-3 flex items-center gap-3 font-mono text-[10px] text-navy/40">
             {SOURCE_LABELS.map((src, i) => (
               <span key={src}>
                 {src}
@@ -262,19 +262,19 @@ export function MarketMap() {
 
             {/* Source market anchor marks — small navy squares at left/right edges */}
             <rect x="10" y="85" width="5" height="5" fill="#001E50" fillOpacity="0.5" />
-            <text x="18" y="91" fontFamily="DM Mono, monospace" fontSize="8" fill="#6B7280">
+            <text x="18" y="91" fontFamily="DM Mono, monospace" fontSize="8" fill="#001E50" fillOpacity="0.4">
               JP
             </text>
             <rect x="10" y="100" width="5" height="5" fill="#001E50" fillOpacity="0.5" />
-            <text x="18" y="106" fontFamily="DM Mono, monospace" fontSize="8" fill="#6B7280">
+            <text x="18" y="106" fontFamily="DM Mono, monospace" fontSize="8" fill="#001E50" fillOpacity="0.4">
               TH
             </text>
             <rect x="10" y="115" width="5" height="5" fill="#001E50" fillOpacity="0.5" />
-            <text x="18" y="121" fontFamily="DM Mono, monospace" fontSize="8" fill="#6B7280">
+            <text x="18" y="121" fontFamily="DM Mono, monospace" fontSize="8" fill="#001E50" fillOpacity="0.4">
               CN
             </text>
             <rect x="375" y="75" width="5" height="5" fill="#001E50" fillOpacity="0.5" />
-            <text x="340" y="71" fontFamily="DM Mono, monospace" fontSize="8" fill="#6B7280">
+            <text x="340" y="71" fontFamily="DM Mono, monospace" fontSize="8" fill="#001E50" fillOpacity="0.4">
               DXB
             </text>
 

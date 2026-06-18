@@ -7,7 +7,6 @@ import { CategoryGrid } from '@/components/features/homepage/CategoryGrid'
 import { TrustBar } from '@/components/features/homepage/TrustBar'
 import { MarketMap } from '@/components/features/homepage/MarketMap'
 import { SectionBlock } from '@/components/features/shared/SectionBlock'
-import { Button } from '@/components/ui/button'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { websiteSchema } from '@/lib/schema'
 
@@ -45,8 +44,9 @@ export default async function HomePage() {
 
       {/* Trust bar — navy */}
       <SectionBlock theme="navy">
-        <div className="mb-10">
-          <h2 className="font-display text-display-sm font-semibold text-warm-white">
+        <div className="mb-14">
+          <p className="mb-4 font-mono text-[10px] uppercase tracking-widest-3 text-warm-white/30">Inteligencia comercial</p>
+          <h2 className="font-display text-display-sm font-light text-warm-white">
             Una operación construida sobre credenciales verificables
           </h2>
         </div>
@@ -60,18 +60,22 @@ export default async function HomePage() {
 
       {/* Mister CTA — navy (merges into footer) */}
       <SectionBlock theme="navy">
-        <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col items-start gap-10 md:flex-row md:items-end md:justify-between">
           <div className="max-w-xl">
-            <h2 className="font-display text-display-md font-semibold text-warm-white">
+            <p className="mb-4 font-mono text-[10px] uppercase tracking-widest-3 text-warm-white/30">Mister · Asistente IA</p>
+            <h2 className="font-display text-display-md font-light text-warm-white">
               ¿Necesitas importar desde China? Mister te guía.
             </h2>
-            <p className="mt-3 font-body text-body-lg text-text-muted-inverse">
-              Mister es tu asistente con inteligencia artificial. Te acompaña en todo el proceso
-              — cotización CIF, zona franca, aranceles y nacionalización. Sin llamadas previas.
+            <p className="mt-4 font-body text-body-lg text-warm-white/45">
+              Cotización CIF, zona franca, aranceles y nacionalización. Sin llamadas previas.
             </p>
           </div>
-          <Link href="/mister">
-            <Button size="lg">Hablar con Mister</Button>
+          <Link
+            href="/mister"
+            className="inline-flex shrink-0 items-center gap-3 bg-gold px-8 py-4 font-mono text-[11px] uppercase tracking-[0.12em] text-navy transition-colors duration-200 hover:bg-gold-hover"
+          >
+            <span className="h-px w-6 bg-current" aria-hidden />
+            Hablar con Mister
           </Link>
         </div>
       </SectionBlock>

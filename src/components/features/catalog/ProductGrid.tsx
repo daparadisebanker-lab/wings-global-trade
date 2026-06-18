@@ -1,12 +1,11 @@
 // src/components/features/catalog/ProductGrid.tsx
 'use client'
 
-import Link from 'next/link'
 import { motion } from 'framer-motion'
 import type { Product, Category } from '@/types/database'
 import { ProductCard } from '@/components/features/catalog/ProductCard'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Button } from '@/components/ui/button'
+import { MisterDeadEnd } from '@/components/features/shared/MisterDeadEnd'
 import { STAGGER_CONTAINER_FAST, VIEWPORT_ONCE } from '@/lib/motion'
 
 interface ProductGridProps {
@@ -57,19 +56,7 @@ export function ProductGrid({ products, category, isLoading }: ProductGridProps)
   }
 
   if (products.length === 0) {
-    return (
-      <div className="rounded-wings-card border border-border-default bg-surface-card p-10 text-center">
-        <p className="font-display text-2xl text-navy">
-          No tenemos productos en esta categoría todavía.
-        </p>
-        <p className="mt-2 font-body text-base text-text-muted">
-          ¿Tienes algo específico en mente? Habla con Mister — importa cualquier producto desde China.
-        </p>
-        <Link href="/mister" className="mt-6 inline-block">
-          <Button>Hablar con Mister</Button>
-        </Link>
-      </div>
-    )
+    return <MisterDeadEnd context="no-results" />
   }
 
   const grouped = groupByBrand(products)
@@ -105,9 +92,9 @@ export function ProductGrid({ products, category, isLoading }: ProductGridProps)
         const brandProducts = grouped.get(brand)!
         return (
           <section key={brand}>
-            <div className="mb-6 flex items-baseline gap-3 border-b border-border-default pb-3">
-              <h2 className="font-display text-display-sm font-semibold text-navy">{brand}</h2>
-              <span className="font-mono text-xs text-text-muted">{brandProducts.length} modelos</span>
+            <div className="mb-8 flex items-baseline gap-4 border-b border-[rgba(0,30,80,0.08)] pb-4">
+              <h2 className="font-display text-display-sm font-light text-navy">{brand}</h2>
+              <span className="font-mono text-[10px] uppercase tracking-widest-2 text-text-muted">{brandProducts.length} modelos</span>
             </div>
             <motion.div
               variants={STAGGER_CONTAINER_FAST}

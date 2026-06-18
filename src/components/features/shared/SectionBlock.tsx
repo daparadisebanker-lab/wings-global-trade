@@ -16,7 +16,7 @@ export function SectionBlock({ theme, children, className, id }: SectionBlockPro
       id={id}
       className={cn(
         'px-6 py-20 md:px-10 md:py-28',
-        theme === 'navy' ? 'bg-navy text-warm-white' : 'bg-warm-white text-navy',
+        theme === 'navy' ? 'bg-navy-900 text-warm-white' : 'bg-warm-white text-navy',
         className,
       )}
     >

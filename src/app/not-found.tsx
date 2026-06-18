@@ -1,24 +1,30 @@
 // src/app/not-found.tsx
+import type { Metadata } from 'next'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
+
+export const metadata: Metadata = {
+  title: '404 — Wings Global Trade',
+}
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-[70vh] flex-col items-center justify-center bg-navy px-6 pt-16 text-center text-warm-white">
-      <p className="font-mono text-label-sm uppercase tracking-widest-2 text-gold">Error 404</p>
-      <h1 className="mt-3 font-display text-display-lg font-semibold">Página no encontrada</h1>
-      <p className="mt-3 max-w-md font-body text-body-md text-text-muted-inverse">
-        La página que buscas no existe o fue movida. Vuelve al catálogo o habla con Mister para
-        importar cualquier producto desde China.
+    <main className="flex min-h-screen flex-col items-center justify-center bg-[#000C1F] px-6 text-center">
+      <div className="wings-rule mx-auto mb-12" />
+      <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-warm-white/30 mb-6">
+        404
       </p>
-      <div className="mt-8 flex gap-3">
-        <Link href="/catalogo">
-          <Button>Ver catálogo</Button>
-        </Link>
-        <Link href="/mister">
-          <Button variant="secondary">Hablar con Mister</Button>
-        </Link>
-      </div>
-    </div>
+      <h1 className="font-display text-display-lg font-light text-warm-white mb-4">
+        Esta página no existe
+      </h1>
+      <p className="font-body text-warm-white/50 mb-10 max-w-sm">
+        La ruta que buscas no está en nuestro catálogo.
+      </p>
+      <Link
+        href="/"
+        className="font-mono text-[11px] uppercase tracking-[0.12em] text-gold hover:text-gold/70 transition-colors duration-200"
+      >
+        Volver al inicio →
+      </Link>
+    </main>
   )
 }

@@ -13,20 +13,20 @@ interface PageHeroProps {
 /** Navy hero band used at the top of interior pages. */
 export function PageHero({ title, subtitle, eyebrow }: PageHeroProps) {
   return (
-    <header className="bg-navy px-6 pb-16 pt-32 text-warm-white md:px-10 md:pb-20 md:pt-40">
+    <header className="hero-mesh hero-grain relative overflow-hidden px-6 pb-20 pt-36 text-warm-white md:px-10 md:pb-28 md:pt-48">
       <motion.div
         variants={FADE_UP}
         initial="initial"
         animate="animate"
         transition={FADE_UP_TRANSITION}
-        className="mx-auto w-full max-w-6xl"
+        className="relative z-[1] mx-auto w-full max-w-6xl"
       >
         {eyebrow && (
-          <p className="mb-3 font-mono text-xs uppercase tracking-widest-2 text-gold">{eyebrow}</p>
+          <p className="mb-4 font-mono text-[10px] uppercase tracking-widest-3 text-gold/80">{eyebrow}</p>
         )}
-        <h1 className="font-display text-display-lg font-semibold">{title}</h1>
+        <h1 className="font-display text-display-lg font-light">{title}</h1>
         {subtitle && (
-          <p className="mt-4 max-w-2xl font-body text-lg text-text-muted-inverse">{subtitle}</p>
+          <p className="mt-5 max-w-2xl font-body text-body-lg text-warm-white/55">{subtitle}</p>
         )}
       </motion.div>
     </header>

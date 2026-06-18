@@ -22,10 +22,22 @@ export interface Category {
   name_en: string
   description_es: string | null
   icon_key: string | null
+  image_url?: string | null
   sort_order: number
   is_active: boolean
   created_at?: string
   updated_at?: string
+}
+
+/** Subcategory row — belongs to a category, used for second-level filtering. */
+export interface Subcategory {
+  id: string
+  category_id: string
+  slug: string
+  name_es: string
+  name_en: string
+  sort_order: number
+  created_at?: string
 }
 
 export interface Product {
@@ -44,6 +56,9 @@ export interface Product {
   sort_order: number
   meta_title_es: string | null
   meta_desc_es: string | null
+  // Added in migration 0005
+  subcategory_id?: string | null
+  filter_attrs?: Record<string, string | number | string[]>
   created_at?: string
   updated_at?: string
 }

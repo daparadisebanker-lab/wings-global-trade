@@ -4,6 +4,12 @@
 
 import { createClient as createSupabaseClient, type SupabaseClient } from '@supabase/supabase-js'
 
+// Strip UTF-8 BOM (U+FEFF) that PowerShell pipe encoding can inject into env vars.
+function clean(s: string | undefined): string | undefined {
+  if (!s) return s
+  return s.charCodeAt(0) === 0xfeff ? s.slice(1) : s
+}
+
 let cached: SupabaseClient | null = null
 
 /**
@@ -13,8 +19,8 @@ let cached: SupabaseClient | null = null
 export function createServiceClient(): SupabaseClient | null {
   if (cached) return cached
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  const url = clean(process.env.NEXT_PUBLIC_SUPABASE_URL)
+  const serviceKey = clean(process.env.SUPABASE_SERVICE_ROLE_KEY)
 
   if (!url || !serviceKey) {
     return null

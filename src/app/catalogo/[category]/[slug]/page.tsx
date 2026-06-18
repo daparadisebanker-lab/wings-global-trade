@@ -2,10 +2,11 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { getCategoryBySlug, getProductBySlug, getProducts } from '@/lib/catalog-data'
+import { getCategoryBySlug, getProductBySlug, getRelatedProducts } from '@/lib/catalog-data'
 import { PageHero } from '@/components/features/shared/PageHero'
 import { ProductDetail } from '@/components/features/catalog/ProductDetail'
 import { ProductCard } from '@/components/features/catalog/ProductCard'
+import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { productSchema, breadcrumbSchema } from '@/lib/schema'
 import { Button } from '@/components/ui/button'
@@ -56,7 +57,7 @@ export default async function ProductPage({ params }: PageProps) {
 
   const heroSubtitle = `${cat?.name_es ?? 'Catálogo'} · Origen: ${product.source_markets.join(', ')} · Disponible vía ZOFRATACNA / ZOFRI`
 
-  // Breadcrumb schema
+  // Breadcrumb schema (JSON-LD)
   const breadcrumbs = [
     { name: 'Inicio', url: 'https://wingsglobaltrade.com' },
     { name: 'Catálogo', url: 'https://wingsglobaltrade.com/catalogo' },
@@ -76,9 +77,8 @@ export default async function ProductPage({ params }: PageProps) {
     specs: product.specs as Record<string, string>,
   })
 
-  // Related products — same category, 3 items
-  const { products: relatedProducts } = await getProducts({ category })
-  const related = relatedProducts.filter((p) => p.slug !== slug).slice(0, 3)
+  // Related products — same category, excludes current product, limit 4
+  const related = await getRelatedProducts(product.id, product.category_id, 4)
 
   return (
     <>
@@ -90,21 +90,36 @@ export default async function ProductPage({ params }: PageProps) {
         title={product.name_es}
         subtitle={heroSubtitle}
       />
-      <ProductDetail product={product} />
 
-      {/* Related products */}
+      {/* Visual breadcrumb — rendered below hero */}
+      <div className="bg-warm-white px-6 md:px-10">
+        <div className="mx-auto w-full max-w-6xl">
+          <Breadcrumb
+            items={[
+              { label: 'Inicio', href: '/' },
+              { label: 'Catálogo', href: '/catalogo' },
+              { label: cat?.name_es ?? 'Catálogo', href: `/catalogo/${category}` },
+              { label: product.name_es },
+            ]}
+          />
+        </div>
+      </div>
+
+      <ProductDetail product={product} categorySlug={category} />
+
+      {/* "También podría interesarte" strip — same category, up to 4 products */}
       {related.length > 0 && cat && (
         <section className="bg-warm-white px-6 py-16 md:px-10">
           <div className="mx-auto w-full max-w-6xl">
-            <p className="mb-2 font-mono text-xs uppercase tracking-widest-2 text-gold">
-              Productos relacionados
+            <p className="mb-6 font-mono text-[10px] uppercase tracking-[0.18em] text-text-muted">
+              También en esta categoría
             </p>
-            <h2 className="mb-8 font-display text-display-sm font-semibold text-navy">
-              Más modelos de {cat.name_es}
-            </h2>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Mobile: horizontal scroll; Desktop: 2-col or 4-col grid */}
+            <div className="flex gap-5 overflow-x-auto pb-2 md:grid md:grid-cols-2 md:overflow-visible md:pb-0 xl:grid-cols-4">
               {related.map((p) => (
-                <ProductCard key={p.id} product={p} category={cat} />
+                <div key={p.id} className="w-[240px] shrink-0 md:w-auto">
+                  <ProductCard product={p} category={cat} />
+                </div>
               ))}
             </div>
           </div>

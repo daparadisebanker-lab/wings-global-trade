@@ -47,6 +47,28 @@ const paths: Record<string, React.ReactNode> = {
       <path d="M12 3l2.5 5.5L20 11l-5.5 2.5L12 19l-2.5-5.5L4 11l5.5-2.5z" />
     </>
   ),
+  // --- New category icon keys (0006_expand_categories) ---
+  motorcycle: (
+    <>
+      <circle cx="6" cy="16" r="3" />
+      <circle cx="18" cy="16" r="3" />
+      <path d="M6 16h3l2-5h4l2 5M13 11l-1-4h3l2 4" />
+      <path d="M9 11H7" />
+    </>
+  ),
+  industrial: (
+    <>
+      <rect x="4" y="12" width="5" height="7" rx="1" />
+      <path d="M9 15h6M15 10l4 2v7h-4z" />
+      <path d="M4 12V9l5-5 5 5v3" />
+      <path d="M9 19v2M15 19v2" />
+    </>
+  ),
+  parts: (
+    <>
+      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3-3a6 6 0 0 1-7.4 7.4l-3.8 3.8a2 2 0 1 1-2.8-2.8l3.8-3.8a6 6 0 0 1 7.4-7.4z" />
+    </>
+  ),
 }
 
 export function CategoryIcon({ iconKey, className }: IconProps) {

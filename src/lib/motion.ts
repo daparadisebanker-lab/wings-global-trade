@@ -101,3 +101,47 @@ export const MENU_SLIDE: Variants = {
 
 /** @deprecated use SCROLL_REVEAL.viewport */
 export const VIEWPORT_ONCE = { once: true, amount: 0.2 }
+
+// ---------------------------------------------------------------------------
+// Wings motion signature — Phase 2B cinematic system
+// ---------------------------------------------------------------------------
+
+export const SPRING: [number, number, number, number] = [0.16, 1, 0.3, 1]
+export const EASE_OUT: [number, number, number, number] = [0, 0, 0.2, 1]
+export const EASE_IN: [number, number, number, number] = [0.4, 0, 1, 1]
+export const EASE_INOUT: [number, number, number, number] = [0.4, 0, 0.2, 1]
+
+export const DUR = {
+  instant: 0.1,
+  fast: 0.2,
+  normal: 0.4,
+  slow: 0.65,
+  cinematic: 1.1,
+} as const
+
+export const REVEAL: Variants = {
+  hidden: { opacity: 0, y: 48 },
+  visible: (i: number = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1], delay: i * 0.08 },
+  }),
+}
+
+export const CARD_HOVER = {
+  whileHover: { y: -4, transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } },
+  whileTap: { y: -1, scale: 0.99 },
+}
+
+export const COUNT_UP: Variants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } },
+}
+
+export const LINE_REVEAL: Variants = {
+  hidden: { y: '110%' },
+  visible: (i: number = 0) => ({
+    y: '0%',
+    transition: { duration: 0.75, ease: [0.16, 1, 0.3, 1], delay: i * 0.08 },
+  }),
+}

@@ -2,6 +2,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import Link from 'next/link'
 import type { Product } from '@/types/database'
 import { Badge } from '@/components/ui/badge'
 import { ProductGallery } from '@/components/features/catalog/ProductGallery'
@@ -9,17 +10,41 @@ import { ProductSpecTable } from '@/components/features/catalog/ProductSpecTable
 import { ProductModelSelector } from '@/components/features/catalog/ProductModelSelector'
 import { InquiryForm } from '@/components/features/catalog/InquiryForm'
 
-interface ProductDetailProps {
-  product: Product
+interface ImplementLink {
+  label: string
+  href: string
 }
 
-export function ProductDetail({ product }: ProductDetailProps) {
+const IMPLEMENT_LINKS: ImplementLink[] = [
+  {
+    label: 'Equipo de Labranza',
+    href: '/catalogo/maquinaria-agricola?sub=labranza',
+  },
+  {
+    label: 'Siembra y Trasplante',
+    href: '/catalogo/maquinaria-agricola?sub=siembra',
+  },
+  {
+    label: 'Protección de Cultivos',
+    href: '/catalogo/maquinaria-agricola?sub=proteccion-cultivos',
+  },
+]
+
+interface ProductDetailProps {
+  product: Product
+  /** Category slug — used to conditionally show the implements section */
+  categorySlug?: string
+}
+
+export function ProductDetail({ product, categorySlug }: ProductDetailProps) {
   const [modelIndex, setModelIndex] = useState(0)
 
   const effectiveSpecs = useMemo(() => {
     const override = product.models?.[modelIndex]?.specs_override ?? {}
     return { ...product.specs, ...override }
   }, [product.specs, product.models, modelIndex])
+
+  const showImplements = categorySlug === 'maquinaria-agricola'
 
   return (
     <div className="bg-warm-white px-6 py-12 md:px-10">
@@ -37,13 +62,41 @@ export function ProductDetail({ product }: ProductDetailProps) {
           </div>
 
           <div>
-            <h2 className="mb-3 font-display text-display-sm font-semibold text-navy">Descripción</h2>
+            <h2 className="mb-3 font-display text-display-sm font-light text-navy">Descripción</h2>
             <p className="font-body text-base leading-relaxed text-text-mono">
               {product.description_es}
             </p>
           </div>
 
           <ProductSpecTable specs={effectiveSpecs} />
+
+          {/* Implementos compatibles — only for maquinaria-agricola */}
+          {showImplements && (
+            <div>
+              <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.18em] text-text-muted">
+                Implementos compatibles
+              </p>
+              <h3 className="mb-4 font-display text-display-sm font-light text-navy">
+                Equipos que operan con este tractor
+              </h3>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                {IMPLEMENT_LINKS.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="group flex flex-1 items-center justify-between rounded-[4px] border border-gold/20 px-4 py-3 transition-all duration-200 hover:border-gold/60 hover:text-gold"
+                  >
+                    <span className="font-display text-base font-light text-navy transition-colors group-hover:text-gold">
+                      {item.label}
+                    </span>
+                    <span className="ml-3 font-mono text-xs text-gold/50 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-gold">
+                      →
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right column — sticky on desktop */}

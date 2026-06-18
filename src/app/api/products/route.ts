@@ -10,10 +10,15 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const category = searchParams.get('category') ?? undefined
     const q = searchParams.get('q') ?? undefined
+    const sub = searchParams.get('sub') ?? undefined
+    const hp = searchParams.get('hp') ?? undefined
+    const traction = searchParams.get('traction') ?? undefined
+    const transmission = searchParams.get('transmission') ?? undefined
+    const brand = searchParams.get('brand') ?? undefined
     const limit = searchParams.get('limit') ? Number(searchParams.get('limit')) : undefined
     const offset = searchParams.get('offset') ? Number(searchParams.get('offset')) : undefined
 
-    const result = await getProducts({ category, q, limit, offset })
+    const result = await getProducts({ category, q, sub, hp, traction, transmission, brand, limit, offset })
     return NextResponse.json(result)
   } catch (error) {
     console.error('[api/products]', error)

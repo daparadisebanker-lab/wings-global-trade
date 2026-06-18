@@ -1,7 +1,5 @@
 // src/app/contacto/page.tsx
 import type { Metadata } from 'next'
-import { PageHero } from '@/components/features/shared/PageHero'
-import { SectionBlock } from '@/components/features/shared/SectionBlock'
 import { ContactForm } from '@/components/features/shared/ContactForm'
 import { WhatsAppButton } from '@/components/features/shared/WhatsAppButton'
 import { OFFICE_LOCATIONS, WINGS_PUBLIC_EMAIL } from '@/lib/constants'
@@ -26,39 +24,58 @@ export const metadata: Metadata = {
 export default function ContactoPage() {
   return (
     <>
-      <PageHero
-        eyebrow="Contacto"
-        title="Habla con el equipo."
-        subtitle="Para consultas fuera del catálogo o de Mister. Respondemos en menos de 24 horas."
-      />
+      {/* Dark hero */}
+      <section className="min-h-[45vh] flex items-end bg-[#000C1F] hero-grain px-6 pb-16 pt-36 md:px-10 md:pb-24">
+        <div className="max-w-4xl">
+          <div className="wings-rule mb-8" />
+          <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-warm-white/30 mb-6">
+            Contacto
+          </p>
+          <h1 className="font-display text-display-xl font-light text-warm-white leading-[0.95] tracking-[-0.02em]">
+            Habla con el equipo.
+          </h1>
+          <p className="mt-6 font-body text-body-lg text-warm-white/50 max-w-lg">
+            Para consultas fuera del catálogo o de Mister. Respondemos en menos de 24 horas.
+          </p>
+        </div>
+      </section>
 
-      <SectionBlock theme="warm-white">
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
+      {/* Form + channels — warm-white */}
+      <section className="bg-[#F8F6F0] py-20 md:py-28 px-6 md:px-10">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 gap-16 lg:grid-cols-2">
           {/* Direct channels */}
           <div>
-            <h2 className="font-display text-display-sm font-semibold text-navy">Canales directos</h2>
+            <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-navy/40 mb-8">
+              Canales directos
+            </p>
 
-            <div className="mt-6 space-y-6">
+            <div className="space-y-8">
               <div>
-                <p className="font-mono text-xs uppercase tracking-widest-2 text-text-muted">WhatsApp</p>
+                <label className="block font-mono text-[10px] uppercase tracking-[0.15em] text-navy/50 mb-2">
+                  WhatsApp
+                </label>
                 <div className="mt-2">
                   <WhatsAppButton message="Hola, quiero más información sobre Wings Global Trade." />
                 </div>
               </div>
 
               <div>
-                <p className="font-mono text-xs uppercase tracking-widest-2 text-text-muted">Email</p>
+                <label className="block font-mono text-[10px] uppercase tracking-[0.15em] text-navy/50 mb-2">
+                  Email
+                </label>
                 <a
                   href={`mailto:${WINGS_PUBLIC_EMAIL}`}
-                  className="mt-2 inline-block font-body text-base text-navy underline decoration-gold underline-offset-4"
+                  className="inline-block font-body text-base text-navy underline decoration-gold underline-offset-4 hover:text-gold transition-colors duration-200"
                 >
                   {WINGS_PUBLIC_EMAIL}
                 </a>
               </div>
 
               <div>
-                <p className="font-mono text-xs uppercase tracking-widest-2 text-text-muted">Oficinas</p>
-                <ul className="mt-2 space-y-2">
+                <label className="block font-mono text-[10px] uppercase tracking-[0.15em] text-navy/50 mb-2">
+                  Oficinas
+                </label>
+                <ul className="space-y-3">
                   {OFFICE_LOCATIONS.map((o) => (
                     <li key={o.city} className="font-body text-base text-navy">
                       {o.city}, {o.country}{' '}
@@ -72,13 +89,13 @@ export default function ContactoPage() {
 
           {/* Form */}
           <div>
-            <h2 className="mb-6 font-display text-display-sm font-semibold text-navy">
+            <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-navy/40 mb-8">
               Envíanos un mensaje
-            </h2>
+            </p>
             <ContactForm />
           </div>
         </div>
-      </SectionBlock>
+      </section>
     </>
   )
 }
