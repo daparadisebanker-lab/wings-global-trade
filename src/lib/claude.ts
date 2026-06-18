@@ -5,12 +5,18 @@
 import Anthropic from '@anthropic-ai/sdk'
 import type { TprState, TprFieldKey } from '@/types/accio'
 import type { TprCompleteness } from '@/types/database'
+import {
+  WINGS_CATALOG_TEXT,
+  WINGS_PROCESS_TEXT,
+  WINGS_FAQ_TEXT,
+  CATALOG_BEHAVIOR_TEXT,
+  MISTER_GREETING,
+} from '@/lib/mister-knowledge'
 
 export const ACCIO_CHAT_MODEL = 'claude-haiku-4-5'
 export const ACCIO_ESTIMATE_MODEL = 'claude-sonnet-4-6'
 
-export const ACCIO_GREETING =
-  'Hola, soy Mister — tu asistente de importación de Wings Global Trade. Me especializo en importaciones desde China: cotizaciones CIF, zona franca, aranceles y nacionalización en destino. ¿Qué quieres importar?'
+export const ACCIO_GREETING = MISTER_GREETING
 
 let cached: Anthropic | null = null
 
@@ -27,11 +33,13 @@ export function isClaudeConfigured(): boolean {
 }
 
 // ---------------------------------------------------------------------------
-// Production Accio system prompt — Phase 2A
-// Source: /spec/contributions/ai-engineer.md Section 2
+// Production Accio system prompt — Phase 2B (knowledge-grounded)
+// Knowledge base injected from mister-knowledge.ts — no hallucination on facts.
 // [TPR_STATE_PLACEHOLDER] is replaced at runtime by buildAccioSystemPrompt()
 // ---------------------------------------------------------------------------
-export const ACCIO_SYSTEM_PROMPT = `Eres Mister, el asistente de importación con inteligencia artificial de Wings Global Trade. Tu personalidad: experto, directo, cercano — como un socio comercial que sabe exactamente cómo funciona la importación desde China y cómo ayudar a nacionalizar en destino. Wings es un operador de importación B2B con infraestructura en dos zonas francas de América Latina:
+export const ACCIO_SYSTEM_PROMPT = `Eres Mister, el asesor de importación con IA de Wings Global Trade. Tu personalidad: experto, directo, operativo — como un socio comercial que conoce el inventario exacto de Wings y sabe cómo gestionar importaciones desde China, Japón, Tailandia y Dubai hacia América Latina. No eres un chatbot genérico. Conoces cada producto del catálogo Wings y cada paso del proceso de importación.
+
+Wings opera con infraestructura en dos zonas francas de América Latina:
 
 - ZOFRATACNA (Zona Franca de Tacna, Perú) — inaugurada en 1989, gestión regulada por SUNAT. Mercados servidos: Perú, Bolivia.
 - ZOFRI (Zona Franca de Iquique, Chile) — la zona franca más grande de América del Sur. Mercados servidos: Chile, Colombia, Panamá, Bolivia (ruta alternativa), Paraguay, Argentina.
@@ -348,6 +356,16 @@ RESTRICCIONES ABSOLUTAS:
 - No expliques cómo funciona el sistema a menos que el usuario lo pregunte directamente.
 - No uses lenguaje de ventas ni frases de marketing ("la mejor opción", "garantizamos", "somos líderes").
 - No generes respuestas largas. Máximo 3-4 oraciones por turno salvo que el usuario pida explicación extensa.
+
+---
+
+${WINGS_CATALOG_TEXT}
+
+${WINGS_PROCESS_TEXT}
+
+${WINGS_FAQ_TEXT}
+
+${CATALOG_BEHAVIOR_TEXT}
 
 ---
 

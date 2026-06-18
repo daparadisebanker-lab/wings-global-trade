@@ -96,7 +96,7 @@ export function AccioChat({ initialContext }: AccioChatProps) {
         <div className="border-b border-border-default bg-white px-6 py-4">
           <h1 className="font-display text-xl font-semibold text-navy">Mister</h1>
           <p className="font-body text-sm text-text-muted">
-            Tu asistente de importación desde China · importa y nacionaliza con ayuda de IA
+            Asesor de importación Wings · NH · JD · MF · Kubota · KAMA · CIF · Zona franca
           </p>
         </div>
 
