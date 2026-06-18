@@ -9,6 +9,9 @@ import { ProductGallery } from '@/components/features/catalog/ProductGallery'
 import { ProductSpecTable } from '@/components/features/catalog/ProductSpecTable'
 import { ProductModelSelector } from '@/components/features/catalog/ProductModelSelector'
 import { InquiryForm } from '@/components/features/catalog/InquiryForm'
+import { ProductHpMeter } from '@/components/features/catalog/ProductHpMeter'
+import { ProductPassport } from '@/components/features/catalog/ProductPassport'
+import { UseCaseStrip } from '@/components/features/catalog/UseCaseStrip'
 
 interface ImplementLink {
   label: string
@@ -32,7 +35,7 @@ const IMPLEMENT_LINKS: ImplementLink[] = [
 
 interface ProductDetailProps {
   product: Product
-  /** Category slug — used to conditionally show the implements section */
+  /** Category slug — used to conditionally show ag-specific sections */
   categorySlug?: string
 }
 
@@ -68,7 +71,11 @@ export function ProductDetail({ product, categorySlug }: ProductDetailProps) {
             </p>
           </div>
 
+          <ProductHpMeter specs={effectiveSpecs} categorySlug={categorySlug} />
+
           <ProductSpecTable specs={effectiveSpecs} />
+
+          <UseCaseStrip specs={effectiveSpecs} filterAttrs={product.filter_attrs} />
 
           {/* Implementos compatibles — only for maquinaria-agricola */}
           {showImplements && (
@@ -100,7 +107,8 @@ export function ProductDetail({ product, categorySlug }: ProductDetailProps) {
         </div>
 
         {/* Right column — sticky on desktop */}
-        <div className="lg:sticky lg:top-24 lg:self-start">
+        <div className="space-y-6 lg:sticky lg:top-24 lg:self-start">
+          <ProductPassport product={product} />
           <ProductModelSelector
             models={product.models ?? []}
             activeIndex={modelIndex}

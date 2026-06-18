@@ -6,6 +6,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 import { createServiceClient } from '@/lib/supabase/server'
+import { ImageComparisonSlider } from '@/components/features/catalog/ImageComparisonSliderClient'
 import { PageHero } from '@/components/features/shared/PageHero'
 import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { Badge } from '@/components/ui/badge'
@@ -206,6 +207,18 @@ export default async function CompararPage({ searchParams }: PageProps) {
               { label: 'Comparar modelos' },
             ]}
           />
+
+          {products.length === 2 && products[0].images[0] && products[1].images[0] && (
+            <div className="mb-10">
+              <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.15em] text-text-muted">
+                Comparación visual
+              </p>
+              <ImageComparisonSlider
+                imageA={{ src: products[0].images[0], label: products[0].name_es }}
+                imageB={{ src: products[1].images[0], label: products[1].name_es }}
+              />
+            </div>
+          )}
 
           <div className="mt-10 overflow-x-auto">
             <table className="w-full border-collapse">
