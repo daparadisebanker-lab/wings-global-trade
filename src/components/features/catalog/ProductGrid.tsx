@@ -15,6 +15,29 @@ interface ProductGridProps {
   isLoading?: boolean
 }
 
+const BRAND_ORDER = ['New Holland', 'John Deere', 'Massey Ferguson', 'Kubota', 'KAMA']
+
+function getBrand(slug: string): string {
+  if (slug.startsWith('new-holland-')) return 'New Holland'
+  if (slug.startsWith('john-deere-')) return 'John Deere'
+  if (slug.startsWith('massey-ferguson-')) return 'Massey Ferguson'
+  if (slug.startsWith('kubota-')) return 'Kubota'
+  if (slug.startsWith('kama-')) return 'KAMA'
+  return ''
+}
+
+function groupByBrand(products: Product[]): Map<string, Product[]> | null {
+  const brands = new Set(products.map((p) => getBrand(p.slug)).filter(Boolean))
+  if (brands.size < 2) return null
+  const map = new Map<string, Product[]>()
+  for (const p of products) {
+    const brand = getBrand(p.slug) || 'Otros'
+    if (!map.has(brand)) map.set(brand, [])
+    map.get(brand)!.push(p)
+  }
+  return map
+}
+
 export function ProductGrid({ products, category, isLoading }: ProductGridProps) {
   if (isLoading) {
     return (
@@ -49,17 +72,57 @@ export function ProductGrid({ products, category, isLoading }: ProductGridProps)
     )
   }
 
+  const grouped = groupByBrand(products)
+
+  if (!grouped) {
+    return (
+      <motion.div
+        variants={STAGGER_CONTAINER_FAST}
+        initial="initial"
+        whileInView="animate"
+        viewport={VIEWPORT_ONCE}
+        className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+      >
+        {products.map((p) => (
+          <ProductCard key={p.id} product={p} category={category} />
+        ))}
+      </motion.div>
+    )
+  }
+
+  const sortedBrands = [...grouped.keys()].sort((a, b) => {
+    const ai = BRAND_ORDER.indexOf(a)
+    const bi = BRAND_ORDER.indexOf(b)
+    if (ai === -1 && bi === -1) return a.localeCompare(b)
+    if (ai === -1) return 1
+    if (bi === -1) return -1
+    return ai - bi
+  })
+
   return (
-    <motion.div
-      variants={STAGGER_CONTAINER_FAST}
-      initial="initial"
-      whileInView="animate"
-      viewport={VIEWPORT_ONCE}
-      className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-    >
-      {products.map((p) => (
-        <ProductCard key={p.id} product={p} category={category} />
-      ))}
-    </motion.div>
+    <div className="space-y-14">
+      {sortedBrands.map((brand) => {
+        const brandProducts = grouped.get(brand)!
+        return (
+          <section key={brand}>
+            <div className="mb-6 flex items-baseline gap-3 border-b border-border-default pb-3">
+              <h2 className="font-display text-display-sm font-semibold text-navy">{brand}</h2>
+              <span className="font-mono text-xs text-text-muted">{brandProducts.length} modelos</span>
+            </div>
+            <motion.div
+              variants={STAGGER_CONTAINER_FAST}
+              initial="initial"
+              whileInView="animate"
+              viewport={VIEWPORT_ONCE}
+              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            >
+              {brandProducts.map((p) => (
+                <ProductCard key={p.id} product={p} category={category} />
+              ))}
+            </motion.div>
+          </section>
+        )
+      })}
+    </div>
   )
 }
