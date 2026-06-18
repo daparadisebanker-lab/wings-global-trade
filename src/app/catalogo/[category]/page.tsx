@@ -118,21 +118,20 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
           </div>
           <ProductGrid products={products} category={cat} />
 
-          {/* Category → /accio CTA — per ia-architect.md §Internal Linking */}
           <div className="mt-16 rounded-wings-card border border-border-default bg-white p-8 text-center">
             <p className="font-mono text-label-sm uppercase tracking-widest-2 text-gold">
-              Motor Accio
+              Mister · Asistente IA
             </p>
             <h3 className="mt-2 font-display text-display-sm font-semibold text-navy">
-              ¿Necesitas un volumen mayor o especificaciones personalizadas?
+              ¿Volumen mayor o especificaciones particulares?
             </h3>
             <p className="mx-auto mt-3 max-w-lg font-body text-body-md text-text-muted">
-              El Motor Accio calcula un estimado CIF real antes de la primera llamada — vía
-              ZOFRATACNA o ZOFRI.
+              Mister te ayuda a importar desde China y a nacionalizar en destino — cotización CIF,
+              aranceles, zona franca. Sin llamadas previas.
             </p>
             <div className="mt-6">
-              <Link href="/accio">
-                <Button>Calcular mi importación</Button>
+              <Link href="/mister">
+                <Button>Hablar con Mister</Button>
               </Link>
             </div>
           </div>

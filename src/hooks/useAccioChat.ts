@@ -125,7 +125,7 @@ export function useAccioChat({ initialContext }: UseAccioChatOptions = {}) {
           const last = next[next.length - 1]
           if (last && last.role === 'assistant' && !last.content) {
             last.content =
-              'Lo siento, el motor Accio no está disponible en este momento. Intenta nuevamente en unos segundos.'
+              'Lo siento, Mister no está disponible en este momento. Intenta nuevamente en unos segundos.'
           }
           return next
         })

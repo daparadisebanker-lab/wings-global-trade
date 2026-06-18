@@ -149,11 +149,11 @@ export const WINGS_FAQS = [
   },
   {
     q: '¿Qué incluye el costo CIF en una importación?',
-    a: 'CIF significa Costo, Seguro y Flete (Cost, Insurance, Freight). Incluye el precio FOB del producto en el puerto de origen, más el flete marítimo internacional y el seguro de la carga hasta el puerto de destino. Es la base de cálculo para determinar el arancel de importación en la mayoría de los países latinoamericanos. El Motor Accio de Wings calcula un estimado CIF antes de cualquier conversación.',
+    a: 'CIF significa Costo, Seguro y Flete (Cost, Insurance, Freight). Incluye el precio FOB del producto en el puerto de origen, más el flete marítimo internacional y el seguro de la carga hasta el puerto de destino. Es la base de cálculo para determinar el arancel de importación en la mayoría de los países latinoamericanos. Mister, el asistente IA de Wings, calcula un estimado CIF antes de cualquier llamada.',
   },
   {
     q: '¿Cuánto tiempo tarda Wings en responder una consulta?',
-    a: 'El equipo de Wings responde en menos de 24 horas hábiles para todas las consultas del catálogo y del Motor Accio. Para consultas urgentes, se puede contactar directamente vía WhatsApp.',
+    a: 'El equipo de Wings responde en menos de 24 horas hábiles para todas las consultas del catálogo y de Mister. Para consultas urgentes, se puede contactar directamente vía WhatsApp.',
   },
   {
     q: '¿Cuánto se puede ahorrar importando a través de zona franca?',

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none" aria-label="Motor Mister — Wings Global Trade">
+  <!-- Hard hat shell -->
+  <path
+    d="M12 46 C12 28 24 14 40 14 C56 14 68 28 68 46 L68 50 C68 52.2 66.2 54 64 54 L16 54 C13.8 54 12 52.2 12 50 Z"
+    fill="#C4933F"
+  />
+  <!-- Hard hat brim -->
+  <rect x="6" y="52" width="68" height="6" rx="3" fill="#001E50"/>
+  <!-- Hard hat strap / underside accent -->
+  <path
+    d="M16 54 L16 58 Q16 62 20 62 L60 62 Q64 62 64 58 L64 54"
+    stroke="#C4933F" stroke-width="1.5" fill="none" stroke-linecap="round"
+  />
+  <!-- W letterform centered in the helmet -->
+  <text
+    x="40"
+    y="45"
+    text-anchor="middle"
+    dominant-baseline="middle"
+    font-family="'Cormorant Garamond', Georgia, serif"
+    font-size="22"
+    font-weight="700"
+    letter-spacing="-0.5"
+    fill="#001E50"
+  >W</text>
+  <!-- Gold top ridge detail -->
+  <path
+    d="M34 16 Q40 10 46 16"
+    stroke="#001E50" stroke-width="2" fill="none" stroke-linecap="round"
+  />
+</svg>

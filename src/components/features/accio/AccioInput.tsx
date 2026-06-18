@@ -5,9 +5,9 @@ import { useEffect, useRef, useState } from 'react'
 
 // Per ENRICHED_SPEC §8 — quick actions for empty screen state
 const QUICK_ACTIONS_EMPTY = [
-  'Quiero importar maquinaria agrícola desde China',
-  'Necesito cotización de camiones para distribución en Perú',
-  'Tengo un código HS — quiero calcular el costo CIF',
+  'Quiero importar desde China, ¿cómo funciona?',
+  'Necesito cotización de maquinaria agrícola para Perú',
+  'Tengo un producto específico y quiero saber el costo total',
 ] as const
 
 interface AccioInputProps {
@@ -78,7 +78,7 @@ export function AccioInput({ onSend, disabled, autoFocus, messageCount = 1 }: Ac
           disabled={disabled}
           // Per ENRICHED_SPEC §3.6 — exact placeholder
           placeholder="Describe lo que necesitas importar..."
-          aria-label="Mensaje para el Motor Accio"
+          aria-label="Mensaje para Mister"
           className="max-h-32 min-h-[48px] w-full resize-none rounded-wings border border-border-default px-4 py-3 font-body text-base text-navy outline-none transition-shadow placeholder:text-[#9CA3AF] focus:border-gold focus:shadow-[0_0_0_3px_rgba(196,147,63,0.15)]"
         />
         <button

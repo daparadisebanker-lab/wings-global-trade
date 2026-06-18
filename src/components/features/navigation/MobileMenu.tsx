@@ -13,10 +13,9 @@ interface MobileMenuProps {
   categories: Category[]
 }
 
-// Per ENRICHED_SPEC §3.2 — "Motor Accio" not "Accio Engine" in Spanish UI
 const NAV_LINKS = [
   { href: '/', label: 'Inicio' },
-  { href: '/accio', label: 'Motor Accio' },
+  { href: '/mister', label: 'Mister' },
   { href: '/nosotros', label: 'Nosotros' },
   { href: '/contacto', label: 'Contacto' },
 ]

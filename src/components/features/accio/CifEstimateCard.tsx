@@ -87,7 +87,7 @@ export function CifEstimateCard({ estimate }: CifEstimateCardProps) {
 
       {/* Always-on disclaimer — per ENRICHED_SPEC §7 */}
       <p className="mt-3 font-body text-xs italic text-text-muted">
-        Estimado preliminar basado en datos del Motor Accio. Los valores finales de flete, arancel
+        Estimado preliminar generado por Mister. Los valores finales de flete, arancel
         y honorarios se confirman con la propuesta formal de Wings.
       </p>
     </motion.div>

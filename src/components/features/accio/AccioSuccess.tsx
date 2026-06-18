@@ -99,7 +99,7 @@ export function AccioSuccess({ tpr, estimate, leadId }: AccioSuccessProps) {
       {/* Post-submit internal link to catalog — per ia-architect.md §Internal Linking */}
       <div className="mt-6 flex flex-col items-center gap-3">
         <WhatsAppButton
-          message={`Hola, acabo de enviar una consulta técnica a través del Motor Accio. Referencia: ${ref}`}
+          message={`Hola, acabo de enviar una consulta a través de Mister en Wings Global Trade. Referencia: ${ref}`}
           label="Abrir conversación en WhatsApp"
         />
         <Link href="/catalogo" className="font-body text-sm text-gold underline underline-offset-4 hover:text-gold-hover">

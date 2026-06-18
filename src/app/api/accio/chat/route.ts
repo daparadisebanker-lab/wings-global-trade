@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
         )
       } catch (error) {
         console.error('[api/accio/chat] stream error', error)
-        controller.enqueue(sse({ type: 'error', message: 'El motor Accio no está disponible en este momento.' }))
+        controller.enqueue(sse({ type: 'error', message: 'Mister no está disponible en este momento. Intenta nuevamente en unos segundos.' }))
       } finally {
         controller.close()
       }

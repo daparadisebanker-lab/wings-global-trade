@@ -29,7 +29,7 @@ export default function ContactoPage() {
       <PageHero
         eyebrow="Contacto"
         title="Habla con el equipo."
-        subtitle="Para consultas fuera del catálogo o el Motor Accio. Respondemos en menos de 24 horas."
+        subtitle="Para consultas fuera del catálogo o de Mister. Respondemos en menos de 24 horas."
       />
 
       <SectionBlock theme="warm-white">

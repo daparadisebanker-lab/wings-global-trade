@@ -17,7 +17,7 @@ interface SiteNavProps {
 // Per ENRICHED_SPEC §3.2 — exact nav labels
 const LINKS = [
   { href: '/', label: 'Inicio' },
-  { href: '/accio', label: 'Motor Accio' },
+  { href: '/mister', label: 'Mister' },
   { href: '/nosotros', label: 'Nosotros' },
 ]
 
@@ -33,8 +33,8 @@ export function SiteNav({ categories }: SiteNavProps) {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Accio page has its own full-height layout; keep nav solid there.
-  const forceSolid = pathname?.startsWith('/accio') || pathname?.startsWith('/catalogo')
+  // Mister page has its own full-height layout; keep nav solid there.
+  const forceSolid = pathname?.startsWith('/mister') || pathname?.startsWith('/catalogo')
   const solid = scrolled || forceSolid
 
   return (

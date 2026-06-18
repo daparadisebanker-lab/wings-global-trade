@@ -28,7 +28,7 @@ export function formatWhatsAppMessage(payload: NotificationPayload): string {
 
   if (payload.flow === 'accio') {
     return [
-      'Nueva consulta Accio — Wings',
+      'Nueva consulta Mister — Wings',
       `Nombre: ${payload.full_name}`,
       `Empresa: ${payload.company ?? '—'}`,
       `País destino: ${payload.destination_country}`,

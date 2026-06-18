@@ -39,16 +39,14 @@ export default async function CatalogIndexPage({
             <CategoryNav categories={categories} activeSlug="" />
           </div>
 
-          {/* Accio CTA for ambiguous search — per ENRICHED_SPEC §3.6 empty state copy */}
           <div className="mb-8 flex flex-col items-start gap-4 rounded-wings-card border border-gold/40 bg-gold/[0.06] p-5 sm:flex-row sm:items-center sm:justify-between">
             <p className="font-body text-sm text-navy">
               {products.length === 0
-                ? `No encontramos productos para esa búsqueda. Prueba con otra categoría o inicia una consulta técnica con el Motor Accio.`
-                : '¿Necesitas un volumen mayor o especificaciones personalizadas? El Motor Accio calcula tu estimado CIF.'}
+                ? `No encontramos productos para esa búsqueda. Habla con Mister — te ayuda a importar cualquier producto desde China.`
+                : '¿Volumen mayor o especificaciones particulares? Mister te ayuda a importar y nacionalizar desde China.'}
             </p>
-            {/* Per ENRICHED_SPEC §0 — "Motor Accio" not "Accio Engine" */}
-            <Link href={`/accio?context=${encodeURIComponent(q)}`}>
-              <Button size="sm">Calcular mi importación</Button>
+            <Link href={`/mister?context=${encodeURIComponent(q)}`}>
+              <Button size="sm">Hablar con Mister</Button>
             </Link>
           </div>
 

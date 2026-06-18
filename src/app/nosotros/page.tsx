@@ -91,15 +91,15 @@ export default function NosotrosPage() {
         </div>
       </SectionBlock>
 
-      {/* warm-white CTA — internal links: nosotros→/catalogo + /accio per ia-architect.md */}
+      {/* warm-white CTA */}
       <SectionBlock theme="warm-white">
         <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
           <h2 className="max-w-xl font-display text-display-md font-semibold text-navy">
             Conversemos sobre tu próxima importación
           </h2>
           <div className="flex gap-3">
-            <Link href="/accio">
-              <Button>Calcular mi importación</Button>
+            <Link href="/mister">
+              <Button>Hablar con Mister</Button>
             </Link>
             <Link href="/catalogo">
               <Button variant="secondary" className="text-navy">

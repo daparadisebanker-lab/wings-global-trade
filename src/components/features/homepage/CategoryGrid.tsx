@@ -47,10 +47,10 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
           </motion.div>
         ))}
 
-        {/* Accio special tile — gold border always visible, gold top on hover */}
+        {/* Motor Mister special tile — gold border always visible, gold top on hover */}
         <motion.div variants={STAGGER_ITEM}>
           <Link
-            href="/accio"
+            href="/mister"
             className="group flex aspect-square flex-col justify-between rounded-wings-card border border-gold border-t-2 border-t-transparent bg-navy p-6 text-warm-white shadow-card transition-all duration-150 hover:-translate-y-0.5 hover:border-t-gold hover:shadow-card-hover"
           >
             <CategoryIcon iconKey="accio" className="h-10 w-10 text-gold" />

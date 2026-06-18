@@ -43,13 +43,12 @@ export function Footer({ categories }: FooterProps) {
                 </Link>
               </li>
             ))}
-            {/* Per ENRICHED_SPEC §0 — "Motor Accio" in Spanish UI, not "Accio Engine" */}
             <li>
               <Link
-                href="/accio"
+                href="/mister"
                 className="font-body text-sm text-gold transition-colors hover:text-gold-hover"
               >
-                Motor Accio
+                Mister
               </Link>
             </li>
           </ul>

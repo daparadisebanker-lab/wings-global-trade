@@ -111,22 +111,22 @@ export default async function ProductPage({ params }: PageProps) {
         </section>
       )}
 
-      {/* Product → /accio CTA */}
+      {/* Product → /mister CTA */}
       <section className="bg-navy px-6 py-16 md:px-10">
         <div className="mx-auto max-w-6xl text-center">
           <p className="font-mono text-xs uppercase tracking-widest-2 text-gold">
-            Motor Accio
+            Mister · Asistente IA
           </p>
           <h2 className="mt-2 font-display text-display-md font-semibold text-warm-white">
-            ¿Importación a volumen o con especificaciones particulares?
+            ¿Necesitas importarlo desde China a volumen?
           </h2>
           <p className="mx-auto mt-3 max-w-lg font-body text-lg text-text-muted-inverse">
-            El Motor Accio calcula un estimado CIF real antes de la primera llamada — vía
-            ZOFRATACNA (Tacna, Perú) o ZOFRI (Iquique, Chile).
+            Mister te acompaña en todo el proceso — desde la cotización CIF hasta la
+            nacionalización en destino, vía ZOFRATACNA o ZOFRI.
           </p>
           <div className="mt-8">
-            <Link href="/accio">
-              <Button size="lg">Calcular mi importación</Button>
+            <Link href="/mister">
+              <Button size="lg">Hablar con Mister</Button>
             </Link>
           </div>
         </div>

@@ -18,7 +18,7 @@ export function formatEmailSubject(payload: NotificationPayload): string {
     return `Nueva consulta: ${payload.product_name} — ${payload.destination_country}`
   }
   if (payload.flow === 'accio') {
-    return `Nueva consulta Accio: ${payload.product_description} × ${payload.quantity} — ${payload.destination_country}`
+    return `Nueva consulta Mister: ${payload.product_description} × ${payload.quantity} — ${payload.destination_country}`
   }
   return `Nuevo contacto: ${payload.full_name}`
 }

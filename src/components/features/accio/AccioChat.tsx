@@ -93,11 +93,10 @@ export function AccioChat({ initialContext }: AccioChatProps) {
     <div className="flex h-[100dvh] flex-col pt-14 md:pt-16 lg:flex-row">
       {/* Chat panel */}
       <div className="flex min-h-0 flex-1 flex-col bg-warm-white">
-        {/* Per ENRICHED_SPEC §3.3 — "Motor Accio" not "Accio Engine" in Spanish UI */}
         <div className="border-b border-border-default bg-white px-6 py-4">
-          <h1 className="font-display text-xl font-semibold text-navy">Motor Accio</h1>
+          <h1 className="font-display text-xl font-semibold text-navy">Mister</h1>
           <p className="font-body text-sm text-text-muted">
-            Importación gestionada desde zona franca · estimado CIF sin llamadas previas
+            Tu asistente de importación desde China · importa y nacionaliza con ayuda de IA
           </p>
         </div>
 

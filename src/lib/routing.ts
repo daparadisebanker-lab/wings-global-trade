@@ -86,7 +86,7 @@ export function resolveSearchUrl(query: string): string {
         ? `/catalogo/${intent.category}?q=${encoded}`
         : `/catalogo?q=${encoded}`
     case 'accio':
-      return `/accio?context=${encoded}`
+      return `/mister?context=${encoded}`
     case 'ambiguous':
     default:
       return `/catalogo?q=${encoded}`

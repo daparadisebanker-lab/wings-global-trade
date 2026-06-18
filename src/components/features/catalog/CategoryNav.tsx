@@ -30,7 +30,7 @@ export function CategoryNav({ categories, activeSlug }: CategoryNavProps) {
         )
       })}
       <Link
-        href="/accio"
+        href="/mister"
         className="shrink-0 rounded-wings border border-navy bg-navy px-4 py-2 font-body text-sm text-warm-white transition-colors hover:bg-[#002266]"
       >
         Importación personalizada

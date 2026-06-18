@@ -47,13 +47,12 @@ export function NavCategoryDropdown({ categories }: NavCategoryDropdownProps) {
                 </li>
               ))}
             </ul>
-            {/* Per ENRICHED_SPEC §0 — "Motor Accio" in Spanish UI, never "Accio Engine" */}
             <div className="mt-1 border-t border-border-default px-3 pb-1 pt-2">
               <Link
-                href="/accio"
+                href="/mister"
                 className="font-body text-sm text-gold transition-colors hover:text-gold-hover"
               >
-                ¿No encuentras lo que buscas? → Motor Accio
+                ¿No encuentras lo que buscas? Habla con Mister →
               </Link>
             </div>
           </motion.div>

@@ -40,10 +40,10 @@ export function ProductGrid({ products, category, isLoading }: ProductGridProps)
           No tenemos productos en esta categoría todavía.
         </p>
         <p className="mt-2 font-body text-base text-text-muted">
-          ¿Tienes algo específico en mente? El motor Accio puede ayudarte a importarlo.
+          ¿Tienes algo específico en mente? Habla con Mister — importa cualquier producto desde China.
         </p>
-        <Link href="/accio" className="mt-6 inline-block">
-          <Button>Describir mi importación</Button>
+        <Link href="/mister" className="mt-6 inline-block">
+          <Button>Hablar con Mister</Button>
         </Link>
       </div>
     )

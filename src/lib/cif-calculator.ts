@@ -154,7 +154,7 @@ export function calculateCIF(input: CifInput): CifEstimate {
     free_zone_savings_pct: freeZoneSavingsPct,
     // Per ENRICHED_SPEC §7 — exact disclaimer text
     disclaimer:
-      'Estimado preliminar basado en datos del Motor Accio. Los valores finales de flete, arancel y honorarios se confirman con la propuesta formal de Wings.',
+      'Estimado preliminar generado por Mister. Los valores finales de flete, arancel y honorarios se confirman con la propuesta formal de Wings.',
     methodology,
   }
 }
