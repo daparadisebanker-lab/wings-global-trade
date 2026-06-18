@@ -42,6 +42,7 @@ const OVERLAY_VARIANTS = {
 
 interface FilterDrawerProps extends FilterSidebarProps {
   isOpen: boolean
+  onOpen: () => void
   onClose: () => void
 }
 
@@ -208,6 +209,7 @@ export function FilterDrawer({
   facets,
   activeFilters,
   isOpen,
+  onOpen,
   onClose,
 }: FilterDrawerProps) {
   const { setFilter, clearFilters, activeCount } = useCatalogFilters()
@@ -240,7 +242,7 @@ export function FilterDrawer({
   return (
     <>
       {/* Floating trigger button — always visible on mobile */}
-      <FloatingTriggerButton activeCount={activeCount} onClick={onClose} />
+      <FloatingTriggerButton activeCount={activeCount} onClick={onOpen} />
 
       <AnimatePresence>
         {isOpen && (

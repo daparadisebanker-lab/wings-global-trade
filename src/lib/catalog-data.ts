@@ -224,6 +224,138 @@ export async function getRelatedProducts(
 }
 
 // ---------------------------------------------------------------------------
+// HP buckets — matched to actual tractor HP distribution (50–140 HP)
+// ---------------------------------------------------------------------------
+export const HP_BUCKETS: { value: string; label: string; min: number; max: number }[] = [
+  { value: '50-70',  label: '50–70 HP',  min: 50,  max: 70  },
+  { value: '70-100', label: '70–100 HP', min: 70,  max: 100 },
+  { value: '100-120',label: '100–120 HP',min: 100, max: 120 },
+  { value: '120-200',label: '120+ HP',   min: 120, max: 200 },
+]
+
+// ---------------------------------------------------------------------------
+// Product facets — computed server-side from the full unfiltered product list
+// ---------------------------------------------------------------------------
+
+export interface FacetOption {
+  value: string
+  label: string
+  count: number
+}
+
+export interface ProductFacets {
+  brand: FacetOption[]
+  hp: FacetOption[]
+  traction: FacetOption[]
+  transmission: FacetOption[]
+}
+
+/**
+ * Compute facets for a category from ALL products (ignoring hp/brand/traction/transmission filters).
+ * Subcategory filter (sub) is preserved since it narrows the meaningful product set.
+ * Called server-side; does not paginate — loads up to 200 products.
+ */
+export async function getProductFacets(
+  categorySlug: string,
+  sub?: string,
+): Promise<ProductFacets> {
+  const supabase = createServiceClient()
+  let rows: { filter_attrs: Record<string, unknown> | null; specs: Record<string, unknown> | null }[] = []
+
+  if (supabase) {
+    const cat = await getCategoryBySlug(categorySlug)
+    if (cat) {
+      let q = supabase
+        .from('products')
+        .select('filter_attrs, specs')
+        .eq('category_id', cat.id)
+        .eq('is_active', true)
+
+      if (sub) {
+        const { data: subRow } = await supabase
+          .from('subcategories')
+          .select('id')
+          .eq('slug', sub)
+          .maybeSingle()
+        if (subRow) q = q.eq('subcategory_id', (subRow as { id: string }).id)
+      }
+
+      const { data } = await q.limit(200)
+      rows = (data ?? []) as typeof rows
+    }
+  } else {
+    // Seed fallback
+    const cat = seedCategories.find((c) => c.slug === categorySlug)
+    rows = cat
+      ? seedProducts
+          .filter((p) => p.category_id === cat.id && p.is_active)
+          .map((p) => ({ filter_attrs: (p as unknown as Record<string, unknown>).filter_attrs as Record<string, unknown> | null, specs: p.specs as Record<string, unknown> | null }))
+      : []
+  }
+
+  const brandCounts: Record<string, number> = {}
+  const hpBucketCounts: Record<string, number> = {}
+  const tractionCounts: Record<string, number> = {}
+  const transmissionCounts: Record<string, number> = {}
+
+  for (const row of rows) {
+    const attrs = row.filter_attrs
+
+    const brand =
+      typeof attrs?.brand === 'string'
+        ? attrs.brand
+        : typeof row.specs?.['Marca'] === 'string'
+          ? (row.specs['Marca'] as string)
+          : null
+    if (brand) brandCounts[brand] = (brandCounts[brand] ?? 0) + 1
+
+    const hpVal = Number(attrs?.hp)
+    if (!isNaN(hpVal) && hpVal > 0) {
+      for (const bucket of HP_BUCKETS) {
+        if (hpVal >= bucket.min && hpVal < bucket.max) {
+          hpBucketCounts[bucket.value] = (hpBucketCounts[bucket.value] ?? 0) + 1
+          break
+        }
+      }
+    }
+
+    if (typeof attrs?.traction === 'string') {
+      const t = attrs.traction
+      tractionCounts[t] = (tractionCounts[t] ?? 0) + 1
+    }
+
+    if (typeof attrs?.transmission === 'string') {
+      const tr = attrs.transmission
+      transmissionCounts[tr] = (transmissionCounts[tr] ?? 0) + 1
+    }
+  }
+
+  const TRACTION_LABELS: Record<string, string> = { '4wd': '4WD', '2wd': '2WD' }
+  const TRANSMISSION_LABELS: Record<string, string> = {
+    mechanical: 'Mecánica',
+    syncro: 'Sincronizada',
+    powershift: 'Powershift',
+  }
+
+  return {
+    brand: Object.entries(brandCounts)
+      .sort((a, b) => b[1] - a[1])
+      .map(([v, c]) => ({ value: v, label: v, count: c })),
+    hp: HP_BUCKETS.filter((b) => (hpBucketCounts[b.value] ?? 0) > 0).map((b) => ({
+      value: b.value,
+      label: b.label,
+      count: hpBucketCounts[b.value],
+    })),
+    traction: Object.entries(tractionCounts)
+      .sort((a, b) => b[1] - a[1])
+      .map(([v, c]) => ({ value: v, label: TRACTION_LABELS[v] ?? v, count: c })),
+    transmission: Object.entries(transmissionCounts)
+      .sort((a, b) => b[1] - a[1])
+      .map(([v, c]) => ({ value: v, label: TRANSMISSION_LABELS[v] ?? v, count: c })),
+  }
+}
+
+// ---------------------------------------------------------------------------
 // HP range parser — "50-100" → { min: 50, max: 100 }
 // ---------------------------------------------------------------------------
 function parseHpRange(range: string): { min: number; max: number } | null {

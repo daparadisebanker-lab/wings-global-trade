@@ -6,11 +6,13 @@ import {
   getCategories,
   getCategoryBySlug,
   getProducts,
+  getProductFacets,
   getSubcategories,
 } from '@/lib/catalog-data'
 import { CategoryNav } from '@/components/features/catalog/CategoryNav'
 import { ProductGrid } from '@/components/features/catalog/ProductGrid'
 import { FilterSidebar } from '@/components/features/catalog/FilterSidebar'
+import { FilterPanel } from '@/components/features/catalog/FilterPanel'
 import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { breadcrumbSchema } from '@/lib/schema'
@@ -115,10 +117,11 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
   const cat = await getCategoryBySlug(category)
   if (!cat) notFound()
 
-  const [categories, subcategories, { products }] = await Promise.all([
+  const [categories, subcategories, { products }, facets] = await Promise.all([
     getCategories(),
     getSubcategories(category),
     getProducts({ category, q, sub, hp, traction, transmission, brand }),
+    getProductFacets(category, sub),
   ])
 
   const seoMeta = CATEGORY_SEO[category]
@@ -303,22 +306,24 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
           )}
 
           {/* Main content: filter sidebar + product grid */}
-          {hasActiveFilters ? (
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-[220px_1fr]">
-              <aside>
-                <FilterSidebar
-                  categorySlug={category}
-                  activeFilters={definedFilters}
-                  facets={{}}
-                />
-              </aside>
-              <div>
-                <ProductGrid products={products} category={cat} />
-              </div>
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[220px_1fr]">
+            {/* Desktop sidebar — always visible */}
+            <FilterSidebar
+              categorySlug={category}
+              activeFilters={definedFilters}
+              facets={facets}
+            />
+            <div>
+              <ProductGrid products={products} category={cat} />
             </div>
-          ) : (
-            <ProductGrid products={products} category={cat} />
-          )}
+          </div>
+
+          {/* Mobile bottom-sheet drawer — FloatingTriggerButton always visible on mobile */}
+          <FilterPanel
+            categorySlug={category}
+            activeFilters={definedFilters}
+            facets={facets}
+          />
 
           {/* ── Mister dead-end CTA (Task 20) ────────────────────────────── */}
           <div className="mt-16">

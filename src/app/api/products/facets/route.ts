@@ -37,11 +37,12 @@ export interface FacetsResponse {
   brand: FacetItem[]
 }
 
-// HP bucket definitions — inclusive lower, exclusive upper (except last)
+// HP bucket definitions — matched to actual tractor HP distribution (50–140 HP)
 const HP_BUCKETS: { value: string; label: string; min: number; max: number }[] = [
-  { value: '15-50', label: '15–50 HP', min: 15, max: 50 },
-  { value: '50-100', label: '50–100 HP', min: 50, max: 100 },
-  { value: '100-200', label: '100–200 HP', min: 100, max: 200 },
+  { value: '50-70',  label: '50–70 HP',  min: 50,  max: 70  },
+  { value: '70-100', label: '70–100 HP', min: 70,  max: 100 },
+  { value: '100-120',label: '100–120 HP',min: 100, max: 120 },
+  { value: '120-200',label: '120+ HP',   min: 120, max: 200 },
 ]
 
 export async function GET(request: NextRequest) {
