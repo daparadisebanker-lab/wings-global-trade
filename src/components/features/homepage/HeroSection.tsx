@@ -1,8 +1,7 @@
 'use client'
 
-import { useRef } from 'react'
 import Link from 'next/link'
-import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { SearchBar } from '@/components/features/homepage/SearchBar'
 import { LINE_REVEAL, COUNT_UP } from '@/lib/motion'
 
@@ -23,31 +22,12 @@ const SPRING: [number, number, number, number] = [0.16, 1, 0.3, 1]
 
 export function HeroSection() {
   const reduce = useReducedMotion()
-  const sectionRef = useRef<HTMLElement>(null)
-  const { scrollY } = useScroll()
-  const backdropY = useTransform(scrollY, [0, 900], ['0%', reduce ? '0%' : '-14%'])
 
   return (
     <section
-      ref={sectionRef}
       className="hero-grain relative flex min-h-screen flex-col justify-center overflow-hidden px-6 pb-24 pt-36 md:px-10 md:pt-44"
       style={{ backgroundColor: '#000C1F' }}
     >
-
-      {/* Wings mark — architectural backdrop, slow parallax */}
-      <motion.div
-        className="pointer-events-none absolute inset-0 flex items-center justify-center"
-        style={{ y: backdropY }}
-        aria-hidden
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/wings-logo.svg"
-          alt=""
-          className="w-[110vw] max-w-none brightness-0 invert opacity-\[0\.04\]"
-        />
-      </motion.div>
-
       {/* Content */}
       <div className="relative z-10 mx-auto w-full max-w-5xl">
 

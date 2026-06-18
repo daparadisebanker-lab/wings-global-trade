@@ -78,14 +78,20 @@ interface QuickItem {
 
 const QUICK_ITEMS: QuickItem[] = [
   {
-    label: 'Importación Personalizada',
+    label: 'Solicitar cotización',
+    href: '/cotizar',
+    highlight: true,
+    prefix: '→',
+  },
+  {
+    label: 'Importación personalizada',
     href: '/mister',
     highlight: true,
     prefix: '★',
   },
   {
-    label: 'Comparar modelos',
-    href: '/catalogo',
+    label: 'Cómo importar',
+    href: '/proceso',
     prefix: '→',
   },
   {

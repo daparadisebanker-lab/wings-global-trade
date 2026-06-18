@@ -8,6 +8,7 @@ import { REVEAL } from '@/lib/motion'
 
 interface Values {
   full_name: string
+  company: string
   email: string
   phone: string
   message: string
@@ -15,7 +16,7 @@ interface Values {
 
 export function ContactForm() {
   const { toast } = useToast()
-  const [values, setValues] = useState<Values>({ full_name: '', email: '', phone: '', message: '' })
+  const [values, setValues] = useState<Values>({ full_name: '', company: '', email: '', phone: '', message: '' })
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success'>('idle')
   const [errors, setErrors] = useState<Partial<Record<keyof Values, string>>>({})
 
@@ -38,6 +39,9 @@ export function ContactForm() {
     if (!validate() || status === 'submitting') return
     setStatus('submitting')
     try {
+      const msg = values.company.trim()
+        ? `[Empresa: ${values.company.trim()}]\n${values.message.trim()}`
+        : values.message.trim()
       const res = await fetch('/api/leads/contact', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -45,7 +49,7 @@ export function ContactForm() {
           full_name: values.full_name.trim(),
           email: values.email.trim(),
           phone: values.phone.trim() || undefined,
-          message: values.message.trim(),
+          message: msg,
         }),
       })
       if (!res.ok) throw new Error(`Contact submit failed: ${res.status}`)
@@ -78,15 +82,25 @@ export function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-0">
-      <LineField label="Nombre completo" error={errors.full_name} required>
-        <LineInput
-          value={values.full_name}
-          onChange={(e) => set('full_name', e.target.value)}
-          hasError={Boolean(errors.full_name)}
-          autoComplete="name"
-          placeholder="Tu nombre"
-        />
-      </LineField>
+      <div className="grid grid-cols-1 gap-0 sm:grid-cols-2 sm:gap-8">
+        <LineField label="Nombre completo" error={errors.full_name} required>
+          <LineInput
+            value={values.full_name}
+            onChange={(e) => set('full_name', e.target.value)}
+            hasError={Boolean(errors.full_name)}
+            autoComplete="name"
+            placeholder="Tu nombre"
+          />
+        </LineField>
+        <LineField label="Empresa">
+          <LineInput
+            value={values.company}
+            onChange={(e) => set('company', e.target.value)}
+            autoComplete="organization"
+            placeholder="Nombre de tu empresa"
+          />
+        </LineField>
+      </div>
 
       <div className="grid grid-cols-1 gap-0 sm:grid-cols-2 sm:gap-8">
         <LineField label="Email" error={errors.email} required>

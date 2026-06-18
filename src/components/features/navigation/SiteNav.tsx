@@ -14,9 +14,8 @@ interface SiteNavProps {
   categories: Category[]
 }
 
-// Per ENRICHED_SPEC §3.2 — exact nav labels
 const LINKS = [
-  { href: '/', label: 'Inicio' },
+  { href: '/proceso', label: 'Cómo importar' },
   { href: '/mister', label: 'Mister' },
   { href: '/nosotros', label: 'Nosotros' },
 ]
@@ -129,8 +128,13 @@ export function SiteNav({ categories }: SiteNavProps) {
             >
               Contacto
             </Link>
-            {/* Per ENRICHED_SPEC §3.4 — WhatsApp CTA exact string */}
-            <WhatsAppButton variant={solid ? 'gold' : 'green'} label="Consultar por WhatsApp" />
+            <Link
+              href="/cotizar"
+              className="inline-flex items-center gap-2 border border-gold/30 px-4 py-2 font-mono text-[11px] uppercase tracking-nav text-gold transition-all duration-200 hover:bg-gold hover:text-navy"
+            >
+              Cotizar
+            </Link>
+            <WhatsAppButton variant={solid ? 'gold' : 'green'} label="WhatsApp" />
           </div>
 
           <button
