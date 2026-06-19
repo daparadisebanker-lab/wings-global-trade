@@ -1,7 +1,10 @@
 // src/components/features/catalog/ProductPassport.tsx
+'use client'
 
+import { useComparison } from '@/hooks/useComparison'
 import type { Product } from '@/types/database'
 import { AuthenticationMark } from '@/components/features/catalog/AuthenticationMark'
+import TechnicalSilhouette from '@/components/features/catalog/TechnicalSilhouette'
 
 interface ProductPassportProps {
   product: Product
@@ -62,6 +65,9 @@ function numericFromSpecs(specs: Record<string, string>, pattern: RegExp): numbe
 }
 
 export function ProductPassport({ product, categorySlug }: ProductPassportProps) {
+  const { add, remove, isInComparison, isFull } = useComparison()
+  const inComparison = isInComparison(product.id)
+
   const specs = product.specs ?? {}
   const specEntries = Object.entries(specs)
 
@@ -132,12 +138,48 @@ export function ProductPassport({ product, categorySlug }: ProductPassportProps)
         {emissions && <DataRow label="Norma" value={emissions} />}
       </dl>
 
+      {/* Engineering reference silhouette — contextual chassis drawing */}
+      <div className="mt-5 overflow-hidden rounded-sm border-t border-[rgba(0,30,80,0.06)]">
+        <p className="bg-[rgba(0,30,80,0.04)] px-3 py-1.5 font-mono text-[8px] uppercase tracking-[0.18em] text-navy/30">
+          Referencia técnica · Vista lateral
+        </p>
+        <TechnicalSilhouette categorySlug={categorySlug ?? ''} className="h-[90px]" />
+      </div>
+
       {/* Footer */}
-      <div className="mt-5 flex items-center gap-3 border-t border-[rgba(0,30,80,0.10)] pt-4">
-        <span className="block h-px w-4 bg-gold/50" aria-hidden />
-        <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-gold">
-          Disponible para importación
-        </span>
+      <div className="mt-5 flex items-center justify-between gap-3 border-t border-[rgba(0,30,80,0.10)] pt-4">
+        <div className="flex items-center gap-3">
+          <span className="block h-px w-4 bg-gold/50" aria-hidden />
+          <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-gold">
+            Disponible para importación
+          </span>
+        </div>
+        {/* Compare button */}
+        <button
+          onClick={() =>
+            inComparison
+              ? remove(product.id)
+              : add({
+                  id: product.id,
+                  name_es: product.name_es,
+                  slug: product.slug,
+                  category_slug: categorySlug ?? '',
+                  image: product.images?.[0] ?? '',
+                })
+          }
+          disabled={!inComparison && isFull}
+          aria-pressed={inComparison}
+          className={[
+            'shrink-0 font-mono text-[9px] uppercase tracking-[0.14em] transition-colors',
+            inComparison
+              ? 'text-gold underline underline-offset-2'
+              : isFull
+              ? 'cursor-not-allowed text-navy/20'
+              : 'text-navy/40 hover:text-navy/70',
+          ].join(' ')}
+        >
+          {inComparison ? '✓ En comparación' : isFull ? 'Comparación llena' : '+ Comparar'}
+        </button>
       </div>
 
       {/* Import readiness meter mount point — integration agent inserts here */}

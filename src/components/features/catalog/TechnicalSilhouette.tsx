@@ -137,7 +137,8 @@ export default function TechnicalSilhouette({ categorySlug, className }: Technic
       style={{
         backgroundColor: '#001E50',
         width: '100%',
-        height: '150px',
+        height: className ? undefined : '150px',
+        minHeight: '80px',
         position: 'relative',
         display: 'flex',
         alignItems: 'center',

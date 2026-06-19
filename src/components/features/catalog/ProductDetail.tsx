@@ -171,9 +171,6 @@ function ProductDetailInner({ product, categorySlug, totalInCategory = 1 }: Prod
 
             <ProductGallery images={product.images} alt={product.name_es} hp={extractNum(product.specs as Record<string, unknown>, 'hp', 'potencia_hp', 'power_hp') ?? undefined} />
 
-            {/* Engineering reference drawing */}
-            <TechnicalSilhouette categorySlug={category} />
-
             <div className="flex flex-wrap gap-1.5">
               {product.source_markets.map((m) => (
                 <Badge key={m} variant="source">
