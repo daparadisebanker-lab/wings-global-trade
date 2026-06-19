@@ -31,6 +31,7 @@ import SavedInquiryBanner from '@/components/features/catalog/SavedInquiryBanner
 import CatalogProgress from '@/components/features/catalog/CatalogProgress'
 import { SpecScannerLine } from '@/components/features/catalog/SpecScannerLine'
 import { MagneticButton } from '@/components/features/catalog/MagneticButton'
+import { extractNum } from '@/lib/spec-normalize'
 
 interface ImplementLink {
   label: string
@@ -168,7 +169,7 @@ function ProductDetailInner({ product, categorySlug, totalInCategory = 1 }: Prod
               </div>
             </div>
 
-            <ProductGallery images={product.images} alt={product.name_es} hp={hp} />
+            <ProductGallery images={product.images} alt={product.name_es} hp={extractNum(product.specs as Record<string, unknown>, 'hp', 'potencia_hp', 'power_hp') ?? undefined} />
 
             {/* Engineering reference drawing */}
             <TechnicalSilhouette categorySlug={category} />
