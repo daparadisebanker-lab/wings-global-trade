@@ -5,13 +5,16 @@ import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { cn } from '@/lib/utils'
+import { NoiseField } from './NoiseField'
 
 interface ProductGalleryProps {
   images: string[]
   alt: string
+  /** Engine power in HP — seeds the ambient noise field behind the gallery. */
+  hp?: number
 }
 
-export function ProductGallery({ images, alt }: ProductGalleryProps) {
+export function ProductGallery({ images, alt, hp = 50 }: ProductGalleryProps) {
   const [active, setActive] = useState(0)
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const prefersReducedMotion = useReducedMotion()
@@ -97,15 +100,20 @@ export function ProductGallery({ images, alt }: ProductGalleryProps) {
           }
           aria-label={hasImages ? `Ver imagen en pantalla completa: ${alt}` : undefined}
         >
+          {/* Generative noise field backdrop — the machine's HP as ambient movement */}
+          <NoiseField hp={hp} className="absolute inset-0 h-full w-full pointer-events-none" />
+
           {current ? (
-            <Image
-              src={current}
-              alt={alt}
-              fill
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover"
-              priority
-            />
+            <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_70%_70%_at_center,black_60%,transparent_100%)] [-webkit-mask-image:radial-gradient(ellipse_70%_70%_at_center,black_60%,transparent_100%)]">
+              <Image
+                src={current}
+                alt={alt}
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover"
+                priority
+              />
+            </div>
           ) : (
             <div className="flex h-full items-center justify-center font-mono text-sm text-text-muted">
               Sin imagen disponible

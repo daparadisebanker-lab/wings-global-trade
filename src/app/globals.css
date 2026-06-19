@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import '../styles/blueprint.css';
+
 /* ============================================================
    Flexo — self-hosted body font
    ============================================================ */
@@ -227,6 +229,18 @@
     scrollbar-width: none;
   }
 
+  @keyframes brand-scroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .brand-marquee {
+    animation: brand-scroll 36s linear infinite;
+    will-change: transform;
+  }
+  .brand-marquee-wrap:hover .brand-marquee {
+    animation-play-state: paused;
+  }
+
   /* ============================================================
      Hero immersion layer — CSS only, 0 KB JS
      Source: /spec/ENRICHED_SPEC.md §2.6 + immersion-engineer.md §1
@@ -256,5 +270,18 @@
   /* Gold bottom rule on hero */
   .hero-gold-rule {
     border-bottom: 1px solid rgba(196, 147, 63, 0.10);
+  }
+
+  /* ============================================================
+     Inspection Mode — click a spec value to open its document panel.
+     Distinct from the hover tooltip: this is deliberate investigation.
+     ============================================================ */
+  .spec-value-inspectable {
+    cursor: pointer;
+    position: relative;
+  }
+  .spec-value-inspectable:hover {
+    color: #C4933F;
+    transition: color 150ms ease;
   }
 }

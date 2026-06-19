@@ -1,0 +1,86 @@
+/* ============================================================
+   Blueprint Mode — the product page as engineering document.
+   Applied via .blueprint-mode on <html>.
+   Not a color inversion: a shift from sales sheet to technical drawing.
+   ============================================================ */
+.blueprint-mode {
+  background-color: #001E50 !important;
+}
+
+.blueprint-mode body {
+  background-color: #001E50;
+  color: #F8F6F0;
+}
+
+/* Override warm-white sections to navy */
+.blueprint-mode .bg-warm-white,
+.blueprint-mode [class*="bg-warm-white"],
+.blueprint-mode .section-warm {
+  background-color: #001E50 !important;
+  color: #F8F6F0 !important;
+}
+
+/* Spec typography: caps + mono — the drawing is annotated, not written */
+.blueprint-mode [class*="font-body"],
+.blueprint-mode [class*="font-display"] {
+  font-family: var(--font-mono), monospace !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 400;
+}
+
+/* Drafting grid overlay — fine 8px sub-grid under a 32px major grid */
+.blueprint-mode::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(196, 147, 63, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(196, 147, 63, 0.08) 1px, transparent 1px),
+    linear-gradient(rgba(196, 147, 63, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(196, 147, 63, 0.03) 1px, transparent 1px);
+  background-size:
+    32px 32px,
+    32px 32px,
+    8px 8px,
+    8px 8px;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Title-block frame — the border every engineering drawing carries */
+.blueprint-mode::after {
+  content: '';
+  position: fixed;
+  inset: 14px;
+  border: 1px solid rgba(196, 147, 63, 0.22);
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* Monoline border style on cards — no radius, drawn not styled */
+.blueprint-mode [class*="rounded"],
+.blueprint-mode [class*="border"] {
+  border-color: rgba(196, 147, 63, 0.4) !important;
+  border-radius: 0 !important;
+}
+
+/* Images render as technical references — desaturated, gold-tinted */
+.blueprint-mode img {
+  filter: grayscale(1) brightness(1.1) sepia(0.35) hue-rotate(5deg) contrast(0.95);
+  mix-blend-mode: luminosity;
+}
+
+/* CTA stays gold — the one actionable element on the sheet */
+.blueprint-mode button[class*="bg-gold"],
+.blueprint-mode a[class*="bg-gold"] {
+  background-color: #C4933F !important;
+  color: #001E50 !important;
+}
+
+/* Prefers-reduced-motion: no transition in blueprint toggle */
+@media (prefers-reduced-motion: reduce) {
+  .blueprint-mode * {
+    transition: none !important;
+  }
+}
