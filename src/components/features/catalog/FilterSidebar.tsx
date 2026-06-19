@@ -25,6 +25,9 @@ interface FacetGroups {
   transmission?: FacetOption[]
   brand?: FacetOption[]
   subcategories?: FacetOption[]
+  fuel?: FacetOption[]
+  payload?: FacetOption[]
+  usage?: FacetOption[]
 }
 
 export interface FilterSidebarProps {
@@ -44,6 +47,9 @@ const FACET_PARAM_MAP: Record<keyof FacetGroups, FilterKey> = {
   transmission: 'transmission',
   brand: 'brand',
   subcategories: 'sub',
+  fuel: 'fuel',
+  payload: 'payload',
+  usage: 'usage',
 }
 
 const FACET_LABELS: Record<keyof FacetGroups, string> = {
@@ -52,16 +58,17 @@ const FACET_LABELS: Record<keyof FacetGroups, string> = {
   transmission: 'Transmisión',
   brand: 'Marca',
   subcategories: 'Categoría',
+  fuel: 'Combustible',
+  payload: 'Tonelaje',
+  usage: 'Aplicación',
 }
 
-// Display order
-const FACET_ORDER: (keyof FacetGroups)[] = [
-  'subcategories',
-  'hp',
-  'traction',
-  'transmission',
-  'brand',
-]
+function getFacetOrder(categorySlug: string): (keyof FacetGroups)[] {
+  if (categorySlug === 'camiones') {
+    return ['subcategories', 'fuel', 'payload', 'usage', 'hp', 'traction', 'transmission', 'brand']
+  }
+  return ['subcategories', 'hp', 'traction', 'transmission', 'brand']
+}
 
 // ---------------------------------------------------------------------------
 // CollapsibleSection
@@ -165,13 +172,14 @@ function FilterOption({ label, count, isActive, onToggle }: FilterOptionProps) {
 // FilterSidebar (main export)
 // ---------------------------------------------------------------------------
 
-export function FilterSidebar({ facets, activeFilters }: FilterSidebarProps) {
+export function FilterSidebar({ facets, activeFilters, categorySlug }: FilterSidebarProps) {
   const { setFilter, clearFilters, activeCount } = useCatalogFilters()
 
   const hasActiveFacets = activeCount > 0
+  const facetOrder = getFacetOrder(categorySlug)
 
   return (
-    <aside className="hidden w-56 flex-shrink-0 md:block">
+    <aside className="hidden w-56 flex-shrink-0 lg:block">
       {/* Header row */}
       <div className="flex items-center justify-between pb-3 border-b border-[rgba(0,30,80,0.06)]">
         <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-text-muted">
@@ -190,7 +198,7 @@ export function FilterSidebar({ facets, activeFilters }: FilterSidebarProps) {
 
       {/* Facet sections */}
       <div className="mt-1">
-        {FACET_ORDER.map((facetKey) => {
+        {facetOrder.map((facetKey) => {
           const options = facets[facetKey]
           if (!options || options.length === 0) return null
 

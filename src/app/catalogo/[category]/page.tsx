@@ -17,6 +17,7 @@ import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { breadcrumbSchema } from '@/lib/schema'
 import { MisterDeadEnd } from '@/components/features/shared/MisterDeadEnd'
+import { FilterChipRow } from '@/components/features/catalog/FilterChipRow'
 import { cn } from '@/lib/utils'
 
 interface PageProps {
@@ -28,6 +29,9 @@ interface PageProps {
     traction?: string
     transmission?: string
     brand?: string
+    fuel?: string
+    payload?: string
+    usage?: string
   }>
 }
 
@@ -69,7 +73,7 @@ const CATEGORY_SEO: Record<
 }
 
 /** Filter param keys that appear in searchParams and in the chips row */
-const FILTER_KEYS = ['hp', 'traction', 'transmission', 'brand'] as const
+const FILTER_KEYS = ['hp', 'traction', 'transmission', 'brand', 'fuel', 'payload', 'usage'] as const
 type FilterKey = (typeof FILTER_KEYS)[number]
 
 /** Human-readable label per filter key */
@@ -78,6 +82,9 @@ const FILTER_LABELS: Record<FilterKey, string> = {
   traction: 'Tracción',
   transmission: 'Transmisión',
   brand: 'Marca',
+  fuel: 'Combustible',
+  payload: 'Tonelaje',
+  usage: 'Aplicación',
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -112,7 +119,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function CategoryPage({ params, searchParams }: PageProps) {
   // Next.js 15 — both params and searchParams are Promises
   const { category } = await params
-  const { q, sub, hp, traction, transmission, brand } = await searchParams
+  const { q, sub, hp, traction, transmission, brand, fuel, payload, usage } = await searchParams
 
   const cat = await getCategoryBySlug(category)
   if (!cat) notFound()
@@ -120,7 +127,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
   const [categories, subcategories, { products }, facets] = await Promise.all([
     getCategories(),
     getSubcategories(category),
-    getProducts({ category, q, sub, hp, traction, transmission, brand }),
+    getProducts({ category, q, sub, hp, traction, transmission, brand, fuel, payload, usage }),
     getProductFacets(category, sub),
   ])
 
@@ -144,6 +151,9 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
     traction,
     transmission,
     brand,
+    fuel,
+    payload,
+    usage,
   }
   const hasActiveFilters = FILTER_KEYS.some((k) => Boolean(activeFilters[k]))
 
@@ -175,6 +185,9 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
     if (traction) params.set('traction', traction)
     if (transmission) params.set('transmission', transmission)
     if (brand) params.set('brand', brand)
+    if (fuel) params.set('fuel', fuel)
+    if (payload) params.set('payload', payload)
+    if (usage) params.set('usage', usage)
     const qs = params.toString()
     return `/catalogo/${category}${qs ? `?${qs}` : ''}`
   }
@@ -270,6 +283,13 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
               })}
             </nav>
           )}
+
+          {/* Horizontal quick-filter chip row */}
+          <FilterChipRow
+            categorySlug={category}
+            facets={facets}
+            activeFilters={definedFilters}
+          />
 
           {/* Active filters chips row */}
           {hasActiveFilters && (

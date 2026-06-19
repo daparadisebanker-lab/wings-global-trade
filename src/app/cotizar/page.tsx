@@ -28,7 +28,7 @@ export default function CotizarPage() {
         <div className="mx-auto w-full max-w-6xl">
           <div className="max-w-2xl">
             <div className="wings-rule mb-8" />
-            <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.15em] text-warm-white/30">
+            <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.15em] text-warm-white/50">
               Cotización · Wings Global Trade
             </p>
             <h1 className="font-display text-display-xl font-light text-warm-white leading-[0.95] tracking-[-0.02em]">
@@ -50,7 +50,7 @@ export default function CotizarPage() {
             ].map((s) => (
               <div key={s.label}>
                 <div className="font-display text-2xl font-light text-gold leading-none">{s.value}</div>
-                <div className="mt-1 font-mono text-[9px] uppercase tracking-[0.15em] text-warm-white/35">{s.label}</div>
+                <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-warm-white/50">{s.label}</div>
               </div>
             ))}
           </div>

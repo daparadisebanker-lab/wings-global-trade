@@ -56,18 +56,32 @@ Rango tractores: 50 HP (New Holland SH504) a 140 HP (New Holland TM140, JD 6E140
 Para potencias mayores a 140 HP: sourcing personalizado (flujo TPR).
 URL base: /catalogo/maquinaria-agricola/{slug}
 
---- CAMIONES — KAMA (origen China, múltiples configuraciones) ---
+--- CAMIONES — KAMA (origen China, 12 series, +50 variantes) ---
+Cada serie KAMA tiene múltiples variantes (modelos). Al mencionar KAMA, especifica la serie Y el modelo concreto.
+Catálogo completo en: src/data/kama-trucks.json
 
-kama-serie-w   | KAMA Serie W     | Gasolina Euro-VI | Carga: 1,5 T | GVW: 3.040 kg | 122 HP | Cabina doble | urbano
-kama-serie-x   | KAMA Serie X     | Gas/GNC/Diésel   | Carga: 2–2,5 T | GVW: hasta 4.600 kg | 107–131 HP | multienergía
-kama-serie-v   | KAMA Serie V     | Gasolina Euro-VI | Carga: 1,2–1,5 T | GVW: 2.700–3.250 kg | hasta 148 HP | distribución urbana
-kama-m36f      | KAMA M36F        | Diésel Euro-VI   | Carga: 4 T | GVW: 5.580 kg | Motor: Weichai WP2.3 148 HP | único Euro-VI serie M3
-kama-serie-m6  | KAMA Serie M6    | Gas/Diésel       | Carga: 3,5–10 T | GVW: 6.320–14.870 kg | 148–201 HP | motor Isuzu opcional | cabina 2.030 mm
-kama-gm67e     | KAMA GM67E       | Diésel Euro-V    | Carga: 10 T | GVW: 16.620 kg | Motor: Yunnei YNF40E1 168 HP | caja alta pared 800mm
-kama-serie-ew-ev  | KAMA EW/EV    | Eléctrico BEV    | Carga: 1–1,5 T | GVW: 2.100–3.390 kg | 35 kW / 70 kW pico | autonomía 130–280 km | baterías CATL/EVE
-kama-serie-es-esp | KAMA ES/ESP   | Eléctrico BEV    | Carga/pasajeros 11–18 | GVW: 3.050–3.350 kg | 35–70 kW | cumple ECE
-kama-serie-ex-em  | KAMA EX/EM    | Eléctrico BEV    | Carga: hasta 8 T | GVW: 3.510–8.000 kg | 35–70 kW / 140 kW pico | batería hasta 141 kWh
+MINI TRUCKS A GASOLINA / GNC / DIÉSEL:
+kama-serie-w | KAMA W Series | Gasolina Euro-V/VI | 5 variantes: W11(1T,WB2700), W12(1T,WB2700), W15S(1.5T,doble cab,WB3300), W21(1T,91kW,WB3300), W25S(1.5T,doble,91kW,WB3600) | Cabina 1600mm | GVW 2.260–3.040 kg
+kama-serie-x | KAMA X Series | Gas+GNC+Diésel | 5 variantes: X11(gas,2T), X12CNG(GNC,2T), XS1C(diésel Euro-III,2T), XS2D(diésel Euro-IV,2.5T), XS3E(diésel Euro-V,2.5T) | Cabina 1750mm | GVW hasta 4.600 kg
+kama-serie-v | KAMA V Series | Gasolina+GNC | 5 variantes: V11(gas Euro-III,1T), V12(gas Euro-VI,1.2T), V13CNG(GNC,1.5T), V13SCNG(GNC doble,1.5T), V15(gas 110kW,1.5T) | Cabina 1715mm | GVW 2.465–3.400 kg
+kama-serie-s | KAMA S Series | Gasolina+GNC | 4 variantes: S11(1.5T), S12(2T,2L), S31(GNC,1.5T), S32(GNC doble,2T) | Cabina 1750mm | Furgón cargo y doble cab | GVW hasta 4.000 kg
+
+CAMIONES LIGEROS / MEDIANOS:
+kama-serie-k  | KAMA K Series | Diésel+Gasolina | 5 variantes: GK56E(diésel Euro-V,2.5T,YUNNEI), K66A(diésel,2T,ISUZU), K67B(diésel,2.5T,ISUZU), K68B(diésel,2.5T,YUNNEI,cab1.5), K69B(gasolina,4T,YUCHAI) | Cabina 1680mm | GVW 4.280–6.520 kg
+kama-serie-m1 | KAMA M1 Series | Diésel | 3 variantes: M11(2T,ISUZU), M15(2.5T,ISUZU Euro-V), M21(3.5T,ISUZU Euro-VI 4KH1-TC) | Cabina 1700mm | GVW 4.200–6.300 kg
+kama-serie-m3 | KAMA M3 Series | Diésel | 4 variantes: M31(3T,ISUZU Euro-III), M33(4.5T,ISUZU Euro-V), M36F(4T,Weichai Euro-VI), M36(6.5T,YUCHAI) | Cabina 1900mm | GVW hasta 11.500 kg | Motor ISUZU 4KH1-TC opción
+kama-serie-m6 | KAMA M6 Series | Diésel | 3 variantes: M61(4T), M62(6T,ISUZU), M63(10T,YUNNEI 125kW) | Cabina 2030mm | GVW hasta 16.800 kg
+
+VOLQUETES (DUMPER):
+kama-serie-gm | KAMA GM Series | Diésel | 4 variantes: GM36B(6.5T,YUCHAI Euro-II), GM37D(6.5T,YUCHAI Euro-IV), GM66B(12T,YUCHAI 96kW,GVW 18.300kg), GM67E(10T,YUNNEI 125kW,GVW 16.620kg) | Cabina 1900/2030mm | Frenos de aire | 8+2 velocidades
+
+ELÉCTRICOS (BEV):
+kama-serie-ew-ev | KAMA EW/EV Series | BEV | 5 variantes: EW1(1T,130km,GOTION 24kWh), EW2(1.5T,200km,EVE 38kWh), EV1(1.5T,220km,GOTION 42kWh), EV2(1.5T,280km,CATL 54kWh), EV3(1.5T,260km,GOTION 51kWh) | Motor 35/70kW | Cabina 1600mm | RHD disponible
+kama-serie-es-esp | KAMA ES/ESP Series | BEV | 4 variantes: ES1(cargo,220km), ES2(cargo,280km), ESP1(pasajeros 1+8,220km), ESP2(pasajeros 1+5,280km) | Batería CATL LFP | CCS2 | Norma ECE
+kama-serie-ex-em | KAMA EX/EM Series | BEV | 5 variantes: EX1(1.5T,230km,EVE 55kWh,INOVANCE), EX2(2T,280km,EVE 67kWh), EM31(2.5T,290km,EVE 81kWh,DANA 60/115kW), EM32(3T,350km,CATL 100kWh), EM61(4T,360km,GOTION 141kWh,DANA 70/140kW) | GVW hasta 8.000 kg
+
 URL base: /catalogo/camiones/{slug}
+Slugs válidos: kama-serie-w | kama-serie-x | kama-serie-v | kama-serie-s | kama-serie-k | kama-serie-m1 | kama-serie-m3 | kama-serie-m6 | kama-serie-gm | kama-serie-ew-ev | kama-serie-es-esp | kama-serie-ex-em
 
 --- BUSES (en catálogo, cotización directa) ---
 bus-urbano-12m      | Bus Urbano 12m       | 90 pasajeros | 12 m | 280 HP | piso bajo | Euro V
@@ -157,7 +171,7 @@ ZOFRATACNA (Tacna, Perú): sirve a Perú y Bolivia. ZOFRI (Iquique, Chile): sirv
 // ---------------------------------------------------------------------------
 
 export const MISTER_GREETING =
-  'Soy Mister, asesor de importación de Wings Global Trade. Tenemos en catálogo tractores New Holland y John Deere de 50 a 140 HP, Kubota, Massey Ferguson, camiones y buses KAMA, equipo industrial y repuestos — con gestión CIF completa para Perú, Chile y LATAM. ¿Qué necesitas importar?'
+  'Soy Mister, asesor de importación de Wings Global Trade. Tenemos en catálogo tractores New Holland y John Deere de 50 a 140 HP, Kubota, Massey Ferguson; camiones KAMA en 12 series con más de 50 variantes (gasolina, diésel, GNC y eléctrico BEV hasta 360km); buses y equipo industrial — gestión CIF completa para Perú, Chile y LATAM. ¿Qué necesitas importar?'
 
 // ---------------------------------------------------------------------------
 // CATALOG MATCHING — behavior rules injected as text
@@ -175,6 +189,7 @@ Cuando el usuario describe una necesidad (HP, marca, uso, tipo de producto):
 5. Para cotización de catálogo: dirige a /cotizar — NO al flujo Accio TPR.
 6. Si el usuario pide una marca que tenemos (New Holland, John Deere, Massey Ferguson, Kubota, KAMA): lista los modelos de esa marca disponibles.
 7. Si piden HP fuera del rango del catálogo (ej: > 140 HP en tractores): informa el rango disponible y ofrece sourcing personalizado (flujo TPR).
+8. Para KAMA: siempre indica la SERIE y el MODELO concreto. Ejemplo: "La serie KAMA W tiene 5 variantes — para 1.5T doble cabina te recomiendo el W15S (WB 3300mm, motor 1249cc 61kW, Euro-VI) — /catalogo/camiones/kama-serie-w".
 
 Cuando NO hay match en catálogo:
 - "Eso no lo tenemos en catálogo activo, pero lo gestionamos por importación personalizada."

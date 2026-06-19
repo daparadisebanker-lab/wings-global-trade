@@ -74,6 +74,12 @@ export interface ProductQuery {
   transmission?: string
   /** Brand value filter. Requires migration 0005. */
   brand?: string
+  /** Fuel type — gasolina | diesel | gnc | electrico | multi. Migration 0009. */
+  fuel?: string
+  /** Payload/tonnage bucket — mini | ligero | mediano | pesado. Migration 0009. */
+  payload?: string
+  /** Usage type — carga | volteo | pasajeros. Migration 0009. */
+  usage?: string
   limit?: number
   offset?: number
 }
@@ -135,6 +141,18 @@ export async function getProducts(
 
   if (query.brand) {
     builder = builder.eq('filter_attrs->>brand', query.brand)
+  }
+
+  if (query.fuel) {
+    builder = builder.eq('filter_attrs->>fuel', query.fuel)
+  }
+
+  if (query.payload) {
+    builder = builder.eq('filter_attrs->>payload', query.payload)
+  }
+
+  if (query.usage) {
+    builder = builder.eq('filter_attrs->>usage', query.usage)
   }
 
   if (query.hp) {
@@ -248,7 +266,34 @@ export interface ProductFacets {
   hp: FacetOption[]
   traction: FacetOption[]
   transmission: FacetOption[]
+  fuel: FacetOption[]
+  payload: FacetOption[]
+  usage: FacetOption[]
 }
+
+export const FUEL_LABELS: Record<string, string> = {
+  gasolina: 'Gasolina',
+  diesel: 'Diésel',
+  gnc: 'GNC',
+  electrico: 'Eléctrico',
+  multi: 'Multi-combustible',
+}
+
+export const PAYLOAD_ORDER = ['mini', 'ligero', 'mediano', 'pesado'] as const
+export const PAYLOAD_LABELS: Record<string, string> = {
+  mini: 'Mini (< 3.5T)',
+  ligero: 'Ligero (3.5–7T)',
+  mediano: 'Mediano (7–14T)',
+  pesado: 'Pesado (14T+)',
+}
+
+export const USAGE_LABELS: Record<string, string> = {
+  carga: 'Carga',
+  volteo: 'Volteo',
+  pasajeros: 'Pasajeros',
+}
+
+const FUEL_ORDER = ['gasolina', 'diesel', 'gnc', 'electrico', 'multi'] as const
 
 /**
  * Compute facets for a category from ALL products (ignoring hp/brand/traction/transmission filters).
@@ -297,6 +342,9 @@ export async function getProductFacets(
   const hpBucketCounts: Record<string, number> = {}
   const tractionCounts: Record<string, number> = {}
   const transmissionCounts: Record<string, number> = {}
+  const fuelCounts: Record<string, number> = {}
+  const payloadCounts: Record<string, number> = {}
+  const usageCounts: Record<string, number> = {}
 
   for (const row of rows) {
     const attrs = row.filter_attrs
@@ -328,6 +376,21 @@ export async function getProductFacets(
       const tr = attrs.transmission
       transmissionCounts[tr] = (transmissionCounts[tr] ?? 0) + 1
     }
+
+    if (typeof attrs?.fuel === 'string') {
+      const f = attrs.fuel
+      fuelCounts[f] = (fuelCounts[f] ?? 0) + 1
+    }
+
+    if (typeof attrs?.payload === 'string') {
+      const p = attrs.payload
+      payloadCounts[p] = (payloadCounts[p] ?? 0) + 1
+    }
+
+    if (typeof attrs?.usage === 'string') {
+      const u = attrs.usage
+      usageCounts[u] = (usageCounts[u] ?? 0) + 1
+    }
   }
 
   const TRACTION_LABELS: Record<string, string> = { '4wd': '4WD', '2wd': '2WD' }
@@ -352,6 +415,19 @@ export async function getProductFacets(
     transmission: Object.entries(transmissionCounts)
       .sort((a, b) => b[1] - a[1])
       .map(([v, c]) => ({ value: v, label: TRANSMISSION_LABELS[v] ?? v, count: c })),
+    fuel: FUEL_ORDER.filter((f) => fuelCounts[f] > 0).map((f) => ({
+      value: f,
+      label: FUEL_LABELS[f] ?? f,
+      count: fuelCounts[f],
+    })),
+    payload: PAYLOAD_ORDER.filter((p) => payloadCounts[p] > 0).map((p) => ({
+      value: p,
+      label: PAYLOAD_LABELS[p] ?? p,
+      count: payloadCounts[p],
+    })),
+    usage: Object.entries(usageCounts)
+      .sort((a, b) => b[1] - a[1])
+      .map(([v, c]) => ({ value: v, label: USAGE_LABELS[v] ?? v, count: c })),
   }
 }
 
@@ -400,6 +476,15 @@ function filterSeedProducts(
   }
   if (query.brand) {
     list = list.filter((p) => (p.filter_attrs as Record<string, unknown> | undefined)?.brand === query.brand)
+  }
+  if (query.fuel) {
+    list = list.filter((p) => (p.filter_attrs as Record<string, unknown> | undefined)?.fuel === query.fuel)
+  }
+  if (query.payload) {
+    list = list.filter((p) => (p.filter_attrs as Record<string, unknown> | undefined)?.payload === query.payload)
+  }
+  if (query.usage) {
+    list = list.filter((p) => (p.filter_attrs as Record<string, unknown> | undefined)?.usage === query.usage)
   }
   if (query.hp) {
     const hpRange = parseHpRange(query.hp)

@@ -8,6 +8,7 @@ import type { Product, Category } from '@/types/database'
 import { Badge } from '@/components/ui/badge'
 import { STAGGER_ITEM } from '@/lib/motion'
 import { useComparison } from '@/hooks/useComparison'
+import { cn } from '@/lib/utils'
 
 interface ProductCardProps {
   product: Product
@@ -80,34 +81,12 @@ export function ProductCard({ product, category }: ProductCardProps) {
               </div>
             )}
 
-            {/* Compare toggle button — top-right, visible on hover */}
-            <button
-              onClick={handleCompareToggle}
-              disabled={isDisabled}
-              aria-label={inComparison ? 'Quitar de comparación' : 'Agregar a comparación'}
-              title={
-                isDisabled
-                  ? 'Comparación llena (máx. 3 productos)'
-                  : inComparison
-                    ? 'Quitar de comparación'
-                    : 'Agregar a comparación'
-              }
-              className={`
-                absolute right-2 top-2 z-10 flex h-7 w-7 items-center justify-center rounded-full
-                transition-all duration-200
-                opacity-0 group-hover:opacity-100
-                disabled:cursor-not-allowed disabled:opacity-30
-                ${
-                  inComparison
-                    ? 'bg-gold text-navy'
-                    : 'bg-white/90 text-navy hover:bg-gold hover:text-navy'
-                }
-              `}
-            >
-              <span className="text-[13px] font-medium leading-none">
-                {inComparison ? '✓' : '+'}
-              </span>
-            </button>
+            {/* Compare indicator dot — top-right, shows when in comparison */}
+            {inComparison && (
+              <div className="absolute right-2 top-2 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-gold">
+                <span className="text-[10px] font-medium leading-none text-navy">✓</span>
+              </div>
+            )}
           </div>
 
           {/* Card body */}
@@ -139,11 +118,25 @@ export function ProductCard({ product, category }: ProductCardProps) {
             {/* Gold rule — expands on hover */}
             <div className="h-px w-6 bg-gold/40 transition-all duration-300 group-hover:w-12 group-hover:bg-gold mb-4" />
 
-            {/* CTA */}
-            <div className="mt-auto">
+            {/* Footer actions */}
+            <div className="mt-auto flex items-center justify-between gap-2">
               <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-navy/40 transition-colors group-hover:text-gold/70">
-                A cotizar →
+                Ver ficha →
               </span>
+              <button
+                onClick={handleCompareToggle}
+                disabled={isDisabled}
+                aria-label={inComparison ? 'Quitar de comparación' : 'Agregar a comparación'}
+                className={cn(
+                  'font-mono text-[10px] uppercase tracking-[0.10em] transition-colors duration-150',
+                  inComparison
+                    ? 'text-gold'
+                    : 'text-navy/30 hover:text-gold',
+                  isDisabled && 'cursor-not-allowed opacity-30',
+                )}
+              >
+                {inComparison ? '✓ Añadido' : '+ Comparar'}
+              </button>
             </div>
           </div>
         </motion.article>

@@ -7,7 +7,7 @@
 import { useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
-export type FilterKey = 'sub' | 'hp' | 'traction' | 'transmission' | 'brand'
+export type FilterKey = 'sub' | 'hp' | 'traction' | 'transmission' | 'brand' | 'fuel' | 'payload' | 'usage'
 
 export interface CatalogFilterState {
   sub: string | null
@@ -15,6 +15,9 @@ export interface CatalogFilterState {
   traction: string | null
   transmission: string | null
   brand: string | null
+  fuel: string | null
+  payload: string | null
+  usage: string | null
 }
 
 export interface UseCatalogFiltersReturn {
@@ -34,6 +37,9 @@ export function useCatalogFilters(): UseCatalogFiltersReturn {
     traction: searchParams.get('traction'),
     transmission: searchParams.get('transmission'),
     brand: searchParams.get('brand'),
+    fuel: searchParams.get('fuel'),
+    payload: searchParams.get('payload'),
+    usage: searchParams.get('usage'),
   }
 
   const activeCount = Object.values(filters).filter(Boolean).length

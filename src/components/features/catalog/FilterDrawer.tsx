@@ -138,6 +138,9 @@ const FACET_PARAM_MAP: Record<FacetKey, FilterKey> = {
   transmission: 'transmission',
   brand: 'brand',
   subcategories: 'sub',
+  fuel: 'fuel',
+  payload: 'payload',
+  usage: 'usage',
 }
 
 const FACET_LABELS: Record<FacetKey, string> = {
@@ -146,9 +149,17 @@ const FACET_LABELS: Record<FacetKey, string> = {
   transmission: 'Transmisión',
   brand: 'Marca',
   subcategories: 'Categoría',
+  fuel: 'Combustible',
+  payload: 'Tonelaje',
+  usage: 'Aplicación',
 }
 
-const FACET_ORDER: FacetKey[] = ['subcategories', 'hp', 'traction', 'transmission', 'brand']
+function getFacetOrder(categorySlug: string): FacetKey[] {
+  if (categorySlug === 'camiones') {
+    return ['subcategories', 'fuel', 'payload', 'usage', 'hp', 'traction', 'transmission', 'brand']
+  }
+  return ['subcategories', 'hp', 'traction', 'transmission', 'brand']
+}
 
 // ---------------------------------------------------------------------------
 // FloatingTriggerButton — fixed at bottom-right, always rendered
@@ -208,6 +219,7 @@ function FloatingTriggerButton({ activeCount, onClick }: FloatingTriggerProps) {
 export function FilterDrawer({
   facets,
   activeFilters,
+  categorySlug,
   isOpen,
   onOpen,
   onClose,
@@ -294,7 +306,7 @@ export function FilterDrawer({
 
               {/* Facet groups */}
               <div>
-                {FACET_ORDER.map((facetKey) => {
+                {getFacetOrder(categorySlug).map((facetKey) => {
                   const options = facets[facetKey]
                   if (!options || options.length === 0) return null
 

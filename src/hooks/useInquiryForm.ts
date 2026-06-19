@@ -1,7 +1,7 @@
 // src/hooks/useInquiryForm.ts
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { CatalogLeadRequest } from '@/types/api'
 
 interface InquiryFormState {
@@ -27,12 +27,16 @@ const EMPTY: InquiryFormState = {
 interface UseInquiryFormArgs {
   productId?: string
   productName: string
+  selectedModel?: string
 }
 
-export function useInquiryForm({ productId, productName }: UseInquiryFormArgs) {
+export function useInquiryForm({ productId, productName, selectedModel }: UseInquiryFormArgs) {
   const [values, setValues] = useState<InquiryFormState>(EMPTY)
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [errors, setErrors] = useState<Partial<Record<keyof InquiryFormState, string>>>({})
+  // Ref so submit callback always reads the latest model without needing it in deps
+  const selectedModelRef = useRef(selectedModel)
+  useEffect(() => { selectedModelRef.current = selectedModel }, [selectedModel])
 
   const setField = useCallback(
     (field: keyof InquiryFormState, value: string) => {
@@ -58,6 +62,10 @@ export function useInquiryForm({ productId, productName }: UseInquiryFormArgs) {
     if (!validate()) return false
     setStatus('submitting')
 
+    const effectiveName = selectedModelRef.current
+      ? `${productName} — ${selectedModelRef.current}`
+      : productName
+
     const payload: CatalogLeadRequest = {
       full_name: values.full_name.trim(),
       company: values.company.trim() || undefined,
@@ -65,7 +73,7 @@ export function useInquiryForm({ productId, productName }: UseInquiryFormArgs) {
       phone: values.phone.trim(),
       destination_country: values.destination_country,
       product_id: productId,
-      product_name: productName,
+      product_name: effectiveName,
       quantity: values.quantity.trim(),
       message: values.message.trim() || undefined,
       source_url: typeof window !== 'undefined' ? window.location.href : undefined,

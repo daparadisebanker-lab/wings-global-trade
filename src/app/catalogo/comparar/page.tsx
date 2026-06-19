@@ -27,7 +27,6 @@ async function fetchProductsByIds(ids: string[]): Promise<Product[]> {
 
   const supabase = createServiceClient()
   if (!supabase) {
-    // Fall back to seed data
     const seedProducts = seed.products as unknown as Product[]
     return seedProducts.filter((p) => ids.includes(p.id))
   }
@@ -77,13 +76,49 @@ async function fetchCategoriesForProducts(
 }
 
 // ---------------------------------------------------------------------------
-// Spec key union — collect all unique spec keys across compared products
+// Spec grouping — mirrors ProductSpecTable grouping logic
 // ---------------------------------------------------------------------------
+
+const SPEC_GROUPS: { label: string; pattern: RegExp }[] = [
+  { label: 'Motor',       pattern: /HP|Potencia|RPM|Motor|Cilindro|Desplazamiento|Combustible|Aspiración|CV/i },
+  { label: 'Transmisión', pattern: /Transmisión|Velocidad|Tracción|Embrague|Marcha/i },
+  { label: 'Hidráulica',  pattern: /Hidráulico|Caudal|Presión|Enganche|PTO|Bomba/i },
+  { label: 'Dimensiones', pattern: /Largo|Ancho|Alto|Peso|Longitud|Anchura|Altura|Batalla|Distancia/i },
+  { label: 'Capacidad',   pattern: /Capacidad|Depósito|Tanque|Litro|Carga/i },
+]
+
+function getSpecGroup(key: string): string {
+  for (const g of SPEC_GROUPS) {
+    if (g.pattern.test(key)) return g.label
+  }
+  return 'General'
+}
+
+function groupSpecKeys(keys: string[]): { label: string; keys: string[] }[] {
+  const map = new Map<string, string[]>()
+  const order: string[] = []
+  for (const key of keys) {
+    const g = getSpecGroup(key)
+    if (!map.has(g)) { map.set(g, []); order.push(g) }
+    map.get(g)!.push(key)
+  }
+  return order.map((label) => ({ label, keys: map.get(label)! }))
+}
 
 function collectSpecKeys(products: Product[]): string[] {
   const keys = new Set<string>()
   products.forEach((p) => Object.keys(p.specs).forEach((k) => keys.add(k)))
   return Array.from(keys)
+}
+
+// Returns true if a numeric value can be extracted for comparison
+function extractNumeric(val: string): number | null {
+  const m = val.match(/^([\d,]+\.?\d*)/)
+  if (m) {
+    const n = parseFloat(m[1].replace(',', ''))
+    return isNaN(n) ? null : n
+  }
+  return null
 }
 
 // ---------------------------------------------------------------------------
@@ -149,14 +184,10 @@ export default async function CompararPage({ searchParams }: PageProps) {
 
   const products = await fetchProductsByIds(rawIds)
 
-  // If products came back empty after a valid ID list (e.g. stale localStorage)
   if (products.length === 0) {
     return (
       <>
-        <PageHero
-          eyebrow="Comparación técnica"
-          title="Comparar modelos"
-        />
+        <PageHero eyebrow="Comparación técnica" title="Comparar modelos" />
         <div className="bg-warm-white px-6 py-24 md:px-10">
           <div className="mx-auto w-full max-w-6xl">
             <Breadcrumb
@@ -188,14 +219,24 @@ export default async function CompararPage({ searchParams }: PageProps) {
 
   const categoryIds = [...new Set(products.map((p) => p.category_id))]
   const categoryMap = await fetchCategoriesForProducts(categoryIds)
-  const specKeys = collectSpecKeys(products)
+  const allSpecKeys = collectSpecKeys(products)
+  const groupedSpecs = groupSpecKeys(allSpecKeys)
+
+  // Count how many specs actually differ across products
+  const differingCount = allSpecKeys.filter((key) => {
+    const vals = products.map((p) => p.specs[key] ?? '—')
+    const nonMissing = vals.filter((v) => v !== '—')
+    return new Set(nonMissing).size > 1
+  }).length
+
+  const colMinWidth = products.length === 2 ? 220 : 180
 
   return (
     <>
       <PageHero
         eyebrow="Comparación técnica"
         title="Comparar modelos"
-        subtitle={`Comparando ${products.length} producto${products.length > 1 ? 's' : ''} seleccionado${products.length > 1 ? 's' : ''}.`}
+        subtitle={`Comparando ${products.length} producto${products.length > 1 ? 's' : ''} · ${differingCount} especificación${differingCount !== 1 ? 'es' : ''} con diferencias`}
       />
 
       <div className="bg-warm-white px-4 py-10 md:px-10">
@@ -209,7 +250,7 @@ export default async function CompararPage({ searchParams }: PageProps) {
           />
 
           {products.length === 2 && products[0].images[0] && products[1].images[0] && (
-            <div className="mb-10">
+            <div className="mt-8 mb-10">
               <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.15em] text-text-muted">
                 Comparación visual
               </p>
@@ -220,13 +261,33 @@ export default async function CompararPage({ searchParams }: PageProps) {
             </div>
           )}
 
-          <div className="mt-10 overflow-x-auto">
-            <table className="w-full border-collapse">
+          {/* Difference summary chips */}
+          <div className="mt-8 mb-6 flex items-center gap-3 flex-wrap">
+            <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-navy/40">
+              Resumen
+            </span>
+            <span className="border border-gold/25 bg-gold/[0.05] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.10em] text-navy">
+              {differingCount} diferencias
+            </span>
+            <span className="border border-[rgba(0,30,80,0.10)] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.10em] text-navy/50">
+              {allSpecKeys.length - differingCount} coincidencias
+            </span>
+          </div>
+
+          {/* Comparison table — horizontally scrollable on mobile */}
+          <div className="overflow-x-auto rounded-none">
+            <table
+              className="w-full border-collapse"
+              style={{ minWidth: `${160 + products.length * colMinWidth}px` }}
+            >
               {/* Product header row */}
               <thead>
                 <tr>
-                  {/* Spec key column header */}
-                  <th className="w-44 border-b border-[rgba(0,30,80,0.08)] py-4 pr-6 text-left align-bottom">
+                  {/* Sticky spec key column header */}
+                  <th
+                    className="sticky left-0 z-20 w-40 bg-warm-white border-b border-[rgba(0,30,80,0.08)] py-4 pr-6 text-left align-bottom"
+                    style={{ minWidth: '160px' }}
+                  >
                     <span className="font-mono text-[10px] uppercase tracking-widest-3 text-text-muted">
                       Especificación
                     </span>
@@ -239,10 +300,10 @@ export default async function CompararPage({ searchParams }: PageProps) {
                     return (
                       <th
                         key={product.id}
-                        className="min-w-[200px] border-b border-[rgba(0,30,80,0.08)] px-4 py-4 text-left align-top"
+                        className="border-b border-[rgba(0,30,80,0.08)] px-4 py-4 text-left align-top"
+                        style={{ minWidth: `${colMinWidth}px` }}
                       >
-                        {/* Product image */}
-                        <div className="relative mb-3 aspect-[4/3] w-full overflow-hidden rounded-wings bg-[#EDEAE1]">
+                        <div className="relative mb-3 aspect-[4/3] w-full overflow-hidden bg-[#EDEAE1]">
                           {image ? (
                             <Image
                               src={image}
@@ -258,24 +319,19 @@ export default async function CompararPage({ searchParams }: PageProps) {
                           )}
                         </div>
 
-                        {/* Category badge */}
                         {category && (
                           <Badge variant="muted" className="mb-2">
                             {category.name_es}
                           </Badge>
                         )}
 
-                        {/* Product name */}
-                        <p className="font-display text-display-sm font-light text-navy">
+                        <p className="font-display text-lg font-light text-navy leading-tight">
                           {product.name_es}
                         </p>
 
-                        {/* Source markets */}
                         <div className="mt-2 flex flex-wrap gap-1">
                           {product.source_markets.map((m) => (
-                            <Badge key={m} variant="source">
-                              {m}
-                            </Badge>
+                            <Badge key={m} variant="source">{m}</Badge>
                           ))}
                         </div>
                       </th>
@@ -284,50 +340,108 @@ export default async function CompararPage({ searchParams }: PageProps) {
                 </tr>
               </thead>
 
-              {/* Spec rows */}
+              {/* Spec rows — grouped by category */}
               <tbody>
-                {specKeys.map((key) => {
-                  const values = products.map((p) => p.specs[key] ?? '—')
-                  const uniqueValues = new Set(values.filter((v) => v !== '—'))
-                  const hasDifference = uniqueValues.size > 1
-
-                  return (
-                    <tr
-                      key={key}
-                      className="border-b border-[rgba(0,30,80,0.05)] last:border-0"
-                    >
-                      <td className="py-3 pr-6 align-middle">
-                        <span className="font-mono text-mono-sm text-text-muted">{key}</span>
+                {groupedSpecs.map(({ label, keys }) => (
+                  <>
+                    {/* Group header row */}
+                    <tr key={`g-${label}`}>
+                      <td
+                        colSpan={products.length + 1}
+                        className="sticky left-0 bg-warm-white pt-6 pb-1"
+                      >
+                        <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-gold/50">
+                          {label}
+                        </span>
+                        <div className="mt-1 h-px w-full bg-[rgba(0,30,80,0.06)]" />
                       </td>
-
-                      {products.map((product) => {
-                        const value = product.specs[key] ?? '—'
-                        const isMissing = value === '—'
-
-                        return (
-                          <td
-                            key={product.id}
-                            className={`px-4 py-3 align-middle ${
-                              hasDifference && !isMissing ? 'bg-gold/10' : ''
-                            }`}
-                          >
-                            <span
-                              className={`font-mono text-mono-sm ${
-                                isMissing ? 'text-text-muted/40' : 'text-text-mono'
-                              }`}
-                            >
-                              {value}
-                            </span>
-                          </td>
-                        )
-                      })}
                     </tr>
-                  )
-                })}
+
+                    {keys.map((key) => {
+                      const values = products.map((p) => p.specs[key] ?? '—')
+                      const nonMissing = values.filter((v) => v !== '—')
+                      const hasDifference = new Set(nonMissing).size > 1
+
+                      // For numeric comparison: find which product has the highest value
+                      const numerics = values.map(extractNumeric)
+                      const maxNumeric = numerics.reduce<number | null>(
+                        (acc, n) => (n !== null && (acc === null || n > acc) ? n : acc),
+                        null,
+                      )
+
+                      return (
+                        <tr
+                          key={key}
+                          className="border-b border-[rgba(0,30,80,0.04)] last:border-0 hover:bg-gold/[0.02] transition-colors"
+                        >
+                          {/* Sticky key cell */}
+                          <td
+                            className="sticky left-0 z-10 bg-warm-white py-3 pr-6 align-middle"
+                            style={{ minWidth: '160px' }}
+                          >
+                            <span className="font-mono text-[11px] text-navy/50">{key}</span>
+                            {hasDifference && (
+                              <span className="ml-2 inline-block h-1.5 w-1.5 rounded-full bg-gold/60 align-middle" />
+                            )}
+                          </td>
+
+                          {products.map((product, pi) => {
+                            const value = values[pi]
+                            const isMissing = value === '—'
+                            const num = numerics[pi]
+                            const isHighest = num !== null && num === maxNumeric && maxNumeric !== null
+                            const isDiff = hasDifference && !isMissing
+
+                            return (
+                              <td
+                                key={product.id}
+                                className={`px-4 py-3 align-middle transition-colors ${
+                                  isDiff ? 'bg-gold/[0.06]' : ''
+                                }`}
+                              >
+                                <span
+                                  className={`font-mono text-[12px] ${
+                                    isMissing
+                                      ? 'text-navy/20'
+                                      : isDiff && isHighest && products.length > 1
+                                      ? 'font-semibold text-gold'
+                                      : isDiff
+                                      ? 'text-navy'
+                                      : 'text-navy/60'
+                                  }`}
+                                >
+                                  {value}
+                                </span>
+                              </td>
+                            )
+                          })}
+                        </tr>
+                      )
+                    })}
+                  </>
+                ))}
               </tbody>
 
-              {/* CTA row */}
+              {/* Legend + CTA row */}
               <tfoot>
+                <tr>
+                  <td colSpan={products.length + 1} className="pt-6 pb-3">
+                    <div className="flex items-center gap-4 flex-wrap">
+                      <div className="flex items-center gap-2">
+                        <span className="inline-block h-2 w-2 rounded-full bg-gold" />
+                        <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-navy/40">
+                          Valor más alto
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="inline-block h-2.5 w-4 rounded-sm bg-gold/[0.06] border border-gold/20" />
+                        <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-navy/40">
+                          Diferencia detectada
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
                 <tr>
                   <td className="py-6 pr-6" />
                   {products.map((product) => {
@@ -340,7 +454,7 @@ export default async function CompararPage({ searchParams }: PageProps) {
                       <td key={product.id} className="px-4 py-6 align-top">
                         <Link
                           href={inquiryHref}
-                          className="inline-flex items-center gap-2 rounded-wings bg-gold px-4 py-2.5 font-mono text-[10px] uppercase tracking-widest-2 text-navy transition-colors hover:bg-gold-hover"
+                          className="inline-flex items-center gap-2 bg-gold px-4 py-2.5 font-mono text-[10px] uppercase tracking-widest-2 text-navy transition-colors hover:bg-gold-hover"
                         >
                           Solicitar cotización →
                         </Link>
@@ -352,7 +466,6 @@ export default async function CompararPage({ searchParams }: PageProps) {
             </table>
           </div>
 
-          {/* Back link */}
           <div className="mt-10 border-t border-[rgba(0,30,80,0.06)] pt-8">
             <Link
               href="/catalogo"

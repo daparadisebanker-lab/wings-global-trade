@@ -6,6 +6,7 @@ import { HeroSection } from '@/components/features/homepage/HeroSection'
 import { CategoryGrid } from '@/components/features/homepage/CategoryGrid'
 import { TrustBar } from '@/components/features/homepage/TrustBar'
 import { MarketMap } from '@/components/features/homepage/MarketMap'
+import { BrandMarquee } from '@/components/features/homepage/BrandMarquee'
 import { SectionBlock } from '@/components/features/shared/SectionBlock'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { websiteSchema } from '@/lib/schema'
@@ -44,6 +45,7 @@ export default async function HomePage() {
 
       {/* Trust bar — navy */}
       <SectionBlock theme="navy">
+        <BrandMarquee />
         <div className="mb-14">
           <p className="mb-4 font-mono text-[10px] uppercase tracking-widest-3 text-warm-white/30">Inteligencia comercial</p>
           <h2 className="font-display text-display-sm font-light text-warm-white">

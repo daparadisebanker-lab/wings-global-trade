@@ -15,6 +15,57 @@ export interface ProductModel {
   specs_override: Record<string, string>
 }
 
+// Option B — typed variant system (replaces flat models[] for multi-config products)
+export interface VariantEngine {
+  model: string
+  displacement_cc: number
+  power_kw: number
+  power_rpm: number
+  torque_nm: number
+  torque_rpm: string
+}
+
+export interface VariantBatteryEV {
+  pack_kwh: number
+  range_km: number
+  voltage_v: number
+  battery_brand: string
+  battery_type: string
+  motor_brand: string
+  rated_peak_kw: string  // "35/70" = rated/peak
+  charger: string
+}
+
+export interface VariantFeatures {
+  abs: boolean
+  power_steering: boolean
+  ac: boolean
+  power_window: boolean
+  central_lock: boolean
+  media: string | null
+}
+
+export interface ProductVariant {
+  model: string                                       // "W11", "GM67E", "EV2"
+  fuel_type: 'gasoline' | 'diesel' | 'cng' | 'bev'
+  emission: string | null                             // "Euro-V", null for BEV
+  payload_t: number
+  cabin: string
+  wheelbase_mm: number
+  overall_dims: string                                // "4290x1690x2030"
+  cargo_box: string | null
+  curb_weight_kg: number
+  gvw_kg: number
+  max_speed_kmh: number
+  tyre: string | null
+  gearshift: string | null
+  battery_volt?: string                               // "12V" / "24V" for ICE
+  engine: VariantEngine | null
+  battery_ev: VariantBatteryEV | null
+  features: VariantFeatures
+  notes?: string
+}
+
 export interface Category {
   id: string
   slug: string
@@ -52,6 +103,7 @@ export interface Product {
   source_markets: string[]
   images: string[]
   models: ProductModel[]
+  variants?: ProductVariant[] | null
   is_active: boolean
   sort_order: number
   meta_title_es: string | null

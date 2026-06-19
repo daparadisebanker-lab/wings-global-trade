@@ -419,13 +419,13 @@ function LineField({
 }) {
   return (
     <div className="border-b border-[rgba(0,30,80,0.08)] py-5 first:border-t first:border-t-[rgba(0,30,80,0.08)]">
-      <label className="mb-3 block font-mono text-[9px] uppercase tracking-[0.18em] text-navy/40">
+      <label className="mb-3 block font-mono text-[11px] uppercase tracking-[0.14em] text-navy/55">
         {label}
-        {required && <span className="ml-1 text-gold/60">*</span>}
+        {required && <span className="ml-1 text-gold/70">*</span>}
       </label>
       {children}
       {error && (
-        <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#DC2626]/70">{error}</p>
+        <p className="mt-2 font-mono text-[11px] tracking-[0.08em] text-[#DC2626]">{error}</p>
       )}
     </div>
   )
