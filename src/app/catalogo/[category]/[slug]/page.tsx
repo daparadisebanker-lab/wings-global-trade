@@ -10,6 +10,7 @@ import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { productSchema, breadcrumbSchema } from '@/lib/schema'
 import { Button } from '@/components/ui/button'
+import { MagneticButton } from '@/components/features/catalog/MagneticButton'
 
 interface PageProps {
   params: Promise<{ category: string; slug: string }>
@@ -105,7 +106,7 @@ export default async function ProductPage({ params }: PageProps) {
         </div>
       </div>
 
-      <ProductDetail product={product} categorySlug={category} />
+      <ProductDetail product={product} categorySlug={category} totalInCategory={related.length + 1} />
 
       {/* "También podría interesarte" strip — same category, up to 4 products */}
       {related.length > 0 && cat && (
@@ -114,12 +115,18 @@ export default async function ProductPage({ params }: PageProps) {
             <p className="mb-6 font-mono text-[10px] uppercase tracking-[0.18em] text-text-muted">
               También en esta categoría
             </p>
-            {/* Mobile: horizontal scroll; Desktop: 2-col or 4-col grid */}
-            <div className="flex gap-5 overflow-x-auto pb-2 md:grid md:grid-cols-2 md:overflow-visible md:pb-0 xl:grid-cols-4">
+            {/* Responsive grid — 1 col mobile, 2 on sm, up to 4 on xl */}
+            <div
+              className={`grid gap-5 ${
+                related.length === 1
+                  ? 'grid-cols-1 max-w-xs'
+                  : related.length === 2
+                  ? 'grid-cols-1 sm:grid-cols-2'
+                  : 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-4'
+              }`}
+            >
               {related.map((p) => (
-                <div key={p.id} className="w-[240px] shrink-0 md:w-auto">
-                  <ProductCard product={p} category={cat} />
-                </div>
+                <ProductCard key={p.id} product={p} category={cat} />
               ))}
             </div>
           </div>
@@ -140,9 +147,11 @@ export default async function ProductPage({ params }: PageProps) {
             nacionalización en destino, vía ZOFRATACNA o ZOFRI.
           </p>
           <div className="mt-8">
-            <Link href="/mister">
-              <Button size="lg">Hablar con Mister</Button>
-            </Link>
+            <MagneticButton className="inline-block">
+              <Link href="/mister">
+                <Button size="lg">Hablar con Mister</Button>
+              </Link>
+            </MagneticButton>
           </div>
         </div>
       </section>
