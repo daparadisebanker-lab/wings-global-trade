@@ -369,7 +369,7 @@ export function ProductSpecTable({ specs }: ProductSpecTableProps) {
                   />
 
                   {/* Label */}
-                  <dt className="min-w-0 flex-1 truncate pl-3 font-mono text-[11px] leading-none text-navy/50">
+                  <dt className="min-w-0 flex-1 truncate pl-3 font-mono text-xs leading-none text-navy/75">
                     {key}
                   </dt>
 
