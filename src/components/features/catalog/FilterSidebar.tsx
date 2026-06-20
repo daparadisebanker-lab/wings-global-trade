@@ -91,12 +91,12 @@ function CollapsibleSection({ title, children, defaultOpen = true }: Collapsible
         className="flex w-full items-center justify-between py-3 text-left"
         aria-expanded={open}
       >
-        <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-text-muted">
+        <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-navy/65">
           {title}
         </span>
         <span
           className={cn(
-            'font-mono text-[10px] text-text-muted transition-transform duration-200',
+            'font-mono text-[10px] text-navy/65 transition-transform duration-200',
             open ? 'rotate-180' : 'rotate-0',
           )}
           aria-hidden
@@ -130,7 +130,7 @@ function FilterOption({ label, count, isActive, onToggle }: FilterOptionProps) {
         'flex w-full items-center justify-between rounded-wings px-2 py-1.5 text-left transition-colors duration-150',
         isActive
           ? 'bg-gold/10 text-navy'
-          : 'text-text-muted hover:bg-[rgba(0,30,80,0.04)] hover:text-navy',
+          : 'text-navy/70 hover:bg-[rgba(0,30,80,0.04)] hover:text-navy',
       )}
     >
       <span className="flex items-center gap-2">
@@ -163,7 +163,7 @@ function FilterOption({ label, count, isActive, onToggle }: FilterOptionProps) {
         </span>
         <span className="font-body text-[13px] leading-tight">{label}</span>
       </span>
-      <span className="font-mono text-[11px] text-text-muted">{count}</span>
+      <span className="font-mono text-[11px] text-navy/55">{count}</span>
     </button>
   )
 }
@@ -182,7 +182,7 @@ export function FilterSidebar({ facets, activeFilters, categorySlug }: FilterSid
     <aside className="hidden w-56 flex-shrink-0 lg:block">
       {/* Header row */}
       <div className="flex items-center justify-between pb-3 border-b border-[rgba(0,30,80,0.06)]">
-        <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-text-muted">
+        <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-navy/65">
           Filtrar
         </span>
         {hasActiveFacets && (
@@ -240,7 +240,7 @@ export function FilterSidebar({ facets, activeFilters, categorySlug }: FilterSid
         <button
           type="button"
           onClick={clearFilters}
-          className="mt-4 font-mono text-[10px] uppercase tracking-[0.10em] text-text-muted hover:text-navy transition-colors duration-150"
+          className="mt-4 font-mono text-[10px] uppercase tracking-[0.10em] text-navy/55 hover:text-navy transition-colors duration-150"
         >
           Limpiar filtros
         </button>

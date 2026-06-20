@@ -82,7 +82,7 @@ function Chip({ label, count, isActive, isDisabled, onToggle }: ChipProps) {
       <span>{label}</span>
       {isActive && <span className="text-gold/60">×</span>}
       {!isActive && (
-        <span className="text-[9px] text-navy/30">{count}</span>
+        <span className="text-[10px] text-navy/50">{count}</span>
       )}
     </button>
   )
@@ -110,7 +110,7 @@ export function FilterChipRow({ categorySlug, facets, activeFilters }: FilterChi
                 <div className="mx-3 h-4 w-px bg-[rgba(0,30,80,0.12)]" aria-hidden />
               )}
               {/* Group label */}
-              <span className="mr-2 shrink-0 font-mono text-[9px] uppercase tracking-[0.15em] text-navy/30">
+              <span className="mr-2 shrink-0 font-mono text-[10px] uppercase tracking-[0.15em] text-navy/55">
                 {group.label}
               </span>
               {/* Chips */}
