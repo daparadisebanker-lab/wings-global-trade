@@ -51,6 +51,12 @@ function getChipGroups(categorySlug: string, facets: FacetGroups): ChipGroupConf
     if (facets.brand?.length) groups.push({ paramKey: 'brand', label: 'Marca', options: facets.brand })
     return groups
   }
+  if (categorySlug === 'buses') {
+    const groups: ChipGroupConfig[] = []
+    if (facets.fuel?.length) groups.push({ paramKey: 'fuel', label: 'Propulsión', options: facets.fuel })
+    if (facets.brand?.length) groups.push({ paramKey: 'brand', label: 'Marca', options: facets.brand })
+    return groups
+  }
   if (facets.brand?.length) {
     return [{ paramKey: 'brand', label: 'Marca', options: facets.brand }]
   }

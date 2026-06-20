@@ -9,6 +9,7 @@ import { Footer } from '@/components/features/navigation/Footer'
 import { ToastProvider } from '@/components/ui/toast'
 import { CompareBar } from '@/components/features/catalog/CompareBar'
 import { MultiInquiryPanel } from '@/components/features/catalog/MultiInquiryPanel'
+import { ComparisonProvider } from '@/contexts/comparison-context'
 import { WINGS_TAGLINE } from '@/lib/constants'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { organizationSchema } from '@/lib/schema'
@@ -57,11 +58,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body className="font-body antialiased">
         <ToastProvider>
-          <SiteNav categories={categories} />
-          <main className="min-h-screen overflow-x-hidden">{children}</main>
-          <Footer categories={categories} />
-          <CompareBar />
-          <MultiInquiryPanel />
+          <ComparisonProvider>
+            <SiteNav categories={categories} />
+            <main className="min-h-screen overflow-x-hidden">{children}</main>
+            <Footer categories={categories} />
+            <CompareBar />
+            <MultiInquiryPanel />
+          </ComparisonProvider>
         </ToastProvider>
       </body>
     </html>

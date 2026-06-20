@@ -3,6 +3,7 @@
 // and renders a side-by-side spec comparison table.
 
 import type { Metadata } from 'next'
+import { Fragment } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { createServiceClient } from '@/lib/supabase/server'
@@ -343,9 +344,9 @@ export default async function CompararPage({ searchParams }: PageProps) {
               {/* Spec rows — grouped by category */}
               <tbody>
                 {groupedSpecs.map(({ label, keys }) => (
-                  <>
+                  <Fragment key={label}>
                     {/* Group header row */}
-                    <tr key={`g-${label}`}>
+                    <tr>
                       <td
                         colSpan={products.length + 1}
                         className="sticky left-0 bg-warm-white pt-6 pb-1"
@@ -379,7 +380,7 @@ export default async function CompararPage({ searchParams }: PageProps) {
                             className="sticky left-0 z-10 bg-warm-white py-3 pr-6 align-middle"
                             style={{ minWidth: '160px' }}
                           >
-                            <span className="font-mono text-[11px] text-navy/50">{key}</span>
+                            <span className="font-mono text-xs text-navy/75">{key}</span>
                             {hasDifference && (
                               <span className="ml-2 inline-block h-1.5 w-1.5 rounded-full bg-gold/60 align-middle" />
                             )}
@@ -418,7 +419,7 @@ export default async function CompararPage({ searchParams }: PageProps) {
                         </tr>
                       )
                     })}
-                  </>
+                  </Fragment>
                 ))}
               </tbody>
 

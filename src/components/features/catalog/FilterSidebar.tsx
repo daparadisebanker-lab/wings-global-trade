@@ -67,6 +67,9 @@ function getFacetOrder(categorySlug: string): (keyof FacetGroups)[] {
   if (categorySlug === 'camiones') {
     return ['subcategories', 'fuel', 'payload', 'usage', 'hp', 'traction', 'transmission', 'brand']
   }
+  if (categorySlug === 'buses') {
+    return ['fuel', 'brand']
+  }
   return ['subcategories', 'hp', 'traction', 'transmission', 'brand']
 }
 

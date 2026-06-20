@@ -14,6 +14,7 @@ import { VariantTable } from '@/components/features/catalog/VariantTable'
 import SavedInquiryBanner from '@/components/features/catalog/SavedInquiryBanner'
 import JumpNavigation from '@/components/features/catalog/JumpNavigation'
 import { KeySpecsRibbon } from '@/components/features/catalog/KeySpecsRibbon'
+import { ProductPassport } from '@/components/features/catalog/ProductPassport'
 
 interface ImplementLink {
   label: string
@@ -99,8 +100,9 @@ export function ProductDetail({ product, categorySlug }: ProductDetailProps) {
               </div>
             </div>
 
-            {/* Right: model selector + inquiry form */}
+            {/* Right: passport card + model selector + inquiry form */}
             <div id="consultar" className="space-y-4 lg:sticky lg:top-24 lg:self-start">
+              <ProductPassport product={product} categorySlug={category} />
               <ProductModelSelector
                 models={product.models ?? []}
                 activeIndex={modelIndex}
