@@ -42,7 +42,7 @@ const COLUMNS: MegaColumn[] = [
   },
   {
     categorySlug: 'camiones',
-    heading: 'Camiones y Volteos',
+    heading: 'Camiones',
     items: [
       { label: 'Volteos y Dumpers', sub: 'volteos' },
       { label: 'Camiones de Carga', sub: 'camiones-carga' },
@@ -52,14 +52,22 @@ const COLUMNS: MegaColumn[] = [
     ],
   },
   {
+    categorySlug: 'buses',
+    heading: 'Buses ASIASTAR',
+    items: [
+      { label: 'Buses Diésel', href: '/catalogo/buses?fuel=diesel' },
+      { label: 'Buses Eléctricos', href: '/catalogo/buses?fuel=electrico' },
+      { label: 'Hidrógeno', href: '/catalogo/buses?fuel=hidrogeno' },
+      { label: 'Chasis', href: '/catalogo/buses?fuel=chasis' },
+    ],
+  },
+  {
     categorySlug: 'equipo-industrial',
-    heading: 'Industrial + Moto',
+    heading: 'Industrial',
     items: [
       { label: 'Montacargas', sub: 'montacargas' },
       { label: 'Compactadores', sub: 'compactadores' },
       { label: 'Generadores', sub: 'generadores' },
-      { label: 'Motocicletas', href: '/catalogo/motocicletas' },
-      { label: 'Buses', href: '/catalogo/buses' },
       { label: 'Repuestos', href: '/catalogo/repuestos' },
     ],
   },
@@ -130,7 +138,7 @@ export function MegaMenu({ categories: _categories, open }: MegaMenuProps) {
           role="region"
           aria-label="Menú de catálogo"
         >
-          <div className="mx-auto grid max-w-7xl grid-cols-4 gap-0 px-10 py-10">
+          <div className="mx-auto grid max-w-7xl grid-cols-5 gap-0 px-10 py-10">
             {/* ---- Three category columns ---- */}
             {COLUMNS.map((col) => (
               <div key={col.categorySlug} className="pr-8">

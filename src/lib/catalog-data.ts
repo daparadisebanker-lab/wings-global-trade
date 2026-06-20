@@ -276,6 +276,8 @@ export const FUEL_LABELS: Record<string, string> = {
   diesel: 'Diésel',
   gnc: 'GNC',
   electrico: 'Eléctrico',
+  hidrogeno: 'Hidrógeno',
+  chasis: 'Chasis',
   multi: 'Multi-combustible',
 }
 
@@ -293,7 +295,7 @@ export const USAGE_LABELS: Record<string, string> = {
   pasajeros: 'Pasajeros',
 }
 
-const FUEL_ORDER = ['gasolina', 'diesel', 'gnc', 'electrico', 'multi'] as const
+const FUEL_ORDER = ['gasolina', 'diesel', 'gnc', 'electrico', 'hidrogeno', 'chasis', 'multi'] as const
 
 /**
  * Compute facets for a category from ALL products (ignoring hp/brand/traction/transmission filters).
