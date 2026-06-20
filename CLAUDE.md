@@ -70,10 +70,13 @@ Section alternation: navy ↔ warm-white. Never two same-color sections adjacent
 ## Typography
 
 ```
-Display/Headings: Cormorant Garamond (Google Fonts)
+Display/Headings: IBM Plex Serif (Google Fonts) — weights 300/400/500/600, normal + italic
 Body/UI:          Flexo (self-hosted, local /public/fonts/)
 Data/Mono:        DM Mono (Google Fonts)
 ```
+
+Font variables: `--font-display` (IBM Plex Serif), `--font-body` (Flexo), `--font-mono` (DM Mono).
+Brand alignment: IBM Plex Serif = Precisión · Flexo = Proximidad · DM Mono = Confianza.
 
 ---
 

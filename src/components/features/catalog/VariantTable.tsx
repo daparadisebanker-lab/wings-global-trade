@@ -1,6 +1,5 @@
 'use client'
 
-import { useRef } from 'react'
 import { cn } from '@/lib/utils'
 import type { ProductVariant } from '@/types/database'
 
@@ -22,6 +21,8 @@ interface SpecRow {
   label: string
   group: string
   getValue: (v: ProductVariant) => string | null
+  isBoolean?: boolean
+  showIfAny?: (v: ProductVariant) => boolean
 }
 
 const SPEC_ROWS: SpecRow[] = [
@@ -37,22 +38,18 @@ const SPEC_ROWS: SpecRow[] = [
     label: 'Motor / Batería',
     group: 'Motor',
     getValue: (v) =>
-      v.engine
-        ? `${v.engine.displacement_cc} cc`
-        : v.battery_ev
-          ? `${v.battery_ev.pack_kwh} kWh`
-          : '—',
+      v.engine ? `${v.engine.displacement_cc} cc`
+      : v.battery_ev ? `${v.battery_ev.pack_kwh} kWh`
+      : '—',
   },
   {
     key: 'power',
     label: 'Potencia',
     group: 'Motor',
     getValue: (v) =>
-      v.engine
-        ? `${v.engine.power_kw} kW`
-        : v.battery_ev
-          ? `${v.battery_ev.rated_peak_kw} kW`
-          : '—',
+      v.engine ? `${v.engine.power_kw} kW`
+      : v.battery_ev ? `${v.battery_ev.rated_peak_kw} kW`
+      : '—',
   },
   {
     key: 'torque',
@@ -61,127 +58,142 @@ const SPEC_ROWS: SpecRow[] = [
     getValue: (v) => (v.engine ? `${v.engine.torque_nm} Nm` : null),
   },
   // BEV only
-  {
-    key: 'range',
-    label: 'Autonomía (WLTP)',
-    group: 'Batería',
-    getValue: (v) => (v.battery_ev ? `${v.battery_ev.range_km} km` : null),
-  },
-  {
-    key: 'battery_brand',
-    label: 'Marca batería',
-    group: 'Batería',
-    getValue: (v) => (v.battery_ev ? v.battery_ev.battery_brand : null),
-  },
-  {
-    key: 'charger',
-    label: 'Carga',
-    group: 'Batería',
-    getValue: (v) => (v.battery_ev ? v.battery_ev.charger : null),
-  },
+  { key: 'range', label: 'Autonomía (WLTP)', group: 'Batería', getValue: (v) => (v.battery_ev ? `${v.battery_ev.range_km} km` : null) },
+  { key: 'battery_brand', label: 'Marca batería', group: 'Batería', getValue: (v) => (v.battery_ev ? v.battery_ev.battery_brand : null) },
+  { key: 'charger', label: 'Carga', group: 'Batería', getValue: (v) => (v.battery_ev ? v.battery_ev.charger : null) },
   // Dimensiones
   { key: 'wheelbase', label: 'Batalla', group: 'Dimensiones', getValue: (v) => `${v.wheelbase_mm} mm` },
   { key: 'cabin', label: 'Cabina', group: 'Dimensiones', getValue: (v) => v.cabin },
-  {
-    key: 'overall',
-    label: 'Dim. ext. (L×A×H)',
-    group: 'Dimensiones',
-    getValue: (v) => v.overall_dims.replace(/x/g, '×') + ' mm',
-  },
-  {
-    key: 'cargo',
-    label: 'Caja de carga',
-    group: 'Dimensiones',
-    getValue: (v) => (v.cargo_box ? v.cargo_box.replace(/x/g, '×') + ' mm' : '—'),
-  },
+  { key: 'overall', label: 'Dim. ext. (L×A×H)', group: 'Dimensiones', getValue: (v) => v.overall_dims.replace(/x/g, '×') + ' mm' },
+  { key: 'cargo', label: 'Caja de carga', group: 'Dimensiones', getValue: (v) => (v.cargo_box ? v.cargo_box.replace(/x/g, '×') + ' mm' : '—') },
   // Transmisión
   { key: 'gearshift', label: 'Caja de cambios', group: 'Transmisión', getValue: (v) => v.gearshift ?? '—' },
   { key: 'tyre', label: 'Neumático', group: 'Transmisión', getValue: (v) => v.tyre ?? '—' },
   { key: 'max_speed', label: 'Vel. máxima', group: 'Transmisión', getValue: (v) => `${v.max_speed_kmh} km/h` },
+  // Configuraciones — shown only if at least one variant has the feature
+  {
+    key: 'abs', label: 'ABS', group: 'Configuraciones', isBoolean: true,
+    getValue: (v) => v.features.abs ? '1' : '0',
+    showIfAny: (v) => v.features.abs,
+  },
+  {
+    key: 'power_steering', label: 'Dir. asistida', group: 'Configuraciones', isBoolean: true,
+    getValue: (v) => v.features.power_steering ? '1' : '0',
+    showIfAny: (v) => v.features.power_steering,
+  },
+  {
+    key: 'ac', label: 'Aire acondicionado', group: 'Configuraciones', isBoolean: true,
+    getValue: (v) => v.features.ac ? '1' : '0',
+    showIfAny: (v) => v.features.ac,
+  },
+  {
+    key: 'power_window', label: 'Vidrios eléctricos', group: 'Configuraciones', isBoolean: true,
+    getValue: (v) => v.features.power_window ? '1' : '0',
+    showIfAny: (v) => v.features.power_window,
+  },
+  {
+    key: 'central_lock', label: 'Cierre centralizado', group: 'Configuraciones', isBoolean: true,
+    getValue: (v) => v.features.central_lock ? '1' : '0',
+    showIfAny: (v) => v.features.central_lock,
+  },
+  {
+    key: 'media', label: 'Multimedia', group: 'Configuraciones',
+    getValue: (v) => v.features.media,
+    showIfAny: (v) => !!v.features.media,
+  },
 ]
 
-function getMostCommon(values: (string | null)[]): string | null {
-  const freq = new Map<string, number>()
-  for (const v of values) {
-    if (v !== null) freq.set(v, (freq.get(v) ?? 0) + 1)
-  }
-  if (freq.size === 0) return null
-  return [...freq.entries()].sort((a, b) => b[1] - a[1])[0][0]
-}
+// Fixed compositional column backgrounds — applied by column index (vi), never by selection state.
+// Odd-indexed columns (vi=0,2,4) are lighter; even-indexed (vi=1,3) are slightly darker.
+// This creates vertical scan lanes that help buyers track a single model's specs.
+const COL_BG: [string, string] = ['#F8F6F0', '#EEEAE2']
 
-function isDifferent(values: (string | null)[]): boolean[] {
-  const nonNull = values.filter((v): v is string => v !== null)
-  if (new Set(nonNull).size <= 1) return values.map(() => false)
-  const base = getMostCommon(values)
-  return values.map((v) => v !== null && v !== base)
+// Mobile-only: row alternation for single-column list layout
+const ROW_BG: [string, string] = ['#F8F6F0', '#EEEAE2']
+
+function BoolCircle({ present }: { present: boolean }) {
+  return (
+    <span
+      className={cn(
+        'inline-block text-base leading-none',
+        present ? 'text-navy' : 'text-navy/20',
+      )}
+      aria-label={present ? 'Incluido' : 'No incluido'}
+    >
+      {present ? '●' : '○'}
+    </span>
+  )
 }
 
 export function VariantTable({ variants, selectedModel, onSelectVariant }: VariantTableProps) {
-  const scrollRef = useRef<HTMLDivElement>(null)
+  const activeModel = selectedModel ?? variants[0]?.model
 
-  // Filter out rows where all variants return null (e.g. BEV rows for gasoline trucks)
-  const activeRows = SPEC_ROWS.filter((row) =>
-    variants.some((v) => row.getValue(v) !== null),
-  )
+  const activeRows = SPEC_ROWS.filter((row) => {
+    if (row.showIfAny) return variants.some(row.showIfAny)
+    return variants.some((v) => row.getValue(v) !== null)
+  })
 
   const groups = [...new Set(activeRows.map((r) => r.group))]
 
-  return (
-    <div className="relative">
-      {/* Scroll shadow indicators */}
-      <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-8 bg-gradient-to-r from-warm-white to-transparent" />
-      <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-8 bg-gradient-to-l from-warm-white to-transparent" />
+  const mobileVariant = variants.find((v) => v.model === activeModel) ?? variants[0]
+  const mobileIdx = Math.max(0, variants.findIndex((v) => v.model === activeModel))
 
-      <div
-        ref={scrollRef}
-        className="overflow-x-auto pb-2"
-        style={{ scrollbarWidth: 'none' }}
-      >
-        <table className="w-full border-collapse" style={{ minWidth: `${Math.max(640, variants.length * 160)}px` }}>
+  const variantPct = 84 / variants.length
+
+  return (
+    <>
+      {/* ── DESKTOP TABLE (md+) ─────────────────────────────────────────── */}
+      <div className="hidden md:block overflow-x-auto no-scrollbar">
+        <table className="w-full border-collapse" style={{ tableLayout: 'fixed', minWidth: '600px' }}>
+          <colgroup>
+            <col style={{ width: '16%' }} />
+            {variants.map((v) => (
+              <col key={v.model} style={{ width: `${variantPct}%` }} />
+            ))}
+          </colgroup>
+
+          {/* Model header row */}
           <thead>
             <tr>
-              {/* Spec label column */}
+              {/* Label column header — always warm white with right separator */}
               <th
-                className="sticky left-0 z-20 min-w-[140px] bg-warm-white py-4 pr-4 text-left align-bottom"
+                className="sticky left-0 z-20 py-4 pr-3 text-left align-bottom border-r border-navy/[0.08]"
+                style={{ backgroundColor: COL_BG[0] }}
                 aria-label="Especificación"
               />
-              {/* Variant columns */}
-              {variants.map((v) => {
-                const isSelected = v.model === selectedModel
+              {variants.map((v, vi) => {
+                const isSelected = v.model === activeModel
                 return (
                   <th
                     key={v.model}
                     className={cn(
-                      'min-w-[140px] px-3 py-4 text-left align-bottom transition-colors',
-                      isSelected && 'bg-gold/[0.05]',
+                      'px-3 py-4 text-left align-bottom',
+                      isSelected && 'border-t-2 border-gold',
                     )}
+                    style={{ backgroundColor: vi % 2 === 0 ? COL_BG[0] : COL_BG[1] }}
                   >
                     <button
                       type="button"
                       onClick={() => onSelectVariant(v.model)}
                       className={cn(
-                        'group flex flex-col gap-1 text-left transition-all duration-200',
-                        isSelected ? 'cursor-default' : 'hover:opacity-80',
+                        'flex flex-col gap-0.5 text-left transition-opacity duration-200',
+                        !isSelected && 'hover:opacity-70',
                       )}
                     >
-                      <span
-                        className={cn(
-                          'font-mono text-xs uppercase tracking-[0.15em] transition-colors',
-                          isSelected ? 'text-gold' : 'text-navy/35',
-                        )}
-                      >
+                      <span className={cn(
+                        'font-mono text-[10px] uppercase tracking-[0.13em]',
+                        isSelected ? 'text-gold' : 'text-navy/35',
+                      )}>
                         {FUEL_LABELS[v.fuel_type] ?? v.fuel_type}
                       </span>
-                      <span
-                        className={cn(
-                          'font-display text-xl font-light leading-none transition-colors',
-                          isSelected ? 'text-gold' : 'text-navy',
-                        )}
-                      >
+                      <span className={cn(
+                        'font-mono text-xs font-medium leading-tight',
+                        isSelected ? 'text-gold' : 'text-navy',
+                      )}>
                         {v.model}
                       </span>
                       <span className="font-mono text-[10px] text-navy/35">
-                        {v.payload_t}T · GVW {(v.gvw_kg / 1000).toFixed(1)}t
+                        {v.payload_t}T · {(v.gvw_kg / 1000).toFixed(1)}t GVW
                       </span>
                     </button>
                   </th>
@@ -191,67 +203,52 @@ export function VariantTable({ variants, selectedModel, onSelectVariant }: Varia
           </thead>
 
           <tbody>
-            {groups.map((group, gi) => {
+            {groups.map((group) => {
               const rows = activeRows.filter((r) => r.group === group)
               return (
                 <>
-                  {/* Group header row */}
+                  {/* Group header — navy full-width band */}
                   <tr key={`g-${group}`}>
                     <td
                       colSpan={variants.length + 1}
-                      className={cn(
-                        'sticky left-0 bg-warm-white pb-1 pt-5',
-                        gi === 0 && 'pt-3',
-                      )}
+                      className="sticky left-0 z-20 bg-navy px-3 py-2"
                     >
-                      <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-gold/50">
+                      <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-gold">
                         {group}
                       </span>
-                      <div className="mt-1 h-px w-full bg-[rgba(0,30,80,0.06)]" />
                     </td>
                   </tr>
 
                   {rows.map((row) => {
                     const values = variants.map((v) => row.getValue(v))
-                    const diffs = isDifferent(values)
 
                     return (
-                      <tr
-                        key={row.key}
-                        className="group border-b border-[rgba(0,30,80,0.04)] transition-colors hover:bg-gold/[0.02]"
-                      >
-                        {/* Spec label */}
-                        <td className="sticky left-0 z-10 bg-warm-white py-3 pr-4 group-hover:bg-[#f4f2ec]">
-                          <span className="font-mono text-[11px] text-navy/45">{row.label}</span>
+                      <tr key={row.key} className="border-b border-navy/[0.04]">
+                        {/* Sticky label cell — fixed warm white with right separator */}
+                        <td
+                          className="sticky left-0 z-20 py-2.5 pr-3 pl-3 border-r border-navy/[0.08]"
+                          style={{ backgroundColor: COL_BG[0] }}
+                        >
+                          <span className="font-mono text-[11px] text-navy/50">{row.label}</span>
                         </td>
 
-                        {/* Values */}
                         {variants.map((v, vi) => {
                           const val = values[vi]
-                          const isSelected = v.model === selectedModel
-                          const isDiff = diffs[vi]
 
                           return (
                             <td
                               key={v.model}
-                              className={cn(
-                                'py-3 pl-3 pr-2 align-middle transition-colors',
-                                isSelected && 'bg-gold/[0.04]',
-                              )}
+                              className="py-2.5 pl-3 pr-2 align-middle"
+                              style={{ backgroundColor: vi % 2 === 0 ? COL_BG[0] : COL_BG[1] }}
                             >
-                              {val !== null ? (
-                                <span
-                                  className={cn(
-                                    'font-mono text-[12px] leading-tight',
-                                    isDiff
-                                      ? 'font-medium text-gold'
-                                      : 'text-navy/70',
-                                  )}
-                                >
+                              {row.isBoolean ? (
+                                <BoolCircle present={val === '1'} />
+                              ) : val !== null ? (
+                                <span className="font-mono text-[11px] leading-snug break-all text-navy">
                                   {val}
                                 </span>
                               ) : (
-                                <span className="font-mono text-[11px] text-navy/20">—</span>
+                                <span className="font-mono text-[10px] text-navy/20">—</span>
                               )}
                             </td>
                           )
@@ -265,23 +262,29 @@ export function VariantTable({ variants, selectedModel, onSelectVariant }: Varia
 
             {/* CTA row */}
             <tr>
-              <td className="sticky left-0 bg-warm-white pt-6" />
-              {variants.map((v) => {
-                const isSelected = v.model === selectedModel
+              <td
+                className="sticky left-0 z-20 pt-5 border-r border-navy/[0.08]"
+                style={{ backgroundColor: COL_BG[0] }}
+              />
+              {variants.map((v, vi) => {
+                const isSelected = v.model === activeModel
                 return (
-                  <td key={v.model} className="pl-3 pr-2 pt-6">
+                  <td
+                    key={v.model}
+                    className="pl-3 pr-2 pt-5"
+                    style={{ backgroundColor: vi % 2 === 0 ? COL_BG[0] : COL_BG[1] }}
+                  >
                     <button
                       type="button"
                       onClick={() => {
                         onSelectVariant(v.model)
-                        // Scroll to inquiry form on mobile
                         document.getElementById('inquiry-form')?.scrollIntoView({
                           behavior: 'smooth',
                           block: 'start',
                         })
                       }}
                       className={cn(
-                        'w-full py-2.5 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-200',
+                        'w-full py-2 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-200',
                         isSelected
                           ? 'bg-gold text-navy'
                           : 'border border-gold/30 text-gold/70 hover:border-gold hover:text-gold',
@@ -297,13 +300,163 @@ export function VariantTable({ variants, selectedModel, onSelectVariant }: Varia
         </table>
       </div>
 
-      {/* Legend */}
-      <div className="mt-3 flex items-center gap-2">
-        <span className="inline-block h-2 w-2 rounded-none bg-gold/60" />
-        <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-navy/30">
-          Valor diferente al de referencia
-        </span>
+      {/* ── MOBILE: comparison bar + single-column spec list (<md) ─────── */}
+      <div className="block md:hidden">
+
+        {/* Compact comparison bar — all models visible simultaneously.
+            Replaces plain tab strip: buyer sees payload + GVW for all variants
+            before choosing which model to explore in detail below. */}
+        <div className="overflow-x-auto no-scrollbar">
+          <table className="w-full border-collapse" style={{ tableLayout: 'fixed', minWidth: '300px' }}>
+            <colgroup>
+              <col style={{ width: '13%' }} />
+              {variants.map((v) => (
+                <col key={v.model} style={{ width: `${87 / variants.length}%` }} />
+              ))}
+            </colgroup>
+            <tbody>
+              {/* Model name row — clickable tab buttons */}
+              <tr className="border-b-2 border-navy/[0.06]">
+                <td className="pb-2.5" />
+                {variants.map((v) => {
+                  const isActive = v.model === activeModel
+                  return (
+                    <td
+                      key={v.model}
+                      className={cn(
+                        'pb-2.5 pl-1',
+                        isActive ? 'border-t-2 border-gold' : 'border-t-2 border-transparent',
+                      )}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => onSelectVariant(v.model)}
+                        className="w-full text-left"
+                        aria-pressed={isActive}
+                      >
+                        <span className={cn(
+                          'block font-mono text-[10px] font-medium uppercase tracking-[0.10em]',
+                          isActive ? 'text-gold' : 'text-navy/45',
+                        )}>
+                          {v.model}
+                        </span>
+                      </button>
+                    </td>
+                  )
+                })}
+              </tr>
+
+              {/* Carga útil row */}
+              <tr className="border-b border-navy/[0.05]">
+                <td className="py-2 pr-1">
+                  <span className="font-mono text-[9px] uppercase tracking-[0.08em] text-navy/30">
+                    Carga
+                  </span>
+                </td>
+                {variants.map((v) => {
+                  const isActive = v.model === activeModel
+                  return (
+                    <td key={v.model} className="py-2 pl-1">
+                      <span className={cn(
+                        'font-mono text-[11px] font-medium',
+                        isActive ? 'text-gold' : 'text-navy/50',
+                      )}>
+                        {v.payload_t}T
+                      </span>
+                    </td>
+                  )
+                })}
+              </tr>
+
+              {/* GVW row */}
+              <tr className="border-b-2 border-navy/[0.10]">
+                <td className="py-2 pr-1">
+                  <span className="font-mono text-[9px] uppercase tracking-[0.08em] text-navy/30">
+                    GVW
+                  </span>
+                </td>
+                {variants.map((v) => {
+                  const isActive = v.model === activeModel
+                  return (
+                    <td key={v.model} className="py-2 pl-1">
+                      <span className={cn(
+                        'font-mono text-[11px]',
+                        isActive ? 'text-gold' : 'text-navy/50',
+                      )}>
+                        {(v.gvw_kg / 1000).toFixed(1)}t
+                      </span>
+                    </td>
+                  )
+                })}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {/* Selected model caption */}
+        {mobileVariant && (
+          <div className="mt-3 mb-4 flex items-center gap-2">
+            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-gold">
+              {FUEL_LABELS[mobileVariant.fuel_type] ?? mobileVariant.fuel_type}
+            </span>
+            <span className="font-mono text-[10px] text-navy/25">·</span>
+            <span className="font-mono text-[10px] text-navy/40">
+              {mobileVariant.payload_t}T · GVW {(mobileVariant.gvw_kg / 1000).toFixed(1)}t
+            </span>
+          </div>
+        )}
+
+        {/* Grouped spec list */}
+        {groups.map((group, gi) => {
+          const rows = activeRows.filter((r) => r.group === group)
+          return (
+            <div key={group}>
+              <div className={cn('bg-navy px-3 py-2', gi === 0 ? 'mt-1' : 'mt-4')}>
+                <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-gold">
+                  {group}
+                </span>
+              </div>
+
+              <dl>
+                {rows.map((row, ri) => {
+                  const val = row.getValue(variants[mobileIdx])
+                  const isEven = ri % 2 === 0
+
+                  return (
+                    <div
+                      key={row.key}
+                      className="flex items-center justify-between gap-4 border-b border-navy/[0.05] px-3 py-2.5"
+                      style={{ backgroundColor: isEven ? ROW_BG[0] : ROW_BG[1] }}
+                    >
+                      <dt className="shrink-0 font-mono text-[11px] text-navy/50">{row.label}</dt>
+                      <dd className="text-right">
+                        {row.isBoolean ? (
+                          <BoolCircle present={val === '1'} />
+                        ) : (
+                          <span className="font-mono text-sm text-navy">
+                            {val ?? '—'}
+                          </span>
+                        )}
+                      </dd>
+                    </div>
+                  )
+                })}
+              </dl>
+            </div>
+          )
+        })}
+
+        {/* Mobile CTA */}
+        <button
+          type="button"
+          onClick={() =>
+            document.getElementById('inquiry-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          }
+          className="mt-6 w-full bg-gold py-3 font-mono text-[10px] uppercase tracking-[0.12em] text-navy"
+        >
+          Solicitar {activeModel}
+        </button>
       </div>
-    </div>
+    </>
   )
 }
