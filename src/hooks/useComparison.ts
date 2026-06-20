@@ -9,6 +9,7 @@ export interface ComparisonItem {
   slug: string
   category_slug: string
   image: string
+  specs?: Record<string, unknown>
 }
 
 export interface UseComparison {

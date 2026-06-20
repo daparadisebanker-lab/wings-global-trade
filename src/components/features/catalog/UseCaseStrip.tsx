@@ -22,7 +22,7 @@ const USE_CASES: UseCase[] = [
   { slug: 'ganaderia',      label: 'Ganadería',         minHp: 60,  requires4wd: false },
 ]
 
-const HP_KEYS = ['Potencia', 'HP', 'Potencia máxima', 'Motor', 'CV', 'Horsepower']
+const HP_KEYS = ['Potencia del motor', 'Potencia', 'HP', 'Potencia máxima', 'Motor', 'CV', 'Horsepower']
 
 function extractHpFromSpecs(specs: Record<string, string>): number | null {
   for (const key of HP_KEYS) {
@@ -84,7 +84,7 @@ export function UseCaseStrip({ specs, filterAttrs }: UseCaseStripProps) {
               className={
                 compatible
                   ? 'border border-gold/30 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.08em] text-navy hover:border-gold hover:bg-gold/[0.03] transition-all'
-                  : 'border border-[rgba(0,30,80,0.08)] px-3 py-2 font-mono text-[10px] uppercase tracking-[0.08em] text-navy/30 hover:text-navy/50 transition-all'
+                  : 'border border-navy/15 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.08em] text-navy/50 hover:text-navy/70 transition-all'
               }
             >
               {compatible ? '✓ ' : '· '}

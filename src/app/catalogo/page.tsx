@@ -60,7 +60,7 @@ export default async function CatalogIndexPage({
                     href={`/catalogo/${cat.slug}/${p.slug}`}
                     className="group block overflow-hidden rounded-wings-card border border-border-default bg-surface-card p-5 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-card-hover"
                   >
-                    <h3 className="font-display text-xl font-semibold text-navy">{p.name_es}</h3>
+                    <h3 className="font-display text-xl font-light text-navy">{p.name_es}</h3>
                     <p className="mt-1 line-clamp-2 font-body text-sm text-text-muted">{p.description_es}</p>
                     <span className="mt-3 inline-block font-body text-sm font-medium text-gold">
                       Ver especificaciones →

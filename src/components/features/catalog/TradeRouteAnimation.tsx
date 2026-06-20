@@ -9,10 +9,13 @@
 // waypoints in a 500×180 stage.
 
 import { useEffect, useRef } from 'react'
+import { ORIGIN_PORTS, inferContainerType, freightRangeDisplay } from '@/lib/product-intelligence'
 
 interface TradeRouteAnimationProps {
   weight?: number
   className?: string
+  sourceMarket?: string
+  categorySlug?: string
 }
 
 const GOLD = '196,147,63'
@@ -34,7 +37,7 @@ function bezier(t: number) {
   return { x, y }
 }
 
-export function TradeRouteAnimation({ weight = 3000, className }: TradeRouteAnimationProps) {
+export function TradeRouteAnimation({ weight = 3000, className, sourceMarket }: TradeRouteAnimationProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
   useEffect(() => {
@@ -91,6 +94,33 @@ export function TradeRouteAnimation({ weight = 3000, className }: TradeRouteAnim
         ctx.fillStyle = `rgba(${GOLD},${0.35 + fade * 0.45})`
         ctx.fill()
       }
+
+      // Origin and destination labels — rendered on top of all geometry.
+      ctx.save()
+      ctx.font = '8px monospace'
+      ctx.textAlign = 'center'
+      ctx.fillStyle = `rgba(${WARM}, 0.55)`
+      const originName = ORIGIN_PORTS[sourceMarket ?? 'China']?.name?.split('·')[0]?.trim() ?? (sourceMarket ?? 'China')
+      ctx.fillText(originName, ORIGIN.x, ORIGIN.y - 10)
+      ctx.fillStyle = `rgba(${WARM}, 0.7)`
+      ctx.fillText('ZOFRATACNA', DEST.x, DEST.y - 10)
+      ctx.restore()
+
+      // Bottom-left: container type.
+      ctx.save()
+      ctx.font = '7px monospace'
+      ctx.textAlign = 'left'
+      ctx.fillStyle = `rgba(${GOLD}, 0.8)`
+      ctx.fillText(inferContainerType(weight ?? 3000), 8, VH - 6)
+      ctx.restore()
+
+      // Bottom-right: freight range.
+      ctx.save()
+      ctx.font = '7px monospace'
+      ctx.textAlign = 'right'
+      ctx.fillStyle = `rgba(${WARM}, 0.45)`
+      ctx.fillText(freightRangeDisplay(sourceMarket ?? 'China'), VW - 8, VH - 6)
+      ctx.restore()
     }
 
     let raf = 0
@@ -110,7 +140,7 @@ export function TradeRouteAnimation({ weight = 3000, className }: TradeRouteAnim
     }
 
     return () => cancelAnimationFrame(raf)
-  }, [weight])
+  }, [weight, sourceMarket])
 
   return (
     <canvas

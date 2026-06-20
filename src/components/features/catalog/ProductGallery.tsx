@@ -5,16 +5,13 @@ import { useState, useEffect, useCallback } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { cn } from '@/lib/utils'
-import { NoiseField } from './NoiseField'
 
 interface ProductGalleryProps {
   images: string[]
   alt: string
-  /** Engine power in HP — seeds the ambient noise field behind the gallery. */
-  hp?: number
 }
 
-export function ProductGallery({ images, alt, hp = 50 }: ProductGalleryProps) {
+export function ProductGallery({ images, alt }: ProductGalleryProps) {
   const [active, setActive] = useState(0)
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const prefersReducedMotion = useReducedMotion()
@@ -81,7 +78,7 @@ export function ProductGallery({ images, alt, hp = 50 }: ProductGalleryProps) {
         <motion.div
           layoutId={prefersReducedMotion ? undefined : sharedLayoutId}
           className={cn(
-            'relative aspect-[4/3] w-full overflow-hidden rounded-wings-card border border-border-default bg-[#EDEAE1]',
+            'relative aspect-[4/3] w-full overflow-hidden rounded-wings-card border border-border-default bg-[#F8F6F0]',
             hasImages && 'cursor-zoom-in',
           )}
           onClick={hasImages ? openLightbox : undefined}
@@ -100,11 +97,8 @@ export function ProductGallery({ images, alt, hp = 50 }: ProductGalleryProps) {
           }
           aria-label={hasImages ? `Ver imagen en pantalla completa: ${alt}` : undefined}
         >
-          {/* Generative noise field backdrop — the machine's HP as ambient movement */}
-          <NoiseField hp={hp} className="absolute inset-0 h-full w-full pointer-events-none" />
-
           {current ? (
-            <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_70%_70%_at_center,black_60%,transparent_100%)] [-webkit-mask-image:radial-gradient(ellipse_70%_70%_at_center,black_60%,transparent_100%)]">
+            <div className="absolute inset-0">
               <Image
                 src={current}
                 alt={alt}
@@ -176,7 +170,7 @@ export function ProductGallery({ images, alt, hp = 50 }: ProductGalleryProps) {
                   e.stopPropagation()
                   goPrev()
                 }}
-                className="absolute left-4 top-1/2 z-10 -translate-y-1/2 font-display text-5xl leading-none text-warm-white/40 transition-colors hover:text-warm-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+                className="absolute left-4 top-1/2 z-10 -translate-y-1/2 font-mono text-2xl leading-none text-warm-white/40 transition-colors hover:text-warm-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
                 aria-label="Imagen anterior"
               >
                 ‹
@@ -191,7 +185,7 @@ export function ProductGallery({ images, alt, hp = 50 }: ProductGalleryProps) {
                   e.stopPropagation()
                   goNext()
                 }}
-                className="absolute right-4 top-1/2 z-10 -translate-y-1/2 font-display text-5xl leading-none text-warm-white/40 transition-colors hover:text-warm-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+                className="absolute right-4 top-1/2 z-10 -translate-y-1/2 font-mono text-2xl leading-none text-warm-white/40 transition-colors hover:text-warm-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
                 aria-label="Imagen siguiente"
               >
                 ›

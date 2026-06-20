@@ -36,6 +36,7 @@ export function ProductCard({ product, category }: ProductCardProps) {
         slug: product.slug,
         category_slug: category.slug,
         image: product.images[0] ?? '',
+        specs: product.specs as Record<string, unknown>,
       })
     }
   }

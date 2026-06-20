@@ -23,7 +23,7 @@ export function InquirySuccess({ productName }: InquirySuccessProps) {
         </svg>
       </div>
       {/* Per ENRICHED_SPEC §3.6 — exact catalog confirm copy */}
-      <h3 className="font-display text-2xl font-semibold text-navy">Solicitud enviada.</h3>
+      <h3 className="font-display text-2xl font-light text-navy">Solicitud enviada.</h3>
       <p className="mt-2 font-body text-base text-text-muted">
         El equipo Wings te contactará en menos de 24 horas.
       </p>

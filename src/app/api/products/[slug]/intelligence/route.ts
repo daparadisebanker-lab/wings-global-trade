@@ -29,7 +29,9 @@ Reglas estrictas:
   "Modelo con mayor demanda en importaciones de mini camiones, ZOFRATACNA 2023."
   "Cosechadora autopropulsada — HS 8433.51 — exonerada de arancel bajo Ley Agraria Perú."
   "Alta rotación en rutas Callao–La Paz vía Desaguadero; 40HC estándar para este equipo."
-  "Preferido en licitaciones municipales Chile por homologación Euro V — HS 8702.10."`
+  "Preferido en licitaciones municipales Chile por homologación Euro V — HS 8702.10."
+
+FORMATO REQUERIDO: Comienza tu respuesta con exactamente un tag de tipo seguido de un espacio. El tag debe ser uno de: TENDENCIA | DEMANDA | REGULACIÓN | RUTA | ZONA FRANCA. Luego el texto de inteligencia. Termina con ' · Q[N] [YYYY]' donde N es el trimestre actual y YYYY es el año. Ejemplo: 'DEMANDA Alta rotación mini camiones 4x4 ZOFRATACNA · Q2 2026'. Máximo 140 caracteres totales incluyendo el tag y la fecha.`
 
 // Static fallbacks used when Claude is unavailable — same values as component fallback.
 const CATEGORY_FALLBACK: Record<string, string> = {
@@ -76,7 +78,7 @@ async function generateIntelligence(
     const text =
       response.content[0].type === 'text' ? response.content[0].text.trim() : null
 
-    if (!text || text.length > 160) return null
+    if (!text || text.length > 160 || !/^(TENDENCIA|DEMANDA|REGULACIÓN|RUTA|ZONA FRANCA)\s/.test(text)) return null
     return text
   } catch (err) {
     console.error('[api/products/intelligence] Claude error', err)

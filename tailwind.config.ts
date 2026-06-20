@@ -55,11 +55,13 @@ const config: Config = {
         mono: ['var(--font-mono)', 'Courier New', 'monospace'],
       },
       fontSize: {
-        // Display scale — Cormorant Garamond, Aston Martin editorial scale
-        'display-xl': ['clamp(3.5rem,7vw,6.5rem)', { lineHeight: '0.95', letterSpacing: '-0.03em' }],
-        'display-lg': ['clamp(2.5rem,5vw,4.5rem)', { lineHeight: '1.0', letterSpacing: '-0.025em' }],
-        'display-md': ['clamp(1.875rem,3.5vw,3rem)', { lineHeight: '1.05', letterSpacing: '-0.02em' }],
-        'display-sm': ['clamp(1.5rem,2.5vw,2.25rem)', { lineHeight: '1.1', letterSpacing: '-0.01em' }],
+        // Display scale — IBM Plex Serif. Technical authority, not editorial fashion.
+        // Tracking is tighter than Cormorant at each size — IBM has moderate default spacing.
+        // Line-heights are slightly looser — IBM has taller ascenders than Cormorant.
+        'display-xl': ['clamp(3.5rem,7vw,6.5rem)', { lineHeight: '1.0', letterSpacing: '-0.02em' }],
+        'display-lg': ['clamp(2.5rem,5vw,4.5rem)', { lineHeight: '1.05', letterSpacing: '-0.015em' }],
+        'display-md': ['clamp(1.875rem,3.5vw,3rem)', { lineHeight: '1.1', letterSpacing: '-0.01em' }],
+        'display-sm': ['clamp(1.5rem,2.5vw,2.25rem)', { lineHeight: '1.15', letterSpacing: '-0.005em' }],
         // Body scale — Flexo
         'body-lg': ['1.125rem', { lineHeight: '1.6', letterSpacing: '0' }],
         'body-md': ['1rem', { lineHeight: '1.5', letterSpacing: '0' }],

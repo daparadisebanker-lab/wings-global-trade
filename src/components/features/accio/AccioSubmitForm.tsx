@@ -146,7 +146,7 @@ export function AccioSubmitForm({
             ) : (
               <form onSubmit={handleSubmit} className="p-6">
                 {/* Per ENRICHED_SPEC §3.3 — Accio submit form heading */}
-                <h3 className="font-display text-2xl font-semibold text-navy">Enviar consulta técnica</h3>
+                <h3 className="font-body text-sm font-medium tracking-tight text-navy">Enviar consulta técnica</h3>
                 <p className="mt-1 font-body text-sm text-text-muted">
                   Comparte tus datos de contacto para que el equipo de Wings prepare tu cotización.
                 </p>

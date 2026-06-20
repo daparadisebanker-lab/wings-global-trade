@@ -221,7 +221,7 @@ export function InquiryForm({ product, selectedVariant, onSuccess }: InquiryForm
       className="rounded-wings-card border border-border-default bg-surface-card p-6"
     >
       {/* Per ENRICHED_SPEC §3.4 — "Solicitar este modelo" context */}
-      <h2 className="font-display text-2xl font-semibold text-navy">Solicitar este modelo</h2>
+      <h2 className="font-body text-sm font-medium tracking-tight text-navy">Solicitar este modelo</h2>
       <p className="mt-1 font-body text-sm text-text-muted">
         Completa tus datos y el equipo de Wings te enviará una cotización detallada.
       </p>
@@ -332,7 +332,7 @@ export function InquiryForm({ product, selectedVariant, onSuccess }: InquiryForm
         {/* Variant badge — shown when a specific model is selected from VariantTable */}
         {selectedVariant && (
           <div className="flex items-center gap-2 rounded-none border border-gold/25 bg-gold/[0.04] px-3 py-2">
-            <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-gold/60">Modelo seleccionado</span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-gold/60">Modelo seleccionado</span>
             <span className="font-mono text-[11px] font-medium text-navy">{selectedVariant}</span>
           </div>
         )}

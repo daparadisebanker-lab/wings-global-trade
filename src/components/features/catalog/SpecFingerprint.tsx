@@ -10,15 +10,17 @@
 // tractor-snh704) carry subtly different fingerprints that are *stable* across
 // reloads. Chance within a designed range — never random per frame.
 
-import { useId, useMemo } from 'react'
+import { useId, useMemo, useState } from 'react'
 import { cn } from '@/lib/utils'
 import {
   normalizeSpecs,
   getSpecPath,
   hashString,
+  rawSpecValues,
   SPEC_AXES,
   type SpecAxis,
 } from '@/lib/spec-normalize'
+import { catalogPercentile } from '@/lib/product-intelligence'
 
 const NAVY = '#001E50'
 const GOLD = '#C4933F'
@@ -32,6 +34,15 @@ const AXIS_LABEL: Record<SpecAxis, string> = {
   weight: 'PESO',
 }
 
+const UNIT: Record<SpecAxis, string> = {
+  hp: 'HP',
+  payload: 'kg',
+  gvw: 'kg',
+  wheelbase: 'mm',
+  speed: 'km/h',
+  weight: 'kg',
+}
+
 interface SpecFingerprintProps {
   specs: Record<string, unknown>
   /** Stable seed for the controlled deviation. Pass the product slug. */
@@ -42,6 +53,12 @@ interface SpecFingerprintProps {
   animate?: boolean
   /** Render axis tick labels around the perimeter. */
   showLabels?: boolean
+  /** Show raw value tooltip on vertex hover. */
+  showValues?: boolean
+  /** Show catalog percentile annotations around the perimeter. */
+  showPercentiles?: boolean
+  /** Ghost polygon for side-by-side comparison. */
+  comparisonSpecs?: Record<string, unknown> | null
 }
 
 /**
@@ -72,9 +89,14 @@ export function SpecFingerprint({
   className,
   animate = false,
   showLabels = false,
+  showValues = false,
+  showPercentiles = false,
+  comparisonSpecs,
 }: SpecFingerprintProps) {
   const uid = useId()
   const gradId = `fp-grad-${uid}`
+
+  const [hoveredAxis, setHoveredAxis] = useState<SpecAxis | null>(null)
 
   const { path, gridRings, axisLines, labelPoints } = useMemo(() => {
     const cx = size / 2
@@ -119,6 +141,45 @@ export function SpecFingerprint({
     return { path, gridRings, axisLines, labelPoints, cx, cy }
   }, [specs, seed, size, showLabels])
 
+  // Vertex positions — used for hover tooltip (showValues) and percentile
+  // annotations (showPercentiles). Kept in a separate memo so they can be
+  // cheaply reused across both features without re-running the full scaffold.
+  const vertexData = useMemo(() => {
+    const cx = size / 2
+    const cy = size / 2
+    const radius = size / 2 - (showLabels ? 16 : 6)
+    const normalized = normalizeSpecs(specs)
+    const deviation = seededDeviation(seed)
+    return SPEC_AXES.map((axis, i) => {
+      const a = -Math.PI / 2 + (i / SPEC_AXES.length) * Math.PI * 2
+      const r = Math.max(0, Math.min(1, normalized[axis] + (deviation[axis] ?? 0))) * radius
+      return {
+        axis,
+        cx: cx + Math.cos(a) * r,
+        cy: cy + Math.sin(a) * r,
+        // Outward tooltip anchor — offset along the axis direction at full radius + 16
+        tx: cx + Math.cos(a) * (radius + 16),
+        ty: cy + Math.sin(a) * (radius + 16),
+        // Percentile annotation — further outward at radius + 22
+        px: cx + Math.cos(a) * (radius + 22),
+        py: cy + Math.sin(a) * (radius + 22),
+        normalized: normalized[axis],
+      }
+    })
+  }, [specs, seed, size, showLabels])
+
+  // Raw values for tooltip display
+  const rawVals = useMemo(() => rawSpecValues(specs), [specs])
+
+  // Comparison ghost path — rendered behind the main polygon
+  const comparisonPath = useMemo(() => {
+    if (!comparisonSpecs) return null
+    const cx = size / 2
+    const cy = size / 2
+    const radius = size / 2 - (showLabels ? 16 : 6)
+    return getSpecPath(normalizeSpecs(comparisonSpecs), radius, cx, cy)
+  }, [comparisonSpecs, size, showLabels])
+
   const cx = size / 2
   const cy = size / 2
 
@@ -147,6 +208,30 @@ export function SpecFingerprint({
           <line key={i} x1={cx} y1={cy} x2={l.x2} y2={l.y2} />
         ))}
       </g>
+
+      {/* Ring fraction labels — rendered at the top axis intersection */}
+      {showLabels && [0.33, 0.66, 1.0].map((f, i) => (
+        <text
+          key={i}
+          x={cx + 3}
+          y={cy - (size / 2 - (showLabels ? 16 : 6)) * f - 2}
+          fontSize={5}
+          fontFamily="DM Mono"
+          fill={NAVY}
+          fillOpacity={0.25}
+        >{['33%', '66%', 'MAX'][i]}</text>
+      ))}
+
+      {/* Comparison ghost polygon — behind main polygon in SVG paint order */}
+      {comparisonPath && (
+        <path
+          d={comparisonPath}
+          fill="rgba(248,246,240,0.06)"
+          stroke="rgba(248,246,240,0.4)"
+          strokeWidth={1}
+          strokeDasharray="3 4"
+        />
+      )}
 
       {/* The fingerprint — rule + controlled deviation */}
       <path
@@ -182,6 +267,8 @@ export function SpecFingerprint({
               cy={cy + Math.sin(a) * r}
               r={1.6}
               fill={GOLD}
+              onMouseEnter={() => { if (showValues) setHoveredAxis(axis) }}
+              onMouseLeave={() => setHoveredAxis(null)}
             />
           )
         })
@@ -203,6 +290,41 @@ export function SpecFingerprint({
             {AXIS_LABEL[axis]}
           </text>
         ))}
+
+      {/* Percentile annotations — one per axis, outward at radius + 22 */}
+      {showPercentiles && vertexData.map(({ axis, px, py, normalized }) => (
+        <text
+          key={axis}
+          x={px}
+          y={py}
+          fontSize={5}
+          fontFamily="DM Mono"
+          fill={NAVY}
+          fillOpacity={0.38}
+          textAnchor="middle"
+        >
+          {catalogPercentile(normalized)}
+        </text>
+      ))}
+
+      {/* Hover tooltip — rendered last so it paints above everything */}
+      {hoveredAxis !== null && rawVals[hoveredAxis] !== null && (() => {
+        const v = vertexData.find(d => d.axis === hoveredAxis)
+        if (!v) return null
+        const vx = v.tx
+        const vy = v.ty
+        return (
+          <g>
+            <rect x={vx - 20} y={vy - 16} width={40} height={20} rx={1} fill="#F8F6F0" fillOpacity={0.95} />
+            <text x={vx} y={vy - 7} fontSize={5.5} fontFamily="DM Mono" fill="#001E50" fillOpacity={0.5} textAnchor="middle">
+              {AXIS_LABEL[hoveredAxis]}
+            </text>
+            <text x={vx} y={vy + 5} fontSize={8} fontFamily="DM Mono" fill="#001E50" fontWeight={500} textAnchor="middle">
+              {rawVals[hoveredAxis]} {UNIT[hoveredAxis]}
+            </text>
+          </g>
+        )
+      })()}
 
       <style>{`@keyframes fp-draw { to { stroke-dashoffset: 0; } }`}</style>
     </svg>

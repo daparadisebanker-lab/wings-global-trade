@@ -1,6 +1,9 @@
+import { extractNum } from '@/lib/spec-normalize'
+
 interface TechnicalSilhouetteProps {
   categorySlug: string
   className?: string
+  specs?: Record<string, unknown>
 }
 
 const LINE = '#F8F6F0'
@@ -130,7 +133,18 @@ function getSilhouette(categorySlug: string) {
   }
 }
 
-export default function TechnicalSilhouette({ categorySlug, className }: TechnicalSilhouetteProps) {
+export default function TechnicalSilhouette({ categorySlug, className, specs }: TechnicalSilhouetteProps) {
+  // Extract dimension values from specs when available
+  const wheelbase = specs
+    ? extractNum(specs, 'batalla', 'wheelbase', 'distancia entre ejes')
+    : null
+  const liftHeight = specs
+    ? extractNum(specs, 'capacidad de levante', 'altura de levante', 'lift height')
+    : null
+
+  // Determine which callout to render
+  const showLiftHeight = categorySlug === 'equipo-industrial'
+
   return (
     <div
       className={className}
@@ -182,6 +196,51 @@ export default function TechnicalSilhouette({ categorySlug, className }: Technic
       >
         Vista lateral · Referencia
       </span>
+
+      {/* Dimension callout — bottom span with measured value from specs */}
+      {showLiftHeight ? (
+        <svg
+          style={{ position: 'absolute', bottom: 0, left: '5%', right: '5%', width: '90%', height: 16, overflow: 'visible' }}
+          viewBox="0 0 100 16"
+          preserveAspectRatio="none"
+        >
+          {/* Horizontal rule */}
+          <line x1={0} y1={8} x2={100} y2={8} stroke="#F8F6F0" strokeWidth={0.5} strokeOpacity={0.4} />
+          {/* Left tick */}
+          <line x1={0} y1={0} x2={0} y2={16} stroke="#F8F6F0" strokeWidth={0.5} strokeOpacity={0.4} />
+          {/* Right tick */}
+          <line x1={100} y1={0} x2={100} y2={16} stroke="#F8F6F0" strokeWidth={0.5} strokeOpacity={0.4} />
+          {/* Value label */}
+          <text x={50} y={7} textAnchor="middle" fill="#F8F6F0" fillOpacity={0.65} fontSize={5} fontFamily="DM Mono">
+            {liftHeight ? liftHeight.toLocaleString('es-PE') + ' mm' : '— mm'}
+          </text>
+          {/* Axis label */}
+          <text x={50} y={14} textAnchor="middle" fill="#F8F6F0" fillOpacity={0.35} fontSize={4} fontFamily="DM Mono">
+            ALTURA LEVANTE
+          </text>
+        </svg>
+      ) : (
+        <svg
+          style={{ position: 'absolute', bottom: 0, left: '5%', right: '5%', width: '90%', height: 16, overflow: 'visible' }}
+          viewBox="0 0 100 16"
+          preserveAspectRatio="none"
+        >
+          {/* Horizontal rule */}
+          <line x1={0} y1={8} x2={100} y2={8} stroke="#F8F6F0" strokeWidth={0.5} strokeOpacity={0.4} />
+          {/* Left tick */}
+          <line x1={0} y1={0} x2={0} y2={16} stroke="#F8F6F0" strokeWidth={0.5} strokeOpacity={0.4} />
+          {/* Right tick */}
+          <line x1={100} y1={0} x2={100} y2={16} stroke="#F8F6F0" strokeWidth={0.5} strokeOpacity={0.4} />
+          {/* Value label */}
+          <text x={50} y={7} textAnchor="middle" fill="#F8F6F0" fillOpacity={0.65} fontSize={5} fontFamily="DM Mono">
+            {wheelbase ? wheelbase.toLocaleString('es-PE') + ' mm' : '— mm'}
+          </text>
+          {/* Axis label */}
+          <text x={50} y={14} textAnchor="middle" fill="#F8F6F0" fillOpacity={0.35} fontSize={4} fontFamily="DM Mono">
+            BATALLA
+          </text>
+        </svg>
+      )}
     </div>
   )
 }

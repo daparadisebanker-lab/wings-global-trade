@@ -3,8 +3,7 @@
 
 import { useComparison } from '@/hooks/useComparison'
 import type { Product } from '@/types/database'
-import { AuthenticationMark } from '@/components/features/catalog/AuthenticationMark'
-import TechnicalSilhouette from '@/components/features/catalog/TechnicalSilhouette'
+import { categoryDutyRate, detectCertifications } from '@/lib/product-intelligence'
 
 interface ProductPassportProps {
   product: Product
@@ -33,7 +32,7 @@ const SOCIAL_PROOF: Record<string, string> = {
 function DataRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-baseline justify-between gap-4">
-      <dt className="shrink-0 font-mono text-[9px] uppercase tracking-[0.15em] text-navy/35">
+      <dt className="shrink-0 font-mono text-[10px] uppercase tracking-[0.15em] text-navy/35">
         {label}
       </dt>
       <dd className="text-right font-mono text-[11px] leading-snug text-navy/75">{value}</dd>
@@ -53,17 +52,6 @@ function findEmissions(specs: Record<string, string>): string | null {
   return null
 }
 
-// Pull a numeric HP / payload hint from specs to seed the Authentication Mark geometry.
-function numericFromSpecs(specs: Record<string, string>, pattern: RegExp): number | undefined {
-  for (const [key, val] of Object.entries(specs)) {
-    if (pattern.test(key) || pattern.test(val)) {
-      const match = `${val}`.match(/[\d.]+/)
-      if (match) return Number(match[0])
-    }
-  }
-  return undefined
-}
-
 export function ProductPassport({ product, categorySlug }: ProductPassportProps) {
   const { add, remove, isInComparison, isFull } = useComparison()
   const inComparison = isInComparison(product.id)
@@ -80,44 +68,33 @@ export function ProductPassport({ product, categorySlug }: ProductPassportProps)
   // Deterministic reference number from props — REF-[8 chars slug]-[code]
   const refNumber = `REF-${product.slug.slice(0, 8).toUpperCase()}-${categoryCode}`
 
-  const hp = numericFromSpecs(specs, /hp|potencia|caballos/i)
-  const payload = numericFromSpecs(specs, /payload|carga|capacidad|gvw/i)
+  // HS chapter and duty rate derived from category
+  const { chapter, rate } = categoryDutyRate(categorySlug ?? 'maquinaria-agricola', 'Perú')
+  // Certifications detected from specs
+  const certs = detectCertifications(specs as Record<string, unknown>)
 
   return (
-    <div
-      className="relative overflow-hidden p-5 sm:p-6"
-      style={{
-        backgroundColor: '#F5F0E8',
-        border: '1px solid rgba(0,30,80,0.10)',
-        // Perforated left edge — dot-matrix down the spine of an inspection slip.
-        borderLeft: '2px dashed rgba(0,30,80,0.3)',
-        backgroundImage:
-          'repeating-linear-gradient(to bottom, rgba(0,30,80,0.28) 0, rgba(0,30,80,0.28) 1px, transparent 1px, transparent 8px)',
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: '1px 100%',
-        backgroundPosition: 'left top',
-      }}
-    >
+    <div className="relative overflow-hidden border border-navy/10 border-l-2 border-l-gold/40 bg-[#F8F6F0] p-6">
       {/* Dot-matrix reference number */}
-      <p className="mb-3 font-mono text-[9px] uppercase tracking-[0.18em] text-navy/40">
+      <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-navy/40">
         {refNumber}
       </p>
 
       {/* Header row */}
       <div className="mb-4 flex items-start justify-between border-b border-[rgba(0,30,80,0.10)] pb-4">
-        <span className="font-mono text-[9px] uppercase tracking-[0.20em] text-navy/30">
+        <span className="font-mono text-[10px] uppercase tracking-[0.20em] text-navy/30">
           Ficha de inspector
         </span>
-        <span className="font-mono text-[9px] uppercase tracking-[0.20em] text-navy/30">
+        <span className="font-mono text-[10px] uppercase tracking-[0.20em] text-navy/30">
           Wings Global Trade
         </span>
       </div>
 
       {/* Product identity */}
-      <h3 className="mb-1 font-display text-xl font-light leading-tight text-navy">
+      <h3 className="mb-1 font-mono text-sm font-medium leading-snug text-navy">
         {product.name_es}
       </h3>
-      <p className="mb-1.5 font-mono text-[9px] uppercase tracking-[0.12em] text-navy/30">
+      <p className="mb-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-navy/30">
         ID · {product.slug.toUpperCase()}
       </p>
 
@@ -136,15 +113,21 @@ export function ProductPassport({ product, categorySlug }: ProductPassportProps)
         ))}
 
         {emissions && <DataRow label="Norma" value={emissions} />}
-      </dl>
 
-      {/* Engineering reference silhouette — contextual chassis drawing */}
-      <div className="mt-5 overflow-hidden rounded-sm border-t border-[rgba(0,30,80,0.06)]">
-        <p className="bg-[rgba(0,30,80,0.04)] px-3 py-1.5 font-mono text-[8px] uppercase tracking-[0.18em] text-navy/30">
-          Referencia técnica · Vista lateral
-        </p>
-        <TechnicalSilhouette categorySlug={categorySlug ?? ''} className="h-[90px]" />
-      </div>
+        {/* HS chapter and duty rate */}
+        <DataRow
+          label="HS Capítulo"
+          value={chapter + 'xx · ' + rate + '% ad valorem'}
+        />
+
+        {/* Certifications detected from specs — only shown when present */}
+        {certs.length > 0 && (
+          <DataRow
+            label="Certificaciones"
+            value={certs.slice(0, 3).join(' · ')}
+          />
+        )}
+      </dl>
 
       {/* Footer */}
       <div className="mt-5 flex items-center justify-between gap-3 border-t border-[rgba(0,30,80,0.10)] pt-4">
@@ -170,7 +153,7 @@ export function ProductPassport({ product, categorySlug }: ProductPassportProps)
           disabled={!inComparison && isFull}
           aria-pressed={inComparison}
           className={[
-            'shrink-0 font-mono text-[9px] uppercase tracking-[0.14em] transition-colors',
+            'shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] transition-colors',
             inComparison
               ? 'text-gold underline underline-offset-2'
               : isFull
@@ -180,19 +163,6 @@ export function ProductPassport({ product, categorySlug }: ProductPassportProps)
         >
           {inComparison ? '✓ En comparación' : isFull ? 'Comparación llena' : '+ Comparar'}
         </button>
-      </div>
-
-      {/* Import readiness meter mount point — integration agent inserts here */}
-      <div id="readiness-meter-slot" className="mt-4" />
-
-      {/* Authentication Mark — stamped into the bottom-right corner */}
-      <div className="pointer-events-none absolute bottom-3 right-3 z-[1]">
-        <AuthenticationMark
-          slug={product.slug}
-          categoryCode={categoryCode}
-          hp={hp}
-          payload={payload}
-        />
       </div>
     </div>
   )

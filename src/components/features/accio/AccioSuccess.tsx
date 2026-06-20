@@ -55,7 +55,7 @@ export function AccioSuccess({ tpr, estimate, leadId }: AccioSuccessProps) {
       </div>
 
       {/* Per ENRICHED_SPEC §3.6 — exact confirm copy */}
-      <h3 className="font-display text-2xl font-semibold text-navy">Consulta técnica enviada.</h3>
+      <h3 className="font-display text-2xl font-light text-navy">Consulta técnica enviada.</h3>
       <p className="mt-2 font-body text-base text-text-muted">
         Recibirás tu análisis de importación en menos de 24 horas.
       </p>

@@ -26,7 +26,7 @@ function personality(hp: number) {
   return {
     speed: 0.3 + t * 0.9, // 0.3 → 1.2
     segments: Math.round(50 + t * 150), // 50 → 200
-    opacity: 0.04 + t * 0.04, // 0.04 → 0.08
+    opacity: 0.015 + t * 0.015, // 0.015 → 0.030
     seed: hp,
   }
 }

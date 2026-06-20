@@ -1,10 +1,14 @@
 'use client'
 
+import { ORIGIN_PORTS, getTransitDays, inferContainerType } from '@/lib/product-intelligence'
+
 interface ProvenanceRibbonProps {
   sourceMarket: string
   destination?: string
   /** Free-trade zone node label. Peru/Bolivia → ZOFRATACNA; Chile/Colombia → ZOFRI. */
   freeZone?: string
+  weightKg?: number
+  categorySlug?: string
 }
 
 const SHIMMER_ID = 'provenance-shimmer'
@@ -13,9 +17,15 @@ export function ProvenanceRibbon({
   sourceMarket,
   destination = 'Destino',
   freeZone = 'ZOFRATACNA',
+  weightKg,
 }: ProvenanceRibbonProps) {
+  const portInfo = ORIGIN_PORTS[sourceMarket] ?? { name: sourceMarket, country: '' }
+  const transit = getTransitDays(sourceMarket)
+  const totalDays = transit.originToPort + transit.oceanTransit + transit.portToZone
+  const containerType = inferContainerType(weightKg ?? 5000)
+
   const nodes = [
-    { x: 90, label: `Origen · ${sourceMarket}` },
+    { x: 90, label: portInfo.name },
     { x: 300, label: 'Puerto' },
     { x: 510, label: freeZone },
     { x: 710, label: destination },
@@ -29,10 +39,10 @@ export function ProvenanceRibbon({
 
   return (
     <svg
-      viewBox="0 0 800 52"
+      viewBox="0 0 800 58"
       preserveAspectRatio="xMidYMid meet"
       width="100%"
-      height="52"
+      height="58"
       aria-label={`Cadena de suministro: ${sourceMarket} hacia ${destination} vía ${freeZone}`}
       role="img"
       style={{ display: 'block' }}
@@ -60,7 +70,7 @@ export function ProvenanceRibbon({
         </linearGradient>
       </defs>
 
-      <rect width="800" height="52" fill="#001E50" />
+      <rect width="800" height="58" fill="#001E50" />
 
       {/* Registration ticks — corners of the manifest field */}
       <g stroke="#C4933F" strokeWidth="1" strokeOpacity="0.35">
@@ -147,6 +157,44 @@ export function ProvenanceRibbon({
           </g>
         )
       })}
+
+      {/* Transit day labels between each node pair */}
+      <text
+        x={(nodes[0].x + nodes[1].x) / 2}
+        y={42}
+        textAnchor="middle"
+        fill="#F8F6F0"
+        fillOpacity={0.45}
+        fontSize={7}
+        fontFamily="DM Mono"
+      >{transit.originToPort}d</text>
+
+      <text
+        x={(nodes[1].x + nodes[2].x) / 2}
+        y={42}
+        textAnchor="middle"
+        fill="#F8F6F0"
+        fillOpacity={0.65}
+        fontSize={7.5}
+        fontFamily="DM Mono"
+      >{transit.oceanTransit}d</text>
+
+      <text
+        x={(nodes[2].x + nodes[3].x) / 2}
+        y={42}
+        textAnchor="middle"
+        fill="#F8F6F0"
+        fillOpacity={0.45}
+        fontSize={7}
+        fontFamily="DM Mono"
+      >{transit.portToZone}d</text>
+
+      {/* Container type badge at ZOFRATACNA node */}
+      <rect x={nodes[2].x - 20} y={26} width={40} height={10} fill="none" stroke="#C4933F" strokeWidth={0.5} opacity={0.5} />
+      <text x={nodes[2].x} y={34} textAnchor="middle" fill="#C4933F" fillOpacity={0.8} fontSize={6} fontFamily="DM Mono">{containerType}</text>
+
+      {/* Total days annotation near destination node */}
+      <text x={nodes[3].x - 20} y={12} textAnchor="middle" fill="#C4933F" fillOpacity={0.7} fontSize={6.5} fontFamily="DM Mono">~{totalDays}d total</text>
     </svg>
   )
 }

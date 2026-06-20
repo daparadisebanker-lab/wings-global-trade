@@ -1,6 +1,6 @@
 // src/app/layout.tsx
 import type { Metadata } from 'next'
-import { Cormorant_Garamond, DM_Mono } from 'next/font/google'
+import { IBM_Plex_Serif, DM_Mono } from 'next/font/google'
 import './globals.css'
 
 import { getCategories } from '@/lib/catalog-data'
@@ -13,9 +13,10 @@ import { WINGS_TAGLINE } from '@/lib/constants'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { organizationSchema } from '@/lib/schema'
 
-const cormorant = Cormorant_Garamond({
+const ibmPlexSerif = IBM_Plex_Serif({
   subsets: ['latin'],
-  weight: ['300', '400', '600'],
+  weight: ['300', '400', '500', '600'],
+  style: ['normal', 'italic'],
   variable: '--font-display',
   display: 'swap',
 })
@@ -50,7 +51,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const categories = await getCategories()
 
   return (
-    <html lang="es" className={`${cormorant.variable} ${dmMono.variable}`}>
+    <html lang="es" className={`${ibmPlexSerif.variable} ${dmMono.variable}`}>
       <head>
         <JsonLd data={organizationSchema()} />
       </head>
