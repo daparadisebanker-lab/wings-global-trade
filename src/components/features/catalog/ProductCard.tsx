@@ -3,7 +3,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import type { Product, Category } from '@/types/database'
 import { Badge } from '@/components/ui/badge'
 import { STAGGER_ITEM } from '@/lib/motion'
@@ -66,7 +66,7 @@ export function ProductCard({ product, category }: ProductCardProps) {
                 className="object-contain p-4 transition-transform duration-500 group-hover:scale-[1.03]"
               />
             ) : (
-              <div className="flex h-full items-center justify-center font-mono text-sm text-text-muted">
+              <div className="flex h-full items-center justify-center font-mono text-sm text-navy/50">
                 Sin imagen
               </div>
             )}
@@ -82,12 +82,20 @@ export function ProductCard({ product, category }: ProductCardProps) {
               </div>
             )}
 
-            {/* Compare indicator dot — top-right, shows when in comparison */}
-            {inComparison && (
-              <div className="absolute right-2 top-2 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-gold">
-                <span className="text-[10px] font-medium leading-none text-navy">✓</span>
-              </div>
-            )}
+            {/* Compare indicator dot — springs in/out when comparison state changes */}
+            <AnimatePresence>
+              {inComparison && (
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0, opacity: 0, transition: { duration: 0.15, ease: [0.4, 0, 1, 1] } }}
+                  transition={{ type: 'spring', stiffness: 600, damping: 22 }}
+                  className="absolute right-2 top-2 z-10 flex h-5 w-5 items-center justify-center rounded-full bg-gold"
+                >
+                  <span className="text-[10px] font-medium leading-none text-navy">✓</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Card body */}
@@ -109,7 +117,7 @@ export function ProductCard({ product, category }: ProductCardProps) {
               <dl className="mb-4 space-y-1">
                 {specEntries.map(([k, v]) => (
                   <div key={k} className="flex justify-between gap-3 font-mono text-mono-sm">
-                    <dt className="text-text-muted">{k}</dt>
+                    <dt className="text-navy/55">{k}</dt>
                     <dd className="text-text-mono">{v}</dd>
                   </div>
                 ))}
@@ -124,20 +132,32 @@ export function ProductCard({ product, category }: ProductCardProps) {
               <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-navy/40 transition-colors group-hover:text-gold/70">
                 Ver ficha →
               </span>
-              <button
+              <motion.button
                 onClick={handleCompareToggle}
                 disabled={isDisabled}
                 aria-label={inComparison ? 'Quitar de comparación' : 'Agregar a comparación'}
+                whileTap={{ scale: 0.88 }}
                 className={cn(
-                  'font-mono text-[10px] uppercase tracking-[0.10em] transition-colors duration-150',
+                  'overflow-hidden font-mono text-[10px] uppercase tracking-[0.10em] transition-colors duration-150',
                   inComparison
                     ? 'text-gold'
                     : 'text-navy/30 hover:text-gold',
                   isDisabled && 'cursor-not-allowed opacity-30',
                 )}
               >
-                {inComparison ? '✓ Añadido' : '+ Comparar'}
-              </button>
+                <AnimatePresence mode="popLayout" initial={false}>
+                  <motion.span
+                    key={inComparison ? 'added' : 'default'}
+                    initial={{ opacity: 0, y: inComparison ? 5 : -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: inComparison ? -5 : 5 }}
+                    transition={{ duration: 0.18, ease: [0, 0, 0.2, 1] }}
+                    className="block"
+                  >
+                    {inComparison ? '✓ Añadido' : '+ Comparar'}
+                  </motion.span>
+                </AnimatePresence>
+              </motion.button>
             </div>
           </div>
         </motion.article>

@@ -87,6 +87,29 @@ const FILTER_LABELS: Record<FilterKey, string> = {
   usage: 'Aplicación',
 }
 
+/** Category-specific label overrides for filter keys */
+const CATEGORY_FILTER_LABELS: Partial<Record<string, Partial<Record<FilterKey, string>>>> = {
+  buses: { fuel: 'Propulsión' },
+}
+
+function getFilterLabel(categorySlug: string, key: FilterKey): string {
+  return CATEGORY_FILTER_LABELS[categorySlug]?.[key] ?? FILTER_LABELS[key]
+}
+
+/** Display-friendly values for raw filter param values */
+const FUEL_DISPLAY: Record<string, string> = {
+  diesel: 'Diésel',
+  electrico: 'Eléctrico',
+  hidrogeno: 'Hidrógeno',
+  chasis: 'Chasis',
+  gas: 'Gas',
+}
+
+function formatFilterValue(key: FilterKey, value: string): string {
+  if (key === 'fuel') return FUEL_DISPLAY[value] ?? value
+  return value
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { category } = await params
   const cat = await getCategoryBySlug(category)
@@ -257,7 +280,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
                   'shrink-0 pb-3 pr-6 font-mono text-[11px] uppercase tracking-nav transition-colors',
                   !sub
                     ? 'border-b-2 border-gold text-gold'
-                    : 'border-b-2 border-transparent text-text-muted hover:text-navy',
+                    : 'border-b-2 border-transparent text-navy/45 hover:text-navy',
                 )}
               >
                 Todos
@@ -274,7 +297,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
                       'shrink-0 pb-3 pr-6 font-mono text-[11px] uppercase tracking-nav transition-colors',
                       isActive
                         ? 'border-b-2 border-gold text-gold'
-                        : 'border-b-2 border-transparent text-text-muted hover:text-navy',
+                        : 'border-b-2 border-transparent text-navy/45 hover:text-navy',
                     )}
                   >
                     {sc.name_es}
@@ -294,7 +317,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
           {/* Active filters chips row */}
           {hasActiveFilters && (
             <div className="mb-6 flex flex-wrap items-center gap-2">
-              <span className="font-mono text-[10px] uppercase tracking-widest-2 text-text-muted">
+              <span className="font-mono text-[10px] uppercase tracking-widest-2 text-navy/55">
                 Filtros:
               </span>
               {FILTER_KEYS.map((key) => {
@@ -305,10 +328,10 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
                     key={key}
                     href={buildRemoveFilterUrl(key)}
                     className="flex items-center gap-1.5 rounded border border-gold/30 bg-gold-subtle px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest-2 text-navy transition-colors hover:border-gold/60"
-                    title={`Eliminar filtro ${FILTER_LABELS[key]}`}
+                    title={`Eliminar filtro ${getFilterLabel(category, key)}`}
                   >
-                    {FILTER_LABELS[key]}: {value}
-                    <span aria-hidden="true" className="text-text-muted">
+                    {getFilterLabel(category, key)}: {formatFilterValue(key, value)}
+                    <span aria-hidden="true" className="text-navy/40">
                       ×
                     </span>
                   </Link>
@@ -318,7 +341,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
               {/* Clear all */}
               <Link
                 href={`/catalogo/${category}${q ? `?q=${q}` : ''}`}
-                className="font-mono text-[10px] uppercase tracking-widest-2 text-text-muted underline-offset-2 hover:text-navy hover:underline"
+                className="font-mono text-[10px] uppercase tracking-widest-2 text-navy/45 underline-offset-2 hover:text-navy hover:underline"
               >
                 Limpiar todo
               </Link>

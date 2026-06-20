@@ -5,7 +5,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { z, ZodError } from 'zod'
-import { createServiceClient } from '@/lib/supabase/server'
+import { insertLead } from '@/lib/leads'
 import { sendWhatsAppNotification } from '@/lib/notifications/whatsapp'
 import { sendEmailNotification } from '@/lib/notifications/email'
 import type { CatalogNotificationPayload } from '@/lib/notifications/types'
@@ -28,13 +28,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const data = MultiLeadSchema.parse(body)
 
-    const supabase = createServiceClient()
-    if (!supabase) {
-      return NextResponse.json(
-        { error: 'Servicio no disponible', code: 'SERVICE_UNAVAILABLE' },
-        { status: 503 },
-      )
-    }
+    const ipCountry = request.headers.get('x-vercel-ip-country') ?? undefined
+    const userAgent = request.headers.get('user-agent') ?? undefined
 
     const productNames = data.products.map((p) => p.name_es).join(', ')
     const fullMessage = [
@@ -44,30 +39,20 @@ export async function POST(request: NextRequest) {
       .filter(Boolean)
       .join('\n\n')
 
-    const { data: lead, error: insertError } = await supabase
-      .from('leads')
-      .insert({
-        flow: 'catalog',
-        full_name: data.full_name,
-        company: data.company || null,
-        email: data.email,
-        phone: data.phone || '',
-        destination_country: data.destination_country,
-        product_name_snapshot: productNames,
-        message: fullMessage,
-        source_url: request.headers.get('referer') ?? null,
-        user_agent: request.headers.get('user-agent') ?? null,
-      })
-      .select('id')
-      .single()
-
-    if (insertError || !lead) {
-      console.error('[api/leads/multi] insert', insertError)
-      return NextResponse.json(
-        { error: 'Error interno del servidor', code: 'INTERNAL_ERROR' },
-        { status: 500 },
-      )
-    }
+    const leadId = await insertLead({
+      flow: 'catalog',
+      full_name: data.full_name,
+      company: data.company || null,
+      email: data.email,
+      phone: data.phone || 'N/A',
+      destination_country: data.destination_country,
+      product_name_snapshot: productNames,
+      quantity: `${data.products.length} modelo${data.products.length > 1 ? 's' : ''}`,
+      message: fullMessage || null,
+      source_url: request.headers.get('referer') ?? null,
+      user_agent: userAgent,
+      ip_country: ipCountry,
+    })
 
     const notificationPayload: CatalogNotificationPayload = {
       flow: 'catalog',
@@ -81,14 +66,14 @@ export async function POST(request: NextRequest) {
       message: fullMessage || null,
     }
 
-    void sendWhatsAppNotification(lead.id, notificationPayload).catch((err) =>
+    void sendWhatsAppNotification(leadId, notificationPayload).catch((err) =>
       console.error('[api/leads/multi] whatsapp', err),
     )
-    void sendEmailNotification(lead.id, notificationPayload).catch((err) =>
+    void sendEmailNotification(leadId, notificationPayload).catch((err) =>
       console.error('[api/leads/multi] email', err),
     )
 
-    return NextResponse.json({ success: true, leadId: lead.id }, { status: 201 })
+    return NextResponse.json({ success: true, leadId }, { status: 201 })
   } catch (error) {
     if (error instanceof ZodError) {
       return NextResponse.json(

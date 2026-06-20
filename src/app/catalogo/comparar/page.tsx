@@ -276,7 +276,19 @@ export default async function CompararPage({ searchParams }: PageProps) {
           </div>
 
           {/* Comparison table — horizontally scrollable on mobile */}
-          <div className="overflow-x-auto rounded-none">
+          {products.length > 1 && (
+            <p className="mb-3 flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-[0.14em] text-navy/35 md:hidden">
+              <span>←</span>
+              <span>Desliza para comparar</span>
+              <span>→</span>
+            </p>
+          )}
+          <div className="relative overflow-x-auto rounded-none">
+            {/* Right-edge fade — signals more content to the right */}
+            <div
+              className="pointer-events-none absolute right-0 top-0 z-30 h-full w-10 bg-gradient-to-l from-warm-white to-transparent md:hidden"
+              aria-hidden
+            />
             <table
               className="w-full border-collapse"
               style={{ minWidth: `${160 + products.length * colMinWidth}px` }}
@@ -286,7 +298,7 @@ export default async function CompararPage({ searchParams }: PageProps) {
                 <tr>
                   {/* Sticky spec key column header */}
                   <th
-                    className="sticky left-0 z-20 w-40 bg-warm-white border-b border-[rgba(0,30,80,0.08)] py-4 pr-6 text-left align-bottom"
+                    className="sticky left-0 z-20 w-40 bg-warm-white border-b border-r border-[rgba(0,30,80,0.08)] py-4 pr-6 text-left align-bottom"
                     style={{ minWidth: '160px' }}
                   >
                     <span className="font-mono text-[10px] uppercase tracking-widest-3 text-text-muted">
@@ -301,7 +313,7 @@ export default async function CompararPage({ searchParams }: PageProps) {
                     return (
                       <th
                         key={product.id}
-                        className="border-b border-[rgba(0,30,80,0.08)] px-4 py-4 text-left align-top"
+                        className="border-b border-[rgba(0,30,80,0.08)] px-5 py-4 text-left align-top"
                         style={{ minWidth: `${colMinWidth}px` }}
                       >
                         <div className="relative mb-3 aspect-[4/3] w-full overflow-hidden bg-[#EDEAE1]">
@@ -377,7 +389,7 @@ export default async function CompararPage({ searchParams }: PageProps) {
                         >
                           {/* Sticky key cell */}
                           <td
-                            className="sticky left-0 z-10 bg-warm-white py-3.5 pr-6 align-top"
+                            className="sticky left-0 z-10 bg-warm-white border-r border-[rgba(0,30,80,0.06)] py-3.5 pr-6 align-top"
                             style={{ minWidth: '160px' }}
                           >
                             <span className="font-mono text-xs leading-snug text-navy/75">{key}</span>
@@ -396,7 +408,7 @@ export default async function CompararPage({ searchParams }: PageProps) {
                             return (
                               <td
                                 key={product.id}
-                                className={`px-4 py-3.5 align-top transition-colors ${
+                                className={`px-5 py-3.5 align-top transition-colors ${
                                   isDiff ? 'bg-gold/[0.06]' : ''
                                 }`}
                               >

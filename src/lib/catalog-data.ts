@@ -164,9 +164,11 @@ export async function getProducts(
       // PostgREST filter syntax for JSONB text extraction with cast:
       // filter_attrs->>'hp' cast to int via gte/lte on the extracted text value.
       // Supabase JS client supports .filter() with raw PostgREST syntax for this.
+      // ::int cast forces numeric comparison — string comparison breaks for
+      // cross-digit-length values ("80" < "100" is false as text but true as int)
       builder = builder
-        .filter('filter_attrs->>hp', 'gte', String(hpRange.min))
-        .filter('filter_attrs->>hp', 'lt', String(hpRange.max))
+        .filter('filter_attrs->>hp::int', 'gte', String(hpRange.min))
+        .filter('filter_attrs->>hp::int', 'lt', String(hpRange.max))
     }
   }
 

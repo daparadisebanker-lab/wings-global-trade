@@ -106,18 +106,18 @@ export function FilterChipRow({ categorySlug, facets, activeFilters }: FilterChi
   }
 
   return (
-    <div className="mb-6 -mx-6 md:mx-0">
+    <div className="relative mb-6 -mx-6 md:mx-0">
       <div className="no-scrollbar overflow-x-auto px-6 md:px-0">
         <div className="flex items-center gap-0">
           {groups.map((group, gi) => (
             <div key={group.paramKey} className="flex items-center gap-0">
               {/* Group separator */}
               {gi > 0 && (
-                <div className="mx-3 h-4 w-px bg-[rgba(0,30,80,0.12)]" aria-hidden />
+                <div className="mx-4 h-4 w-px shrink-0 bg-[rgba(0,30,80,0.22)]" aria-hidden />
               )}
-              {/* Group label */}
-              <span className="mr-2 shrink-0 font-mono text-[10px] uppercase tracking-[0.15em] text-navy/55">
-                {group.label}
+              {/* Group label — smaller + lighter than chip text to read as a category prefix */}
+              <span className="mr-2.5 shrink-0 font-mono text-[9px] uppercase tracking-[0.18em] text-navy/40">
+                {group.label}:
               </span>
               {/* Chips */}
               <div className="flex items-center gap-1.5">
@@ -159,6 +159,11 @@ export function FilterChipRow({ categorySlug, facets, activeFilters }: FilterChi
           )}
         </div>
       </div>
+      {/* Right-edge fade — signals horizontal overflow on mobile */}
+      <div
+        className="pointer-events-none absolute right-0 top-0 h-full w-12 bg-gradient-to-l from-warm-white to-transparent md:hidden"
+        aria-hidden
+      />
     </div>
   )
 }

@@ -67,7 +67,7 @@ interface FilterGroupProps {
 function FilterGroup({ title, options, paramKey, activeValue, onToggle }: FilterGroupProps) {
   return (
     <div className="border-b border-[rgba(0,30,80,0.06)]">
-      <p className="py-3 font-mono text-[10px] uppercase tracking-[0.15em] text-text-muted">
+      <p className="py-3 font-mono text-[10px] uppercase tracking-[0.15em] text-navy/65">
         {title}
       </p>
       <div className="flex flex-col gap-0.5 pb-3">
@@ -82,7 +82,7 @@ function FilterGroup({ title, options, paramKey, activeValue, onToggle }: Filter
                 'flex w-full items-center justify-between rounded-wings px-2 py-2 text-left transition-colors duration-150',
                 isActive
                   ? 'bg-gold/10 text-navy'
-                  : 'text-text-muted hover:bg-[rgba(0,30,80,0.04)] hover:text-navy',
+                  : 'text-navy/70 hover:bg-[rgba(0,30,80,0.04)] hover:text-navy',
               )}
             >
               <span className="flex items-center gap-2">
@@ -116,7 +116,7 @@ function FilterGroup({ title, options, paramKey, activeValue, onToggle }: Filter
                 </span>
                 <span className="font-body text-[14px] leading-tight">{opt.label}</span>
               </span>
-              <span className="font-mono text-[11px] text-text-muted">{opt.count}</span>
+              <span className="font-mono text-[11px] text-navy/55">{opt.count}</span>
             </button>
           )
         })}
@@ -154,9 +154,20 @@ const FACET_LABELS: Record<FacetKey, string> = {
   usage: 'Aplicación',
 }
 
+const CATEGORY_FACET_LABELS: Partial<Record<string, Partial<Record<FacetKey, string>>>> = {
+  buses: { fuel: 'Propulsión' },
+}
+
+function getFacetLabel(categorySlug: string, facetKey: FacetKey): string {
+  return CATEGORY_FACET_LABELS[categorySlug]?.[facetKey] ?? FACET_LABELS[facetKey]
+}
+
 function getFacetOrder(categorySlug: string): FacetKey[] {
   if (categorySlug === 'camiones') {
     return ['subcategories', 'fuel', 'payload', 'usage', 'hp', 'traction', 'transmission', 'brand']
+  }
+  if (categorySlug === 'buses') {
+    return ['fuel', 'brand']
   }
   return ['subcategories', 'hp', 'traction', 'transmission', 'brand']
 }
@@ -176,33 +187,18 @@ function FloatingTriggerButton({ activeCount, onClick }: FloatingTriggerProps) {
       type="button"
       onClick={onClick}
       className={cn(
-        'fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-wings bg-navy px-5 py-3 shadow-lg',
-        'font-mono text-[11px] uppercase tracking-[0.12em] text-warm-white',
-        'transition-colors duration-200 hover:bg-navy-light lg:hidden',
+        'fixed bottom-[84px] right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-navy shadow-lg lg:hidden',
+        'transition-colors duration-200 hover:bg-navy-light',
         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold',
       )}
-      aria-label={`Abrir filtros${activeCount > 0 ? `, ${activeCount} activos` : ''}`}
+      aria-label={`Filtros${activeCount > 0 ? `, ${activeCount} activos` : ''}`}
     >
-      {/* Filter icon */}
-      <svg
-        width="14"
-        height="12"
-        viewBox="0 0 14 12"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden
-      >
-        <path
-          d="M1 1h12M3 6h8M5 11h4"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        />
+      <svg width="16" height="14" viewBox="0 0 16 14" fill="none" aria-hidden>
+        <path d="M1 1h14M4 7h8M6.5 13h3" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
-      <span>Filtros</span>
       {activeCount > 0 && (
         <span
-          className="flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[9px] font-bold text-white"
+          className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-gold text-[9px] font-bold leading-none text-navy"
           aria-hidden
         >
           {activeCount}
@@ -291,13 +287,13 @@ export function FilterDrawer({
 
               {/* Header */}
               <div className="mb-4 flex items-center justify-between">
-                <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-text-muted">
+                <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-navy/65">
                   Filtrar
                 </span>
                 <button
                   type="button"
                   onClick={onClose}
-                  className="font-mono text-[10px] uppercase tracking-[0.10em] text-text-muted hover:text-navy transition-colors duration-150"
+                  className="font-mono text-[10px] uppercase tracking-[0.10em] text-navy/55 hover:text-navy transition-colors duration-150"
                   aria-label="Cerrar filtros"
                 >
                   Cerrar
@@ -316,7 +312,7 @@ export function FilterDrawer({
                   return (
                     <FilterGroup
                       key={facetKey}
-                      title={FACET_LABELS[facetKey]}
+                      title={getFacetLabel(categorySlug, facetKey)}
                       options={options}
                       paramKey={paramKey}
                       activeValue={activeValue}
@@ -332,7 +328,7 @@ export function FilterDrawer({
                   <button
                     type="button"
                     onClick={handleClearAll}
-                    className="font-mono text-[10px] uppercase tracking-[0.10em] text-text-muted hover:text-navy transition-colors duration-150"
+                    className="font-mono text-[10px] uppercase tracking-[0.10em] text-navy/55 hover:text-navy transition-colors duration-150"
                   >
                     Limpiar filtros
                   </button>

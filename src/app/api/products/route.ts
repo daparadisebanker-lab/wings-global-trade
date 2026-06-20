@@ -15,10 +15,13 @@ export async function GET(request: NextRequest) {
     const traction = searchParams.get('traction') ?? undefined
     const transmission = searchParams.get('transmission') ?? undefined
     const brand = searchParams.get('brand') ?? undefined
+    const fuel = searchParams.get('fuel') ?? undefined
+    const payload = searchParams.get('payload') ?? undefined
+    const usage = searchParams.get('usage') ?? undefined
     const limit = searchParams.get('limit') ? Number(searchParams.get('limit')) : undefined
     const offset = searchParams.get('offset') ? Number(searchParams.get('offset')) : undefined
 
-    const result = await getProducts({ category, q, sub, hp, traction, transmission, brand, limit, offset })
+    const result = await getProducts({ category, q, sub, hp, traction, transmission, brand, fuel, payload, usage, limit, offset })
     return NextResponse.json(result)
   } catch (error) {
     console.error('[api/products]', error)
