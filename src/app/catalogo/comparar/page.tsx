@@ -377,10 +377,10 @@ export default async function CompararPage({ searchParams }: PageProps) {
                         >
                           {/* Sticky key cell */}
                           <td
-                            className="sticky left-0 z-10 bg-warm-white py-3 pr-6 align-middle"
+                            className="sticky left-0 z-10 bg-warm-white py-3.5 pr-6 align-top"
                             style={{ minWidth: '160px' }}
                           >
-                            <span className="font-mono text-xs text-navy/75">{key}</span>
+                            <span className="font-mono text-xs leading-snug text-navy/75">{key}</span>
                             {hasDifference && (
                               <span className="ml-2 inline-block h-1.5 w-1.5 rounded-full bg-gold/60 align-middle" />
                             )}
@@ -396,12 +396,12 @@ export default async function CompararPage({ searchParams }: PageProps) {
                             return (
                               <td
                                 key={product.id}
-                                className={`px-4 py-3 align-middle transition-colors ${
+                                className={`px-4 py-3.5 align-top transition-colors ${
                                   isDiff ? 'bg-gold/[0.06]' : ''
                                 }`}
                               >
                                 <span
-                                  className={`font-mono text-[12px] ${
+                                  className={`font-mono text-[12px] leading-snug ${
                                     isMissing
                                       ? 'text-navy/20'
                                       : isDiff && isHighest && products.length > 1

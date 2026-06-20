@@ -288,7 +288,7 @@ export function ProductSpecTable({ specs }: ProductSpecTableProps) {
     <div ref={ref}>
 
       {/* ── Section header ──────────────────────────────────────────── */}
-      <div className="mb-4 flex items-baseline justify-between">
+      <div className="mb-6 flex items-baseline justify-between">
         <h2 className="font-body text-sm font-medium tracking-tight text-navy">
           Especificaciones técnicas
         </h2>
@@ -299,7 +299,7 @@ export function ProductSpecTable({ specs }: ProductSpecTableProps) {
 
       {/* ── Tab navigation ──────────────────────────────────────────── */}
       {groups.length > 1 && (
-        <div className="overflow-x-auto no-scrollbar">
+        <div className="relative mb-1 overflow-x-auto no-scrollbar">
           <div className="flex min-w-max items-end border-b border-navy/10">
             {groups.map((group) => {
               const isActive = group.id === currentGroupId
@@ -311,12 +311,12 @@ export function ProductSpecTable({ specs }: ProductSpecTableProps) {
                     setClickedSpec(null)
                   }}
                   className={cn(
-                    '-mb-px shrink-0 border-b-2 pb-2.5 pr-5 pt-0 text-left',
-                    'font-mono text-[10px] uppercase tracking-[0.12em] whitespace-nowrap',
+                    '-mb-px shrink-0 border-b-2 pb-3 pr-6 pt-2 text-left',
+                    'font-mono text-[11px] uppercase tracking-[0.12em] whitespace-nowrap',
                     'transition-colors duration-150',
                     isActive
                       ? 'border-gold text-navy'
-                      : 'border-transparent text-navy/35 hover:text-navy/65',
+                      : 'border-transparent text-navy/40 hover:text-navy/70',
                   )}
                 >
                   {group.label}
@@ -332,6 +332,11 @@ export function ProductSpecTable({ specs }: ProductSpecTableProps) {
               )
             })}
           </div>
+          {/* Overflow fade hint — signals horizontal scroll on mobile */}
+          <div
+            className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-warm-white to-transparent"
+            aria-hidden
+          />
         </div>
       )}
 
@@ -355,9 +360,10 @@ export function ProductSpecTable({ specs }: ProductSpecTableProps) {
                   onMouseEnter={() => handleSpecEnter(key)}
                   onMouseLeave={handleSpecLeave}
                   className={cn(
-                    'group relative flex items-baseline justify-between gap-6',
-                    'border-b border-navy/[0.06] py-3',
-                    'transition-colors duration-100 hover:bg-gold/[0.03]',
+                    'group relative border-b border-navy/[0.06] transition-colors duration-100',
+                    'flex flex-col gap-0.5 py-3.5',
+                    'sm:flex-row sm:items-baseline sm:justify-between sm:gap-8 sm:py-3',
+                    'hover:bg-gold/[0.03]',
                     hasContext && 'cursor-help',
                     isInspected && 'bg-gold/[0.04]',
                   )}
@@ -369,19 +375,19 @@ export function ProductSpecTable({ specs }: ProductSpecTableProps) {
                   />
 
                   {/* Label */}
-                  <dt className="min-w-0 flex-1 truncate pl-3 font-mono text-xs leading-none text-navy/75">
+                  <dt className="pl-3 font-mono text-xs leading-snug text-navy/70 sm:min-w-0 sm:flex-1">
                     {key}
                   </dt>
 
                   {/* Value — clickable when inspection is available */}
-                  <dd className="shrink-0 text-right font-mono text-sm font-medium leading-none text-navy">
+                  <dd className="pl-3 font-mono text-sm font-medium leading-snug text-navy sm:pl-0 sm:text-right sm:shrink-0">
                     {hasInspection ? (
                       <button
                         type="button"
                         onClick={() => toggleInspection(key)}
                         aria-expanded={isInspected}
                         className={cn(
-                          'spec-value-inspectable font-mono text-sm font-medium',
+                          'font-mono text-sm font-medium leading-snug text-left sm:text-right',
                           isInspected ? 'text-gold' : 'text-navy',
                         )}
                       >
