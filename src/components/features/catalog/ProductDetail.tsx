@@ -65,42 +65,103 @@ export function ProductDetail({ product, categorySlug }: ProductDetailProps) {
       />
 
       <div className="px-6 py-12 md:px-10">
-        <div className="mx-auto w-full max-w-6xl space-y-12">
+        <div className="mx-auto w-full max-w-6xl">
 
-          {/* ── Top section: product info (left) + inquiry form (right) ── */}
-          <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_380px]">
+          {/* ── Two-column grid spans ALL content so the right column stays sticky
+               through specs/variants/use-cases, releasing at #tambien below ── */}
+          <div className="grid grid-cols-1 gap-x-10 lg:grid-cols-[1fr_380px]">
 
-            {/* Left: header, gallery, description */}
-            <div className="space-y-8">
-              <div>
+            {/* ── LEFT: all scrollable content ── */}
+            <div className="space-y-12">
+
+              {/* Header, gallery, description */}
+              <div className="space-y-8">
                 <h1 className="font-display text-display-md font-light text-navy">
                   {product.name_es}
                 </h1>
+
+                <KeySpecsRibbon specs={effectiveSpecs} />
+
+                <ProductGallery images={product.images} alt={product.name_es} />
+
+                <div className="flex flex-wrap gap-1.5">
+                  {product.source_markets.map((m) => (
+                    <Badge key={m} variant="source">
+                      Origen: {m}
+                    </Badge>
+                  ))}
+                </div>
+
+                <div>
+                  <h2 className="mb-3 font-body text-sm font-medium tracking-tight text-navy">
+                    Descripción
+                  </h2>
+                  <p className="font-body text-base leading-relaxed text-text-mono">
+                    {product.description_es}
+                  </p>
+                </div>
               </div>
 
-              <KeySpecsRibbon specs={effectiveSpecs} />
+              {/* Variant comparison table */}
+              {hasVariants && product.variants && (
+                <div id="variantes">
+                  <div className="mb-5">
+                    <p className="mb-0.5 font-mono text-[10px] uppercase tracking-[0.18em] text-navy/30">
+                      Comparar variantes
+                    </p>
+                    <h3 className="font-body text-sm font-medium tracking-tight text-navy">
+                      {product.variants.length} modelos disponibles
+                    </h3>
+                  </div>
+                  <VariantTable
+                    variants={product.variants}
+                    selectedModel={selectedVariant}
+                    onSelectVariant={handleSelectVariant}
+                  />
+                </div>
+              )}
 
-              <ProductGallery images={product.images} alt={product.name_es} />
-
-              <div className="flex flex-wrap gap-1.5">
-                {product.source_markets.map((m) => (
-                  <Badge key={m} variant="source">
-                    Origen: {m}
-                  </Badge>
-                ))}
+              {/* Technical specifications */}
+              <div id="especificaciones">
+                <ProductSpecTable specs={effectiveSpecs} />
               </div>
 
-              <div>
-                <h2 className="mb-3 font-body text-sm font-medium tracking-tight text-navy">
-                  Descripción
-                </h2>
-                <p className="font-body text-base leading-relaxed text-text-mono">
-                  {product.description_es}
-                </p>
+              {/* Use cases */}
+              <div id="aplicaciones">
+                <UseCaseStrip specs={effectiveSpecs} filterAttrs={product.filter_attrs} />
               </div>
+
+              {/* Compatible implements (ag only) */}
+              {showImplements && (
+                <div>
+                  <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.18em] text-text-muted">
+                    Implementos compatibles
+                  </p>
+                  <h3 className="mb-4 font-body text-sm font-medium tracking-tight text-navy">
+                    Equipos que operan con este tractor
+                  </h3>
+                  <div className="flex flex-col gap-3 sm:flex-row">
+                    {IMPLEMENT_LINKS.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className="group flex flex-1 items-center justify-between rounded-[4px] border border-gold/20 px-4 py-3 transition-all duration-200 hover:border-gold/60"
+                      >
+                        <span className="font-body text-sm font-medium text-navy transition-colors group-hover:text-gold">
+                          {item.label}
+                        </span>
+                        <span className="ml-3 font-mono text-xs text-gold/50 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-gold">
+                          →
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
             </div>
 
-            {/* Right: passport card + model selector + inquiry form */}
+            {/* ── RIGHT: sticky passport + form — stays visible until grid ends ── */}
             <div id="consultar" className="space-y-4 lg:sticky lg:top-24 lg:self-start">
               <ProductPassport product={product} categorySlug={category} />
               <ProductModelSelector
@@ -117,65 +178,8 @@ export function ProductDetail({ product, categorySlug }: ProductDetailProps) {
                 />
               </div>
             </div>
+
           </div>
-
-          {/* ── Full-width: variant comparison table ── */}
-          {hasVariants && product.variants && (
-            <div id="variantes">
-              <div className="mb-5">
-                <p className="mb-0.5 font-mono text-[10px] uppercase tracking-[0.18em] text-navy/30">
-                  Comparar variantes
-                </p>
-                <h3 className="font-body text-sm font-medium tracking-tight text-navy">
-                  {product.variants.length} modelos disponibles
-                </h3>
-              </div>
-              <VariantTable
-                variants={product.variants}
-                selectedModel={selectedVariant}
-                onSelectVariant={handleSelectVariant}
-              />
-            </div>
-          )}
-
-          {/* ── Full-width: technical specifications ── */}
-          <div id="especificaciones">
-            <ProductSpecTable specs={effectiveSpecs} />
-          </div>
-
-          {/* ── Full-width: use cases ── */}
-          <div id="aplicaciones">
-            <UseCaseStrip specs={effectiveSpecs} filterAttrs={product.filter_attrs} />
-          </div>
-
-          {/* ── Full-width: compatible implements (ag only) ── */}
-          {showImplements && (
-            <div>
-              <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.18em] text-text-muted">
-                Implementos compatibles
-              </p>
-              <h3 className="mb-4 font-body text-sm font-medium tracking-tight text-navy">
-                Equipos que operan con este tractor
-              </h3>
-              <div className="flex flex-col gap-3 sm:flex-row">
-                {IMPLEMENT_LINKS.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className="group flex flex-1 items-center justify-between rounded-[4px] border border-gold/20 px-4 py-3 transition-all duration-200 hover:border-gold/60"
-                  >
-                    <span className="font-body text-sm font-medium text-navy transition-colors group-hover:text-gold">
-                      {item.label}
-                    </span>
-                    <span className="ml-3 font-mono text-xs text-gold/50 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-gold">
-                      →
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
-
         </div>
       </div>
     </div>
