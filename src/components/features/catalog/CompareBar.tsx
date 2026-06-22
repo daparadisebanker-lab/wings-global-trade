@@ -90,7 +90,7 @@ function CompareSheet({ isOpen, onClose }: CompareSheetProps) {
                   Selecciona hasta 3 productos para comparar
                 </p>
                 <p className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.10em] text-navy/30">
-                  Usa "+ Comparar" en cada ficha de producto
+                  Usa &quot;+ Comparar&quot; en cada ficha de producto
                 </p>
               </div>
             )}
