@@ -71,6 +71,17 @@ const COLUMNS: MegaColumn[] = [
       { label: 'Repuestos', href: '/catalogo/repuestos' },
     ],
   },
+  {
+    categorySlug: 'automoviles',
+    heading: 'Automóviles',
+    items: [
+      { label: 'Changan', href: '/catalogo/automoviles?brand=Changan' },
+      { label: 'Toyota', href: '/catalogo/automoviles?brand=Toyota' },
+      { label: 'Hyundai', href: '/catalogo/automoviles?brand=Hyundai' },
+      { label: 'Jetour', href: '/catalogo/automoviles?brand=Jetour' },
+      { label: 'Híbridos', href: '/catalogo/automoviles?fuel=hibrido' },
+    ],
+  },
 ]
 
 // --------------------------------------------------------------------------
@@ -138,7 +149,7 @@ export function MegaMenu({ categories: _categories, open }: MegaMenuProps) {
           role="region"
           aria-label="Menú de catálogo"
         >
-          <div className="mx-auto grid max-w-7xl grid-cols-5 gap-0 px-10 py-10">
+          <div className="mx-auto grid max-w-7xl grid-cols-6 gap-0 px-10 py-10">
             {/* ---- Three category columns ---- */}
             {COLUMNS.map((col) => (
               <div key={col.categorySlug} className="pr-8">

@@ -36,6 +36,7 @@ const CATEGORY_IMAGES: Record<string, { mobile: string; desktop: string }> = {
 const ORDERED_SLUGS = [
   'maquinaria-agricola',
   'camiones',
+  'automoviles',
   'buses',
   'equipo-industrial',
   'repuestos',
@@ -147,7 +148,7 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
   const rest = categories.filter((c) => !ORDERED_SLUGS.includes(c.slug))
   const all  = [...sorted, ...rest]
 
-  const [cat0, cat1, cat2, cat3, cat4] = all
+  const [cat0, cat1, cat2, cat3, cat4, cat5] = all
 
   const EASE = [0.16, 1, 0.3, 1] as const
   const ENTER = (delay = 0) => ({
@@ -206,19 +207,19 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
           )}
         </div>
 
-        {/* Row 2 — buses · industrial · repuestos (equal thirds) */}
-        <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
-          {([cat2, cat3, cat4] as (Category | undefined)[]).map((cat, i) =>
+        {/* Row 2 — automoviles · buses · industrial · repuestos (equal quarters) */}
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-4">
+          {([cat2, cat3, cat4, cat5] as (Category | undefined)[]).map((cat, i) =>
             cat ? (
               <motion.div
                 key={cat.id}
                 {...ENTER(i * 0.07)}
-                className="h-[80vw] md:h-[38vw] md:max-h-[460px]"
+                className="h-[80vw] md:h-[48vw] md:max-h-[460px] lg:h-[30vw] lg:max-h-[420px]"
               >
                 <CategoryCard
                   category={cat}
                   index={i + 2}
-                  sizes="(min-width: 768px) 33vw, 100vw"
+                  sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
                 />
               </motion.div>
             ) : null
