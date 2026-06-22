@@ -186,8 +186,110 @@ function CompareSheet({ isOpen, onClose }: CompareSheetProps) {
 }
 
 // ---------------------------------------------------------------------------
+// DesktopCompareBar — sticky bottom bar, visible on lg+ only
+// Slides up from bottom when items are selected.
+// ---------------------------------------------------------------------------
+
+function DesktopCompareBar() {
+  const { items, remove, clear } = useComparison()
+  const canCompare = items.length >= 2
+
+  return (
+    <AnimatePresence>
+      {items.length > 0 && (
+        <motion.div
+          initial={{ y: '100%' }}
+          animate={{ y: 0 }}
+          exit={{ y: '100%' }}
+          transition={{ duration: 0.32, ease: [0.0, 0.0, 0.2, 1.0] }}
+          className="fixed bottom-0 left-0 right-0 z-40 hidden border-t border-warm-white/[0.08] bg-[#000C1F] lg:block"
+          role="region"
+          aria-label="Comparación de productos"
+        >
+          <div className="mx-auto flex max-w-6xl items-center gap-6 px-10 py-4">
+            {/* Label */}
+            <p className="shrink-0 font-mono text-[10px] uppercase tracking-[0.15em] text-warm-white/35">
+              Comparando
+            </p>
+
+            {/* Product slots */}
+            <div className="flex flex-1 items-center gap-3">
+              {[0, 1, 2].map((idx) => {
+                const item = items[idx]
+                return item ? (
+                  <div
+                    key={item.id}
+                    className="flex items-center gap-2.5 rounded border border-warm-white/[0.08] bg-warm-white/[0.04] px-3 py-2"
+                  >
+                    {item.image && (
+                      <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded bg-white/10">
+                        <Image
+                          src={item.image}
+                          alt={item.name_es}
+                          fill
+                          sizes="32px"
+                          className="object-contain p-0.5"
+                        />
+                      </div>
+                    )}
+                    <span className="max-w-[160px] truncate font-mono text-[11px] text-warm-white/75">
+                      {item.name_es}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => remove(item.id)}
+                      aria-label={`Quitar ${item.name_es}`}
+                      className="ml-1 font-mono text-base leading-none text-warm-white/25 transition-colors hover:text-warm-white/70"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ) : (
+                  <div
+                    key={`empty-${idx}`}
+                    className="flex h-[44px] w-[180px] items-center rounded border border-dashed border-warm-white/[0.08] px-3"
+                    aria-hidden
+                  >
+                    <span className="font-mono text-[10px] uppercase tracking-[0.10em] text-warm-white/20">
+                      Slot {idx + 1}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* Actions */}
+            <div className="flex shrink-0 items-center gap-4">
+              <button
+                type="button"
+                onClick={clear}
+                className="font-mono text-[10px] uppercase tracking-[0.12em] text-warm-white/30 transition-colors hover:text-warm-white/60"
+              >
+                Limpiar
+              </button>
+              {canCompare ? (
+                <Link
+                  href={`/catalogo/comparar?ids=${items.map((i) => i.id).join(',')}`}
+                  className="flex items-center gap-2 bg-gold px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.12em] text-navy transition-colors hover:bg-gold-hover"
+                >
+                  Comparar {items.length} productos →
+                </Link>
+              ) : (
+                <span className="font-mono text-[10px] uppercase tracking-[0.10em] text-warm-white/25">
+                  Agrega {2 - items.length} más para comparar
+                </span>
+              )}
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+}
+
+// ---------------------------------------------------------------------------
 // CompareBar — circular FAB + animated pulse ring + spring badge
-// Rendered in layout.tsx. Always visible on mobile.
+// Rendered in layout.tsx. Mobile: FAB + sheet. Desktop: sticky bottom bar.
 // ---------------------------------------------------------------------------
 
 export function CompareBar() {
@@ -208,7 +310,7 @@ export function CompareBar() {
 
   return (
     <>
-      {/* Fixed wrapper — pulse ring and button share the same origin point */}
+      {/* Mobile FAB — hidden on desktop */}
       <div className="fixed bottom-6 right-6 z-40 lg:hidden">
         {/* Pulse ring — expands + fades each time an item is added */}
         <AnimatePresence>
@@ -268,7 +370,11 @@ export function CompareBar() {
         </motion.button>
       </div>
 
+      {/* Mobile comparison sheet */}
       <CompareSheet isOpen={isOpen} onClose={() => setIsOpen(false)} />
+
+      {/* Desktop sticky bottom bar */}
+      <DesktopCompareBar />
     </>
   )
 }
