@@ -3,6 +3,7 @@
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
+import { AnimatePresence, motion } from 'framer-motion'
 import type { Product } from '@/types/database'
 import { Badge } from '@/components/ui/badge'
 import { ProductGallery } from '@/components/features/catalog/ProductGallery'
@@ -14,7 +15,8 @@ import { VariantTable } from '@/components/features/catalog/VariantTable'
 import SavedInquiryBanner from '@/components/features/catalog/SavedInquiryBanner'
 import JumpNavigation from '@/components/features/catalog/JumpNavigation'
 import { KeySpecsRibbon } from '@/components/features/catalog/KeySpecsRibbon'
-import { ProductPassport } from '@/components/features/catalog/ProductPassport'
+import { useComparison } from '@/hooks/useComparison'
+import { cn } from '@/lib/utils'
 
 interface ImplementLink {
   label: string
@@ -49,6 +51,25 @@ export function ProductDetail({ product, categorySlug }: ProductDetailProps) {
 
   const showImplements = category === 'maquinaria-agricola'
 
+  const { add, remove, isInComparison, isFull } = useComparison()
+  const inComparison = isInComparison(product.id)
+  const compareDisabled = isFull && !inComparison
+
+  function handleCompareToggle() {
+    if (inComparison) {
+      remove(product.id)
+    } else if (!isFull) {
+      add({
+        id: product.id,
+        name_es: product.name_es,
+        slug: product.slug,
+        category_slug: category,
+        image: product.images[0] ?? '',
+        specs: product.specs as Record<string, unknown>,
+      })
+    }
+  }
+
   function handleSelectVariant(model: string) {
     setSelectedVariant(model)
   }
@@ -67,8 +88,8 @@ export function ProductDetail({ product, categorySlug }: ProductDetailProps) {
       <div className="px-6 py-12 md:px-10">
         <div className="mx-auto w-full max-w-6xl">
 
-          {/* ── Two-column grid spans ALL content so the right column stays sticky
-               through specs/variants/use-cases, releasing at #tambien below ── */}
+          {/* Two-column grid spans ALL content — right column stays sticky
+              through specs/variants/use-cases, releasing at #tambien below */}
           <div className="grid grid-cols-1 gap-x-10 lg:grid-cols-[1fr_380px]">
 
             {/* ── LEFT: all scrollable content ── */}
@@ -163,14 +184,73 @@ export function ProductDetail({ product, categorySlug }: ProductDetailProps) {
 
             {/* ── RIGHT: outer cell stretches full row height; inner div is sticky ── */}
             <div id="consultar">
-              <div className="space-y-4 lg:sticky lg:top-24">
-                <ProductPassport product={product} categorySlug={category} />
+              <div className="space-y-3 lg:sticky lg:top-24">
+
+                {/* Compare button — prominent, full-width */}
+                <motion.button
+                  onClick={handleCompareToggle}
+                  disabled={compareDisabled}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.15 }}
+                  aria-pressed={inComparison}
+                  className={cn(
+                    'flex w-full items-center justify-between px-5 py-4 font-mono text-[11px] uppercase tracking-[0.12em] transition-all duration-200',
+                    inComparison
+                      ? 'border border-gold bg-gold/8 text-gold'
+                      : compareDisabled
+                      ? 'cursor-not-allowed border border-navy/10 bg-navy/[0.03] text-navy/25'
+                      : 'border border-navy/20 bg-white text-navy hover:border-gold/60 hover:text-gold',
+                  )}
+                >
+                  <AnimatePresence mode="popLayout" initial={false}>
+                    <motion.span
+                      key={inComparison ? 'added' : 'default'}
+                      initial={{ opacity: 0, y: inComparison ? 4 : -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.16 }}
+                      className="flex items-center gap-2.5"
+                    >
+                      {inComparison ? (
+                        <>
+                          <span className="text-base leading-none">✓</span>
+                          Añadido a comparación
+                        </>
+                      ) : compareDisabled ? (
+                        'Comparación llena'
+                      ) : (
+                        <>
+                          <svg width="14" height="12" viewBox="0 0 14 12" fill="none" aria-hidden className="shrink-0">
+                            <rect x="0.75" y="0.75" width="4.5" height="10.5" rx="0.75" stroke="currentColor" strokeWidth="1.5" />
+                            <rect x="8.75" y="0.75" width="4.5" height="10.5" rx="0.75" stroke="currentColor" strokeWidth="1.5" />
+                          </svg>
+                          Comparar este producto
+                        </>
+                      )}
+                    </motion.span>
+                  </AnimatePresence>
+
+                  {/* Right side state indicator */}
+                  {!compareDisabled && (
+                    <span className={cn(
+                      'shrink-0 font-mono text-[9px]',
+                      inComparison ? 'text-gold/60' : 'text-navy/25',
+                    )}>
+                      {inComparison ? 'Quitar' : `${isFull ? '3' : ''}` }
+                    </span>
+                  )}
+                </motion.button>
+
+                {/* Model selector */}
                 <ProductModelSelector
                   models={product.models ?? []}
                   activeIndex={modelIndex}
                   onSelect={setModelIndex}
                 />
+
                 <SavedInquiryBanner productSlug={product.slug} onRestore={handleRestoreSaved} />
+
+                {/* Inquiry form */}
                 <div id="inquiry-form">
                   <InquiryForm
                     product={product}
@@ -178,6 +258,7 @@ export function ProductDetail({ product, categorySlug }: ProductDetailProps) {
                     onSuccess={() => {}}
                   />
                 </div>
+
               </div>
             </div>
 
