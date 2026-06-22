@@ -110,7 +110,7 @@ export default async function ProductPage({ params }: PageProps) {
 
       {/* "También podría interesarte" strip — same category, up to 4 products */}
       {related.length > 0 && cat && (
-        <section className="bg-warm-white px-6 py-16 md:px-10">
+        <section id="tambien" className="bg-warm-white px-6 py-16 md:px-10">
           <div className="mx-auto w-full max-w-6xl">
             <p className="mb-6 font-mono text-[10px] uppercase tracking-[0.18em] text-text-muted">
               También en esta categoría

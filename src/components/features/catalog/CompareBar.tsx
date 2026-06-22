@@ -24,6 +24,7 @@ interface CompareSheetProps {
 function CompareSheet({ isOpen, onClose }: CompareSheetProps) {
   const { items, remove, clear } = useComparison()
   const canCompare = items.length >= 2
+  const addMoreHref = emptySlotHref(items)
 
   return (
     <AnimatePresence>
@@ -131,20 +132,22 @@ function CompareSheet({ isOpen, onClose }: CompareSheetProps) {
                     </button>
                   </div>
                 ))}
-                {/* Empty slots */}
+                {/* Empty slots — tappable, lead to add-more destination */}
                 {Array.from({ length: 3 - items.length }).map((_, i) => (
-                  <div
+                  <Link
                     key={`empty-${i}`}
-                    className="flex h-[52px] items-center rounded-wings border border-dashed border-[rgba(0,30,80,0.09)] px-3"
-                    aria-hidden
+                    href={addMoreHref}
+                    onClick={onClose}
+                    className="flex h-[52px] items-center rounded-wings border border-dashed border-[rgba(0,30,80,0.09)] px-3 transition-colors hover:border-gold/40"
+                    aria-label="Agregar producto a la comparación"
                   >
                     <span className="w-4 text-center font-mono text-[10px] text-navy/20">
                       {items.length + i + 1}
                     </span>
-                    <span className="ml-3 font-mono text-[10px] uppercase tracking-[0.10em] text-navy/18">
-                      Vacío
+                    <span className="ml-3 font-mono text-[10px] uppercase tracking-[0.10em] text-navy/30">
+                      + Agregar
                     </span>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}
@@ -190,9 +193,16 @@ function CompareSheet({ isOpen, onClose }: CompareSheetProps) {
 // Slides up from bottom when items are selected.
 // ---------------------------------------------------------------------------
 
+function emptySlotHref(items: { category_slug: string; slug: string }[]): string {
+  if (items.length === 0) return '/catalogo'
+  const last = items[items.length - 1]
+  return `/catalogo/${last.category_slug}/${last.slug}#tambien`
+}
+
 function DesktopCompareBar() {
   const { items, remove, clear } = useComparison()
   const canCompare = items.length >= 2
+  const addMoreHref = emptySlotHref(items)
 
   return (
     <AnimatePresence>
@@ -245,15 +255,16 @@ function DesktopCompareBar() {
                     </button>
                   </div>
                 ) : (
-                  <div
+                  <Link
                     key={`empty-${idx}`}
-                    className="flex h-[44px] w-[180px] items-center rounded border border-dashed border-warm-white/[0.08] px-3"
-                    aria-hidden
+                    href={addMoreHref}
+                    className="flex h-[44px] w-[180px] items-center rounded border border-dashed border-warm-white/[0.08] px-3 transition-colors hover:border-gold/40 hover:bg-warm-white/[0.04]"
+                    aria-label="Agregar producto a la comparación"
                   >
                     <span className="font-mono text-[10px] uppercase tracking-[0.10em] text-warm-white/20">
-                      Slot {idx + 1}
+                      + Agregar
                     </span>
-                  </div>
+                  </Link>
                 )
               })}
             </div>
