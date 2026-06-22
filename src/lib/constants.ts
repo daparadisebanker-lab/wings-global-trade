@@ -2,7 +2,7 @@
 // Public, non-secret constants used across client + server components.
 
 /** Wings ops WhatsApp number for public deep links (display contact). */
-export const WINGS_PUBLIC_WHATSAPP = '51999000000'
+export const WINGS_PUBLIC_WHATSAPP = '50760250735'
 export const WINGS_PUBLIC_EMAIL = 'comercial@wingsglobaltrade.com'
 
 export const WINGS_TAGLINE = 'Precisión. Proximidad. Confianza.'

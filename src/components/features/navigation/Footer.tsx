@@ -7,6 +7,7 @@ import {
   WINGS_PUBLIC_EMAIL,
   WINGS_PUBLIC_WHATSAPP,
 } from '@/lib/constants'
+import { buildWhatsAppLink } from '@/lib/utils'
 
 interface FooterProps {
   categories: Category[]
@@ -43,7 +44,7 @@ export function Footer({ categories }: FooterProps) {
               Canal directo
             </p>
             <a
-              href={`https://wa.me/${WINGS_PUBLIC_WHATSAPP}`}
+              href={buildWhatsAppLink(WINGS_PUBLIC_WHATSAPP, 'Hola, me interesa importar equipamiento a través de Wings Global Trade.')}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-3 border border-gold/20 px-6 py-3 font-mono text-[11px] uppercase tracking-[0.10em] text-warm-white/60 transition-all duration-200 hover:border-gold/60 hover:text-gold"

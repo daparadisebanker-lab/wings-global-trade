@@ -134,7 +134,11 @@ export function SiteNav({ categories }: SiteNavProps) {
             >
               Cotizar
             </Link>
-            <WhatsAppButton variant={solid ? 'gold' : 'green'} label="WhatsApp" />
+            <WhatsAppButton
+              variant={solid ? 'gold' : 'green'}
+              label="WhatsApp"
+              message="Hola, estoy revisando el catálogo de Wings Global Trade y me gustaría más información."
+            />
           </div>
 
           <button
