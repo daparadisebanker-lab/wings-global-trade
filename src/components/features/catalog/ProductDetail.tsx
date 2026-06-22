@@ -161,21 +161,23 @@ export function ProductDetail({ product, categorySlug }: ProductDetailProps) {
 
             </div>
 
-            {/* ── RIGHT: sticky passport + form — stays visible until grid ends ── */}
-            <div id="consultar" className="space-y-4 lg:sticky lg:top-24 lg:self-start">
-              <ProductPassport product={product} categorySlug={category} />
-              <ProductModelSelector
-                models={product.models ?? []}
-                activeIndex={modelIndex}
-                onSelect={setModelIndex}
-              />
-              <SavedInquiryBanner productSlug={product.slug} onRestore={handleRestoreSaved} />
-              <div id="inquiry-form">
-                <InquiryForm
-                  product={product}
-                  selectedVariant={selectedVariant}
-                  onSuccess={() => {}}
+            {/* ── RIGHT: outer cell stretches full row height; inner div is sticky ── */}
+            <div id="consultar">
+              <div className="space-y-4 lg:sticky lg:top-24">
+                <ProductPassport product={product} categorySlug={category} />
+                <ProductModelSelector
+                  models={product.models ?? []}
+                  activeIndex={modelIndex}
+                  onSelect={setModelIndex}
                 />
+                <SavedInquiryBanner productSlug={product.slug} onRestore={handleRestoreSaved} />
+                <div id="inquiry-form">
+                  <InquiryForm
+                    product={product}
+                    selectedVariant={selectedVariant}
+                    onSuccess={() => {}}
+                  />
+                </div>
               </div>
             </div>
 
