@@ -95,8 +95,8 @@ export function ProductDetail({ product, categorySlug }: ProductDetailProps) {
             {/* ── LEFT: sticky title/specs header + scrollable body ── */}
             <div>
 
-              {/* STATIC: title + key specs — sticks to top while body scrolls under */}
-              <div className="lg:sticky lg:top-24 lg:z-10 lg:bg-warm-white lg:pb-6">
+              {/* STATIC: title + key specs — sticks below SiteNav(64px)+JumpNav(48px)=112px */}
+              <div className="lg:sticky lg:top-28 lg:z-10 lg:bg-warm-white lg:pb-6">
                 <h1 className="font-display text-display-md font-light text-navy">
                   {product.name_es}
                 </h1>
@@ -124,6 +124,56 @@ export function ProductDetail({ product, categorySlug }: ProductDetailProps) {
                     {product.description_es}
                   </p>
                 </div>
+
+                {/* Compare button — inline in left column, below description */}
+                <motion.button
+                  onClick={handleCompareToggle}
+                  disabled={compareDisabled}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.15 }}
+                  aria-pressed={inComparison}
+                  className={cn(
+                    'flex w-full items-center justify-between px-5 py-4 font-mono text-[11px] uppercase tracking-[0.12em] transition-all duration-200',
+                    inComparison
+                      ? 'border border-gold bg-gold/8 text-gold'
+                      : compareDisabled
+                      ? 'cursor-not-allowed border border-navy/10 bg-navy/[0.03] text-navy/25'
+                      : 'border border-navy/20 bg-white text-navy hover:border-gold/60 hover:text-gold',
+                  )}
+                >
+                  <AnimatePresence mode="popLayout" initial={false}>
+                    <motion.span
+                      key={inComparison ? 'added' : 'default'}
+                      initial={{ opacity: 0, y: inComparison ? 4 : -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.16 }}
+                      className="flex items-center gap-2.5"
+                    >
+                      {inComparison ? (
+                        <>
+                          <span className="text-base leading-none">✓</span>
+                          Añadido a comparación
+                        </>
+                      ) : compareDisabled ? (
+                        'Comparación llena'
+                      ) : (
+                        <>
+                          <svg width="14" height="12" viewBox="0 0 14 12" fill="none" aria-hidden className="shrink-0">
+                            <rect x="0.75" y="0.75" width="4.5" height="10.5" rx="0.75" stroke="currentColor" strokeWidth="1.5" />
+                            <rect x="8.75" y="0.75" width="4.5" height="10.5" rx="0.75" stroke="currentColor" strokeWidth="1.5" />
+                          </svg>
+                          Comparar este producto
+                        </>
+                      )}
+                    </motion.span>
+                  </AnimatePresence>
+                  {!compareDisabled && (
+                    <span className={cn('shrink-0 font-mono text-[9px]', inComparison ? 'text-gold/60' : 'text-navy/25')}>
+                      {inComparison ? 'Quitar' : ''}
+                    </span>
+                  )}
+                </motion.button>
               </div>
 
               {/* Variant comparison table */}
@@ -188,62 +238,7 @@ export function ProductDetail({ product, categorySlug }: ProductDetailProps) {
 
             {/* ── RIGHT: outer cell stretches full row height; inner div is sticky ── */}
             <div id="consultar">
-              <div className="space-y-3 lg:sticky lg:top-24">
-
-                {/* Compare button — prominent, full-width */}
-                <motion.button
-                  onClick={handleCompareToggle}
-                  disabled={compareDisabled}
-                  whileTap={{ scale: 0.98 }}
-                  transition={{ duration: 0.15 }}
-                  aria-pressed={inComparison}
-                  className={cn(
-                    'flex w-full items-center justify-between px-5 py-4 font-mono text-[11px] uppercase tracking-[0.12em] transition-all duration-200',
-                    inComparison
-                      ? 'border border-gold bg-gold/8 text-gold'
-                      : compareDisabled
-                      ? 'cursor-not-allowed border border-navy/10 bg-navy/[0.03] text-navy/25'
-                      : 'border border-navy/20 bg-white text-navy hover:border-gold/60 hover:text-gold',
-                  )}
-                >
-                  <AnimatePresence mode="popLayout" initial={false}>
-                    <motion.span
-                      key={inComparison ? 'added' : 'default'}
-                      initial={{ opacity: 0, y: inComparison ? 4 : -4 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.16 }}
-                      className="flex items-center gap-2.5"
-                    >
-                      {inComparison ? (
-                        <>
-                          <span className="text-base leading-none">✓</span>
-                          Añadido a comparación
-                        </>
-                      ) : compareDisabled ? (
-                        'Comparación llena'
-                      ) : (
-                        <>
-                          <svg width="14" height="12" viewBox="0 0 14 12" fill="none" aria-hidden className="shrink-0">
-                            <rect x="0.75" y="0.75" width="4.5" height="10.5" rx="0.75" stroke="currentColor" strokeWidth="1.5" />
-                            <rect x="8.75" y="0.75" width="4.5" height="10.5" rx="0.75" stroke="currentColor" strokeWidth="1.5" />
-                          </svg>
-                          Comparar este producto
-                        </>
-                      )}
-                    </motion.span>
-                  </AnimatePresence>
-
-                  {/* Right side state indicator */}
-                  {!compareDisabled && (
-                    <span className={cn(
-                      'shrink-0 font-mono text-[9px]',
-                      inComparison ? 'text-gold/60' : 'text-navy/25',
-                    )}>
-                      {inComparison ? 'Quitar' : `${isFull ? '3' : ''}` }
-                    </span>
-                  )}
-                </motion.button>
+              <div className="space-y-3 lg:sticky lg:top-28">
 
                 {/* Model selector */}
                 <ProductModelSelector
