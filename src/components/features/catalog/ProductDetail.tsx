@@ -92,17 +92,20 @@ export function ProductDetail({ product, categorySlug }: ProductDetailProps) {
               through specs/variants/use-cases, releasing at #tambien below */}
           <div className="grid grid-cols-1 gap-x-10 lg:grid-cols-[1fr_380px]">
 
-            {/* ── LEFT: all scrollable content ── */}
-            <div className="space-y-12">
+            {/* ── LEFT: sticky title/specs header + scrollable body ── */}
+            <div>
 
-              {/* Header, gallery, description */}
-              <div className="space-y-8">
+              {/* STATIC: title + key specs — sticks to top while body scrolls under */}
+              <div className="lg:sticky lg:top-24 lg:z-10 lg:bg-warm-white lg:pb-6">
                 <h1 className="font-display text-display-md font-light text-navy">
                   {product.name_es}
                 </h1>
-
                 <KeySpecsRibbon specs={effectiveSpecs} />
+              </div>
 
+              {/* SCROLLABLE: gallery and all content below */}
+              <div className="space-y-12">
+              <div className="space-y-8">
                 <ProductGallery images={product.images} alt={product.name_es} />
 
                 <div className="flex flex-wrap gap-1.5">
@@ -180,6 +183,7 @@ export function ProductDetail({ product, categorySlug }: ProductDetailProps) {
                 </div>
               )}
 
+              </div> {/* end scrollable */}
             </div>
 
             {/* ── RIGHT: outer cell stretches full row height; inner div is sticky ── */}
