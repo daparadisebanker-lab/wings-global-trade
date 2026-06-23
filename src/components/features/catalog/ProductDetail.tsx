@@ -202,7 +202,7 @@ export function ProductDetail({ product, categorySlug }: ProductDetailProps) {
 
               {/* Use cases */}
               <div id="aplicaciones">
-                <UseCaseStrip specs={effectiveSpecs} filterAttrs={product.filter_attrs} />
+                <UseCaseStrip categorySlug={category} specs={effectiveSpecs} filterAttrs={product.filter_attrs} />
               </div>
 
               {/* Compatible implements (ag only) */}

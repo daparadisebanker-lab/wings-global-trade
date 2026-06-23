@@ -3,66 +3,89 @@
 
 import Link from 'next/link'
 
+interface UseCase {
+  label: string
+  slug?: string       // if set → links to /catalogo/[category]/aplicacion/[slug]
+  minHp?: number      // ag-only: hide chip if product HP is below this
+  requires4wd?: boolean
+}
+
+// Use cases keyed by category slug. Only categories listed here render the section.
+const CATEGORY_USE_CASES: Record<string, UseCase[]> = {
+  'maquinaria-agricola': [
+    { label: 'Arrozal',           slug: 'arrozal',        minHp: 90,  requires4wd: true  },
+    { label: 'Frutales',          slug: 'frutales',       minHp: 60,  requires4wd: false },
+    { label: 'Cultivos en surco', slug: 'cultivos-surco', minHp: 40,  requires4wd: false },
+    { label: 'Ganadería',         slug: 'ganaderia',      minHp: 60,  requires4wd: false },
+  ],
+  'camiones': [
+    { label: 'Distribución urbana'      },
+    { label: 'Carga regional'           },
+    { label: 'Transporte pesado'        },
+    { label: 'Construcción y obras'     },
+    { label: 'Logística agropecuaria'   },
+  ],
+  'buses': [
+    { label: 'Transporte escolar'    },
+    { label: 'Transporte de personal'},
+    { label: 'Turismo'               },
+    { label: 'Transporte interurbano'},
+    { label: 'Transporte rural'      },
+  ],
+  'equipo-industrial': [
+    { label: 'Construcción e infraestructura' },
+    { label: 'Minería y canteras'             },
+    { label: 'Manufactura industrial'         },
+    { label: 'Logística y almacén'            },
+  ],
+}
+
 interface UseCaseStripProps {
+  categorySlug: string
   specs: Record<string, string>
   filterAttrs?: Record<string, string | number | string[]> | null
 }
 
-interface UseCase {
-  slug: string
-  label: string
-  minHp: number
-  requires4wd: boolean
-}
+const HP_KEYS = ['Potencia del motor', 'Potencia', 'HP', 'Potencia máxima', 'Motor', 'CV']
 
-const USE_CASES: UseCase[] = [
-  { slug: 'arrozal',        label: 'Arrozal',           minHp: 90,  requires4wd: true  },
-  { slug: 'frutales',       label: 'Frutales',          minHp: 60,  requires4wd: false },
-  { slug: 'cultivos-surco', label: 'Cultivos en surco', minHp: 40,  requires4wd: false },
-  { slug: 'ganaderia',      label: 'Ganadería',         minHp: 60,  requires4wd: false },
-]
-
-const HP_KEYS = ['Potencia del motor', 'Potencia', 'HP', 'Potencia máxima', 'Motor', 'CV', 'Horsepower']
-
-function extractHpFromSpecs(specs: Record<string, string>): number | null {
+function extractHp(
+  specs: Record<string, string>,
+  filterAttrs?: Record<string, string | number | string[]> | null,
+): number | null {
+  if (filterAttrs?.hp !== undefined) {
+    const raw = filterAttrs.hp
+    if (typeof raw === 'number') return raw
+    if (typeof raw === 'string') {
+      const parsed = parseFloat(raw)
+      if (!isNaN(parsed)) return parsed
+    }
+  }
   for (const key of HP_KEYS) {
     const value = specs[key]
     if (value) {
       const parsed = parseFloat(value.replace(/[^0-9.]/g, ''))
-      if (!isNaN(parsed) && parsed > 0) {
-        return parsed
-      }
+      if (!isNaN(parsed) && parsed > 0) return parsed
     }
   }
   return null
 }
 
-function hasSpecs4wd(specs: Record<string, string>): boolean {
+function has4wd(
+  specs: Record<string, string>,
+  filterAttrs?: Record<string, string | number | string[]> | null,
+): boolean {
+  if (filterAttrs?.traction === '4wd') return true
+  if (Array.isArray(filterAttrs?.traction) && filterAttrs.traction.includes('4wd')) return true
   return Object.values(specs).some((v) => /4WD/i.test(v))
 }
 
-export function UseCaseStrip({ specs, filterAttrs }: UseCaseStripProps) {
-  // Extract HP — try filterAttrs.hp first, then parse from specs
-  let hp: number | null = null
-  if (filterAttrs?.hp !== undefined) {
-    const raw = filterAttrs.hp
-    if (typeof raw === 'number') {
-      hp = raw
-    } else if (typeof raw === 'string') {
-      const parsed = parseFloat(raw)
-      if (!isNaN(parsed)) hp = parsed
-    }
-  }
-  if (hp === null) {
-    hp = extractHpFromSpecs(specs)
-  }
+export function UseCaseStrip({ categorySlug, specs, filterAttrs }: UseCaseStripProps) {
+  const useCases = CATEGORY_USE_CASES[categorySlug]
+  if (!useCases?.length) return null
 
-  // Extract traction
-  const has4wd =
-    filterAttrs?.traction === '4wd' ||
-    (Array.isArray(filterAttrs?.traction) && filterAttrs.traction.includes('4wd')) ||
-    hasSpecs4wd(specs)
-
+  const isAg = categorySlug === 'maquinaria-agricola'
+  const hp = isAg ? extractHp(specs, filterAttrs) : null
+  const traction4wd = isAg ? has4wd(specs, filterAttrs) : false
   const hpUnknown = hp === null
 
   return (
@@ -72,25 +95,38 @@ export function UseCaseStrip({ specs, filterAttrs }: UseCaseStripProps) {
       </p>
 
       <div className="flex flex-wrap gap-2">
-        {USE_CASES.map((uc) => {
-          const compatible =
-            hpUnknown ||
-            (hp !== null && hp >= uc.minHp && (!uc.requires4wd || has4wd))
+        {useCases.map((uc) => {
+          // Ag: show compatibility signal. Other categories: all chips are informational.
+          const compatible = !isAg
+            || hpUnknown
+            || (hp !== null && hp >= (uc.minHp ?? 0) && (!uc.requires4wd || traction4wd))
 
-          return (
-            <Link
-              key={uc.slug}
-              href={`/catalogo/maquinaria-agricola/aplicacion/${uc.slug}`}
+          const chip = (
+            <span
               className={
                 compatible
-                  ? 'border border-gold/30 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.08em] text-navy hover:border-gold hover:bg-gold/[0.03] transition-all'
-                  : 'border border-navy/15 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.08em] text-navy/50 hover:text-navy/70 transition-all'
+                  ? 'border border-gold/30 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.08em] text-navy transition-all'
+                  : 'border border-navy/15 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.08em] text-navy/50 transition-all'
               }
             >
-              {compatible ? '✓ ' : '· '}
+              {isAg ? (compatible ? '✓ ' : '· ') : ''}
               {uc.label}
-            </Link>
+            </span>
           )
+
+          if (uc.slug) {
+            return (
+              <Link
+                key={uc.slug}
+                href={`/catalogo/${categorySlug}/aplicacion/${uc.slug}`}
+                className="hover:border-gold hover:bg-gold/[0.03]"
+              >
+                {chip}
+              </Link>
+            )
+          }
+
+          return <div key={uc.label}>{chip}</div>
         })}
       </div>
     </div>
