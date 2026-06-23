@@ -60,7 +60,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <ToastProvider>
           <ComparisonProvider>
             <SiteNav categories={categories} />
-            <main className="min-h-screen overflow-x-hidden">{children}</main>
+            <main className="min-h-screen overflow-x-clip">{children}</main>
             <Footer categories={categories} />
             <CompareBar />
             <MultiInquiryPanel />
