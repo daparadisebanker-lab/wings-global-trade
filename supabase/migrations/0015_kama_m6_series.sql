@@ -1,0 +1,210 @@
+-- 0015_kama_m6_series.sql
+-- Adds variants to existing kama-serie-m6 product.
+-- 5 variants: M61 (gasoline/Euro-IV), M66B (diesel/Euro-II), M67B (diesel/Euro-II),
+--             M68E (diesel/Euro-V), M69E (diesel/Euro-V)
+-- Payload 3.5–10 T. GVW up to 14.870 kg. Engines: XG 2.7L, Yuchai 3.0–4.2L,
+-- Yuchai 3.8L Euro-V, ISUZU 4HK1 5.2L.
+
+UPDATE products
+SET
+  variants = '[
+    {
+      "model": "M61",
+      "fuel_type": "gasoline",
+      "emission": "Euro-IV",
+      "payload_t": 3.5,
+      "cabin": "one and half cabin (2030)",
+      "wheelbase_mm": 3600,
+      "overall_dims": "6470x2280x2400",
+      "cargo_box": "4300x2100x450",
+      "curb_weight_kg": 2820,
+      "gvw_kg": 6320,
+      "max_speed_kmh": 105,
+      "tyre": "7.50R16LT",
+      "front_rear_overhang_mm": "1125/1560",
+      "wheel_track_mm": "1670/1590",
+      "final_ratio": 6.833,
+      "qty_wheels": "6+1",
+      "brake_system": "Hydraulic brake",
+      "parking_brake": "Central drum type",
+      "gearshift": "5+1 speed manually",
+      "battery_volt": "12V",
+      "engine": {
+        "model": "G4BA(XG)",
+        "displacement_cc": 2693,
+        "power_kw": 110,
+        "power_rpm": 4800,
+        "torque_nm": 235,
+        "torque_rpm": "4000"
+      },
+      "battery_ev": null,
+      "features": {
+        "abs": true,
+        "power_steering": true,
+        "ac": false,
+        "power_window": true,
+        "central_lock": true,
+        "media": "MP5"
+      },
+      "notes": "A/C opcional"
+    },
+    {
+      "model": "M66B",
+      "fuel_type": "diesel",
+      "emission": "Euro-II",
+      "payload_t": 6.0,
+      "cabin": "single cabin (2030)",
+      "wheelbase_mm": 3815,
+      "overall_dims": "7040x2280x2400",
+      "cargo_box": "5160x2100x450",
+      "curb_weight_kg": 3640,
+      "gvw_kg": 9640,
+      "max_speed_kmh": 95,
+      "tyre": "7.50R16LT",
+      "front_rear_overhang_mm": "1130/2095",
+      "wheel_track_mm": "1695/1610",
+      "final_ratio": 5.286,
+      "qty_wheels": "6+1",
+      "brake_system": "Air brake",
+      "parking_brake": "Spring energy air cut brake",
+      "gearshift": "8+2 speed manually",
+      "battery_volt": "24V",
+      "engine": {
+        "model": "YC4FA120-33(YUCHAI)",
+        "displacement_cc": 2982,
+        "power_kw": 88,
+        "power_rpm": 3200,
+        "torque_nm": 345,
+        "torque_rpm": "1800-2200"
+      },
+      "battery_ev": null,
+      "features": {
+        "abs": true,
+        "power_steering": true,
+        "ac": true,
+        "power_window": true,
+        "central_lock": true,
+        "media": "MP5"
+      }
+    },
+    {
+      "model": "M67B",
+      "fuel_type": "diesel",
+      "emission": "Euro-II",
+      "payload_t": 7.0,
+      "cabin": "one and half cabin (2030)",
+      "wheelbase_mm": 4200,
+      "overall_dims": "7580x2280x2500",
+      "cargo_box": "5330x2100x550",
+      "curb_weight_kg": 4200,
+      "gvw_kg": 11200,
+      "max_speed_kmh": 100,
+      "tyre": "8.25R16LT",
+      "front_rear_overhang_mm": "1150/2230",
+      "wheel_track_mm": "1825/1700",
+      "final_ratio": 5.286,
+      "qty_wheels": "6+1",
+      "brake_system": "Air brake",
+      "parking_brake": "Spring energy air cut brake",
+      "gearshift": "6+1 speed manually",
+      "battery_volt": "24V",
+      "engine": {
+        "model": "YC4D130-33(YUCHAI)",
+        "displacement_cc": 4210,
+        "power_kw": 96,
+        "power_rpm": 2800,
+        "torque_nm": 380,
+        "torque_rpm": "1400-1700"
+      },
+      "battery_ev": null,
+      "features": {
+        "abs": true,
+        "power_steering": true,
+        "ac": true,
+        "power_window": true,
+        "central_lock": true,
+        "media": "MP5"
+      }
+    },
+    {
+      "model": "M68E",
+      "fuel_type": "diesel",
+      "emission": "Euro-V",
+      "payload_t": 7.5,
+      "cabin": "one and half cabin (2050)",
+      "wheelbase_mm": 4500,
+      "overall_dims": "7890x2280x2450",
+      "cargo_box": "5660x2100x450",
+      "curb_weight_kg": 4500,
+      "gvw_kg": 12000,
+      "max_speed_kmh": 100,
+      "tyre": "235/75R17.5",
+      "front_rear_overhang_mm": "1140/2250",
+      "wheel_track_mm": "1820/1680",
+      "final_ratio": 4.33,
+      "qty_wheels": "6+1",
+      "brake_system": "Air brake",
+      "parking_brake": "Spring energy air cut brake",
+      "gearshift": "5+1 speed manually",
+      "battery_volt": "24V",
+      "engine": {
+        "model": "YC4S160-50(YUCHAI)",
+        "displacement_cc": 3767,
+        "power_kw": 118,
+        "power_rpm": 2600,
+        "torque_nm": 550,
+        "torque_rpm": "1300-1800"
+      },
+      "battery_ev": null,
+      "features": {
+        "abs": true,
+        "power_steering": true,
+        "ac": true,
+        "power_window": true,
+        "central_lock": true,
+        "media": "MP5"
+      },
+      "notes": "ESC opcional"
+    },
+    {
+      "model": "M69E",
+      "fuel_type": "diesel",
+      "emission": "Euro-V",
+      "payload_t": 10.0,
+      "cabin": "one and half cabin (2030)",
+      "wheelbase_mm": 4800,
+      "overall_dims": "8470x2480x2500",
+      "cargo_box": "6250x2300x550",
+      "curb_weight_kg": 4870,
+      "gvw_kg": 14870,
+      "max_speed_kmh": 95,
+      "tyre": "245/70R19.5",
+      "front_rear_overhang_mm": "1150/2520",
+      "wheel_track_mm": "1825/1805",
+      "final_ratio": 4.33,
+      "qty_wheels": "6+1",
+      "brake_system": "Air brake",
+      "parking_brake": "Spring energy air cut brake",
+      "gearshift": "8+2 speed manually",
+      "battery_volt": "24V",
+      "engine": {
+        "model": "4HK1-TCG60(ISUZU)",
+        "displacement_cc": 5193,
+        "power_kw": 150,
+        "power_rpm": 2600,
+        "torque_nm": 647,
+        "torque_rpm": "1600"
+      },
+      "battery_ev": null,
+      "features": {
+        "abs": true,
+        "power_steering": true,
+        "ac": true,
+        "power_window": true,
+        "central_lock": true,
+        "media": "MP5"
+      }
+    }
+  ]'::jsonb,
+  updated_at = now()
+WHERE slug = 'kama-serie-m6';
