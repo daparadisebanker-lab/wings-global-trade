@@ -60,7 +60,7 @@ export function HeroSection() {
                 initial={reduce ? { opacity: 0 } : 'hidden'}
                 animate={reduce ? { opacity: 1 } : 'visible'}
                 className="block font-display text-display-xl font-light text-warm-white leading-[0.95] tracking-[-0.03em]"
-                style={{ fontSize: 'clamp(2.75rem, 6.5vw, 7.5rem)', lineHeight: 1.0 }}
+                style={{ fontSize: 'clamp(2.25rem, 6.5vw, 7.5rem)', lineHeight: 1.0 }}
               >
                 {line}
               </motion.span>

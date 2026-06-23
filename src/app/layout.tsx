@@ -58,6 +58,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="es">
       <head>
+        {/* Preload display font before first paint — eliminates FOUT flash on hero headlines */}
+        <link rel="preload" href="/fonts/NissanOpti.otf" as="font" type="font/opentype" crossOrigin="anonymous" />
         <JsonLd data={organizationSchema()} />
       </head>
       <body className="font-body antialiased">

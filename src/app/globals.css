@@ -11,14 +11,14 @@
   src: url('/fonts/NissanOpti.otf') format('opentype');
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  font-display: block;
 }
 @font-face {
   font-family: 'NissanOpti';
   src: url('/fonts/NissanOpti-Italic.otf') format('opentype');
   font-weight: 400;
   font-style: italic;
-  font-display: swap;
+  font-display: block;
 }
 
 /* ============================================================
@@ -254,6 +254,7 @@
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
     font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+    overflow-x: hidden;
   }
 
   body {

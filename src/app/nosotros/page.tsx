@@ -34,8 +34,8 @@ export default function NosotrosPage() {
       <JsonLd data={breadcrumbSchema(breadcrumbs)} />
 
       {/* Dark hero */}
-      <section className="min-h-[60vh] flex items-end bg-[#000C1F] hero-grain px-6 pb-20 pt-40 md:px-10 md:pb-28">
-        <div className="max-w-4xl">
+      <section className="min-h-[60vh] flex items-end bg-[#000C1F] hero-grain overflow-hidden px-6 pb-20 pt-40 md:px-10 md:pb-28">
+        <div className="w-full max-w-4xl">
           <div className="wings-rule mb-8" />
           <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-warm-white/30 mb-6">
             Nosotros
