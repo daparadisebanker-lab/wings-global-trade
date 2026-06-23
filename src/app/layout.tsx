@@ -1,5 +1,5 @@
 // src/app/layout.tsx
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
 import { getCategories } from '@/lib/catalog-data'
@@ -13,21 +13,41 @@ import { WINGS_TAGLINE } from '@/lib/constants'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { organizationSchema } from '@/lib/schema'
 
+export const viewport: Viewport = {
+  themeColor: '#001E50',
+}
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://wingsglobaltrade.com'),
+  applicationName: 'Wings Global Trade',
   title: {
     default: 'Wings Global Trade — Importación B2B para LATAM',
     template: '%s — Wings Global Trade',
   },
   description:
     'Maquinaria agrícola, camiones, buses y equipo industrial. Importación directa con gestión en zona franca ZOFRATACNA y ZOFRI. Consulta sin registro.',
+  icons: {
+    icon: [{ url: '/brand/wings-isotipo-bg.svg', type: 'image/svg+xml' }],
+    apple: [{ url: '/brand/wings-isotipo-bg.svg' }],
+    shortcut: '/brand/wings-isotipo-bg.svg',
+  },
+  manifest: '/site.webmanifest',
   openGraph: {
     title: 'Wings Global Trade — Importación B2B para LATAM',
     description:
       'Maquinaria agrícola, camiones, buses y equipo industrial. Importación directa con gestión en zona franca ZOFRATACNA y ZOFRI. Consulta sin registro.',
+    siteName: 'Wings Global Trade',
     locale: 'es_PE',
     type: 'website',
     url: 'https://wingsglobaltrade.com',
+    images: [{ url: '/opengraph-image', width: 1200, height: 630, alt: 'Wings Global Trade' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Wings Global Trade — Importación B2B para LATAM',
+    description:
+      'Maquinaria agrícola, camiones, buses y equipo industrial. Importación directa con zona franca ZOFRATACNA y ZOFRI.',
+    images: ['/opengraph-image'],
   },
   robots: { index: true, follow: true },
 }

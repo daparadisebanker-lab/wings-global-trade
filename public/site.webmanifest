@@ -1,0 +1,17 @@
+{
+  "name": "Wings Global Trade",
+  "short_name": "Wings",
+  "description": "Plataforma B2B de importación de maquinaria y vehículos para América Latina.",
+  "start_url": "/",
+  "display": "browser",
+  "theme_color": "#001E50",
+  "background_color": "#001E50",
+  "icons": [
+    {
+      "src": "/brand/wings-isotipo-bg.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
