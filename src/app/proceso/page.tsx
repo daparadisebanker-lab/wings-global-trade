@@ -130,8 +130,8 @@ export default function ProcesoPage() {
               { label: 'Importador gestiona', value: 'Solo su RUC / NIT' },
             ].map((d) => (
               <div key={d.label} className="flex flex-col gap-1">
-                <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-warm-white/25">{d.label}</span>
-                <span className="font-mono text-[11px] text-warm-white/70">{d.value}</span>
+                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-warm-white/30">{d.label}</span>
+                <span className="font-body text-sm text-warm-white/75">{d.value}</span>
               </div>
             ))}
           </div>
@@ -168,10 +168,10 @@ export default function ProcesoPage() {
                 <div className="flex flex-col gap-4 border-l-0 pt-0 lg:border-l lg:border-[rgba(0,30,80,0.08)] lg:pl-10 lg:pt-1">
                   {step.data.map((d) => (
                     <div key={d.label}>
-                      <p className="mb-1 font-mono text-[9px] uppercase tracking-[0.18em] text-navy/30">
+                      <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.15em] text-navy/30">
                         {d.label}
                       </p>
-                      <p className="font-mono text-[11px] leading-snug text-navy/70">{d.value}</p>
+                      <p className="font-body text-sm leading-snug text-navy/75">{d.value}</p>
                     </div>
                   ))}
                 </div>

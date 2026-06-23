@@ -70,13 +70,17 @@ Section alternation: navy ↔ warm-white. Never two same-color sections adjacent
 ## Typography
 
 ```
-Display/Headings: IBM Plex Serif (Google Fonts) — weights 300/400/500/600, normal + italic
-Body/UI:          Flexo (self-hosted, local /public/fonts/)
-Data/Mono:        DM Mono (Google Fonts)
+Display/Headings: NissanOpti (self-hosted OTF) — Regular + Italic only
+Body/UI:          Flexo (self-hosted TTF) — full 8-weight range (100–900)
+Labels/Technical: Teko (self-hosted TTF) — condensed, 5 weights (300–700)
 ```
 
-Font variables: `--font-display` (IBM Plex Serif), `--font-body` (Flexo), `--font-mono` (DM Mono).
-Brand alignment: IBM Plex Serif = Precisión · Flexo = Proximidad · DM Mono = Confianza.
+All fonts are in `public/fonts/`. No Google Fonts dependencies.
+Font variables: `--font-display` (NissanOpti), `--font-body` (Flexo), `--font-mono` (Teko).
+Set in `globals.css :root` — no next/font imports needed.
+
+Tailwind utilities: `font-display`, `font-body`, `font-mono` map to these variables.
+NissanOpti has only weight 400 — never apply font-weight: 300 to display elements.
 
 ---
 

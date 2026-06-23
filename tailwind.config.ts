@@ -52,12 +52,10 @@ const config: Config = {
       fontFamily: {
         display: ['var(--font-display)', 'Georgia', 'serif'],
         body: ['var(--font-body)', 'system-ui', 'sans-serif'],
-        mono: ['var(--font-mono)', 'Courier New', 'monospace'],
+        mono: ['var(--font-mono)', 'system-ui', 'sans-serif'],
       },
       fontSize: {
-        // Display scale — IBM Plex Serif. Technical authority, not editorial fashion.
-        // Tracking is tighter than Cormorant at each size — IBM has moderate default spacing.
-        // Line-heights are slightly looser — IBM has taller ascenders than Cormorant.
+        // Display scale — NissanOpti
         'display-xl': ['clamp(3.5rem,7vw,6.5rem)', { lineHeight: '1.0', letterSpacing: '-0.02em' }],
         'display-lg': ['clamp(2.5rem,5vw,4.5rem)', { lineHeight: '1.05', letterSpacing: '-0.015em' }],
         'display-md': ['clamp(1.875rem,3.5vw,3rem)', { lineHeight: '1.1', letterSpacing: '-0.01em' }],
@@ -70,10 +68,10 @@ const config: Config = {
         'label-lg': ['0.875rem', { lineHeight: '1', letterSpacing: '0.01em' }],
         'label-md': ['0.8125rem', { lineHeight: '1', letterSpacing: '0.01em' }],
         'label-sm': ['0.75rem', { lineHeight: '1', letterSpacing: '0.08em' }],
-        // Mono scale — DM Mono
-        'mono-lg': ['1rem', { lineHeight: '1.3', letterSpacing: '0' }],
-        'mono-md': ['0.875rem', { lineHeight: '1.4', letterSpacing: '0' }],
-        'mono-sm': ['0.75rem', { lineHeight: '1.4', letterSpacing: '0' }],
+        // Mono scale — Teko (condensed technical labels; 13px minimum for legibility)
+        'mono-lg': ['1.125rem', { lineHeight: '1.3', letterSpacing: '0' }],
+        'mono-md': ['1rem', { lineHeight: '1.4', letterSpacing: '0' }],
+        'mono-sm': ['0.8125rem', { lineHeight: '1.4', letterSpacing: '0' }],
       },
       letterSpacing: {
         'widest-2': '0.08em',

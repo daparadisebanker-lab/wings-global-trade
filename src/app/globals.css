@@ -4,25 +4,173 @@
 
 
 /* ============================================================
-   Flexo — self-hosted body font
+   NissanOpti — brand display face
+   ============================================================ */
+@font-face {
+  font-family: 'NissanOpti';
+  src: url('/fonts/NissanOpti.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'NissanOpti';
+  src: url('/fonts/NissanOpti-Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ============================================================
+   Flexo — self-hosted body font (full weight range)
    ============================================================ */
 @font-face {
   font-family: 'Flexo';
-  src: url('/fonts/flexo-regular.ttf') format('truetype');
+  src: url('/fonts/Flexo-Thin.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/Flexo-ThinIt.ttf') format('truetype');
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/Flexo-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/Flexo-LightIt.ttf') format('truetype');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/Flexo-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'Flexo';
-  src: url('/fonts/flexo-medium.ttf') format('truetype');
+  src: url('/fonts/Flexo-It.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/Flexo-Medium.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: 'Flexo';
-  src: url('/fonts/flexo-bold.ttf') format('truetype');
+  src: url('/fonts/Flexo-MediumIt.ttf') format('truetype');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/Flexo-Demi.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/Flexo-DemiIt.ttf') format('truetype');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/Flexo-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/Flexo-BoldIt.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/Flexo-Heavy.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/Flexo-HeavyIt.ttf') format('truetype');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/Flexo-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/Flexo-BlackIt.ttf') format('truetype');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ============================================================
+   Teko — condensed technical label face
+   ============================================================ */
+@font-face {
+  font-family: 'Teko';
+  src: url('/fonts/Teko-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Teko';
+  src: url('/fonts/Teko-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Teko';
+  src: url('/fonts/Teko-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Teko';
+  src: url('/fonts/Teko-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Teko';
+  src: url('/fonts/Teko-Bold.ttf') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -82,7 +230,9 @@
   --color-indicator-complete:   #16A34A;
 
   /* Font variables consumed by Tailwind font-* utilities */
+  --font-display: 'NissanOpti';
   --font-body: 'Flexo';
+  --font-mono: 'Teko';
 
   /* Extended tokens */
   --color-gold-muted:       rgba(196, 147, 63, 0.12);
@@ -119,7 +269,7 @@
   h3,
   h4 {
     font-family: var(--font-display), Georgia, serif;
-    font-weight: 300;
+    font-weight: 400;
     line-height: 1.05;
   }
 
@@ -141,10 +291,20 @@
   .font-body {
     font-family: var(--font-body), system-ui, sans-serif;
   }
-  /* DM Mono — tabular figures for all numeric data displays */
+  /* Teko — condensed label face; tabular-nums for data displays */
   .font-mono {
-    font-family: var(--font-mono), 'Courier New', monospace;
+    font-family: var(--font-mono), system-ui, sans-serif;
     font-variant-numeric: tabular-nums;
+  }
+
+  /* Teko legibility floor — 9–12px Teko uppercase is illegible on screen.
+     Two-class specificity (0,2,0) beats individual Tailwind utilities (0,1,0).
+     Covers every font-mono label at sub-13px without touching 100+ component files. */
+  .font-mono.text-\[9px\],
+  .font-mono.text-\[10px\],
+  .font-mono.text-\[11px\],
+  .font-mono.text-xs {
+    font-size: 0.8125rem; /* 13px */
   }
 
   /* Premium section spacing */
@@ -175,9 +335,9 @@
 
   /* Refined mono label */
   .mono-label {
-    font-family: var(--font-mono), monospace;
-    font-size: 0.625rem;
-    letter-spacing: 0.15em;
+    font-family: var(--font-mono), system-ui, sans-serif;
+    font-size: 0.8125rem; /* 13px — Teko minimum legible size */
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     font-variant-numeric: tabular-nums;
   }

@@ -60,7 +60,7 @@ export function AccioInput({ onSend, disabled, autoFocus, messageCount = 1 }: Ac
               type="button"
               onClick={() => handleChipClick(action)}
               disabled={disabled}
-              className="rounded-sm border border-navy px-3 py-1.5 font-mono text-xs text-navy transition-colors hover:border-gold hover:text-gold disabled:opacity-40"
+              className="rounded-sm border border-navy/30 px-4 py-2 font-body text-sm text-navy/70 transition-colors hover:border-gold hover:text-gold disabled:opacity-40"
             >
               {action}
             </button>
