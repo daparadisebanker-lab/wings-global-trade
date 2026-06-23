@@ -68,10 +68,10 @@ const config: Config = {
         'label-lg': ['0.875rem', { lineHeight: '1', letterSpacing: '0.01em' }],
         'label-md': ['0.8125rem', { lineHeight: '1', letterSpacing: '0.01em' }],
         'label-sm': ['0.75rem', { lineHeight: '1', letterSpacing: '0.08em' }],
-        // Mono scale — Teko (condensed technical labels; 13px minimum for legibility)
-        'mono-lg': ['1.125rem', { lineHeight: '1.3', letterSpacing: '0' }],
-        'mono-md': ['1rem', { lineHeight: '1.4', letterSpacing: '0' }],
-        'mono-sm': ['0.8125rem', { lineHeight: '1.4', letterSpacing: '0' }],
+        // Mono scale — Teko (condensed technical labels; 15px minimum for legibility)
+        'mono-lg': ['1.25rem', { lineHeight: '1.3', letterSpacing: '0' }],
+        'mono-md': ['1.125rem', { lineHeight: '1.4', letterSpacing: '0' }],
+        'mono-sm': ['0.9375rem', { lineHeight: '1.4', letterSpacing: '0' }],
       },
       letterSpacing: {
         'widest-2': '0.08em',

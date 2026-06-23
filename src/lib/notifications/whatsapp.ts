@@ -11,48 +11,85 @@ function isProduction(): boolean {
   return process.env.VERCEL_ENV === 'production'
 }
 
-export function formatWhatsAppMessage(payload: NotificationPayload): string {
+const DIVIDER = '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+
+function row(label: string, value: string): string {
+  return `${label.padEnd(10)}${value}`
+}
+
+function wgtRef(leadId: string): string {
+  const digits = leadId.replace(/\D/g, '').slice(-4).padStart(4, '0')
+  return `WGT-${digits}`
+}
+
+export function formatWhatsAppMessage(payload: NotificationPayload, leadId = ''): string {
+  const ref = leadId ? wgtRef(leadId) : 'WGT-????'
+  const now = new Date().toLocaleString('es-PE', {
+    timeZone: 'America/Lima',
+    day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+  })
+
   if (payload.flow === 'catalog') {
     return [
-      'Nueva consulta de catálogo — Wings',
-      `Nombre: ${payload.full_name}`,
-      `Empresa: ${payload.company ?? '—'}`,
-      `País: ${payload.destination_country}`,
-      `Producto: ${payload.product_name}`,
-      `Cantidad: ${payload.quantity}`,
-      `WhatsApp: ${payload.phone}`,
-      `Email: ${payload.email}`,
-      `Mensaje: ${payload.message ?? '—'}`,
-    ].join('\n')
+      'WINGS GLOBAL TRADE · NUEVA CONSULTA',
+      DIVIDER,
+      row('REF ·', ref),
+      row('TIPO ·', 'Catálogo'),
+      DIVIDER,
+      row('PRODUCTO', payload.product_name),
+      row('CANTIDAD', payload.quantity),
+      row('DESTINO', payload.destination_country),
+      payload.message ? row('MENSAJE', payload.message) : '',
+      DIVIDER,
+      row('CONTACTO', payload.full_name),
+      row('EMPRESA', payload.company ?? '—'),
+      row('TELÉFONO', payload.phone),
+      row('EMAIL', payload.email),
+      DIVIDER,
+      row('RECIBIDO', now + ' PET'),
+      'RESPUESTA ESPERADA < 24H',
+    ].filter(Boolean).join('\n')
   }
 
   if (payload.flow === 'accio') {
     return [
-      'Nueva consulta Mister — Wings',
-      `Nombre: ${payload.full_name}`,
-      `Empresa: ${payload.company ?? '—'}`,
-      `País destino: ${payload.destination_country}`,
-      `Producto: ${payload.product_description}`,
-      `Cantidad: ${payload.quantity}`,
-      `Precio objetivo: ${
-        payload.target_price_usd != null ? formatCurrency(payload.target_price_usd) : '—'
-      }`,
-      `CIF estimado: ${
-        payload.cif_total_usd != null ? formatCurrency(payload.cif_total_usd) : '—'
-      }`,
-      `Zona franca: ${payload.free_zone ?? '—'}`,
-      `WhatsApp: ${payload.phone}`,
-      `Email: ${payload.email}`,
+      'WINGS GLOBAL TRADE · NUEVA CONSULTA',
+      DIVIDER,
+      row('REF ·', ref),
+      row('TIPO ·', 'Accio Engine'),
+      DIVIDER,
+      row('PRODUCTO', payload.product_description),
+      row('CANTIDAD', payload.quantity),
+      row('DESTINO', payload.destination_country),
+      row('PRECIO OBJ', payload.target_price_usd != null ? formatCurrency(payload.target_price_usd) : '—'),
+      row('CIF EST.', payload.cif_total_usd != null ? formatCurrency(payload.cif_total_usd) : '—'),
+      row('ZONA', payload.free_zone ?? '—'),
+      DIVIDER,
+      row('CONTACTO', payload.full_name),
+      row('EMPRESA', payload.company ?? '—'),
+      row('TELÉFONO', payload.phone),
+      row('EMAIL', payload.email),
+      DIVIDER,
+      row('RECIBIDO', now + ' PET'),
+      'RESPUESTA ESPERADA < 24H',
     ].join('\n')
   }
 
   // contact
   return [
-    'Nuevo contacto — Wings',
-    `Nombre: ${payload.full_name}`,
-    `Email: ${payload.email}`,
-    `Teléfono: ${payload.phone ?? '—'}`,
-    `Mensaje: ${payload.message}`,
+    'WINGS GLOBAL TRADE · CONTACTO',
+    DIVIDER,
+    row('REF ·', ref),
+    row('TIPO ·', 'Contacto directo'),
+    DIVIDER,
+    row('CONTACTO', payload.full_name),
+    row('EMAIL', payload.email),
+    row('TELÉFONO', payload.phone ?? '—'),
+    DIVIDER,
+    row('MENSAJE', payload.message),
+    DIVIDER,
+    row('RECIBIDO', now + ' PET'),
   ].join('\n')
 }
 
@@ -64,7 +101,7 @@ export async function sendWhatsAppNotification(
   const from = process.env.TWILIO_WHATSAPP_FROM
   const sid = process.env.TWILIO_ACCOUNT_SID
   const token = process.env.TWILIO_AUTH_TOKEN
-  const body = formatWhatsAppMessage(payload)
+  const body = formatWhatsAppMessage(payload, leadId)
 
   if (!isProduction() || !sid || !token || !from || !to) {
     console.info('[whatsapp] (skipped — non-production or unconfigured)\n', body)

@@ -297,14 +297,16 @@
     font-variant-numeric: tabular-nums;
   }
 
-  /* Teko legibility floor — 9–12px Teko uppercase is illegible on screen.
+  /* Teko legibility floor — condensed uppercase needs 15px minimum on screen.
      Two-class specificity (0,2,0) beats individual Tailwind utilities (0,1,0).
-     Covers every font-mono label at sub-13px without touching 100+ component files. */
+     Covers every font-mono label at sub-15px without touching 100+ component files. */
   .font-mono.text-\[9px\],
   .font-mono.text-\[10px\],
   .font-mono.text-\[11px\],
-  .font-mono.text-xs {
-    font-size: 0.8125rem; /* 13px */
+  .font-mono.text-\[12px\],
+  .font-mono.text-xs,
+  .font-mono.text-sm {
+    font-size: 0.9375rem; /* 15px */
   }
 
   /* Premium section spacing */
@@ -336,8 +338,8 @@
   /* Refined mono label */
   .mono-label {
     font-family: var(--font-mono), system-ui, sans-serif;
-    font-size: 0.8125rem; /* 13px — Teko minimum legible size */
-    letter-spacing: 0.12em;
+    font-size: 0.9375rem; /* 15px */
+    letter-spacing: 0.10em;
     text-transform: uppercase;
     font-variant-numeric: tabular-nums;
   }
