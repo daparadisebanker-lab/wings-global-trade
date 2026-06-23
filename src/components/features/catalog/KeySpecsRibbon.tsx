@@ -48,19 +48,16 @@ export function KeySpecsRibbon({ specs }: KeySpecsRibbonProps) {
 
   return (
     <div className="border-y border-navy/10 py-6">
-      <div className="grid grid-cols-2 gap-x-6 gap-y-5 sm:flex sm:items-stretch sm:gap-0">
-        {items.map((item, i) => (
+      <div className="grid grid-cols-2 gap-x-6 gap-y-5 sm:flex sm:items-stretch sm:divide-x sm:divide-navy/10">
+        {items.map((item) => (
           <div
             key={item.label}
-            className={cn(
-              'flex flex-col gap-1',
-              i > 0 && 'sm:border-l sm:border-navy/10 sm:pl-6',
-            )}
+            className="flex flex-col gap-2 sm:px-8 sm:first:pl-0 sm:last:pr-0"
           >
-            <span className="font-display text-2xl font-light leading-none text-navy">
+            <span className="font-display text-2xl font-light leading-none text-[#062663]">
               {item.value}
             </span>
-            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-gold">
+            <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-gold">
               {item.label}
             </span>
           </div>

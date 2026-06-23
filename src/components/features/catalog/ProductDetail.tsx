@@ -96,8 +96,8 @@ export function ProductDetail({ product, categorySlug }: ProductDetailProps) {
             <div>
 
               {/* STATIC: title + key specs — sticks just below JumpNav (h-12 = 48px) */}
-              <div className="lg:sticky lg:top-12 lg:z-10 lg:bg-warm-white lg:pb-6">
-                <h1 className="font-display text-display-md font-light text-navy">
+              <div className="lg:sticky lg:top-12 lg:z-30 lg:bg-warm-white lg:pb-6">
+                <h1 className="mb-3 font-display text-display-md font-light text-navy">
                   {product.name_es}
                 </h1>
                 <KeySpecsRibbon specs={effectiveSpecs} />

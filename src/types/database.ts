@@ -58,6 +58,12 @@ export interface ProductVariant {
   gvw_kg: number
   max_speed_kmh: number
   tyre: string | null
+  front_rear_overhang_mm?: string | null              // "1190/1490" (front/rear mm)
+  wheel_track_mm?: string | null                      // "1485/1440" (front/rear mm)
+  final_ratio?: number | null                         // 5.375
+  qty_wheels?: string | null                          // "6+1"
+  brake_system?: string | null                        // "Hydraulic brake"
+  parking_brake?: string | null                       // "Central drum type"
   gearshift: string | null
   battery_volt?: string                               // "12V" / "24V" for ICE
   engine: VariantEngine | null

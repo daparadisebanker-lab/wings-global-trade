@@ -66,10 +66,46 @@ const SPEC_ROWS: SpecRow[] = [
   { key: 'cabin', label: 'Cabina', group: 'Dimensiones', getValue: (v) => v.cabin },
   { key: 'overall', label: 'Dim. ext. (L×A×H)', group: 'Dimensiones', getValue: (v) => v.overall_dims.replace(/x/g, '×') + ' mm' },
   { key: 'cargo', label: 'Caja de carga', group: 'Dimensiones', getValue: (v) => (v.cargo_box ? v.cargo_box.replace(/x/g, '×') + ' mm' : '—') },
+  {
+    key: 'overhang', label: 'Voladizo del./tras.', group: 'Dimensiones',
+    getValue: (v) => v.front_rear_overhang_mm ? v.front_rear_overhang_mm + ' mm' : null,
+    showIfAny: (v) => !!v.front_rear_overhang_mm,
+  },
+  {
+    key: 'wheel_track', label: 'Vía del./tras.', group: 'Dimensiones',
+    getValue: (v) => v.wheel_track_mm ? v.wheel_track_mm + ' mm' : null,
+    showIfAny: (v) => !!v.wheel_track_mm,
+  },
   // Transmisión
   { key: 'gearshift', label: 'Caja de cambios', group: 'Transmisión', getValue: (v) => v.gearshift ?? '—' },
   { key: 'tyre', label: 'Neumático', group: 'Transmisión', getValue: (v) => v.tyre ?? '—' },
   { key: 'max_speed', label: 'Vel. máxima', group: 'Transmisión', getValue: (v) => `${v.max_speed_kmh} km/h` },
+  {
+    key: 'final_ratio', label: 'Relación final', group: 'Transmisión',
+    getValue: (v) => v.final_ratio != null ? v.final_ratio.toString() : null,
+    showIfAny: (v) => v.final_ratio != null,
+  },
+  {
+    key: 'qty_wheels', label: 'N.º ruedas', group: 'Transmisión',
+    getValue: (v) => v.qty_wheels ?? null,
+    showIfAny: (v) => !!v.qty_wheels,
+  },
+  {
+    key: 'battery_volt', label: 'Tensión batería', group: 'Transmisión',
+    getValue: (v) => v.battery_volt ?? null,
+    showIfAny: (v) => !!v.battery_volt,
+  },
+  // Frenos — shown only if at least one variant has brake data
+  {
+    key: 'brake_system', label: 'Sistema de frenos', group: 'Frenos',
+    getValue: (v) => v.brake_system ?? null,
+    showIfAny: (v) => !!v.brake_system,
+  },
+  {
+    key: 'parking_brake', label: 'Freno de estacionamiento', group: 'Frenos',
+    getValue: (v) => v.parking_brake ?? null,
+    showIfAny: (v) => !!v.parking_brake,
+  },
   // Configuraciones — shown only if at least one variant has the feature
   {
     key: 'abs', label: 'ABS', group: 'Configuraciones', isBoolean: true,
