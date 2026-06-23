@@ -74,7 +74,7 @@ export default function JumpNavigation({
   return (
     <nav
       className={[
-        'sticky top-16 z-40 w-full',
+        'sticky top-0 z-40 w-full',
         'bg-[rgba(248,246,240,0.95)] backdrop-blur-sm',
         'border-b border-navy/10',
         'transition-[opacity,transform] duration-200 ease-[ease]',

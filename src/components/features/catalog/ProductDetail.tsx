@@ -95,8 +95,8 @@ export function ProductDetail({ product, categorySlug }: ProductDetailProps) {
             {/* ── LEFT: sticky title/specs header + scrollable body ── */}
             <div>
 
-              {/* STATIC: title + key specs — sticks below SiteNav(64px)+JumpNav(48px)=112px */}
-              <div className="lg:sticky lg:top-28 lg:z-10 lg:bg-warm-white lg:pb-6">
+              {/* STATIC: title + key specs — sticks just below JumpNav (h-12 = 48px) */}
+              <div className="lg:sticky lg:top-12 lg:z-10 lg:bg-warm-white lg:pb-6">
                 <h1 className="font-display text-display-md font-light text-navy">
                   {product.name_es}
                 </h1>
@@ -238,7 +238,7 @@ export function ProductDetail({ product, categorySlug }: ProductDetailProps) {
 
             {/* ── RIGHT: outer cell stretches full row height; inner div is sticky ── */}
             <div id="consultar">
-              <div className="space-y-3 lg:sticky lg:top-28">
+              <div className="space-y-3 lg:sticky lg:top-12">
 
                 {/* Model selector */}
                 <ProductModelSelector
