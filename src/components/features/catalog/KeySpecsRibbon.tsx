@@ -57,7 +57,7 @@ export function KeySpecsRibbon({ specs }: KeySpecsRibbonProps) {
               i > 0 && 'sm:border-l sm:border-navy/10 sm:pl-6',
             )}
           >
-            <span className="font-mono text-2xl font-medium leading-none text-navy">
+            <span className="font-display text-2xl font-light leading-none text-navy">
               {item.value}
             </span>
             <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-gold">
