@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Image from 'next/image'
 
 const BRANDS = [
@@ -14,9 +15,14 @@ const BRANDS = [
 export function BrandMarquee() {
   // Triplicate for seamless loop at any viewport width
   const items = [...BRANDS, ...BRANDS, ...BRANDS]
+  const [paused, setPaused] = useState(false)
 
   return (
-    <div className="mb-16 -mx-6 md:-mx-10">
+    <div
+      className="mb-16 -mx-6 md:-mx-10"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
       {/* Eyebrow */}
       <p className="mb-5 px-6 md:px-10 font-mono text-[9px] uppercase tracking-widest-3 text-warm-white/25">
         Fabricantes verificados
@@ -37,7 +43,10 @@ export function BrandMarquee() {
           aria-hidden
         />
 
-        <div className="brand-marquee flex items-center w-max">
+        <div
+          className="brand-marquee flex items-center w-max"
+          style={{ animationPlayState: paused ? 'paused' : 'running' }}
+        >
           {items.map((brand, i) => (
             <span key={`${brand.name}-${i}`} className="flex items-center shrink-0">
               <Image
