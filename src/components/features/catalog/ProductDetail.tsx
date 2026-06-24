@@ -3,7 +3,7 @@
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import type { Product } from '@/types/database'
 import { Badge } from '@/components/ui/badge'
 import { ProductGallery } from '@/components/features/catalog/ProductGallery'
@@ -55,6 +55,8 @@ export function ProductDetail({ product, categorySlug }: ProductDetailProps) {
   const inComparison = isInComparison(product.id)
   const compareDisabled = isFull && !inComparison
 
+  const prefersReducedMotion = useReducedMotion()
+
   function handleCompareToggle() {
     if (inComparison) {
       remove(product.id)
@@ -97,33 +99,97 @@ export function ProductDetail({ product, categorySlug }: ProductDetailProps) {
 
               {/* STATIC: title + key specs — sticks just below JumpNav (h-12 = 48px) */}
               <div className="lg:sticky lg:top-12 lg:z-30 lg:bg-warm-white lg:pb-6">
-                <h1 className="mb-3 font-display text-display-md font-light text-navy">
-                  {product.name_es}
-                </h1>
+                {prefersReducedMotion ? (
+                  <h1 className="mb-3 font-display text-display-md font-light text-navy">
+                    {product.name_es}
+                  </h1>
+                ) : (
+                  <div className="overflow-hidden mb-3">
+                    <motion.h1
+                      initial={{ y: '110%' }}
+                      animate={{ y: '0%' }}
+                      transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+                      className="font-display text-display-md font-light text-navy"
+                    >
+                      {product.name_es}
+                    </motion.h1>
+                  </div>
+                )}
                 <KeySpecsRibbon specs={effectiveSpecs} />
               </div>
 
               {/* SCROLLABLE: gallery and all content below */}
               <div className="space-y-12">
               <div className="space-y-8">
-                <ProductGallery images={product.images} alt={product.name_es} />
+                {prefersReducedMotion ? (
+                  <ProductGallery images={product.images} alt={product.name_es} />
+                ) : (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.6, ease: [0, 0, 0.2, 1] }}
+                  >
+                    <ProductGallery images={product.images} alt={product.name_es} />
+                  </motion.div>
+                )}
 
-                <div className="flex flex-wrap gap-1.5">
-                  {product.source_markets.map((m) => (
-                    <Badge key={m} variant="source">
-                      Origen: {m}
-                    </Badge>
-                  ))}
-                </div>
+                {prefersReducedMotion ? (
+                  <>
+                    <div className="flex flex-wrap gap-1.5">
+                      {product.source_markets.map((m) => (
+                        <Badge key={m} variant="source">
+                          Origen: {m}
+                        </Badge>
+                      ))}
+                    </div>
 
-                <div>
-                  <h2 className="mb-3 font-body text-sm font-medium tracking-tight text-navy">
-                    Descripción
-                  </h2>
-                  <p className="font-body text-base leading-relaxed text-text-mono">
-                    {product.description_es}
-                  </p>
-                </div>
+                    <div>
+                      <h2 className="mb-3 font-body text-sm font-medium tracking-tight text-navy">
+                        Descripción
+                      </h2>
+                      <p className="font-body text-base leading-relaxed text-text-mono">
+                        {product.description_es}
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <motion.div
+                    initial="hidden"
+                    animate="visible"
+                    variants={{
+                      hidden: {},
+                      visible: { transition: { staggerChildren: 0.06, delayChildren: 0.2 } },
+                    }}
+                  >
+                    <motion.div
+                      variants={{
+                        hidden: { opacity: 0, y: 8 },
+                        visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0, 0, 0.2, 1] } },
+                      }}
+                      className="flex flex-wrap gap-1.5"
+                    >
+                      {product.source_markets.map((m) => (
+                        <Badge key={m} variant="source">
+                          Origen: {m}
+                        </Badge>
+                      ))}
+                    </motion.div>
+
+                    <motion.div
+                      variants={{
+                        hidden: { opacity: 0, y: 8 },
+                        visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0, 0, 0.2, 1] } },
+                      }}
+                    >
+                      <h2 className="mb-3 font-body text-sm font-medium tracking-tight text-navy">
+                        Descripción
+                      </h2>
+                      <p className="font-body text-base leading-relaxed text-text-mono">
+                        {product.description_es}
+                      </p>
+                    </motion.div>
+                  </motion.div>
+                )}
 
                 {/* Compare button — inline in left column, below description */}
                 <motion.button

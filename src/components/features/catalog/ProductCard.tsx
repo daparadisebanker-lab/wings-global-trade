@@ -51,9 +51,9 @@ export function ProductCard({ product, category }: ProductCardProps) {
     >
       <Link href={`/catalogo/${category.slug}/${product.slug}`} className="block">
         <motion.article
-          whileHover={{ y: -4, boxShadow: '0 8px 40px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06)' }}
+          whileHover={{ y: -4 }}
           transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-          className="group relative flex flex-col bg-white border border-[rgba(0,30,80,0.07)] overflow-hidden cursor-pointer"
+          className="group relative flex flex-col bg-white border border-[rgba(0,30,80,0.07)] overflow-hidden cursor-pointer transition-shadow duration-300 hover:shadow-[0_8px_40px_rgba(0,0,0,0.10),_0_2px_8px_rgba(0,0,0,0.06)]"
         >
           {/* Image area */}
           <div className="relative aspect-[4/3] overflow-hidden bg-[#F8F6F0]">
