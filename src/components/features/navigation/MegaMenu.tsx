@@ -130,6 +130,24 @@ function buildHref(categorySlug: string, item: SubItem): string {
 }
 
 // --------------------------------------------------------------------------
+// Stagger variants — Fix #08
+// --------------------------------------------------------------------------
+
+const columnContainerVariants = {
+  closed: {},
+  open: { transition: { staggerChildren: 0.03, delayChildren: 0.12 } },
+}
+
+const columnItemVariants = {
+  closed: { opacity: 0, y: 6 },
+  open: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.2, ease: [0, 0, 0.2, 1] as [number, number, number, number] },
+  },
+}
+
+// --------------------------------------------------------------------------
 // Component
 // --------------------------------------------------------------------------
 
@@ -144,13 +162,13 @@ export function MegaMenu({ categories: _categories, open }: MegaMenuProps) {
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.28, ease: [0.25, 1, 0.5, 1] }}
           className="w-full border-t border-[rgba(196,147,63,0.12)] bg-[#000C1F] shadow-card-hover"
           role="region"
           aria-label="Menú de catálogo"
         >
           <div className="mx-auto grid max-w-7xl grid-cols-6 gap-0 px-10 py-10">
-            {/* ---- Three category columns ---- */}
+            {/* ---- Category columns ---- */}
             {COLUMNS.map((col) => (
               <div key={col.categorySlug} className="pr-8">
                 {/* Column heading */}
@@ -158,19 +176,27 @@ export function MegaMenu({ categories: _categories, open }: MegaMenuProps) {
                   {col.heading}
                 </p>
 
-                {/* Subcategory items */}
-                <ul className="flex flex-col gap-2">
+                {/* Subcategory items — staggered entrance (Fix #08) */}
+                <motion.ul
+                  className="flex flex-col gap-2"
+                  variants={columnContainerVariants}
+                  initial="closed"
+                  animate={open ? 'open' : 'closed'}
+                >
                   {col.items.map((item) => (
-                    <li key={item.sub ?? item.href ?? item.label}>
+                    <motion.li
+                      key={item.sub ?? item.href ?? item.label}
+                      variants={columnItemVariants}
+                    >
                       <Link
                         href={buildHref(col.categorySlug, item)}
                         className="block font-mono text-[11px] text-warm-white/70 transition-colors duration-150 hover:text-gold"
                       >
                         {item.label}
                       </Link>
-                    </li>
+                    </motion.li>
                   ))}
-                </ul>
+                </motion.ul>
 
                 {/* Ver todo link */}
                 <Link
@@ -188,9 +214,14 @@ export function MegaMenu({ categories: _categories, open }: MegaMenuProps) {
                 Acceso rápido
               </p>
 
-              <ul className="flex flex-col gap-3">
+              <motion.ul
+                className="flex flex-col gap-3"
+                variants={columnContainerVariants}
+                initial="closed"
+                animate={open ? 'open' : 'closed'}
+              >
                 {QUICK_ITEMS.map((item) => (
-                  <li key={item.href}>
+                  <motion.li key={item.href} variants={columnItemVariants}>
                     <Link
                       href={item.href}
                       className={
@@ -204,9 +235,9 @@ export function MegaMenu({ categories: _categories, open }: MegaMenuProps) {
                       )}
                       {item.label}
                     </Link>
-                  </li>
+                  </motion.li>
                 ))}
-              </ul>
+              </motion.ul>
             </div>
           </div>
         </motion.div>

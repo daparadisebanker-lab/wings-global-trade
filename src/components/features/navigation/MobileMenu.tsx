@@ -21,13 +21,19 @@ const PRIMARY_NAV = [
   { href: '/contacto',  label: 'Contacto',        num: '06' },
 ]
 
+// Fix #14 — stagger container drives timing; items use shared variants
+const NAV_CONTAINER_VARIANTS = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.04 } },
+}
+
 const ITEM_VARIANTS = {
-  hidden: { opacity: 0, x: -16 },
-  visible: (i: number) => ({
+  hidden: { opacity: 0, x: -12 },
+  visible: {
     opacity: 1,
     x: 0,
-    transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1], delay: 0.04 + i * 0.05 },
-  }),
+    transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
+  },
 }
 
 export function MobileMenu({ open, onClose, categories }: MobileMenuProps) {
@@ -47,14 +53,16 @@ export function MobileMenu({ open, onClose, categories }: MobileMenuProps) {
           <div className="flex min-h-full flex-col px-8 pb-12 pt-24">
 
             {/* Primary nav — numbered editorial style */}
-            <nav aria-label="Navegación principal">
-              {PRIMARY_NAV.map((link, i) => (
+            <motion.nav
+              aria-label="Navegación principal"
+              variants={NAV_CONTAINER_VARIANTS}
+              initial="hidden"
+              animate="visible"
+            >
+              {PRIMARY_NAV.map((link) => (
                 <motion.div
                   key={link.href}
-                  custom={i}
                   variants={ITEM_VARIANTS}
-                  initial="hidden"
-                  animate="visible"
                   className="border-b border-warm-white/[0.06] last:border-0"
                 >
                   <Link
@@ -71,7 +79,7 @@ export function MobileMenu({ open, onClose, categories }: MobileMenuProps) {
                   </Link>
                 </motion.div>
               ))}
-            </nav>
+            </motion.nav>
 
             {/* Category chips */}
             <motion.div
