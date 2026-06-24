@@ -104,16 +104,14 @@ export function ProductDetail({ product, categorySlug }: ProductDetailProps) {
                     {product.name_es}
                   </h1>
                 ) : (
-                  <div className="overflow-hidden mb-3">
-                    <motion.h1
-                      initial={{ y: '110%' }}
-                      animate={{ y: '0%' }}
-                      transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
-                      className="font-display text-display-md font-light text-navy"
-                    >
-                      {product.name_es}
-                    </motion.h1>
-                  </div>
+                  <motion.h1
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    className="mb-3 font-display text-display-md font-light text-navy"
+                  >
+                    {product.name_es}
+                  </motion.h1>
                 )}
                 <KeySpecsRibbon specs={effectiveSpecs} />
               </div>
