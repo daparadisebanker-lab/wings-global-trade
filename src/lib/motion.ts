@@ -145,3 +145,33 @@ export const LINE_REVEAL: Variants = {
     transition: { duration: 0.75, ease: [0.16, 1, 0.3, 1], delay: i * 0.08 },
   }),
 }
+
+// ---------------------------------------------------------------------------
+// Weight-differentiated headlines — larger elements move slower
+// ---------------------------------------------------------------------------
+
+// Weight-differentiated headlines — larger elements move slower
+export const LINE_REVEAL_H1: Variants = {
+  hidden: { y: '110%' },
+  visible: (i: number = 0) => ({
+    y: '0%',
+    transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1], delay: i * 0.1 },
+  }),
+}
+
+export const LINE_REVEAL_H2: Variants = {
+  hidden: { y: '110%' },
+  visible: (i: number = 0) => ({
+    y: '0%',
+    transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1], delay: i * 0.08 },
+  }),
+}
+
+export const FADE_UP_LABEL: Variants = {
+  hidden: { opacity: 0, y: 8 },
+  visible: (i: number = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.25, ease: [0, 0, 0.2, 1], delay: i * 0.04 },
+  }),
+}

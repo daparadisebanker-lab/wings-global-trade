@@ -12,6 +12,7 @@ import { ComparisonProvider } from '@/contexts/comparison-context'
 import { WINGS_TAGLINE } from '@/lib/constants'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { organizationSchema } from '@/lib/schema'
+import { PageTransition } from '@/components/features/shared/PageTransition'
 
 export const viewport: Viewport = {
   themeColor: '#001E50',
@@ -66,7 +67,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <ToastProvider>
           <ComparisonProvider>
             <SiteNav categories={categories} />
-            <main className="min-h-screen overflow-x-clip">{children}</main>
+            <main className="min-h-screen overflow-x-clip"><PageTransition>{children}</PageTransition></main>
             <Footer categories={categories} />
             <CompareBar />
             <MultiInquiryPanel />
