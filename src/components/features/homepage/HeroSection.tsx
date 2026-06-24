@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
 import { SearchBar } from '@/components/features/homepage/SearchBar'
+import { CountUpStat } from '@/components/features/homepage/CountUpStat'
 import { LINE_REVEAL, COUNT_UP } from '@/lib/motion'
 
 const HEADLINE_LINES = [
@@ -83,8 +84,7 @@ export function HeroSection() {
               custom={i}
               className="md:border-r border-[rgba(248,246,240,0.07)] last:border-r-0 md:px-8 first:pl-0"
             >
-              <div className="font-display text-[2.5rem] font-light text-gold leading-none tracking-tight">{s.value}</div>
-              <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.15em] text-warm-white/40">{s.label}</div>
+              <CountUpStat value={s.value} label={s.label} />
             </motion.div>
           ))}
         </motion.div>
