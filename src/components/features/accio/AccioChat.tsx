@@ -107,20 +107,39 @@ export function AccioChat({ initialContext }: AccioChatProps) {
           className="no-scrollbar flex-1 overflow-y-auto px-6 py-6"
         >
           <div className="mx-auto flex max-w-3xl flex-col gap-4">
-            {messages.map((m, i) => (
-              <AccioMessage
-                key={i}
-                message={m}
-                isStreaming={isStreaming && i === messages.length - 1 && m.role === 'assistant'}
-              />
-            ))}
-            {isLoading && !isStreaming && (
-              <div className="flex items-center gap-1.5 px-1">
-                <span className="typing-dot h-2 w-2 rounded-full bg-navy" />
-                <span className="typing-dot h-2 w-2 rounded-full bg-navy" />
-                <span className="typing-dot h-2 w-2 rounded-full bg-navy" />
-              </div>
-            )}
+            <AnimatePresence initial={false}>
+              {messages.map((m, i) => (
+                <AccioMessage
+                  key={`${m.role}-${m.timestamp}-${i}`}
+                  message={m}
+                  isStreaming={isStreaming && i === messages.length - 1 && m.role === 'assistant'}
+                />
+              ))}
+              {isLoading && !isStreaming && (
+                <motion.div
+                  key="typing-indicator"
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 4 }}
+                  transition={{ duration: 0.2, ease: [0, 0, 0.2, 1] }}
+                  className="flex items-center gap-1.5 px-1"
+                >
+                  {[0, 1, 2].map((i) => (
+                    <motion.span
+                      key={i}
+                      className="h-2 w-2 rounded-full bg-navy/40"
+                      animate={{ y: [0, -6, 0] }}
+                      transition={{
+                        duration: 0.7,
+                        repeat: Infinity,
+                        delay: i * 0.15,
+                        ease: [0.4, 0, 0.2, 1],
+                      }}
+                    />
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 
