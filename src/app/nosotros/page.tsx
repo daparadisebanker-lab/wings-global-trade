@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { faqSchema, WINGS_FAQS, breadcrumbSchema } from '@/lib/schema'
 import { FREE_ZONES, SOURCE_MARKETS, MARKETS_SERVED } from '@/lib/constants'
+import { AnimatedInteriorHero } from '@/components/features/shared/AnimatedInteriorHero'
 
 export const metadata: Metadata = {
   title: 'Nosotros — Wings Global Trade | Zona Franca LATAM',
@@ -37,16 +38,12 @@ export default function NosotrosPage() {
       <section className="min-h-[60vh] flex items-end bg-[#000C1F] hero-grain overflow-hidden px-6 pb-20 pt-40 md:px-10 md:pb-28">
         <div className="w-full max-w-4xl">
           <div className="wings-rule mb-8" />
-          <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-warm-white/30 mb-6">
-            Nosotros
-          </p>
-          <h1 className="font-display text-display-xl font-light text-warm-white leading-[0.95] tracking-[-0.02em]">
-            Operadores de comercio.<br />No intermediarios.
-          </h1>
-          <p className="mt-8 font-body text-body-lg text-warm-white/60 max-w-2xl leading-relaxed">
-            Wings Global Trade opera con infraestructura real en zonas francas del Pacífico Sur.
-            Seguimiento en 24 horas. Sin promesas vacías.
-          </p>
+          <AnimatedInteriorHero
+            overline="Nosotros"
+            headline={["Operadores de comercio.", "No intermediarios."]}
+            subtitle="Wings Global Trade opera con infraestructura real en zonas francas del Pacífico Sur. Seguimiento en 24 horas. Sin promesas vacías."
+            dark
+          />
         </div>
       </section>
 
