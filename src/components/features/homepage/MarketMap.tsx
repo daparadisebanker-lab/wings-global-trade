@@ -1,24 +1,22 @@
 // src/components/features/homepage/MarketMap.tsx
 'use client'
 
-import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { FADE_UP, FADE_UP_TRANSITION, VIEWPORT_ONCE } from '@/lib/motion'
 
 // Destination market pins — positioned in viewBox 0 0 400 600
 const DESTINATION_PINS = [
-  { label: 'Colombia', x: 138, y: 185, beginDelay: '0s' },
-  { label: 'Panamá', x: 115, y: 160, beginDelay: '0.4s' },
-  { label: 'Perú', x: 148, y: 290, beginDelay: '0.8s' },
-  { label: 'Bolivia', x: 182, y: 328, beginDelay: '1.2s' },
-  { label: 'Chile', x: 158, y: 415, beginDelay: '1.6s' },
+  { label: 'Colombia', x: 138, y: 185 },
+  { label: 'Panamá', x: 115, y: 160 },
+  { label: 'Perú', x: 148, y: 290 },
+  { label: 'Bolivia', x: 182, y: 328 },
+  { label: 'Chile', x: 158, y: 415 },
 ]
 
 // Source market labels rendered above the SVG
 const SOURCE_LABELS = ['China', 'Japón', 'Tailandia', 'Dubai']
 
 // Freight corridor arcs: quadratic bezier paths
-// Each arc has a total path length estimate for stroke-dashoffset animation
 // Control point is placed offshore (to the left / above the Pacific) for a natural arc
 const FREIGHT_ARCS = [
   {
@@ -28,9 +26,6 @@ const FREIGHT_ARCS = [
     strokeWidth: 1.5,
     opacity: 0.45,
     dashArray: '6 4',
-    animBegin: '0s',
-    animDur: '3s',
-    pathLength: 340,
   },
   {
     // China → Valparaíso (Chile)
@@ -39,9 +34,6 @@ const FREIGHT_ARCS = [
     strokeWidth: 1.5,
     opacity: 0.4,
     dashArray: '6 4',
-    animBegin: '0.4s',
-    animDur: '3s',
-    pathLength: 480,
   },
   {
     // Japan → Callao
@@ -50,9 +42,6 @@ const FREIGHT_ARCS = [
     strokeWidth: 1.5,
     opacity: 0.38,
     dashArray: '6 4',
-    animBegin: '0.8s',
-    animDur: '3s',
-    pathLength: 330,
   },
   {
     // Thailand → Callao
@@ -61,9 +50,6 @@ const FREIGHT_ARCS = [
     strokeWidth: 1.2,
     opacity: 0.35,
     dashArray: '5 5',
-    animBegin: '0.6s',
-    animDur: '3s',
-    pathLength: 335,
   },
   {
     // Dubai → Callao (lighter, longer arc from right side)
@@ -72,70 +58,12 @@ const FREIGHT_ARCS = [
     strokeWidth: 1,
     opacity: 0.3,
     dashArray: '4 6',
-    animBegin: '1.2s',
-    animDur: '3.4s',
-    pathLength: 500,
   },
 ]
 
 export function MarketMap() {
-  const sectionRef = useRef<HTMLElement>(null)
-  const svgRef = useRef<SVGSVGElement>(null)
-  const observerRef = useRef<IntersectionObserver | null>(null)
-
-  useEffect(() => {
-    const svg = svgRef.current
-    if (!svg) return
-
-    // Start all arc animations paused — activated on scroll entry
-    const arcPaths = svg.querySelectorAll<SVGPathElement>('[data-freight-arc]')
-    arcPaths.forEach((path) => {
-      const animates = path.querySelectorAll('animate')
-      animates.forEach((anim) => {
-        ;(anim as SVGAnimateElement & { beginElement?: () => void })
-        // Set initial play state to paused via attribute
-        anim.setAttribute('begin', 'indefinite')
-      })
-    })
-
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            // Trigger all arc draw-in animations
-            arcPaths.forEach((path) => {
-              const animates = path.querySelectorAll<SVGAnimateElement>('animate')
-              animates.forEach((anim) => {
-                // Restore the original begin delay from data attribute
-                const delay = path.dataset.animBegin ?? '0s'
-                anim.setAttribute('begin', delay)
-                // Force restart
-                try {
-                  anim.beginElement?.()
-                } catch (_) {
-                  // beginElement may not exist on all browsers — setAttribute fallback is sufficient
-                }
-              })
-            })
-            // Disconnect after first trigger — once only
-            observerRef.current?.disconnect()
-          }
-        })
-      },
-      { threshold: 0.3 },
-    )
-
-    if (sectionRef.current) {
-      observerRef.current.observe(sectionRef.current)
-    }
-
-    return () => {
-      observerRef.current?.disconnect()
-    }
-  }, [])
-
   return (
-    <section ref={sectionRef} className="w-full">
+    <section className="w-full">
       <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
         {/* Left column — copy */}
         <motion.div
@@ -193,7 +121,6 @@ export function MarketMap() {
             The LATAM continental shape occupies roughly x:90–240, y:80–520.
           */}
           <svg
-            ref={svgRef}
             viewBox="0 0 400 600"
             className="h-auto w-full max-w-sm"
             role="img"
@@ -278,9 +205,9 @@ export function MarketMap() {
               DXB
             </text>
 
-            {/* Freight corridor arcs — draw-in on scroll entry via IntersectionObserver */}
-            {FREIGHT_ARCS.map((arc) => (
-              <path
+            {/* Freight corridor arcs — Framer Motion pathLength draw-in on scroll entry */}
+            {FREIGHT_ARCS.map((arc, index) => (
+              <motion.path
                 key={arc.id}
                 id={arc.id}
                 d={arc.d}
@@ -288,58 +215,40 @@ export function MarketMap() {
                 stroke="#C4933F"
                 strokeWidth={arc.strokeWidth}
                 strokeDasharray={arc.dashArray}
-                opacity={arc.opacity}
-                data-freight-arc="true"
-                data-anim-begin={arc.animBegin}
-              >
-                {/*
-                  stroke-dashoffset draw-in animation.
-                  begin="indefinite" means it won't fire until beginElement() is called
-                  by the IntersectionObserver above, or until IntersectionObserver restores
-                  the original begin delay attribute.
-                  repeatCount="indefinite" creates the continuous flowing freight effect.
-                */}
-                <animate
-                  attributeName="stroke-dashoffset"
-                  from={arc.pathLength}
-                  to="0"
-                  dur={arc.animDur}
-                  begin="indefinite"
-                  repeatCount="indefinite"
-                  calcMode="linear"
-                />
-              </path>
+                initial={{ pathLength: 0, opacity: 0 }}
+                whileInView={{ pathLength: 1, opacity: arc.opacity }}
+                viewport={{ once: true, margin: '-100px' }}
+                transition={{
+                  pathLength: { duration: 1.8, delay: index * 0.25, ease: [0.16, 1, 0.3, 1] },
+                  opacity: { duration: 0.3, delay: index * 0.25 },
+                }}
+              />
             ))}
 
-            {/* Destination pins — pulsing gold circles */}
-            {DESTINATION_PINS.map((pin) => (
+            {/* Destination pins — ambient pulse rings active from mount, stable core dots */}
+            {DESTINATION_PINS.map((pin, pinIndex) => (
               <g key={pin.label}>
-                {/* Outer pulse ring */}
-                <circle
+                {/* Outer pulse ring — always animating from mount, not gated by scroll */}
+                <motion.circle
                   cx={pin.x}
                   cy={pin.y}
-                  r="6"
+                  r={6}
                   fill="#C4933F"
-                  fillOpacity="0"
+                  fillOpacity={0}
                   stroke="#C4933F"
-                  strokeWidth="1"
-                >
-                  <animate
-                    attributeName="r"
-                    values="6;10;6"
-                    dur="2.4s"
-                    begin={pin.beginDelay}
-                    repeatCount="indefinite"
-                  />
-                  <animate
-                    attributeName="opacity"
-                    values="0.6;0;0.6"
-                    dur="2.4s"
-                    begin={pin.beginDelay}
-                    repeatCount="indefinite"
-                  />
-                </circle>
-                {/* Core pin */}
+                  strokeWidth={1}
+                  animate={{
+                    scale: [1, 1.4, 1],
+                    opacity: [0.6, 0, 0.6],
+                  }}
+                  transition={{
+                    repeat: Infinity,
+                    duration: 2,
+                    ease: 'easeInOut',
+                    delay: pinIndex * 0.3,
+                  }}
+                />
+                {/* Core pin — stable, no animation */}
                 <circle
                   cx={pin.x}
                   cy={pin.y}
