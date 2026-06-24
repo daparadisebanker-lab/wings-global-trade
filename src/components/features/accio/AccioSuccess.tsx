@@ -4,7 +4,6 @@
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import type { TprState, CifEstimate } from '@/types/accio'
-import { SLIDE_UP } from '@/lib/motion'
 import { WhatsAppButton } from '@/components/features/shared/WhatsAppButton'
 
 interface AccioSuccessProps {
@@ -42,70 +41,135 @@ function buildFollowUpTimestamp(): string {
   return `${dayName} ${day} de ${month}, 18:00`
 }
 
+// Animation variants for staggered detail items
+const detailContainerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.35,
+    },
+  },
+}
+
+const detailItemVariants = {
+  hidden: { opacity: 0, y: 6 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.35, ease: [0, 0, 0.2, 1] as [number, number, number, number] },
+  },
+}
+
 export function AccioSuccess({ tpr, estimate, leadId }: AccioSuccessProps) {
   const ref = formatReferenceNumber(leadId)
   const followUp = buildFollowUpTimestamp()
 
   return (
-    <motion.div variants={SLIDE_UP} initial="initial" animate="animate" className="p-6 text-center">
-      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gold/[0.12]">
-        <svg viewBox="0 0 24 24" className="h-6 w-6 text-gold" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+    <div className="p-6 text-center">
+      {/* Checkmark icon — spring entrance */}
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
+        className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gold/[0.12]"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          className="h-6 w-6 text-gold"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          aria-hidden
+        >
           <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
-      </div>
+      </motion.div>
 
-      {/* Per ENRICHED_SPEC §3.6 — exact confirm copy */}
-      <h3 className="font-display text-2xl font-light text-navy">Consulta técnica enviada.</h3>
-      <p className="mt-2 font-body text-base text-text-muted">
+      {/* Per ENRICHED_SPEC §3.6 — exact confirm copy — fade up */}
+      <motion.h3
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: [0, 0, 0.2, 1] as [number, number, number, number], delay: 0.25 }}
+        className="font-display text-2xl font-light text-navy"
+      >
+        Consulta técnica enviada.
+      </motion.h3>
+      <motion.p
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: [0, 0, 0.2, 1] as [number, number, number, number], delay: 0.3 }}
+        className="mt-2 font-body text-base text-text-muted"
+      >
         Recibirás tu análisis de importación en menos de 24 horas.
-      </p>
+      </motion.p>
 
-      {/* Reference number — per game-designer.md §Secondary Reward + ENRICHED_SPEC §4.5 */}
-      <div className="mx-auto mt-4 inline-block rounded-wings-card border border-border-default bg-white px-4 py-2">
-        <p className="font-mono text-xs uppercase tracking-widest-2 text-text-muted">
-          Número de referencia
-        </p>
-        <p className="mt-0.5 font-mono text-base font-medium text-navy">{ref}</p>
-      </div>
-
-      {/* Specific 24h follow-up timestamp — per game-designer.md */}
-      <p className="mt-3 font-body text-sm text-text-muted">
-        El equipo Wings te contactará antes del{' '}
-        <span className="font-medium text-navy">{followUp}</span>.
-      </p>
-
-      <div className="mx-auto mt-6 max-w-sm rounded-wings-card border border-border-default bg-white p-4 text-left">
-        <p className="mb-2 font-mono text-xs uppercase tracking-widest-2 text-text-muted">
-          Resumen del requerimiento
-        </p>
-        <p className="font-body text-sm text-navy">{tpr.product_description}</p>
-        <p className="mt-1 font-mono text-sm text-text-mono">
-          {tpr.quantity} · {tpr.destination_country}
-        </p>
-        {estimate && (
-          <p className="mt-2 font-mono text-sm text-gold">
-            CIF estimado:{' '}
-            {new Intl.NumberFormat('es-PE', {
-              style: 'currency',
-              currency: 'USD',
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 0,
-            }).format(estimate.cif_total_usd)}{' '}
-            vía {estimate.free_zone}
+      {/* Detail items — staggered */}
+      <motion.div
+        variants={detailContainerVariants}
+        initial="hidden"
+        animate="visible"
+        className="contents"
+      >
+        {/* Reference number — per game-designer.md §Secondary Reward + ENRICHED_SPEC §4.5 */}
+        <motion.div
+          variants={detailItemVariants}
+          className="mx-auto mt-4 inline-block rounded-wings-card border border-border-default bg-white px-4 py-2"
+        >
+          <p className="font-mono text-xs uppercase tracking-widest-2 text-text-muted">
+            Número de referencia
           </p>
-        )}
-      </div>
+          <p className="mt-0.5 font-mono text-base font-medium text-navy">{ref}</p>
+        </motion.div>
 
-      {/* Post-submit internal link to catalog — per ia-architect.md §Internal Linking */}
-      <div className="mt-6 flex flex-col items-center gap-3">
-        <WhatsAppButton
-          message={`Hola, acabo de enviar una consulta a través de Mister en Wings Global Trade. Referencia: ${ref}`}
-          label="Abrir conversación en WhatsApp"
-        />
-        <Link href="/catalogo" className="font-body text-sm text-gold underline underline-offset-4 hover:text-gold-hover">
-          Explorar catálogo de productos
-        </Link>
-      </div>
-    </motion.div>
+        {/* Specific 24h follow-up timestamp — per game-designer.md */}
+        <motion.p variants={detailItemVariants} className="mt-3 font-body text-sm text-text-muted">
+          El equipo Wings te contactará antes del{' '}
+          <span className="font-medium text-navy">{followUp}</span>.
+        </motion.p>
+
+        <motion.div
+          variants={detailItemVariants}
+          className="mx-auto mt-6 max-w-sm rounded-wings-card border border-border-default bg-white p-4 text-left"
+        >
+          <p className="mb-2 font-mono text-xs uppercase tracking-widest-2 text-text-muted">
+            Resumen del requerimiento
+          </p>
+          <p className="font-body text-sm text-navy">{tpr.product_description}</p>
+          <p className="mt-1 font-mono text-sm text-text-mono">
+            {tpr.quantity} · {tpr.destination_country}
+          </p>
+          {estimate && (
+            <p className="mt-2 font-mono text-sm text-gold">
+              CIF estimado:{' '}
+              {new Intl.NumberFormat('es-PE', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
+              }).format(estimate.cif_total_usd)}{' '}
+              vía {estimate.free_zone}
+            </p>
+          )}
+        </motion.div>
+
+        {/* Post-submit internal link to catalog — per ia-architect.md §Internal Linking */}
+        <motion.div
+          variants={detailItemVariants}
+          className="mt-6 flex flex-col items-center gap-3"
+        >
+          <WhatsAppButton
+            message={`Hola, acabo de enviar una consulta a través de Mister en Wings Global Trade. Referencia: ${ref}`}
+            label="Abrir conversación en WhatsApp"
+          />
+          <Link
+            href="/catalogo"
+            className="font-body text-sm text-gold underline underline-offset-4 hover:text-gold-hover"
+          >
+            Explorar catálogo de productos
+          </Link>
+        </motion.div>
+      </motion.div>
+    </div>
   )
 }
