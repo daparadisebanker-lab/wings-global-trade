@@ -27,9 +27,12 @@ export const metadata: Metadata = {
   description:
     'Maquinaria agrícola, camiones, buses y equipo industrial. Importación directa con gestión en zona franca ZOFRATACNA y ZOFRI. Consulta sin registro.',
   icons: {
-    icon: [{ url: '/brand/wings-isotipo-bg.svg', type: 'image/svg+xml' }],
-    apple: [{ url: '/brand/wings-isotipo-bg.svg' }],
-    shortcut: '/brand/wings-isotipo-bg.svg',
+    icon: [
+      { url: '/brand/icon-192.png', type: 'image/png', sizes: '192x192' },
+      { url: '/brand/icon-512.png', type: 'image/png', sizes: '512x512' },
+    ],
+    apple: [{ url: '/brand/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
+    shortcut: '/brand/icon-192.png',
   },
   manifest: '/site.webmanifest',
   openGraph: {
