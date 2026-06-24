@@ -167,8 +167,8 @@ export function SiteNav({ categories }: SiteNavProps) {
 
         {/* Scroll progress indicator */}
         <div
-          className="absolute bottom-0 left-0 h-px bg-gold transition-none"
-          style={{ width: `${scrollProgress * 100}%` }}
+          className="absolute bottom-0 left-0 h-px bg-gold"
+          style={{ width: `${scrollProgress * 100}%`, transition: 'width 0.1s linear' }}
           aria-hidden
         />
       </header>
