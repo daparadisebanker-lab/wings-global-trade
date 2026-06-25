@@ -1,7 +1,7 @@
 import { CountUpStat } from '@/components/features/homepage/CountUpStat'
 
 const STATS = [
-  { value: '32', label: 'Modelos disponibles' },
+  { value: '97', label: 'Modelos disponibles' },
   { value: '5',  label: 'Fabricantes verificados' },
   { value: '2',  label: 'Zonas francas' },
   { value: '24h', label: 'Respuesta garantizada' },
