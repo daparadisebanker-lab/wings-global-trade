@@ -166,19 +166,6 @@ export default function ProcesoPage() {
 
       {/* Dark hero */}
       <section className="relative flex min-h-[55vh] items-end overflow-hidden bg-[#000C1F] px-6 pb-20 pt-40 hero-grain md:px-10 md:pb-28">
-        {/* Document register — editorial signature */}
-        <div
-          aria-hidden
-          className="absolute right-6 top-36 hidden flex-col items-end gap-0.5 md:right-10 md:flex"
-        >
-          <span className="font-mono text-[8px] uppercase tracking-[0.20em] text-warm-white/20">
-            Documento técnico · REF. WGT-PROC-01
-          </span>
-          <span className="font-mono text-[8px] uppercase tracking-[0.15em] text-warm-white/[0.12]">
-            Vigencia 2025 · Rev. 3
-          </span>
-        </div>
-
         <div className="mx-auto w-full max-w-6xl">
           <div className="wings-rule mb-8" />
           <AnimatedInteriorHero
