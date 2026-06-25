@@ -196,12 +196,12 @@ export default function ProcesoPage() {
       </section>
 
       {/* Image strip 1 — Wings containers at port — scale proof */}
-      <div className="relative h-[52vh] overflow-hidden">
+      <div className="relative h-[68vh] overflow-hidden">
         <Image
           src="/Importacion/como-importar/containers-port.png"
           alt="Contenedores Wings en puerto de origen"
           fill
-          className="object-cover object-center"
+          className="object-cover object-bottom"
           sizes="100vw"
         />
       </div>
@@ -214,12 +214,12 @@ export default function ProcesoPage() {
       </section>
 
       {/* Image strip 2 — operative in warehouse — human proof */}
-      <div className="relative h-[44vh] overflow-hidden">
+      <div className="relative h-[62vh] overflow-hidden">
         <Image
           src="/Importacion/como-importar/operative-warehouse.png"
           alt="Coordinador Wings supervisando operación en almacén"
           fill
-          className="object-cover object-top"
+          className="object-cover object-center"
           sizes="100vw"
         />
       </div>
