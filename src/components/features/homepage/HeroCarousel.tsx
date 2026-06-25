@@ -67,7 +67,7 @@ export function HeroCarousel() {
   const slide = SLIDES[active]
 
   return (
-    <section className="relative h-screen min-h-[620px] overflow-hidden bg-[#000C1F]">
+    <section className="relative h-[100dvh] min-h-[620px] overflow-hidden bg-[#000C1F]">
 
       {/* Layer 1 — background image */}
       <AnimatePresence mode="sync" initial={false}>
@@ -84,12 +84,12 @@ export function HeroCarousel() {
               src={slide.image}
               alt=""
               fill
-              className="object-cover object-center"
+              className="object-cover object-[center_20%] md:object-center"
               sizes="100vw"
               priority
             />
-            {/* Mobile gradient scrim only — desktop uses SVG panel */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#000C1F]/88 via-[#000C1F]/55 to-transparent md:hidden" />
+            {/* Mobile: uniform dark overlay — desktop uses SVG panel */}
+            <div className="absolute inset-0 bg-[#000C1F]/72 md:hidden" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -119,7 +119,7 @@ export function HeroCarousel() {
       <div className="h-16 md:h-[72px]" />
 
       {/* Layer 4 — text content */}
-      <div className="relative z-10 flex h-[calc(100%-64px)] flex-col justify-center px-6 pb-24 md:h-[calc(100%-72px)] md:px-10 md:pb-28">
+      <div className="relative z-10 flex h-[calc(100dvh-64px)] flex-col justify-center px-6 pb-24 md:h-[calc(100dvh-72px)] md:px-10 md:pb-28">
         <div className="mx-auto w-full max-w-6xl">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
@@ -156,7 +156,7 @@ export function HeroCarousel() {
                   <div key={i} className="overflow-hidden">
                     <motion.span
                       className="block font-display font-light text-warm-white leading-[0.97] tracking-[-0.02em]"
-                      style={{ fontSize: 'clamp(1.6rem, 3.4vw, 3.2rem)' }}
+                      style={{ fontSize: 'clamp(1.875rem, 3.4vw, 3.2rem)' }}
                       variants={{
                         hidden: { y: '110%' },
                         visible: {
