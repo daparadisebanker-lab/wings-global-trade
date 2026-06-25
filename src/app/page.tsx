@@ -2,7 +2,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getCategories } from '@/lib/catalog-data'
-import { HeroSection } from '@/components/features/homepage/HeroSection'
+import { HeroCarousel } from '@/components/features/homepage/HeroCarousel'
+import { StatBar } from '@/components/features/homepage/StatBar'
 import { CategoryGrid } from '@/components/features/homepage/CategoryGrid'
 import { TrustBar } from '@/components/features/homepage/TrustBar'
 import { MarketMap } from '@/components/features/homepage/MarketMap'
@@ -35,8 +36,11 @@ export default async function HomePage() {
     <>
       <JsonLd data={websiteSchema()} />
 
-      {/* Hero — navy */}
-      <HeroSection />
+      {/* Hero carousel — dark, full-screen */}
+      <HeroCarousel />
+
+      {/* Stats bar — dark, anchored to carousel base */}
+      <StatBar />
 
       {/* Category grid — warm-white */}
       <SectionBlock theme="warm-white">
