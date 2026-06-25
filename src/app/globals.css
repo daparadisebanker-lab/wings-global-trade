@@ -12,6 +12,9 @@
   font-weight: 400;
   font-style: normal;
   font-display: block;
+  /* NissanOpti lacks ¡ (U+00A1) and ¿ (U+00BF) — exclude them so the browser
+     falls back to Georgia for those glyphs instead of rendering a box */
+  unicode-range: U+0000-00A0, U+00A2-00BE, U+00C0-FFFF;
 }
 @font-face {
   font-family: 'NissanOpti';
@@ -19,6 +22,7 @@
   font-weight: 400;
   font-style: italic;
   font-display: block;
+  unicode-range: U+0000-00A0, U+00A2-00BE, U+00C0-FFFF;
 }
 
 /* ============================================================
