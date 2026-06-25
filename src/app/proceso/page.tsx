@@ -214,31 +214,31 @@ export default function ProcesoPage() {
         </div>
       </section>
 
-      {/* Dual CTA — navy */}
-      <section className="bg-[#000C1F] px-6 py-20 md:px-10 md:py-28">
+      {/* Dual CTA — warm white (separates visually from navy footer) */}
+      <section className="bg-[#F8F6F0] px-6 py-20 md:px-10 md:py-28">
         <div className="mx-auto w-full max-w-6xl">
           <div className="wings-rule mb-8" />
           <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
             <div className="max-w-lg">
-              <h2 className="font-display text-display-md font-light text-warm-white leading-[1.05] tracking-[-0.02em]">
-                Más de 50 modelos en catálogo. Cotización CIF en 24 horas.
+              <h2 className="font-display text-display-md font-light text-navy leading-[1.05] tracking-[-0.02em]">
+                Más de 50 modelos en catálogo. Precio CIF sin intermediarios.
               </h2>
-              <p className="mt-4 font-body text-body-md leading-relaxed text-warm-white/50">
+              <p className="mt-4 font-body text-body-md leading-relaxed text-navy/55">
                 New Holland, John Deere, Massey Ferguson, Kubota, KAMA. Tractores desde 50 hasta
                 140 HP, camiones diésel y eléctricos, buses y equipo industrial.
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
               <Link
-                href="/cotizar"
+                href="/catalogo"
                 className="inline-flex items-center gap-3 bg-gold px-8 py-4 font-mono text-[11px] uppercase tracking-[0.12em] text-navy transition-colors duration-200 hover:bg-gold-hover"
               >
                 <span aria-hidden className="h-px w-6 bg-current" />
-                Solicitar cotización
+                Explorar catálogo
               </Link>
               <Link
                 href="/mister"
-                className="inline-flex items-center gap-3 border border-warm-white/20 px-8 py-4 font-mono text-[11px] uppercase tracking-[0.12em] text-warm-white/70 transition-all duration-200 hover:border-gold/40 hover:text-gold"
+                className="inline-flex items-center gap-3 border border-[rgba(0,30,80,0.18)] px-8 py-4 font-mono text-[11px] uppercase tracking-[0.12em] text-navy/70 transition-all duration-200 hover:border-gold/40 hover:text-gold"
               >
                 Hablar con Mister IA
               </Link>
