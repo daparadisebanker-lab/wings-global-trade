@@ -68,7 +68,7 @@ const COLUMNS: MegaColumn[] = [
       { label: 'Montacargas', sub: 'montacargas' },
       { label: 'Compactadores', sub: 'compactadores' },
       { label: 'Generadores', sub: 'generadores' },
-      { label: 'Repuestos', href: '/catalogo/repuestos' },
+      { label: 'Motores JDM', href: '/repuestos' },
     ],
   },
   {

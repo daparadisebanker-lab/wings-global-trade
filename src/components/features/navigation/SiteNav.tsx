@@ -15,9 +15,10 @@ interface SiteNavProps {
 }
 
 const LINKS = [
-  { href: '/proceso', label: 'Cómo importar' },
-  { href: '/mister', label: 'Mister' },
-  { href: '/nosotros', label: 'Nosotros' },
+  { href: '/proceso',    label: 'Cómo importar' },
+  { href: '/repuestos',  label: 'Motores' },
+  { href: '/mister',     label: 'Mister IA' },
+  { href: '/nosotros',   label: 'Nosotros' },
 ]
 
 export function SiteNav({ categories }: SiteNavProps) {
@@ -49,7 +50,7 @@ export function SiteNav({ categories }: SiteNavProps) {
   }, [])
 
   // Mister page has its own full-height layout; keep nav solid there.
-  const forceSolid = pathname?.startsWith('/mister') || pathname?.startsWith('/catalogo')
+  const forceSolid = pathname?.startsWith('/mister') || pathname?.startsWith('/catalogo') || pathname?.startsWith('/repuestos')
   const solid = scrolled || forceSolid
 
   return (
