@@ -179,40 +179,8 @@ export default function ProcesoPage() {
         />
       </div>
 
-      {/* Headline section — warm white, below image */}
-      <section className="bg-[#F8F6F0] px-6 py-16 md:px-10 md:py-20">
-        <div className="mx-auto w-full max-w-6xl">
-          <div className="wings-rule mb-8" />
-          <p className="mb-6 font-mono text-[10px] uppercase tracking-[0.15em] text-navy/40">
-            Cómo importar · Wings Global Trade
-          </p>
-          <h1 className="font-display text-display-xl font-light text-navy leading-[1.0] tracking-[-0.02em] max-w-3xl">
-            De la consulta a la entrega.
-            <br />
-            Sin zonas grises.
-          </h1>
-          <div className="mt-10 hidden flex-wrap gap-6 border-t border-[rgba(0,30,80,0.08)] pt-8 md:flex">
-            {[
-              { label: 'Respuesta inicial', value: '< 24 h', href: '#paso-01' },
-              { label: 'Marcas en catálogo', value: 'NH · JD · MF · Kubota · KAMA', href: '#paso-02' },
-              { label: 'Zonas francas', value: 'ZOFRATACNA · ZOFRI', href: '#paso-05' },
-              { label: 'Importador gestiona', value: 'Solo su RUC / NIT', href: '#paso-04' },
-            ].map((d) => (
-              <Link key={d.label} href={d.href} className="group flex flex-col gap-1">
-                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-navy/35 transition-colors group-hover:text-navy/55">
-                  {d.label}
-                </span>
-                <span className="font-body text-sm text-navy/65 transition-colors group-hover:text-navy/85">
-                  {d.value}
-                </span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Process steps — Fase A */}
-      <section className="bg-[#F8F6F0] px-6 pt-20 pb-16 md:px-10 md:pt-28 md:pb-20">
+      <section className="bg-[#F8F6F0] px-6 pt-16 pb-16 md:px-10 md:pt-20 md:pb-20">
         <div className="mx-auto w-full max-w-6xl">
           <AnimatedProcessSteps phases={[PHASES[0]]} />
         </div>
