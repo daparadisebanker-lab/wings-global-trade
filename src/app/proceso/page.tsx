@@ -214,12 +214,12 @@ export default function ProcesoPage() {
       </section>
 
       {/* Image strip 2 — operative in warehouse — human proof */}
-      <div className="relative h-[62vh] overflow-hidden">
+      <div className="relative h-[72vh] overflow-hidden">
         <Image
           src="/Importacion/como-importar/operative-warehouse.png"
           alt="Coordinador Wings supervisando operación en almacén"
           fill
-          className="object-cover object-center"
+          className="object-cover object-top"
           sizes="100vw"
         />
       </div>
