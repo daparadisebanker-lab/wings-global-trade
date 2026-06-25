@@ -1,5 +1,6 @@
 // src/app/proceso/page.tsx
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import { AnimatedInteriorHero } from '@/components/features/shared/AnimatedInteriorHero'
 import { AnimatedProcessSteps, type Phase } from '@/components/features/proceso/AnimatedProcessSteps'
@@ -194,12 +195,52 @@ export default function ProcesoPage() {
         </div>
       </section>
 
-      {/* Process steps — warm white */}
-      <section className="bg-[#F8F6F0] px-6 py-20 md:px-10 md:py-28">
+      {/* Image strip 1 — Wings containers at port — scale proof */}
+      <div className="relative h-[52vh] overflow-hidden">
+        <Image
+          src="/Importacion/como-importar/containers-port.png"
+          alt="Contenedores Wings en puerto de origen"
+          fill
+          className="object-cover object-center"
+          sizes="100vw"
+        />
+      </div>
+
+      {/* Process steps — Fase A */}
+      <section className="bg-[#F8F6F0] px-6 pt-20 pb-16 md:px-10 md:pt-28 md:pb-20">
         <div className="mx-auto w-full max-w-6xl">
-          <AnimatedProcessSteps phases={PHASES} />
+          <AnimatedProcessSteps phases={[PHASES[0]]} />
         </div>
       </section>
+
+      {/* Image strip 2 — operative in warehouse — human proof */}
+      <div className="relative h-[44vh] overflow-hidden">
+        <Image
+          src="/Importacion/como-importar/operative-warehouse.png"
+          alt="Coordinador Wings supervisando operación en almacén"
+          fill
+          className="object-cover object-top"
+          sizes="100vw"
+        />
+      </div>
+
+      {/* Process steps — Fase B + C */}
+      <section className="bg-[#F8F6F0] px-6 pt-16 pb-20 md:px-10 md:pt-20 md:pb-28">
+        <div className="mx-auto w-full max-w-6xl">
+          <AnimatedProcessSteps phases={PHASES.slice(1)} />
+        </div>
+      </section>
+
+      {/* Image strip 3 — truck at dock — delivery proof */}
+      <div className="relative h-[46vh] overflow-hidden">
+        <Image
+          src="/Importacion/como-importar/truck-dock.png"
+          alt="Entrega en destino — último tramo Wings Global Trade"
+          fill
+          className="object-cover object-left"
+          sizes="100vw"
+        />
+      </div>
 
       {/* Dual CTA — warm white (separates visually from navy footer) */}
       <section className="bg-[#F8F6F0] px-6 py-20 md:px-10 md:py-28">
