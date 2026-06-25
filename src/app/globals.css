@@ -14,7 +14,7 @@
   font-display: block;
   /* NissanOpti lacks ¡ (U+00A1) and ¿ (U+00BF) — restrict its range so the
      supplemental declaration below handles those two glyphs instead */
-  unicode-range: U+0000-00A0, U+00A2-00BE, U+00C0-FFFF;
+  unicode-range: U+0000-003E, U+0040-00A0, U+00A2-00BE, U+00C0-FFFF;
 }
 @font-face {
   font-family: 'NissanOpti';
@@ -22,17 +22,18 @@
   font-weight: 400;
   font-style: italic;
   font-display: block;
-  unicode-range: U+0000-00A0, U+00A2-00BE, U+00C0-FFFF;
+  unicode-range: U+0000-003E, U+0040-00A0, U+00A2-00BE, U+00C0-FFFF;
 }
 /* Supplemental: Flexo-Medium (usWeightClass 500) matches NissanOpti's visual
-   weight exactly and carries ¡ and ¿ — used only for those two glyphs */
+   weight exactly. Covers ? ! ¡ ¿ so both question marks and both exclamation
+   marks render from the same font at the same weight. */
 @font-face {
   font-family: 'NissanOpti';
   src: url('/fonts/flexo-medium.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: block;
-  unicode-range: U+00A1, U+00BF;
+  unicode-range: U+003F, U+0021, U+00A1, U+00BF;
 }
 @font-face {
   font-family: 'NissanOpti';
@@ -40,7 +41,7 @@
   font-weight: 400;
   font-style: italic;
   font-display: block;
-  unicode-range: U+00A1, U+00BF;
+  unicode-range: U+003F, U+0021, U+00A1, U+00BF;
 }
 
 /* ============================================================
