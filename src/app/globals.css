@@ -12,8 +12,8 @@
   font-weight: 400;
   font-style: normal;
   font-display: block;
-  /* NissanOpti lacks ¡ (U+00A1) and ¿ (U+00BF) — exclude them so the browser
-     falls back to Georgia for those glyphs instead of rendering a box */
+  /* NissanOpti lacks ¡ (U+00A1) and ¿ (U+00BF) — restrict its range so the
+     supplemental declaration below handles those two glyphs instead */
   unicode-range: U+0000-00A0, U+00A2-00BE, U+00C0-FFFF;
 }
 @font-face {
@@ -23,6 +23,24 @@
   font-style: italic;
   font-display: block;
   unicode-range: U+0000-00A0, U+00A2-00BE, U+00C0-FFFF;
+}
+/* Supplemental: Flexo-Medium (usWeightClass 500) matches NissanOpti's visual
+   weight exactly and carries ¡ and ¿ — used only for those two glyphs */
+@font-face {
+  font-family: 'NissanOpti';
+  src: url('/fonts/flexo-medium.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+  unicode-range: U+00A1, U+00BF;
+}
+@font-face {
+  font-family: 'NissanOpti';
+  src: url('/fonts/Flexo-MediumIt.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: block;
+  unicode-range: U+00A1, U+00BF;
 }
 
 /* ============================================================
