@@ -106,20 +106,14 @@ export function FilterChipRow({ categorySlug, facets, activeFilters }: FilterChi
   }
 
   return (
-    <div className="relative mb-6 -mx-6 md:mx-0">
-      <div className="no-scrollbar overflow-x-auto px-6 md:px-0">
-        <div className="flex items-center gap-0">
-          {groups.map((group, gi) => (
-            <div key={group.paramKey} className="flex items-center gap-0">
-              {/* Group separator */}
-              {gi > 0 && (
-                <div className="mx-4 h-4 w-px shrink-0 bg-[rgba(0,30,80,0.22)]" aria-hidden />
-              )}
-              {/* Group label — smaller + lighter than chip text to read as a category prefix */}
+    <div className="mb-6 flex flex-col gap-2">
+      {groups.map((group) => (
+        <div key={group.paramKey} className="relative -mx-6 md:mx-0">
+          <div className="no-scrollbar overflow-x-auto px-6 md:px-0">
+            <div className="flex items-center gap-0">
               <span className="mr-2.5 shrink-0 font-mono text-[9px] uppercase tracking-[0.18em] text-navy/40">
                 {group.label}:
               </span>
-              {/* Chips */}
               <div className="flex items-center gap-1.5">
                 {group.options.map((opt) => {
                   const isActive = activeFilters[group.paramKey] === opt.value
@@ -136,34 +130,30 @@ export function FilterChipRow({ categorySlug, facets, activeFilters }: FilterChi
                 })}
               </div>
             </div>
-          ))}
-
-          {/* Clear all — only when filters active */}
-          {activeCount > 0 && (
-            <>
-              <div className="mx-3 h-4 w-px bg-[rgba(0,30,80,0.12)]" aria-hidden />
-              <button
-                type="button"
-                onClick={() => {
-                  for (const group of groups) {
-                    if (activeFilters[group.paramKey]) {
-                      setFilter(group.paramKey, '')
-                    }
-                  }
-                }}
-                className="shrink-0 font-mono text-[10px] uppercase tracking-[0.10em] text-navy/35 transition-colors hover:text-navy"
-              >
-                Limpiar
-              </button>
-            </>
-          )}
+          </div>
+          <div
+            className="pointer-events-none absolute right-0 top-0 h-full w-12 bg-gradient-to-l from-warm-white to-transparent md:hidden"
+            aria-hidden
+          />
         </div>
-      </div>
-      {/* Right-edge fade — signals horizontal overflow on mobile */}
-      <div
-        className="pointer-events-none absolute right-0 top-0 h-full w-12 bg-gradient-to-l from-warm-white to-transparent md:hidden"
-        aria-hidden
-      />
+      ))}
+
+      {/* Clear all — only when filters active */}
+      {activeCount > 0 && (
+        <button
+          type="button"
+          onClick={() => {
+            for (const group of groups) {
+              if (activeFilters[group.paramKey]) {
+                setFilter(group.paramKey, '')
+              }
+            }
+          }}
+          className="self-start font-mono text-[10px] uppercase tracking-[0.10em] text-navy/35 transition-colors hover:text-navy"
+        >
+          Limpiar filtros
+        </button>
+      )}
     </div>
   )
 }
