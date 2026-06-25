@@ -2,7 +2,6 @@
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
-import { AnimatedInteriorHero } from '@/components/features/shared/AnimatedInteriorHero'
 import { AnimatedProcessSteps, type Phase } from '@/components/features/proceso/AnimatedProcessSteps'
 import { JsonLd } from '@/components/seo/JsonLd'
 
@@ -165,17 +164,31 @@ export default function ProcesoPage() {
     <>
       <JsonLd data={howToSchema} />
 
-      {/* Dark hero */}
-      <section className="relative flex min-h-[55vh] items-end overflow-hidden bg-[#000C1F] px-6 pb-20 pt-40 hero-grain md:px-10 md:pb-28">
+      {/* Containers image — visual hero, nav floats over it */}
+      <div className="relative h-[88vh] overflow-hidden">
+        <Image
+          src="/Importacion/como-importar/containers-port.png"
+          alt="Contenedores Wings en puerto de origen"
+          fill
+          className="object-cover object-bottom"
+          sizes="100vw"
+          priority
+        />
+      </div>
+
+      {/* Headline section — warm white, below image */}
+      <section className="bg-[#F8F6F0] px-6 py-16 md:px-10 md:py-20">
         <div className="mx-auto w-full max-w-6xl">
           <div className="wings-rule mb-8" />
-          <AnimatedInteriorHero
-            overline="Cómo importar · Wings Global Trade"
-            headline={['De la consulta a la entrega.', 'Sin zonas grises.']}
-            subtitle="Wings gestiona la importación completa: fabricante certificado, precio CIF con desglose real, zona franca ZOFRATACNA o ZOFRI, y documentación aduanal. El importador solo recibe la mercancía."
-            dark
-          />
-          <div className="mt-10 flex flex-wrap gap-6 border-t border-warm-white/[0.07] pt-8">
+          <p className="mb-6 font-mono text-[10px] uppercase tracking-[0.15em] text-navy/40">
+            Cómo importar · Wings Global Trade
+          </p>
+          <h1 className="font-display text-display-xl font-light text-navy leading-[1.0] tracking-[-0.02em] max-w-3xl">
+            De la consulta a la entrega.
+            <br />
+            Sin zonas grises.
+          </h1>
+          <div className="mt-10 flex flex-wrap gap-6 border-t border-[rgba(0,30,80,0.08)] pt-8">
             {[
               { label: 'Respuesta inicial', value: '< 24 h', href: '#paso-01' },
               { label: 'Marcas en catálogo', value: 'NH · JD · MF · Kubota · KAMA', href: '#paso-02' },
@@ -183,10 +196,10 @@ export default function ProcesoPage() {
               { label: 'Importador gestiona', value: 'Solo su RUC / NIT', href: '#paso-04' },
             ].map((d) => (
               <Link key={d.label} href={d.href} className="group flex flex-col gap-1">
-                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-warm-white/30 transition-colors group-hover:text-warm-white/50">
+                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-navy/35 transition-colors group-hover:text-navy/55">
                   {d.label}
                 </span>
-                <span className="font-body text-sm text-warm-white/75 transition-colors group-hover:text-warm-white/90">
+                <span className="font-body text-sm text-navy/65 transition-colors group-hover:text-navy/85">
                   {d.value}
                 </span>
               </Link>
@@ -194,17 +207,6 @@ export default function ProcesoPage() {
           </div>
         </div>
       </section>
-
-      {/* Image strip 1 — Wings containers at port — scale proof */}
-      <div className="relative h-[68vh] overflow-hidden">
-        <Image
-          src="/Importacion/como-importar/containers-port.png"
-          alt="Contenedores Wings en puerto de origen"
-          fill
-          className="object-cover object-bottom"
-          sizes="100vw"
-        />
-      </div>
 
       {/* Process steps — Fase A */}
       <section className="bg-[#F8F6F0] px-6 pt-20 pb-16 md:px-10 md:pt-28 md:pb-20">
