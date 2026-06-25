@@ -25,7 +25,7 @@ export default function ContactoPage() {
   return (
     <>
       {/* Dark hero */}
-      <section className="min-h-[45vh] flex items-end bg-[#000C1F] hero-grain px-6 pb-16 pt-36 md:px-10 md:pb-24">
+      <section className="relative min-h-[45vh] flex items-end bg-[#000C1F] hero-grain overflow-hidden px-6 pb-16 pt-36 md:px-10 md:pb-24">
         <div className="max-w-4xl">
           <div className="wings-rule mb-8" />
           <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-warm-white/30 mb-6">

@@ -111,7 +111,7 @@ export default function ProcesoPage() {
   return (
     <>
       {/* Dark hero */}
-      <section className="min-h-[55vh] flex items-end bg-[#000C1F] hero-grain px-6 pb-20 pt-40 md:px-10 md:pb-28">
+      <section className="relative min-h-[55vh] flex items-end bg-[#000C1F] hero-grain overflow-hidden px-6 pb-20 pt-40 md:px-10 md:pb-28">
         <div className="mx-auto w-full max-w-6xl">
           <div className="wings-rule mb-8" />
           <AnimatedInteriorHero

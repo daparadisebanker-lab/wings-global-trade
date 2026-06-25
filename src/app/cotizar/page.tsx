@@ -24,7 +24,7 @@ export default function CotizarPage() {
   return (
     <>
       {/* Dark hero */}
-      <section className="min-h-[50vh] flex items-end bg-[#000C1F] hero-grain px-6 pb-16 pt-36 md:px-10 md:pb-24">
+      <section className="relative min-h-[50vh] flex items-end bg-[#000C1F] hero-grain overflow-hidden px-6 pb-16 pt-36 md:px-10 md:pb-24">
         <div className="mx-auto w-full max-w-6xl">
           <div className="max-w-2xl">
             <div className="wings-rule mb-8" />

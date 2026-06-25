@@ -91,7 +91,7 @@ export default function JumpNavigation({
           {String(position).padStart(2, '0')} / {String(sections.length).padStart(2, '0')}
         </span>
 
-        <div className="flex items-center gap-8 overflow-x-auto scrollbar-none">
+        <div className="no-scrollbar flex items-center gap-8 overflow-x-auto">
           {sections.map(({ id, label }) => {
             const isActive = activeId === id
             return (
