@@ -164,8 +164,11 @@ export default function ProcesoPage() {
     <>
       <JsonLd data={howToSchema} />
 
-      {/* Containers image — visual hero, nav floats over it */}
-      <div className="relative h-[88vh] overflow-hidden">
+      {/* Nav spacer — keeps containers image below the fixed navy header */}
+      <div className="h-16 md:h-[72px] bg-[#000C1F]" />
+
+      {/* Containers image — visual hero */}
+      <div className="relative aspect-[16/9] overflow-hidden md:aspect-auto md:h-[88vh]">
         <Image
           src="/Importacion/como-importar/containers-port.png"
           alt="Contenedores Wings en puerto de origen"
@@ -188,7 +191,7 @@ export default function ProcesoPage() {
             <br />
             Sin zonas grises.
           </h1>
-          <div className="mt-10 flex flex-wrap gap-6 border-t border-[rgba(0,30,80,0.08)] pt-8">
+          <div className="mt-10 hidden flex-wrap gap-6 border-t border-[rgba(0,30,80,0.08)] pt-8 md:flex">
             {[
               { label: 'Respuesta inicial', value: '< 24 h', href: '#paso-01' },
               { label: 'Marcas en catálogo', value: 'NH · JD · MF · Kubota · KAMA', href: '#paso-02' },
