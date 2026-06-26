@@ -38,13 +38,14 @@ const CATEGORY_IMAGES: Record<string, { mobile: string; desktop: string; objectP
   },
 }
 
-// Display order: agricola is always hero (row 1 wide card)
+// Row 1: agricola · buses · equipo-industrial · camiones
+// Row 2: automoviles · repuestos · [Mister col-span-2]
 const ORDERED_SLUGS = [
   'maquinaria-agricola',
-  'automoviles',
-  'camiones',
   'buses',
   'equipo-industrial',
+  'camiones',
+  'automoviles',
   'repuestos',
 ]
 
@@ -55,12 +56,11 @@ const ORDERED_SLUGS = [
 interface CardProps {
   category: Category
   index: number
-  isHero?: boolean
   priority?: boolean
   sizes: string
 }
 
-function CategoryCard({ category, index, isHero, priority, sizes }: CardProps) {
+function CategoryCard({ category, index, priority, sizes }: CardProps) {
   const imgs = CATEGORY_IMAGES[category.slug]
   const num  = String(index + 1).padStart(2, '0')
 
@@ -115,18 +115,15 @@ function CategoryCard({ category, index, isHero, priority, sizes }: CardProps) {
 
         {/* Bottom text overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6">
-          {/* Gold rule — extends on hover */}
           <motion.div
             className="mb-3 h-px w-5 bg-gold"
             style={{ originX: 0 }}
             variants={{ hover: { scaleX: 2.8 } }}
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
           />
-          {/* Category name */}
-          <h3 className={`font-display text-warm-white leading-tight ${isHero ? 'text-2xl md:text-3xl' : 'text-xl md:text-2xl'}`}>
+          <h3 className="font-display text-xl text-warm-white leading-tight md:text-2xl">
             {category.name_es}
           </h3>
-          {/* CTA hint */}
           <motion.p
             className="mt-1.5 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.15em] text-warm-white/35"
             variants={{ hover: { x: 4 } }}
@@ -143,6 +140,70 @@ function CategoryCard({ category, index, isHero, priority, sizes }: CardProps) {
 }
 
 // ---------------------------------------------------------------------------
+// Mister card — Importación Personalizada
+// ---------------------------------------------------------------------------
+
+function MisterCard({ index }: { index: number }) {
+  const num = String(index + 1).padStart(2, '0')
+
+  return (
+    <Link href="/mister" className="block h-full">
+      <motion.article
+        whileHover="hover"
+        className="group relative h-full overflow-hidden bg-[#000C1F] cursor-pointer"
+      >
+        {/* Top border rule */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-[#C4933F]/15" />
+
+        {/* Editorial index */}
+        <span className="absolute right-4 top-4 font-mono text-[10px] tracking-widest-3 text-[#F8F6F0]/20 select-none">
+          {num}
+        </span>
+
+        {/* Ambient glow on hover */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          initial={{ opacity: 0 }}
+          variants={{ hover: { opacity: 1 } }}
+          transition={{ duration: 0.5 }}
+          style={{
+            background:
+              'radial-gradient(ellipse at 20% 85%, rgba(196,147,63,0.09) 0%, transparent 55%)',
+          }}
+        />
+
+        {/* Content */}
+        <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-6">
+          <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#C4933F]/50 mb-3">
+            Asesor de Importación · IA
+          </p>
+          <motion.div
+            className="mb-3 h-px w-5 bg-[#C4933F]"
+            style={{ originX: 0 }}
+            variants={{ hover: { scaleX: 2.8 } }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          />
+          <h3 className="font-display text-xl text-[#F8F6F0] leading-tight md:text-2xl">
+            Mister
+          </h3>
+          <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.10em] text-[#F8F6F0]/40">
+            Importación Personalizada
+          </p>
+          <motion.p
+            className="mt-3 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.15em] text-[#F8F6F0]/35"
+            variants={{ hover: { x: 4 } }}
+            transition={{ duration: 0.22 }}
+          >
+            <span className="h-px w-3 bg-current shrink-0" aria-hidden />
+            Consultar
+          </motion.p>
+        </div>
+      </motion.article>
+    </Link>
+  )
+}
+
+// ---------------------------------------------------------------------------
 // Main grid export
 // ---------------------------------------------------------------------------
 
@@ -151,14 +212,11 @@ interface CategoryGridProps {
 }
 
 export function CategoryGrid({ categories }: CategoryGridProps) {
-  // Sort to match editorial layout order; append unknown slugs at end
   const sorted = ORDERED_SLUGS
     .map((slug) => categories.find((c) => c.slug === slug))
     .filter(Boolean) as Category[]
   const rest = categories.filter((c) => !ORDERED_SLUGS.includes(c.slug))
   const all  = [...sorted, ...rest]
-
-  const [cat0, cat1, cat2, cat3, cat4, cat5] = all
 
   const EASE = [0.16, 1, 0.3, 1] as const
   const ENTER = (delay = 0) => ({
@@ -168,10 +226,14 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
     transition: { duration: 0.65, ease: EASE, delay },
   })
 
+  // First 4 cards are above the fold on desktop — load eagerly
+  const CARD_SIZES = '(min-width: 768px) 25vw, 50vw'
+  const CARD_H     = 'h-[52vw] md:h-[28vw] md:max-h-[380px]'
+
   return (
     <div>
 
-      {/* Section header — two-column editorial meta bar */}
+      {/* Section header */}
       <div className="mb-10 md:mb-14">
         <div className="mb-6 flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
@@ -193,102 +255,36 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
         </h2>
       </div>
 
-      {/* ── Editorial grid ──────────────────────────────────────────────── */}
-      <div className="flex flex-col gap-2">
+      {/* ── 4 × 2 uniform grid ─────────────────────────────────────────────── */}
+      {/* Row 1: agricola · buses · industrial · camiones                       */}
+      {/* Row 2: automoviles · repuestos · Mister (col-span-2)                  */}
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
 
-        {/* Row 1 — hero (2 cols) + automoviles (1 col) */}
-        <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
-          {/* Agrícola — hero card, double width */}
-          {cat0 && (
-            <motion.div
-              {...ENTER(0)}
-              className="h-[80vw] md:col-span-2 md:h-[50vw] md:max-h-[600px]"
-            >
-              <CategoryCard
-                category={cat0}
-                index={0}
-                isHero
-                priority
-                sizes="(min-width: 768px) 66vw, 100vw"
-              />
-            </motion.div>
-          )}
-          {/* Camiones */}
-          {cat1 && (
-            <motion.div
-              {...ENTER(0.07)}
-              className="h-[80vw] md:h-[50vw] md:max-h-[600px]"
-            >
-              <CategoryCard
-                category={cat1}
-                index={1}
-                priority
-                sizes="(min-width: 768px) 33vw, 100vw"
-              />
-            </motion.div>
-          )}
-        </div>
+        {all.map((cat, i) => (
+          <motion.div
+            key={cat.id}
+            {...ENTER(i * 0.06)}
+            className={CARD_H}
+          >
+            <CategoryCard
+              category={cat}
+              index={i}
+              priority={i < 4}
+              sizes={CARD_SIZES}
+            />
+          </motion.div>
+        ))}
 
-        {/* Row 2 — automoviles · buses · industrial · repuestos (equal quarters) */}
-        <div className="grid grid-cols-2 gap-2 md:grid-cols-2 lg:grid-cols-4">
-          {([cat2, cat3, cat4, cat5] as (Category | undefined)[]).map((cat, i) =>
-            cat ? (
-              <motion.div
-                key={cat.id}
-                {...ENTER(i * 0.07)}
-                className="h-[52vw] md:h-[48vw] md:max-h-[460px] lg:h-[30vw] lg:max-h-[420px]"
-              >
-                <CategoryCard
-                  category={cat}
-                  index={i + 2}
-                  sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
-                />
-              </motion.div>
-            ) : null
-          )}
-        </div>
-
-        {/* Mister — Importación Personalizada (full-width strip) */}
-        <motion.div {...ENTER(0.18)}>
-          <Link href="/mister">
-            <motion.article
-              whileHover="hover"
-              className="group relative overflow-hidden bg-[#000C1F] cursor-pointer"
-            >
-              {/* Top rule */}
-              <div className="absolute top-0 left-0 right-0 h-px bg-warm-white/[0.08]" />
-
-              <div className="flex items-center justify-between px-6 py-8 md:px-8 md:py-10">
-                <div>
-                  <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-gold/40 mb-2">
-                    Mister · Asistente IA
-                  </p>
-                  <h3 className="font-display text-xl font-light text-warm-white md:text-2xl">
-                    Importación Personalizada
-                  </h3>
-                </div>
-                <motion.span
-                  className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.12em] text-warm-white/30 shrink-0 ml-8"
-                  variants={{ hover: { x: 6, color: 'rgba(196,147,63,0.9)' } }}
-                  transition={{ duration: 0.22 }}
-                >
-                  <span className="h-px w-4 bg-current shrink-0" aria-hidden />
-                  Consultar
-                </motion.span>
-              </div>
-
-              {/* Gold bottom rule — slides in on hover */}
-              <motion.div
-                className="absolute bottom-0 left-0 h-px w-full bg-gold/35 origin-left"
-                variants={{ hover: { scaleX: 1, opacity: 1 } }}
-                initial={{ scaleX: 0, opacity: 0 }}
-                transition={{ duration: 0.45 }}
-              />
-            </motion.article>
-          </Link>
+        {/* Mister — last card, spans 2 columns to complete the row */}
+        <motion.div
+          {...ENTER(all.length * 0.06)}
+          className={`col-span-2 ${CARD_H}`}
+        >
+          <MisterCard index={all.length} />
         </motion.div>
 
       </div>
+
     </div>
   )
 }
