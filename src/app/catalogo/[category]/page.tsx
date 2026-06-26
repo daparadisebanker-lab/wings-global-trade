@@ -17,6 +17,7 @@ import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { breadcrumbSchema } from '@/lib/schema'
 import { MisterDeadEnd } from '@/components/features/shared/MisterDeadEnd'
+import { SubcategoryGateway } from '@/components/features/catalog/SubcategoryGateway'
 import { FilterChipRow } from '@/components/features/catalog/FilterChipRow'
 import { cn } from '@/lib/utils'
 
@@ -368,7 +369,15 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
             facets={facets}
           />
 
-          {/* ── Mister dead-end CTA (Task 20) ────────────────────────────── */}
+          {/* ── Subcategory gateway — inactive subcategories route to Mister */}
+          <SubcategoryGateway
+            categorySlug={category}
+            categoryName={cat.name_es}
+            activeSubSlugs={subcategories.map((s) => s.slug)}
+            productCount={products.length}
+          />
+
+          {/* ── Mister dead-end CTA ───────────────────────────────────────── */}
           <div className="mt-16">
             <MisterDeadEnd context="category-bottom" />
           </div>

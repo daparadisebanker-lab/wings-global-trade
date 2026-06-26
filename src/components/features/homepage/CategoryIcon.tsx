@@ -74,6 +74,73 @@ const paths: Record<string, React.ReactNode> = {
       <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3-3a6 6 0 0 1-7.4 7.4l-3.8 3.8a2 2 0 1 1-2.8-2.8l3.8-3.8a6 6 0 0 1 7.4-7.4z" />
     </>
   ),
+  harvester: (
+    <>
+      <circle cx="15" cy="11" r="5" />
+      <rect x="2" y="8" width="8" height="7" rx="1" />
+      <path d="M2 15h20" />
+      <circle cx="5" cy="19" r="2.5" />
+      <circle cx="18" cy="20" r="2" />
+      <path d="M10 11.5h3" />
+    </>
+  ),
+  'dump-truck': (
+    <>
+      <rect x="1" y="10" width="7" height="6" rx="1" />
+      <path d="M8 16V7l12-3v12z" />
+      <path d="M1 16h19" />
+      <circle cx="4" cy="18.5" r="1.5" />
+      <circle cx="15" cy="18.5" r="1.5" />
+      <circle cx="19" cy="18.5" r="1.5" />
+    </>
+  ),
+  forklift: (
+    <>
+      <rect x="10" y="9" width="11" height="9" rx="1" />
+      <path d="M8 2v16M12 5v13" />
+      <path d="M8 16H2M8 18.5H2" />
+      <circle cx="19" cy="20.5" r="2" />
+      <circle cx="3.5" cy="20.5" r="1.5" />
+    </>
+  ),
+  generator: (
+    <>
+      <rect x="3" y="4" width="18" height="14" rx="1.5" />
+      <path d="M13 7.5L10 13h4.5L11.5 18.5" />
+      <path d="M8 4V2M10 4V2" />
+    </>
+  ),
+  crane: (
+    <>
+      <path d="M5 22V4" />
+      <path d="M5 4h15" />
+      <path d="M20 4L5 11" />
+      <path d="M14 4v10" />
+      <path d="M14 14v3q0 2-3 2" />
+      <path d="M3 22h4" />
+      <path d="M5 4H2" />
+    </>
+  ),
+  semi: (
+    <>
+      <rect x="9" y="7" width="13" height="9" rx="1" />
+      <path d="M9 16V7H4L1 11v5z" />
+      <circle cx="4" cy="18.5" r="2" />
+      <circle cx="15" cy="18.5" r="2" />
+      <circle cx="19" cy="18.5" r="2" />
+      <path d="M9 13h2" />
+    </>
+  ),
+  sprayer: (
+    <>
+      <rect x="8" y="8" width="8" height="6" rx="2" />
+      <path d="M1 11h6M17 11h6" />
+      <path d="M2 13v2M5 13v2M19 13v2M22 13v2" />
+      <circle cx="9.5" cy="16" r="2" />
+      <circle cx="14.5" cy="16" r="2" />
+      <path d="M12 8V4" />
+    </>
+  ),
 }
 
 export function CategoryIcon({ iconKey, className }: IconProps) {
