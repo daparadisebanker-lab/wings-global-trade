@@ -6,45 +6,51 @@ import { motion } from 'framer-motion'
 import type { Category } from '@/types/database'
 
 // ---------------------------------------------------------------------------
-// Per-category photography map — mobile and desktop variants
+// Per-category image map — SVG variants for mobile and desktop
 // ---------------------------------------------------------------------------
 
 const CATEGORY_IMAGES: Record<string, { mobile: string; desktop: string; objectPosition?: string }> = {
   'maquinaria-agricola': {
-    mobile:  '/images/categories/agricola.png',
-    desktop: '/images/categories/agricola-desktop.png',
-    objectPosition: 'center 65%',
-  },
-  automoviles: {
-    mobile:  '/images/categories/automoviles.jpg',
-    desktop: '/images/categories/automoviles.jpg',
-    objectPosition: 'center 55%',
-  },
-  camiones: {
-    mobile:  '/images/categories/camiones.png',
-    desktop: '/images/categories/camiones-desktop.png',
+    mobile:  '/images/categories/agricola-mobile.svg',
+    desktop: '/images/categories/agricola-desktop.svg',
   },
   buses: {
-    mobile:  '/images/categories/buses.png',
-    desktop: '/images/categories/buses-desktop.png',
+    mobile:  '/images/categories/buses-mobile.svg',
+    desktop: '/images/categories/buses-desktop.svg',
   },
   'equipo-industrial': {
-    mobile:  '/images/categories/industrial.png',
-    desktop: '/images/categories/industrial-desktop.png',
+    mobile:  '/images/categories/industrial-mobile.svg',
+    desktop: '/images/categories/industrial-desktop.svg',
+  },
+  camiones: {
+    mobile:  '/images/categories/camiones-mobile.svg',
+    desktop: '/images/categories/camiones-desktop.svg',
+  },
+  utv: {
+    mobile:  '/images/categories/utv-mobile.svg',
+    desktop: '/images/categories/utv-desktop.svg',
+  },
+  automoviles: {
+    mobile:  '/images/categories/automoviles-mobile.svg',
+    desktop: '/images/categories/automoviles-desktop.svg',
   },
   repuestos: {
-    mobile:  '/images/categories/repuestos.png',
-    desktop: '/images/categories/repuestos-desktop.png',
+    mobile:  '/images/categories/repuestos-mobile.svg',
+    desktop: '/images/categories/repuestos-desktop.svg',
   },
 }
 
-// Row 1: agricola · buses · equipo-industrial · camiones
-// Row 2: automoviles · repuestos · [Mister col-span-2]
+// Grid order — 7 categories fill positions 1-7, Mister fills position 8
+// Mobile (2-col):  row1: agricola·buses  row2: industrial·camiones
+//                  row3: utv·automoviles  row4: repuestos·Mister
+// Desktop (4-col): row1: agricola·buses·industrial·camiones
+//                  row2: utv·automoviles·repuestos·Mister
 const ORDERED_SLUGS = [
   'maquinaria-agricola',
   'buses',
   'equipo-industrial',
   'camiones',
+  'utv',
   'automoviles',
   'repuestos',
 ]
@@ -63,6 +69,7 @@ interface CardProps {
 function CategoryCard({ category, index, priority, sizes }: CardProps) {
   const imgs = CATEGORY_IMAGES[category.slug]
   const num  = String(index + 1).padStart(2, '0')
+  const isSvg = imgs?.mobile.endsWith('.svg')
 
   return (
     <Link href={`/catalogo/${category.slug}`} className="block h-full">
@@ -77,6 +84,7 @@ function CategoryCard({ category, index, priority, sizes }: CardProps) {
             alt={category.name_es}
             fill
             sizes={sizes}
+            unoptimized={isSvg}
             className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05] md:hidden"
             style={{ objectPosition: imgs.objectPosition ?? 'center' }}
             priority={priority}
@@ -89,6 +97,7 @@ function CategoryCard({ category, index, priority, sizes }: CardProps) {
             alt={category.name_es}
             fill
             sizes={sizes}
+            unoptimized={isSvg}
             className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05] hidden md:block"
             style={{ objectPosition: imgs.objectPosition ?? 'center' }}
             priority={priority}
@@ -140,7 +149,7 @@ function CategoryCard({ category, index, priority, sizes }: CardProps) {
 }
 
 // ---------------------------------------------------------------------------
-// Mister card — Importación Personalizada
+// Mister card — position 8, uses its own SVG illustration
 // ---------------------------------------------------------------------------
 
 function MisterCard({ index }: { index: number }) {
@@ -150,17 +159,37 @@ function MisterCard({ index }: { index: number }) {
     <Link href="/mister" className="block h-full">
       <motion.article
         whileHover="hover"
-        className="group relative h-full overflow-hidden bg-[#000C1F] cursor-pointer"
+        className="group relative h-full overflow-hidden cursor-pointer bg-[#000C1F]"
       >
-        {/* Top border rule */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-[#C4933F]/15" />
+        {/* SVG illustration — mobile */}
+        <Image
+          src="/images/categories/mister-mobile.svg"
+          alt="Mister — Importación Personalizada"
+          fill
+          unoptimized
+          sizes="50vw"
+          className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05] md:hidden"
+        />
+        {/* SVG illustration — desktop */}
+        <Image
+          src="/images/categories/mister-desktop.svg"
+          alt="Mister — Importación Personalizada"
+          fill
+          unoptimized
+          sizes="(min-width: 768px) 25vw, 50vw"
+          className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05] hidden md:block"
+        />
 
-        {/* Editorial index */}
-        <span className="absolute right-4 top-4 font-mono text-[10px] tracking-widest-3 text-[#F8F6F0]/20 select-none">
-          {num}
-        </span>
+        {/* Bottom gradient — darker for legibility over illustration */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              'linear-gradient(to top, rgba(0,12,31,0.88) 0%, rgba(0,12,31,0.30) 50%, rgba(0,12,31,0.06) 100%)',
+          }}
+        />
 
-        {/* Ambient glow on hover */}
+        {/* Ambient gold glow on hover */}
         <motion.div
           className="absolute inset-0 pointer-events-none"
           initial={{ opacity: 0 }}
@@ -172,9 +201,14 @@ function MisterCard({ index }: { index: number }) {
           }}
         />
 
-        {/* Content */}
-        <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-6">
-          <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#C4933F]/50 mb-3">
+        {/* Editorial index */}
+        <span className="absolute right-4 top-4 font-mono text-[10px] tracking-widest-3 text-[#F8F6F0]/20 select-none">
+          {num}
+        </span>
+
+        {/* Bottom text overlay */}
+        <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6">
+          <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-[#C4933F]/60 mb-3">
             Asesor de Importación · IA
           </p>
           <motion.div
@@ -186,11 +220,8 @@ function MisterCard({ index }: { index: number }) {
           <h3 className="font-display text-xl text-[#F8F6F0] leading-tight md:text-2xl">
             Mister
           </h3>
-          <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.10em] text-[#F8F6F0]/40">
-            Importación Personalizada
-          </p>
           <motion.p
-            className="mt-3 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.15em] text-[#F8F6F0]/35"
+            className="mt-1.5 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.15em] text-[#F8F6F0]/35"
             variants={{ hover: { x: 4 } }}
             transition={{ duration: 0.22 }}
           >
@@ -226,7 +257,6 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
     transition: { duration: 0.65, ease: EASE, delay },
   })
 
-  // First 4 cards are above the fold on desktop — load eagerly
   const CARD_SIZES = '(min-width: 768px) 25vw, 50vw'
   const CARD_H     = 'h-[52vw] md:h-[28vw] md:max-h-[380px]'
 
@@ -255,9 +285,7 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
         </h2>
       </div>
 
-      {/* ── 4 × 2 uniform grid ─────────────────────────────────────────────── */}
-      {/* Row 1: agricola · buses · industrial · camiones                       */}
-      {/* Row 2: automoviles · repuestos · Mister (col-span-2)                  */}
+      {/* ── 4 × 2 uniform grid — all 8 cards equal ─────────────────────────── */}
       <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
 
         {all.map((cat, i) => (
@@ -275,16 +303,13 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
           </motion.div>
         ))}
 
-        {/* Mister — half-width on mobile, spans 2 cols on desktop */}
+        {/* Mister — position 8 */}
         <motion.div
           {...ENTER(all.length * 0.06)}
-          className={`col-span-1 md:col-span-2 ${CARD_H}`}
+          className={CARD_H}
         >
           <MisterCard index={all.length} />
         </motion.div>
-
-        {/* Mobile-only spacer — fills the empty 8th slot beside Mister */}
-        <div className={`md:hidden bg-[#000C1F] border-t border-[#C4933F]/10 ${CARD_H}`} aria-hidden />
 
       </div>
 
