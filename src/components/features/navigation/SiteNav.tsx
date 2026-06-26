@@ -69,9 +69,9 @@ export function SiteNav({ categories }: SiteNavProps) {
           <Link href="/" className="flex items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/wings-logo.svg"
+              src="/Wings-logo-imagotipo-color.svg"
               alt="Wings Global Trade"
-              className="h-8 w-auto brightness-0 invert md:h-10"
+              className="h-10 w-auto brightness-0 invert md:h-12"
             />
           </Link>
 

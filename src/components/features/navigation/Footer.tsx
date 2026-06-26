@@ -30,9 +30,9 @@ export function Footer({ categories }: FooterProps) {
           <div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/wings-logo.svg"
+              src="/Wings-logo-imagotipo-color.svg"
               alt="Wings Global Trade"
-              className="h-9 w-auto brightness-0 invert opacity-90"
+              className="h-11 w-auto brightness-0 invert opacity-90"
             />
             <p className="mt-4 max-w-xs font-display text-sm font-light italic leading-relaxed text-warm-white/30 tracking-wide">
               Importación técnica para el mercado latinoamericano. Zonas francas. Sin intermediarios.
