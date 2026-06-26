@@ -71,7 +71,7 @@ export function SiteNav({ categories }: SiteNavProps) {
             <img
               src="/Wings-logo-imagotipo-color.svg"
               alt="Wings Global Trade"
-              className="h-10 w-auto brightness-0 invert md:h-12"
+              className="h-12 w-auto brightness-0 invert md:h-14"
             />
           </Link>
 
