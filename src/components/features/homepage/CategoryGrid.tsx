@@ -49,11 +49,12 @@ const ORDERED_SLUGS = [
 interface CardProps {
   category: Category
   index: number
+  isHero?: boolean
   priority?: boolean
   sizes: string
 }
 
-function CategoryCard({ category, index, priority, sizes }: CardProps) {
+function CategoryCard({ category, index, isHero, priority, sizes }: CardProps) {
   const imgs = CATEGORY_IMAGES[category.slug]
   const num  = String(index + 1).padStart(2, '0')
 
@@ -95,7 +96,7 @@ function CategoryCard({ category, index, priority, sizes }: CardProps) {
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              'linear-gradient(to top, rgba(0,12,31,0.90) 0%, rgba(0,12,31,0.28) 48%, rgba(0,12,31,0.06) 100%)',
+              'linear-gradient(to top, rgba(0,12,31,0.78) 0%, rgba(0,12,31,0.22) 46%, rgba(0,12,31,0.04) 100%)',
           }}
         />
 
@@ -114,17 +115,18 @@ function CategoryCard({ category, index, priority, sizes }: CardProps) {
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
           />
           {/* Category name */}
-          <h3 className="font-display text-xl font-light text-warm-white leading-tight md:text-2xl">
+          <h3 className={`font-display text-warm-white leading-tight ${isHero ? 'text-2xl md:text-3xl' : 'text-xl md:text-2xl'}`}>
             {category.name_es}
           </h3>
           {/* CTA hint */}
           <motion.p
-            className="mt-1.5 font-mono text-[9px] uppercase tracking-[0.15em] text-warm-white/35"
+            className="mt-1.5 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.15em] text-warm-white/35"
             variants={{ hover: { x: 4 } }}
             style={{ color: 'rgba(248,246,240,0.35)' }}
             transition={{ duration: 0.22 }}
           >
-            Ver catálogo →
+            <span className="h-px w-3 bg-current shrink-0" aria-hidden />
+            Ver catálogo
           </motion.p>
         </div>
       </motion.article>
@@ -162,13 +164,13 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
     <div className="py-20 md:py-28 lg:py-32">
 
       {/* Section header */}
-      <div className="mb-10 md:mb-12">
+      <div className="mb-10 md:mb-14">
         <div className="wings-rule mb-6" />
         <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-navy/40 mb-3">
           Catálogo
         </p>
-        <h2 className="font-display text-display-md font-light text-navy leading-tight">
-          Equipamiento para <em className="not-italic text-gold">el trabajo real</em>
+        <h2 className="font-display text-display-md text-navy leading-tight">
+          Equipamiento para el trabajo real.
         </h2>
       </div>
 
@@ -186,6 +188,7 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
               <CategoryCard
                 category={cat0}
                 index={0}
+                isHero
                 priority
                 sizes="(min-width: 768px) 66vw, 100vw"
               />
@@ -208,13 +211,13 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
         </div>
 
         {/* Row 2 — automoviles · buses · industrial · repuestos (equal quarters) */}
-        <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2 md:grid-cols-2 lg:grid-cols-4">
           {([cat2, cat3, cat4, cat5] as (Category | undefined)[]).map((cat, i) =>
             cat ? (
               <motion.div
                 key={cat.id}
                 {...ENTER(i * 0.07)}
-                className="h-[80vw] md:h-[48vw] md:max-h-[460px] lg:h-[30vw] lg:max-h-[420px]"
+                className="h-[52vw] md:h-[48vw] md:max-h-[460px] lg:h-[30vw] lg:max-h-[420px]"
               >
                 <CategoryCard
                   category={cat}
@@ -246,11 +249,12 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
                   </h3>
                 </div>
                 <motion.span
-                  className="font-mono text-[11px] uppercase tracking-[0.12em] text-warm-white/30 shrink-0 ml-8"
+                  className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.12em] text-warm-white/30 shrink-0 ml-8"
                   variants={{ hover: { x: 6, color: 'rgba(196,147,63,0.9)' } }}
                   transition={{ duration: 0.22 }}
                 >
-                  Consultar →
+                  <span className="h-px w-4 bg-current shrink-0" aria-hidden />
+                  Consultar
                 </motion.span>
               </div>
 
