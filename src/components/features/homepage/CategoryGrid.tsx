@@ -161,14 +161,25 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
   })
 
   return (
-    <div className="py-20 md:py-28 lg:py-32">
+    <div>
 
-      {/* Section header */}
+      {/* Section header — two-column editorial meta bar */}
       <div className="mb-10 md:mb-14">
-        <div className="wings-rule mb-6" />
-        <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-navy/40 mb-3">
-          Catálogo
-        </p>
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="wings-rule" />
+            <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-navy/40">
+              Catálogo
+            </p>
+          </div>
+          <Link
+            href="/catalogo"
+            className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.10em] text-gold transition-colors hover:text-gold-hover shrink-0"
+          >
+            <span className="h-px w-3 bg-current" aria-hidden />
+            Ver todo el catálogo
+          </Link>
+        </div>
         <h2 className="font-display text-display-md text-navy leading-tight">
           Equipamiento para el trabajo real.
         </h2>

@@ -9,6 +9,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useRef, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { usePathname } from 'next/navigation'
 import { useComparison } from '@/hooks/useComparison'
 import { cn } from '@/lib/utils'
 
@@ -304,6 +305,7 @@ function DesktopCompareBar() {
 // ---------------------------------------------------------------------------
 
 export function CompareBar() {
+  const pathname = usePathname()
   const { items } = useComparison()
   const [isOpen, setIsOpen] = useState(false)
   const hasItems = items.length > 0
@@ -318,6 +320,10 @@ export function CompareBar() {
     }
     prevItemCount.current = items.length
   }, [items.length])
+
+  const isOnCatalog = pathname?.startsWith('/catalogo')
+  if (pathname?.startsWith('/repuestos')) return null
+  if (!isOnCatalog && !hasItems) return null
 
   return (
     <>
