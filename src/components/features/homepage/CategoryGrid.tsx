@@ -70,6 +70,7 @@ function CategoryCard({ category, index, priority, sizes }: CardProps) {
   const imgs = CATEGORY_IMAGES[category.slug]
   const num  = String(index + 1).padStart(2, '0')
   const isSvg = imgs?.mobile.endsWith('.svg')
+  const HOVER_TRANSITION = { duration: 0.7, ease: [0.16, 1, 0.3, 1] as const }
 
   return (
     <Link href={`/catalogo/${category.slug}`} className="block h-full">
@@ -77,31 +78,53 @@ function CategoryCard({ category, index, priority, sizes }: CardProps) {
         whileHover="hover"
         className="group relative h-full overflow-hidden cursor-pointer"
       >
-        {/* Photography — mobile */}
-        {imgs && (
-          <Image
-            src={imgs.mobile}
-            alt={category.name_es}
-            fill
-            sizes={sizes}
-            unoptimized={isSvg}
-            className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05] md:hidden"
-            style={{ objectPosition: imgs.objectPosition ?? 'center' }}
-            priority={priority}
-          />
+        {/* SVG illustrations — CSS background avoids rasterization gap artifacts */}
+        {imgs && isSvg && (
+          <>
+            <motion.div
+              className="absolute inset-0 md:hidden"
+              variants={{ hover: { scale: 1.05 } }}
+              transition={HOVER_TRANSITION}
+              style={{
+                backgroundImage: `url('${imgs.mobile}')`,
+                backgroundSize: 'cover',
+                backgroundPosition: imgs.objectPosition ?? 'center',
+              }}
+            />
+            <motion.div
+              className="absolute inset-0 hidden md:block"
+              variants={{ hover: { scale: 1.05 } }}
+              transition={HOVER_TRANSITION}
+              style={{
+                backgroundImage: `url('${imgs.desktop}')`,
+                backgroundSize: 'cover',
+                backgroundPosition: imgs.objectPosition ?? 'center',
+              }}
+            />
+          </>
         )}
-        {/* Photography — desktop */}
-        {imgs && (
-          <Image
-            src={imgs.desktop}
-            alt={category.name_es}
-            fill
-            sizes={sizes}
-            unoptimized={isSvg}
-            className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05] hidden md:block"
-            style={{ objectPosition: imgs.objectPosition ?? 'center' }}
-            priority={priority}
-          />
+        {/* Photography (JPG/PNG) — Next.js Image with optimization */}
+        {imgs && !isSvg && (
+          <>
+            <Image
+              src={imgs.mobile}
+              alt={category.name_es}
+              fill
+              sizes={sizes}
+              className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05] md:hidden"
+              style={{ objectPosition: imgs.objectPosition ?? 'center' }}
+              priority={priority}
+            />
+            <Image
+              src={imgs.desktop}
+              alt={category.name_es}
+              fill
+              sizes={sizes}
+              className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05] hidden md:block"
+              style={{ objectPosition: imgs.objectPosition ?? 'center' }}
+              priority={priority}
+            />
+          </>
         )}
         {/* Fallback when no image */}
         {!imgs && (
@@ -161,23 +184,26 @@ function MisterCard({ index }: { index: number }) {
         whileHover="hover"
         className="group relative h-full overflow-hidden cursor-pointer bg-[#000C1F]"
       >
-        {/* SVG illustration — mobile */}
-        <Image
-          src="/images/categories/mister-mobile.svg"
-          alt="Mister — Importación Personalizada"
-          fill
-          unoptimized
-          sizes="50vw"
-          className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05] md:hidden"
+        {/* SVG illustration — CSS background, no rasterization artifacts */}
+        <motion.div
+          className="absolute inset-0 md:hidden"
+          variants={{ hover: { scale: 1.05 } }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          style={{
+            backgroundImage: "url('/images/categories/mister-mobile.svg')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
         />
-        {/* SVG illustration — desktop */}
-        <Image
-          src="/images/categories/mister-desktop.svg"
-          alt="Mister — Importación Personalizada"
-          fill
-          unoptimized
-          sizes="(min-width: 768px) 25vw, 50vw"
-          className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05] hidden md:block"
+        <motion.div
+          className="absolute inset-0 hidden md:block"
+          variants={{ hover: { scale: 1.05 } }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          style={{
+            backgroundImage: "url('/images/categories/mister-desktop.svg')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
         />
 
         {/* Bottom gradient — darker for legibility over illustration */}
