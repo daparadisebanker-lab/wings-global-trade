@@ -9,10 +9,16 @@ import type { Category } from '@/types/database'
 // Per-category photography map — mobile and desktop variants
 // ---------------------------------------------------------------------------
 
-const CATEGORY_IMAGES: Record<string, { mobile: string; desktop: string }> = {
+const CATEGORY_IMAGES: Record<string, { mobile: string; desktop: string; objectPosition?: string }> = {
   'maquinaria-agricola': {
     mobile:  '/images/categories/agricola.png',
     desktop: '/images/categories/agricola-desktop.png',
+    objectPosition: 'center 65%',
+  },
+  automoviles: {
+    mobile:  '/images/categories/automoviles.jpg',
+    desktop: '/images/categories/automoviles.jpg',
+    objectPosition: 'center 55%',
   },
   camiones: {
     mobile:  '/images/categories/camiones.png',
@@ -35,8 +41,8 @@ const CATEGORY_IMAGES: Record<string, { mobile: string; desktop: string }> = {
 // Display order: agricola is always hero (row 1 wide card)
 const ORDERED_SLUGS = [
   'maquinaria-agricola',
-  'camiones',
   'automoviles',
+  'camiones',
   'buses',
   'equipo-industrial',
   'repuestos',
@@ -72,6 +78,7 @@ function CategoryCard({ category, index, isHero, priority, sizes }: CardProps) {
             fill
             sizes={sizes}
             className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05] md:hidden"
+            style={{ objectPosition: imgs.objectPosition ?? 'center' }}
             priority={priority}
           />
         )}
@@ -83,6 +90,7 @@ function CategoryCard({ category, index, isHero, priority, sizes }: CardProps) {
             fill
             sizes={sizes}
             className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05] hidden md:block"
+            style={{ objectPosition: imgs.objectPosition ?? 'center' }}
             priority={priority}
           />
         )}
@@ -188,7 +196,7 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
       {/* ── Editorial grid ──────────────────────────────────────────────── */}
       <div className="flex flex-col gap-2">
 
-        {/* Row 1 — hero (2 cols) + camiones (1 col) */}
+        {/* Row 1 — hero (2 cols) + automoviles (1 col) */}
         <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
           {/* Agrícola — hero card, double width */}
           {cat0 && (
