@@ -275,13 +275,16 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
           </motion.div>
         ))}
 
-        {/* Mister — last card, spans 2 columns to complete the row */}
+        {/* Mister — half-width on mobile, spans 2 cols on desktop */}
         <motion.div
           {...ENTER(all.length * 0.06)}
-          className={`col-span-2 ${CARD_H}`}
+          className={`col-span-1 md:col-span-2 ${CARD_H}`}
         >
           <MisterCard index={all.length} />
         </motion.div>
+
+        {/* Mobile-only spacer — fills the empty 8th slot beside Mister */}
+        <div className={`md:hidden bg-[#000C1F] border-t border-[#C4933F]/10 ${CARD_H}`} aria-hidden />
 
       </div>
 
