@@ -243,11 +243,9 @@ interface CategoryGridProps {
 }
 
 export function CategoryGrid({ categories }: CategoryGridProps) {
-  const sorted = ORDERED_SLUGS
+  const all = ORDERED_SLUGS
     .map((slug) => categories.find((c) => c.slug === slug))
     .filter(Boolean) as Category[]
-  const rest = categories.filter((c) => !ORDERED_SLUGS.includes(c.slug))
-  const all  = [...sorted, ...rest]
 
   const EASE = [0.16, 1, 0.3, 1] as const
   const ENTER = (delay = 0) => ({
