@@ -2,6 +2,8 @@
 
 // src/components/features/catalog/SubcategoryGateway.tsx
 // Icon card grid for subcategories not yet in the DB.
+// Mobile: horizontal scroll strip with peek (scroll-snap, 2.5 cards visible).
+// Desktop (sm+): 3/4-col stagger grid.
 // Each card routes to /mister?context=[pre-composed Spanish message].
 
 import Link from 'next/link'
@@ -10,12 +12,13 @@ import { CategoryIcon } from '@/components/features/homepage/CategoryIcon'
 import { SUBCATEGORY_CATALOG } from '@/lib/subcategory-catalog'
 
 // ---------------------------------------------------------------------------
-// Motion system
+// Motion constants
 // ---------------------------------------------------------------------------
 
 const ENTER: [number, number, number, number] = [0.0, 0.0, 0.2, 1.0]
+const TAP = { scale: 0.96, transition: { duration: 0.08 } }
 
-// Cards: staggered entrance via custom delay + hover y-lift
+// Desktop grid: staggered entrance + y-lift on hover
 const cardVariants: Variants = {
   hidden: { opacity: 0, y: 16 },
   visible: (i: number) => ({
@@ -29,17 +32,14 @@ const cardVariants: Variants = {
   },
 }
 
-// Icon: scale up on parent hover
 const iconVariants: Variants = {
   hover: { scale: 1.12, transition: { duration: 0.2, ease: ENTER } },
 }
 
-// CTA text: slide right on parent hover — reinforces directional intent
 const ctaVariants: Variants = {
   hover: { x: 3, transition: { duration: 0.15 } },
 }
 
-// Framer Motion-enhanced Link
 const MotionLink = motion(Link)
 
 // ---------------------------------------------------------------------------
@@ -83,7 +83,6 @@ export function SubcategoryGateway({
         className="mb-10"
       >
         <div className="mb-6 flex items-center gap-4">
-          {/* Gold rule — draws in from left after header arrives */}
           <motion.div
             initial={{ scaleX: 0 }}
             whileInView={{ scaleX: 1 }}
@@ -108,35 +107,67 @@ export function SubcategoryGateway({
         </p>
       </motion.div>
 
-      {/* Card grid — staggered entrance via custom delay index */}
+      {/* ── Mobile: horizontal scroll strip (sm:hidden) ─────────────────── */}
+      {/* 2.5 cards visible at 390px → peek signals "scroll right"          */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-40px' }}
+        transition={{ duration: 0.45, ease: ENTER, delay: 0.15 }}
+        className="no-scrollbar -mx-6 flex gap-2 overflow-x-auto pl-6 pb-2 sm:hidden"
+        style={{ scrollSnapType: 'x mandatory' }}
+      >
+        {inactiveEntries.map((entry) => (
+          <MotionLink
+            key={`mob-${entry.slug}`}
+            href={`/mister?context=${encodeURIComponent(entry.misterContext)}`}
+            whileTap={TAP}
+            style={{ scrollSnapAlign: 'start' }}
+            className="group flex w-36 shrink-0 flex-col items-center gap-3 border border-[rgba(0,30,80,0.09)] px-3 pb-5 pt-6 text-center transition-colors duration-150 active:border-navy active:bg-navy"
+          >
+            <CategoryIcon
+              iconKey={entry.iconKey}
+              className="h-6 w-6 shrink-0 text-navy/40 transition-colors duration-150 group-active:text-gold"
+            />
+            <span className="font-mono text-[10px] uppercase leading-snug tracking-[0.10em] text-navy/60 transition-colors duration-150 group-active:text-warm-white">
+              {entry.name_es}
+            </span>
+            <span className="flex items-center gap-1.5 font-mono text-[8px] uppercase tracking-[0.18em] text-gold/50 transition-colors duration-150 group-active:text-gold/90">
+              <span className="h-px w-2 bg-current shrink-0" aria-hidden />
+              Consultar
+            </span>
+          </MotionLink>
+        ))}
+        {/* Trailing spacer: gives last card right breathing room */}
+        <div className="w-4 shrink-0" aria-hidden />
+      </motion.div>
+
+      {/* ── Desktop: staggered 3/4-col grid (hidden on mobile) ──────────── */}
       <motion.div
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: '-40px' }}
-        className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4"
+        className="hidden sm:grid sm:grid-cols-3 sm:gap-2 lg:grid-cols-4"
       >
         {inactiveEntries.map((entry, i) => (
           <MotionLink
-            key={entry.slug}
+            key={`desk-${entry.slug}`}
             href={`/mister?context=${encodeURIComponent(entry.misterContext)}`}
             variants={cardVariants}
             custom={i}
             whileHover="hover"
+            whileTap={TAP}
             className="group flex flex-col items-center gap-3 border border-[rgba(0,30,80,0.09)] px-4 pb-5 pt-6 text-center transition-colors duration-200 hover:border-navy hover:bg-navy"
           >
-            {/* Icon — scales up on hover */}
             <motion.div variants={iconVariants}>
               <CategoryIcon
                 iconKey={entry.iconKey}
                 className="h-6 w-6 shrink-0 text-navy/40 transition-colors duration-200 group-hover:text-gold"
               />
             </motion.div>
-
             <span className="font-mono text-[10px] uppercase leading-snug tracking-[0.10em] text-navy/60 transition-colors duration-200 group-hover:text-warm-white">
               {entry.name_es}
             </span>
-
-            {/* CTA — slides right on hover to reinforce directional intent */}
             <motion.span
               variants={ctaVariants}
               className="flex items-center gap-1.5 font-mono text-[8px] uppercase tracking-[0.18em] text-gold/40 transition-colors duration-200 group-hover:text-gold/80"
@@ -148,7 +179,7 @@ export function SubcategoryGateway({
         ))}
       </motion.div>
 
-      {/* Footnote — fades in after last card */}
+      {/* Footnote — delayed fade after cards settle */}
       <motion.p
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
