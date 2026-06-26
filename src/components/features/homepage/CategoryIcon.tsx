@@ -47,6 +47,11 @@ const paths: Record<string, React.ReactNode> = {
       <path d="M12 3l2.5 5.5L20 11l-5.5 2.5L12 19l-2.5-5.5L4 11l5.5-2.5z" />
     </>
   ),
+  plus: (
+    <>
+      <path d="M12 5v14M5 12h14" />
+    </>
+  ),
   // --- New category icon keys (0006_expand_categories) ---
   motorcycle: (
     <>

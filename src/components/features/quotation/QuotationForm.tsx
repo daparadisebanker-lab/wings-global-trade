@@ -9,18 +9,19 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { useToast } from '@/components/ui/toast'
 import { REVEAL } from '@/lib/motion'
+import { CategoryIcon } from '@/components/features/homepage/CategoryIcon'
 
 // ---------------------------------------------------------------------------
 // Data — category tiles and product suggestions
 // ---------------------------------------------------------------------------
 
 const CATEGORIES = [
-  { slug: 'maquinaria-agricola', label: 'Maquinaria Agrícola', icon: '🌾' },
-  { slug: 'camiones',            label: 'Camiones',            icon: '🚛' },
-  { slug: 'buses',               label: 'Buses',               icon: '🚌' },
-  { slug: 'equipo-industrial',   label: 'Equipo Industrial',   icon: '⚙️'  },
-  { slug: 'repuestos',           label: 'Repuestos',           icon: '🔩'  },
-  { slug: 'otro',                label: 'Otro / No sé',        icon: '+'   },
+  { slug: 'maquinaria-agricola', label: 'Maquinaria Agrícola', iconKey: 'tractor'  },
+  { slug: 'camiones',            label: 'Camiones',            iconKey: 'truck'    },
+  { slug: 'buses',               label: 'Buses',               iconKey: 'bus'      },
+  { slug: 'equipo-industrial',   label: 'Equipo Industrial',   iconKey: 'gear'     },
+  { slug: 'repuestos',           label: 'Repuestos',           iconKey: 'parts'    },
+  { slug: 'otro',                label: 'Otro / No sé',        iconKey: 'plus'     },
 ] as const
 
 type CategorySlug = typeof CATEGORIES[number]['slug']
@@ -186,7 +187,7 @@ export function QuotationForm() {
                     : 'border-[rgba(0,30,80,0.10)] text-navy/60 hover:border-gold/30 hover:text-navy',
                 )}
               >
-                <span className="text-lg" aria-hidden>{c.icon}</span>
+                <CategoryIcon iconKey={c.iconKey} className="h-5 w-5 shrink-0" />
                 <span className="font-mono text-[10px] uppercase leading-tight tracking-[0.10em]">
                   {c.label}
                 </span>
