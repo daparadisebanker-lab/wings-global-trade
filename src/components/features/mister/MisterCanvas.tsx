@@ -120,7 +120,8 @@ export function MisterCanvas({ isLoading, messageCount, category }: MisterCanvas
       cancelAnimationFrame(rafId)
       ro.disconnect()
     }
-  }, []) // category/profile are URL-derived and stable for component lifetime
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- category is URL-derived, stable for lifetime; restarting RAF on change would flash the canvas
+  }, [])
 
   if (shouldReduceMotion || !canRender) return null
 
