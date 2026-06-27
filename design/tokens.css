@@ -1,0 +1,219 @@
+/**
+ * Wings Global Trade — Design Tokens
+ * Audit output: Brand Universe AUDIT mode
+ * Source: /spec/design-system.md + /src/app/globals.css + tailwind.config.ts
+ * Standard: D&AD / Cannes Lions
+ * Date: 2026-06-19
+ *
+ * This file is the single authoritative token source.
+ * Import order: tokens.css → globals.css (which extends these).
+ */
+
+:root {
+
+  /* ============================================================
+     BRAND PRIMITIVES
+     The three-color system is correct and ownable.
+     Navy + Gold + Warm White forms a palette with genuine
+     differentiation in the trade/logistics category.
+     ============================================================ */
+
+  --color-navy:              #001E50;   /* Primary — deep sovereign blue */
+  --color-navy-light:        #0A2560;
+  --color-navy-dark:         #001040;
+  --color-navy-900:          #000C1F;
+  --color-navy-950:          #00070F;
+
+  --color-gold:              #C4933F;   /* Accent — warm amber, not commodity yellow */
+  --color-gold-hover:        #D4A84F;
+  --color-gold-active:       #A6751A;
+  --color-gold-muted:        rgba(196, 147, 63, 0.12);
+  --color-gold-subtle:       rgba(196, 147, 63, 0.06);
+
+  --color-warm-white:        #F8F6F0;   /* Background — paper, not screen */
+
+  /* ============================================================
+     SURFACES
+     Hierarchy: warm-white (page) > surface-card (components)
+     > navy (sections, Blueprint panel)
+     ============================================================ */
+
+  --color-surface-page:          #F8F6F0;   /* Product detail page bg */
+  --color-surface-card:          #FAF9F6;   /* Component surfaces on warm-white */
+  --color-surface-passport:      #F5F0E8;   /* ProductPassport — aged parchment */
+  --color-surface-navy-panel:    #001E50;   /* Blueprint DataLayer panel */
+  --color-surface-chat-user:     #F0EDE6;
+  --color-surface-overlay:       rgba(0, 30, 80, 0.72);
+
+  /* ============================================================
+     TEXT
+     AUDIT FINDING: --color-text-muted is currently #6B7280
+     in the spec but rgba(0,30,80,0.45) in globals.css.
+     These must be unified. The navy-derived value is correct —
+     warm palette demands navy-derived muted tones, not Tailwind gray.
+     ============================================================ */
+
+  --color-text-primary:          #001E50;
+  --color-text-inverse:          #F8F6F0;
+  --color-text-muted:            rgba(0, 30, 80, 0.45);      /* navy-derived — NOT #6B7280 */
+  --color-text-muted-inverse:    rgba(248, 246, 240, 0.45);
+  --color-text-mono:             rgba(0, 30, 80, 0.65);
+  --color-text-ghost:            rgba(0, 30, 80, 0.30);      /* ultra-subtle labels */
+
+  /* ============================================================
+     BORDERS
+     AUDIT FINDING: --color-border-default is #E5E7EB in spec
+     (Tailwind gray) but should be navy-derived.
+     Cold gray borders contaminate the warm palette system.
+     ============================================================ */
+
+  --color-border-default:        rgba(0, 30, 80, 0.10);      /* Correct: navy-derived */
+  --color-border-strong:         rgba(0, 30, 80, 0.22);
+  --color-border-gold:           #C4933F;
+  --color-border-gold-muted:     rgba(196, 147, 63, 0.22);
+  --color-border-focus:          rgba(196, 147, 63, 0.40);
+  --color-border-navy:           rgba(248, 246, 240, 0.12);  /* on navy bg */
+  --color-border-navy-strong:    rgba(248, 246, 240, 0.22);
+
+  /* ============================================================
+     TYPOGRAPHY
+     Three-font system with clear role separation.
+     Cormorant Garamond: editorial authority, display weight only.
+     Flexo: operational body — proprietary, gives Wings a voice
+             no competitor can replicate (key differentiator).
+     DM Mono: data layer — all numerics, labels, codes.
+
+     AUDIT FINDING: Flexo is self-hosted which is correct and
+     highly valuable. It is the ONE typographic element that makes
+     Wings visually non-generic. Protect this at all costs.
+     Do not fall back to system-ui in any user-visible context.
+     ============================================================ */
+
+  --font-display:    'Cormorant Garamond', Georgia, serif;
+  --font-body:       'Flexo', 'Flexo-fallback', system-ui, sans-serif;
+  --font-mono:       'DM Mono', 'Courier New', monospace;
+
+  /* Display scale — Cormorant Garamond, editorial proportions */
+  --text-display-xl:   clamp(3.5rem, 7vw, 6.5rem);    /* Hero only */
+  --text-display-lg:   clamp(2.5rem, 5vw, 4.5rem);
+  --text-display-md:   clamp(1.875rem, 3.5vw, 3rem);
+  --text-display-sm:   clamp(1.5rem, 2.5vw, 2.25rem); /* Product name */
+
+  /* Body scale — Flexo */
+  --text-body-lg:      1.125rem;   /* 18px */
+  --text-body-md:      1rem;       /* 16px */
+  --text-body-sm:      0.875rem;   /* 14px */
+
+  /* Mono scale — DM Mono */
+  --text-mono-lg:      1rem;       /* 16px — CIF values */
+  --text-mono-md:      0.875rem;   /* 14px — data labels */
+  --text-mono-sm:      0.75rem;    /* 12px — fine data */
+  --text-mono-xs:      0.625rem;   /* 10px — stamp-level labels */
+
+  /* Label scale */
+  --text-label-lg:     0.875rem;
+  --text-label-md:     0.8125rem;
+  --text-label-sm:     0.75rem;
+
+  /* Letter spacing for stamp/code contexts */
+  --tracking-stamp:    0.18em;
+  --tracking-wide:     0.12em;
+  --tracking-nav:      0.10em;
+  --tracking-code:     0.08em;
+
+  /* ============================================================
+     SPACING — 4px base unit
+     ============================================================ */
+
+  --space-1:    4px;
+  --space-2:    8px;
+  --space-3:    12px;
+  --space-4:    16px;
+  --space-5:    20px;
+  --space-6:    24px;
+  --space-8:    32px;
+  --space-10:   40px;
+  --space-12:   48px;
+  --space-16:   64px;
+  --space-20:   80px;
+  --space-24:   96px;
+  --space-section: clamp(4rem, 8vw, 7rem);
+
+  /* ============================================================
+     SHAPE
+     2px radius is the correct system-level decision.
+     It signals precision without being cold.
+     Zero radius would read as brutalist; 4px+ reads as generic SaaS.
+     ============================================================ */
+
+  --radius-sm:     2px;   /* Buttons, badges, inputs — the Wings radius */
+  --radius-md:     2px;   /* Cards */
+  --radius-lg:     4px;   /* Modal containers (slightly more approachable) */
+
+  /* ============================================================
+     SHADOW
+     AUDIT FINDING: Current shadow values use rgba(0,0,0,...)
+     which reads as cold/generic. Navy-derived shadows align
+     with the warm palette and communicate brand origin in the
+     depth layer — the Hermès approach to shadow color.
+     ============================================================ */
+
+  --shadow-card:         0 1px 2px rgba(0, 30, 80, 0.04), 0 4px 16px rgba(0, 30, 80, 0.06);
+  --shadow-card-hover:   0 4px 24px rgba(0, 30, 80, 0.10), 0 12px 48px rgba(0, 30, 80, 0.08);
+  --shadow-gold:         0 0 0 1px rgba(196, 147, 63, 0.25), 0 4px 20px rgba(196, 147, 63, 0.12);
+  --shadow-passport:     0 2px 8px rgba(0, 30, 80, 0.08);  /* Document elevation */
+
+  /* ============================================================
+     MOTION
+     The spring easing (0.16, 1, 0.3, 1) used in BlueprintDataLayer
+     is the only spring in the system. This is correct — reserve
+     spring for the highest-drama moments only. Everything else
+     uses ease-out or standard ease.
+     ============================================================ */
+
+  --easing-spring:    cubic-bezier(0.16, 1, 0.3, 1);  /* Blueprint panel entry */
+  --easing-out:       cubic-bezier(0, 0, 0.2, 1);
+  --easing-standard:  cubic-bezier(0.25, 0.1, 0.25, 1.0);
+
+  --duration-fast:    0.15s;
+  --duration-normal:  0.25s;
+  --duration-medium:  0.35s;
+  --duration-slow:    0.5s;
+  --duration-reveal:  0.6s;
+
+  /* ============================================================
+     INDICATORS — Lead / TPR status
+     These three colors (gold, amber, green) sit outside the core
+     3-color brand palette. They are functional, not brand.
+     Use only for status states — never for decoration.
+     ============================================================ */
+
+  --color-indicator-captured:   #C4933F;   /* Gold — captured = brand color */
+  --color-indicator-minimum:    #F59E0B;   /* Amber — threshold state */
+  --color-indicator-complete:   #16A34A;   /* Green — completion */
+  --color-indicator-pending:    #D1D5DB;   /* Gray — unresolved */
+
+  /* Status colors — lead pipeline only */
+  --color-status-new:           #C4933F;
+  --color-status-contacted:     #2563EB;
+  --color-status-qualified:     #16A34A;
+  --color-status-closed-won:    #15803D;
+  --color-status-closed-lost:   #6B7280;
+
+  /* ============================================================
+     PRINT / DOCUMENT ARTIFACT TOKENS
+     Used in ProductPassport, BlueprintDataLayer, JumpNavigation.
+     These create the "technical document" visual language —
+     the brand's core differentiation from generic e-commerce.
+     ============================================================ */
+
+  --document-rule-weight:    0.5px;
+  --document-rule-color:     rgba(0, 30, 80, 0.10);
+  --document-rule-color-dark: rgba(196, 147, 63, 0.20);
+  --document-label-size:     9px;
+  --document-stamp-size:     7px;
+
+  /* Grid line colors for Blueprint panel drafting paper */
+  --blueprint-grid-major:    rgba(196, 147, 63, 0.08);
+  --blueprint-grid-minor:    rgba(196, 147, 63, 0.03);
+}

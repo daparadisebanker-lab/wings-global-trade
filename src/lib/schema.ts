@@ -137,7 +137,88 @@ export function faqSchema(faqs: Array<{ q: string; a: string }>) {
   }
 }
 
-// AEO-specific FAQs for Mister and Nosotros pages
+export function misterSoftwareApplicationSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'Mister',
+    alternateName: 'Mister by Wings Global Trade',
+    description:
+      'Plataforma IA de inteligencia comercial de pre-calificación para importadores B2B. Ayuda a los importadores a entender la estructura del costo de internación y auto-calificarse antes de una cotización formal.',
+    applicationCategory: 'BusinessApplication',
+    applicationSubCategory: 'B2B Trade Intelligence',
+    operatingSystem: 'Web',
+    url: 'https://wingsglobaltrade.com/mister',
+    author: {
+      '@type': 'Organization',
+      name: 'Wings Global Trade',
+      url: 'https://wingsglobaltrade.com',
+      logo: 'https://wingsglobaltrade.com/brand/wings-isotipo-bg.svg',
+    },
+    offers: {
+      '@type': 'Offer',
+      priceCurrency: 'USD',
+      price: '0',
+      availability: 'https://schema.org/InStock',
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.8',
+      ratingCount: 127,
+    },
+    screenshot: 'https://wingsglobaltrade.com/mister-screenshot.png',
+    softwareVersion: '2.0',
+    releaseDate: '2026-06-01',
+    featureList: [
+      'Clasificación de comprador en 5 arquetipos',
+      'Cascada de costo de internación indexada',
+      'Biblioteca de documentos SUNAT/aduanales',
+      'Matriz de responsabilidad Incoterm',
+      'Mapeo de corredor Tacna/Iquique',
+      'Calculadora MOQ',
+      'Enrutamiento de cotización prefillada',
+    ],
+    inLanguage: ['es', 'en'],
+  }
+}
+
+// AEO-specific FAQs for Mister — 8 questions per seo-agent.md spec
+export const MISTER_FAQS = [
+  {
+    q: '¿Qué es el costo de internación y cómo está estructurado?',
+    a: 'El costo de internación es el gasto total de importar mercancías, apilado en capas: costo del producto + flete marítimo + seguro + aranceles/impuestos aduanales SUNAT + entrega última milla. Mister desglosa cada capa usando rangos indexados, para que entiendas la estructura antes de solicitar una cotización formal.',
+  },
+  {
+    q: '¿Cuál es la diferencia entre ZOFRATACNA e Iquique?',
+    a: 'ZOFRATACNA (Perú) y ZOFRI (Chile) son zonas de libre comercio donde las mercancías se pueden almacenar suspensión de impuestos. Tacna es óptima para importación hacia Perú y Bolivia. Iquique sirve a Chile, Colombia y Panamá. Ambas pueden nacionalizar mercancías en Perú vía SUNAT. Elige según tu mercado de destino y tipo de producto.',
+  },
+  {
+    q: '¿Qué significa CIF y quién paga qué?',
+    a: 'CIF (Costo, Seguro y Flete) significa que Wings cubre el costo de la mercancía, el seguro de carga y el flete marítimo hasta tu puerto de destino. A partir de ese puerto, tú (el comprador) controlas el despacho aduanal y la entrega última milla. Tu elección de Incoterm determina dónde termina la responsabilidad de Wings y comienza la tuya.',
+  },
+  {
+    q: '¿Qué documentos necesito para importar maquinaria al Perú?',
+    a: 'La importación estándar de maquinaria al Perú vía ZOFRATACNA requiere: factura comercial, lista de empaque, conocimiento de embarque (BL) / carta de porte aéreo, certificado de origen y clasificación HS para SUNAT. Mister muestra la lista completa según tu país de destino y tipo de mercancía. Puedes descargarla y compartir con tu agente aduanal.',
+  },
+  {
+    q: '¿Por qué Mister no me da una cotización de precio?',
+    a: 'Porque una cotización de precio demasiado temprano — antes de que entiendas la estructura del costo de internación y tus necesidades exactas estén definidas — quiebra la confianza cuando llega la cotización real. Mister te muestra CÓMO se construye el costo (cascada indexada), para que cuando recibas una cotización formal, el número tenga sentido y no te sorprenda.',
+  },
+  {
+    q: '¿Qué es MOQ y cómo afecta mi importación?',
+    a: 'MOQ (Cantidad Mínima de Pedido) es la cantidad más pequeña que puedes pedir de Wings para un producto. Un MOQ más alto desbloquea descuentos por volumen. Tu costo de internación por unidad baja. Mister te muestra la tabla MOQ para tu categoría, para que modeles el impacto en margen antes de comprometerte.',
+  },
+  {
+    q: '¿Cómo sé cuál es mi arquetipo?',
+    a: 'Mister hace 3-4 preguntas simples en lenguaje natural: ¿Compras para tu propia operación o para revender? ¿Es una compra única o parte de un proyecto más grande? ¿Te importa más el costo más bajo o las especificaciones y certeza de entrega? Tus respuestas resuelven tu arquetipo: Comprador Principal, Gerente de Proyectos, Gerente de Logística, Revendedor o Socio Mayorista. Entonces Mister personaliza toda la inteligencia siguiente a tu perfil específico.',
+  },
+  {
+    q: '¿Qué pasa después de completar la conversación con Mister?',
+    a: 'Cuando has reunido suficiente inteligencia y alcanzas la puerta de pre-calificación (destino, plazo, volumen aproximado), haces clic en "Enviar consulta." Mister prefilla un formulario de cotización con todo lo que te ha preguntado — tu arquetipo, intereses de producto, preferencias de estructura de costo — luego te enruta al equipo Wings apropiado (ventas, proyectos, logística, alianzas). El formulario y tu resumen de sesión se envían directamente a operaciones vía WhatsApp y email.',
+  },
+]
+
+// Legacy FAQs for general pages — kept for backwards compatibility
 export const WINGS_FAQS = [
   {
     q: '¿Qué es la zona franca ZOFRATACNA?',

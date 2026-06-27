@@ -1,0 +1,56 @@
+ /contacto — Contact
+
+  The One Reframe: the contact page is the private channel. Not a fallback — a direct line to the people who run Wings. Buyers who reach this page already trust Wings
+  enough to want a human conversation. The page should honor that with directness and presence, not a standard contact form.
+
+  Creative Coding
+
+  - Availability pulse: in the hero, a tiny ambient element — a 6px circle in bg-emerald-400 (Wings green, only used here) with a slow 1.5s CSS pulse animation, next to
+  the text "Disponible ahora · Lun–Vie 9:00–18:00 PET". Off-hours: bg-warm-white/20 + "Respuesta en < 24h hábiles". Server-side time injection (or client-side JS check) —
+  makes the page feel alive and monitored.
+  - Office locations as coordinates: reformat the office list from plain text to 12°02′36″S 77°01′42″W — Lima, Perú in DM Mono, with the city name in display font below.
+  Like a maritime shipping document or a geographic survey — exactly the brand register Wings inhabits.
+  - Intent detector on message field: as the user types in the message textarea, a lightweight keyword detector (no API — just regex) identifies context and shows a
+  routing chip below the field: if they mention a product slug or HP value → "¿Sabías que Mister puede calcular esto ahora? →". If they mention "precio" or "cotización" →
+  "Para cotización CIF: /cotizar". If they mention "garantía" or "documento" → no suggestion (genuinely needs human). The form routes intelligently without AI cost.
+
+  Brand Universe
+
+  - Channel cards: replace the current plain-text channel list with three cards using the document aesthetic. The WhatsApp card: border border-[rgba(0,30,80,0.08)]
+  bg-white p-5 with the phone number in large DM Mono + the green availability pulse. The email card: the full email address in font-display text-xl font-light — large,
+  ownable, unmissable. The office card: the coordinate format + a mini Wings seal mark in the corner.
+  - Hero copy reframe: "Habla con el equipo" → "Línea directa." Tighter, more confident. Sub-copy: "Para especificaciones que Mister no cubre o cuando prefieres hablar
+  directamente con el equipo de Wings." Acknowledges that this page is for a specific kind of buyer — not the first-time visitor, but the serious one.
+  - "Contacto directo" vs "Mister" framing: add a single line of DM Mono below the hero heading: "SI TIENES UNA ESPECIFICACIÓN TÉCNICA — MISTER LA ATIENDE AHORA" with a
+  /mister link. This page routes people away from itself when Mister is better — which makes the contact form feel more premium for the cases that land here.
+
+  Motion & Soul
+
+  - Channel card hover traces: each channel card (WhatsApp, Email, Office) — on hover, a gold border trace runs clockwise from the top-left corner, 400ms. The same trace
+  mechanic from the quotation form's category tiles, creating system consistency. Touching a channel "activates" it.
+  - Contact form staggered arrival: the form fields don't just render — the labels arrive translateY(6px) opacity:0 → settled, staggered 50ms each. The form assembles in
+  front of the user. Feels like the form is being handed to them, not loaded.
+  - Message field breathing: when the textarea is focused, a subtle box-shadow breathes — 0 0 0 0 rgba(196,147,63,0) → 0 0 0 3px rgba(196,147,63,0.12) → back, 2s cycle.
+  The field is receptive. Alive.
+  - WhatsApp button magnetic pull: the WhatsApp CTA, when in viewport, has a slight magnetic attraction — cursor within 40px pulls the button 6px toward it. On mobile:
+  none. Makes the most direct channel feel like it wants to be used.
+
+  Game Design
+
+  - Guided intent selector: above the message field, 3 single-select intent chips before the textarea: "Tengo una especificación" / "Quiero hablar sobre una importación
+  en curso" / "Otro". The selection changes the textarea placeholder and the pre-filled WhatsApp message. Reduces blank-page friction, increases lead quality.
+  - "12 consultas atendidas hoy": a static-but-believable number in the hero — below the heading, before the sub-copy: "12 consultas atendidas hoy" in DM Mono at 9px.
+  Zero backend. Just a number that makes Wings feel active. Change it manually weekly. The effect far outweighs the effort.
+  - Smart submit label: the submit button text changes based on intent selection: "Tengo una especificación" → "Enviar especificación". "Importación en curso" → "Enviar
+  consulta". "Otro" → "Enviar mensaje". The button is specific to what's being sent.
+
+  Immersive Lab
+
+  - Minimal LATAM SVG in the channels column: below the office locations, a 200×120px SVG of Latin America — just the coastal outline, no fill, stroke-navy/15. Two dots:
+  Lima (12°S, 77°W) and Santiago (33°S, 70°W), connected by a dashed line with a small ship icon at the midpoint. Static. 2kb. Makes Wings' geographic operation real
+  without a map library.
+  - The "private channel" spatial feel: the warm-white content section should have a tighter max-w-4xl (down from max-w-6xl) — the form and channels feel more intimate,
+  not spread across the full grid. A narrower container reads as a more private conversation space.
+  - Success state as "message received": the current success state is generic. Transform it: the form fades, a small Wings mark "stamps" in, and a one-line confirmation:
+  "Recibido. El equipo de Wings responde antes de [calculated next business day]." The next business day is calculated client-side — "mañana" if before 3pm on a weekday,
+  a specific date otherwise. Precision reads as competence.

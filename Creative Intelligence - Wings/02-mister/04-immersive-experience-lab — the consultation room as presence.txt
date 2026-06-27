@@ -1,0 +1,18 @@
+Immersive Experience Lab — The consultation room as presence
+
+  The spatial question: what does it feel like to be in this room?
+
+  Not like using an app. Like sitting across from someone who knows more than you about importing from China, and they're doing the work in real-time while you talk.
+
+  - Full-dark consultation: convert the inner chat panel to dark — bg-navy/90 or bg-[#000C1F]. Warm-white text on dark navy. The conversation lives in a contained beam.
+  The ambient noise field is visible in the dark background. The TprSheet on the right has a slightly lighter dark background (bg-navy/50) — the document area has more
+  light than the conversation area.
+  - The spatial hierarchy: on desktop, the conversation column is narrower than the TprSheet — max-w-lg vs w-96. The document being built (TPR) gets more visual
+  real-estate than the conversation producing it. This inverts the typical chat-sidebar hierarchy and signals that the output is what matters.
+  - Presence cues: Mister has a subtle "breathing" dot next to its name in the header — a 2px circle that pulses at 0.6 Hz when idle, stops when Mister is thinking, and
+  switches to a solid gold dot when Mister has something to say. Tiny. Unavoidable. Makes Mister feel present.
+  - "Campo de inspección" overlay: when a TPR field is captured, the user can hover any field in the TprSheet to see what Mister understood + what was said that produced
+  it. A tooltip expanding from the field showing the conversation extract. The document is traceable to the conversation.
+  - The exit experience: when the consultation is submitted, Mister delivers a closing line in its own voice — not a generic "Gracias por tu consulta" system message, but
+  something like: "El equipo de Wings revisará la ficha. Referencia: WGT-2847. Responden en menos de 24 horas hábiles." And then the interface quietly dims — the
+  conversation is over, the document has been sent. No CTAs. No "explore the catalog." The room closes.

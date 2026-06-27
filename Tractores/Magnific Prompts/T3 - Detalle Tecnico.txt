@@ -1,0 +1,176 @@
+════════════════════════════════════════════════════════════
+WINGS GLOBAL TRADE — TRACTORES
+TERRITORY 3: DETALLE TÉCNICO
+Uso: 3–5 imágenes de apoyo en la página de detalle, después de las specs.
+Convierte al comprador que ya está comparando — prueba visual de ingeniería.
+════════════════════════════════════════════════════════════
+
+INSTRUCCIÓN: Fotografías macro/close-up de componentes específicos.
+Luz difusa (nublado suave o sombra abierta). El componente llena el
+80% del cuadro. Foco nítido sobre el detalle. Cada foto = un argumento.
+
+════════════════════════════════════════════════════════════
+DETALLE 1: MOTOR / COMPARTIMENTO DEL MOTOR
+════════════════════════════════════════════════════════════
+
+Close-up photograph of an agricultural tractor engine bay with the hood
+raised and propped open. The engine block is clean and detailed — visible
+engine manufacturer badge, fuel injection components, air filter housing,
+cooling system hoses. Camera positioned directly above and slightly in
+front, looking down into the bay at 45 degrees. Flat diffuse overcast
+light, no harsh shadows inside the bay. The metal surfaces show authentic
+engineering quality: cast iron, aluminum covers, rubber hoses, steel
+brackets. Sharp focus on the center engine block, slight natural falloff
+toward the edges. Commercial automotive engine documentation photography,
+photorealistic, highly detailed surface texture rendering, clean workshop
+quality.
+
+Negative prompt: dirty or oil-stained engine, dark unlit bay, harsh, readable text, legible text, brand name text, model number text, distorted logo, hallucinated writing, visible letters on bodywork
+shadows, blurry, HDR, watermark, text overlay, wide shot showing
+the whole tractor.
+
+
+════════════════════════════════════════════════════════════
+DETALLE 2: ENGANCHE HIDRÁULICO TRASERO + TDF
+════════════════════════════════════════════════════════════
+
+Close-up photograph of an agricultural tractor rear hydraulic three-point
+hitch system. The lower link arms are in the lowered position, hydraulic
+rams visible. The PTO shaft stub is visible at center. Hydraulic remote
+coupling sockets visible at right side. Camera at low angle looking up
+slightly at the rear hitch assembly — the implement coupling architecture
+fills the frame. Flat diffuse light, no harsh shadows, pale ground surface
+visible below. The casting quality of the lift arms and the precision of
+the hydraulic cylinder is clearly visible. Commercial agricultural
+equipment close-up photography, photorealistic, sharp metal and casting
+texture, accurate rendering of hydraulic components.
+
+Negative prompt: full tractor visible, wide shot, dark, blurry, HDR,, readable text, legible text, brand name text, model number text, distorted logo, hallucinated writing, visible letters on bodywork
+watermark, warm golden light, people.
+
+
+════════════════════════════════════════════════════════════
+DETALLE 3: NEUMÁTICO TRASERO — PERFIL DE BANDA
+════════════════════════════════════════════════════════════
+
+Extreme close-up photograph of an agricultural tractor rear tire —
+the massive chevron lug pattern in sharp focus. Camera positioned
+at ground level looking directly at the sidewall and tread, low angle.
+The tire occupies the entire frame. The tread depth and lug size
+communicate gripping power. The soil caught between the lugs shows
+authentic field use. Afternoon diffuse light, slight shadow in the
+lug valleys creating natural depth perception. The tire size marking
+on the sidewall is legible. Automotive tire close-up photography,
+photorealistic, sharp rubber texture detail, authentic soil traces
+in tread pattern.
+
+Negative prompt: full tractor visible, wide shot, HDR, watermark,, readable text, legible text, brand name text, model number text, distorted logo, hallucinated writing, visible letters on bodywork
+clean perfect tire with no use, artificial studio light.
+
+
+════════════════════════════════════════════════════════════
+DETALLE 4: CABINA — INTERIOR (salpicadero + consola)
+════════════════════════════════════════════════════════════
+
+Interior photograph of an agricultural tractor cab, looking in through
+the open front door. The instrument cluster and dashboard fill the center
+of the frame: speedometer, tachometer, warning lights, digital display
+panel if present. The steering wheel is visible at bottom. Gear lever and
+PTO control levers visible to the right. The seat is visible behind the
+steering column. Natural diffuse daylight entering through the cab glass
+— no flash, no artificial interior light. The materials show quality:
+molded plastic panels, rubberized controls, fabric or vinyl seat.
+Commercial agricultural cab interior documentation photography,
+photorealistic, sharp on instrument cluster, authentic interior quality
+rendering.
+
+Negative prompt: dark cab, flash photography, harsh reflections on glass,, readable text, legible text, brand name text, model number text, distorted logo, hallucinated writing, visible letters on bodywork
+blurry, HDR, watermark, fish-eye lens distortion, exterior tractor visible.
+
+
+════════════════════════════════════════════════════════════
+DETALLE 5: PANEL DE CONTROL — CONSOLA LATERAL
+════════════════════════════════════════════════════════════
+
+Close-up of the tractor cab right-side control console — the operational
+brain of the machine. Hydraulic flow control levers, PTO engagement
+switch, differential lock, creeper gear selector, remote valve controls.
+Camera looking down at the console from driver's eye perspective, slightly
+from the right. Flat soft light entering from the cab windows. The labels
+on each control are legible. Metal and plastic textures clearly visible.
+Switches and levers are in neutral/parked position. Commercial control
+system documentation photography, photorealistic, sharp on control
+labels and lever positions.
+
+Negative prompt: blurry, dark, HDR, watermark, wide cab interior shot,, readable text, legible text, brand name text, model number text, distorted logo, hallucinated writing, visible letters on bodywork
+hands operating the controls, flash glare.
+
+
+════════════════════════════════════════════════════════════
+PROMPT UNIVERSAL PARA DETALLE GENÉRICO
+(cuando no tienes clara la toma — úsalo como base)
+════════════════════════════════════════════════════════════
+
+A close-up macro photograph of an agricultural tractor mechanical
+component. The component fills 80% of the frame. Flat diffuse overcast
+light with no harsh shadows. Razor-sharp focus on the subject with
+subtle natural depth-of-field falloff at the extreme edges only.
+The texture of cast iron, machined steel, rubber, or chrome is
+photorealistic and highly detailed. No motion. Clean component,
+no excessive dirt. Commercial agricultural equipment documentation
+photography, technical precision, authentic material rendering.
+
+Negative prompt: wide shot, full tractor visible, HDR, watermark,, readable text, legible text, brand name text, model number text, distorted logo, hallucinated writing, visible letters on bodywork
+text, blur, harsh shadows, dark.
+
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+LOGOS Y NÚMEROS DE MODELO — REGLA CRÍTICA
+════════════════════════════════════════════════════════════
+
+LOS MODELOS DE IA NO PUEDEN RENDERIZAR TEXTO NI LOGOS CORRECTAMENTE.
+No intentes que Magnific genere el logo de la marca ni el número de modelo.
+Siempre saldrán distorsionados, ilegibles o inventados.
+
+WORKFLOW CORRECTO:
+  1. Genera la imagen del cuerpo/contexto de la máquina en Magnific
+     sin ningún texto visible ni logo prominente en el frame.
+  2. Exporta la imagen a 4:3 desde Magnific.
+  3. Abre en Canva / Photoshop / Affinity Photo.
+  4. Superpón el logo de la marca (PNG con fondo transparente) y el
+     número de modelo como texto en la posición correcta sobre la máquina.
+  5. Exporta el resultado final como JPG o PNG.
+
+AÑADE SIEMPRE A TU NEGATIVE PROMPT:
+  readable text, legible text, brand name text, model number text,
+  alphanumeric labels on machine, visible letters on bodywork,
+  distorted text, blurry logo, hallucinated writing, text overlay,
+  watermark text, decal text
+
+════════════════════════════════════════════════════════════
+════
+CONFIGURACIÓN MAGNIFIC RECOMENDADA
+════════════════════════════════════════════════════════════
+
+Creativity:   1 – 2
+              (mínimo — estos prompts son DOCUMENTALES, no artísticos.
+               La máquina real es la que manda.)
+
+Resemblance:  8 – 9
+              (máxima fidelidad al componente fotografiado)
+
+HDR:          OFF
+
+Fractality:   Low
+
+Engine:       Automatic / Photo
+
+Aspect ratio: 1:1 o 4:3 (cuadrado o casi cuadrado — los detalles
+               no necesitan formato panorámico)
+
+Nota importante: Territory 3 es para SUBIR resolución y mejorar
+detalle superficial de fotos reales. Si la foto del componente ya
+es buena, Magnific solo necesita escalarla. Usa estos prompts para
+guiar el realce de texturas metálicas y de goma.
+
+════════════════════════════════════════════════════════════

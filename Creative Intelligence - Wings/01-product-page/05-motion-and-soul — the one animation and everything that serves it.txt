@@ -1,0 +1,28 @@
+ Motion & Soul — The One Animation and everything that serves it
+
+  The One Animation for Wings: the Variant Selection Ceremony — when a user picks a variant, every changed spec cell transitions simultaneously. Old value
+  exits upward, new value enters from below, 30ms stagger per cell, HP meter re-runs, passport badge updates with a micro-burst. This moment should feel
+  like configuring a machine, not clicking a table row.
+
+  Everything else serves this:
+
+  - Page Entrance Choreography: product name arrives word by word from left at 60ms stagger. Eyebrow label fades up 200ms before the name starts. Gallery
+  slides in from top simultaneously. Passport "stamps" in from the right at 400ms with a rotation: -1° → 0° as it lands. The whole page assembles over
+  800ms.
+  - Spec Scanner on Scroll: gold scan line sweeps down the spec table on useInView trigger. Each row highlights as it crosses — 20ms stagger. Feels like
+  reading a document being processed.
+  - Magnetic Inquiry CTA: the "Solicitar cotización" button has a 20px magnetic pull when cursor enters 60px radius. The button follows the cursor slightly
+  (lerp 0.15). Makes clicking feel inevitable — the button wants to be pressed.
+  - HP Meter Overshoot: the dot overshoots the target by 4–6% and settles back with spring physics. The bar lands 80ms after the dot. Small physics,
+  enormous feel.
+  - Section Revealer: each major section (specs, use cases) has a thin warm-white overlay that slides up and off on viewport entry, like pulling back a
+  cover sheet. 600ms, ease-out.
+  - Gallery Depth Parallax: product image moves at 0.75x scroll speed, background layer at 0.45x — foreground/mid/back without any 3D.
+  - Number Cascade: all spec values (not just HP) count up from 0 on entry, but with different durations based on value magnitude — small numbers finish
+  fast, large numbers take longer. The table feels alive with computation.
+  - Ambient Spec Pulse: the "decision specs" (HP, payload) have a barely perceptible 0.002 scale oscillation on a 4s sine loop. You feel the machine
+  breathing without being able to identify why.
+  - Form Ceremony on Completion: when all required fields are valid simultaneously, the submit button border traces gold from 0% to 100% over 600ms. When
+  submitted, a stamp animation — the confirmation mark presses down with a slight compression and release.
+  - Paper Sound: on passport "stamp" entrance and on form submission success, a < 50kb audio clip of paper/stamp. Off by default, opt-in. Not a notification
+  sound — a material sound.

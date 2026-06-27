@@ -1,0 +1,13 @@
+Brand Universe — The product page as authenticated document
+
+  - Provenance Ribbon: a thin horizontal band running across the full width, charting the supply chain visually — factory pin (China/Japan) → port of origin
+  → zona franca node → destination country. Pure SVG, no 3D, but gives the product a geographic identity it currently lacks entirely.
+  - Trade Intelligence Line: below the product name, a single data line — "Modelo con mayor demanda en importaciones de mini camiones, ZOFRATACNA 2023." Not
+  real-time, but editable per product — makes the page feel like it comes from inside knowledge, not a general catalog.
+  - "Blueprint Mode" toggle: one button, full-page aesthetic shift — navy background, warm-white monoline technical drawing style, all spec typography in
+  caps/mono, grid overlay. Like switching from the sales sheet to the engineering document. The same information, felt completely differently.
+  - Authentication Mark: each product gets a generated seal — product slug + category code + origin market + a small geometric motif derived from the specs.
+  Not a logo, not a badge — a mark. Like a Lloyd's certificate mark or a Carfax seal. Goes in the passport bottom-right corner.
+  - "Ficha de inspector": the passport card redesigned to feel like a physical customs inspection document — perforated edge simulation in CSS, slight warm
+  tint, dot-matrix reference number at top. The B2B buyer fantasy: this is an official document, not a product listing.
+

@@ -1,264 +1,311 @@
-# Wings Global Trade — ENRICHED SPEC (v2)
+# MISTER — ENRICHED MASTER SPEC (Builder's single source of truth)
 
-> **Authority:** This document supersedes the original `/spec/` files for Phase 2 implementation.
-> It synthesizes the contributions of the full 13-agent council. Where it conflicts with v1 spec
-> files, this document wins. Where a contribution file (`/spec/contributions/*.md`) gives more
-> granular detail, defer to it. Builder reads this first, then the relevant contribution file.
->
-> **Prime directive:** Enhance the existing v1 codebase at `C:\Users\Muaaz\projects\wings-global-trade`.
-> Do not break existing functionality. Do not rename routes, slugs, or data keys. Apply the
-> council's intelligence as a refinement layer over working code.
+**Synthesized by the Conductor from 12 council contributions + MISTER_MASTER_BRIEF.md**
+**Session:** mister-v2-20260627 · **Decision:** A — REPLACE (the indexed-range trade-intelligence Mister supersedes the CIF-estimate calculator)
+**Status:** Build authoritative. Where this doc and a contribution disagree, THIS doc wins. Where this doc is silent, the named contribution is authoritative.
 
----
-
-## 0. NON-NEGOTIABLE CONSTRAINTS (read before touching code)
-
-1. **Do not change category slugs.** The codebase, data, icons, and SEO all use:
-   `maquinaria-agricola`, `camiones`, `buses`, `equipo-industrial`, `repuestos`.
-   The ia-architect proposed `camiones-vehiculos` / `equipamiento-industrial` — **REJECT those.**
-   Display labels may differ from slugs (label "Camiones y Vehículos" → slug `camiones`).
-2. **"Motor Accio" is the Spanish UI name** for the AI flow. Never "Accio Engine", "chatbot",
-   "asistente", or "IA" in user-facing Spanish copy. Code identifiers stay English (`AccioChat`, `/accio`).
-3. **No 3D / WebGL / Lottie / GSAP / video backgrounds.** Immersion is CSS + SVG + rAF only.
-   Framer Motion is the only motion library. Total added JS from immersion = 0 KB.
-4. **No exclamation marks anywhere in Spanish copy.** No "solución", "plataforma" (standalone),
-   "innovador", "disruptivo". `te` (tuteo), never `usted`.
-5. **Conversion is the north star.** Inquiry conversion rate. Every change must serve a buyer
-   reaching a submission faster, with more trust. Nothing decorative.
-6. **TypeScript everywhere, pnpm, Tailwind utilities, `@/` imports, server-only secrets/AI calls.**
+> Authoritative source files (read directly when building the relevant area):
+> - Visual: `spec/contributions/designer.md`
+> - Copy: `spec/contributions/copywriter.md`
+> - UX: `spec/contributions/experience.md`
+> - Motion: `spec/contributions/animator.md`
+> - IA / state machine: `spec/contributions/ia-architect.md`
+> - AI architecture: `spec/contributions/ai-engineer.md`
+> - Financial display: `spec/contributions/finance.md`
+> - Learning UX: `spec/contributions/educator.md`
+> - Engagement: `spec/contributions/game-designer.md`
+> - SEO/AEO: `spec/contributions/seo-agent.md`
+> - Brand: `spec/contributions/brand-strategist.md`
+> - Campaign: `spec/contributions/campaigner.md`
+> - Product brief: `spec/MISTER_MASTER_BRIEF.md`
 
 ---
 
-## 1. GOVERNING THESIS (brand-strategist + designer)
+## 1. BUILD CONTEXT
 
-**Visual thesis:** *Trade intelligence visualized at the precision of a customs manifest, with the warmth of a handshake.* Every screen reads like **a trade document that has been designed** — documentation-grade precision (DM Mono, exact numbers, tight grids) plus human proximity (warm paper tones, serif headlines, real market names).
+### 1.1 What exists (live, on Vercel)
+The deployed Mister at `/mister` is a **TPR → CIF-estimate** flow (the OLD product):
+- `src/components/features/mister/`: `MisterChat.tsx`, `MisterCanvas.tsx`, `MisterWaveform.tsx`, `MisterInput.tsx`, `MisterMessage.tsx`, `MisterSubmitForm.tsx`; `src/components/features/shared/MisterDeadEnd.tsx`
+- `src/hooks/useMisterChat.ts`, `useMisterWaveform.ts` (+ `useTprState`, `useCifEstimate` referenced in CLAUDE.md)
+- `src/app/api/mister/chat/route.ts`, `estimate/route.ts`, `submit/route.ts`
+- `src/lib/mister-knowledge.ts`, `src/lib/cif-calculator.ts`, `src/lib/duty-rates.ts`, `src/lib/claude.ts` (`MISTER_SYSTEM_PROMPT`)
+- `src/types/mister.ts`
+- Model: `claude-haiku-4-5` (chat) + `claude-sonnet-4-6` (estimate)
+- DB: `mister_projects` (formerly `accio_projects`), `leads`, `categories`, `products`, `notification_log`
 
-**Category Wings defines:** *Operador Comercial Digital* (The Digital Trade Operator) — not a marketplace, not a directory, not a broker. The first LATAM B2B trade platform with a managed free-zone AI engine in the discovery layer.
+### 1.2 Decision A — what changes
+The new Mister is the **indexed-range trade-intelligence layer** from `MISTER_MASTER_BRIEF.md`. It **NEVER renders an absolute price** — only indexed ranges on base 100. Therefore:
+- **RETIRE from the Mister surface:** `CifEstimateCard`, `src/lib/cif-calculator.ts`, `useCifEstimate`, `/api/mister/estimate`. (Removing absolute-USD output is the entire point of decision A.) Mark deprecated/removed; do not leave them wired into any Mister path. `duty-rates.ts` may remain only as reference data for indexed duty ranges, but no code path may produce an absolute duty figure.
+- **REBUILD** the component tree and API per the brief (Deliverable 7) and the contributions.
+- **MODEL:** `claude-sonnet-4-6` for the conversation (the brief mandates it). No second pricing/estimation model call.
 
-**The ONE ownable thing:** *Wings publishes the CIF estimate before you call them.* No competitor does this. The CIF card must feel like a Bloomberg terminal, not a price-quote widget — every number justified, source market explicit, free zone named.
+### 1.3 Hard, non-negotiable constraints (enforced at type + prompt + server level)
+1. No absolute price/total/FOB/CIF/DDP figure, ever. Indexed ranges only, always `[low, high]`, always with a disclaimer.
+2. No availability/lead-time speculation. Route to human.
+3. Route when uncertain. Ambiguity = escalation, not invention.
+4. No tool exists that returns a quotable number (`fetchPrice`/`getLeadTime`/`fetchStock`/`getAvailability` are deliberately absent — architectural anti-price guarantee).
+5. One resolved `archetype` per session; tone/content adapt to it.
 
-**Thought-leadership belief:** *"El margen se pierde entre el proveedor y el puerto — no en la fábrica."* Importers lose 15–40% of margin in the logistics/customs corridor. The free zone is a structural advantage they don't know they can access.
+### 1.4 Conventions (project CLAUDE.md — non-negotiable)
+TypeScript strict everywhere · pnpm only · functional components · Tailwind utilities only (CSS vars for tokens; no inline styles) · `@/` absolute imports · 2-space · camelCase/PascalCase/kebab-case · async errors always handled · secrets only in `.env.local` · Supabase service-role key server-side only · RLS on every table · Claude key server-side only · UI copy es-PE primary (EN parity strings provided) · no exclamation marks · no emojis.
 
-**Voice:** Direct. Operational. Earned. Peer-to-peer (senior buyer to senior trade partner).
+### 1.5 RESOLVED font decision (was a 3-way conflict)
+Mister inherits the **live repo font variables**: `--font-display` (NissanOpti, weight 400 only), `--font-body` (Flexo, full range), `--font-mono` (Teko, condensed, 300–700). **No new `next/font` imports. Never use `--font-playfair` (dead).** Ignore the global CLAUDE.md Cormorant/DM Sans stack and the IBM Plex Serif spec-doc stack — the live globals.css is the truth. The existing `.mister` Teko legibility-floor override in globals.css is correct; do not alter it.
 
 ---
 
-## 2. VISUAL SYSTEM (designer + brand-strategist + immersion)
+## 2. VISUAL SYSTEM (designer + brand-strategist — authoritative: designer.md)
 
-### 2.1 Color tokens — extend `tailwind.config.ts` + `globals.css`
+### 2.1 Visual thesis
+**"A certified trade document that happens to respond in real time."** Brand thesis: every pixel Mister owns is indistinguishable from a certified trade document in the hands of a very senior specialist. This is testable: screenshot a MisterMessage, print it — does it read as a certified trade document? If no, it's wrong.
 
-Keep all existing tokens. ADD:
+### 2.2 Killed (chatbot conventions — do not build any of these)
+Rounded bubble messages · AI avatar · ellipsis typing indicator · pastel quick-action chips · any "friendly chatbot" element · gradients/glow inside the window · emoji.
+
+### 2.3 The single distinctive decision — Document Entry Format
+Every assistant message carries a two-digit **turn index** ("01","02"…) in a fixed 32px left-margin column (Teko 300 11px, `--mister-text-ghost`), with a 2px vertical gold rule (`--mister-rule-assistant`) running the message height at x=24px. The transcript reads as a numbered consultation record. User messages are warm-paper right-aligned rectangular blocks (max 72% width). No avatars, no name labels — the left-rule + warm paper ARE the identity signals.
+
+### 2.4 Color tokens — paste into `:root` in `src/styles/globals.css` after existing Phase 2A tokens
 ```css
---color-gold-subtle:        rgba(196,147,63,0.12);  /* highlight rows, free-zone chip */
---color-surface-overlay:    rgba(0,30,80,0.72);     /* modal/drawer scrim */
---color-border-focus:       rgba(196,147,63,0.40);  /* focus ring color */
---color-navy-light:         #002266;
---color-navy-dark:          #001040;
+/* Mister Design Tokens — extend Wings Phase 2A · source: spec/contributions/designer.md */
+:root {
+  /* Window structure */
+  --mister-bg-window:#000C1F; --mister-bg-header:#001E50; --mister-bg-composer:#000C1F;
+  --mister-bg-inset:#040F22; --mister-bg-message-user:#F0EDE6; --mister-bg-hover-subtle:rgba(248,246,240,0.03);
+  /* Text — dark */
+  --mister-text-primary:#F8F6F0; --mister-text-secondary:rgba(248,246,240,0.60);
+  --mister-text-muted:rgba(248,246,240,0.35); --mister-text-ghost:rgba(248,246,240,0.15);
+  /* Text — warm paper */
+  --mister-text-user:#001E50; --mister-text-user-muted:rgba(0,30,80,0.35);
+  /* Gold — semantic */
+  --mister-gold:#C4933F; --mister-gold-annotation:rgba(196,147,63,0.75);
+  --mister-gold-rule:rgba(196,147,63,0.15); --mister-gold-rule-strong:rgba(196,147,63,0.30);
+  --mister-gold-fill:rgba(196,147,63,0.06); --mister-gold-fill-active:rgba(196,147,63,0.10);
+  --mister-gold-duties:rgba(196,147,63,0.08);
+  /* Borders */
+  --mister-border-window:rgba(196,147,63,0.15); --mister-border-surface:rgba(248,246,240,0.10);
+  --mister-border-row:rgba(248,246,240,0.06); --mister-border-input:rgba(248,246,240,0.12);
+  --mister-border-focus:rgba(196,147,63,0.50);
+  /* Message left rules */
+  --mister-rule-assistant:rgba(196,147,63,0.18); --mister-rule-assistant-hover:rgba(196,147,63,0.40);
+  /* Quick actions */
+  --mister-qa-border:rgba(196,147,63,0.22); --mister-qa-border-hover:rgba(196,147,63,0.55);
+  --mister-qa-bg-hover:rgba(196,147,63,0.06);
+  /* LandedCostWaterfall */
+  --mister-wf-bg:#001040; --mister-wf-strip-product:rgba(248,246,240,0.08);
+  --mister-wf-strip-freight:rgba(248,246,240,0.06); --mister-wf-strip-insurance:rgba(248,246,240,0.04);
+  --mister-wf-strip-duties:rgba(196,147,63,0.08); --mister-wf-strip-lastmile:rgba(248,246,240,0.04);
+  --mister-wf-separator:rgba(196,147,63,0.12); --mister-wf-base:#C4933F; --mister-wf-value:#F8F6F0;
+  --mister-wf-total-separator:rgba(196,147,63,0.30);
+  /* Launcher */
+  --mister-launcher-bg:#001040; --mister-launcher-border:rgba(196,147,63,0.22);
+  --mister-launcher-border-hover:rgba(196,147,63,0.55);
+  /* Status */
+  --mister-status-unresolved:rgba(248,246,240,0.25); --mister-status-resolved:#C4933F; --mister-status-captured:#C4933F;
+  /* Elevation */
+  --mister-shadow-window:0 8px 48px rgba(0,0,0,0.40),0 0 0 1px rgba(196,147,63,0.12);
+  --mister-shadow-surface:0 2px 12px rgba(0,0,0,0.24);
+  /* Spacing */
+  --mister-space-xs:4px; --mister-space-sm:8px; --mister-space-md:16px; --mister-space-lg:20px;
+  --mister-space-xl:28px; --mister-space-message-group:20px; --mister-space-message-internal:8px; --mister-space-same-role:4px;
+  /* Window dims */
+  --mister-window-width:420px; --mister-window-height:680px; --mister-window-header-height:48px;
+  --mister-window-composer-height:56px; --mister-launcher-width:96px; --mister-launcher-height:36px; --mister-margin-column:32px;
+}
 ```
-Tailwind `colors` should expose nested `gold: { DEFAULT, hover, active, subtle }` and `navy: { DEFAULT, light, dark }` (additive — do not remove flat `gold`/`navy` already used).
 
-### 2.2 Typography scale (apply as Tailwind `fontSize` + utility classes)
+### 2.5 Typography (full scale in designer.md §3)
+- **NissanOpti** (`--font-display`, weight 400 only): product-name headers inside surfaces ONLY (ProductCard 18px, SpecSheet title 20px, ComparisonView col header 15px). Not the window title, not CTAs.
+- **Flexo** (`--font-body`): all conversational/human text — assistant msg 14px/1.65, user msg 14px/1.50, quick-action label 12px/500, CTA label 13px/600 navy-on-gold, tooltips 11px/300.
+- **Teko** (`--font-mono`, tabular-nums always): all numbers/codes/labels — window title "MISTER" 13px/500/0.12em upper, turn index 11px/300, waterfall values 16px/500, waterfall total 20px/700, HS/Incoterm inline 13px, eyebrows 10px/500 upper.
 
-| Token | Font | Size | Weight | Line | Tracking |
-|---|---|---|---|---|---|
-| display-xl | Cormorant | clamp(3rem,5vw,5rem) | 600 | 1.05 | -0.02em |
-| display-lg | Cormorant | clamp(2.25rem,4vw,3.75rem) | 600 | 1.1 | -0.015em |
-| display-md | Cormorant | clamp(1.875rem,3vw,2.5rem) | 400 | 1.15 | -0.01em |
-| display-sm | Cormorant | clamp(1.5rem,2.5vw,2rem) | 400 | 1.2 | 0 |
-| body-lg | Flexo | 1.125rem | 400 | 1.6 | 0 |
-| body-md | Flexo | 1rem | 400 | 1.5 | 0 |
-| body-sm | Flexo | 0.875rem | 400 | 1.45 | 0 |
-| label-lg | Flexo | 0.875rem | 500 | 1 | 0.01em |
-| label-md | Flexo | 0.8125rem | 500 | 1 | 0.01em |
-| label-sm | Flexo | 0.75rem | 500 | 1 | 0.08em (UPPERCASE) |
-| mono-lg | DM Mono | 1rem | 500 | 1.3 | 0 |
-| mono-md | DM Mono | 0.875rem | 400 | 1.4 | 0 |
-| mono-sm | DM Mono | 0.75rem | 300 | 1.4 | 0 |
+### 2.6 Component aesthetic (full detail designer.md §4 — build to these)
+- **MisterLauncher:** 96×36px rectangular tab (NOT a circle/pill), bottom-right 24px, navy-dark bg, 1px gold border, "MISTER" Teko upper. 4px gold square corner-marker appears once archetype resolved. radius 2px. Only border-color transitions.
+- **MisterWindow:** floating 420×680 (mobile: full-width − 16px gutters, full-height − 80px) / embedded full-width natural height. bg `--mister-bg-window`, 1px `--mister-border-window`, **radius 0**, shadow only floating. No backdrop blur. Structure: Header | MessageList | QuickActions(floated bottom of list) | Composer.
+- **MisterHeader:** 48px, navy bg, 1px gold bottom rule. Left: "MISTER" + "by Wings Global Trade" (10px muted). Right: session ref "WGT-XXXX" (ghost→gold on resolve) + 4px gold square + minimize (−) + close (×), 1px strokes, no fill. No logo mark.
+- **MisterMessage assistant:** 32px left-margin column with turn index + 2px gold left-rule; transparent bg; Flexo 14px/1.65; inline numbers switch to Teko 13px; trade terms first-use get gold underline; timestamp Teko 9px ghost bottom-right; no avatar/name.
+- **MisterMessage user:** right-aligned, max 72%, warm-paper `#F0EDE6` bg, navy text, radius 0, no border.
+- **MisterQuickActions:** 3 transparent tags, 28px tall, 1px gold border, radius 2, Flexo 12px/500, no icons. Hover bg+border gold. Aligned to message content (offset past margin column).
+- **MisterComposer:** 56px, top 1px gold rule (→ strong on focus), bg flush with window, bare input (no element border), bare "→" send (Teko 16px, muted→gold when text present).
+- **ProductCard / ComparisonView / SpecSheet / MoqTable / ContactCard / DocumentLink / QuotationForm CTA:** document-grammar surfaces, `--mister-bg-inset`, 1px surface borders, radius 0, header bands navy + gold rule. ContactCard gets 3px gold left accent (it IS the handoff). QuotationForm CTA: pre-fill summary strip (Teko collected fields) + full-width 44px gold button navy text "Generar cotización prefilled" + "<24h" subline. Full specs designer.md §4.
+- **LandedCostWaterfall (signature):** see §8.
 
-**Typographic fingerprint:** category overlines (`MAQUINARIA AGRÍCOLA`) = `label-sm` + uppercase + 0.08em. Use this overline pattern on every section header and product category context.
-
-### 2.3 THE distinctive visual decision
-**Gold top-border reveal on hover for every card** (category tiles, product cards, feature cards): initial `border-top: 2px solid transparent` → `#C4933F` on hover, `transition: border-top-color 0.15s ease`. This is the platform's visual signature — makes gold feel earned, not decorative.
-
-### 2.4 Grid & rhythm
-- Max content width `max-w-7xl` (1280px), `mx-auto`, `px-4 sm:px-6 lg:px-8`.
-- Product/category grids: `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`, gap-6/gap-4.
-- Section padding `py-20 md:py-28`.
-- **Section alternation** navy ↔ warm-white, never two same adjacent, footer always navy.
-
-### 2.5 Imagery & icons
-- Documentary machinery photography, no people in hero (equipment is hero). Hero uses CSS gradient mesh + grain, no photo.
-- Product images `aspect-ratio: 4/3`, `object-fit: cover`.
-- Icons: existing category SVGs in `/public/icons/**`; supplementary icons via Lucide, 1.5px stroke, rounded caps, no fill, 24px. Never mix icon styles per screen.
-- Alt text: Spanish, specific (model + context).
-
-### 2.6 Immersion layer (immersion-engineer) — CSS/SVG only, 0 KB JS added
-- **Hero:** layered navy = base `#001E50` + two `radial-gradient` mesh light sources + static SVG `feTurbulence` grain at ~4% opacity + 1px gold `border-bottom` at 0.15 opacity. (Exact gradient values in immersion-engineer.md §1.)
-- **Hero text:** word-by-word stagger, `letterSpacing 0.08em→0` + opacity, 60ms stagger, 0.4s each. "Precisión" renders gold; "Proximidad. Confianza." warm-white. SearchBar enters last.
-- **MarketMap (THE signature moment):** inline SVG LATAM map. Active markets filled navy @8%, inactive @3%. Gold destination pins with staggered `<animate>` pulse (r 6→10, cascading begin 0–2.4s north→south). Source-market square markers (China/Japan/Thailand/Dubai) in DM Mono. Freight-corridor bezier arcs `stroke #C4933F` dashed, animated `stroke-dashoffset` 3s loop = "freight in transit". IntersectionObserver gates play-state, `once`. `role="img"` + title/desc. Full reduced-motion static fallback.
-- **TrustBar:** zone identity cards (DM Mono), rAF count-up on numeric figures (0→value, 800ms, ease-out cubic, gold mono-lg).
-- **Product card hover:** existing lift + source badge translateY(-2px) + image `scale(1.03)` 300ms.
-- **TPR progress track:** 2px bar atop TprSheet, gold fill `width = captured/total`, 0.6s ease-out.
+### 2.7 Grid/spacing — designer.md §5
+Window h-padding 20px; left margin column 32px; content width = window − 20 − 32 = 368px floating. Spacing tokens above.
 
 ---
 
-## 3. COPY SYSTEM (copywriter + brand-strategist) — apply verbatim
+## 3. COMPLETE COPY (copywriter — authoritative: copywriter.md; financial copy reconciled with finance.md)
 
-### 3.1 Tagline
-Primary: **Precisión. Proximidad. Confianza.** Secondary claim (Motor Accio only): **El precio CIF antes de la primera llamada.**
+All user-facing strings exist es-PE (primary) + EN in copywriter.md. Builder lifts strings from there. Key indexed items:
+- **Q0 opening** (induction): elevated version in copywriter.md (canonical verb "route"). EN + es-PE.
+- **20 CTAs** (5 archetypes × 4 stages) with firing conditions — copywriter.md.
+- **60 quick-action labels** (3 × 4 stages × 5 archetypes) as lift-ready string tables — copywriter.md. These feed both the model's `quick_actions` and the 25-set fallback (§7.4).
+- **Empty/error/placeholder states** including the guardrail-deflection message ("I don't generate prices — that's by design, not a limitation" + Schwartz-style benefit close) — copywriter.md.
+- **Financial copy:** waterfall header/footer/segment labels/tooltips/micro-disclaimer + the 5 DisclaimerId strings. CANONICAL strings live in finance.md §2/§11 and `WATERFALL_COPY`; copywriter.md improved `duties`/`handoff` wording — use the finance.md `DISCLAIMERS` record values (already incorporate the HS/SUNAT + active-construction improvements). es-PE display strings from copywriter.md.
+- **Voice rules:** 5 ALWAYS / 5 NEVER (paste into system-prompt annotation + QA rubric) — copywriter.md.
+- Copy rules: es-PE default, no exclamation marks, no emoji, lead with the answer.
 
-### 3.2 Navigation labels
-`Inicio` · `Catálogo` (dropdown) · `Motor Accio` · `Nosotros` · `Contacto` · CTA `Consultar por WhatsApp` (rightmost).
-Catalog dropdown labels→slugs: `Maquinaria Agrícola`→maquinaria-agricola · `Camiones y Vehículos`→camiones · `Buses`→buses · `Equipamiento Industrial`→equipo-industrial · `Repuestos`→repuestos.
+---
 
-### 3.3 Page heroes (use PRIMARY option; alternates in copywriter.md)
-- **Home H1:** "Importación técnica para el mercado latinoamericano." Sub: "Catálogo curado de maquinaria agrícola, camiones, buses y equipamiento industrial — con acceso a zona franca en ZOFRATACNA y ZOFRI para importaciones de volumen."
-- **Catálogo H1:** "Catálogo Wings — [Categoría]". Sub: "[N] modelos de origen [mercados]. Solicitud de consulta sin cuenta requerida."
-- **Product H1:** "[Modelo]". Sub: "[Categoría] · Origen: [Mercado] · Disponible vía ZOFRATACNA / ZOFRI".
-- **Accio H1:** "Importación gestionada desde zona franca." Sub: "El Motor Accio reúne tu Requisito Técnico de Producto y calcula un estimado CIF real — vía ZOFRATACNA (Tacna, Perú) o ZOFRI (Iquique, Chile). Sin llamadas previas."
-- **Nosotros H1:** "Operadores de comercio. No intermediarios."
-- **Contacto H1:** "Habla con el equipo."
+## 4. UX FLOWS (experience — authoritative: experience.md; journeys also in ia-architect.md)
 
-### 3.4 CTAs (action + outcome — exact strings)
-Home: `Explorar catálogo` / `Iniciar consulta técnica`. Accio tile: `Calcular mi importación`. Product card: `Ver especificaciones`. Product detail: `Solicitar este modelo`. Inquiry submit: `Enviar solicitud de consulta`. Accio after minimum: `Ver mi estimado CIF`. Accio submit: `Enviar consulta técnica`. Nav WhatsApp: `Consultar por WhatsApp`. Footer WhatsApp: `Abrir conversación en WhatsApp`.
+- **5 archetype journeys** mapped beat-by-beat (entry → induction → discovery → consideration → pre-qual gate → escalation/handoff) in experience.md. A5 is ALWAYS human-mediated at pre-qual (no auto-quote path).
+- **Floating vs embedded:** embedded pre-binds `current_product`, compresses induction to one product-anchored question, skips induction for returning sessions; floating runs full induction from zero context.
+- **Mobile:** drawer opens upward from bottom; keyboard active suppresses swipe-to-close; quick actions pinned above composer at bottom of scrollable transcript; narrow screens scroll the action row horizontally (do not wrap). Build on existing repo mobile keyboard/drawer/dvh fixes.
+- **Trust architecture:** six sequential mechanisms (expertise-before-answer induction Q; precise follow-ups proving retention; externalized session memory; price-refusal+waterfall converting disappointment to understanding; naming limits to build credibility; pre-filled handoff proving the session's value). experience.md.
+- **Friction audit:** 9 abandonment points + design response. Highest risk: (a) price refusal and (b) handoff-feels-like-a-drop — BOTH require response + recovery in the SAME turn (waterfall appears WITH the refusal; system message appears WITH the WhatsApp link).
+- **THE single most important moment:** the first `LandedCostWaterfall` render in response to a price question. It must arrive as the same SSE surface event that closes the streaming reply (no extra turn), Mister must name the user's dominant cost driver (specific to `collected`, not generic), and the 3 quick actions are `explain_cost`, `open_quotation`, `connect_whatsapp` in that order.
 
-### 3.5 Motor Accio opening message (hardcoded first assistant turn)
+---
+
+## 5. MOTION SYSTEM (animator — authoritative: animator.md; variants exported to `src/lib/mister/motion.ts`)
+
+- **Personality:** Deliberate. Weighted. Final. Banned: overshoot, spring, bounce, hover-scale. Test: would a senior specialist find this appropriate laying a document on a desk?
+- **Easings (7):** message-appear `cubic-bezier(0.20,0,0,1)` … window-close `cubic-bezier(0.55,0,1,0.45)` (full set animator.md).
+- **Durations (8):** instant 80ms → waterfall 480ms; nothing exceeds 480ms.
+- **Typing indicator: eliminated.** The existing `MisterWaveform` (canvas sine) is the sole ambient processing signal; amplitude lerps to ~0 during streaming. Streaming uses a CSS-only gold blinking cursor that disappears on completion.
+- **LandedCostWaterfall signature build:** 5 strip segments animate `scaleX` from `originX:0`, 45% overlap stagger, ~1.54s total; breakdown rows enter in sync with their bars; total band appears only after all 5 rows; duties segment fires ONE opacity pulse `[0.08,0.20,0.08]` at ~1.3s (the only secondary animation in the system).
+- **prefers-reduced-motion:** every variant exposes a reduced path (translate→0, duration 0–80ms); waveform draws static line. A `useReducedMotion` hook wraps Framer's detection. CSS transitions stay at 0.15s ease (per designer), never converted to Framer.
+- All Framer Motion variant objects are in animator.md — implement them verbatim into `src/lib/mister/motion.ts`.
+
+---
+
+## 6. IA & STATE MACHINE (ia-architect — authoritative: ia-architect.md)
+
+- **Two dimensions:** 5 archetypes × 4 stages (+ unresolved archetype, + greeting/induction pre-stage). 25 archetype×stage combos fully mapped.
+- **Stage machine:** greeting/induction → discovery → consideration → pre_qualification → support/handoff, with explicit transition conditions (discovery exits on intent+constraint clear; consideration exits on education-complete or escalation-trigger; pre-qual exits on minimum fields per archetype; escalation can bypass remaining stages). **Stage is model-declared in the control block (§7), server-validated** — not pure heuristic.
+- **Information node taxonomy (8):** PRODUCT, SPEC, COMPARE, LOGI, MOQ, QUOTE, CONTACT, CAL — each with archetype+stage access rules, render component, required disclaimers, surfacing rules (MOQ only A4/A5 at consideration+; QUOTE only at pre-qual or escalation).
+- **Quick-action selection:** rank 3 from the 10-action library per archetype×stage (firing-condition table in ia-architect.md). The model proposes 3 in the control block; server validates against the table and falls back to the 25-set map if missing/invalid.
+- **Archetype resolution:** deterministic Q0–Q3 tree (brief Deliverable 1) resolves ~99% in 2–3 turns; strong-signal fast-paths ("I move freight" → A3); model-assisted fallback for >3-turn low-confidence; silent re-classification on contradictory signals, logged to `archetype_history[]`.
+- **Escalation routing matrix:** 10 trigger types × archetype × stage → destination (sales / project specialist / logistics broker / partnerships / key-accounts / quotation / document / meeting). A5 always escalates to a human at pre-qual. Full matrix in ia-architect.md.
+
+---
+
+## 7. AI ARCHITECTURE (ai-engineer — authoritative: ai-engineer.md; CONDUCTOR RATIFICATIONS below override where they conflict)
+
+Implement the brief Deliverable 7 + ai-engineer.md, with these **ratified decisions (LAW):**
+
+### 7.1 The Mister Control Block (resolves tool-model + stage + collected, risks #1/#5/#6)
+The model emits ONE fenced JSON control block at the END of every turn:
 ```
-Soy el Motor Accio de Wings Global Trade.
-
-Te ayudo a estructurar tu Requisito Técnico de Producto y a calcular un estimado CIF
-real vía zona franca — ZOFRATACNA (Tacna, Perú) o ZOFRI (Iquique, Chile).
-
-Para comenzar: ¿qué categoría de producto buscas importar?
-
-(Puedes mencionarme el tipo de maquinaria, el código HS si lo tienes, o describir
-el uso que le darás — lo que te resulte más fácil.)
+```mister
+{
+  "quick_actions": [ {"label":"…","action":"<action_id>"}, …3 ],
+  "surfaces":      [ {"type":"product|comparison|specs|moq|waterfall|document|contact","ref":"<id-or-key>"} ],
+  "state":         {"archetype":"…","stage":"…"},
+  "collected":     { /* patch of newly learned MisterCollected fields */ }
+}
 ```
-Personality: tuteo; confirms each field ("Anotado. 50 unidades de tracción 4×4."); on uncertainty "No tengo certeza sobre ese código HS específico — el equipo lo confirmará en 24h."; one question per turn; uses FOB/CIF/HS naturally.
-
-### 3.6 States (full tables in copywriter.md)
-- Empty (no results): "No encontramos productos para esa búsqueda. Prueba con otra categoría o inicia una consulta técnica con el Motor Accio."
-- Error (submit fail): "No pudimos enviar tu solicitud. Intenta nuevamente o escríbenos por WhatsApp."
-- Confirm (catalog): "Solicitud enviada. El equipo Wings te contactará en menos de 24 horas."
-- Confirm (Accio): "Consulta técnica enviada. Recibirás tu análisis de importación en menos de 24 horas." + reference number (see §6).
-- Placeholders: name "Tu nombre completo"; email "correo@empresa.com"; phone "+51 999 000 000"; Accio input "Describe lo que necesitas importar...".
-
----
-
-## 4. UX & FLOWS (experience + game-designer)
-
-### 4.1 Two journeys
-- **Catalog:** Landing → category tile → product grid → product detail (badge first, gallery, spec summary, inquiry anchor, full table, variants) → `Solicitar este modelo` → inline success + WhatsApp. Target < 4 min.
-- **Accio:** Landing/tile → /accio split (chat left, TPR right) → immediate hardcoded greeting → 6–10 one-question turns with live TPR fill → minimum reached → `Ver mi estimado CIF` animates in → CIF card reveal → `Enviar consulta técnica` (contact form) → success + reference number.
-
-### 4.2 The single most important conversion moment
-**The `Ver mi estimado CIF` button appearing at minimum TPR completeness**, then the CIF card sliding in as a document. Button animates in (opacity + y, 0.4s), gold, full-width mobile. Click → skeleton (1.5–3s perceived calc) → CIF card slide-up. Make it feel like a real calculation, not a widget.
-
-### 4.3 Trust architecture (place at decision points, not footer)
-Hero subheadline names ZOFRATACNA·ZOFRI → source-market badges on every card → "Consulta sin compromiso. Sin cuenta requerida." above each submit → specific 24h SLA in success → named free zones + instant first AI message at Accio → CIF breakdown specificity (not rounded).
-
-### 4.4 Friction fixes (apply)
-- Inquiry form: ≤6 visible fields; notes optional/collapsible; validate on blur; sticky mobile CTA appears after spec table.
-- Accio: typing indicator < 200ms; streaming; minimum completeness at 6 fields not 10; never let buyer be >2 questions from estimate without telling them.
-- Mobile Accio: full-screen chat; TPR as bottom drawer; toggle button always shows field-count badge `Ver resumen · 6/10`; at minimum, label → `Ver estimado CIF` (gold).
-- Disabled submit must always list missing fields below it — never silent.
-
-### 4.5 Engagement mechanics (game-designer) — professional restraint
-- **Primary mechanic:** TPR completeness *gates* the CIF estimate; the reveal is the reward. Field count shown as `6 / 10 campos` in DM Mono (NOT a percentage progress bar in the sheet body; the 2px top track is the only quantified bar). Header states: "Requisito técnico" (empty) → "Listo para estimar" (minimum, gold) → "Requisito completo" (full, gold + 1px gold sheet border).
-- **CIF reveal:** line items populate sequentially FOB→Flete→Seguro→CIF Total; **CIF total counts up 0→value over 800ms** in gold DM Mono; savings % counts up last (variable reward).
-- **Reference number** at submission `WGT-[year]-[sequence]` from lead ID; specific follow-up timestamp ("antes del martes 18 de junio, 18:00").
-- **AI conversation arc** varies tone: turns 1–3 exploratory, 4–6 confirmatory, 7–8 momentum ("Casi listos…"), 9–10 wrap-up. One question per turn, always.
-- **Excluded:** confetti, sound, percentages-as-game, level-up language, streaks, points, social-proof tickers.
-
----
-
-## 5. MOTION SYSTEM (animator) — replace `src/lib/motion.ts`
-
-### 5.1 Personality & signature
-Precise. Grounded. Efficient. Easings:
 ```
-enter [0,0,0.2,1] · exit [0.4,0,1,1] · interaction [0.25,0.1,0.25,1] · transition [0.4,0,0.2,1]
-```
-Durations (ms): instant 0 · fast 150 · normal 300 · slow 500 · cinematic 800 (hero only). Nothing > 800ms.
+Server flow per turn: validate session → atomic burst-guard (§7.7) → load `mister_projects` → **server-side pre-resolve likely nodes** (current product, archetype contacts, MOQ if A4/A5, etc.) into `<<MISTER_CONTEXT>>` → call `claude-sonnet-4-6` (system cached + context uncached) → stream tokens with hold-back guardrail scan (§7.5) → at stream end parse the `mister` control block → resolve `surfaces[].ref` to payloads via tools (server-side) → emit `surface` events, then `actions`, then `state`, then `done` → persist turn + merge `collected` patch + apply archetype/stage + `archetype_history` on change. No second Anthropic call for extraction. Tools run server-side only; NO price/availability tool exists.
 
-### 5.2 THE SOUL LAYER — TPR field-capture pulse (exclusive to TprField capture event)
-On capture: gold dot `scale [1,1.4,1]` 250ms ease-out + value `opacity 0→1` 300ms (0.1s delay) + row background gold shimmer `rgba(196,147,63,0)→0.08→0` 400ms. This is the heartbeat of Motor Accio: "We got that. You're making progress." Reduced-motion: scale `[1,1.1,1]` (the one animation NOT suppressed, only softened).
+### 7.2 SSE event format (brief 7.2)
+`event: token {"delta":"…"}` · `event: surface {"type":"…","payload":{…}}` · `event: actions {"quickActions":[…3]}` · `event: state {"archetype":"…","stage":"…"}` · `event: done {"messageId":"…"}` · `event: error {"code":"…","message":"…"}`. The `mister` control fence is stripped from the streamed visible text (hold-back buffer prevents it leaking to UI).
 
-### 5.3 Variant objects (paste into `src/lib/motion.ts`)
-Use the full set from animator.md §"Complete Framer Motion Variant Objects": `FADE_UP`, `FADE_UP_SLOW`, `FADE_IN`, `SCROLL_REVEAL`, `STAGGER_CONTAINER`, `STAGGER_ITEM`, `SLIDE_FROM_RIGHT`, `PAGE_ENTER`, `TPR_CAPTURE_DOT`, `TPR_CAPTURE_VALUE`. **Compatibility note:** existing components import `FADE_UP_TRANSITION`, `FADE_IN_TRANSITION`, `STAGGER_CONTAINER_FAST`, `SLIDE_UP`, `MENU_SLIDE`, `VIEWPORT_ONCE`. **Keep those exports** (re-point easing to the new `enter` curve `[0,0,0.2,1]` where they used `[0.25,0.1,0.25,1]`) so nothing breaks. Page-load choreography & per-component hover specs in animator.md.
+### 7.3 History trim (risk #2)
+Send last **15 turns** to the model; **store last 50 turns** in `mister_projects.history` (hard cap); older context collapses into `collected`. `trimHistory(messages, 15)` per ai-engineer.md.
 
-### 5.4 Page transitions
-`<AnimatePresence>` route transitions: `PAGE_ENTER` (opacity+y 8px, 350ms). No horizontal slides. Always provide `useReducedMotion()` fallback (opacity-only, 0.01s).
+### 7.4 Quick-action fallback (risk #3)
+Complete **25-set** fallback map (5 archetypes × 5 stages incl. unresolved) in `src/lib/mister/fallback-actions.ts`, populated from copywriter.md's 60 labels + unresolved set. If the control block omits/invalidates `quick_actions`, server injects the fallback for the current archetype×stage. Missing even one set is a build-blocker.
 
----
+### 7.5 Guardrails — hold-back scan (risk #4; NOT stream-then-replace)
+`src/lib/mister/guardrails.ts`. Stream tokens through a **hold-back buffer**: only flush text confirmed clean; withhold any trailing partial that could be forming a currency/number/lead-time token until the next token disambiguates. Patterns (EN+ES):
+- Price: `/\b(US?\$|S\/\.?|USD|PEN|EUR)\s?\d/i`, `/\d[\d.,]*\s?(soles|dólares|euros)\b/i`
+- Lead-time/availability: `/(en|in)\s+\d+\s+(días|semanas|days|weeks)/i`, `/(en stock|in stock|disponibles?\s+(ahora|hoy))/i`
+On match mid-stream: stop flushing, discard the violating span, regenerate once with a corrective instruction; if it matches again, replace the turn with the routing message + `open_quotation`/`connect_whatsapp` surface. Log to `mister_projects.flags[]`. A price must never reach the client even briefly. Indexed `[low,high]` patterns are explicitly allowed (scope the regex to currency symbols/words, not bare bracketed indices — the waterfall must not trip the scan).
 
-## 6. AI ARCHITECTURE (ai-engineer) — apply to `src/lib/claude.ts`
+### 7.6 Prompt caching
+`system: [ {type:'text', text: STATIC_SYSTEM_PROMPT, cache_control:{type:'ephemeral'}}, {type:'text', text: renderContextBlock(ctx)} ]`. Static = brief Deliverable 3 verbatim (in `src/lib/mister/systemPrompt.ts`); dynamic = `<<MISTER_CONTEXT>>` (uncached).
 
-- Replace `ACCIO_SYSTEM_PROMPT` with the complete production Spanish prompt in ai-engineer.md (free-zone ops, FOB/CIF formulas, HS guidance per category, LATAM duty knowledge, incoterms, `|||JSON_START|||…|||JSON_END|||` extraction protocol, stage-by-stage conversation rules, one-question-per-turn, uncertainty scripts that NEVER fabricate duty rates).
-- Extend `extractTprFields()` to parse the full-TPR-state JSON block format the new prompt emits. Keep backward-compat with current parser shape.
-- Models: `claude-haiku-4-5` for chat turns; `claude-sonnet-4-6` for CIF estimation on unusual HS codes. SSE events: text delta, `tpr_update`, `done`. Context: full conversation history + current TPR state per request.
-- 3 contextual quick-actions per Accio screen state (empty / mid-conversation / estimate-ready) — strings in ai-engineer.md.
-- Uncertainty: when a duty/HS value is unknown, mark "tasa estimada" / defer to 24h team confirmation. Never invent a rate.
+### 7.7 Burst guard + rate limit (risk #7)
+Atomic: `UPDATE mister_projects SET in_flight=true WHERE id=$1 AND in_flight=false RETURNING id` — no row → 409. Clear `in_flight` in a `finally`. Per-session 40 turns (soft nudge at 30). Per-IP via Upstash/Vercel KV: 20/min, 300/hr, key `mister:rl:ip:{ip}` → 429 with polite SSE error. `src/lib/mister/rateLimit.ts`.
 
----
+### 7.8 Supabase schema (ai-engineer.md has full DDL — apply via migration)
+`mister_projects`: `id uuid pk`, `session_id uuid unique`, `archetype text`, `archetype_history jsonb default '[]'`, `stage text`, `locale text default 'es-PE'`, `collected jsonb default '{}'`, `history jsonb default '[]'` (≤50 turns), `turn_count int default 0`, `in_flight boolean default false`, `flags jsonb default '[]'`, `current_product_id text null`, `created_at/updated_at timestamptz`. Reuse existing `products`/`categories` for content; add doc/contact/moq tables if needed. RLS ON all; service-role-only writes; anon may read only `categories`/`products`. `lead_flow` enum: add `'mister'` value in a standalone migration deployed atomically with code (risk #8 — document in runbook).
 
-## 7. FINANCIAL DISPLAY (finance) — apply to CIF calculator display
+### 7.9 Env vars (`.env.local`)
+`ANTHROPIC_API_KEY`, `MISTER_MODEL=claude-sonnet-4-6`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` (or Vercel KV), `RESEND_API_KEY`, `TWILIO_*`, `TWILIO_WHATSAPP_TO=+50760250735`. Full template in ai-engineer.md; never commit; `.gitignore` already covers `.env.local`.
 
-- Formula confirmed; margins by slug: maquinaria-agricola 18%, camiones 15%, buses 15%, equipo-industrial 20%, repuestos 22%. Insurance `(FOB+Freight)×0.015`, min $150. Freight table + ZOFRATACNA/ZOFRI +$200 transfer in finance.md.
-- **Edge cases:** target_price 0/null → "Por favor ingresa un precio objetivo"; qty 0 → "La cantidad debe ser mayor a 0"; unknown HS → category default + "tasa estimada"; unknown country → Peru default + note; freight miss → $2,800 default flagged estimated.
-- **Number format (es-PE):** `Intl.NumberFormat('es-PE',{style:'currency',currency:'USD',minimumFractionDigits:0,maximumFractionDigits:0})` → "US$ 47,320". Rates `toFixed(1)` → "9.0%".
-- **CIF card rows (labels exact):** `FOB estimado (en origen)` / `Flete internacional` / `Seguro de carga (1.5%)` / —— / `CIF total` / `Arancel estimado (9.0%)` / —— / `Costo total estimado en destino` / `Zona franca: ZOFRATACNA (Tacna, Perú)`.
-- **Disclaimer (always):** "Estimado preliminar basado en datos del Motor Accio. Los valores finales de flete, arancel y honorarios se confirman con la propuesta formal de Wings."
+### 7.10 Tools (brief 7.4 — server-side, NO price tools)
+`fetchProduct`, `preloadComparison`, `triggerQuotationForm` (returns formUrl + prefillToken, never a price), `fetchContact`, `fetchDocument` (`available:false` → escalate). In `src/lib/mister/tools.ts`.
 
----
-
-## 8. IA & NAVIGATION (ia-architect) — slugs locked per §0
-
-- Primary nav + catalog dropdown per §3.2. Motor Accio is a top-level item, NEVER inside Catálogo.
-- URLs: `/`, `/catalogo`, `/catalogo/[category]`, `/catalogo/[category]/[slug]`, `/accio`, `/nosotros`, `/contacto`. Query: `?q=`, `?context=`.
-- Breadcrumbs (separator `·`, not `/`): `Inicio · Catálogo · Maquinaria Agrícola · [Modelo]`. Emit `BreadcrumbList` JSON-LD.
-- Category filters order: Origen (multi) → Disponibilidad → Potencia/Tonelaje (range) → Tipo. Filter state in URL for shareability.
-- Internal linking: product→same-category (3) + /accio; category→/accio CTA; home→all 5 + /accio; nosotros→/catalogo+/accio; accio success→/catalogo; 404→/catalogo+/accio.
-- Classification: classify by primary use case, not construction similarity.
+### 7.11 Error handling
+Every async failure has a user-facing SSE `error` event with a copywriter.md string (rate-limited, connection-lost, no-product, internal). Never leak Supabase/stack traces. `extractCollected` is eliminated (collected now comes from the control block) — no silent-stale failure mode.
 
 ---
 
-## 9. SEO & AEO (seo-agent) — Phase 2A parallel task owns implementation
+## 8. FINANCIAL DISPLAY (finance — authoritative: finance.md; types in `src/types/mister.ts`, data in `src/lib/mister/waterfall-segments.ts`)
 
-- Per-page primary keyword, title (<60), meta desc (<155), H1 — full table in seo-agent.md.
-- JSON-LD: Organization (global/layout), WebSite+SearchAction (home), Product (no `price` field — prices are null/on-inquiry), BreadcrumbList (catalog/product), FAQPage (/accio, /nosotros). Exact field values in seo-agent.md.
-- `robots.ts` + `sitemap.ts` per priorities: `/`=1.0, `/accio`=0.9, categories 0.7–0.8, products 0.7, nosotros/contacto 0.5.
-- AEO: each page answers a named question set (Accio = "cómo calcular CIF de China a Perú" is the highest-value anchor). Image alt convention: Spanish, model + context.
-
----
-
-## 10. GROWTH CONTEXT (lead-magnet + campaigner) — informs copy/placement, not core build
-
-- **Lead magnet (v2-ready, design hooks now):** the CIF cost calculator concept = essentially the public-facing Motor Accio estimate gated by email. Offer points: product-detail page (modal below inquiry CTA) and Accio entry for context-less visitors. Do not let it compete with the primary inquiry CTA.
-- **Campaign anchor:** "El Número Antes de La Llamada" → drives to `/accio`. Build the **Shareable CIF Card** as a design affordance in the Accio success state (document-styled card with `WGT-[year]-[seq]` ref, FOB/flete/seguro/CIF/arancel/total, free zone, destination). MVP render server-side (satori) — Builder may stub the share action; the visual card in success state is in scope.
-
----
-
-## 11. BUILDER WORK ORDER (Phase 2A — non-breaking enhancement)
-
-1. **Tokens:** extend `tailwind.config.ts` + `globals.css` per §2.1–2.2 (additive). Add typography utilities.
-2. **Copy:** replace every user-facing string across pages/components with §3 strings (and copywriter.md tables). "Accio Engine"→"Motor Accio" in all Spanish UI.
-3. **Motion:** rewrite `src/lib/motion.ts` per §5.3 keeping back-compat exports; wire new variants where components already consume motion.
-4. **AI:** swap `ACCIO_SYSTEM_PROMPT` + extend `extractTprFields()` per §6.
-5. **Finance display:** apply §7 formatting + labels + disclaimer to `CifEstimateCard` and `cif-calculator` display path; implement count-up on CIF total.
-6. **UX:** §4 friction fixes — TPR field-count header, mobile drawer badge, disabled-submit missing-field list, success-state reference number + specific timestamp.
-7. **Hero immersion:** §2.6 gradient mesh + grain + gold rule (CSS only).
-8. **IA:** breadcrumbs (`·`), internal links per §8, nav label corrections.
-9. Write `build/BUILDER_COMPLETE.flag` when done.
-
-**Animator (Phase 2B)** owns: MarketMap SVG animation, Soul Layer in `TprField`, page-load choreography, hover states, page transitions, reduced-motion. **Designer (Phase 2B)** owns: token consistency audit, gold-top-border-on-hover everywhere, Awwwards verdict.
+The structural anti-price guarantee is the brand made code:
+- `WaterfallSegment` requires BOTH `indexLow` AND `indexHigh` (no single-value field) AND a required `disclaimerId`. Constructing a point estimate or an undisclaimed segment is a **compile error**.
+- `LandedCostWaterfall` total is **computed** `[Σlow, Σhigh]` and rendered as a band. No scalar `total`/`totalCif`/`priceInUsd` prop exists.
+- `DISCLAIMERS: Record<DisclaimerId,string>` is the single source of truth (5 ids: illustrative/range/duties/fx/handoff) — use the exact strings in finance.md §8.
+- 5 segment constants (PRODUCT 100–100, FREIGHT 8–15, INSURANCE 1–3, DUTIES 12–28 gold-tinted, LASTMILE 2–6) with Bloomberg-precise labels + teacher tooltips + driverNotes — finance.md §4.
+- `COST_DRIVERS[]` (5: volume/incoterm/destination_port/container_type/currency) with impact + explanation — finance.md §6.
+- `IndexComparisonView` (exactly 2 scenarios + delta callout naming the primary driver, never a currency delta) — finance.md §7.
+- Per-archetype FRAMING (narrative only, never a number) — finance.md §10.
+- Full type block + component API + validation rules — finance.md §8/§9/§13. Render visual per designer.md §4 (two-part: 24px indexed strip + breakdown table, gold only on BASE 100, stronger rule above the always-a-band total).
+- **QA gate:** there must be no code path that renders an absolute currency value; verify at compile time and with a render test.
 
 ---
 
-## 12. ACCEPTANCE (quality gates)
-- `pnpm build` — zero TS errors.
-- All Spanish copy matches §3 (no "Accio Engine", no `!`).
-- Soul Layer present in TprField; MarketMap animates with reduced-motion fallback.
-- CIF card formatting matches §7 exactly.
-- Designer Awwwards verdict: YES.
-- Flags: BUILDER_COMPLETE, SEO_COMPLETE, ANIMATION_COMPLETE, DESIGN_REVIEW_COMPLETE.
+## 9. LEARNING UX (educator — authoritative: educator.md)
+
+- **Checkpoints** are Mister's closing confirmation sentence beside a rendered surface ("¿eso calza con tu situación?") — never a quiz. 2–3 exact lines per archetype in educator.md.
+- **Progression is invisible:** signaled by deeper questions, surfaces escalating in register (ProductCard→Waterfall→ContactCard), quick actions shifting educational→commercial (explain_cost→open_quotation), and Mister ceasing to define vocabulary the user now shares. No progress bars, no module announcements.
+- **Progressive disclosure** = data-gate conditions on `collected` fields per module (gates listed in educator.md). A5 Module 4 is a human-routing gate, not an educational one — `open_quotation` is NEVER an A5 quick action.
+- **4 support sub-lanes** (needs-assessment / custom-inquiry / document-library / price-deflection) each have exact entry trigger, in-lane behavior, exit/return — educator.md. Price-deflection = 2–4 sentences, render waterfall, state disclaimer once, convert to `open_quotation`.
+- **Re-routing** is seamless and unannounced — one embedded reframing sentence; all `collected` carries forward; no question re-asked. Exact micro-copy per directional shift in educator.md.
+
+---
+
+## 10. ENGAGEMENT (game-designer — authoritative: game-designer.md)
+
+- **Core loop:** progressive clarity (fog burning away) — each turn delivers recognition + specificity + forward motion. Dignified B2B; NO badges/points/confetti/celebration copy.
+- **The ONE mechanic — the Live Session Brief:** a structured panel accumulating what Mister has learned (archetype, corridor, HS, Incoterm, docs held/needed, open fields) in professional intake format. Not a progress bar; the empty fields are the pull; the completed brief IS the handoff document. (Repurpose the existing `TprSheet` UI slot as the `SessionBrief` — do NOT resurrect TPR/CIF semantics.)
+- **Progress signal:** lives in the brief's open fields and the CTA activation state (CTA inactive until per-archetype minimum pre-qual met, then activates without announcement). No percentages.
+- **Variable reward = unexpected precision:** unprompted comparison surface; a document offered before asked; a targeted cost-driver call-out when the waterfall first renders; silent archetype re-resolution.
+- **Re-engagement:** session continuity / save-state / WhatsApp continuity for returning abandoners.
+- **Milestones** acknowledged by tonal shift + depth, never celebration: archetype resolved (sharper next message), first product (renders as evidence), first waterfall (renders with a specific insight), quotation (pre-filled form + 2-sentence handoff), human handoff (ContactCard + "they'll have the full picture before you speak").
+
+---
+
+## 11. SEO / AEO (seo-agent — authoritative: seo-agent.md)
+
+- **Conversations: `noindex`** (ephemeral, personal). SEO value flows from published thought leadership + schema, not transcripts.
+- `/mister` landing page: **indexed**, with metadata (EN + es-PE/hreflang), OG/Twitter, canonical. JSON-LD: `SoftwareApplication` + `FAQPage` (8 questions) on the landing page. Blocks ready in seo-agent.md.
+- **AEO:** 19 keyword targets (es-PE + EN) + answer snippets to earn ChatGPT/Perplexity/Claude citations for landed-cost/Incoterm/SUNAT/corridor questions; 4-article blog roadmap (FAQPage schema each). Implement schema/metadata now; content is a roadmap.
+- Session URL state (if any `?session=`): `noindex` meta. `robots.txt` allows `/mister` + `/blog`, blocks `/api`. Sitemap entries for `/mister` (0.9). All in seo-agent.md.
+
+---
+
+## 12. CAMPAIGN CONTEXT (campaigner — authoritative: campaigner.md)
+
+- **Territory: "La Estructura"** — for the first time an importer walks into a quote already knowing what it should look like. The waterfall diagram is the creative hero.
+- **Positioning line:** not "we built a chatbot" — "we made the structure of cost visible before anyone quotes you."
+- **Moat:** Mister is architecturally prohibited from quoting (no `fetchPrice` function) — no competitor can say their tool is designed to educate rather than quote.
+- Launch one-liners (EN + es-PE), 3 LinkedIn posts, full concept in campaigner.md. (Informs landing-page hero copy + meta description.)
+
+---
+
+## 13. BUILD PLAN (Phase 2) & QUALITY GATES
+
+### Component tree to build (brief 7.1) under `src/components/features/mister/`
+`MisterProvider` · `MisterLauncher` · `MisterWindow` (+`MisterHeader`) · `MisterMessageList` (+`MisterMessage`, `MisterStreamingMessage`) · `MisterQuickActions` · `MisterComposer` · `MisterEmbedded` · surfaces: `ProductCard`, `ComparisonView`, `SpecSheet`, `MoqTable`, `LandedCostWaterfall`, `IndexComparison`, `DocumentLink`, `ContactCard`, `QuotationFormCTA`, `SessionBrief`. Hooks: `useMister`, `useMisterStream`. Lib: `client.ts`, `tools.ts`, `guardrails.ts`, `archetype.ts`, `stage.ts`, `systemPrompt.ts`, `buildContext.ts`, `rateLimit.ts`, `fallback-actions.ts`, `waterfall-segments.ts`, `motion.ts`. API: `app/api/mister/route.ts` (new streaming endpoint). Retire old chat/estimate Mister paths; refactor `submit` to the new quotation/lead flow without CIF.
+
+### Quality gates (ALL must pass before deploy)
+- [ ] `pnpm build`: zero TS errors, zero `any`, zero `ts-ignore`
+- [ ] All 5 tools implemented + typed; NO price/availability tool exists
+- [ ] All 5 archetypes handled in system prompt (brief D3 verbatim)
+- [ ] `LandedCostWaterfall`: no absolute-number code path (compile-time + render test)
+- [ ] Rate limiting active on `/api/mister`; atomic burst guard
+- [ ] `validateOutput()` covers price AND availability (EN+ES); hold-back scan; indexed brackets pass
+- [ ] All copywriter strings in place (es-PE + EN)
+- [ ] All animator animations implemented + reduced-motion fallbacks
+- [ ] `CifEstimateCard` + `cif-calculator.ts` removed from the Mister surface (no Mister path imports them)
+
+### Deployment
+Stage on `feature/mister-v2`, build green, **then HOLD for user confirmation before production deploy** (replacing a live conversion feature is irreversible — conductor will not auto-fire prod). On user GO: `pnpm build` → Vercel production → `SHIPPING_REPORT.md` → commit `feat(mister): v1 — council build`.
+
+*End ENRICHED_SPEC.md*

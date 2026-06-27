@@ -1,0 +1,28 @@
+Game Design — The import journey as progression arc
+
+  The buyer fantasy hidden in this page: "I am a serious procurement professional who knows exactly what they need." Every mechanic should make that fantasy
+  feel real.
+
+  Micro loop (seconds): Read spec → feel more informed → want to dig deeper
+  Macro loop (minutes): Explore variants → find the right configuration → submit inquiry
+  Meta loop (days): Return to Wings for next sourcing need because the experience felt like expertise, not a catalog browse
+
+  Mechanics:
+
+  - Import Readiness Meter: 5-segment progress bar in the passport. Fills silently as the user: arrives (segment 1) → scrolls to specs (segment 2) → selects
+  a variant (segment 3) → opens the form (segment 4) → submits (segment 5). No text labels. Just a thin horizontal fill. No gamification theater — quiet,
+  ambient, forward-pulling.
+  - Spec Deep Dive Unlock: spec table starts showing only the 4 most important specs (HP, payload, GVW, transmission). A "Ver especificaciones completas"
+  link reveals the rest — the act of revealing creates micro-reward (revelation mechanic, the most underused in B2B).
+  - "3 razones para este modelo": above the variant table, 3 context chips generated from specs — "Para carga de 1T en zona urbana · Para cabina doble ·
+  Motor Euro-VI". User self-identifies. Reduces cognitive load before engaging with the variant table.
+  - Attention Reward on Hover: hovering a spec value for 1.5+ seconds triggers a tooltip expansion — operational context in one line. "GVW 3,040 kg —
+  determina categoría de licencia." Rewards the curious buyer.
+  - Social Proof Line: "23 consultas este mes" or "Modelo activo en ZOFRATACNA" as a single line in the passport. Manufactured scarcity signal. High B2B
+  conversion impact, near-zero cost.
+  - Saved Inquiry State: localStorage saves the selected variant and any typed form data. On return visit: "¿Continuar tu consulta sobre el W15S?" as a
+  dismissible chip. Recovering abandoned inquiries is the most underbuilt retention mechanic in B2B.
+  - Catalog Progress: "Has explorado 3 de 5 modelos en esta categoría" in the "También en esta categoría" section. Makes the buyer feel they're completing
+  an evaluation, not randomly browsing.
+  - Comparison Collection: a subtle "Añadir a comparación" secondary button on the passport card (single click, instant feedback) — the compare bar mechanic
+  you've already built, but surfaced as a collection action earlier in the page.

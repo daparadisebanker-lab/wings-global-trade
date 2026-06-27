@@ -1,0 +1,45 @@
+UX_COMPLETE
+Agent: experience
+Timestamp: 2026-06-19
+
+## Conversion Flow Summary
+
+Entry → PageHero (orientation) → ProductDetail left column (evaluate specs, select variant) →
+ProductDetail right column sticky (InquiryForm always visible on desktop) →
+Submit → InquirySuccess with WhatsApp escalation → Mister recovery CTA for non-converting buyers
+
+## Top 3 Friction Points Resolved
+
+1. TRUST AT WRONG MOMENT
+   Was: "Consulta sin compromiso. Sin cuenta requerida." placed at top of form, before fields.
+   Fixed: Moved trust signal to directly above submit button as "Respuesta en 24 horas · Sin compromiso de compra"
+   (DM Mono 10px navy/50). Fogg's model: motivation must be highest at the moment of maximum resistance.
+
+2. NO SAVED STATE — COMPARISON SHOPPING DESTROYS PROGRESS
+   Was: Form fields reset on every page load. B2B buyers who navigate away mid-form lose all progress.
+   Fixed: Debounced localStorage save (800ms) on every field change to `wings_inquiry_${product.slug}`.
+   Restored on mount. Cleared after successful submit or after 7-day expiry. Full SSR-safe try/catch.
+
+3. NO COMPLETION CEREMONY — SILENT SUBMIT BUTTON
+   Was: Submit button identical whether form is empty or fully valid. No visible finish line.
+   Fixed: SVG rect border overlaid on button animates pathLength 0→1 in gold (#C4933F) over 600ms
+   when all required fields simultaneously valid. On successful submit: stamp animation (scale 1→0.96→1,
+   rotate 0→-1→0, 400ms). Both skip on prefers-reduced-motion. Goal Gradient: visible finish line
+   accelerates completion in the final stage.
+
+## Additional Enhancements Implemented
+
+- Auto-focus on full_name field on desktop (non-mobile) on form load
+- Goal Gradient field pulse: on valid field blur, next field wrapper receives gold box-shadow pulse
+  (200ms, rgba(196,147,63,0.5)) drawing the eye forward through the sequence
+- Select (país de destino) triggers quantity pulse on value change — closes the blur-event gap for selects
+- Removed redundant top-of-form trust signal (was duplicating signal at wrong position)
+- Preserved all existing functionality: variant badge, product ref field, error states, toast on failure
+
+## Files Modified
+- src/components/features/catalog/InquiryForm.tsx
+
+## Files Created
+- src/ux/friction-report.md
+- src/ux/cta-architecture.md
+- src/ux/UX_COMPLETE.flag

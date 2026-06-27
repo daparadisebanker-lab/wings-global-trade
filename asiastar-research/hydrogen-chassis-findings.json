@@ -1,0 +1,123 @@
+{
+  "_meta": {
+    "agent": "asiastar-hydrogen-chassis",
+    "completed": "2026-06-20T21:53Z",
+    "integrity_flag": "XCJ1X1HFCEV hydrogen chassis and 195kW interurban hydrogen coach NOT FOUND in any public DB. Likely 2023–2024 announcement-stage products. Diesel chassis fully specced via representative built coach models."
+  },
+  "manufacturer": {
+    "name_en": "Yangzhou Asiastar Bus Co., Ltd. (Yaxing Coach)",
+    "name_zh": "扬州亚星客车股份有限公司",
+    "parent": "Weichai Group",
+    "stock": "Shanghai 600213",
+    "official_site": "https://www.asiastarbuses.com/",
+    "catalog_pdf": "https://www.asiastarbuses.com/product-catalog-download",
+    "contact": "marketing@asiastarbus.com / +86-514-82989212"
+  },
+  "asiastar-hidrogeno-coach": {
+    "status": "NOT_FOUND_IN_PUBLIC_SOURCES",
+    "confirmed_from_catalog": { "fuel_cell_system_kW": 195, "type": "interurban coach" },
+    "context": "Closest cataloged hydrogen COACH is YBL6818HFCEV (8.11m). 195kW model likely 2023–2024 YAXING X11 shown at IAA 2024, not yet spec-indexed.",
+    "fuel_cell_brand_likely": "Weichai (in-house system, 62% efficiency, >30,000h durability, -30C to +45C)",
+    "recommendation": "Request spec sheet via marketing@asiastarbus.com or download catalog PDF"
+  },
+  "asiastar-chasis-hidrogeno": {
+    "status": "MODEL_NUMBER_NOT_FOUND",
+    "model": "XCJ1X1HFCEV",
+    "confirmed_from_catalog": { "length_m": 12.7, "motor_kW": 195, "battery": "100 MS", "hydrogen_cylinders": "10–14" },
+    "found_specs": "None verifiable beyond catalog input",
+    "recommendation": "Confirm via Asiastar catalog PDF"
+  },
+  "asiastar-chasis-diesel-2ejes": {
+    "status": "VERIFIED via YBL6125H representative model",
+    "representative_model": "YBL6125H",
+    "dimensions_mm": "12000×2550×3850",
+    "GVW_kg": 18000,
+    "axles": 2,
+    "engine": {
+      "brand": "Weichai",
+      "model": "WP10.336E53",
+      "power_kW": 247,
+      "power_rpm": 1900,
+      "torque_Nm": 1550,
+      "torque_rpm": "1200–1500",
+      "emission": "China V (Euro V equivalent)"
+    },
+    "engine_options": ["WP10.336E53 (247kW/336hp)", "WP10.270E40 (270hp)", "8.8L 336hp", "9.5L 375hp"],
+    "transmission": "6 velocidades manual",
+    "clutch": "φ430 muelle diafragma",
+    "suspension": "suspensión neumática",
+    "brakes": "neumático doble circuito, freno de estacionamiento de resorte, ABS, retardador",
+    "tires": "295/80R22.5",
+    "fuel_tank_L": 260,
+    "seating": "49+1",
+    "max_speed_kmh": 120,
+    "source": "https://www.asiastarbuses.com/coaches/12m-coach/ybl6125h.html"
+  },
+  "asiastar-chasis-diesel-3ejes": {
+    "status": "VERIFIED via YBL6148H2QP2 representative model",
+    "representative_model": "YBL6148H2QP2",
+    "dimensions_mm": "13680×2550×3900",
+    "wheelbase_mm": "6500+1500",
+    "GVW_kg": 22000,
+    "curb_weight_kg": 15800,
+    "axles": 3,
+    "axle_loads_kg": { "front": 6500, "middle": 10500, "rear": 5000 },
+    "suspension": "suspensión neumática 8 globos",
+    "engine": {
+      "brand": "Weichai",
+      "model": "WP12.430E50",
+      "power_kW": 316,
+      "displacement_mL": 11596,
+      "emission": "China V (GB17691-2005)"
+    },
+    "engine_options": ["WP12.430E50 (316kW/430hp)", "WP12.375E40", "WP12 276–338kW Euro III/IV/V"],
+    "tires": "295/80R22.5 (8 total)",
+    "seating": "24–69",
+    "max_speed_kmh": 100,
+    "sources": [
+      "https://www.asiastarbuses.com/coaches/13m-coach/ybl6148h.html",
+      "https://m.chinabuses.com/product/buses/11927.html"
+    ]
+  },
+  "bonus_verified_hydrogen_models": {
+    "YBL6818HFCEV": {
+      "type": "hydrogen coach (smallest cataloged)",
+      "dimensions_mm": "8110×2260×3150",
+      "wheelbase_mm": 4300,
+      "curb_kg": 6600,
+      "GVW_kg": 9250,
+      "motor": "Weichai TZ368XS06002, rated 60kW / peak 155kW",
+      "battery": "LiFePO4 (Huizhou EVE Energy)",
+      "fuel_cell": "H2-air PEM (Suzhou Foresa)",
+      "seating": "24–34",
+      "max_speed_kmh": 95,
+      "source": "https://m.buses.cn/product/13516.html"
+    },
+    "JS6108GHFCEV1": {
+      "type": "hydrogen city bus 10.5m",
+      "dimensions_mm": "10500×2500×3415–3475",
+      "motor": "Weichai TZ370XS08001, rated 80kW / peak 160kW",
+      "fuel_cell": "H2-air PEM (Suzhou Foresa)",
+      "battery": "LiFePO4 (CATL)",
+      "seating": "19–40 (81–87 total pax)",
+      "source": "https://m.chinabuses.com/product/buses/17844.html"
+    },
+    "JS6108GHFCEV2": {
+      "type": "hydrogen low-floor city bus 10.5m",
+      "dimensions_mm": "10500×2550×3420",
+      "wheelbase_mm": 5100,
+      "curb_kg": 10800,
+      "GVW_kg": 18000,
+      "H2_consumption_kg_100km": "3.8–4",
+      "fuel_cell_durability_h": "25000–30000",
+      "operating_temp_C": "-30 to +45",
+      "seating": "19–31",
+      "source": "https://m.buses.cn/product/19580.html"
+    },
+    "JS6128GHFCEV": {
+      "type": "hydrogen city bus 12m",
+      "length_mm": 12000,
+      "seating": "21–46"
+    }
+  }
+}

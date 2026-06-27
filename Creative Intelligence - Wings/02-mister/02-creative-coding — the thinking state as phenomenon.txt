@@ -1,0 +1,14 @@
+Creative Coding — The thinking state as phenomenon
+
+  - Replace the three dots: the current typing-dot h-2 w-2 rounded-full bg-navy three-dot indicator is the most generic element in the UI. Replace with a Canvas 2D
+  waveform: a 100% width, 28px-high strip showing an oscillating sine wave in rgba(196,147,63,0.35). While Mister is processing: 3-4 overlapping frequencies, constantly
+  moving. When the response begins streaming: the waveform flattens and the text appears from it — like the text emerges from the signal.
+  - CIF calculation visualization: the CIF estimate isn't just a number — it's the result of FOB + Freight + Insurance + Duty calculations. When the estimate generates,
+  show the components assembling: four bars grow sequentially (FOB first, then Freight arrives and stacks, then Insurance, then Duty), then collapse into the final CIF
+  total. 2.5s total. Feels like computation, not a loading spinner.
+  - TPR field stamp effect: when a field is captured (the SSE tpr_update fires), the field in the TprSheet doesn't just appear — it "stamps" in: starts at 0.4 scale and 0
+  opacity, bounces to 1.05 then settles to 1.0 with a spring, the gold label traces across the field name over 300ms. The physical sensation of a stamp landing.
+  - Ambient noise field behind the conversation: the dark navy column has a barely perceptible Perlin noise particle field at 2% opacity. While Mister is thinking:
+  particles move faster (seeded by conversation length). While idle: very slow drift. Makes the background feel alive without being distracting.
+  - Context-seeded background: if Mister is opened from a truck product page (?context=kama-serie-w), the noise field particles take on the density/speed of an industrial
+  product. From an agricultural product page: slower, organic. The environment responds to what's being discussed.

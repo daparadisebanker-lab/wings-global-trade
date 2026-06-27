@@ -1,0 +1,16 @@
+The Intelligence Upgrades — What makes Mister's AI fundamentally different
+
+  These aren't UI — they're the core capability gap:
+
+  1. Live catalog tool call: replace the static WINGS_CATALOG_TEXT string with an actual Claude tool (search_catalog) that queries Supabase in real-time. User asks for 85
+  HP tractors → Mister calls the tool → gets live product data including current availability, images, and full specs. The knowledge isn't baked into the prompt — it's
+  fetched on demand.
+  2. Context-aware product entry: ?product=kama-serie-w in the URL → server fetches the product from Supabase → passes it as structured context to Mister's first message.
+  Mister opens with: "Estaba viendo el KAMA W15S contigo — para 1.5T doble cabina, es sólido. ¿Cuántas unidades y para dónde?"
+  3. Inline product cards: when Mister recommends a catalog product, the message contains a [PRODUCT_CARD:kama-serie-w] token that the AccioMessage component replaces
+  with an actual rendered product card — image, name, 3 key specs, and a "Ver ficha completa →" link. The recommendation is visual, not textual.
+  4. Pre-populated quote handoff: when the TPR is complete and the user wants to proceed, a "Ir al formulario" button on the TprSheet opens
+  /cotizar?category=camiones&product=KAMA+W15S&quantity=2&destination=Peru&timeline=3-6 with all TPR fields as query params. The QuotationForm reads them and pre-fills.
+  Zero data re-entry.
+  5. Session PDF export: a "Descargar ficha" button on the completed TprSheet calls a /api/mister/export route that generates a PDF — the Wings letterhead, the session
+  reference, all TPR fields, the CIF breakdown, and the conversation summary. Real-world B2B artifact.

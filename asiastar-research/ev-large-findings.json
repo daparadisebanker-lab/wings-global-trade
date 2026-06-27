@@ -1,0 +1,98 @@
+{
+  "_meta": {
+    "agent": "asiastar-ev-large",
+    "completed": "2026-06-20T22:02Z",
+    "integrity_flags": [
+      "DC fast / AC slow charge times: NOT published for any large-bus models. Asiastar only says 'supports ordinary and fast charging'.",
+      "YBL6029BEV / YBL6109BEV exact kWh and range: UNVERIFIED — brief's 151-255kWh / 136kW figures could not be confirmed.",
+      "JS6128HEV as a distinct hybrid chassis: no standalone sheet; JS6128GHBEV running gear used as proxy.",
+      "Australian press 105.6kWh/120kW/300km figures are for LIGHT COMMERCIAL VANS — do NOT merge into bus catalog."
+    ]
+  },
+  "asiastar-ev-10-12m": {
+    "best_documented_variant": "JS6128GHBEV (12m)",
+    "variants": {
+      "JS6128GHBEV_12m": {
+        "dimensions_mm": "12000×2550×3450",
+        "wheelbase_mm": 5900,
+        "curb_weight_kg": 10750,
+        "GVW_kg": 18000,
+        "seated_capacity": "40 (hasta 90 total en configuración urbana 3 puertas)",
+        "motor_rated_kW": 145,
+        "motor_peak_kW": 245,
+        "torque_rated_Nm": 1100,
+        "torque_peak_Nm": 3329,
+        "battery_kWh": 281,
+        "battery_type": "LFP",
+        "battery_supplier": "CATL",
+        "max_speed_kmh": 80,
+        "gradeability_pct": "≥15",
+        "front_axle": "GK BFA 81R (8T)",
+        "rear_axle": "GK BRA 132DC90 (13T)",
+        "tires": "275/70R22.5",
+        "suspension": "Neumática WABCO ECAS CAN2 (2 delantera / 4 trasera)",
+        "charging": "AC lento + DC rápido (tiempos no publicados)",
+        "warranty": "batería 8 años/400,000km · chasis 3 años/100,000km"
+      },
+      "JS6108GHBEV_10.5m": {
+        "seated_capacity": 61,
+        "motor_rated_kW": 110,
+        "motor_peak_kW": 200,
+        "battery_type": "LFP, CNAC Lithium (Luoyang)",
+        "roof_options": "bajo / estándar / alto"
+      }
+    },
+    "sources": [
+      "https://salcparts.en.made-in-china.com/product/rmkRBzjWHiVP/China-Asiastar-12m-EV-Bus-40-50-Seats-City-Bus-Coach-Bus.html",
+      "https://www.cnev.cn/series/21390.html",
+      "https://www.asiastarbuses.com/pure-elecrtrical-buses/11m-e-bus/js6108ghbev-e-bus.html"
+    ]
+  },
+  "asiastar-ev-doble-piso": {
+    "models": ["JS6111SHBEV", "JS6111SHBEV1", "JS6111SHBEV2"],
+    "dimensions_mm": "10800×2550×3980 (4180mm techo alto)",
+    "total_capacity": "86–95 pasajeros",
+    "seated_capacity": "30–61",
+    "motor_base_kW": 200,
+    "motor_brand": "Weichai Power",
+    "max_speed_kmh": 69,
+    "BEV2_variant": {
+      "battery_kWh": 281.9,
+      "battery_supplier": "CATL LFP",
+      "drive_system_kW": 240,
+      "range_km": 536
+    },
+    "note": "Spec inicial (269kWh / 100kW de brief) = variante de primera generación. BEV2 = 281.9kWh CATL / 536km.",
+    "sources": [
+      "https://m.chinabuses.com/product/buses/17845.html",
+      "https://weichaiindia.com/product/ev-bus/"
+    ]
+  },
+  "asiastar-ev-coach": {
+    "status": "UNVERIFIED — YBL6029BEV / YBL6109BEV no encontrados en DB pública",
+    "closest_sibling": {
+      "model": "YBL6117HBEV (10.69m)",
+      "dimensions_mm": "10690×2500×3560",
+      "seated_capacity": "24–51",
+      "max_speed_kmh": 100,
+      "range_km": "~250km (A/C activo, carga máxima)"
+    },
+    "interior_features_family": "portaequipajes, lámpara lectura, cortinas, USB, A/C techo 32000kcal, DVD/MP5, LCD 19in, calefacción agua",
+    "source": "https://www.chinabuses.com/product/buses/2988.html"
+  },
+  "asiastar-chasis-ev-10-12m": {
+    "status": "UNVERIFIED como chasis independiente — sin ficha pública para JS6128HEV",
+    "proxy_running_gear": {
+      "from": "JS6128GHBEV",
+      "motor_rated_kW": 145,
+      "motor_peak_kW": 245,
+      "battery_kWh": 281,
+      "battery_supplier": "CATL LFP",
+      "front_axle": "GK BFA 81R (8T)",
+      "rear_axle": "GK BRA 132DC90 (13T)",
+      "suspension": "WABCO ECAS neumática",
+      "max_speed_kmh": 80
+    },
+    "note": "Sufijo HEV sugiere variante híbrida; sin datos públicos que confirmen tren motriz diferenciado."
+  }
+}

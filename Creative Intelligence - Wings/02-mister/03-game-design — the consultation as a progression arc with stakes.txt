@@ -1,0 +1,20 @@
+Game Design — The consultation as a progression arc with stakes
+
+  The loop architecture:
+
+  - Micro (10–30s): Answer Mister's question → see a TPR field capture → feel the consultation advancing
+  - Macro (3–8 min): 10 fields captured → CIF calculated → consultation becomes a document worth submitting
+  - Meta (days): Return to Wings knowing the process is this efficient → refer other importers
+
+  Mechanics missing from the current implementation:
+
+  - Visible progress from the first message: a thin horizontal progress bar at the very top of the chat column — 0% to 100% as fields 1–10 are captured. No labels. Just a
+  gold line growing. Impossible to miss, never mentioned.
+  - Milestone acknowledgments in Mister's voice: at 3 fields, Mister says (as part of its response, not as a system message): "Ya tenemos las bases para calcular el rango
+  de flete." At 7 fields: "Casi listo — necesito dos datos más para cerrar el CIF exacto." These aren't pop-ups. They're woven into Mister's natural responses.
+  - The variable reward: when Mister identifies a catalog match the user didn't know existed ("No buscas el W15S, pero dado el GVW que describes, el X12 CNG tiene mejor
+  relación costo-capacidad"), it surfaces the product as a surprise. The user didn't ask for it. Unexpected value delivered — the most powerful retention mechanic.
+  - Saved session state: localStorage persists the full conversation + TPR state. On returning: the chat column shows a subtle "Consulta anterior disponible" chip at the
+  top of the message list, with the session reference number. One click to resume. The user doesn't start over.
+  - "Tu ficha está lista": when the CIF estimate is generated, the TPR Sheet header transitions — the "BORRADOR" watermark animates out, "LISTA PARA ENVIAR" animates in.
+  The document is complete. The commitment is visible before the user clicks submit.

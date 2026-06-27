@@ -1,0 +1,138 @@
+════════════════════════════════════════════════════════════
+WINGS GLOBAL TRADE — TRACTORES
+TERRITORY 2: PRECISION / PERFIL
+Uso: Imagen secundaria en la página de detalle — confirmación racional
+del producto después del precio y las specs
+════════════════════════════════════════════════════════════
+
+INSTRUCCIÓN: Esta foto se dispara en luz difusa (cielo nublado suave,
+amanecer antes del dorado, o sombra abierta). Superficie neutra debajo
+del tractor. Toda la máquina en cuadro con 10% de margen en todos los
+bordes. La cámara está exactamente al nivel del eje central del tractor.
+
+════════════════════════════════════════════════════════════
+PROMPT BASE — TODOS LOS TRACTORES
+════════════════════════════════════════════════════════════
+
+A large agricultural tractor photographed in three-quarter front view on a
+neutral flat surface — dry lakebed, salt flat edge, or clean hard-packed
+earth. The camera is positioned at the exact height of the tractor's axle
+midpoint: perfectly level, not looking up or down. The entire machine is
+in frame with 10% breathing space on all sides. Early morning flat diffuse
+light from a cloud-softened sky — no harsh shadows, no directional warmth.
+The light is cool and neutral: silver-grey, not golden. The ground surface
+is pale: white salt flat, pale grey cement, or dry white clay soil. No
+background distractions — minimal horizon, open sky. The implement linkage
+at the rear is fully visible and in focus. The machine is clean and
+stationary. Commercial automotive-grade product photography, photorealistic,
+razor-sharp throughout entire frame, accurate brand colors and paint
+rendering, technical catalog precision, professional agricultural equipment
+documentation photography.
+
+Negative prompt: golden hour warm light, dramatic shadows, dark terrain,, readable text, legible text, brand name text, model number text, distorted logo, hallucinated writing, visible letters on bodywork
+motion blur, people, soft background blur bokeh, HDR, orange or warm
+tones, studio backdrop, white paper background, watermark, text, fish-eye,
+toy or miniature look, tilted frame, crop cutting any part of the machine.
+
+
+════════════════════════════════════════════════════════════
+VARIANTE: VISTA LATERAL COMPLETA (perfil puro)
+════════════════════════════════════════════════════════════
+
+A large agricultural tractor photographed in pure side profile — perfectly
+perpendicular to camera, left side facing lens. Camera at axle midpoint
+height, level horizon, entire machine in frame with generous margin.
+The surface is pale salt flat or dry white lakebed. Soft diffuse overcast
+light, no directional shadows, cool neutral tones. All four wheels visible,
+full rear implement linkage visible, cab roof fully in frame. Automotive
+side-profile documentation photography, photorealistic, razor sharp,
+accurate colors, clean background.
+
+Negative prompt: three-quarter angle, diagonal composition, warm light,, readable text, legible text, brand name text, model number text, distorted logo, hallucinated writing, visible letters on bodywork
+golden hour, shadows, dark ground, blur, people, HDR, watermark.
+
+
+════════════════════════════════════════════════════════════
+VARIANTE: VISTA TRASERA (enganche + TDF visible)
+════════════════════════════════════════════════════════════
+
+A large agricultural tractor photographed from the rear three-quarter angle,
+showing the full rear hydraulic hitch system, PTO shaft, and implement
+coupling plate. Camera at axle midpoint height, looking directly at the
+rear of the machine. The three-point linkage arms are visible and lowered
+to a neutral position. Flat diffuse light, pale neutral ground, cool
+silver-grey tones. The rear tires fill the lower frame. Commercial
+agricultural equipment documentation photography, razor sharp throughout,
+photorealistic, accurate metal and hydraulic component rendering.
+
+Negative prompt: people, warm light, golden hour, dark ground, blur,, readable text, legible text, brand name text, model number text, distorted logo, hallucinated writing, visible letters on bodywork
+HDR, watermark, text, distracting background.
+
+
+════════════════════════════════════════════════════════════
+SUPERFICIES NEUTRAS RECOMENDADAS
+════════════════════════════════════════════════════════════
+
+SALINA (Salar de Uyuni / Huancayo):
+"...pure white salt flat surface extending to the horizon, reflective salt
+crystals on ground, completely flat terrain, pale sky above, the machine
+casts a subtle reflection in the thin salt moisture layer..."
+
+LECHO SECO:
+"...pale dry lakebed, cracked white and grey clay surface, completely flat,
+minimal horizon, overcast silver sky, no vegetation, maximum surface
+neutrality..."
+
+CEMENTO / PATIO INDUSTRIAL:
+"...clean pale grey cement surface, industrial yard context, flat light
+from overcast sky, no markings or lines visible in frame, commercial
+facility background suggestion..."
+
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+LOGOS Y NÚMEROS DE MODELO — REGLA CRÍTICA
+════════════════════════════════════════════════════════════
+
+LOS MODELOS DE IA NO PUEDEN RENDERIZAR TEXTO NI LOGOS CORRECTAMENTE.
+No intentes que Magnific genere el logo de la marca ni el número de modelo.
+Siempre saldrán distorsionados, ilegibles o inventados.
+
+WORKFLOW CORRECTO:
+  1. Genera la imagen del cuerpo/contexto de la máquina en Magnific
+     sin ningún texto visible ni logo prominente en el frame.
+  2. Exporta la imagen a 4:3 desde Magnific.
+  3. Abre en Canva / Photoshop / Affinity Photo.
+  4. Superpón el logo de la marca (PNG con fondo transparente) y el
+     número de modelo como texto en la posición correcta sobre la máquina.
+  5. Exporta el resultado final como JPG o PNG.
+
+AÑADE SIEMPRE A TU NEGATIVE PROMPT:
+  readable text, legible text, brand name text, model number text,
+  alphanumeric labels on machine, visible letters on bodywork,
+  distorted text, blurry logo, hallucinated writing, text overlay,
+  watermark text, decal text
+
+════════════════════════════════════════════════════════════
+════
+CONFIGURACIÓN MAGNIFIC RECOMENDADA
+════════════════════════════════════════════════════════════
+
+Creativity:   2 – 3
+              (mínimo necesario — esta imagen debe ser precisa, no artística)
+
+Resemblance:  7 – 8
+              (máxima fidelidad al tractor original)
+
+HDR:          OFF
+
+Fractality:   Low
+
+Engine:       Automatic / Photo
+
+Aspect ratio: 4:3
+              (ratio único — mismo en web y WhatsApp Business)
+
+Nota: Si la foto original tiene fondo complicado, usa Magnific para limpiar
+el fondo y acercar la textura a una superficie neutra — el prompt lo guiará.
+
+════════════════════════════════════════════════════════════

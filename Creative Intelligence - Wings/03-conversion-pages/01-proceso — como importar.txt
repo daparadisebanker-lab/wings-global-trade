@@ -1,0 +1,56 @@
+/proceso — Cómo importar
+
+  The One Reframe: the process page should feel like reading the protocol document that Wings actually operates on. Not marketing. A genuine SOP that happens to be
+  beautifully designed.
+
+  Creative Coding
+
+  - The vertical thread: replace the divide-y static dividers with a continuous 2px gold line running the full height of the 6-step section, positioned absolutely at
+  left: 40px. As each step scrolls into view, the line "fills in" from the previous node using a scaleY animation on a child element — you visibly progress down the
+  process as you scroll. The line is the spine of the document.
+  - Node activation: each step number (01 through 06) is a node on that line — a 10px gold circle in border-gold/30 bg-white. On viewport entry, it fills to bg-gold and
+  the title + body slide in from translateX(-12px) + opacity: 0. The process assembles as you descend it.
+  - Live data counters: the right-column data values — "Menos de 24 horas hábiles", "60–90 días" — start invisible. On step entry, they count up: 0 → 24 → < 24 in 800ms
+  for the time values, brands tick in one by one for the NH · JD · MF lists. The numbers feel computed in real-time, not printed.
+  - Supply chain particle path: in the hero, below the 4 stat blocks, an SVG abstract route — not a real map, just a horizontal schematic. A line from China/Japón →
+  Fábrica → Puerto → Tránsito marítimo → ZOFRATACNA/ZOFRI → Destino. Animated dashed stroke traveling left to right, looping at 8s. 4kb. Makes the geographic scale of
+  what Wings does viscerally clear before the user reads step 1.
+  - Zona franca decision tree: between steps 03 and 05, an inline SVG callout — a minimal decision fork: "¿Destino?" with two branches: Perú · Bolivia → ZOFRATACNA ·
+  Tacna and Chile · Colombia · Panamá → ZOFRI · Iquique. Gold branches on warm-white. Makes the routing logic visual rather than prose.
+
+  Brand Universe
+
+  - Document header: at the very top of the 6-step section, before step 01, a document metadata line in DM Mono: PROCESO ESTÁNDAR · WINGS GLOBAL TRADE · REV. 2024-01 · 6
+  ETAPAS. Like reading the header of a real SOP. The page declares itself as a document.
+  - Step data blocks as "ficha" entries: the right-column data blocks (Canal, Respuesta, Orígenes) get the passport card treatment — border border-[rgba(0,30,80,0.08)]
+  bg-surface-card p-4 with the label in gold at 8px tracking and the value in DM Mono. Each step generates a mini-document fragment.
+  - Zone franca badge: on steps 03 and 05, a bg-gold/[0.08] border border-gold/20 callout band running the full width of the step row — a subtle zone franca highlight
+  that visually marks these steps as the financial core of the process.
+
+  Motion & Soul
+
+  - The One Animation: step node activation — the gold circle fills, the title slides in, and the right-column data block "stamps" in from the right simultaneously. Every
+  step has the same choreography (30ms delay between title and data block). A rhythm you feel before you notice it.
+  - FAQ accordion: the current static FAQ on the navy section should be interactive — max-height transition with spring physics on open/close. The question gets a gold
+  underline on open. The answer slides down opacity: 0 → 1 as it expands. The FAQ becomes a navigation tool, not just text.
+  - The dual CTA synchronized entry: the two CTA buttons enter with a 100ms stagger when the final section enters view — the gold primary slides from left, the outlined
+  secondary from right. They arrive as a pair. The page ends with a gesture.
+
+  Game Design
+
+  - "¿Por dónde empezar?" quiz after step 06: a 2-question decision helper before the FAQ. "¿Tienes un producto específico en mente?" [Sí → Catálogo] [No del todo →
+  Mister] "¿Tienes urgencia en los próximos 3 meses?" [Sí → Cotizar] [No → Consulta]. Routes with a gold button. Converts a passive reader into an active buyer — without
+  them having decided to be one.
+  - "Ya lo hiciste" state for returning visitors: if localStorage has a Wings session, a quiet chip appears below the hero: "Has consultado antes — tu referencia activa:
+  WGT-####." The process page becomes a status check for returning buyers.
+  - Step timing as stakes: each step's data block shows the time it covers in the total process — a thin horizontal bar at the bottom of the block showing proportional
+  timeline share. Step 01 is small (hours). Step 04 is large (weeks). Visual weight matches actual weight.
+
+  Immersive Lab
+
+  - Scroll-linked step depth: as you scroll down the 6 steps, each step number has a very subtle parallax translateY — the number moves at 0.85x scroll speed, the content
+  at 1x, the data block at 1.05x. Three layers of depth through the editorial.
+  - The inspection room moment at step 05: the "Zona franca e inspección" step gets a visual environment shift — a subtle bg-gold/[0.03] background behind the entire row,
+  and a faint dotted border around it (border-dashed border-gold/15). You're "inside" the free zone as you read about it.
+  - Dark FAQ as a separate space: the transition from warm-white steps to navy FAQ is already there — amplify it. The FAQ section header (Lo que necesitas saber) should
+  have a min-h-screen optional suggestion — make it feel like entering a dedicated room, not just a section below.

@@ -1,0 +1,17 @@
+IA_ARCHITECT COMPLETION SIGNAL
+
+Timestamp: 2026-06-27
+Output: C:\Users\Muaaz\projects\wings-global-trade\spec\contributions\ia-architect.md
+
+Deliverables completed:
+1. Conversation IA: Five-lane architecture mapped to 4-stage journey; 25 archetype×stage combinations defined
+2. Stage taxonomy: State machine with explicit transition conditions (discovery → consideration → pre-qual → support)
+3. Information node taxonomy: 8 mutually exclusive content types (PROD, SPEC, COMPARE, LOGI, MOQ, QUOTE, CONTACT, CAL); retrieval rules per stage
+4. Quick action IA: Algorithm to select 3 contextual actions per turn; complete library + ranking rules
+5. Surface card IA: Decision logic for rendering; constraints to prevent over-surfacing
+6. Archetype resolution algorithm: Induction tree (Q0–Q3), re-classification rules, signal scoring
+7. Escalation routing matrix: 10 trigger types → archetype×stage→contact/form/doc/meeting
+
+Scale guarantee: Taxonomy built on user mental models + exhaustive decision rules. Scales to 10× content without restructuring.
+
+Status: READY FOR DEVELOPMENT

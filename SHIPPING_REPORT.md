@@ -1,132 +1,86 @@
-# Wings Global Trade v2 — Shipping Report
-**21-Agent Council Enhancement** · 2026-06-17 · Conductor: Opus 4.8
+# MISTER v2 — Shipping Report
+**Two-Phase Full-Council Build** · 2026-06-27 · Conductor: Opus 4.8 · Session: mister-v2-20260627
+**Branch:** `feature/mister-v2` · **Status:** BUILD COMPLETE · all gates green · **HELD at production deploy pending user GO**
 
 ---
 
-## Verdict
+## Decision of record
+**A — REPLACE.** The new indexed-range trade-intelligence Mister supersedes the old TPR→CIF-estimate calculator. Mister now NEVER renders an absolute price — only indexed ranges on base 100. The old CIF surface (`CifEstimateCard`, `cif-calculator`, `useCifEstimate`, `/api/mister/estimate`) is retired.
 
-**SHIPPED.** All quality gates pass. The existing v1 codebase has been enriched with the full domain intelligence of the council and rebuilt to a world-class standard without breaking existing functionality.
-
-| Gate | Result |
-|---|---|
-| `pnpm build` (zero TS/lint errors) | PASS — 16/16 routes generated |
-| All 13 Phase-1 contribution files exist | YES |
-| `ENRICHED_SPEC.md` synthesized | YES |
-| Build flags (Builder · SEO · Animation · Design) | 4/4 present |
-| Designer Awwwards verdict | **YES** — 100% spec compliance |
-| Soul Layer + MarketMap animation in source | Verified |
-| Copy gate ("Motor Accio", no `!`, tuteo) | CLEAN |
-| First Load JS (shared / homepage) | 105 kB / 151 kB |
+> NOTE: This decision was relayed by a coordinator, which carries no user authority. The build proceeded on the original user mission (which says "build from the brief exactly"). The single irreversible action — promoting this over the live conversion feature in production — is intentionally NOT executed and awaits explicit user confirmation.
 
 ---
 
-## Phase 1 — Full Council Spec Enrichment (13 agents, parallel)
+## Phase 1 — Full council spec enrichment (12 contributions, all re-run against the current brief)
+Stale Jun-17 "Accio"-era contributions were archived to `spec/contributions/_archive_accio_jun17/`. Fresh contributions written (waves ordered by dependency):
+- Wave 1: brand-strategist, ia-architect, ai-engineer, finance, educator, game-designer, campaigner
+- Wave 2: designer, copywriter
+- Wave 3: experience, animator, seo-agent
 
-Every domain-relevant agent contributed before any code was written. Contributions in `/spec/contributions/`:
+`spec/contributions/*.md` — 12 files, 8,233 lines. The previously-missing `educator.md` was produced. Synthesized into **`spec/ENRICHED_SPEC.md`** (12 sections), the builder's single source of truth.
 
-| Agent | Decisive contribution |
-|---|---|
-| **brand-strategist** | Category definition *Operador Comercial Digital*; visual thesis ("customs-manifest precision + handshake warmth"); locked **"Motor Accio"** naming; the ownable thing — *CIF before the call*. |
-| **designer** | Full token system, 13-level type scale, the signature visual decision (**gold top-border-on-hover** for every card), per-component aesthetic direction. |
-| **copywriter** | Every Spanish string: heroes, CTAs (action+outcome), empty/error/confirm states, Motor Accio opening message + personality, voice rules. No exclamation marks; tuteo. |
-| **experience** | Both conversion journeys, trust-at-decision-point architecture, friction audit, and the single most important conversion moment (*Ver mi estimado CIF*). |
-| **animator** | Motion personality, easing signature, **The Soul Layer** (TPR field-capture gold pulse), full variant set, reduced-motion fallbacks. |
-| **ia-architect** | Navigation taxonomy, breadcrumb logic (`·` separator), filter architecture, internal-linking map, classification rules. |
-| **seo-agent** | Per-page titles/descriptions/H1, 5 JSON-LD schema types, robots/sitemap, AEO question sets. |
-| **ai-engineer** | Production Spanish Accio system prompt (free-zone ops, CIF/FOB, HS tables, duty knowledge, extraction protocol), model rationale, uncertainty handling. |
-| **finance** | CIF validation + edge cases, freight + duty reference tables, es-PE number formatting, exact CIF-card row labels, mandatory disclaimer. |
-| **game-designer** | TPR-completeness-gates-CIF mechanic, three header states, count-up reveal, reference number, anti-drop-off cues — all in professional register. |
-| **lead-magnet** | CIF-calculator lead magnet (29/30), placement strategy, email sequence. |
-| **immersion-engineer** | **No-3D verdict** for LATAM mobile; CSS/SVG immersion (hero mesh+grain, animated MarketMap corridors) at 0 KB added JS; signature moment = the MarketMap. |
-| **campaigner** | Launch concept "El Número Antes de La Llamada"; the **Shareable CIF Card** word-of-mouth mechanic. |
-
-### Conductor synthesis decisions (conflicts resolved)
-- **Naming unified:** "Motor Accio" adopted across brand/copy/IA/campaign.
-- **Slug conflict resolved:** rejected ia-architect's `camiones-vehiculos`/`equipamiento-industrial` renames; kept locked slugs `maquinaria-agricola · camiones · buses · equipo-industrial · repuestos` to protect routing, data, icons, SEO. (The SEO agent's Phase-2 pass even caught a stale slug in the codebase and corrected it — validating the constraint.)
-- **No 3D** adopted per immersion-engineer.
-- **Motion back-compat:** instructed builder to preserve every `motion.ts` export the codebase already imports while adding new variants — verified intact.
-
-`spec/ENRICHED_SPEC.md` integrates all 13 domains and served as the single authoritative source for Phase 2.
+### Conductor conflict resolutions (encoded in ENRICHED_SPEC)
+1. **Font 3-way conflict** → inherit live repo vars `--font-display` (NissanOpti) / `--font-body` (Flexo) / `--font-mono` (Teko). No new next/font. `--font-playfair` forbidden.
+2. **AI-engineer's 8 risks ratified** → Mister Control Block (single fenced `mister` JSON for quick_actions/surfaces/state/collected); store-50/send-15 history; complete 25-set quick-action fallback; hold-back guardrail scan; model-declared stage; atomic burst guard; coordinated `lead_flow` enum migration.
 
 ---
 
-## Phase 2 — Parallel Enhancement Build
+## Phase 2 — Build (sequenced ai-engineer → builder → seo+designer review)
 
-**Phase 2A (parallel):**
-- **builder** — applied tokens, full copy pass, motion system, enhanced Accio prompt + TPR parser, finance display (es-PE format, CIF count-up, disclaimer), UX friction fixes (TPR field-count header + 3 states, mobile drawer badge, missing-field list on disabled submit, reference number + specific timestamp), CSS hero immersion, breadcrumbs + internal links. ~24 files changed. Build green.
-- **seo-agent** — generateMetadata across all pages, JSON-LD (Organization, WebSite+SearchAction, Product without price, BreadcrumbList, FAQPage), robots + dynamic sitemap. Corrected a category-slug bug.
+### Backend (ai-engineer) — `src/lib/mister/**`, `/api/mister/route.ts`, types, migration
+- New SSE streaming endpoint `POST /api/mister` (named events: token/surface/actions/state/done/error)
+- `systemPrompt.ts` (brief D3 verbatim, cached static block) · `buildContext.ts` (parallel tool fetch, trim) · `tools.ts` (fetchProduct, preloadComparison, fetchDocument, fetchContact + `/api/mister/quote` token — NO price/availability tool) · `guardrails.ts` (EN+ES price + availability) · `rateLimit.ts` (Upstash 20/min·300/hr, fail-open; atomic in_flight burst guard) · `stage.ts` · `archetype.ts` · `fallback-actions.ts` (25 sets) · `waterfall-segments.ts`
+- `src/types/mister.ts` — v2 context types + anti-price financial types (legacy TPR types preserved for `/accio`)
+- Migration `supabase/migrations/20260627000001_mister_system.sql` — `mister_projects` (+ contacts/documents/quote_tokens), RLS on all, `lead_flow` += `mister`, legacy table renamed. **NOT YET APPLIED to remote** (apply at deploy, atomically with code)
+- Old paths retired: `/api/mister/chat` and `/api/mister/estimate` return 410; `submit` refactored without CIF
 
-**Phase 2B (after builder):**
-- **animator** — Soul Layer in `TprField`, animated MarketMap SVG (cascading gold pin pulses + flowing freight corridors), hero word-stagger, page-load choreography, reduced-motion.
-- **designer** — consistency audit + 3 `ProductCard` token fixes (`text-display-sm`, 150ms gold border, `mono-sm`). **Awwwards verdict: YES**, 100% rule compliance.
+### Frontend (builder) — 22 components + 2 hooks + page
+- Shell: MisterProvider, MisterLauncher, MisterWindow, MisterHeader, MisterMessageList, MisterMessage, MisterStreamingMessage, MisterQuickActions, MisterComposer, MisterEmbedded (+ kept MisterWaveform)
+- Surfaces: ProductCard, ComparisonView, SpecSheet, MoqTable, **LandedCostWaterfall** (signature), IndexComparison, DocumentLink, ContactCard, QuotationFormCTA, SessionBrief, SurfaceRenderer
+- Hooks: useMister, useMisterStream · Motion: `src/lib/mister/motion.ts` (animator variants verbatim) · Tokens: `--mister-*` block in globals.css
+- `src/app/mister/page.tsx` now mounts `MisterEmbedded`; 8 retired components deleted (CifEstimateCard, CifBreakdownChart, MisterChat, MisterCanvas, MisterInput, TprSheet, MisterSubmitForm, TprField)
 
----
+### SEO (seo-agent)
+`/mister` metadata (es-PE primary + hreflang en) · JSON-LD SoftwareApplication + FAQPage (8 AEO questions) via `<JsonLd>` · `robots.ts` allows `/mister`+`/blog`, blocks `/api` · conversation state noindex.
 
-## What changed from v1 → v2
-
-| Area | v1 | v2 |
-|---|---|---|
-| Copy | Generic placeholder Spanish | Council copy: heroes, action+outcome CTAs, Motor Accio voice, human error/empty/success states |
-| Naming | "Accio Engine" | "Motor Accio" (Spanish UI), enforced everywhere |
-| Motion | Basic fade-ups (`y24→0, 0.5s`) | Editorial system + **Soul Layer** capture pulse + animated MarketMap + reduced-motion |
-| Hero | Flat navy | CSS gradient mesh + grain + gold rule + word-stagger reveal (0 KB JS) |
-| Accio TPR | Passive field list | Live dossier: `N/10 campos`, 3 header states, gold progress track, mobile drawer field-count badge |
-| CIF card | Plain rows | Bloomberg-grade: es-PE format, exact labels, count-up total, free-zone savings, mandatory disclaimer |
-| Conversion | Form submit | Reference number `WGT-2026-NNNN` + specific 24h timestamp; missing-field guidance on gated submit |
-| SEO | Partial | Full metadata + 5 JSON-LD types + dynamic sitemap + AEO; slug bug fixed |
-| Design tokens | Partial application | Full token system + signature gold-top-border-on-hover everywhere |
+### Design review (designer) — Awwwards verdict: YES
+11 deviations fixed across 10 files. Most consequential: the global Teko legibility floor was inflating 11/12px document-register type to 15px — fixed, restoring the "certified trade document" micro-typography. All component colors now flow through `--mister-*` tokens (inline styles removed except runtime-computed waterfall bar widths). Added missing header minimize control + comparison delta-summary row.
 
 ---
 
-## Deployment
-
-- **Build:** `pnpm build` → clean (16/16 routes). First Load JS shared 105 kB.
-- **Note:** a transient Windows `.next/_ssgManifest.js` ENOENT appeared on one run (filesystem race, not a code error) and cleared on rebuild. Recommend a clean `.next` in CI.
-- **Live URL:** not yet deployed. Ready for `vercel --prod`. Set env vars per `deployment.md` (Supabase service role, Anthropic key, Resend, Twilio). Lighthouse to be measured on the preview URL; immersion budget (no 3D, <150 kB shared) is designed to hit LCP < 2.0s on LATAM 4G.
+## Quality gates — ALL PASS
+| Gate | Status |
+|------|--------|
+| `pnpm build` — zero TS errors | PASS |
+| `pnpm lint` — zero warnings/errors | PASS |
+| Zero `any` / `ts-ignore` in Mister surface | PASS |
+| All 5 tools implemented + typed | PASS |
+| NO price/availability tool exists (architectural) | PASS |
+| All 5 archetypes in system prompt | PASS |
+| LandedCostWaterfall — no absolute-number code path | PASS |
+| Rate limiting + atomic burst guard active | PASS |
+| Guardrails cover price AND availability (EN+ES) | PASS |
+| Copy strings (es-PE + EN) in place | PASS |
+| Animations + reduced-motion implemented | PASS |
+| CifEstimateCard + cif-calculator removed from Mister surface | PASS |
 
 ---
 
+## Known deviations to harden before production promote (non-blocking, build green)
+1. **`extractCollected` retained as an async haiku call** (ai-engineer kept the brief's fallback) instead of the ratified control-block `collected` patch. Functional; a second API call + a silent-stale failure path. Recommend consolidating into the control block.
+2. **Guardrail is stream-then-scan-then-regenerate**, not the ratified hold-back buffer. Given the architectural no-price-tool guarantee + financial type system, risk of a price reaching the client is very low, but a price could in theory flash before replacement. Recommend hold-back before prod promote.
+3. **`og/mister-og-es.png` referenced but not confirmed present** in `public/og/`. Add the asset or the OG card 404s.
+4. **Upstash env vars** must be set in Vercel or rate limiting fails open.
 
 ---
 
-## Creative Intelligence v3 — Product Page Enhancement
+## Deployment runbook (execute on user GO)
+1. Apply Supabase migration `20260627000001_mister_system.sql` to the project (`pyznlglvwihosemqkhtq`) — atomically with the code deploy (the `lead_flow` enum add cannot roll back in a txn).
+2. Set Vercel env: `MISTER_MODEL=claude-sonnet-4-6`, `MISTER_OPS_WHATSAPP=+50760250735`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`.
+3. `pnpm build` (green) → merge `feature/mister-v2` → Vercel production.
+4. Commit: `feat(mister): v1 — council build`.
 
-**7 specialist agents** built 22 new components; integration builder wired them into ProductDetail.tsx and ran pnpm build to zero errors.
+**Conductor will not fire steps 1–3 in production without explicit user confirmation, because this replaces a live conversion feature.**
 
-### All 5 layers implemented
-
-| Layer | Components |
-|---|---|
-| **Layer 1: Brand Universe** | ProvenanceRibbon, AuthenticationMark (via ProductPassport), BlueprintModeToggle, ficha-de-inspector (ProductPassport) |
-| **Layer 2: Creative Coding** | SpecFingerprint / VariantFingerprint, NoiseField (via ProductGallery), WaveformOverlay, TradeRouteAnimation, CellularAutomaton |
-| **Layer 3: Game Design** | ImportReadinessMeter (5-step journey tracker), ReasonChips (self-identification), spec deep dive + hover tooltip (ProductSpecTable) |
-| **Layer 4: Immersive Experience** | EnvironmentalContextLayer, TechnicalSilhouette, JumpNavigation, FieldReport, SavedInquiryBanner, CatalogProgress |
-| **Layer 5: Motion & Soul** | VariantCeremonyProvider context, SpecScannerLine, MagneticButton (Mister CTA), HP overshoot spring (ProductHpMeter), CountUp (ui/CountUp) |
-
-### New component count: 22 components wired
-
-ProvenanceRibbon - BlueprintModeToggle - TradeIntelligenceLine - ReasonChips - WaveformOverlay - CellularAutomaton - TradeRouteAnimation - EnvironmentalContextLayer - TechnicalSilhouette - JumpNavigation - FieldReport - ImportReadinessMeter - SavedInquiryBanner - CatalogProgress - SpecScannerLine - MagneticButton - VariantCeremonyProvider - NoiseField (ProductGallery) - AuthenticationMark (ProductPassport) - VariantFingerprint - SpecFingerprint - CountUp (ProductHpMeter)
-
-### Notable decisions
-
-- **No 3D:** All creative coding uses Canvas 2D and SVG — consistent with immersion-engineer verdict; LATAM mobile performance budget maintained.
-- **VariantCeremony pattern:** VariantCeremonyProvider wraps the entire ProductDetail tree. ProductDetailInner consumes triggerCeremony via hook. Single source of truth for variant selection: selectedVariant state in ProductDetail; VariantTable calls back via onSelectVariant (controlled prop). Desync eliminated.
-- **ImportReadinessMeter placement:** Rendered outside ProductPassport (below it), not inside the readiness-meter-slot div. Avoids server-component boundary issues and keeps step state in the same component that drives it (ProductDetail).
-- **CatalogProgress placement:** Rendered inside ProductDetail right column; totalInCategory prop passed from page.tsx (related.length + 1). Keeps the component co-located with the inquiry flow it contextualizes.
-- **onSuccess wiring:** Added onSuccess?: () => void to InquiryForm to fire readiness step 5 on successful submission.
-- **MagneticButton placement:** Wraps the Mister CTA in page.tsx — the highest-stakes navigation CTA on the product page.
-- **File ownership:** All 22 new component files written by specialist agents are not overwritten. Integration changes were surgical (imports + JSX placement only).
-
-### Build status
-
-pnpm build — **zero TypeScript errors** — 25/25 routes generated. First Load JS shared 102 kB.
-
-### Known follow-up
-
-- Mobile sticky CTA bar (flagged by experience agent) — not yet implemented.
-- VariantFingerprint / SpecFingerprint not yet wired into VariantTable cells (context available via useVariantCeremony; specialist agent integration pending).
-## Recommended next steps
-1. Deploy to Vercel preview, run Lighthouse, confirm LCP/CLS on a throttled 4G profile.
-2. Wire the **Shareable CIF Card** (satori PNG) into the Accio success state — design affordance already specified.
-3. Ship the CIF-calculator **lead magnet** modal on product detail + Accio entry (v2 spec ready).
-4. Verify Supabase RLS on `leads` / `accio_projects` before production traffic.
+---
+*Conductor: Opus 4.8 · 12 Phase-1 agents + 4 Phase-2 agents · build on `feature/mister-v2`*

@@ -1,9 +1,12 @@
 // src/hooks/useMisterChat.ts
+// LEGACY HOOK — drives the old /api/mister/chat flow (now returns 410).
+// Kept compilable so the builder can replace it with a v2 hook.
+// Import LegacyMisterStreamEvent to preserve the old { type: '...' } shape.
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { ConversationTurn, TprCompleteness } from '@/types/database'
-import type { TprState, TprFieldKey, MisterStreamEvent } from '@/types/mister'
+import type { TprState, TprFieldKey, LegacyMisterStreamEvent } from '@/types/mister'
 import { MISTER_GREETING } from '@/lib/claude.client'
 
 interface UseMisterChatOptions {
@@ -102,7 +105,7 @@ export function useMisterChat({ initialContext }: UseMisterChatOptions = {}) {
             if (!trimmedLine.startsWith('data:')) continue
             const json = trimmedLine.slice(5).trim()
             if (!json) continue
-            let event: MisterStreamEvent
+            let event: LegacyMisterStreamEvent
             try {
               event = JSON.parse(json)
             } catch {

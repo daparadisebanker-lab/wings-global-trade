@@ -1,0 +1,55 @@
+{
+  "_meta": {
+    "agent": "asiastar-ev-small",
+    "completed": "2026-06-20T21:53Z",
+    "integrity_flag": "Several model numbers in buses-catalog.ts (JS6760GH, JS6730GHBEV, JS6850HBEV, JS6851HBEV, JS6906HBEV, JS6690GHEV, YBL9900XHBEV) do NOT appear on asiastarbuses.com, chinabuses.org or any dealer listing. Likely originated from offline sales materials or unverified distributor sheets."
+  },
+  "asiastar-ev-6-7m": {
+    "canonical_model": "JS6690GHBEV",
+    "catalog_note": "Brief's JS6760GH/JS6730GHBEV/JS6690GH not found on official sources",
+    "dimensions_mm": "6990×2260×3050 (7250mm L / 3000mm H optional)",
+    "motor": "DANA MD80 permanent magnet synchronous, water-cooled (MD90 optional)",
+    "motor_peak_power_kw": 155,
+    "motor_peak_torque_nm": 1650,
+    "battery_supplier": "CATL",
+    "battery_chemistry": "LFP (Lithium Iron Phosphate)",
+    "battery_kwh_options": [90, 95, 105, 114, 121, 128],
+    "range_km": "hasta 200 km (con batería de 128 kWh)",
+    "seating": "hasta 21+1 sentados / 29 total (versión 7250mm)",
+    "gradeability_pct": 20,
+    "front_axle_t": 3.5,
+    "rear_axle_t": 6.5,
+    "suspension": "2 resortes de aire delanteros / 2 traseros",
+    "brakes": "disco delantero, tambor trasero (disco opcional), circuito neumático dual",
+    "floor": "low entry",
+    "source": "https://www.asiastarbuses.com/pure-elecrtrical-buses/7m-e-bus/js6690ghbev-electric-city-bus.html"
+  },
+  "asiastar-ev-8-9m": {
+    "canonical_model": "JS6859GHBEV",
+    "catalog_note": "Brief's JS6850HBEV, JS6851HBEV, JS6906HBEV not found on official sources",
+    "dimensions_mm": "8540×2430×3025 (3165mm con A/C en techo)",
+    "motor": "DANA MD100 permanent magnet synchronous, water-cooled",
+    "max_speed_kmh": 69,
+    "gradeability_pct": "≥18%",
+    "tire": "265/70R19.5",
+    "front_axle_t": 5,
+    "rear_axle_t": 9.5,
+    "seating_capacity_range": "14–75 pasajeros (configurable)",
+    "charging_standards": "GB/T 20234.3-2015 (CN) · IEC (EU) · SAE J1772 (US) · CHAdeMO (JP)",
+    "battery_kwh": "bajo solicitud",
+    "range_km": "bajo solicitud",
+    "motor_power_kw": "bajo solicitud",
+    "sources": [
+      "https://www.asiastarbuses.com/pure-elecrtrical-buses/8m-e-bus/js6859ghbev.html",
+      "https://www.chinabuses.org/manufacturers/manufacturer_16.html"
+    ]
+  },
+  "asiastar-chasis-ev-7m": {
+    "status": "UNVERIFIED",
+    "catalog_note": "JS6690GHEV not found on any official source. Closest real product is the JS6690GHBEV complete bus."
+  },
+  "asiastar-chasis-ev-9m": {
+    "status": "UNVERIFIED",
+    "catalog_note": "YBL9900XHBEV not found on asiastarbuses.com, chinabuses.org, or dealer sites."
+  }
+}

@@ -1,0 +1,17 @@
+ Creative Coding — Specs as visual phenomenon
+
+  - Spec Fingerprint: SVG rendered from live spec data. Each product's HP, payload, GVW, and wheelbase normalized to 0–1 and plotted as radii on a circle —
+  6 axes, 6 values, connected. The tractor-snh504 fingerprint is a different shape than the kama-serie-w fingerprint. Vera Molnár's rule: define a geometric
+  rule, apply it, introduce controlled deviation, observe what emerges. The fingerprint goes in the passport as the machine's visual identity.
+  - Variant Morphing: when switching KAMA variants, the fingerprint SVG morphs between shapes with d path interpolation. The spec diff made visual — you
+  feel which axes change before you read the numbers.
+  - Noise Field Seeded by HP: a Canvas 2D ambient element behind the gallery, seeded by the product's HP value. 50 HP tractor: slow, low-density, soft flow.
+  280 HP bus: fast, dense, high-energy. Same algorithm, different personality. The machine's power expressed as ambient movement.
+  - Waveform Overlay: HP, torque, and RPM plotted as overlapping sine waves in a thin strip — like an oscilloscope reading. Not a chart. An aesthetic. Sits
+  between the HP meter and the spec table.
+  - "Data Score": the product's specs condensed into a single SVG composition — vertical bars of varying height, like a musical score but read left to
+  right: weight → HP → payload → speed → dimensions. Each product's score is unique and instantly recognizable as a visual language.
+  - Trade Route Animation: particles flowing on a simplified map — origin port → Pacific → ZOFRATACNA — seeded by the product's weight (heavier products =
+  slower, denser particles). Canvas 2D, subtle, ambient. 10kb.
+  - Cellular Life from Specs: the GVW and HP values seed a 32×8 cell automaton — the product generates its own living texture that runs quietly in a thin
+  decorative strip. Two products side by side have fundamentally different organisms.

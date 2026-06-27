@@ -1,0 +1,125 @@
+{
+  "_meta": {
+    "agent": "asiastar-diesel",
+    "completed": "2026-06-20T21:55Z",
+    "integrity_flags": [
+      "JS6180GH (BRT): model code not found; specs from documented 18m Asiastar BRT — height 3350mm vs brief 3480mm. Model number unconfirmed.",
+      "JS6111SH (doble piso): weakest data point — official page 404s, dealer dimensions differ from brief (10800 vs 11300mm). No powertrain confirmed.",
+      "Coach lines span multiple variants; returned best-documented representative per line.",
+      "None of the diesel models are Euro VI / China VI — all WP5/WP10/WP12 Weichai in Euro III/V range."
+    ]
+  },
+  "asiastar-medio-frontal": {
+    "matched_model": "YBL6859H",
+    "dimensions_mm": "8670×2550×3420",
+    "engine": { "brand": "Weichai", "model": "WP5.200E51", "power_kW": 147, "torque_Nm": 800 },
+    "engine_position": "front",
+    "seating": "35+1 (2+2 layout)",
+    "tire": "255/70R22.5",
+    "max_speed_kmh": 120,
+    "emission": "Euro V",
+    "drive": "LHD/RHD",
+    "source": "https://www.asiastarbuses.com/intercity-bus/8m-intercity-bus/ybl6859h.html"
+  },
+  "asiastar-grande-frontal": {
+    "matched_model": "Yaxing 12.5m front-engine (WP10)",
+    "dimensions_mm": "12500×2550×3900",
+    "wheelbase_mm": "5390+1350",
+    "overhang_mm": "2380 front / 3380 rear",
+    "GVW_kg": 21000,
+    "engine": { "brand": "Weichai", "model": "WP10.375E30", "power_kW": 276, "power_hp": 375, "torque_Nm": 2010 },
+    "engine_position": "front",
+    "transmission": "6DS150T manual 6-speed",
+    "fuel_tank_L": 600,
+    "seating": "55+1 (2+2 layout)",
+    "axles": { "front_t": 8, "drive_t": 13, "tag_t": 7.5 },
+    "tire": "tubeless radial",
+    "max_speed_kmh": 120,
+    "emission": "Euro III",
+    "alt_variant_YBL6128HQ": {
+      "dimensions_mm": "12000×2580×3850",
+      "wheelbase_mm": 6130,
+      "GVW_kg": 18000,
+      "engine": "WP10.336N 247kW / 1500Nm",
+      "seating": 44,
+      "fuel_tank_L": 400
+    },
+    "sources": [
+      "https://xtautoexp.en.made-in-china.com/product/jZOtaGhKnRVU/",
+      "https://www.chinabuses.org/product/buses/811.html"
+    ]
+  },
+  "asiastar-carretera-trasero": {
+    "matched_model": "YBL6125H",
+    "dimensions_mm": "12000×2550×3850",
+    "wheelbase_mm": 6100,
+    "GVW_kg": 18000,
+    "engine": { "brand": "Weichai", "model": "WP10.336E53", "power_kW": 247, "power_hp": 336, "torque_Nm": 1550, "torque_rpm": "1200–1500" },
+    "engine_position": "rear",
+    "transmission": "6 velocidades manual",
+    "clutch": "φ430 muelle diafragma",
+    "fuel_tank_L": 260,
+    "seating": "49+1",
+    "tire": "295/80R22.5",
+    "suspension": "suspensión neumática",
+    "brakes": "neumático doble circuito, freno de estacionamiento de resorte, ABS, retardador",
+    "ac": "techo 32000 kcal",
+    "max_speed_kmh": 120,
+    "emission": "Euro V",
+    "source": "https://www.asiastarbuses.com/coaches/12m-coach/ybl6125h.html"
+  },
+  "asiastar-lujo-trasero": {
+    "matched_model": "Asiastar 13.68m luxury VIP coach (WP12.430)",
+    "dimensions_mm": "13680×2550×3860",
+    "wheelbase_mm": "6600+1350",
+    "GVW_kg": 22000,
+    "engine": { "brand": "Weichai", "model": "WP12.430E50", "power_hp": 430, "torque_Nm": 1920 },
+    "engine_position": "rear",
+    "transmission": "6 velocidades manual",
+    "fuel_tank_L": 260,
+    "axles": { "front_t": 6.5, "drive_t": 13, "tag_t": 7.5 },
+    "suspension": "2+4+2 suspensión neumática",
+    "tire": "295/80R22.5",
+    "max_speed_kmh": 100,
+    "emission": "Euro V",
+    "features": "A/C, calefacción, dispensador de agua, refrigerador, baño, ABS/ASR/ESC",
+    "source": "https://www.used-motorvehicle.com/sale-27271355-wp12-430e50-asiastar-luxury-vip-coach-single-deck-bus-13680mm.html"
+  },
+  "asiastar-starbus-doble-piso": {
+    "matched_model": "JS6111SH",
+    "data_confidence": "LOW",
+    "dimensions_mm": "10800×2500×3980/4180 (dealer) — brief stated 11300×2530×3860/4180, discrepancy unresolved",
+    "GVW_kg": 18000,
+    "wheelbase_mm": 5650,
+    "seating": "21–40 (hasta 60+ según configuración)",
+    "brakes": "ABS",
+    "suspension": "ballesta",
+    "note": "Página oficial Asiastar devuelve 404. Solo fragmentos de distribuidores disponibles. Motor/transmisión/emisiones no confirmados para variante diésel.",
+    "sources": [
+      "https://logintech.com.ua/en/katalog/urban-asiastar/city-bus-js6111sh",
+      "https://www.asiastarbuses.com/showroom/js6111sh/"
+    ]
+  },
+  "asiastar-starbus-brt": {
+    "matched_model": "JS6180GH class (18m articulado)",
+    "data_confidence": "MEDIUM",
+    "note": "Código JS6180GH no encontrado directamente. Specs de autobús BRT articulado 18m Asiastar documentado con WP12.380E51. Altura 3350mm vs 3480mm del brief — discrepancia sin resolver.",
+    "dimensions_mm": "18000×2550×3350",
+    "GVW_kg": 28000,
+    "curb_weight_kg": 17790,
+    "overhang_mm": "2650 front / 3450 rear",
+    "engine": { "brand": "Weichai", "model": "WP12.380E51", "power_kW": 280, "torque_Nm": 1700 },
+    "engine_position": "rear",
+    "transmission": "automática",
+    "drive": "motor trasero, tracción trasera",
+    "fuel_tank_L": 400,
+    "seating": "38+1 sentados / 150+ total",
+    "tire": "275/70R22.5",
+    "max_speed_kmh": 80,
+    "emission": "Euro V",
+    "turning_circle_m": 24.4,
+    "interior_height_mm": "≥2300",
+    "door_width_mm": 1300,
+    "source": "https://xtautoexp.en.made-in-china.com/product/VwtQeWDZXzkm/"
+  }
+}
