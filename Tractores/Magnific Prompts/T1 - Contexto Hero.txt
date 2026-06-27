@@ -1,0 +1,200 @@
+════════════════════════════════════════════════════════════
+WINGS GLOBAL TRADE — TRACTORES
+TERRITORY 1: CONTEXTO / HERO
+Uso: Imagen principal del listing card + hero de la página de detalle
+════════════════════════════════════════════════════════════
+
+REGLA WHATSAPP BUSINESS (CRITICA):
+─────────────────────────────────────────────────
+WhatsApp Business recorta todas las imagenes del catalogo a 1:1 (cuadrado).
+El recorte es siempre del CENTRO de la imagen.
+
+ZONA SEGURA: La maquina debe estar CENTRADA HORIZONTALMENTE en el encuadre.
+Esto garantiza que el recorte 1:1 de WhatsApp siempre capture la maquina
+completa, independientemente de la composicion de tercios del resto.
+
+Regla practica: primero centra la maquina, luego añade el contexto de
+terreno a izquierda/derecha. La regla de tercios aplica al ENTORNO, no
+a la maquina.
+─────────────────────────────────────────────────
+
+INSTRUCCIÓN: Fotografía el tractor primero. Luego pega la foto en Magnific
+y usa el prompt correspondiente a la marca. Ajusta los valores de Magnific
+según las recomendaciones al final de este archivo.
+
+════════════════════════════════════════════════════════════
+PROMPT BASE — FUNCIONA PARA CUALQUIER TRACTOR
+════════════════════════════════════════════════════════════
+
+A large agricultural tractor photographed in authentic South American farmland
+at golden hour. The camera is positioned low, below the machine's axle midpoint,
+looking slightly upward to communicate scale and power. The tractor is placed in
+the left third of the frame — rule of thirds composition. The background shows
+LATAM agricultural terrain: dry brown earth with Andean hills, sparse vegetation,
+and a wide sky filled with warm golden-orange light. Long diagonal shadows extend
+from the machine across the soil. The tractor's paint and chrome surfaces catch
+intense directional golden sunlight from camera-left, creating rich specular
+highlights on metal surfaces. No people visible in the frame. Foreground interest:
+tire track impressions in dry soil. Cinematic commercial agricultural photography,
+photorealistic, sharp focus throughout frame, rich earth tones, accurate machine
+brand colors, professional editorial quality. Aesthetic reference: Caterpillar
+brand campaign photography, Land Rover Defender terrain photography.
+
+Negative prompt: white background, studio backdrop, blown highlights, fish-eye, readable text, legible text, brand name text, model number text, distorted logo, hallucinated writing, visible letters on bodywork
+lens distortion, smiling farmer models, stock photo aesthetic, European green
+meadow, flat overcast lighting, desaturated matte effect, heavy HDR tone-mapping,
+watermark, text overlay, miniature tilt-shift effect, motion blur, soft focus,
+digital painting look.
+
+
+════════════════════════════════════════════════════════════
+NEW HOLLAND — (blanco/crema con detalles naranja-amarillo)
+════════════════════════════════════════════════════════════
+
+A New Holland agricultural tractor — white and cream body with orange and yellow
+accent trim — photographed in the Andean highlands of Peru at golden hour. Camera
+positioned low below the axle midpoint, looking slightly upward. Rule of thirds:
+tractor in left third of frame. Background: dark volcanic soil or deep reddish-brown
+Andean earth — the white paint pops with maximum contrast against the dark terrain.
+The orange trim catches golden sunlight and glows. Andean mountain silhouette
+visible on the far horizon. Long shadows across plowed rows. Cinematic agricultural
+photography, photorealistic, professional editorial quality, sharp focus, rich
+color contrast between white machine and dark earth.
+
+Negative prompt: white background, studio, flat lighting, European meadow,, readable text, legible text, brand name text, model number text, distorted logo, hallucinated writing, visible letters on bodywork
+green grass, stock photo, HDR, watermark, text, tilt-shift, blur.
+
+
+════════════════════════════════════════════════════════════
+JOHN DEERE — (verde + amarillo)
+════════════════════════════════════════════════════════════
+
+A John Deere agricultural tractor — deep green body with yellow trim and wheels —
+photographed in a LATAM harvest field at golden hour. Camera positioned low,
+below axle midpoint, looking slightly upward. Rule of thirds: tractor in right
+third, open golden field in left two-thirds. Background: dry amber-gold wheat
+stubble or golden harvest field — the green machine against the gold field honors
+John Deere's historical visual language and creates powerful complementary color
+contrast. Low raking golden sunlight from camera-right. Andean hills softly visible
+in the far background. Long shadows from machine across field texture. Cinematic
+commercial photography, photorealistic, sharp focus, green and yellow tones
+perfectly rendered against gold-amber landscape.
+
+Negative prompt: studio, white background, flat light, European meadow,, readable text, legible text, brand name text, model number text, distorted logo, hallucinated writing, visible letters on bodywork
+HDR, watermark, text, blur, stock photo, green grass background.
+
+
+════════════════════════════════════════════════════════════
+MASSEY FERGUSON — (rojo + gris plateado)
+════════════════════════════════════════════════════════════
+
+A Massey Ferguson agricultural tractor — red body with grey silver hood and
+chassis — photographed on Peruvian coastal farmland at golden hour. Camera
+positioned low, below axle midpoint, looking slightly upward. Rule of thirds:
+tractor in left third. Red paint in golden hour directional light creates
+extraordinarily vivid saturated crimson tones — maximize this. Background:
+dry coastal Peruvian farmland, flat wide horizon, warm amber dust haze,
+Pacific light on the horizon. Long shadows across plowed earth. The red machine
+against earth tones and warm sky creates natural visual drama without manipulation.
+Cinematic editorial agricultural photography, photorealistic, sharp throughout,
+rich saturated red machine against warm earth tones.
+
+Negative prompt: studio, white background, flat light, desaturated, HDR,, readable text, legible text, brand name text, model number text, distorted logo, hallucinated writing, visible letters on bodywork
+watermark, text, blur, green grass, stock photo, European.
+
+
+════════════════════════════════════════════════════════════
+KUBOTA — (naranja + negro)
+════════════════════════════════════════════════════════════
+
+A Kubota agricultural tractor — vivid orange body with black engine hood and
+trim — photographed in an Andean valley at early golden hour with atmospheric
+morning mist. Camera positioned low, below axle midpoint, looking slightly
+upward. Rule of thirds: tractor in right third. Background: Andean valley
+with layers of atmospheric morning mist drifting across green-to-brown hillsides,
+mountains in soft focus behind. The orange machine radiates warmth against the
+cool mist tones — the contrast between the vivid orange and the atmospheric grey-
+blue mist creates cinematic depth and visual drama. Early morning golden light
+from camera-left catching the orange bodywork. Cinematic agricultural photography,
+photorealistic, sharp machine against softly atmospheric background, editorial
+commercial quality.
+
+Negative prompt: studio, white background, midday light, harsh shadows,, readable text, legible text, brand name text, model number text, distorted logo, hallucinated writing, visible letters on bodywork
+overcast flat light, HDR, watermark, text, blur, stock photo.
+
+
+════════════════════════════════════════════════════════════
+VARIANTES DE TERRENO — intercambia el entorno en cualquier prompt
+════════════════════════════════════════════════════════════
+
+ALTIPLANO ANDINO (Puno / Cusco / Bolivia):
+"...bare Andean altiplano at 3,800m elevation, rocky dry soil, sparse ichu grass,
+the horizon is unbroken, vast high-altitude sky, thin clear atmosphere, intense
+directional golden light..."
+
+COSTA PERUANA (Ica / La Libertad):
+"...flat Peruvian coastal agricultural land, sandy pale soil, irrigation channels
+visible at left edge, Pacific coastal atmospheric haze on the horizon, warm coastal
+golden hour light..."
+
+CHACO PARAGUAYO / BOLIVIANO:
+"...Paraguayan Chaco terrain, reddish-brown laterite soil, low dry scrub trees
+at horizon, completely flat landscape, intense tropical golden hour light,
+wide open sky with deep orange tones..."
+
+VALLE CHILENO (Maule / Bío-Bío):
+"...Chilean central valley farmland, rows of agricultural crops in middle
+distance, Andes mountain range visible on the far eastern horizon, clean
+blue-to-gold sky gradient, warm late afternoon directional light..."
+
+SELVA ALTA PERUANA (Chanchamayo / San Martín):
+"...Peruvian high jungle edge, red-brown tropical soil, palm and tree canopy
+softly visible in background, humid tropical golden hour light, warm orange
+atmospheric glow..."
+
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+LOGOS Y NÚMEROS DE MODELO — REGLA CRÍTICA
+════════════════════════════════════════════════════════════
+
+LOS MODELOS DE IA NO PUEDEN RENDERIZAR TEXTO NI LOGOS CORRECTAMENTE.
+No intentes que Magnific genere el logo de la marca ni el número de modelo.
+Siempre saldrán distorsionados, ilegibles o inventados.
+
+WORKFLOW CORRECTO:
+  1. Genera la imagen del cuerpo/contexto de la máquina en Magnific
+     sin ningún texto visible ni logo prominente en el frame.
+  2. Exporta la imagen a 4:3 desde Magnific.
+  3. Abre en Canva / Photoshop / Affinity Photo.
+  4. Superpón el logo de la marca (PNG con fondo transparente) y el
+     número de modelo como texto en la posición correcta sobre la máquina.
+  5. Exporta el resultado final como JPG o PNG.
+
+AÑADE SIEMPRE A TU NEGATIVE PROMPT:
+  readable text, legible text, brand name text, model number text,
+  alphanumeric labels on machine, visible letters on bodywork,
+  distorted text, blurry logo, hallucinated writing, text overlay,
+  watermark text, decal text
+
+════════════════════════════════════════════════════════════
+════
+CONFIGURACIÓN MAGNIFIC RECOMENDADA
+════════════════════════════════════════════════════════════
+
+Creativity:   3 – 4
+              (suficiente para añadir detalle de terreno y luz dorada,
+               no tanto como para alterar la máquina)
+
+Resemblance:  6 – 7
+              (mantiene la exactitud visual de la máquina)
+
+HDR:          OFF
+
+Fractality:   Medium
+
+Engine:       Automatic / Photo
+
+Aspect ratio: 4:3
+              (ratio canónico — web cards + gallery + WhatsApp Business)
+
+════════════════════════════════════════════════════════════

@@ -1,0 +1,66 @@
+ /cotizar — Quotation Form
+
+  The One Reframe: the quotation form is not a web form. It's the first document in the Wings procurement dossier. By the time the user submits, they should feel like
+  they've created something — not filled something out.
+
+  Creative Coding
+
+  - Live form fingerprint in the sidebar: the desktop sidebar currently has static "¿Cómo funciona?" text. Add above it a 120×120px SVG that generates a radial
+  fingerprint as the user fills the form. 6 required fields = 6 axes. Each completion adds an axis at its normalized value (category = axis 1, product length = axis 2,
+  destination = axis 3, timeline = axis 4, name = axis 5, email = axis 6). Starts as a near-invisible circle. Fills into a unique glyph as the consultation takes shape.
+  Silent. No labels. The fingerprint is a visual accumulation of intent.
+  - Section completion trace: each FormSection has a top border (border-t border-[rgba(0,30,80,0.08)]). When all required fields in a section become valid, that border
+  animates to border-gold/40 with a left-to-right scaleX transition over 300ms. The form acknowledges completion visually — section by section.
+  - Submit button border trace: when all 5 required fields are simultaneously valid, the submit button (bg-gold) gets an additional gold glow trace running around its
+  perimeter — a box-shadow pulse from 0px 0px 0px 0px rgba(196,147,63,0) → 0px 0px 0px 4px rgba(196,147,63,0.25) → back to 0, once, 600ms. The button lights up once. Not
+  animated continuously — just the moment all fields are complete.
+  - "Tomando forma" live text in sidebar: below the fingerprint, a single line that updates as fields are filled: "Categoría: Camiones" → then adds "· Destino: Perú" →
+  then "· Plazo: 3–6 meses". A growing one-line summary of the consultation being built. The buyer sees their request coalescing.
+
+  Brand Universe
+
+  - Document header above the form: before section 01, a REQUISITO DE IMPORTACIÓN · WINGS GLOBAL TRADE header in DM Mono, with a generated draft ref BORRADOR ##### that
+  changes to the actual WGT-#### on submission. The form is already a document before the first field is filled.
+  - Sidebar as mini-ficha: the "¿Cómo funciona?" sidebar steps become passport-card styled entries — the same visual language as the product passport and the Mister TPR
+  sheet. Each step has a gold label in 8px mono and body in 10px DM Mono. The sidebar looks like a reference document, not a marketing sidebar.
+  - Category tiles upgrade: the 6 category tiles are currently flex flex-col items-start gap-2 border p-4. The emoji icon should be replaced with a DM Mono 2-letter code:
+  AG (Agrícola), CA (Camiones), BU (Buses), IN (Industrial), RE (Repuestos), XX (Otro). More on-brand, less consumer-app. Or keep a minimal SVG icon for each category —
+  a tractor silhouette, a truck profile, a bus side-view — all at 24×16px, line-art style.
+  - "Empresas similares importaron": a one-line social proof line below the category tiles — context-specific when a category is selected: "Importadores de camiones en
+  Perú gestionaron cotización CIF promedio en 3.2 días hábiles." Editable per category. Makes the form feel used and proven.
+
+  Motion & Soul
+
+  - The One Animation: category tile selection. When clicked:
+    a. The tile's border traces gold clockwise (left → top → right → bottom, 300ms total)
+    b. All other tiles dim to opacity: 0.5 over 150ms
+    c. The suggestion chips appear from translateY(8px) opacity:0 → settled, staggered 35ms each
+    d. The product description input expands from maxHeight: 0px → full height, 200ms
+
+  One fluid 400ms sequence. The form responds to choice like a precision instrument responding to input.
+  - Field validation celebration: instead of only showing errors, show success. When a required field is completed (on blur), its label gets a gold micro-dot at the right
+  edge — w-1.5 h-1.5 rounded-full bg-gold appearing with scale: 0 → 1, spring physics, 150ms. Quiet. Rewarding.
+  - Timeline button selection spring: the timeline buttons (border px-4 py-2) — when one is selected, it springs slightly: scale: 1 → 1.04 → 1, 200ms. Not a big
+  animation. Just a physical acknowledgment.
+  - The success state redesign: currently <motion.div variants={REVEAL}> with a heading and text. Transform it: the form fades to opacity: 0 over 300ms, a Wings seal
+  "stamps" down (scale from 1.3 → 0.9 → 1.0, rotation from -3° → 0°, 400ms), a WGT-#### reference number counts up from 0, and a confirmation ficha card slides in from
+  below. The form has become a document. The transaction is visible.
+
+  Game Design
+
+  - Real-time progress bar above the form: a thin gold line at the very top of the form section (above the REQUISITO header), starting at 0%, advancing as required fields
+  complete. 5 required fields = 5 segments. When all 5 complete, the bar pulses once in gold. Silent, ambient, forward-pulling.
+  - Smart suggestion surfacing: when the category is "Camiones" and the user selects "Volteo 6×4" from suggestions, a context chip appears below the product field: "Para
+  volteo 6×4, Wings evalúa fabricantes en Shandong, Shaanxi y Hebei." When they select "Perú" as destination: "Via ZOFRATACNA · Tacna. Tiempo estimado: 75–105 días." Zero
+  API cost — pure conditional logic. But it reads like Mister is in the room.
+  - Abandoned form recovery: if the user fills 3+ fields and navigates away, localStorage saves their partial state. On return, the form pre-fills silently and a quiet
+  chip appears above section 01: "Recuperamos tu borrador — WGT-BORRADOR-####". The user didn't lose their work.
+  - "Plazo" auto-suggest from product field: if the user types "urgente" or "necesito para marzo" in the product description, the timeline button for "Menos de 3 meses"
+  gets a subtle gold glow — suggested but not forced. The form reads the user's intent.
+
+  Immersive Lab
+
+  - Category as "workspace entry": when a category tile is selected, the surrounding tiles don't just dim — they recede (scale: 0.97 translate(-2px)) and the selected
+  tile expands (scale: 1.02). You've entered a workspace, not clicked a button. The form focuses around your selection.
+  - Contact section as "closing the document": section 03 ("Tu información") has a slightly different treatment — a light bg-gold/[0.02] background and a DATOS DE
+  CONTACTO · CONFIDENCIAL eyebrow. This section is where the document becomes personal. It should feel like signing a document, not filling a form.

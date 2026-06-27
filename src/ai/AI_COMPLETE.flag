@@ -1,0 +1,42 @@
+TRADE INTELLIGENCE LINE — AI ENGINEER COMPLETE
+================================================
+
+SAMPLE GENERATED OUTPUT
+-----------------------
+Product: Cosechadora Autopropulsada Foton RG50
+Category: maquinaria-agricola
+Origin: China
+
+Generated intelligence line:
+"Cosechadora HS 8433.51 — exonerada de arancel en Perú; mayor rotación ZOFRATACNA H2 2023."
+
+PROMPT RATIONALE
+----------------
+The system prompt was designed to produce insider-sounding lines, not marketing copy.
+Key decisions:
+
+1. PERSONA: "analyst who works operationally in ZOFRATACNA/ZOFRI" — forces specificity.
+   Generic marketing tone (e.g. "alta calidad certificada") is excluded by persona constraint.
+
+2. GROUNDING SIGNALS injected via user prompt:
+   - product.name_es — the exact product name anchors the output
+   - category slug — triggers zone-specific language (ZOFRATACNA vs ZOFRI)
+   - source_markets[0] — origin anchors documentary/cert language
+   - top 5 specs from product.specs — enables HP/capacity references
+
+3. EXAMPLES IN SYSTEM PROMPT — 4 concrete examples with the exact lexical register
+   expected. LLMs match register reliably when given examples at the right length.
+
+4. MAX 120 chars enforced in prompt + validated in route (>160 chars = discard → fallback).
+   Haiku tends to be concise; the constraint prevents run-on outputs.
+
+5. FALLBACK CHAIN:
+   cached DB value → Claude generate → static category fallback → default line
+   No user-visible error state for this feature.
+
+FILES CREATED / MODIFIED
+-------------------------
+- supabase/migrations/20260619000001_add_trade_intelligence.sql
+- src/app/api/products/[slug]/intelligence/route.ts
+- src/hooks/useTradeIntelligence.ts
+- src/components/features/catalog/TradeIntelligenceLine.tsx  (modified)

@@ -1,0 +1,14 @@
+ The Cross-Page System
+
+  The ideas that tie all three together into one coherent intelligence:
+
+  - The Wings Reference Thread: every interaction generates a WGT-#### reference. The form assigns one on submission. Mister assigns one per consultation. The contact
+  form assigns one. On return visits, any page shows the user's active reference as a quiet chip. One procurement relationship, tracked across all pages.
+  - Context handoffs: /proceso CTA → /cotizar with ?category= from the most recently scrolled step. /cotizar abandoned → /contacto?intent=specification pre-fills the
+  intent selector. /contacto message with product name → Mister CTA shows ?context=[detected product]. The pages hand off intelligently.
+  - The Wings data strip: a reusable component — a full-width 28px DM Mono ticker strip at text-[9px] in text-navy/20 — placed before every major CTA section: CATÁLOGO
+  ACTIVO · 50+ MODELOS · NH · JD · MF · KUBOTA · KAMA · ZOFRATACNA · ZOFRI · RESPUESTA < 24H. Either static (no animation) or very slow horizontal scroll at 40s loop.
+  Brand reassurance at every transition.
+  - The "import journey" ambient progress: a shared localStorage state tracks where the user is: exploring → specifying → submitted → responded. Each page reads this
+  state and renders a quiet chip in the top-right of the hero — not a progress bar, just a single-line status: "Cotización activa · WGT-2847" or "Respuesta pendiente — <
+  24h". Every page knows who this person is, without login.

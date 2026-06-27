@@ -1,0 +1,38 @@
+BRAND UNIVERSE — LAYER 1 COMPLETE
+Wings Global Trade · Product Page
+
+VISUAL THESIS
+"The customs manifest as precision instrument — every element authenticated,
+sourced, and documented. The product page is not a listing; it is an inspection
+slip you could file with a port authority. Navy field, gold registration ink,
+mono annotations. Nothing decorative survives; everything earns its place by
+behaving like an instrument of trade, not a sales sheet."
+
+ENHANCEMENT AUDIT (what changed and why)
+
+1. ProvenanceRibbon — Was a generic 4-node progress line. Now a shipping manifest:
+   terminal nodes rendered as square survey markers (not dots), a cargo ship SVG
+   sits at the Pacific midpoint (the open-water leg between Puerto and the free
+   zone), and a CSS/SMIL shimmer travels the dashed gold line to read as cargo in
+   transit. Free-zone node is now a prop (ZOFRATACNA vs ZOFRI) so the route tells
+   the truth per destination. Corner registration ticks frame it as a manifest field.
+
+2. AuthenticationMark — Was a hexagon floating in one ring; read as decoration.
+   Now earned: outer 2px bezel + thin 1px inner ring at 40% opacity for depth, a
+   12-tick milled edge (notary/Lloyd's seal), spec-derived hexagon geometry
+   (rotation from HP, radius from payload) with a struck center point. Category
+   code is STAMPED — uppercase, 0.2em tracking, 500 weight — and the slug suffix is
+   engraved at the crown. The mark now feels minted from the product's own specs.
+
+3. ProductPassport ("Ficha de inspector") — Rebuilt as a physical inspection slip:
+   warm tint (#F5F0E8), perforated dashed left spine with a repeating-linear-gradient
+   dot-matrix, deterministic dot-matrix REF number (REF-[8 slug]-[categoryCode]),
+   a derived social-proof line, the AuthenticationMark stamped into the bottom-right
+   corner (80×80, z-1), and a #readiness-meter-slot mount for the integration agent.
+   BlueprintModeToggle gained a true 150ms ease-in-out cross-fade on the icon swap,
+   and blueprint.css now reads as an engineering drawing (drafting sub-grid, title-
+   block frame, luminosity-blended technical reference imagery) rather than a CSS
+   invert. New: TradeIntelligenceLine — mono 11px, navy/60, gold stamp border, with
+   per-category inside-knowledge fallbacks.
+
+STANDARD: D&AD / Lloyd's Register. Typecheck clean (tsc --noEmit, exit 0).

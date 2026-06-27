@@ -1,0 +1,22 @@
+ Immersive Experience Lab — The user inhabits the machine, not the webpage
+
+  The spatial archetype for Wings is The Machine — "legible systems, visible processes, industrial clarity. Function made beautiful." Peter Zumthor's
+  ---
+  Immersive Experience Lab — The user inhabits the machine, not the webpage
+
+  The spatial archetype for Wings is The Machine — "legible systems, visible processes, industrial clarity. Function made beautiful." Peter Zumthor's question applied:
+  what does this product page want to feel like? Answer: the inside of a precision instrument.
+
+  - Environmental Context Layer: a category-specific ambient texture behind the page. Tractors: faint SVG contour lines suggesting agricultural terrain. Trucks: faint
+  grid lines suggesting warehouse/logistics. Buses: faint urban grid. Extremely subtle — 3% opacity. Gives the machine a world.
+  - Technical Drawing Silhouette: below the gallery, a CSS/SVG isometric vector silhouette of the product type — not a photograph, not 3D, but a precision line drawing in
+  the tradition of engineering documentation. Gives the product dimensional presence without 3D weight.
+  - "Inspection Mode": click any spec value and it expands into an inline explanation — what this spec means, why it matters for this buyer's use case, what the range
+  looks like in the market. The product page becomes a learning surface.
+  - Depth of Field on Gallery: CSS filter: blur() applied to the very edges of the gallery image, sharp center — simulates the optics of a precision camera. The product
+  emerges from depth rather than sitting flat.
+  - Jump Navigation: with this much content, a minimal sticky jump nav appears after first scroll: Variantes · Especificaciones · Usos · Consultar. Four words. Gold
+  underline on active. Lets the serious buyer navigate like a document, not scroll like a consumer.
+  - "Field Report" expandable section: collapsible section at the bottom (before the Mister CTA) — operational context written in the voice of a technical expert. "Este
+  modelo opera en condiciones de altitud media hasta 3,200 msnm. Para uso en sierra peruana, verificar especificaciones de carburador con proveedor." Real intelligence,
+  not marketing copy.

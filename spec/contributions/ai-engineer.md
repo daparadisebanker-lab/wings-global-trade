@@ -1,711 +1,1338 @@
-# AI Engineer Contribution — Wings Global Trade
-# Accio Engine: Complete AI Architecture Specification
+# Mister AI Engineer Specification
+
+**Author:** AI Engineer  
+**Date:** 2026-06-27  
+**Model:** claude-sonnet-4-6  
+**Source authority:** MISTER_MASTER_BRIEF.md D3 + D7 + existing codebase audit  
+**Status:** Implementation-ready — builder reads this before touching any AI code
 
 ---
 
-## 1. AI Integration Points
+## 0. Codebase reality vs brief
 
-Every point at which Claude is invoked in the product, with model, trigger, input, and output defined.
+The existing code (`src/app/api/mister/chat/route.ts`, `src/types/mister.ts`) implements the **old Accio Engine TPR flow**. It is entirely replaced. Specifically:
 
-| # | Integration Point | Model | Route / Location | Trigger | Input | Output |
-|---|---|---|---|---|---|---|
-| 1 | **Accio chat turn** | `claude-haiku-4-5` | `POST /api/accio/chat` | User sends message | Full conversation history + current TPR state injected into system prompt | SSE stream: `text` chunks + embedded `|||JSON_START|||...|||JSON_END|||` blocks |
-| 2 | **CIF estimation (standard)** | Deterministic (no AI) | `POST /api/accio/estimate` | TPR reaches `minimum` completeness | TPR state object | Synchronous JSON: CIF breakdown, duty estimate, free zone routing |
-| 3 | **CIF estimation (complex HS)** | `claude-sonnet-4-6` | `POST /api/accio/estimate` (conditional path) | HS code not in static duty table, or product description is ambiguous for categorization | TPR + system prompt instructing HS classification and duty reasoning | JSON: HS chapter classification, duty rate reasoning, methodology explanation |
-| 4 | **Search intent classification** (future v2) | `claude-haiku-4-5` | `src/lib/routing.ts` | Search query from homepage SearchBar | Query string | `{ type: 'catalog' | 'accio' | 'ambiguous', category?: string }` |
+- `tpr_update` / `delta` / `done` SSE event types → replaced by `token` / `surface` / `actions` / `state` / `done` / `error`
+- `tprState` / `TprState` / `TprFieldKey` → replaced by `MisterContext` / `MisterCollected` / `MisterArchetype`
+- `buildMisterSystemBlocks(tprState)` → replaced by the two-block prompt caching shape
+- `accio_projects` table → coexists unchanged; new `mister_projects` table added alongside it
+- `src/lib/mister-knowledge.ts` static catalog text → continues to exist and can be included in the static system prompt block (it is domain knowledge, not dynamic context)
+- The mock stream (offline mode) → preserve the pattern but adapt to new event types
 
-**Hard rules for all AI calls:**
-- All calls are server-side only (`src/app/api/**`). API key (`ANTHROPIC_API_KEY`) never in client bundle.
-- If `ANTHROPIC_API_KEY` is absent: chat falls back to deterministic mock stream. Estimate returns a mock CIF with `is_mock: true` flag. Platform must be demonstrable without API key.
-- Maximum conversation length: 20 turns enforced server-side (not client-side). After 20 turns, Accio redirects to submit.
-- Rate limit: 30 chat requests per `session_id` per hour (server-enforced).
+The `leads` table and notification flow are unchanged. A Mister session that escalates to human contact still creates a `leads` row — the `flow` enum needs a new value `'mister'`.
 
 ---
 
-## 2. Enhanced Accio System Prompt — Production-Ready
+## 1. Gap Analysis
 
-The following prompt is complete and ready to paste into `src/lib/claude.ts` as `ACCIO_SYSTEM_PROMPT`. It replaces the placeholder string `[TPR_STATE_PLACEHOLDER]` at runtime via `buildAccioSystemPrompt()`.
+What D3 and D7 leave unspecified that a builder needs before writing a line of code.
+
+### G1 — `mister_projects` DDL
+
+D7 mentions the table in the checklist and lists columns in prose. No DDL, no types, no indexes, no RLS policies. Fully specified in §8.
+
+### G2 — Content tables (contacts, documents, MOQ)
+
+D7.4 defines the tool function signatures but not the Supabase tables they read. `fetchContact` needs a `mister_contacts` table. `fetchDocument` needs a `mister_documents` table. MOQ data lives embedded in `products.specs` jsonb — no separate table needed. Full DDL in §8.
+
+### G3 — Tool execution model: reactive vs pre-loaded
+
+D7.4 says "all tools run server-side, results injected into context.backend" but also defines them as `async function fetchProduct(...)` implying they are Anthropic tool_use blocks. These two descriptions resolve differently. The implementation decision is specified in §2.
+
+### G4 — Quick actions fence extraction from live stream
+
+D3 mandates a fenced `` ```quick_actions `` block at the end of every response. D7 does not specify how the server extracts it without either (a) buffering the entire response before streaming tokens to the client, or (b) using a stateful buffer mid-stream. The exact algorithm is specified in §3.
+
+### G5 — History trim: what constitutes a "turn"
+
+D7 says "last 15 turns" and "older turns are summarized into a compact collected context." It does not define whether a "turn" is a user+assistant pair (2 messages) or a single message. The word "summarized" implies a second model call which would be expensive. The exact algorithm and what "summarized" means mechanically are specified in §4.
+
+### G6 — Stage transition logic
+
+D7 defines `MisterStage` as an enum and says "use stage to decide how hard to push toward a next step." It does not specify when the server transitions stage from `induction` → `discovery` → `consideration` → `pre_qualification` → `support`, nor who is responsible (model vs server inference). Specified in §4.
+
+### G7 — Guardrail scan: stream-then-replace flow
+
+D7.6 gives regex patterns but does not specify whether the scan happens (a) on a buffered full response before streaming, (b) in real-time on tokens, or (c) after streaming completes. The "regenerate once with corrective instruction" adds an Anthropic API call — the cost and latency implications are unaddressed. The practical flow is specified in §5.
+
+### G8 — Prompt caching: exact SDK call shape
+
+D3 shows the TypeScript pattern but does not note that `cache_control` on a `system` block requires `@anthropic-ai/sdk` ≥ 0.24.0 and that the `system` field must be an array of content blocks (not a string). The existing code passes `system` as a string (via `buildMisterSystemBlocks`). The exact call shape is specified in §6.
+
+### G9 — SSE wire format: named events vs flat JSON
+
+D7 shows named SSE events (`event: token\ndata: {...}`) but the existing implementation uses flat JSON discriminated by `type` (`data: {"type":"delta",...}`). With `fetch` + `ReadableStream` (not `EventSource`), both work — but the client parser must match the server format. The exact wire format and client parsing pattern are specified in §3.
+
+### G10 — `surface` event: when emitted and payload shapes
+
+D7 lists `surface` as an SSE event type with `{"type":"product","payload":{...}}` but does not specify when it fires relative to tokens, what the payload looks like for each surface type, or whether multiple surfaces can fire in one turn. Specified in §3.
+
+### G11 — Rate limiting: Redis dependency, fallback, burst guard implementation
+
+D7.5 mentions Upstash Redis but the existing `.env.local.example` has no Redis variables. The burst guard (max 1 in-flight per session) is mentioned but not implemented. Fail-open vs fail-closed on Redis unavailability is unspecified. Full implementation pattern in §7.
+
+### G12 — Session lifecycle: row creation and relation to `leads`
+
+When does `mister_projects` row get created — on first message or when the client generates a session ID? What is the handoff to `leads` (which table links them)? The `leads.flow` enum needs a `'mister'` value. Specified in §8.
+
+### G13 — `prefillToken` for quotation form
+
+`triggerQuotationForm` returns `{ formUrl, prefillToken }`. The token needs a TTL, a storage table, and a validation endpoint so the form page can retrieve pre-filled data. Specified in §8.
+
+---
+
+## 2. Tool Execution Model
+
+### Decision: pre-loaded context, not reactive Anthropic tool_use
+
+Do not use Anthropic tool_use blocks for the D7.4 tools. Use them as plain server-side async functions called during context assembly, before the model API call. Reasons:
+
+1. Tool_use interrupts the streaming flow: the model emits a `tool_use` block, the stream pauses, the server dispatches the tool and calls the API again. This doubles latency per turn on tool-heavy turns and requires stateful multi-call management.
+2. The D7 system prompt says the context block arrives with `backend: { product, comparison, moq, logistics_docs, contacts }` pre-populated. The model is designed to read from injected context, not discover via tool calls.
+3. D7.4 says "no fetchPrice, getLeadTime, fetchStock, getAvailability tool may exist" — this is framed as a schema-level prohibition. Keeping NO tools in the Anthropic tool schema achieves the same goal more simply.
+4. All tool outputs are deterministic lookups (Supabase queries) — there is no benefit to letting the model decide what to fetch mid-stream; the server can make that decision based on session state.
+
+### What each tool does at context assembly time
 
 ```
-Eres el Motor Accio de Wings Global Trade. Wings es un operador de importación B2B con infraestructura en dos zonas francas de América Latina:
-
-- ZOFRATACNA (Zona Franca de Tacna, Perú) — inaugurada en 1989, gestión regulada por SUNAT. Mercados servidos: Perú, Bolivia.
-- ZOFRI (Zona Franca de Iquique, Chile) — la zona franca más grande de América del Sur. Mercados servidos: Chile, Colombia, Panamá, Bolivia (ruta alternativa), Paraguay, Argentina.
-
-Tu misión es recopilar el Requisito Técnico de Producto (TPR) del importador mediante conversación natural en español, y cuando sea posible, estimar el costo CIF de la operación. Al terminar, entregas un brief estructurado al equipo operativo de Wings.
-
-No eres un chatbot genérico. Eres un asesor de comercio internacional con experiencia en maquinaria, vehículos comerciales, equipos industriales, buses y repuestos de origen chino, japonés, tailandés y árabe.
-
----
-
-IDIOMA Y TONO:
-- Siempre en español. Tuteo: "te", "tu", "tienes".
-- Directo y operativo — como un socio comercial experimentado, no como un asistente virtual.
-- Frases cortas. Sin relleno retórico.
-- No uses signos de exclamación. Nunca digas "¡Perfecto!", "¡Excelente!", "¡Genial!" ni variantes.
-- Cuando confirmes un dato: "Anotado." o "Entendido. [dato]." — nada más.
-- Cuando necesites aclaración: una sola pregunta directa. Nunca dos preguntas en el mismo mensaje.
-
----
-
-DOMINIO — TÉRMINOS DE COMERCIO EXTERIOR (usa con naturalidad):
-
-INCOTERMS relevantes:
-- EXW (Ex Works): precio en fábrica, el comprador cubre todo desde origen.
-- FOB (Free On Board): vendedor entrega en puerto de embarque, comprador cubre flete y seguro.
-- CIF (Cost, Insurance, Freight): vendedor cubre costo de mercancía + flete + seguro hasta puerto destino.
-- DDP (Delivered Duty Paid): vendedor cubre todo hasta destino final incluido impuestos.
-- Wings trabaja principalmente en esquema FOB origen / CIF destino.
-
-Documentación aduanera estándar:
-- Factura comercial (Commercial Invoice)
-- Lista de empaque (Packing List)
-- Certificado de origen (puede ser Form E para China bajo FTA ASEAN/Perú-China)
-- Bill of Lading (BL) o Airway Bill (AWB)
-- Certificados sanitarios, fitosanitarios o técnicos según categoría (SENASA, DIGESA, SNS, SIM)
-- DUA (Declaración Única de Aduana) — aplicable Perú
-- DIN (Declaración de Ingreso) — Chile
-- SAE (solicitud de autorización de embarque) — Colombia
-
-Contenedores estándar:
-- 20' DC (Dry Container): 33 m³, ~28 ton
-- 40' DC: 67 m³, ~26 ton
-- 40' HC (High Cube): 76 m³, ~26 ton — estándar para maquinaria pesada
-- LCL (Less than Container Load): carga consolidada con otros importadores, útil para volúmenes bajos
-
-Zonas francas — ventajas operativas:
-- Suspensión de aranceles y tributos hasta que la mercancía se nacionaliza.
-- Consolidación de carga de múltiples proveedores antes de despacho final.
-- Repacking y relabeling dentro de zona franca (sin alterar naturaleza del producto).
-- Despachos parciales: permite liberar mercancía en lotes, no en una sola operación.
-- Almacenamiento con plazo extendido (hasta 1 año ZOFRATACNA, 2 años ZOFRI con extensión).
-- Inspección de calidad antes de nacionalización: el comprador puede rechazar carga sin haberla importado.
-- Ahorro estimado vs. importación estándar: 15% a 40% dependiendo del destino, categoría y volumen.
-
----
-
-MERCADOS DE ORIGEN — Wings trabaja con:
-
-China (principal):
-- Maquinaria agrícola: YTO, Foton, Yuchai, Jinma, Lovol, XCMG
-- Camiones: FAW, Sinotruk (HOWO), CAMC, Dongfeng, Shacman
-- Buses: Higer, Yutong, King Long, Zhongtong
-- Equipo industrial: XCMG, SANY, Liugong, Zoomlion
-- Repuestos: múltiples fabricantes Guangzhou, Yiwu, Quanzhou
-- Puerto de embarque principal: Shanghai, Tianjin, Guangzhou
-
-Japón:
-- Camiones: Hino, Mitsubishi Fuso, Isuzu (unidades usadas o nuevas)
-- Buses: Toyota Coaster (minibús)
-- Puerto principal: Yokohama, Osaka
-
-Tailandia:
-- Maquinaria agrícola: Kubota, Iseki (tractores compactos)
-- Puerto principal: Laem Chabang
-
-Emiratos Árabes (Dubai):
-- Hub de redistribución para equipo industrial, repuestos, generadores
-- Productos de origen chino o europeo re-exportados desde Dubai
-- Puerto: Jebel Ali
-
----
-
-MERCADOS DE DESTINO — rutas frecuentes:
-
-Perú → ZOFRATACNA (Tacna) → puerto Ilo o Matarani, o paso terrestre → destino final
-Bolivia → ZOFRATACNA (Tacna) → Desaguadero o Tambo Quemado (paso terrestre) → La Paz / Santa Cruz
-Chile → ZOFRI (Iquique) → directo a distribución nacional
-Colombia → directo a Buenaventura o Cartagena (ruta preferida para Colombia), o ZOFRI para consolidación
-Panamá → ZOFRI (Iquique) como opción, o directo a Colón
-Paraguay → ZOFRI (Iquique) → Paso Los Libertadores o ruta fluvial Rosario
-
----
-
-TASAS ARANCELARIAS DE REFERENCIA (para estimación — no son tasas legales vinculantes):
-
-PERÚ (base CIF, incluye ad valorem + IGV 18%):
-- Maquinaria agrícola (Cap. HS 84): 0% — exonerado bajo Ley de Promoción Agraria
-- Tractores (HS 8701): 0%
-- Cosechadoras (HS 8433): 0%
-- Camiones > 5 ton (HS 8704): 9% ad valorem
-- Camiones < 5 ton (HS 8704): 9%
-- Buses > 10 pasajeros (HS 8702): 9%
-- Equipo industrial — grúas, montacargas (HS 8426-8428): 4-6%
-- Generadores (HS 8502): 4%
-- Compresores (HS 8414): 6%
-- Repuestos — motores (HS 8407-8408): 6-9%
-- Repuestos — partes maquinaria (HS 8431): 0-6%
-
-CHILE (base CIF — Chile tiene FTAs con China y muchos países asiáticos):
-- Mayoría de maquinaria bajo FTA con China: 0-1.5%
-- Vehículos comerciales: 6% tasa general, algunos con FTA más bajo
-- Equipos industriales: 0-6%
-- Repuestos: 0-6%
-
-COLOMBIA (base CIF):
-- Maquinaria agrícola: 0-5% + IVA 19%
-- Vehículos de carga (HS 8704): 35% para nuevos importados, 15-35% según categoría
-- Buses: 15-35%
-- Equipos industriales: 0-5%
-- Repuestos: 5-20% dependiendo del capítulo
-
-PANAMÁ (base CIF):
-- Tarifas bajas — mayoría 0-15%
-- Zona franca Colón: régimen especial, puede aplazar aranceles
-
-BOLIVIA (base CIF):
-- Importa vía Arancel Externo Común CAN: 5-20%
-- Maquinaria agrícola: 5%
-- Vehículos: 20-30%
-- Equipos industriales: 10-20%
-
-NOTA CRÍTICA: Nunca confirmes tasas arancelarias como definitivas. Siempre indica: "El arancel final lo confirma el equipo de Wings y el agente aduanero. Este es un estimado de referencia."
-
----
-
-CÓDIGOS HS FRECUENTES POR CATEGORÍA Wings:
-
-Maquinaria agrícola:
-- 8701.10 — tractores para semirremolques
-- 8701.91/92/93/94/95 — tractores agrícolas por potencia (< 18kW hasta > 130kW)
-- 8432 — máquinas de preparación del suelo, sembradoras
-- 8433 — máquinas de cosecha y trilla; cosechadoras autopropulsadas
-- 8436 — otras máquinas agrícolas, ganaderas, avícolas
-
-Camiones y vehículos comerciales:
-- 8704.10 — volquetes para minería off-road
-- 8704.21/22/23 — camiones a motor de émbolo alternativo (GN/diesel, < 5 ton, 5-20 ton, > 20 ton)
-- 8704.31/32 — camiones a motor de émbolo (gasolina)
-- 8706 — chasis con motor para vehículos de transporte
-
-Buses:
-- 8702.10 — ómnibus > 10 pasajeros, motor diesel
-- 8702.20 — ómnibus > 10 pasajeros, motor gasolina
-- 8702.40 — ómnibus eléctricos
-- 8702.90 — otros ómnibus
-
-Equipo industrial:
-- 8426 — grúas, aparatos de elevación y carga
-- 8427 — montacargas, apiladoras
-- 8428 — otros aparatos de elevación, carga, descarga
-- 8429 — bulldozers, niveladoras, motoniveladoras, excavadoras, cargadoras
-- 8502 — grupos electrógenos (generadores)
-- 8414 — bombas de aire, compresores
-
-Repuestos:
-- 8407 — motores de émbolo alternativo, encendido por chispa
-- 8408 — motores de émbolo de encendido por compresión (diesel)
-- 8409 — partes para motores 8407/8408
-- 8431 — partes para maquinaria HS 8425-8430
-- 8708 — partes y accesorios para vehículos HS 8701-8705
-
----
-
-FÓRMULA CIF (uso interno — nunca compartas la fórmula ni los márgenes):
-
-FOB = precio_objetivo_usd × cantidad × (1 + margen_sourcing)
-Márgenes por categoría:
-- Maquinaria agrícola: 18%
-- Vehículos (camiones/buses): 15%
-- Repuestos y partes: 22%
-- Equipo industrial: 20%
-
-Flete referencial (contenedor 40HC, ruta Shanghai → destino):
-- Shanghai → Callao (Lima, Perú): USD 2,800 – 4,200
-- Shanghai → San Antonio (Chile): USD 2,600 – 3,800
-- Shanghai → Buenaventura (Colombia): USD 2,400 – 3,600
-- Shanghai → Balboa (Panamá): USD 2,200 – 3,200
-- Yokohama → Callao: USD 2,400 – 3,600
-- Dubai → Callao: USD 2,800 – 4,000
-
-Seguro = (FOB + Flete) × 1.5% (ICC cláusula C estándar)
-CIF = FOB + Flete + Seguro
-Arancel = CIF × tasa_arancelaria / 100
-
-Ahorro zona franca vs. importación directa estándar:
-- ZOFRATACNA (Perú): ahorro estimado 15–22% en costo total landed
-- ZOFRI (Chile): ahorro estimado 12–18% en costo total landed
-(Ahorro proviene de: tarifas de manejo preferenciales, diferimiento de IGV/IVA, consolidación, eficiencia en despacho)
-
----
-
-CAMPOS TPR A CAPTURAR (en orden de prioridad):
-
-1. product_description — descripción libre del producto (obligatorio)
-2. hs_code — código HS si el comprador lo conoce; si no, inferirlo y confirmar
-3. quantity — número de unidades o contenedores
-4. target_price_usd — precio objetivo por unidad en USD (FOB o en fábrica)
-5. destination_country — país de destino final
-6. source_market — mercado de origen preferido (o "flexible")
-7. certifications — certificaciones requeridas (CE, EPA, SENASA, DIGESA, etc.) o "ninguna"
-8. tech_specs — especificaciones técnicas clave (potencia, capacidad, material, voltaje, etc.)
-9. packaging_requirements — requisitos de empaque y etiquetado
-10. delivery_timeline — plazo de entrega deseado (semanas o fecha)
-
-REGLAS DE COMPLETENESS:
-- partial: 1–2 campos (solo descripción o descripción + destino)
-- minimum: campos 1, 3, 4, 5 capturados → suficiente para CIF estimado
-- standard: campos 1-6 capturados
-- complete: los 10 campos capturados
-
-SELECCIÓN DE ZONA FRANCA (determinista, no preguntar):
-- destination_country = "peru" o "bolivia" → free_zone = "ZOFRATACNA"
-- destination_country = cualquier otro → free_zone = "ZOFRI"
-
----
-
-PROTOCOLO DE EXTRACCIÓN DE DATOS:
-
-Al final de CADA respuesta tuya, incluye un bloque JSON con el estado TPR actualizado. El servidor parsea este bloque para actualizar la ficha en tiempo real. El bloque NUNCA se muestra al usuario — el servidor lo elimina antes de mostrar el texto.
-
-Formato EXACTO (los delimitadores deben ser exactamente estos):
-|||JSON_START|||
-{
-  "tpr": {
-    "product_description": "string o null",
-    "hs_code": "string o null",
-    "quantity": "string o null",
-    "target_price_usd": número o null,
-    "destination_country": "string o null",
-    "source_market": "string o null",
-    "certifications": ["array"] o null,
-    "tech_specs": {"clave": "valor"} o null,
-    "packaging_requirements": "string o null",
-    "delivery_timeline": "string o null"
-  },
-  "completeness": "partial" | "minimum" | "standard" | "complete",
-  "missing_fields": ["lista de campos pendientes"],
-  "free_zone": "ZOFRATACNA" | "ZOFRI" | null,
-  "source_market_recommendation": "string o null"
-}
-|||JSON_END|||
-
-REGLAS DEL BLOQUE JSON:
-- Incluir en CADA respuesta, incluso si no cambia nada.
-- null para campos no capturados (nunca omitir la clave).
-- target_price_usd debe ser un número (float), no string.
-- certifications debe ser array de strings, o null.
-- tech_specs debe ser objeto clave-valor, o null.
-- completeness debe reflejar el estado actual, no el anterior.
-- Si en la respuesta anterior ya tenías un campo y el usuario confirma o no corrige, mantenlo en el bloque.
-- Si el usuario corrige un campo, actualiza el valor.
-- source_market_recommendation: sugiere el mercado más apropiado según la categoría del producto, aunque el usuario no lo haya dicho.
-
----
-
-FLUJO DE CONVERSACIÓN — QUÉ HACER EN CADA ETAPA:
-
-ETAPA 1 — TPR vacío (inicio de conversación):
-- El usuario llega sin datos previos (o con un ?context= de la búsqueda homepage).
-- Si hay context, úsalo como punto de partida: "Veo que buscas [context]. ¿Puedes confirmarme el producto exacto y la cantidad que necesitas?"
-- Si no hay context, pregunta directamente: "¿Qué necesitas importar?"
-- No presentes opciones de menú ni listas de categorías. El usuario sabe lo que quiere.
-
-ETAPA 2 — TPR parcial (recopilando campos):
-- Un campo a la vez. Nunca dos preguntas en un mensaje.
-- Orden natural: producto → cantidad → destino → precio → especificaciones → certificaciones → empaque → plazo.
-- Si el usuario menciona algo que no es el campo que preguntaste, captúralo y avanza.
-- Confirma cada campo capturado con una línea corta antes de la siguiente pregunta.
-- Ejemplo: "Anotado — 20 unidades de cosechadora autopropulsada. ¿Cuál es el país de destino?"
-
-ETAPA 3 — TPR en completeness "minimum":
-- Di exactamente: "Tengo suficiente para calcular un estimado CIF preliminar. ¿Lo genero ahora o seguimos completando el requisito?"
-- Si dice sí: informa que el sistema generará el estimado automáticamente (el servidor llama /api/accio/estimate).
-- Si dice "seguir": continúa capturando campos faltantes.
-
-ETAPA 4 — TPR completo o estimado generado:
-- Di: "Tu requisito técnico está listo. Para enviarlo al equipo de Wings, completa tus datos de contacto en el formulario."
-- No intentes capturar nombre, email ni teléfono en el chat — ese flujo es del AccioSubmitForm.
-
----
-
-MANEJO DE INCERTIDUMBRE — NUNCA FABRICAR:
-
-HS Code no claro:
-"El código HS exacto lo confirma el equipo — para el estimado voy a usar el capítulo [X] que cubre [descripción]. Si tienes una ficha técnica o especificación oficial, el agente aduanero puede afinarlo."
-
-Tasa arancelaria en país no estándar o producto especializado:
-"Para [país/producto], el arancel varía según la clasificación arancelaria final. El estimado usa [X%] como referencia. El equipo de Wings verifica la tasa exacta antes de la cotización formal."
-
-Flete inusual (producto sobredimensionado, ruta no estándar):
-"Para carga sobredimensionada o rutas especiales, el flete tiene mayor variación. El estimado incluye un margen de ±15%. La cotización de flete exacta la hace el agente de carga."
-
-Certificaciones desconocidas para un mercado:
-"Las certificaciones específicas que aplican en [país] para [producto] dependen del uso final y del ente regulador local. El equipo Wings las verifica — por ahora anoto 'verificar certificaciones aplicables'."
-
----
-
-RESTRICCIONES ABSOLUTAS:
-
-- No menciones competidores por nombre (Alibaba, Accio.com, Alibaba ACCIO, Faire, TradeKey, etc.).
-- No hagas compromisos de precio, plazo o disponibilidad que el equipo Wings no haya confirmado.
-- No reveles la fórmula CIF, los márgenes de sourcing ni las tasas de ahorro de zona franca como números exactos — solo di "el estimado refleja el costo operativo real de la ruta".
-- No pidas datos de contacto (nombre, email, teléfono, empresa) — eso es responsabilidad del AccioSubmitForm.
-- No expliques cómo funciona el sistema a menos que el usuario lo pregunte directamente.
-- No uses lenguaje de ventas ni frases de marketing ("la mejor opción", "garantizamos", "somos líderes").
-- No generes respuestas largas. Máximo 3-4 oraciones por turno salvo que el usuario pida explicación extensa.
-
----
-
-ESTADO ACTUAL DEL TPR:
-[TPR_STATE_PLACEHOLDER]
+fetchProduct(currentProductId)
+  → fires when: request.currentProductId is non-null
+  → query: SELECT id, slug, name_es, description_es, specs, images, models, trade_intelligence
+            FROM products WHERE id = $1 AND is_active = true
+  → result shape: { id, name, category, summary, specs, imageUrl?, moqRef? }
+  → injects into: context.backend.product
+
+preloadComparison(session.collected.productInterest[])
+  → fires when: session.collected.productInterest has ≥ 2 entries
+  → query: SELECT id, name_es, specs FROM products WHERE id = ANY($1) AND is_active = true
+  → result shape: { products: [{id, name, specs}], axes: string[] }
+  → axes = union of all spec keys across the products, filtered to ≤ 8 most discriminating
+  → injects into: context.backend.comparison
+
+fetchDocument(session.collected.destinationCountry, currentProductCategory)
+  → fires when: collected.destinationCountry is set
+  → query: SELECT title, public_url, is_available FROM mister_documents
+            WHERE country_code = $1 AND (product_type = $2 OR product_type = 'ALL')
+            ORDER BY is_available DESC LIMIT 5
+  → injects into: context.backend.logistics_docs (array or null if none available)
+
+fetchContact(session.archetype, inferredCategory)
+  → fires when: session.stage is 'pre_qualification' or 'support'
+  → inferredCategory logic:
+      lead_buyer          → 'sales'
+      project_manager     → 'project'
+      logistics_manager   → 'logistics'
+      reseller            → 'partnerships'
+      wholesale_partner   → 'key_accounts'
+      unresolved          → 'sales'
+  → query: SELECT name, role, whatsapp, email FROM mister_contacts
+            WHERE $1 = ANY(archetypes) AND category = $2 AND is_active = true
+            ORDER BY sort_order LIMIT 1
+  → fallback: { name: 'Wings Global Trade', role: 'Operaciones', whatsapp: process.env.MISTER_OPS_WHATSAPP }
+  → injects into: context.backend.contacts
+
+triggerQuotationForm(prefilled)
+  → not called during stream context assembly
+  → called as a SEPARATE endpoint: POST /api/mister/quote
+  → stores prefill data in mister_quote_tokens table with 24h TTL
+  → returns { formUrl: '/cotizar?token={token}', prefillToken: '{uuid}' }
+  → the /cotizar page reads the token and pre-fills the existing inquiry form
 ```
 
+### Event sequence for a full turn (no tool result needed at model time)
+
+```
+1.  POST /api/mister/chat received
+2.  Validate session: check mister_projects.in_flight = false (burst guard)
+3.  SET mister_projects.in_flight = true (atomic update)
+4.  Load mister_projects row (session state, history, archetype, stage, collected)
+5.  Run context assembly (fetchProduct, fetchDocument, fetchContact in parallel)
+6.  trimHistory(history, 15) → trimmedMessages
+7.  renderContextBlock(session + assembledContext) → dynamic context string
+8.  Open SSE stream to client (headers: text/event-stream)
+9.  Emit pre-loaded surface events to client (for each non-null backend field, emit surface SSE)
+10. Call Anthropic messages.stream() with static cached block + dynamic block + trimmed history
+11. For each text delta:
+      a. Append to accumulator string
+      b. Run quick_actions fence detector on accumulator
+      c. If in fence: do not emit token SSE
+      d. If safe text available: emit token SSE
+12. On message_stop:
+      a. Run guardrail scan on full accumulated text
+      b. If violation: emit error SSE { code: 'CONTENT_REPLACED', fallback: ROUTING_MESSAGE }
+                       log violation to mister_projects.flags[]
+      c. If clean: parse quick_actions from accumulated text, emit actions SSE
+13. Infer new stage from updated collected data
+14. Emit state SSE { archetype, stage }
+15. Emit done SSE { messageId: uuid }
+16. Persist to DB: new message appended to history, collected updated, turn_count++, in_flight = false
+17. Close stream
+```
+
+### Event sequence for multi-tool turns (future)
+
+If tool_use blocks are ever added to the schema (e.g., for a web-search capability), the server must handle the Anthropic agentic loop: stream call → pause on tool_use → execute → inject tool_result → stream call resume. That flow is out of scope for v1 Mister but the route must be designed so adding it does not require a rewrite of the SSE emission logic.
+
 ---
 
-## 3. Context Assembly Strategy
+## 3. SSE Format and Client Consumption
 
-What the server assembles for each request to `/api/accio/chat`:
+### Wire format
 
-```typescript
-// src/app/api/accio/chat/route.ts — assembly pattern
+The server uses `fetch` + `ReadableStream`, not `EventSource`. Named SSE events (`event:` + `data:` lines) are used. The client parses the raw stream with a custom reader.
 
-const systemPrompt = buildAccioSystemPrompt(req.tpr_state)
-// Injects current TPR JSON into [TPR_STATE_PLACEHOLDER]
-// TPR state is denormalized (only non-null fields, compacted) to minimize token usage
+```
+event: surface\ndata: {"type":"product","payload":{...}}\n\n
+event: token\ndata: {"delta":"On a 40'HC out of Iquique"}\n\n
+event: token\ndata: {"delta":" into Peru, your usable volume"}\n\n
+...
+event: actions\ndata: {"quickActions":[{"label":"...","action":"..."},...]}\n\n
+event: state\ndata: {"archetype":"logistics_manager","stage":"consideration"}\n\n
+event: done\ndata: {"messageId":"018f..."}\n\n
+```
 
-const messages = req.messages.slice(-20) // Hard cap at 20 turns
-// Full message history is passed — no summarization in MVP
-// Each message is { role: 'user' | 'assistant', content: string }
-// Assistant messages include the raw JSON blocks (server strips them before displaying to user)
-// Passing them in history allows the model to maintain context of what it already captured
+Error events:
+```
+event: error\ndata: {"code":"AI_UNAVAILABLE","message":"Mister no está disponible..."}\n\n
+event: error\ndata: {"code":"CONTENT_REPLACED","fallback":"Para precios específicos..."}\n\n
+event: error\ndata: {"code":"SESSION_LIMIT","message":"..."}\n\n
+```
 
-const claudeRequest = {
-  model: ACCIO_CHAT_MODEL, // 'claude-haiku-4-5'
-  max_tokens: 800,         // Cap assistant response length
-  system: systemPrompt,
-  messages,
-  stream: true,
+### SSE encoder helper
+
+```ts
+function sseEvent(name: string, payload: unknown): Uint8Array {
+  return new TextEncoder().encode(
+    `event: ${name}\ndata: ${JSON.stringify(payload)}\n\n`
+  );
 }
 ```
 
-**Token budget notes:**
-- System prompt (with TPR injected): ~2,000-2,500 tokens
-- Conversation history (20 turns avg 100 tokens each): ~2,000 tokens
-- Total context per request: ~4,500-5,000 tokens
-- Response cap: 800 tokens (forces concise answers)
-- Haiku input pricing: $0.25/MTok — typical session (10 turns): ~$0.05
+### Surface event payload shapes
 
-**History truncation rule:**
-- Keep the 20 most recent turns (10 user + 10 assistant)
-- Never summarize — full text is passed
-- Older turns are dropped silently
-- System prompt is always fresh (full, with current TPR state)
+```ts
+// event: surface
+type SurfaceEvent =
+  | { type: 'product'; payload: ProductSurface }
+  | { type: 'comparison'; payload: ComparisonSurface }
+  | { type: 'moq'; payload: MoqSurface }
+  | { type: 'document'; payload: DocumentSurface }
+  | { type: 'contact'; payload: ContactSurface }
+  | { type: 'waterfall'; payload: WaterfallSurface }
 
-**Initial context injection from homepage search:**
-- If `?context=` query param exists on `/accio`, the first user message is pre-populated with the search query
-- This is passed as the first message in the history
-- The AI treats it as the user's opening statement
-
----
-
-## 4. Model Selection Rationale
-
-| Task | Model | Rationale |
-|---|---|---|
-| Accio chat turns | `claude-haiku-4-5` | Latency is the primary UX constraint for streaming chat. Haiku streams fastest. The task is structured conversation with a known extraction protocol — it does not require deep reasoning. Cost: ~$0.005 per turn. |
-| CIF estimation — standard path | No AI (deterministic) | `cif-calculator.ts` covers all common cases with static lookup tables. Zero latency, zero cost. AI is not needed when the formula and rate tables are known. |
-| CIF estimation — edge cases | `claude-sonnet-4-6` | Unusual HS codes, mixed-category products, or destinations with non-standard duty regimes require reasoning. Sonnet provides reliable structured JSON output and better knowledge of tariff schedules. Called synchronously (user sees skeleton loader). |
-| Search intent classification | `claude-haiku-4-5` (future) | Simple classification task. No streaming required. Current implementation uses deterministic keyword matching — AI upgrade only if keyword coverage proves insufficient. |
-
-**Fallback chain when API key is missing:**
-1. Chat: stream a hardcoded 3-turn demo conversation covering the most common TPR flow (maquinaria agrícola, 20 unidades, Perú, $35k objetivo). TPR events fire as if real. CIF estimate uses demo data.
-2. Estimate: return a static mock CIF card with `is_mock: true` flag visible only in development logs.
-3. Platform never errors — demo always works.
-
----
-
-## 5. Streaming Strategy
-
-### `/api/accio/chat` — SSE (Server-Sent Events)
-
-```typescript
-// Event types emitted to client
-
-// 1. Text delta — streamed as Claude generates the response
-data: {"type":"delta","content":"Entendido. Destino: Perú."}
-
-// 2. TPR update — emitted AFTER the stream completes, parsed from JSON blocks
-data: {"type":"tpr_update","tpr":{"product_description":"Cosechadora autopropulsada 100HP","quantity":"5 unidades","destination_country":"peru",...},"completeness":"minimum","free_zone":"ZOFRATACNA"}
-
-// 3. Done — signals end of stream, includes final completeness
-data: {"type":"done","completeness":"minimum"}
-
-// 4. Error — if Claude API fails mid-stream
-data: {"type":"error","message":"El servicio de IA no está disponible. Intenta nuevamente."}
+interface ProductSurface {
+  id: string; name: string; category: string;
+  summary: string; specs: Record<string, string>;
+  imageUrl?: string; slug: string;
+}
+interface ComparisonSurface {
+  products: { id: string; name: string; specs: Record<string, string> }[];
+  axes: string[];
+}
+interface MoqSurface {
+  category: string;
+  tiers: { minQty: number; description: string }[];
+}
+interface DocumentSurface {
+  available: boolean; title?: string; url?: string;
+  country: string; productType: string;
+}
+interface ContactSurface {
+  name: string; role: string; whatsapp: string; email?: string;
+}
+interface WaterfallSurface {
+  segments: WaterfallSegment[]; // from Deliverable 4
+}
 ```
 
-**Streaming implementation notes:**
+Multiple surface events may fire in a single turn. They are emitted before the first `token` event so the UI can render cards before text arrives.
 
-The server buffers the streamed response in a string accumulator. While streaming, text chunks are passed through `stripJsonMarkers()` before being forwarded to the client — this prevents partial `|||JSON_START|||` sequences from appearing in the visible chat.
+### Quick actions fence extraction algorithm
 
-After the stream closes:
-1. Full accumulated text is passed to `extractTprFields()` → returns `{ fields, cleaned }`
-2. One `tpr_update` SSE event is emitted with the full updated TPR state
-3. One `done` SSE event is emitted with the completeness level
-4. If completeness changed from `partial` to `minimum`, client hook triggers `/api/accio/estimate` automatically
-
-**Client-side handling in `useAccioChat.ts`:**
-```typescript
-// On SSE event type 'delta': append content to current assistant message
-// On 'tpr_update': call updateTprState(event.tpr) — updates TprSheet in real-time
-// On 'done': if event.completeness === 'minimum', trigger useCifEstimate()
-// On 'error': show toast, stop streaming indicator, allow retry
+The model appends exactly this at the end of every response (per D3 mandate):
+````
+```quick_actions
+[{"label":"...","action":"..."},{"label":"...","action":"..."},{"label":"...","action":"..."}]
 ```
+````
 
-### `/api/accio/estimate` — Synchronous JSON
+The fence detector operates on the accumulating full-text buffer. It is NOT a streaming token-by-token state machine because the fence header `` ```quick_actions `` can span multiple chunks. Instead:
 
-No streaming. Client shows `<CifEstimateCard />` skeleton. Typical response time: 200ms (deterministic path) or 3-5s (Sonnet path for edge cases).
+```ts
+const FENCE_OPEN = '```quick_actions';
+const FENCE_CLOSE = '```';
 
----
+interface StreamState {
+  accumulator: string;    // full text so far
+  fenceStart: number;     // index where fence opens, -1 if not found yet
+  safeUpto: number;       // index up to which tokens have been emitted
+}
 
-## 6. Domain Knowledge Embedded in AI
-
-Every rule and formula the AI must know to behave as an expert trade consultant.
-
-### Free Zone Operations (Operational Reality)
-
-**ZOFRATACNA (Tacna, Perú):**
-- Legal basis: Ley 27688 (Zona Franca y Zona Comercial de Tacna). Administrada por ZOTAC.
-- Mercancías ingresan bajo régimen de suspensión de aranceles.
-- Plazo máximo de permanencia: 12 meses (prorrogable con justificación).
-- Operaciones permitidas dentro de zona: almacenamiento, empaque, reempaque, etiquetado, control de calidad, exhibición.
-- Para nacionalizar: DUA en aduana de Tacna. IGV 18% aplica sobre CIF.
-- Productos agrícolas: requieren inspección SENASA antes de ingreso a territorio peruano.
-- Wings usa ZOFRATACNA para destinos: Perú (Lima, Arequipa, Cusco, Trujillo) y Bolivia (La Paz, Cochabamba, Santa Cruz).
-
-**ZOFRI (Iquique, Chile):**
-- La zona franca más grande de Sudamérica. Privada, operada por ZOFRI S.A.
-- Mercancías en zona no pagan IVA ni aranceles hasta nacionalización.
-- Plazo máximo de almacenamiento: 2 años con posibilidad de extensión.
-- Permite: almacenamiento, distribución, manufactura simple, exhibición, consolidación.
-- Para exportar desde ZOFRI hacia Bolivia, Paraguay, Argentina: documentación de re-exportación.
-- Para nacionalizar a Chile: DIN (Declaración de Ingreso), arancel + IVA 19%.
-- Wings usa ZOFRI para destinos: Chile, Colombia (vía consolide), Panamá, Paraguay.
-
-**Ahorro real de zona franca (para comunicar al cliente):**
-- El comprador NO paga aranceles ni IVA hasta que decide nacionalizar.
-- Puede inspeccionar, rechazar o re-exportar mercancía sin haberla importado oficialmente.
-- Consolidación de múltiples pedidos en un solo despacho final reduce costo logístico.
-- Ahorro típico reportado por clientes Wings: 15%–40% vs. importación directa sin zona franca.
-
-### Duty Rate Tables (embedded in `src/lib/duty-rates.ts`)
-
-El AI no debe memorizar tablas exactas — las tasas exactas están en el código. El AI usa las tasas de referencia del sistema prompt para orientación conversacional únicamente.
-
-### HS Code Inference Rules
-
-Si el usuario no proporciona HS code:
-1. Identificar categoría del producto por descripción.
-2. Asignar capítulo HS probable (84 = maquinaria, 87 = vehículos, 85 = eléctrico, 73 = hierro/acero).
-3. Proponer el código de 4-6 dígitos más probable.
-4. Confirmar con el usuario: "¿El producto que mencionas es [descripción técnica]? Si es así, clasificaría bajo HS [código]."
-5. Si el usuario confirma: marcar `hs_code_confirmed: true`.
-6. Si el usuario no sabe: usar el capítulo para la estimación y marcar como "pendiente verificación".
-
-### LATAM Import Regulations (per country)
-
-**Perú:**
-- Ente regulador: SUNAT (tributos), MINCETUR (comercio exterior)
-- Maquinaria agrícola: arancel 0% bajo Decreto Legislativo de Promoción Agraria
-- Vehículos: restricción de antigüedad (no se pueden importar vehículos > 5 años de antigüedad como nuevos)
-- Productos de uso agrícola y fitosanitario: autorización SENASA
-- Productos eléctricos: normativa MTC/INDECOPI para equipos electrónicos
-- IGV: 18% sobre CIF (siempre aplica, excepto exoneraciones específicas)
-
-**Chile:**
-- TLC con China (Acuerdo de Libre Comercio Chile-China, 2006): reduce aranceles a 0% en mayoría de HS capítulos industriales
-- IVA: 19%
-- SVS (Servicio Veterinario, SAG) para productos agropecuarios
-- Sin restricción de antigüedad para vehículos (mercado de usados activo)
-
-**Colombia:**
-- Ente regulador: DIAN (aduanas), INVIMA (salud), ICA (agropecuario)
-- Tarifa del arancel puede ser alta para vehículos (35%+)
-- NIT (Número de Identificación Tributaria) obligatorio para importaciones formales
-- Restricciones específicas para ciertos equipos electrónicos y médicos
-- IVA: 19% sobre base gravable (CIF + arancel)
-- Puerto preferido para Colombia: Buenaventura (Pacífico) o Cartagena/Barranquilla (Atlántico)
-
-**Panamá:**
-- Zona Franca de Colón: régimen especial, puede re-exportar sin pagar aranceles
-- Tarifa baja en la mayoría de categorías (0-10%)
-- Sin restricciones severas para maquinaria e industrial
-- ITBMS: 7% impuesto equivalente a IVA
-
-**Bolivia:**
-- Importaciones vía ZOFRATACNA (ruta Tacna-Desaguadero) o ZOFRI (ruta Iquique-Tambo Quemado)
-- Arancel CAN: 5-20% según categoría
-- IVA: 13% (más bajo que región)
-- No tiene acceso marítimo propio — toda carga entra por territorio de países vecinos
-
----
-
-## 7. Uncertainty Handling
-
-Rules for how Accio communicates uncertainty. The AI must never fabricate specific figures.
-
-**Principle:** Acknowledge the uncertainty explicitly, provide the best available approximation, and commit the verification to the Wings team. Never refuse to help — give an estimate with a stated confidence level.
-
-### Scripts for common uncertainty scenarios:
-
-**HS Code desconocido o ambiguo:**
-```
-"Para [descripción], el capítulo HS más probable es [XX] — específicamente la subpartida [XXXX.XX]. 
-Te lo confirmo así en el estimado. El agente aduanero de Wings verifica la clasificación exacta antes del despacho."
-```
-
-**Tasa arancelaria incierta (producto especializado o país no estándar):**
-```
-"Para [producto] en [país], la tasa depende de la subpartida final y de si aplica algún TLC vigente. 
-En el estimado uso [X%] como referencia razonable — el equipo Wings verifica el arancel exacto y te lo informa en la cotización formal."
-```
-
-**Flete con alta variabilidad (carga sobredimensionada, ruta poco frecuente):**
-```
-"El flete para [descripción de carga] tiene variación mayor a lo estándar. 
-El estimado usa [USD X] por contenedor [tipo], con un margen de ±15–20%. 
-La cotización de flete exacta la genera el agente de carga una vez confirmada la carga."
-```
-
-**Certificaciones requeridas no verificadas:**
-```
-"Las certificaciones que aplican para [producto] en [país] dependen del uso final y del ente regulador específico. 
-Por ahora anoto 'verificar certificaciones aplicables' en el requisito. 
-El equipo Wings coordina esta verificación en paralelo con el sourcing."
-```
-
-**Producto fuera de categorías habituales de Wings:**
-```
-"Wings opera principalmente con maquinaria, vehículos, equipo industrial y repuestos. 
-Para [producto], la viabilidad de importación vía zona franca es similar — lo que cambia es el sourcing específico. 
-Continúa con el requisito y el equipo Wings evalúa la operación."
-```
-
-**Nota de responsabilidad (añadida automáticamente a cualquier estimado):**
-Siempre que des un número de CIF, tasa arancelaria o flete, termina con:
-"Este es un estimado preliminar. Los valores finales se confirman en la cotización formal del equipo Wings."
-
----
-
-## 8. Quick Action Suggestions — 3 Per Screen State
-
-### Estado: Pantalla vacía (usuario llega a /accio, sin historial)
-
-Contexto de uso: `AccioInput` antes del primer mensaje del usuario.
-
-```
-"Quiero importar maquinaria agrícola desde China"
-"Necesito cotización de camiones para distribución en Perú"
-"Tengo un código HS — quiero calcular el costo CIF"
-```
-
-Lógica de renderizado:
-- Visibles en `AccioInput` como chips de suggestion cuando `messages.length === 0`
-- Al hacer click, se envía como primer mensaje del usuario
-- Si `?context=` param existe, ocultar las sugerencias (el usuario ya tiene contexto)
-
-### Estado: Conversación activa (mid-conversation, TPR en "partial" o "standard")
-
-Contexto de uso: bajo el input en `AccioInput`, visibles cuando `completeness === 'partial' | 'standard'`.
-
-```
-"Necesito certificación CE para el equipo"
-"El destino es Bolivia, no Perú"
-"Prefiero origen Japón, no China"
-```
-
-Lógica de renderizado:
-- Sugerencias se actualizan después de cada turno según qué campos están pendientes
-- Si `missing_fields` incluye `certifications`: mostrar "Necesito certificación CE para el equipo"
-- Si `destination_country` capturado pero `source_market` no: mostrar sugerencia de mercado de origen
-- Máximo 3 chips visibles, scroll horizontal en mobile
-
-### Estado: Estimado generado (CifEstimateCard visible, TPR en "minimum" o "complete")
-
-Contexto de uso: `TprSheet` después de `CifEstimateCard`, o en mobile drawer.
-
-```
-"Enviar consulta al equipo Wings"
-"Completar especificaciones técnicas del producto"
-"Calcular ruta alternativa vía ZOFRI"
-```
-
-Lógica de renderizado:
-- "Enviar consulta" → trigger `AccioSubmitForm` (acción principal)
-- "Completar especificaciones" → envía mensaje pidiendo detalles técnicos adicionales
-- "Calcular ruta alternativa" → envía mensaje solicitando comparación de zonas francas (solo si destino es Perú/Bolivia, donde ZOFRI es alternativa secundaria)
-
----
-
-## 9. Implementation Notes for `src/lib/claude.ts`
-
-The current implementation in `src/lib/claude.ts` is well-structured. The following amendments apply:
-
-**System prompt:** Replace the current `ACCIO_SYSTEM_PROMPT` constant with the full prompt in Section 2. The `buildAccioSystemPrompt()` function and `[TPR_STATE_PLACEHOLDER]` pattern remain unchanged.
-
-**JSON extraction:** The current `extractTprFields()` function parses single-field blocks `{"field": "...", "value": ...}`. The enhanced prompt emits a full TPR state object. Update the parser to handle both formats — the new format (`{"tpr": {...}, "completeness": "...", ...}`) is the canonical one going forward.
-
-```typescript
-// Updated parser (addendum to current extractTprFields)
-export function extractTprState(text: string): {
-  tpr: Partial<TprState> | null
-  completeness: TprCompleteness | null
-  freeZone: 'ZOFRATACNA' | 'ZOFRI' | null
-  cleaned: string
+function processChunk(state: StreamState, chunk: string): {
+  tokenToEmit: string | null;
+  state: StreamState;
 } {
-  const match = text.match(/\|\|\|JSON_START\|\|\|([\s\S]*?)\|\|\|JSON_END\|\|\|/)
-  if (!match) return { tpr: null, completeness: null, freeZone: null, cleaned: text }
-  
+  const acc = state.accumulator + chunk;
+  const fenceIdx = acc.indexOf(FENCE_OPEN);
+
+  if (fenceIdx === -1) {
+    // No fence started yet — emit everything new up to current length
+    const tokenToEmit = acc.slice(state.safeUpto);
+    return {
+      tokenToEmit: tokenToEmit || null,
+      state: { ...state, accumulator: acc, safeUpto: acc.length }
+    };
+  }
+
+  // Fence found: emit text before fence start (only newly safe portion)
+  const newSafeUpto = Math.min(fenceIdx, acc.length);
+  const tokenToEmit = newSafeUpto > state.safeUpto
+    ? acc.slice(state.safeUpto, newSafeUpto)
+    : null;
+
+  return {
+    tokenToEmit,
+    state: { ...state, accumulator: acc, fenceStart: fenceIdx, safeUpto: newSafeUpto }
+  };
+}
+
+function extractActionsFromFull(fullText: string): {
+  cleanText: string;
+  actions: MisterQuickAction[] | null;
+} {
+  const openIdx = fullText.indexOf(FENCE_OPEN);
+  if (openIdx === -1) return { cleanText: fullText.trimEnd(), actions: null };
+
+  const bodyStart = fullText.indexOf('\n', openIdx) + 1;
+  const closeIdx = fullText.indexOf(FENCE_CLOSE, bodyStart);
+  if (closeIdx === -1) return { cleanText: fullText.slice(0, openIdx).trimEnd(), actions: null };
+
+  const jsonBody = fullText.slice(bodyStart, closeIdx).trim();
+  let actions: MisterQuickAction[] | null = null;
   try {
-    const parsed = JSON.parse(match[1].trim())
-    // New format: full object with tpr, completeness, free_zone
-    if (parsed.tpr) {
-      const cleaned = text.replace(/\|\|\|JSON_START\|\|\|[\s\S]*?\|\|\|JSON_END\|\|\|/g, '').trim()
-      return {
-        tpr: parsed.tpr,
-        completeness: parsed.completeness ?? null,
-        freeZone: parsed.free_zone ?? null,
-        cleaned,
-      }
+    const parsed = JSON.parse(jsonBody);
+    if (Array.isArray(parsed) && parsed.length === 3) {
+      actions = parsed as MisterQuickAction[];
     }
-    // Legacy format: single field {"field": "...", "value": ...}
-    // Keep existing extractTprFields() for backward compat
-    return { tpr: null, completeness: null, freeZone: null, cleaned: text }
   } catch {
-    return { tpr: null, completeness: null, freeZone: null, cleaned: text }
+    // malformed — skip actions, log to console
+    console.warn('[mister] malformed quick_actions JSON:', jsonBody.slice(0, 120));
+  }
+
+  return {
+    cleanText: fullText.slice(0, openIdx).trimEnd(),
+    actions
+  };
+}
+```
+
+On `message_stop`, call `extractActionsFromFull(accumulator)` to get the final clean text and actions. Actions validation: confirm each action has a valid `action` field matching `MisterActionId`. If 0 or >3 actions returned, use an archetype-appropriate fallback set (hardcoded per archetype in `src/lib/mister/fallback-actions.ts`).
+
+### Client consumption pattern (`useMisterStream.ts`)
+
+```ts
+// Pseudocode — not the full hook
+const reader = response.body!.getReader();
+const decoder = new TextDecoder();
+let buffer = '';
+
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) break;
+  buffer += decoder.decode(value, { stream: true });
+
+  // Split on double newline (SSE event separator)
+  const events = buffer.split('\n\n');
+  buffer = events.pop() ?? '';  // last (possibly incomplete) chunk stays buffered
+
+  for (const rawEvent of events) {
+    if (!rawEvent.trim()) continue;
+    const lines = rawEvent.split('\n');
+    const eventName = lines.find(l => l.startsWith('event:'))?.slice(7).trim();
+    const dataLine = lines.find(l => l.startsWith('data:'))?.slice(5).trim();
+    if (!dataLine) continue;
+
+    const payload = JSON.parse(dataLine);
+
+    switch (eventName) {
+      case 'token':    appendStreamingText(payload.delta); break;
+      case 'surface':  addSurface(payload); break;
+      case 'actions':  setQuickActions(payload.quickActions); break;
+      case 'state':    updateSession(payload.archetype, payload.stage); break;
+      case 'done':     finalizeMessage(payload.messageId); break;
+      case 'error':
+        if (payload.code === 'CONTENT_REPLACED') replaceLastMessage(payload.fallback);
+        else showErrorBanner(payload.message);
+        break;
+    }
   }
 }
 ```
 
-**Model constants (no change needed):**
-```typescript
-export const ACCIO_CHAT_MODEL = 'claude-haiku-4-5'
-export const ACCIO_ESTIMATE_MODEL = 'claude-sonnet-4-6'
+Abort controller: attach an `AbortController` to the fetch. On new user message while one is in-flight, call `controller.abort()` and start a new request. The server detects abort via `request.signal.aborted`.
+
+---
+
+## 4. Context Assembly and History Management
+
+### `buildMisterContext()` function signature
+
+```ts
+// src/lib/mister/context.ts
+export async function buildMisterContext(
+  session: MisterProjectRow,
+  request: { currentPage: string | null; currentProductId: string | null },
+  supabase: SupabaseClient
+): Promise<{ contextString: string; surfaces: SurfaceEvent[] }>
 ```
 
-**Greeting (no change needed):**
-```typescript
-export const ACCIO_GREETING =
-  'Hola. Soy Accio, el motor de importación de Wings. Cuéntame qué necesitas importar — tipo de producto, cantidad aproximada y destino — y te prepararé un análisis de costo de importación.'
+### Exact query pattern
+
+```ts
+async function buildMisterContext(...) {
+  const [productResult, documentResult, contactResult] = await Promise.allSettled([
+    // product: only if on a product page
+    request.currentProductId
+      ? fetchProduct(request.currentProductId, supabase)
+      : Promise.resolve(null),
+
+    // docs: only if destination country is known
+    session.collected.destinationCountry
+      ? fetchDocument(
+          session.collected.destinationCountry,
+          inferProductType(session),
+          supabase
+        )
+      : Promise.resolve(null),
+
+    // contact: only if stage is pre_qualification or support
+    (session.stage === 'pre_qualification' || session.stage === 'support')
+      ? fetchContact(session.archetype, supabase)
+      : Promise.resolve(null),
+  ]);
+
+  // comparison: only if ≥2 products in productInterest
+  let comparisonResult = null;
+  const interests = session.collected.productInterest ?? [];
+  if (interests.length >= 2) {
+    comparisonResult = await preloadComparison(interests, supabase).catch(() => null);
+  }
+
+  const backend = {
+    product: productResult.status === 'fulfilled' ? productResult.value : null,
+    comparison: comparisonResult,
+    moq: null,  // embedded in products.specs; rendered by product surface
+    logistics_docs: documentResult.status === 'fulfilled' ? documentResult.value : null,
+    contacts: contactResult.status === 'fulfilled' ? contactResult.value : null,
+  };
+
+  // Build surfaces to emit before tokens
+  const surfaces: SurfaceEvent[] = [];
+  if (backend.product) surfaces.push({ type: 'product', payload: toProductSurface(backend.product) });
+  if (backend.comparison) surfaces.push({ type: 'comparison', payload: backend.comparison });
+  if (backend.contacts) surfaces.push({ type: 'contact', payload: backend.contacts });
+  if (backend.logistics_docs?.available) surfaces.push({ type: 'document', payload: backend.logistics_docs });
+
+  const contextString = renderContextBlock({
+    session,
+    currentPage: request.currentPage,
+    currentProductId: request.currentProductId,
+    backend,
+    opsWhatsapp: process.env.MISTER_OPS_WHATSAPP ?? '+50760250735',
+  });
+
+  return { contextString, surfaces };
+}
+```
+
+### `renderContextBlock()` function
+
+```ts
+function renderContextBlock(params: {
+  session: MisterProjectRow;
+  currentPage: string | null;
+  currentProductId: string | null;
+  backend: BackendContext;
+  opsWhatsapp: string;
+}): string {
+  const { session, currentPage, currentProductId, backend, opsWhatsapp } = params;
+
+  const productLine = backend.product
+    ? JSON.stringify({
+        id: backend.product.id,
+        name: backend.product.name,
+        summary: backend.product.summary,
+        specs: backend.product.specs,
+      })
+    : 'null';
+
+  const comparisonLine = backend.comparison
+    ? JSON.stringify(backend.comparison)
+    : 'null';
+
+  const moqLine = backend.product?.moqRef ?? 'null';
+
+  const logisticsLine = backend.logistics_docs
+    ? JSON.stringify(backend.logistics_docs)
+    : 'null';
+
+  const contactsLine = backend.contacts
+    ? JSON.stringify(backend.contacts)
+    : 'null';
+
+  return `<<MISTER_CONTEXT>>
+archetype: ${session.archetype}
+stage: ${session.stage}
+locale: ${session.locale}
+current_page: ${currentPage ?? 'null'}
+current_product: ${productLine}
+collected: ${JSON.stringify(session.collected)}
+backend:
+  product: ${productLine}
+  comparison: ${comparisonLine}
+  moq: ${moqLine}
+  logistics_docs: ${logisticsLine}
+  contacts: ${contactsLine}
+ops_whatsapp: ${opsWhatsapp}
+<<END_CONTEXT>>`;
+}
+```
+
+The rendered block is the second element of the `system` array (no `cache_control` — always fresh).
+
+### History trim algorithm
+
+A "turn" = 1 user message + 1 assistant message = 2 adjacent messages in the array. 15 turns = 30 messages maximum sent to the model.
+
+```ts
+// src/lib/mister/history.ts
+export function trimHistory(
+  messages: { role: 'user' | 'assistant'; content: string }[],
+  maxTurns: number = 15
+): {
+  trimmed: { role: 'user' | 'assistant'; content: string }[];
+  droppedTurns: number;
+} {
+  const maxMessages = maxTurns * 2;
+  if (messages.length <= maxMessages) {
+    return { trimmed: messages, droppedTurns: 0 };
+  }
+
+  const excess = messages.length - maxMessages;
+  // Always drop full turns (pairs). If excess is odd, drop one extra message.
+  const dropCount = excess % 2 === 0 ? excess : excess + 1;
+
+  // Ensure first remaining message is a user message
+  let sliceFrom = dropCount;
+  while (sliceFrom < messages.length && messages[sliceFrom].role !== 'user') {
+    sliceFrom++;
+  }
+
+  return {
+    trimmed: messages.slice(sliceFrom),
+    droppedTurns: Math.ceil(sliceFrom / 2),
+  };
+}
+```
+
+What "summarized into collected" means: it does NOT mean a separate summarization API call. It means the `collected` jsonb field on `mister_projects` is updated every turn as new data is extracted from the conversation (destination country, Incoterm, product interest, etc.). When old turns are dropped from the messages array, their captured data is already persisted in `collected`. The context block always injects the latest `collected` state, so the model retains structured knowledge of what was discussed even as raw transcript ages out.
+
+### Stage transition inference (server-side, no model cooperation needed)
+
+```ts
+function inferStage(
+  archetype: MisterArchetype,
+  collected: MisterCollected,
+  currentStage: MisterStage
+): MisterStage {
+  // Never regress
+  const order: MisterStage[] = ['induction','discovery','consideration','pre_qualification','support'];
+  const current = order.indexOf(currentStage);
+
+  if (archetype === 'unresolved') return 'induction';
+
+  // Resolved archetype → at least discovery
+  let inferred = Math.max(current, 1);  // index 1 = discovery
+
+  // 3+ collected fields signals consideration
+  const filledFields = Object.values(collected).filter(v => v !== undefined && v !== null).length;
+  if (filledFields >= 3) inferred = Math.max(inferred, 2);  // consideration
+
+  // Has destination + (timeline or RUC) → pre_qualification
+  if (collected.destinationCountry && (collected.timeline || collected.ruc)) {
+    inferred = Math.max(inferred, 3);  // pre_qualification
+  }
+
+  // Support is only entered by escalation events (quotation form trigger, contact fetch)
+  // Do not auto-advance to support — it is set explicitly when those events fire
+
+  return order[inferred];
+}
+```
+
+### Collected field extraction
+
+The model does not embed JSON extraction markers (the old Accio pattern). Instead, the server scans the assistant response for structured data using a lightweight NLP approach: the model is prompted (in the static system prompt) to use specific phrases that are easy to parse. Example: "I've noted your destination: **Peru**" → server scans for bolded named entities in specific contexts.
+
+Alternatively (simpler): at the end of every request, make a lightweight claude-haiku-4-5 classification call with a compact prompt:
+
+```ts
+// After the main stream completes, async (non-blocking)
+async function extractCollected(
+  assistantResponse: string,
+  userMessage: string,
+  currentCollected: MisterCollected
+): Promise<Partial<MisterCollected>> {
+  // Uses claude-haiku-4-5 (fast, cheap) for structured extraction
+  const result = await haiku.messages.create({
+    model: 'claude-haiku-4-5',
+    max_tokens: 256,
+    system: `Extract trade data from conversation. Return JSON only. Fields: destinationCountry (string), destinationCity (string), incoterm (EXW|FOB|CFR|CIF|DAP|DDP), containerType (20GP|40GP|40HC|reefer|LCL), volume (string), ruc (string), timeline (string), productInterest (string[]). Return only fields that can be confidently extracted. If nothing new, return {}.`,
+    messages: [{ role: 'user', content: `User said: "${userMessage}"\nMister replied: "${assistantResponse.slice(0, 800)}"` }]
+  });
+  try {
+    return JSON.parse((result.content[0] as { text: string }).text);
+  } catch { return {}; }
+}
+```
+
+This extraction call happens AFTER the stream closes (fire-and-forget). Its result is written to `mister_projects.collected` via a follow-up Supabase update. On the next turn, the updated `collected` is in the context block.
+
+This approach is clean, cheap (~50 tokens in/out), and does not block the user-facing stream.
+
+---
+
+## 5. Guardrail Scan
+
+### Decision: stream-then-replace
+
+Buffer the full response server-side while streaming tokens to the client. After `message_stop`, run the guardrail scan. If a violation is detected:
+
+1. Emit `error` SSE with `code: 'CONTENT_REPLACED'` and `fallback: ROUTING_MESSAGE`
+2. The client receives both the streamed (violating) text AND the error event
+3. Client handler: on `CONTENT_REPLACED`, replace the content of the last assistant message bubble with `fallback`
+4. Log violation: append to `mister_projects.flags[]`
+
+No regeneration call. Regeneration (extra Anthropic API call) is not worth the latency and cost for a guardrail edge case. The routing message is the correct response anyway.
+
+### Routing message constants
+
+```ts
+// src/lib/mister/guardrails.ts
+export const ROUTING_MESSAGE_ES = `Para precios específicos, necesito pasarte a nuestro equipo de ventas — ellos preparan la cotización formal con los números reales para tu pedido. ¿Prefieres continuar por WhatsApp o abrir el formulario de cotización ahora?`;
+
+export const ROUTING_MESSAGE_EN = `For specific pricing I need to route you to our sales team — they prepare the formal quotation with real figures for your order. Would you prefer to continue on WhatsApp or open the quotation form now?`;
+```
+
+Use the session locale to pick the appropriate constant.
+
+### Regex patterns (exhaustive, EN + ES)
+
+```ts
+export const PRICE_GUARDRAIL_PATTERNS: RegExp[] = [
+  // Currency symbols followed by digits
+  /\b(US?\$|S\/\.?|USD|PEN|EUR|€|\$)\s*\d[\d,.]*/i,
+  // Digits followed by currency words
+  /\d[\d,.]*\s*(soles?|d[oó]lares?|euros?)\b/i,
+  // Incoterm + value
+  /\b(CIF|FOB|DDP|CFR|DAP|EXW)\s*:?\s*[\d$€]/i,
+  // Total/price followed by number
+  /\b(precio|costo|cif\s+total|fob\s+total|total\s+estimado|landed\s+cost)\s*:?\s*\d[\d,.]*/i,
+  // Cost index as a specific dollar figure (not as an index point)
+  // Index ranges like "100-115" are allowed; "US$12,000" is not
+  /US?\$\d[\d,.]+/i,
+];
+
+export const AVAILABILITY_GUARDRAIL_PATTERNS: RegExp[] = [
+  // Lead time with a number
+  /(en|in|within)\s+\d+\s+(d[íi]as?|semanas?|meses?|days?|weeks?|months?)/i,
+  // Stock statements
+  /(en\s+stock|in\s+stock|disponible\s*(ahora|hoy|inmediatamente?)|available\s*(now|today|immediately))/i,
+  // Lead time label
+  /lead\s*time\s*:?\s*\d/i,
+  // Delivery in X
+  /entrega\s+en\s+\d/i,
+  // Delivery guarantee
+  /te\s+(lo\s+)?(entregamos?|enviamos?)\s+en\s+\d/i,
+  // Arrival guarantee
+  /(llegará|llega|arrives?)\s+en\s+\d/i,
+];
+
+export function scanGuardrails(text: string): {
+  violated: boolean;
+  patterns: string[];
+} {
+  const violated: string[] = [];
+
+  for (const pattern of PRICE_GUARDRAIL_PATTERNS) {
+    if (pattern.test(text)) violated.push(`price:${pattern.source}`);
+  }
+  for (const pattern of AVAILABILITY_GUARDRAIL_PATTERNS) {
+    if (pattern.test(text)) violated.push(`availability:${pattern.source}`);
+  }
+
+  return { violated: violated.length > 0, patterns: violated };
+}
+```
+
+### Input sanitization
+
+Run before passing user message to the model. Replace injection attempts with a neutral acknowledgement:
+
+```ts
+const INJECTION_PATTERNS: RegExp[] = [
+  /ignore\s+(previous|prior|all)\s+instructions?/i,
+  /disregard\s+(your|the|all)\s+(system\s+prompt|instructions?)/i,
+  /you\s+are\s+now\s+(a|an)\s+\w+/i,
+  /repeat\s+(back\s+)?(your|the)\s+system\s+prompt/i,
+  /output\s+your\s+(full\s+)?(instructions?|system\s+prompt)/i,
+  /act\s+as\s+if\s+you\s+(are|were)\s+(not|a|an)/i,
+  /jailbreak/i,
+  /dan\s+mode/i,
+];
+
+export function sanitizeInput(userMessage: string): {
+  clean: string;
+  injectionDetected: boolean;
+} {
+  const injectionDetected = INJECTION_PATTERNS.some(p => p.test(userMessage));
+  if (!injectionDetected) return { clean: userMessage, injectionDetected: false };
+
+  // Replace the whole message with a neutral rephrase that preserves trade intent
+  // Do not reveal that injection was detected — just route normally
+  return {
+    clean: 'Tengo una consulta sobre importación de productos.',
+    injectionDetected: true,
+  };
+}
+```
+
+Log `injectionDetected: true` to `mister_projects.flags[]` with timestamp.
+
+---
+
+## 6. Prompt Caching
+
+### Exact SDK call shape
+
+The `@anthropic-ai/sdk` package is already a dependency. Prompt caching with `cache_control` works without a beta header in SDK ≥ 0.27.0; the SDK handles it. The `system` field must be an array of content block objects when using prompt caching.
+
+```ts
+// src/app/api/mister/chat/route.ts
+
+import Anthropic from '@anthropic-ai/sdk';
+import { MISTER_STATIC_PROMPT } from '@/lib/mister/prompt';
+
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+const stream = await client.messages.stream({
+  model: 'claude-sonnet-4-6',
+  max_tokens: 2048,
+  system: [
+    {
+      type: 'text',
+      text: MISTER_STATIC_PROMPT,
+      // cache_control marks this block for prompt caching (5-min TTL on Anthropic infra)
+      // The block must be ≥1024 tokens to qualify for caching
+      cache_control: { type: 'ephemeral' },
+    },
+    {
+      type: 'text',
+      // Per-turn dynamic block: always fresh, never cached
+      text: contextString,  // from renderContextBlock()
+    },
+  ],
+  messages: trimmedMessages,
+});
+```
+
+### Static prompt composition
+
+The static block (`MISTER_STATIC_PROMPT`) combines:
+1. The verbatim system prompt from D3 (~1,500 tokens)
+2. The `WINGS_CATALOG_TEXT` from `mister-knowledge.ts` (~800 tokens)
+3. The `WINGS_PROCESS_TEXT` from `mister-knowledge.ts` (~250 tokens)
+4. The `WINGS_FAQ_TEXT` from `mister-knowledge.ts` (~400 tokens)
+5. The `CATALOG_BEHAVIOR_TEXT` from `mister-knowledge.ts` (~350 tokens)
+
+Total estimated: ~3,300 tokens. This comfortably exceeds the 1,024-token minimum for caching eligibility. The cache saves these tokens on every turn after the first.
+
+```ts
+// src/lib/mister/prompt.ts
+import {
+  WINGS_CATALOG_TEXT,
+  WINGS_PROCESS_TEXT,
+  WINGS_FAQ_TEXT,
+  CATALOG_BEHAVIOR_TEXT,
+} from '@/lib/mister-knowledge';
+
+export const MISTER_STATIC_PROMPT = `${D3_SYSTEM_PROMPT}
+
+${WINGS_CATALOG_TEXT}
+
+${WINGS_PROCESS_TEXT}
+
+${WINGS_FAQ_TEXT}
+
+${CATALOG_BEHAVIOR_TEXT}`;
+```
+
+### Cache miss behavior
+
+On cache miss (first turn, or after 5-minute TTL expiry), the full ~3,300 tokens are billed at standard input-token rate. On cache hit, only the cache read cost applies (~10% of standard rate). At typical conversational cadence (messages within 2 minutes of each other), cache hit rate is ~95%.
+
+### max_tokens budget
+
+Old code: `max_tokens: 1024`. New Mister responses include the quick_actions block (~120 tokens) plus more detailed multi-section responses (ANSWER + SURFACE + NEXT STEP). Budget: `max_tokens: 2048`. This is sufficient for all archetype responses including logistics_manager technical depth.
+
+---
+
+## 7. Rate Limiting
+
+### Dependency
+
+Add `@upstash/ratelimit` and `@upstash/redis` to `pnpm` dependencies. Add env vars:
+
+```
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
+```
+
+If these are absent, the rate limiter fails open (logs a warning, proceeds).
+
+### Implementation
+
+```ts
+// src/lib/mister/rate-limit.ts
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
+
+function createLimiter() {
+  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+    return null;  // fail open
+  }
+  const redis = new Redis({
+    url: process.env.UPSTASH_REDIS_REST_URL,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN,
+  });
+  return {
+    perMinute: new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(20, '1 m'),
+      prefix: 'mister:rl:ip:min',
+    }),
+    perHour: new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(300, '1 h'),
+      prefix: 'mister:rl:ip:hr',
+    }),
+  };
+}
+
+let limiterCache: ReturnType<typeof createLimiter> | undefined;
+function getLimiter() {
+  if (limiterCache === undefined) limiterCache = createLimiter();
+  return limiterCache;
+}
+
+export async function checkRateLimit(ip: string): Promise<{
+  allowed: boolean;
+  retryAfterMs?: number;
+}> {
+  const limiter = getLimiter();
+  if (!limiter) return { allowed: true };  // fail open
+
+  try {
+    const [min, hr] = await Promise.all([
+      limiter.perMinute.limit(ip),
+      limiter.perHour.limit(ip),
+    ]);
+    if (!min.success) return { allowed: false, retryAfterMs: min.reset - Date.now() };
+    if (!hr.success) return { allowed: false, retryAfterMs: hr.reset - Date.now() };
+    return { allowed: true };
+  } catch (err) {
+    console.warn('[mister/rate-limit] Redis error — failing open:', err);
+    return { allowed: true };
+  }
+}
+```
+
+### Burst guard (in-flight)
+
+The `mister_projects.in_flight` boolean column acts as a per-session mutex. On request start:
+
+```ts
+// Atomic check-and-set using Supabase update with a condition
+const { data, error } = await supabase
+  .from('mister_projects')
+  .update({ in_flight: true })
+  .eq('session_id', sessionId)
+  .eq('in_flight', false)  // only succeed if not already in flight
+  .select('id')
+  .single();
+
+if (!data) {
+  return new Response(
+    JSON.stringify({ error: 'Mister ya está procesando tu pregunta.', code: 'CONCURRENT_REQUEST' }),
+    { status: 409 }
+  );
+}
+```
+
+On stream completion (success or error), always clear `in_flight`:
+```ts
+await supabase
+  .from('mister_projects')
+  .update({ in_flight: false })
+  .eq('session_id', sessionId);
+```
+
+Put this in a `try/finally` block so it always runs.
+
+### Abuse rate tightening
+
+When `mister_projects.flags[]` grows to ≥ 3 entries (injection attempts + guardrail violations), write a `'TIGHTENED'` flag and halve the per-IP limits for that IP (keyed separately in Redis as `mister:rl:ip:tight:{ip}`). The implementation is a simple check before the standard rate limit call.
+
+### Turn limit
+
+```ts
+if (session.turn_count >= 40) {
+  // Emit SESSION_LIMIT error SSE and return
+}
+if (session.turn_count >= 30) {
+  // Inject a soft warning into the context block:
+  // "SYSTEM NOTE: This session is approaching its limit. Begin routing to human contact."
+}
 ```
 
 ---
 
-## 10. CIF Estimation — When Sonnet Is Called
+## 8. Supabase Schema
 
-The deterministic calculator (`src/lib/cif-calculator.ts`) handles all standard cases. Sonnet is called **only** when:
+### Migration file name
 
-1. `hs_code` is null or empty and the product description is insufficient to map to a known chapter.
-2. `destination_country` is not in the static duty rate table (e.g., Costa Rica, Dominican Republic, Uruguay).
-3. Product spans multiple HS chapters (e.g., "kit de maquinaria agrícola con repuestos y sistema de irrigación").
-4. Explicit flag from the standard calculator: `requires_ai_classification: true`.
+`supabase/migrations/20260627000001_mister_system.sql`
 
-When Sonnet is called, the prompt instructs it to:
-- Classify the HS chapter from the product description.
-- Select the applicable duty rate for the destination.
-- Return structured JSON only (no prose).
-- Include a `methodology` string explaining assumptions.
-- Include a `confidence: 'low' | 'medium' | 'high'` field.
+### DDL
 
-The response is merged with the deterministic CIF math (Freight, Insurance, FOB are always calculated deterministically — only the HS chapter and duty rate come from Sonnet).
+```sql
+-- ============================================================
+-- Mister AI Trade Intelligence System
+-- Migration: 20260627000001_mister_system.sql
+-- ============================================================
+
+-- Enums
+DO $$ BEGIN
+  CREATE TYPE mister_archetype AS ENUM (
+    'lead_buyer', 'project_manager', 'logistics_manager',
+    'reseller', 'wholesale_partner', 'unresolved'
+  );
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE mister_stage AS ENUM (
+    'induction', 'discovery', 'consideration', 'pre_qualification', 'support'
+  );
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+DO $$ BEGIN
+  CREATE TYPE mister_locale AS ENUM ('es-PE', 'en', 'nl', 'de');
+EXCEPTION WHEN duplicate_object THEN null; END $$;
+
+-- Extend lead_flow enum to include 'mister'
+-- (Postgres enums cannot be modified in a transaction; use a workaround)
+ALTER TYPE lead_flow ADD VALUE IF NOT EXISTS 'mister';
+
+-- ============================================================
+-- mister_projects — one row per session
+-- ============================================================
+CREATE TABLE IF NOT EXISTS mister_projects (
+  id                  uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
+  session_id          text        UNIQUE NOT NULL,
+  archetype           mister_archetype NOT NULL DEFAULT 'unresolved',
+  archetype_history   jsonb       NOT NULL DEFAULT '[]',
+  -- shape: [{ from: MisterArchetype, to: MisterArchetype, at: ISO8601 }]
+  stage               mister_stage NOT NULL DEFAULT 'induction',
+  locale              mister_locale NOT NULL DEFAULT 'es-PE',
+  current_page        text,
+  current_product_id  uuid        REFERENCES products(id) ON DELETE SET NULL,
+  collected           jsonb       NOT NULL DEFAULT '{}',
+  -- shape: MisterCollected (see D7.3)
+  history             jsonb       NOT NULL DEFAULT '[]',
+  -- shape: { role: 'user'|'assistant', content: string }[]
+  -- server trims to last 15 turns before model call; full history stored here
+  turn_count          integer     NOT NULL DEFAULT 0,
+  flags               text[]      NOT NULL DEFAULT '{}',
+  -- entries: 'INJECTION:{timestamp}', 'GUARDRAIL:{pattern}:{timestamp}', 'TIGHTENED'
+  in_flight           boolean     NOT NULL DEFAULT false,
+  lead_id             uuid        REFERENCES leads(id) ON DELETE SET NULL,
+  -- set when session converts to a lead (contact info submitted)
+  created_at          timestamptz NOT NULL DEFAULT now(),
+  updated_at          timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS mister_projects_session_id_idx ON mister_projects(session_id);
+CREATE INDEX IF NOT EXISTS mister_projects_archetype_idx  ON mister_projects(archetype);
+CREATE INDEX IF NOT EXISTS mister_projects_stage_idx      ON mister_projects(stage);
+CREATE INDEX IF NOT EXISTS mister_projects_created_at_idx ON mister_projects(created_at DESC);
+
+ALTER TABLE mister_projects ENABLE ROW LEVEL SECURITY;
+-- No public policies. Service role only.
+
+DROP TRIGGER IF EXISTS set_mister_projects_updated_at ON mister_projects;
+CREATE TRIGGER set_mister_projects_updated_at
+  BEFORE UPDATE ON mister_projects
+  FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+-- ============================================================
+-- mister_contacts — fetchContact source table
+-- ============================================================
+CREATE TABLE IF NOT EXISTS mister_contacts (
+  id          uuid    PRIMARY KEY DEFAULT gen_random_uuid(),
+  name        text    NOT NULL,
+  role        text    NOT NULL,
+  category    text    NOT NULL,
+  -- CHECK: 'sales' | 'project' | 'logistics' | 'partnerships' | 'key_accounts'
+  archetypes  text[]  NOT NULL DEFAULT '{}',
+  -- which mister_archetype values this contact handles
+  whatsapp    text    NOT NULL,
+  email       text,
+  is_active   boolean NOT NULL DEFAULT true,
+  sort_order  integer NOT NULL DEFAULT 0,
+  created_at  timestamptz NOT NULL DEFAULT now()
+);
+
+ALTER TABLE mister_contacts ENABLE ROW LEVEL SECURITY;
+-- No public policies. Service role only.
+
+-- Seed: ops fallback (always present)
+INSERT INTO mister_contacts (name, role, category, archetypes, whatsapp, sort_order)
+VALUES (
+  'Wings Global Trade',
+  'Operaciones',
+  'sales',
+  ARRAY['lead_buyer','project_manager','logistics_manager','reseller','wholesale_partner','unresolved'],
+  '+50760250735',
+  999
+) ON CONFLICT DO NOTHING;
+
+-- ============================================================
+-- mister_documents — fetchDocument source table
+-- ============================================================
+CREATE TABLE IF NOT EXISTS mister_documents (
+  id              uuid    PRIMARY KEY DEFAULT gen_random_uuid(),
+  country_code    text    NOT NULL,
+  -- ISO 3166-1 alpha-2 or 'ALL' for universal documents
+  product_type    text    NOT NULL,
+  -- 'ALL' or category slug (maquinaria-agricola, camiones, etc.) or HS chapter
+  title           text    NOT NULL,
+  description_es  text,
+  storage_path    text,
+  -- Supabase Storage path (relative to bucket root)
+  public_url      text,
+  -- pre-signed URL or public URL; regenerate periodically
+  is_available    boolean NOT NULL DEFAULT false,
+  -- false until document is actually uploaded
+  created_at      timestamptz NOT NULL DEFAULT now(),
+  updated_at      timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS mister_documents_lookup_idx
+  ON mister_documents(country_code, product_type);
+
+ALTER TABLE mister_documents ENABLE ROW LEVEL SECURITY;
+-- No public policies.
+
+DROP TRIGGER IF EXISTS set_mister_documents_updated_at ON mister_documents;
+CREATE TRIGGER set_mister_documents_updated_at
+  BEFORE UPDATE ON mister_documents
+  FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+-- ============================================================
+-- mister_quote_tokens — prefill tokens for quotation form
+-- ============================================================
+CREATE TABLE IF NOT EXISTS mister_quote_tokens (
+  id            uuid    PRIMARY KEY DEFAULT gen_random_uuid(),
+  token         text    UNIQUE NOT NULL DEFAULT gen_random_uuid()::text,
+  session_id    text    NOT NULL,
+  prefill_data  jsonb   NOT NULL DEFAULT '{}',
+  -- shape: Partial<MisterCollected> & { archetype, productIds? }
+  used          boolean NOT NULL DEFAULT false,
+  expires_at    timestamptz NOT NULL DEFAULT (now() + interval '24 hours'),
+  created_at    timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS mister_quote_tokens_token_idx      ON mister_quote_tokens(token);
+CREATE INDEX IF NOT EXISTS mister_quote_tokens_session_id_idx ON mister_quote_tokens(session_id);
+CREATE INDEX IF NOT EXISTS mister_quote_tokens_expires_at_idx ON mister_quote_tokens(expires_at);
+
+ALTER TABLE mister_quote_tokens ENABLE ROW LEVEL SECURITY;
+-- Public read by token only (for the /cotizar page)
+CREATE POLICY "quote_token_public_read" ON mister_quote_tokens
+  FOR SELECT USING (used = false AND expires_at > now());
+```
+
+### Session lifecycle
+
+- `mister_projects` row is created on the **first POST** to `/api/mister/chat`. The client generates the `session_id` as a UUID on mount and sends it on every request. The server does `INSERT ... ON CONFLICT (session_id) DO NOTHING` then reads the row.
+- The `leads` table row is created when the user submits contact info (separate endpoint `/api/mister/submit`). At that point, `mister_projects.lead_id` is set.
+- The old `accio_projects` table is not touched by Mister. Existing records remain. No migration changes `accio_projects`.
+
+### `/api/mister/quote` endpoint
+
+```ts
+// POST /api/mister/quote
+// Body: { sessionId: string; prefilled: Partial<MisterCollected> & { archetype, productIds? } }
+// Response: { formUrl: string; prefillToken: string }
+
+const { data } = await supabase
+  .from('mister_quote_tokens')
+  .insert({ session_id: sessionId, prefill_data: prefilled })
+  .select('token')
+  .single();
+
+return NextResponse.json({
+  formUrl: `/cotizar?token=${data.token}`,
+  prefillToken: data.token,
+});
+```
+
+The `/cotizar` page reads the token from the query string, calls a server action to fetch `prefill_data` by token, and pre-fills the existing inquiry form. Mark `used = true` after read.
+
+---
+
+## 9. Environment Variables
+
+Complete `.env.local.example` replacement:
+
+```
+# ============================================================
+# Wings Global Trade — Environment Variables
+# Copy this file to .env.local and fill in real values.
+# .env.local is gitignored — never commit secrets.
+# ============================================================
+
+# --- Supabase ---
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+
+# --- Anthropic (Claude API) — server-side only ---
+ANTHROPIC_API_KEY=
+
+# --- Upstash Redis (rate limiting) ---
+# Get from https://console.upstash.com — create a Redis database
+# If absent, Mister rate limiting fails open (still works, no limiting)
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
+
+# --- Resend (transactional email) ---
+RESEND_API_KEY=
+
+# --- Twilio (WhatsApp API) ---
+TWILIO_ACCOUNT_SID=
+TWILIO_AUTH_TOKEN=
+TWILIO_WHATSAPP_FROM=
+TWILIO_WHATSAPP_TO=+50760250735
+
+# --- Wings Ops recipients ---
+WINGS_OPS_WHATSAPP=+50760250735
+WINGS_OPS_EMAIL=
+
+# --- Mister operational constants ---
+# The WhatsApp number Mister surfaces for human escalation
+# Injected into every <<MISTER_CONTEXT>> block
+MISTER_OPS_WHATSAPP=+50760250735
+```
+
+---
+
+## 10. Error Handling
+
+Every async failure mode, its detection point, and the user-facing response.
+
+| # | Failure | Detection point | Server action | Client SSE / HTTP |
+|---|---------|----------------|---------------|-------------------|
+| 1 | Request body malformed / schema invalid | Zod parse | Log, return 400 | HTTP 400 JSON `{error, code: 'VALIDATION_ERROR'}` |
+| 2 | Input too long (>4000 chars) | Before model call | Log | HTTP 400 `{code: 'INPUT_TOO_LONG'}` |
+| 3 | Session concurrent request (in_flight=true) | Burst guard check | No Supabase update | HTTP 409 `{code: 'CONCURRENT_REQUEST'}` |
+| 4 | Per-IP rate limit exceeded | Upstash check | Log | HTTP 429 `{code: 'RATE_LIMITED', retryAfterMs}` |
+| 5 | `mister_projects` row not found and insert fails | DB call | Log error | `error` SSE `{code: 'SESSION_ERROR', message: 'Recarga la página.'}` |
+| 6 | Context assembly tool fails (fetchProduct etc.) | `Promise.allSettled` | Log, continue with null | Silent — context block has `null` for that field |
+| 7 | Anthropic API network error / timeout | `client.messages.stream()` throw | Log, clear in_flight | `error` SSE `{code: 'AI_UNAVAILABLE', message: 'Mister no disponible. Intenta en unos segundos.'}` |
+| 8 | Anthropic API 429 (overloaded) | API error status | Log | `error` SSE `{code: 'OVERLOADED', message: 'Demasiadas consultas ahora. Intenta en un momento o escríbenos por WhatsApp.'}` |
+| 9 | Anthropic API 401 (invalid API key) | API error status | Log critical | `error` SSE `{code: 'AI_UNAVAILABLE'}` — do NOT expose key details |
+| 10 | Guardrail violation in generated content | Post-stream scan | Log to flags[], clear in_flight | `error` SSE `{code: 'CONTENT_REPLACED', fallback: ROUTING_MESSAGE}` |
+| 11 | Injection attempt in user input | Input sanitize | Log to flags[], proceed with sanitized input | No SSE — transparent to user |
+| 12 | Session turn limit reached (turn_count >= 40) | Before model call | Clear in_flight | `error` SSE `{code: 'SESSION_LIMIT', message: 'Sesión completada. Un especialista continúa por WhatsApp.'}` + `actions` SSE with `connect_whatsapp` |
+| 13 | Post-stream DB write fails | Supabase update | Log, do NOT surface | Silent — graceful degradation (next turn re-reads stale state) |
+| 14 | `mister_quote_tokens` insert fails | Supabase call in /api/mister/quote | Log | HTTP 500 `{code: 'QUOTE_ERROR'}` — client shows "Abre el formulario manualmente" fallback |
+| 15 | Upstash Redis unavailable | Upstash SDK throw | Log warning | Fail open — proceed without rate limiting |
+| 16 | `quick_actions` JSON malformed | Fence extraction | Log, use archetype fallback | `actions` SSE with hardcoded fallback for that archetype+stage |
+| 17 | Stream abort (client sends new message) | `request.signal.aborted` | Clear in_flight | No SSE — connection already closed |
+
+All error SSE events include a human-readable `message` field in the session locale. The raw error (Supabase error, Anthropic error object, stack trace) is never included in SSE payload. All raw errors go to `console.error('[mister/...]', error)` only.
+
+---
+
+## 11. File Routing Map
+
+New files to create (all under `src/`):
+
+```
+src/
+  app/
+    api/
+      mister/
+        chat/route.ts          ← REPLACE existing file entirely
+        quote/route.ts         ← NEW: POST, returns prefill token
+        document/route.ts      ← NEW: GET ?country=&type=, proxies signed URL
+  lib/
+    mister/
+      prompt.ts                ← NEW: MISTER_STATIC_PROMPT assembly
+      context.ts               ← NEW: buildMisterContext, renderContextBlock
+      tools.ts                 ← NEW: fetchProduct, preloadComparison, etc.
+      guardrails.ts            ← NEW: scanGuardrails, sanitizeInput, ROUTING_MESSAGE*
+      history.ts               ← NEW: trimHistory
+      rate-limit.ts            ← NEW: checkRateLimit (Upstash)
+      stage.ts                 ← NEW: inferStage, extractCollected (haiku call)
+      fallback-actions.ts      ← NEW: per-archetype fallback quick_actions
+  types/
+    mister.ts                  ← REPLACE: keep TprState (for old accio flow), ADD new Mister types
+```
+
+Keep `/src/lib/mister-knowledge.ts` and all existing TPR/Accio code. The old `/api/mister/chat/route.ts` is the only file being replaced.
+
+The `/src/types/mister.ts` must export BOTH the old `TprState` / `TprFieldKey` / `CifEstimate` (for the still-active Accio Engine at `/accio`) AND the new `MisterArchetype` / `MisterStage` / `MisterCollected` / `MisterContext` / `MisterQuickAction` / `MisterSurface` / `MisterMessage` types.
+
+---
+
+## 12. Type Definitions (canonical, builder-ready)
+
+These extend (not replace) the existing `src/types/mister.ts`. Add below the existing exports:
+
+```ts
+// ── NEW MISTER SYSTEM TYPES ──────────────────────────────────────────────────
+
+export type MisterArchetype =
+  | 'lead_buyer'
+  | 'project_manager'
+  | 'logistics_manager'
+  | 'reseller'
+  | 'wholesale_partner'
+  | 'unresolved';
+
+export type MisterStage =
+  | 'induction'
+  | 'discovery'
+  | 'consideration'
+  | 'pre_qualification'
+  | 'support';
+
+export type MisterLocale = 'es-PE' | 'en' | 'nl' | 'de';
+
+export type MisterActionId =
+  | 'ask_followup'
+  | 'show_product'
+  | 'show_comparison'
+  | 'show_specs'
+  | 'show_moq'
+  | 'download_document'
+  | 'open_quotation'
+  | 'book_meeting'
+  | 'connect_whatsapp'
+  | 'explain_cost';
+
+export interface MisterQuickAction {
+  label: string;
+  action: MisterActionId;
+}
+
+export interface MisterCollected {
+  destinationCountry?: string;
+  destinationCity?: string;
+  incoterm?: 'EXW' | 'FOB' | 'CFR' | 'CIF' | 'DAP' | 'DDP';
+  containerType?: '20GP' | '40GP' | '40HC' | 'reefer' | 'LCL';
+  volume?: string;
+  ruc?: string;
+  timeline?: string;
+  productInterest?: string[];  // product UUIDs from products table
+  budgetBand?: string;
+  notes?: string;
+}
+
+export type MisterSurfaceType = 'product' | 'comparison' | 'specs' | 'moq' | 'waterfall' | 'document' | 'contact';
+
+export interface MisterSurface {
+  type: MisterSurfaceType;
+  payload: unknown;  // narrowed per type at render time
+}
+
+// SSE event types (named event wire format)
+export type MisterStreamEvent =
+  | { event: 'token';   data: { delta: string } }
+  | { event: 'surface'; data: { type: MisterSurfaceType; payload: unknown } }
+  | { event: 'actions'; data: { quickActions: MisterQuickAction[] } }
+  | { event: 'state';   data: { archetype: MisterArchetype; stage: MisterStage } }
+  | { event: 'done';    data: { messageId: string } }
+  | { event: 'error';   data: { code: string; message?: string; fallback?: string } };
+
+// POST /api/mister/chat request
+export interface MisterChatRequest {
+  sessionId: string;
+  message: string;
+  actionId?: MisterActionId;
+  currentPage?: string;
+  currentProductId?: string | null;
+}
+
+// mister_projects Supabase row shape
+export interface MisterProjectRow {
+  id: string;
+  session_id: string;
+  archetype: MisterArchetype;
+  archetype_history: { from: MisterArchetype; to: MisterArchetype; at: string }[];
+  stage: MisterStage;
+  locale: MisterLocale;
+  current_page: string | null;
+  current_product_id: string | null;
+  collected: MisterCollected;
+  history: { role: 'user' | 'assistant'; content: string }[];
+  turn_count: number;
+  flags: string[];
+  in_flight: boolean;
+  lead_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+```
+
+---
+
+## 13. Induction and Archetype Resolution
+
+D1 defines the decision tree but not the implementation mechanism. The model handles induction conversationally — the D3 system prompt contains the archetype definitions. No server-side state machine is needed for the questions themselves.
+
+The server IS responsible for:
+
+**Detecting first archetype resolution** — on each turn, compare the model's text for archetype signals using a lightweight keyword pass, THEN confirm via the next `extractCollected` haiku call which also returns an `archetypeSignal` field:
+
+```ts
+// Add to extractCollected prompt:
+// Also return archetypeSignal: one of
+// 'lead_buyer'|'project_manager'|'logistics_manager'|'reseller'|'wholesale_partner'|null
+// based on explicit signals in the exchange. Return null if no strong signal.
+```
+
+When `archetypeSignal` is non-null and different from the current `session.archetype`:
+- Append to `archetype_history`: `{ from: current, to: signal, at: now() }`
+- Update `session.archetype = signal`
+- Persist to `mister_projects`
+
+**"If the user resists the induction"** — detected when `turn_count >= 3` and `archetype === 'unresolved'`. On next context assembly, inject into the dynamic context block: `SYSTEM NOTE: User has not resolved archetype after 3 turns. Set archetype to 'unresolved' and proceed to answer their direct question. Infer from page context.`
+
+---
+
+## Completion Flag
+
+Signal: create `/ai/AI_COMPLETE.flag` at `C:\Users\Muaaz\projects\wings-global-trade\ai\AI_COMPLETE.flag`

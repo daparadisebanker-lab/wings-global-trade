@@ -1,0 +1,20 @@
+Motion & Soul — The One Animation and its hierarchy
+
+  The One Animation for Mister: the arrival of a response — specifically when Mister surfaces a product recommendation inline. The card doesn't stream into existence. It
+  materializes:
+
+  1. Chat text arrives streaming as usual (300ms to first word)
+  2. At the end of the text, a thin gold horizontal line appears (200ms trace)
+  3. The product card slides in from below the line, from translateY(12px) opacity 0 to settled position, over 500ms with ease: [0.16, 1, 0.3, 1]
+  4. The card has a brief shadow-heavy entrance that relaxes to flat (depth → surface)
+
+  Everything else serves this or echoes it:
+
+  - Response materialization: Mister's messages don't stream character-by-character. They arrive as a fade-in-sharpen: text renders at blur(4px) → blur(0) + opacity: 0 →
+  opacity: 1 over 400ms. Feels like information being focused, not typed.
+  - User message echo: when the user sends, their message moves up with a slight arc (translateY: 0 → -4px → 0) while the waveform thinking indicator appears below.
+  - Field-capture spring: each TprSheet field arrival has identical spring physics (stiffness 300, damping 20) — the system has a timing signature.
+  - CIF reveal: the final CIF total is hidden behind a frosted overlay until the user scrolls to it or the estimate completes — then it "reveals" with an unblur-fade in
+  600ms. The reveal feels earned.
+  - The submit ceremony: when the user clicks "Enviar consulta" and it succeeds, the chat column fades to 20% opacity, the TPR sheet center-stage reveals "ENVIADO"
+  stamped in gold at 120px font, then the confirmation card slides in. The transaction is complete — the interface acknowledges its own conclusion.

@@ -1,36 +1,47 @@
 // src/app/mister/page.tsx
+// Mister v2 — embedded consultation surface.
+// Replaced old MisterChat (TPR/CIF flow) with MisterEmbedded (v2 session flow).
 import type { Metadata } from 'next'
-import { MisterChat } from '@/components/features/mister/MisterChat'
+import { MisterEmbedded } from '@/components/features/mister/MisterEmbedded'
 import { JsonLd } from '@/components/seo/JsonLd'
-import { faqSchema, WINGS_FAQS } from '@/lib/schema'
+import { faqSchema, misterSoftwareApplicationSchema, MISTER_FAQS } from '@/lib/schema'
 
 export const metadata: Metadata = {
-  title: 'Mister — Tu asistente de importación desde China | Wings',
+  title: 'Mister — Inteligencia de Pre-Calificación de Importación',
   description:
-    'Mister es el asistente IA de Wings Global Trade. Te ayuda a importar desde China y a nacionalizar en destino — cotización CIF, aranceles, zona franca y más. Sin llamadas previas.',
+    'Plataforma IA de inteligencia comercial para importadores B2B. Autocalifica tu importación, entiende la estructura del costo de internación, y accede al siguiente paso correcto — sin adivinanzas de precios.',
+  robots: { index: true, follow: true },
   openGraph: {
-    title: 'Mister — Tu asistente de importación desde China | Wings',
+    title: 'Mister — Inteligencia de Pre-Calificación',
     description:
-      'Mister es el asistente IA de Wings Global Trade. Te ayuda a importar desde China y a nacionalizar en destino — cotización CIF, aranceles, zona franca y más. Sin llamadas previas.',
+      'Resuelve tu perfil de importación, entiende la estructura del costo, y pre-califica — antes de ser cotizado.',
     locale: 'es_PE',
     type: 'website',
     url: 'https://wingsglobaltrade.com/mister',
+    siteName: 'Wings Global Trade',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Mister — Inteligencia de Pre-Calificación',
+    description: 'Plataforma IA para importadores. Pre-califica antes de cotización.',
   },
   alternates: {
     canonical: 'https://wingsglobaltrade.com/mister',
+    languages: {
+      'es-PE': 'https://wingsglobaltrade.com/mister',
+      'en': 'https://wingsglobaltrade.com/en/mister',
+    },
   },
 }
 
-export default async function MisterPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ context?: string }>
-}) {
-  const { context } = await searchParams
+export default function MisterPage() {
   return (
-    <div className="bg-[#000C1F] min-h-screen">
-      <JsonLd data={faqSchema(WINGS_FAQS)} />
-      <MisterChat initialContext={context} />
+    <div className="min-h-screen bg-[var(--mister-bg-window)]">
+      <JsonLd data={misterSoftwareApplicationSchema()} />
+      <JsonLd data={faqSchema(MISTER_FAQS)} />
+      <main className="mx-auto max-w-[var(--mister-window-width)] px-0 py-8">
+        <MisterEmbedded currentPage="/mister" />
+      </main>
     </div>
   )
 }

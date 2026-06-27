@@ -1,0 +1,288 @@
+export type EngineConfig = 'I3' | 'I4' | 'I6' | 'V6' | 'V8' | 'B4' | 'B6'
+export type FuelType = 'gasoline' | 'diesel' | 'lpg'
+export type VehicleType = 'hatchback' | 'sedan' | 'suv' | 'van' | 'pickup' | 'sports' | 'kei' | 'mpv'
+
+export interface Engine {
+  brand: string
+  code: string
+  variant: string
+  priceJpy: number | null   // null = CKD (kit only, no assembled price)
+  displacement: number      // cc
+  cylinders: number
+  config: EngineConfig
+  hp: number
+  fuel: FuelType
+  turbo: boolean
+  vehicleTypes: VehicleType[]
+  commonVehicles: string[]
+}
+
+export const BRANDS = ['DAIHATSU','HONDA','MITSUBISHI','MAZDA','NISSAN','SUBARU','SUZUKI','TOYOTA'] as const
+export type Brand = typeof BRANDS[number]
+
+export const ENGINES: Engine[] = [
+  // ── DAIHATSU ──────────────────────────────────────────────────────────────
+  { brand:'DAIHATSU', code:'1KR', variant:'PASSO',       priceJpy:75000,  displacement:998,  cylinders:3, config:'I3', hp:58,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','kei'], commonVehicles:['Daihatsu Boon','Toyota Passo','Perodua Myvi'] },
+  { brand:'DAIHATSU', code:'1KR', variant:'VITS',        priceJpy:100000, displacement:998,  cylinders:3, config:'I3', hp:67,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback'],       commonVehicles:['Toyota Vitz KSP90','Toyota Yaris'] },
+  { brand:'DAIHATSU', code:'K3',  variant:'',            priceJpy:90000,  displacement:1298, cylinders:4, config:'I4', hp:87,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','sedan'],commonVehicles:['Daihatsu Mira','Daihatsu Sirion'] },
+  { brand:'DAIHATSU', code:'K3',  variant:'TERIOS CAMI', priceJpy:180000, displacement:1298, cylinders:4, config:'I4', hp:133, fuel:'gasoline', turbo:true,  vehicleTypes:['suv','kei'],        commonVehicles:['Daihatsu Terios Kid','Toyota Cami'] },
+
+  // ── HONDA ─────────────────────────────────────────────────────────────────
+  { brand:'HONDA', code:'B20B',  variant:'RF1 TYPE',  priceJpy:130000, displacement:1972, cylinders:4, config:'I4', hp:130, fuel:'gasoline', turbo:false, vehicleTypes:['suv'],              commonVehicles:['Honda CR-V RD1','Honda Orthia'] },
+  { brand:'HONDA', code:'D13B',  variant:'',          priceJpy:70000,  displacement:1343, cylinders:4, config:'I4', hp:75,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','sedan'],commonVehicles:['Honda Civic EG','Honda Domani'] },
+  { brand:'HONDA', code:'D15B',  variant:'NEW',       priceJpy:100000, displacement:1493, cylinders:4, config:'I4', hp:130, fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','sedan'],commonVehicles:['Honda Civic EK9','Honda Domani'] },
+  { brand:'HONDA', code:'D15B',  variant:'OLD',       priceJpy:130000, displacement:1493, cylinders:4, config:'I4', hp:105, fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','sedan'],commonVehicles:['Honda Civic EF','Honda Civic EG'] },
+  { brand:'HONDA', code:'D16A',  variant:'',          priceJpy:130000, displacement:1590, cylinders:4, config:'I4', hp:120, fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','sedan'],commonVehicles:['Honda Civic EG','Honda Integra DB6'] },
+  { brand:'HONDA', code:'D17A',  variant:'',          priceJpy:160000, displacement:1668, cylinders:4, config:'I4', hp:110, fuel:'gasoline', turbo:false, vehicleTypes:['hatchback'],        commonVehicles:['Honda Civic EP3','Honda Stream'] },
+  { brand:'HONDA', code:'F18B',  variant:'',          priceJpy:100000, displacement:1797, cylinders:4, config:'I4', hp:140, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Honda Accord CF4','Honda Torneo'] },
+  { brand:'HONDA', code:'F20B',  variant:'',          priceJpy:120000, displacement:1997, cylinders:4, config:'I4', hp:200, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','sports'],   commonVehicles:['Honda Accord CF5','Honda Prelude BB5'] },
+  { brand:'HONDA', code:'F20B',  variant:'BLUE',      priceJpy:null,   displacement:1997, cylinders:4, config:'I4', hp:200, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','sports'],   commonVehicles:['Honda Accord CF5','Honda Prelude BB5'] },
+  { brand:'HONDA', code:'F23A',  variant:'',          priceJpy:120000, displacement:2254, cylinders:4, config:'I4', hp:150, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','mpv'],      commonVehicles:['Honda Accord CH9','Honda Odyssey RA6'] },
+  { brand:'HONDA', code:'F22B',  variant:'',          priceJpy:100000, displacement:2156, cylinders:4, config:'I4', hp:145, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Honda Accord CD5','Honda Ascot'] },
+  { brand:'HONDA', code:'H23A',  variant:'BLUE',      priceJpy:180000, displacement:2259, cylinders:4, config:'I4', hp:160, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','sports'],   commonVehicles:['Honda Accord CB9','Honda Prelude BA8'] },
+  { brand:'HONDA', code:'G20A',  variant:'',          priceJpy:80000,  displacement:1996, cylinders:4, config:'I4', hp:130, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Honda Orthia','Honda Partner','Honda Domani'] },
+  { brand:'HONDA', code:'G25A',  variant:'',          priceJpy:80000,  displacement:2493, cylinders:6, config:'V6', hp:200, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Honda Inspire UA2','Honda Saber UA2'] },
+  { brand:'HONDA', code:'J25A',  variant:'',          priceJpy:100000, displacement:2493, cylinders:6, config:'V6', hp:200, fuel:'gasoline', turbo:false, vehicleTypes:['mpv','sedan'],      commonVehicles:['Honda Odyssey RA6','Honda Accord CL9'] },
+  { brand:'HONDA', code:'J30A',  variant:'RR3,4',     priceJpy:100000, displacement:2997, cylinders:6, config:'V6', hp:210, fuel:'gasoline', turbo:false, vehicleTypes:['mpv'],              commonVehicles:['Honda Odyssey RR3','Honda Odyssey RR4'] },
+  { brand:'HONDA', code:'J30A',  variant:'RA8,UC1',   priceJpy:100000, displacement:2997, cylinders:6, config:'V6', hp:210, fuel:'gasoline', turbo:false, vehicleTypes:['mpv','sedan'],      commonVehicles:['Honda Odyssey RA8','Honda Inspire UC1'] },
+  { brand:'HONDA', code:'J35A',  variant:'RL1',       priceJpy:80000,  displacement:3471, cylinders:6, config:'V6', hp:250, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Honda Legend RL1'] },
+  { brand:'HONDA', code:'J35A',  variant:'KB1,RR5',   priceJpy:130000, displacement:3471, cylinders:6, config:'V6', hp:265, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','mpv'],      commonVehicles:['Honda Legend KB1','Honda Odyssey RR5'] },
+  { brand:'HONDA', code:'J35A',  variant:'CP3,MDX',   priceJpy:230000, displacement:3471, cylinders:6, config:'V6', hp:275, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','suv'],      commonVehicles:['Honda Inspire CP3','Acura MDX'] },
+  { brand:'HONDA', code:'J37A',  variant:'KB2',       priceJpy:120000, displacement:3664, cylinders:6, config:'V6', hp:303, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Honda Legend KB2'] },
+  { brand:'HONDA', code:'K20A',  variant:'',          priceJpy:55000,  displacement:1998, cylinders:4, config:'I4', hp:155, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','suv'],      commonVehicles:['Honda CR-V RD5','Honda Accord CL7'] },
+  { brand:'HONDA', code:'K24A',  variant:'RB1 ABSO',  priceJpy:100000, displacement:2354, cylinders:4, config:'I4', hp:160, fuel:'gasoline', turbo:false, vehicleTypes:['mpv'],              commonVehicles:['Honda Odyssey RB1 Absolute'] },
+  { brand:'HONDA', code:'K24A',  variant:'ACCORD',    priceJpy:100000, displacement:2354, cylinders:4, config:'I4', hp:160, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Honda Accord CL9','Honda Accord CM2'] },
+  { brand:'HONDA', code:'K24A',  variant:'RF7,RD6',   priceJpy:80000,  displacement:2354, cylinders:4, config:'I4', hp:160, fuel:'gasoline', turbo:false, vehicleTypes:['mpv','suv'],        commonVehicles:['Honda Elysion RF7','Honda CR-V RD6'] },
+  { brand:'HONDA', code:'K24A',  variant:'NEW RB3',   priceJpy:100000, displacement:2354, cylinders:4, config:'I4', hp:160, fuel:'gasoline', turbo:false, vehicleTypes:['mpv'],              commonVehicles:['Honda Odyssey RB3','Honda Odyssey RB4'] },
+  { brand:'HONDA', code:'L13A',  variant:'',          priceJpy:90000,  displacement:1339, cylinders:4, config:'I4', hp:86,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback'],        commonVehicles:['Honda Jazz GD3','Honda Fit GD1'] },
+  { brand:'HONDA', code:'L15A',  variant:'',          priceJpy:70000,  displacement:1497, cylinders:4, config:'I4', hp:109, fuel:'gasoline', turbo:false, vehicleTypes:['hatchback'],        commonVehicles:['Honda Jazz GE6','Honda Fit GE6','Honda City GM2'] },
+  { brand:'HONDA', code:'R18A',  variant:'',          priceJpy:75000,  displacement:1798, cylinders:4, config:'I4', hp:140, fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','sedan'],commonVehicles:['Honda Civic FD','Honda Stream RN6'] },
+  { brand:'HONDA', code:'R20A',  variant:'',          priceJpy:65000,  displacement:1997, cylinders:4, config:'I4', hp:150, fuel:'gasoline', turbo:false, vehicleTypes:['suv','sedan'],      commonVehicles:['Honda CR-V RE3','Honda Accord CW1'] },
+  { brand:'HONDA', code:'ZC',    variant:'',          priceJpy:100000, displacement:1590, cylinders:4, config:'I4', hp:130, fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','sedan'],commonVehicles:['Honda Civic EF','Honda CRX EF'] },
+
+  // ── MITSUBISHI ────────────────────────────────────────────────────────────
+  { brand:'MITSUBISHI', code:'4A90', variant:'',         priceJpy:60000,  displacement:998,  cylinders:3, config:'I3', hp:68,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback'],        commonVehicles:['Mitsubishi Colt Z21A','Smart Fortwo'] },
+  { brand:'MITSUBISHI', code:'4A91', variant:'',         priceJpy:60000,  displacement:1124, cylinders:4, config:'I4', hp:75,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback'],        commonVehicles:['Mitsubishi Colt Z25A','Mitsubishi Colt Z27A'] },
+  { brand:'MITSUBISHI', code:'4B10', variant:'',         priceJpy:90000,  displacement:1798, cylinders:4, config:'I4', hp:140, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Mitsubishi Lancer CY4A','Mitsubishi Galant Fortis'] },
+  { brand:'MITSUBISHI', code:'4B11', variant:'',         priceJpy:90000,  displacement:1998, cylinders:4, config:'I4', hp:150, fuel:'gasoline', turbo:false, vehicleTypes:['suv','sedan'],      commonVehicles:['Mitsubishi Outlander CW4W','Mitsubishi Lancer CY3A'] },
+  { brand:'MITSUBISHI', code:'4B12', variant:'',         priceJpy:90000,  displacement:2360, cylinders:4, config:'I4', hp:170, fuel:'gasoline', turbo:false, vehicleTypes:['suv','sedan'],      commonVehicles:['Mitsubishi Outlander CW6W','Mitsubishi Galant Fortis CX6A'] },
+  { brand:'MITSUBISHI', code:'4G13', variant:'NO GDI',   priceJpy:90000,  displacement:1298, cylinders:4, config:'I4', hp:82,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','sedan'],commonVehicles:['Mitsubishi Mirage CA1A','Mitsubishi Colt'] },
+  { brand:'MITSUBISHI', code:'4G15', variant:'NO GDI',   priceJpy:null,   displacement:1468, cylinders:4, config:'I4', hp:90,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','sedan'],commonVehicles:['Mitsubishi Colt C50','Mitsubishi Mirage'] },
+  { brand:'MITSUBISHI', code:'4G15', variant:'GDI',      priceJpy:60000,  displacement:1468, cylinders:4, config:'I4', hp:95,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','sedan'],commonVehicles:['Mitsubishi Lancer CS1A','Mitsubishi Colt'] },
+  { brand:'MITSUBISHI', code:'4G63', variant:'GDI',      priceJpy:60000,  displacement:1997, cylinders:4, config:'I4', hp:145, fuel:'gasoline', turbo:false, vehicleTypes:['suv','sedan'],      commonVehicles:['Mitsubishi Outlander CU2W','Mitsubishi Eclipse D53A'] },
+  { brand:'MITSUBISHI', code:'4G63', variant:'NO GDI',   priceJpy:80000,  displacement:1997, cylinders:4, config:'I4', hp:145, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','sports'],   commonVehicles:['Mitsubishi Lancer CP9A','Mitsubishi Galant E54A'] },
+  { brand:'MITSUBISHI', code:'4G64', variant:'GDI',      priceJpy:60000,  displacement:2350, cylinders:4, config:'I4', hp:128, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','suv'],      commonVehicles:['Mitsubishi Galant EA3A','Mitsubishi Eclipse D54A'] },
+  { brand:'MITSUBISHI', code:'4G64', variant:'DELICA',   priceJpy:120000, displacement:2350, cylinders:4, config:'I4', hp:134, fuel:'gasoline', turbo:false, vehicleTypes:['van','mpv'],        commonVehicles:['Mitsubishi Delica D:5','Mitsubishi Space Gear'] },
+  { brand:'MITSUBISHI', code:'4G69', variant:'MIVEC',    priceJpy:90000,  displacement:2378, cylinders:4, config:'I4', hp:160, fuel:'gasoline', turbo:false, vehicleTypes:['suv','sedan'],      commonVehicles:['Mitsubishi Outlander CW5W','Mitsubishi Galant Fortis CX5A'] },
+  { brand:'MITSUBISHI', code:'4G93', variant:'GDI FF',   priceJpy:60000,  displacement:1834, cylinders:4, config:'I4', hp:120, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','hatchback'],commonVehicles:['Mitsubishi Carisma DA1A','Mitsubishi Lancer CE9A'] },
+  { brand:'MITSUBISHI', code:'4G93', variant:'GDI FR',   priceJpy:70000,  displacement:1834, cylinders:4, config:'I4', hp:120, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Mitsubishi Mirage Dingo CQ2A','Mitsubishi Legnum EA4W'] },
+  { brand:'MITSUBISHI', code:'4G94', variant:'GDI FF',   priceJpy:60000,  displacement:1997, cylinders:4, config:'I4', hp:128, fuel:'gasoline', turbo:false, vehicleTypes:['suv','sedan'],      commonVehicles:['Mitsubishi Outlander CU2W','Mitsubishi Dion CR9W'] },
+  { brand:'MITSUBISHI', code:'4G94', variant:'GDI FR',   priceJpy:70000,  displacement:1997, cylinders:4, config:'I4', hp:128, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','suv'],      commonVehicles:['Mitsubishi Galant EA7A','Mitsubishi Legnum EC7W'] },
+  { brand:'MITSUBISHI', code:'6G72', variant:'FF',       priceJpy:60000,  displacement:2972, cylinders:6, config:'V6', hp:175, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Mitsubishi Diamante F31A','Mitsubishi Sigma F16A'] },
+  { brand:'MITSUBISHI', code:'6G72', variant:'FR',       priceJpy:150000, displacement:2972, cylinders:6, config:'V6', hp:230, fuel:'gasoline', turbo:false, vehicleTypes:['suv','sports'],     commonVehicles:['Mitsubishi Pajero V6','Mitsubishi GTO Z16A'] },
+  { brand:'MITSUBISHI', code:'6G74', variant:'FR',       priceJpy:200000, displacement:3497, cylinders:6, config:'V6', hp:245, fuel:'gasoline', turbo:false, vehicleTypes:['suv'],              commonVehicles:['Mitsubishi Pajero V75W','Mitsubishi Montero V6'] },
+  { brand:'MITSUBISHI', code:'4A30', variant:'P/J MINI', priceJpy:35000,  displacement:659,  cylinders:3, config:'I3', hp:38,  fuel:'gasoline', turbo:false, vehicleTypes:['kei','van'],        commonVehicles:['Mitsubishi Minicab','Mitsubishi Town Box','Mitsubishi Toppo'] },
+  { brand:'MITSUBISHI', code:'6A12', variant:'',         priceJpy:60000,  displacement:1998, cylinders:6, config:'V6', hp:175, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Mitsubishi Galant EC5A','Mitsubishi Legnum EC5W'] },
+  { brand:'MITSUBISHI', code:'6A13', variant:'',         priceJpy:60000,  displacement:2498, cylinders:6, config:'V6', hp:200, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','sports'],   commonVehicles:['Mitsubishi Galant EC7A','Mitsubishi Legnum EC7W','Mitsubishi GTO Z15A'] },
+
+  // ── MAZDA ─────────────────────────────────────────────────────────────────
+  { brand:'MAZDA', code:'AJ',   variant:'',            priceJpy:120000, displacement:2967, cylinders:6, config:'V6', hp:200, fuel:'gasoline', turbo:false, vehicleTypes:['suv','mpv'],        commonVehicles:['Mazda MPV LW3W','Ford Tribute','Mazda Tribute'] },
+  { brand:'MAZDA', code:'B3',   variant:'',            priceJpy:60000,  displacement:1324, cylinders:4, config:'I4', hp:74,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','sedan'],commonVehicles:['Mazda Demio DW3W','Mazda 323 BG'] },
+  { brand:'MAZDA', code:'B5',   variant:'',            priceJpy:60000,  displacement:1498, cylinders:4, config:'I4', hp:92,  fuel:'gasoline', turbo:false, vehicleTypes:['sedan','hatchback'],commonVehicles:['Mazda 323 BH5P','Mazda Familia BH5P'] },
+  { brand:'MAZDA', code:'F8',   variant:'EFI',         priceJpy:80000,  displacement:1789, cylinders:4, config:'I4', hp:110, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Mazda Capella CB','Mazda 626 GC'] },
+  { brand:'MAZDA', code:'FE',   variant:'',            priceJpy:100000, displacement:1998, cylinders:4, config:'I4', hp:68,  fuel:'diesel',   turbo:false, vehicleTypes:['pickup','van'],     commonVehicles:['Mazda Bongo E2200','Mazda B-series pickup'] },
+  { brand:'MAZDA', code:'FP',   variant:'',            priceJpy:70000,  displacement:1839, cylinders:4, config:'I4', hp:112, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','hatchback'],commonVehicles:['Mazda Capella GW','Mazda 626 GF','Mazda Lantis'] },
+  { brand:'MAZDA', code:'FS',   variant:'',            priceJpy:100000, displacement:1991, cylinders:4, config:'I4', hp:140, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','mpv'],      commonVehicles:['Mazda Capella GW','Mazda 626 GF','Mazda Premacy CP8W'] },
+  { brand:'MAZDA', code:'GY',   variant:'',            priceJpy:100000, displacement:2497, cylinders:6, config:'V6', hp:165, fuel:'gasoline', turbo:false, vehicleTypes:['mpv','sedan'],      commonVehicles:['Mazda MPV LWEW','Mazda Millenia TA5P'] },
+  { brand:'MAZDA', code:'J5',   variant:'',            priceJpy:60000,  displacement:1490, cylinders:4, config:'I4', hp:87,  fuel:'gasoline', turbo:false, vehicleTypes:['sedan','hatchback'],commonVehicles:['Mazda 323 BF','Mazda Familia BF'] },
+  { brand:'MAZDA', code:'KL',   variant:'',            priceJpy:60000,  displacement:2497, cylinders:6, config:'V6', hp:200, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','sports'],   commonVehicles:['Mazda Millenia TA5P','Mazda MX-6 GE8','Mazda 626 GF'] },
+  { brand:'MAZDA', code:'KF',   variant:'',            priceJpy:60000,  displacement:1329, cylinders:4, config:'I4', hp:91,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback'],        commonVehicles:['Mazda Demio DE3FS','Mazda Verisa DC5W'] },
+  { brand:'MAZDA', code:'LF',   variant:'',            priceJpy:60000,  displacement:1999, cylinders:4, config:'I4', hp:150, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','suv'],      commonVehicles:['Mazda Atenza GG','Mazda 6 GH','Mazda CX-7 ER3P'] },
+  { brand:'MAZDA', code:'L3',   variant:'',            priceJpy:60000,  displacement:2261, cylinders:4, config:'I4', hp:166, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Mazda Atenza GG3P','Mazda 6 GH5FS'] },
+  { brand:'MAZDA', code:'L3',   variant:'TURBO',       priceJpy:150000, displacement:2261, cylinders:4, config:'I4', hp:260, fuel:'gasoline', turbo:true,  vehicleTypes:['sedan','suv','sports'],commonVehicles:['Mazda Mazdaspeed6','Mazda CX-7 ER3P Turbo'] },
+  { brand:'MAZDA', code:'R2',   variant:'',            priceJpy:130000, displacement:2209, cylinders:4, config:'I4', hp:72,  fuel:'diesel',   turbo:false, vehicleTypes:['van','pickup'],     commonVehicles:['Mazda Bongo SK','Mazda Bongo Truck SK'] },
+  { brand:'MAZDA', code:'R2',   variant:'WHITE EFI',   priceJpy:130000, displacement:2209, cylinders:4, config:'I4', hp:74,  fuel:'diesel',   turbo:false, vehicleTypes:['van','pickup'],     commonVehicles:['Mazda Bongo SK EFI','Mazda Bongo Van SKF2V'] },
+  { brand:'MAZDA', code:'RF',   variant:'BLACK TURBO', priceJpy:110000, displacement:2184, cylinders:4, config:'I4', hp:100, fuel:'diesel',   turbo:true,  vehicleTypes:['sedan','van'],      commonVehicles:['Mazda Capella GV8W','Mazda 626 diesel'] },
+  { brand:'MAZDA', code:'RF',   variant:'NEW TURBO',   priceJpy:70000,  displacement:2184, cylinders:4, config:'I4', hp:105, fuel:'diesel',   turbo:true,  vehicleTypes:['van','sedan'],      commonVehicles:['Mazda Bongo SL diesel','Mazda Premacy diesel'] },
+  { brand:'MAZDA', code:'WL',   variant:'TURBO',       priceJpy:250000, displacement:2499, cylinders:4, config:'I4', hp:115, fuel:'diesel',   turbo:true,  vehicleTypes:['pickup','van'],     commonVehicles:['Mazda B-series','Mazda Bongo','Ford Ranger WL'] },
+  { brand:'MAZDA', code:'ZL',   variant:'',            priceJpy:90000,  displacement:1498, cylinders:4, config:'I4', hp:88,  fuel:'gasoline', turbo:false, vehicleTypes:['sedan','hatchback'],commonVehicles:['Mazda 323 BJ','Mazda Familia BJ'] },
+  { brand:'MAZDA', code:'ZY',   variant:'',            priceJpy:50000,  displacement:1348, cylinders:4, config:'I4', hp:91,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback'],        commonVehicles:['Mazda Demio DE3','Mazda Verisa DC5W'] },
+  { brand:'MAZDA', code:'ZJ',   variant:'',            priceJpy:50000,  displacement:1348, cylinders:4, config:'I4', hp:91,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback'],        commonVehicles:['Mazda Demio DJ3FS','Mazda2'] },
+  { brand:'MAZDA', code:'Z5',   variant:'',            priceJpy:80000,  displacement:1839, cylinders:4, config:'I4', hp:91,  fuel:'gasoline', turbo:false, vehicleTypes:['sedan','hatchback'],commonVehicles:['Mazda 323 BG','Mazda Familia BG'] },
+
+  // ── NISSAN ────────────────────────────────────────────────────────────────
+  { brand:'NISSAN', code:'CG10',    variant:'',                priceJpy:55000,  displacement:999,  cylinders:3, config:'I3', hp:58,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','kei'], commonVehicles:['Nissan March K11'] },
+  { brand:'NISSAN', code:'CG13',    variant:'',                priceJpy:55000,  displacement:1275, cylinders:4, config:'I4', hp:75,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','sedan'],commonVehicles:['Nissan March K11','Nissan Micra K11'] },
+  { brand:'NISSAN', code:'CGA3',    variant:'',                priceJpy:55000,  displacement:1348, cylinders:4, config:'I4', hp:75,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback'],        commonVehicles:['Nissan March K12','Nissan Micra K12'] },
+  { brand:'NISSAN', code:'CR12,14', variant:'',                priceJpy:50000,  displacement:1240, cylinders:4, config:'I4', hp:73,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback'],        commonVehicles:['Nissan March K12','Nissan Note'] },
+  { brand:'NISSAN', code:'GA15',    variant:'EFI',             priceJpy:110000, displacement:1497, cylinders:4, config:'I4', hp:90,  fuel:'gasoline', turbo:false, vehicleTypes:['sedan','hatchback'],commonVehicles:['Nissan Sunny B13','Nissan Sentra B13'] },
+  { brand:'NISSAN', code:'GA15',    variant:'CARB',            priceJpy:100000, displacement:1497, cylinders:4, config:'I4', hp:85,  fuel:'gasoline', turbo:false, vehicleTypes:['sedan','hatchback'],commonVehicles:['Nissan Sunny B12','Nissan Sentra'] },
+  { brand:'NISSAN', code:'GA16',    variant:'CARB',            priceJpy:100000, displacement:1597, cylinders:4, config:'I4', hp:99,  fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Nissan Sunny B13','Nissan Wingroad'] },
+  { brand:'NISSAN', code:'HR12',    variant:'',                priceJpy:50000,  displacement:1198, cylinders:3, config:'I3', hp:80,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback'],        commonVehicles:['Nissan March K13','Nissan Micra K13'] },
+  { brand:'NISSAN', code:'HR15',    variant:'',                priceJpy:50000,  displacement:1498, cylinders:4, config:'I4', hp:109, fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','sedan'],commonVehicles:['Nissan Tiida C11','Nissan Note E11'] },
+  { brand:'NISSAN', code:'HR15',    variant:'NEW',             priceJpy:65000,  displacement:1498, cylinders:4, config:'I4', hp:109, fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','sedan'],commonVehicles:['Nissan Note E12','Nissan Tiida C11 late'] },
+  { brand:'NISSAN', code:'HR16',    variant:'AT',              priceJpy:80000,  displacement:1598, cylinders:4, config:'I4', hp:110, fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','sedan'],commonVehicles:['Nissan Tiida C11','Nissan Latio C11'] },
+  { brand:'NISSAN', code:'HR16',    variant:'MT',              priceJpy:90000,  displacement:1598, cylinders:4, config:'I4', hp:110, fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','sedan'],commonVehicles:['Nissan Tiida C11 manual','Nissan Latio'] },
+  { brand:'NISSAN', code:'MR18',    variant:'',                priceJpy:80000,  displacement:1797, cylinders:4, config:'I4', hp:131, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','hatchback'],commonVehicles:['Nissan Tiida C11','Nissan Sylphy G11','Nissan Bluebird G11'] },
+  { brand:'NISSAN', code:'MR20',    variant:'',                priceJpy:60000,  displacement:1997, cylinders:4, config:'I4', hp:141, fuel:'gasoline', turbo:false, vehicleTypes:['suv','sedan'],      commonVehicles:['Nissan X-Trail T31','Nissan Sylphy B17','Nissan Qashqai J10'] },
+  { brand:'NISSAN', code:'QD32',    variant:'EFI ELG',         priceJpy:320000, displacement:3153, cylinders:4, config:'I4', hp:100, fuel:'diesel',   turbo:false, vehicleTypes:['van','suv'],        commonVehicles:['Nissan Caravan E24','Nissan Terrano R20','Nissan Elgrand E50'] },
+  { brand:'NISSAN', code:'QG15',    variant:'BLACK',           priceJpy:100000, displacement:1497, cylinders:4, config:'I4', hp:109, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','hatchback'],commonVehicles:['Nissan Sunny B15','Nissan Almera N16'] },
+  { brand:'NISSAN', code:'QG15',    variant:'SILVER',          priceJpy:90000,  displacement:1497, cylinders:4, config:'I4', hp:105, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','hatchback'],commonVehicles:['Nissan Sunny B15','Nissan Wingroad Y11'] },
+  { brand:'NISSAN', code:'QG18',    variant:'BLACK',           priceJpy:110000, displacement:1769, cylinders:4, config:'I4', hp:116, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Nissan Sunny B15','Nissan Bluebird Sylphy G10'] },
+  { brand:'NISSAN', code:'QG18',    variant:'SILVER',          priceJpy:100000, displacement:1769, cylinders:4, config:'I4', hp:116, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Nissan Almera N16','Nissan Wingroad Y11'] },
+  { brand:'NISSAN', code:'QR20',    variant:'',                priceJpy:85000,  displacement:1997, cylinders:4, config:'I4', hp:140, fuel:'gasoline', turbo:false, vehicleTypes:['suv','sedan'],      commonVehicles:['Nissan X-Trail T30','Nissan Wingroad Y12'] },
+  { brand:'NISSAN', code:'QR20',    variant:'NT30',            priceJpy:125000, displacement:1997, cylinders:4, config:'I4', hp:145, fuel:'gasoline', turbo:false, vehicleTypes:['suv'],              commonVehicles:['Nissan X-Trail NT30 4WD'] },
+  { brand:'NISSAN', code:'QR20',    variant:'FR CARAVAN',      priceJpy:240000, displacement:1997, cylinders:4, config:'I4', hp:140, fuel:'gasoline', turbo:false, vehicleTypes:['van'],              commonVehicles:['Nissan Caravan E25','Nissan Hommy'] },
+  { brand:'NISSAN', code:'QR25',    variant:'FF OLD',          priceJpy:120000, displacement:2488, cylinders:4, config:'I4', hp:170, fuel:'gasoline', turbo:false, vehicleTypes:['suv','pickup'],     commonVehicles:['Nissan Frontier D40','Nissan Presage TU31'] },
+  { brand:'NISSAN', code:'QR25',    variant:'FF NEW',          priceJpy:75000,  displacement:2488, cylinders:4, config:'I4', hp:170, fuel:'gasoline', turbo:false, vehicleTypes:['suv'],              commonVehicles:['Nissan X-Trail T31 2.5','Nissan Teana J32'] },
+  { brand:'NISSAN', code:'QR25',    variant:'FR CARAVAN',      priceJpy:250000, displacement:2488, cylinders:4, config:'I4', hp:170, fuel:'gasoline', turbo:false, vehicleTypes:['van','pickup'],     commonVehicles:['Nissan Caravan E25','Nissan Frontier D22'] },
+  { brand:'NISSAN', code:'RB20',    variant:'',                priceJpy:70000,  displacement:1998, cylinders:6, config:'I6', hp:145, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','sports'],   commonVehicles:['Nissan Skyline R31','Nissan Skyline R32','Nissan Laurel C33'] },
+  { brand:'NISSAN', code:'RB25',    variant:'NEO',             priceJpy:150000, displacement:2498, cylinders:6, config:'I6', hp:210, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','sports'],   commonVehicles:['Nissan Skyline R33','Nissan Skyline R34','Nissan Stagea WGNC34'] },
+  { brand:'NISSAN', code:'RD28',    variant:'',                priceJpy:100000, displacement:2826, cylinders:6, config:'I6', hp:95,  fuel:'diesel',   turbo:false, vehicleTypes:['van','suv'],        commonVehicles:['Nissan Caravan VTE24','Nissan Patrol Y60'] },
+  { brand:'NISSAN', code:'SR18',    variant:'',                priceJpy:80000,  displacement:1809, cylinders:4, config:'I4', hp:124, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','hatchback'],commonVehicles:['Nissan Primera P10','Nissan Bluebird U13'] },
+  { brand:'NISSAN', code:'SR20',    variant:'',                priceJpy:85000,  displacement:1998, cylinders:4, config:'I4', hp:145, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','sports'],   commonVehicles:['Nissan Primera P11','Nissan Bluebird U14','Nissan 200SX S14'] },
+  { brand:'NISSAN', code:'TD27',    variant:'EFI CARAVAN',     priceJpy:null,   displacement:2663, cylinders:4, config:'I4', hp:99,  fuel:'diesel',   turbo:false, vehicleTypes:['van'],              commonVehicles:['Nissan Caravan E24','Nissan Homy E24'] },
+  { brand:'NISSAN', code:'TD27',    variant:'EFI TERANO',      priceJpy:null,   displacement:2663, cylinders:4, config:'I4', hp:99,  fuel:'diesel',   turbo:false, vehicleTypes:['suv'],              commonVehicles:['Nissan Terrano R20','Nissan Pathfinder R20'] },
+  { brand:'NISSAN', code:'TD27',    variant:'NON EFI TERANO',  priceJpy:null,   displacement:2663, cylinders:4, config:'I4', hp:85,  fuel:'diesel',   turbo:false, vehicleTypes:['suv'],              commonVehicles:['Nissan Terrano D21','Nissan Pathfinder WD21'] },
+  { brand:'NISSAN', code:'VG33',    variant:'',                priceJpy:130000, displacement:3275, cylinders:6, config:'V6', hp:168, fuel:'gasoline', turbo:false, vehicleTypes:['suv','pickup'],     commonVehicles:['Nissan Frontier D22','Nissan Terrano R50','Nissan Xterra'] },
+  { brand:'NISSAN', code:'VQ20',    variant:'OLD FF',          priceJpy:100000, displacement:1995, cylinders:6, config:'V6', hp:150, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Nissan Cefiro A32','Nissan Maxima J30'] },
+  { brand:'NISSAN', code:'VQ20',    variant:'NEO FF',          priceJpy:100000, displacement:1995, cylinders:6, config:'V6', hp:155, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Nissan Cefiro A33','Nissan Maxima A33'] },
+  { brand:'NISSAN', code:'VQ23',    variant:'',                priceJpy:60000,  displacement:2349, cylinders:6, config:'V6', hp:165, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Nissan Teana J31'] },
+  { brand:'NISSAN', code:'VQ25',    variant:'OLD FF',          priceJpy:100000, displacement:2496, cylinders:6, config:'V6', hp:190, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','mpv'],      commonVehicles:['Nissan Cefiro A33','Nissan Stagea WC34'] },
+  { brand:'NISSAN', code:'VQ25',    variant:'J32',             priceJpy:60000,  displacement:2496, cylinders:6, config:'V6', hp:185, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Nissan Teana J32'] },
+  { brand:'NISSAN', code:'VQ25',    variant:'FR',              priceJpy:70000,  displacement:2496, cylinders:6, config:'V6', hp:190, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','sports'],   commonVehicles:['Nissan Skyline R34','Nissan Gloria Y34'] },
+  { brand:'NISSAN', code:'VQ30',    variant:'FF HU30',         priceJpy:150000, displacement:2988, cylinders:6, config:'V6', hp:225, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Nissan Cefiro HU30','Nissan Maxima A33'] },
+  { brand:'NISSAN', code:'VQ30',    variant:'FR',              priceJpy:70000,  displacement:2988, cylinders:6, config:'V6', hp:220, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Nissan Gloria Y34','Nissan Cedric Y34'] },
+  { brand:'NISSAN', code:'VQ35',    variant:'FF',              priceJpy:120000, displacement:3498, cylinders:6, config:'V6', hp:260, fuel:'gasoline', turbo:false, vehicleTypes:['suv','mpv'],        commonVehicles:['Nissan Murano PNZ50','Nissan Teana J31 3.5'] },
+  { brand:'NISSAN', code:'VQ35',    variant:'ELG E51',         priceJpy:70000,  displacement:3498, cylinders:6, config:'V6', hp:280, fuel:'gasoline', turbo:false, vehicleTypes:['mpv'],              commonVehicles:['Nissan Elgrand E51'] },
+  { brand:'NISSAN', code:'VQ35',    variant:'ELG E50',         priceJpy:80000,  displacement:3498, cylinders:6, config:'V6', hp:245, fuel:'gasoline', turbo:false, vehicleTypes:['mpv'],              commonVehicles:['Nissan Elgrand E50'] },
+  { brand:'NISSAN', code:'VQ35',    variant:'DE OLD',          priceJpy:160000, displacement:3498, cylinders:6, config:'V6', hp:280, fuel:'gasoline', turbo:false, vehicleTypes:['sports','sedan'],   commonVehicles:['Nissan 350Z Z33','Infiniti G35 V35'] },
+  { brand:'NISSAN', code:'VQ35',    variant:'HR FR',           priceJpy:120000, displacement:3498, cylinders:6, config:'V6', hp:306, fuel:'gasoline', turbo:false, vehicleTypes:['sports','sedan'],   commonVehicles:['Nissan 350Z Z33 HR','Infiniti G35 late'] },
+  { brand:'NISSAN', code:'VQ37',    variant:'',                priceJpy:120000, displacement:3696, cylinders:6, config:'V6', hp:330, fuel:'gasoline', turbo:false, vehicleTypes:['sports','sedan'],   commonVehicles:['Nissan 370Z Z34','Infiniti G37 V36'] },
+  { brand:'NISSAN', code:'VK45',    variant:'',                priceJpy:70000,  displacement:4494, cylinders:8, config:'V8', hp:340, fuel:'gasoline', turbo:false, vehicleTypes:['suv','sedan'],      commonVehicles:['Infiniti FX45 S50','Infiniti Q45 F50'] },
+  { brand:'NISSAN', code:'YD22',    variant:'',                priceJpy:70000,  displacement:2184, cylinders:4, config:'I4', hp:136, fuel:'diesel',   turbo:true,  vehicleTypes:['suv','sedan'],      commonVehicles:['Nissan Almera N16 diesel','Nissan X-Trail T30 diesel'] },
+  { brand:'NISSAN', code:'YD25',    variant:'FF',              priceJpy:160000, displacement:2488, cylinders:4, config:'I4', hp:170, fuel:'diesel',   turbo:true,  vehicleTypes:['suv','pickup'],     commonVehicles:['Nissan Navara D22','Nissan Pathfinder R50'] },
+  { brand:'NISSAN', code:'YD25',    variant:'FR',              priceJpy:250000, displacement:2488, cylinders:4, config:'I4', hp:190, fuel:'diesel',   turbo:true,  vehicleTypes:['pickup','suv'],     commonVehicles:['Nissan Navara D40','Nissan Pathfinder R51'] },
+  { brand:'NISSAN', code:'ZD30',    variant:'',                priceJpy:270000, displacement:2953, cylinders:4, config:'I4', hp:150, fuel:'diesel',   turbo:true,  vehicleTypes:['suv','van'],        commonVehicles:['Nissan Patrol Y61','Nissan Caravan E25 diesel'] },
+
+  // ── SUBARU ────────────────────────────────────────────────────────────────
+  { brand:'SUBARU', code:'EJ15', variant:'',         priceJpy:60000,  displacement:1493, cylinders:4, config:'B4', hp:100, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','suv'],      commonVehicles:['Subaru Impreza GC1','Subaru Impreza GD2','Subaru Forester SF5'] },
+  { brand:'SUBARU', code:'EL15', variant:'',         priceJpy:60000,  displacement:1498, cylinders:4, config:'B4', hp:107, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','hatchback'],commonVehicles:['Subaru Impreza G4','Subaru Impreza Sport GP'] },
+  { brand:'SUBARU', code:'EJ20', variant:'',         priceJpy:70000,  displacement:1994, cylinders:4, config:'B4', hp:125, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','suv'],      commonVehicles:['Subaru Legacy BH','Subaru Forester SF','Subaru Impreza GD'] },
+  { brand:'SUBARU', code:'EJ20', variant:'SG5 TURBO',priceJpy:null,   displacement:1994, cylinders:4, config:'B4', hp:250, fuel:'gasoline', turbo:true,  vehicleTypes:['suv','sports'],     commonVehicles:['Subaru Forester SG5 STI','Subaru Impreza WRX GDA'] },
+  { brand:'SUBARU', code:'EJ25', variant:'OTHER',    priceJpy:80000,  displacement:2457, cylinders:4, config:'B4', hp:165, fuel:'gasoline', turbo:false, vehicleTypes:['suv','sedan'],      commonVehicles:['Subaru Outback BP9','Subaru Legacy BL9'] },
+  { brand:'SUBARU', code:'EJ25', variant:'BR9 NO/T', priceJpy:75000,  displacement:2457, cylinders:4, config:'B4', hp:173, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Subaru Legacy BR9 NA'] },
+  { brand:'SUBARU', code:'EJ25', variant:'BP9 OLD',  priceJpy:110000, displacement:2457, cylinders:4, config:'B4', hp:165, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','suv'],      commonVehicles:['Subaru Legacy BP9','Subaru Outback BPE'] },
+  { brand:'SUBARU', code:'EJ25', variant:'BP9 NEW',  priceJpy:150000, displacement:2457, cylinders:4, config:'B4', hp:210, fuel:'gasoline', turbo:true,  vehicleTypes:['sedan','sports'],   commonVehicles:['Subaru Legacy BP9 Spec B','Subaru Outback BPET'] },
+  { brand:'SUBARU', code:'EJ25', variant:'YA9',      priceJpy:75000,  displacement:2457, cylinders:4, config:'B4', hp:165, fuel:'gasoline', turbo:false, vehicleTypes:['suv'],              commonVehicles:['Subaru Outback YA9','Subaru Outback BR9'] },
+  { brand:'SUBARU', code:'FB20', variant:'',         priceJpy:120000, displacement:1995, cylinders:4, config:'B4', hp:148, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','suv'],      commonVehicles:['Subaru Impreza GJ','Subaru XV GP','Subaru Forester SJ'] },
+  { brand:'SUBARU', code:'FB25', variant:'',         priceJpy:140000, displacement:2498, cylinders:4, config:'B4', hp:172, fuel:'gasoline', turbo:false, vehicleTypes:['suv','sedan'],      commonVehicles:['Subaru Outback BS9','Subaru Legacy BN9','Subaru Forester SJ'] },
+  { brand:'SUBARU', code:'EZ30', variant:'',         priceJpy:120000, displacement:2999, cylinders:6, config:'B6', hp:212, fuel:'gasoline', turbo:false, vehicleTypes:['suv','sedan'],      commonVehicles:['Subaru Outback BH9','Subaru Legacy BE9','Subaru Tribeca B9A'] },
+
+  // ── SUZUKI ────────────────────────────────────────────────────────────────
+  { brand:'SUZUKI', code:'K6A',  variant:'FR',  priceJpy:35000,  displacement:658,  cylinders:3, config:'I3', hp:58,  fuel:'gasoline', turbo:false, vehicleTypes:['kei','suv'],        commonVehicles:['Suzuki Jimny JB23','Suzuki Wagon R MC22','Suzuki Alto HA23'] },
+  { brand:'SUZUKI', code:'K12B', variant:'',    priceJpy:50000,  displacement:1242, cylinders:4, config:'I4', hp:85,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback'],        commonVehicles:['Suzuki Swift ZC72S','Suzuki Swift ZD72S','Suzuki Splash'] },
+  { brand:'SUZUKI', code:'M13A', variant:'',    priceJpy:50000,  displacement:1328, cylinders:4, config:'I4', hp:89,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','sedan'],commonVehicles:['Suzuki Swift ZC21W','Suzuki Aerio RD51S','Suzuki Liana'] },
+  { brand:'SUZUKI', code:'M15A', variant:'',    priceJpy:50000,  displacement:1490, cylinders:4, config:'I4', hp:99,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','sedan'],commonVehicles:['Suzuki Swift ZC71S','Suzuki Aerio','Suzuki Liana RH413'] },
+  { brand:'SUZUKI', code:'M16A', variant:'AT',  priceJpy:85000,  displacement:1586, cylinders:4, config:'I4', hp:107, fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','suv'],  commonVehicles:['Suzuki Swift ZC72S','Suzuki SX4 RW415','Suzuki Kizashi'] },
+  { brand:'SUZUKI', code:'M16A', variant:'MT',  priceJpy:100000, displacement:1586, cylinders:4, config:'I4', hp:110, fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','suv'],  commonVehicles:['Suzuki Swift ZC72S Sport','Suzuki SX4','Suzuki Swift Sport ZC31S'] },
+  { brand:'SUZUKI', code:'M18A', variant:'',    priceJpy:60000,  displacement:1780, cylinders:4, config:'I4', hp:121, fuel:'gasoline', turbo:false, vehicleTypes:['suv','sedan'],      commonVehicles:['Suzuki SX4 YA41S','Suzuki Aerio RD51S 1.8'] },
+
+  // ── TOYOTA ────────────────────────────────────────────────────────────────
+  { brand:'TOYOTA', code:'1AZ',  variant:'',              priceJpy:70000,  displacement:1998, cylinders:4, config:'I4', hp:152, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','mpv'],      commonVehicles:['Toyota Avensis AZT251','Toyota Vista AZV50','Toyota Ipsum AZM15'] },
+  { brand:'TOYOTA', code:'1G',   variant:'OLD',           priceJpy:120000, displacement:1988, cylinders:6, config:'I6', hp:175, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','sports'],   commonVehicles:['Toyota Crown JZS130','Toyota Soarer GZ20','Toyota Mark II GX90'] },
+  { brand:'TOYOTA', code:'1G',   variant:'BEAMS',         priceJpy:100000, displacement:1988, cylinders:6, config:'I6', hp:200, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','sports'],   commonVehicles:['Toyota Crown GS171','Toyota Mark II GX110','Toyota Altezza'] },
+  { brand:'TOYOTA', code:'1JZ',  variant:'VVT-i',         priceJpy:150000, displacement:2491, cylinders:6, config:'I6', hp:200, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','sports'],   commonVehicles:['Toyota Crown JZS171','Toyota Mark II JZX110','Toyota Soarer JZZ31'] },
+  { brand:'TOYOTA', code:'1JZ',  variant:'D-4',           priceJpy:80000,  displacement:2491, cylinders:6, config:'I6', hp:200, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Toyota Crown JZS175','Toyota Mark II JZX115','Toyota Verossa JZX110'] },
+  { brand:'TOYOTA', code:'1KZ',  variant:'',              priceJpy:320000, displacement:2982, cylinders:4, config:'I4', hp:130, fuel:'diesel',   turbo:false, vehicleTypes:['suv','pickup','van'],commonVehicles:['Toyota Land Cruiser Prado KZJ95','Toyota Hilux Surf KZN185','Toyota Hiace KZH106'] },
+  { brand:'TOYOTA', code:'1MZ',  variant:'OLD',           priceJpy:100000, displacement:2994, cylinders:6, config:'V6', hp:200, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','suv','mpv'],commonVehicles:['Toyota Camry MCV20','Toyota Windom MCV21','Toyota Harrier MCU10'] },
+  { brand:'TOYOTA', code:'1MZ',  variant:'VVTI',          priceJpy:175000, displacement:2994, cylinders:6, config:'V6', hp:220, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','suv','mpv'],commonVehicles:['Toyota Camry MCV30','Toyota Harrier MCU30','Toyota Estima MCR30'] },
+  { brand:'TOYOTA', code:'1NZ',  variant:'OLD',           priceJpy:180000, displacement:1497, cylinders:4, config:'I4', hp:109, fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','sedan'],commonVehicles:['Toyota Vitz NCP10','Toyota Platz NCP12','Toyota Prius NHW10'] },
+  { brand:'TOYOTA', code:'1NZ',  variant:'CVT K210',      priceJpy:110000, displacement:1497, cylinders:4, config:'I4', hp:109, fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','sedan'],commonVehicles:['Toyota Vitz NCP91','Toyota Yaris NCP93','Toyota Ractis NCP100'] },
+  { brand:'TOYOTA', code:'1NZ',  variant:'CVT K310,312',  priceJpy:160000, displacement:1497, cylinders:4, config:'I4', hp:109, fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','sedan'],commonVehicles:['Toyota Vitz KSP130','Toyota Aqua NHP10','Toyota Ractis NCP120'] },
+  { brand:'TOYOTA', code:'1NZ',  variant:'HYBRID',        priceJpy:80000,  displacement:1497, cylinders:4, config:'I4', hp:78,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','sedan'],commonVehicles:['Toyota Prius NHW11','Toyota Auris hybrid','Toyota IST'] },
+  { brand:'TOYOTA', code:'1NR',  variant:'',              priceJpy:100000, displacement:1197, cylinders:3, config:'I3', hp:97,  fuel:'gasoline', turbo:true,  vehicleTypes:['hatchback','sedan'],commonVehicles:['Toyota Yaris WA1A','Toyota Vios NHP150','Toyota Sienta NSP170'] },
+  { brand:'TOYOTA', code:'1SZ',  variant:'',              priceJpy:null,   displacement:999,  cylinders:4, config:'I4', hp:72,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','kei'],  commonVehicles:['Toyota Vitz SCP10','Toyota Funcargo NCP20','Toyota WiLL Vi'] },
+  { brand:'TOYOTA', code:'1TR',  variant:'LPG',           priceJpy:175000, displacement:1998, cylinders:4, config:'I4', hp:145, fuel:'lpg',      turbo:false, vehicleTypes:['van','mpv'],        commonVehicles:['Toyota Hiace TRH200','Toyota Regius Ace TRH102','Toyota Quantum TRH203'] },
+  { brand:'TOYOTA', code:'1UZ',  variant:'OLD',           priceJpy:150000, displacement:3969, cylinders:8, config:'V8', hp:260, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','suv'],      commonVehicles:['Toyota Celsior UCF20','Lexus LS400 UCF10','Toyota Soarer UZZ31'] },
+  { brand:'TOYOTA', code:'1UZ',  variant:'VVTI',          priceJpy:180000, displacement:3969, cylinders:8, config:'V8', hp:290, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','suv'],      commonVehicles:['Toyota Celsior UCF30','Lexus LS430','Toyota Land Cruiser Cygnus'] },
+  { brand:'TOYOTA', code:'1ZZ',  variant:'OLD',           priceJpy:120000, displacement:1794, cylinders:4, config:'I4', hp:132, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','hatchback'],commonVehicles:['Toyota Corolla CE120','Toyota Allex NZE121','Toyota Vista Ardeo ZZV50'] },
+  { brand:'TOYOTA', code:'1ZZ',  variant:'NEW',           priceJpy:210000, displacement:1794, cylinders:4, config:'I4', hp:140, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','hatchback'],commonVehicles:['Toyota Corolla Fielder NZE121','Toyota Auris NZE151','Toyota Corolla Rumion'] },
+  { brand:'TOYOTA', code:'2AZ',  variant:'ACR30,ANH10',   priceJpy:175000, displacement:2362, cylinders:4, config:'I4', hp:160, fuel:'gasoline', turbo:false, vehicleTypes:['mpv'],              commonVehicles:['Toyota Estima ACR30','Toyota Alphard ANH10','Toyota Previa ACR50'] },
+  { brand:'TOYOTA', code:'2AZ',  variant:'ACM21',         priceJpy:190000, displacement:2362, cylinders:4, config:'I4', hp:160, fuel:'gasoline', turbo:false, vehicleTypes:['mpv'],              commonVehicles:['Toyota Alphard MNH10','Toyota Previa ACM21'] },
+  { brand:'TOYOTA', code:'2AZ',  variant:'NEW',           priceJpy:150000, displacement:2362, cylinders:4, config:'I4', hp:167, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','suv'],      commonVehicles:['Toyota Camry ACV40','Toyota RAV4 ACA36','Toyota Vanguard GSA33'] },
+  { brand:'TOYOTA', code:'2AZ',  variant:'HYBRID',        priceJpy:130000, displacement:2362, cylinders:4, config:'I4', hp:150, fuel:'gasoline', turbo:false, vehicleTypes:['mpv'],              commonVehicles:['Toyota Estima AHR10','Toyota Alphard AHR10 hybrid'] },
+  { brand:'TOYOTA', code:'2GR',  variant:'FF',            priceJpy:280000, displacement:3456, cylinders:6, config:'V6', hp:296, fuel:'gasoline', turbo:false, vehicleTypes:['mpv','suv','sedan'],commonVehicles:['Toyota Alphard ANH20','Toyota Estima ACR50','Toyota Camry GSV40'] },
+  { brand:'TOYOTA', code:'2GR',  variant:'FR',            priceJpy:120000, displacement:3456, cylinders:6, config:'V6', hp:306, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','sports'],   commonVehicles:['Toyota Crown GRS182','Toyota Mark X GRX130','Lexus IS350'] },
+  { brand:'TOYOTA', code:'2JZ',  variant:'VVT-i',         priceJpy:170000, displacement:2997, cylinders:6, config:'I6', hp:230, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','sports'],   commonVehicles:['Toyota Crown JZS171','Toyota Aristo JZS160','Toyota Supra JZA80'] },
+  { brand:'TOYOTA', code:'2JZ',  variant:'D-4',           priceJpy:100000, displacement:2997, cylinders:6, config:'I6', hp:225, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Toyota Crown JZS175 D-4','Toyota Progres JCG15'] },
+  { brand:'TOYOTA', code:'2MZ',  variant:'',              priceJpy:80000,  displacement:2495, cylinders:6, config:'V6', hp:190, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Toyota Windom MCV21','Lexus ES250'] },
+  { brand:'TOYOTA', code:'2NZ',  variant:'',              priceJpy:150000, displacement:1298, cylinders:4, config:'I4', hp:87,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','sedan'],commonVehicles:['Toyota Vitz NCP13','Toyota Platz NCP16','Toyota bB NCP30'] },
+  { brand:'TOYOTA', code:'2SZ',  variant:'',              priceJpy:130000, displacement:1298, cylinders:4, config:'I4', hp:87,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback'],        commonVehicles:['Toyota Ractis NCP105','Toyota Yaris NCP150'] },
+  { brand:'TOYOTA', code:'2TZ',  variant:'ESTIMA',        priceJpy:100000, displacement:2438, cylinders:4, config:'I4', hp:115, fuel:'lpg',      turbo:false, vehicleTypes:['mpv'],              commonVehicles:['Toyota Estima Lucida TCR10','Toyota Previa TCR10'] },
+  { brand:'TOYOTA', code:'2ZR',  variant:'FE',            priceJpy:180000, displacement:1798, cylinders:4, config:'I4', hp:136, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','hatchback'],commonVehicles:['Toyota Auris ZRE152','Toyota Corolla ZRE142','Toyota Prius+ ZVW40'] },
+  { brand:'TOYOTA', code:'2ZR',  variant:'FAE',           priceJpy:160000, displacement:1798, cylinders:4, config:'I4', hp:140, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','hatchback'],commonVehicles:['Toyota Auris ZRE186','Toyota Corolla Fielder NZE161','Toyota Vios NCP150'] },
+  { brand:'TOYOTA', code:'2ZZ',  variant:'',              priceJpy:210000, displacement:1796, cylinders:4, config:'I4', hp:190, fuel:'gasoline', turbo:false, vehicleTypes:['sports','hatchback'],commonVehicles:['Toyota Celica ZZT231','Toyota Matrix XRS','Lotus Elise/Exige'] },
+  { brand:'TOYOTA', code:'3CT',  variant:'ESTIMA',        priceJpy:100000, displacement:2184, cylinders:4, config:'I4', hp:90,  fuel:'diesel',   turbo:false, vehicleTypes:['mpv'],              commonVehicles:['Toyota Estima Emina TCR10 diesel','Toyota Previa diesel'] },
+  { brand:'TOYOTA', code:'3GR',  variant:'',              priceJpy:100000, displacement:2994, cylinders:6, config:'V6', hp:245, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Toyota Crown GRS180','Toyota Mark X GRX120','Toyota Lexus GS300'] },
+  { brand:'TOYOTA', code:'3RZ',  variant:'',              priceJpy:270000, displacement:2693, cylinders:4, config:'I4', hp:145, fuel:'gasoline', turbo:false, vehicleTypes:['suv','van','pickup'],commonVehicles:['Toyota Land Cruiser Prado RZJ95','Toyota Hiace TRH102','Toyota Hilux RZN'] },
+  { brand:'TOYOTA', code:'3S',   variant:'FR',            priceJpy:null,   displacement:1998, cylinders:4, config:'I4', hp:175, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','sports'],   commonVehicles:['Toyota Celica ST205','Toyota Carina ST215','Toyota Camry SXV20'] },
+  { brand:'TOYOTA', code:'3S',   variant:'FF',            priceJpy:null,   displacement:1998, cylinders:4, config:'I4', hp:140, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','suv'],      commonVehicles:['Toyota Camry SXV20','Toyota RAV4 SXA10','Toyota Corona ST215'] },
+  { brand:'TOYOTA', code:'3S',   variant:'D-4',           priceJpy:null,   displacement:1998, cylinders:4, config:'I4', hp:155, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Toyota Camry SXV25','Toyota Vista SV50','Toyota Ipsum SXM15'] },
+  { brand:'TOYOTA', code:'3SZ',  variant:'FF',            priceJpy:120000, displacement:1495, cylinders:4, config:'I4', hp:109, fuel:'gasoline', turbo:false, vehicleTypes:['suv','hatchback'],  commonVehicles:['Toyota Rush J210E','Toyota Terios J102G','Daihatsu Terios J102G'] },
+  { brand:'TOYOTA', code:'3UZ',  variant:'',              priceJpy:290000, displacement:4292, cylinders:8, config:'V8', hp:285, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','suv'],      commonVehicles:['Toyota Crown Majesta UZS186','Toyota Celsior UCF31','Lexus SC430'] },
+  { brand:'TOYOTA', code:'3ZR',  variant:'',              priceJpy:70000,  displacement:1997, cylinders:4, config:'I4', hp:147, fuel:'gasoline', turbo:false, vehicleTypes:['mpv','sedan'],      commonVehicles:['Toyota Stream ZRR75','Toyota Wish ZGE20','Toyota Noah ZRR80'] },
+  { brand:'TOYOTA', code:'4A',   variant:'EFI',           priceJpy:null,   displacement:1587, cylinders:4, config:'I4', hp:115, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','hatchback'],commonVehicles:['Toyota Corolla AE100','Toyota Carina AT190','Toyota Sprinter AE100'] },
+  { brand:'TOYOTA', code:'4E',   variant:'',              priceJpy:100000, displacement:1331, cylinders:4, config:'I4', hp:88,  fuel:'gasoline', turbo:false, vehicleTypes:['hatchback','kei'],  commonVehicles:['Toyota Starlet EP91','Toyota Corolla II EL51','Toyota Tercel EL53'] },
+  { brand:'TOYOTA', code:'4GR',  variant:'',              priceJpy:60000,  displacement:2494, cylinders:6, config:'V6', hp:215, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Toyota Mark X GRX120','Toyota Crown GRS200','Lexus IS250'] },
+  { brand:'TOYOTA', code:'4S',   variant:'',              priceJpy:null,   displacement:1838, cylinders:4, config:'I4', hp:118, fuel:'gasoline', turbo:false, vehicleTypes:['sedan'],            commonVehicles:['Toyota Vista SV30','Toyota Camry SV30','Toyota Carina SV30'] },
+  { brand:'TOYOTA', code:'5A',   variant:'DIST',          priceJpy:null,   displacement:1498, cylinders:4, config:'I4', hp:100, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','hatchback'],commonVehicles:['Toyota Corolla AE100','Toyota Carina AT190','Toyota Sprinter'] },
+  { brand:'TOYOTA', code:'5E',   variant:'DIST COIL',     priceJpy:null,   displacement:1331, cylinders:4, config:'I4', hp:100, fuel:'gasoline', turbo:false, vehicleTypes:['hatchback'],        commonVehicles:['Toyota Starlet EP82','Toyota Corolla II EL51','Toyota Tercel EL51'] },
+  { brand:'TOYOTA', code:'5S',   variant:'COIL',          priceJpy:null,   displacement:2164, cylinders:4, config:'I4', hp:133, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','suv'],      commonVehicles:['Toyota Camry SXV20','Toyota RAV4 SXA10','Toyota Previa'] },
+  { brand:'TOYOTA', code:'5VZ',  variant:'',              priceJpy:250000, displacement:3378, cylinders:6, config:'V6', hp:190, fuel:'gasoline', turbo:false, vehicleTypes:['suv','pickup'],     commonVehicles:['Toyota Land Cruiser Prado VZJ95','Toyota 4Runner VZN185','Toyota Hilux Surf VZN185'] },
+  { brand:'TOYOTA', code:'7A',   variant:'',              priceJpy:null,   displacement:1762, cylinders:4, config:'I4', hp:115, fuel:'gasoline', turbo:false, vehicleTypes:['sedan','hatchback'],commonVehicles:['Toyota Corolla AE100','Toyota Carina AT191','Toyota Avensis AT220'] },
+]
+
+// ── Derived filter options ─────────────────────────────────────────────────
+
+export const DISPLACEMENT_RANGES = [
+  { label: '< 1.5L',     min: 0,    max: 1499  },
+  { label: '1.5 – 2.0L', min: 1500, max: 1999  },
+  { label: '2.0 – 2.5L', min: 2000, max: 2499  },
+  { label: '2.5 – 3.0L', min: 2500, max: 2999  },
+  { label: '> 3.0L',     min: 3000, max: Infinity },
+] as const
+
+export const HP_RANGES = [
+  { label: '< 100hp',    min: 0,   max: 99  },
+  { label: '100 – 150hp',min: 100, max: 150 },
+  { label: '150 – 200hp',min: 151, max: 200 },
+  { label: '> 200hp',    min: 201, max: Infinity },
+] as const
+
+export const VEHICLE_TYPE_LABELS: Record<VehicleType, string> = {
+  hatchback: 'Hatchback',
+  sedan:     'Sedán',
+  suv:       'SUV / 4×4',
+  van:       'Van / Furgón',
+  pickup:    'Pickup',
+  sports:    'Deportivo',
+  kei:       'Kei / Mini',
+  mpv:       'MPV / Familiar',
+}
+
+export const FUEL_LABELS: Record<FuelType, string> = {
+  gasoline: 'Gasolina',
+  diesel:   'Diésel',
+  lpg:      'GLP',
+}
+
+export const CONFIG_LABELS: Record<EngineConfig, string> = {
+  I3: '3 cil. línea',
+  I4: '4 cil. línea',
+  I6: '6 cil. línea',
+  V6: 'V6',
+  V8: 'V8',
+  B4: '4 cil. bóxer',
+  B6: '6 cil. bóxer',
+}

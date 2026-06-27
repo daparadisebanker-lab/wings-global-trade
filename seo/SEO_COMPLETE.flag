@@ -1,0 +1,86 @@
+SEO/AEO AUDIT COMPLETE — Wings Global Trade Mister
+
+Generated: 2026-06-27
+Audit Type: AEO-First Strategy (conversational tool + thought leadership)
+Scope: Mister interface + supporting blog/guides
+
+========================================
+KEYWORD TARGETS (19 Primary)
+========================================
+
+TIER 1 — Landed Cost & Import Structure (6)
+[es-PE] costo de internación, estructura de costo importación, que es CIF, diferencia Incoterms, FOB vs CIF, flete marítimo
+[EN]    landed cost, import cost structure, CIF explained, Incoterms, ocean freight
+
+TIER 2 — Customs & Documentation (5)
+[es-PE] documentos importación Perú, clasificación HS, ZOFRATACNA, aranceles maquinaria, nacionalización aduanal
+[EN]    Peru import documents, HS classification, ZOFRATACNA, machinery tariffs, customs nationalization
+
+TIER 3 — Reseller & Wholesale (4)
+[es-PE] margen de reventa importación, MOQ que es, importación mayorista, MOQ afecta precio
+[EN]    resale margin on imports, what is MOQ, wholesale import, MOQ pricing
+
+TIER 4 — Logistics & Corridors (4)
+[es-PE] Tacna vs Iquique, contenedor tamaño, logística importación, corredor comercial
+[EN]    Tacna vs Iquique, container size choice, import logistics, trade corridor
+
+========================================
+SCHEMA MARKUP IMPLEMENTATION COUNT
+========================================
+
+Mister Route (/mister EN + es-PE):
+  • SoftwareApplication — 2 blocks (1 per locale)
+  • FAQPage with 8 questions — 2 blocks (1 per locale, localized)
+  • Optional HowTo schema — 2 blocks (if guide published)
+  Subtotal: 4 required + 2 optional = 6 blocks
+
+Supporting Blog/Guide Articles (4 required + 4 secondary):
+  • Blog article 1 (Cómo se construye el costo): FAQPage (5Q) + BlogPosting + Breadcrumb = 3 blocks
+  • Blog article 2 (Incoterms explicados): FAQPage (7Q) + BlogPosting + Breadcrumb = 3 blocks
+  • Blog article 3 (Documentos Perú): FAQPage (6Q) + BlogPosting + Breadcrumb = 3 blocks
+  • Blog article 4 (Tacna vs Iquique): FAQPage (6Q) + BlogPosting + Breadcrumb = 3 blocks
+  • Secondary articles (MOQ, HS, Flete, Margin): 4 articles × 2 blocks = 8 blocks (estimated)
+  Subtotal: 12 required + 8 optional = 20 blocks
+
+========================================
+TOTAL AEO-COMPLIANT SCHEMA BLOCKS
+========================================
+
+MINIMUM (4 articles only): 4 (Mister) + 12 (blogs) = 16 schema blocks
+COMPREHENSIVE (8 articles): 6 (Mister) + 20 (blogs) = 26 schema blocks
+
+AEO Compliance: PASS
+Every page has ≥1 FAQPage schema.
+Mister conversations are noindex (ephemeral).
+Mister landing page (/mister) is indexed.
+
+========================================
+DELIVERABLES GENERATED
+========================================
+
+✓ Metadata for /mister (EN + es-PE) with OG, Twitter, hreflang
+✓ SoftwareApplication + FAQPage JSON-LD (production-ready)
+✓ 19 keyword targets mapped to AEO queries (4 tiers)
+✓ 4 required blog articles mapped with target keywords
+✓ FAQPage microcopy (8 core questions for Mister)
+✓ Blog publication roadmap (12-week rollout)
+✓ robots.txt directive for Mister routes
+✓ sitemap.xml structure (Mister + blog entries)
+✓ Indexing strategy (noindex convos, index /mister page)
+✓ Canonical & hreflang spec (EN ↔ es-PE)
+✓ AEO citation strategy (how to earn AI answer citations)
+✓ Internal linking protocol (3 Mister CTAs per blog article)
+✓ Success metrics (organic, AEO, conversion)
+✓ 90-day implementation roadmap
+
+========================================
+COMPLETE SPECIFICATION
+========================================
+
+Full audit document:
+C:\Users\Muaaz\projects\wings-global-trade\spec\contributions\seo-agent.md
+
+All outputs are production-ready.
+No further discovery needed.
+
+SEO Flag: READY_FOR_IMPLEMENTATION

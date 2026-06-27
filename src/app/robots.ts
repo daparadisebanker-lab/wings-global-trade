@@ -6,9 +6,9 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: '*',
-        allow: '/',
+        allow: ['/', '/mister', '/blog', '/catalogo', '/nosotros', '/contacto'],
         disallow: ['/api/', '/_next/', '/catalogo?q='],
-        crawlDelay: 2,
+        crawlDelay: 1,
       },
       // AI search and answer engine crawlers — explicit allow for AEO
       { userAgent: 'GPTBot', allow: '/' },

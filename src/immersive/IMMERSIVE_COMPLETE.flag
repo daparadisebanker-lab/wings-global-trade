@@ -1,0 +1,82 @@
+IMMERSIVE EXPERIENCE LAB — LAYER 4 COMPLETE
+Wings Global Trade · Product Page
+Mode: SPATIAL-DESIGN (NOT BUILD-3D)
+Spatial archetype: The Machine — "function made beautiful," the inside of a precision instrument.
+
+================================================================
+PERFORMANCE CONTRACT
+================================================================
+- Zero Three.js. Zero WebGL. Zero canvas. Zero 3D.
+- All presence is CSS + inline SVG (static, no animation loops).
+- EnvironmentalContextLayer renders ONE tiled SVG <pattern> — GPU-cheap, no JS.
+- No requestAnimationFrame loops introduced by Layer 4.
+- Safe for LATAM mobile (the constraint that ruled out 3D in the shipping report).
+- Inspection Mode + FieldReport use AnimatePresence height transitions only —
+  no layout thrash, GPU-composited opacity/height.
+
+================================================================
+SPATIAL EXPERIENCE SUMMARY — what makes the buyer feel "inside the machine"
+================================================================
+
+1. EnvironmentalContextLayer.tsx  [REWRITTEN]
+   The machine's world, rendered as the document it would live inside, held at 3% opacity.
+   - maquinaria-agricola → nested TOPOGRAPHIC CONTOUR lines (a terrain survey, with a
+     spot-height tick), not a single sinewave. Reads as a topo map.
+   - camiones / buses → orthogonal WAREHOUSE FLOOR PLAN: bay grid, dimension ticks,
+     loading-dock hatching. Reads as logistics floor plan, not a generic grid.
+   - equipo-industrial → engineering REGISTRATION GRID with corner crosses.
+   - Removed dangerouslySetInnerHTML (XSS-shaped pattern) → real React SVG.
+   - Removed 100vw/100vh fixed sizing that caused horizontal scroll → inset-0 + overflow-hidden,
+     opacity moved to the wrapper (Tailwind), preserveAspectRatio="...slice" for full bleed.
+
+2. TechnicalSilhouette.tsx  [REWRITTEN]
+   Real engineering side-elevations, not placeholder shapes. 1.5px warm-white monoline on
+   navy, resting on a gold 0.5px datum rule with end-ticks (the silhouette has a baseline to
+   sit on — dimensional presence without 3D weight).
+   - Tractor: large rear drive wheel (r=40) + hub rings, small front wheel (r=20),
+     trapezoid body, CAB OUTLINE (was missing), roof overhang, exhaust stack, grille ticks.
+   - Truck: cab + window, cargo box with door seam, chassis baseline, two wheels.
+   - Bus: long rounded body, windscreen rake, 4 windows, door with seam, two wheels.
+   - Forklift: chassis, operator overhead guard, MAST with two diagonal cross-braces,
+     carriage, two forks extending left, two rear wheels (was the weakest — now correct).
+   - Label set to sentence case to match brand register.
+
+3. JumpNavigation.tsx  [REWRITTEN — reframed from nav bar to document index]
+   The serious buyer controls the depth; the platform does not control the flow.
+   - Added a document POSITION REGISTER on the left edge: "02 / 04" (tabular DM Mono),
+     so the buyer reads where they are in the document.
+   - Four words (Variantes · Especificaciones · Usos · Consultar), gold underline on active,
+     aria-current on the active section. Sticky, appears after 200px scroll.
+
+4. FieldReport.tsx  [CONTENT KEPT — threshold refined]
+   Content was already operationally real (altitude 3,200 msnm / carburetor verification,
+   SUTRAN, MTC, INDECOPI, ZOFRATACNA/ZOFRI admission). Kept verbatim.
+   - Threshold refined: added "REG · OPS" document-reference tag beside the header, so opening
+     it reads as breaking the seal on a technical field document, not expanding a marketing FAQ.
+
+5. ProductSpecTable.tsx  [INSPECTION MODE ADDED — game-designer's hover tooltip PRESERVED]
+   Two distinct depths of curiosity, intact and non-overlapping:
+   - game-designer's 1.5s HOVER tooltip (passive reward for lingering) — untouched.
+   - NEW click-driven INSPECTION MODE (deliberate deep investigation):
+     * clickedSpec state; spec value becomes a button (.spec-value-inspectable).
+     * Inline AnimatePresence panel: spec name in DM Mono 10px uppercase gold,
+       extended explanation in Flexo 13px navy, "Rango de mercado" line when available.
+     * Dismiss on Escape or outside click. Grid card spans full width while open.
+     * specInspectionFor() reuses game-designer's keyword identity map, extended content.
+
+6. globals.css  [Inspection Mode styles appended]
+   .spec-value-inspectable (cursor + gold hover at 150ms) under @layer utilities.
+
+================================================================
+QUALITY BAR — the test applied to every element
+================================================================
+"Does the user feel they are inside a precision instrument, or browsing a catalog?"
+- Topo/floor-plan ambient ground → the machine has a WORLD, not a CSS trick.
+- True silhouettes on a datum rule → the product has DIMENSION, legibly drawn.
+- Document register + jump index → the buyer NAVIGATES a document, controlling depth.
+- Field report as a sealed ops document → presence of FIELD EXPERIENCE, not a brief.
+- Inspection Mode → the page becomes a LEARNING SURFACE on intentional click.
+Silence held: nothing added that does not add presence. 3% opacity, monoline, no decoration.
+
+TypeScript: all 5 Layer 4 files typecheck clean (verified). The only project tsc errors
+are in InquiryForm.tsx (experience agent's pulseGold prop, task #16) — outside my ownership.

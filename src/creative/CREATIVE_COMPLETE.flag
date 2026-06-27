@@ -1,0 +1,81 @@
+CREATIVE CODING LAYER — COMPLETE
+Wings Global Trade · Product Page · Specs as Visual Phenomenon
+Method: Vera Molnár — define a rule, apply it, introduce controlled deviation, observe.
+
+Each product's spec map is the seed. The algorithm is the author. The tractor-snh504
+and the kama-serie-w must read as different organisms — same rules, different life.
+
+────────────────────────────────────────────────────────────────────────
+FOUNDATION
+────────────────────────────────────────────────────────────────────────
+src/lib/spec-normalize.ts
+  Normalizes heterogeneous Spanish spec maps to a 6-axis 0–1 vector.
+  - extractNum(): fuzzy Spanish-key matching + numeric parsing out of
+    unit-bearing strings ("50 HP", "2370 kg", "766 RPM"). Tonne→kg unit
+    scaling so "40 toneladas" and "2370 kg" stay comparable.
+  - Catalog ranges: HP 18–400 · payload 200–20000 · GVW 800–35000 ·
+    wheelbase 1800–5500 · speed 30–150 · weight 400–18000.
+  - getSpecPath(): closed SVG radar polygon, optional per-axis deviation.
+  - hashString() (FNV-1a): deterministic slug seed for stable deviation.
+  Missing axes collapse to 0 (a flat radius) — truthful, never throws.
+
+────────────────────────────────────────────────────────────────────────
+GENERATIVE SYSTEMS — each tied irreducibly to its product
+────────────────────────────────────────────────────────────────────────
+1. SpecFingerprint.tsx        SEED: specs + product slug
+   6-axis radar. The rule is the geometry; the deviation is ±2% per-axis
+   jitter from a mulberry32 PRNG seeded by the slug hash — deterministic,
+   stable across reloads. Near-identical machines (snh504 vs snh704) carry
+   subtly different fingerprints. Faint navy scaffold = the rule made visible.
+
+2. VariantFingerprint.tsx     SEED: specs (delta)
+   Morph wrapper. SpecFingerprint already declares `transition: d 400ms`,
+   so a persistent node interpolates the polygon when specs change. Feature-
+   detects animatable CSS `d` via CSS.supports; falls back to keyed remount
+   (snap) where unsupported (e.g. Firefox). The spec diff made visual.
+
+3. NoiseField.tsx             SEED: hp
+   Canvas 2D sine flow field. angle(x,y,t)=sin(x·0.015+seed·0.01)·cos(y·0.015+t·speed).
+   HP sets personality: 18→ slow(0.3)/sparse(50)/faint(0.04); 400→ fast(1.2)/
+   dense(200)/brighter(0.08). Gold/warm-white alternating segments, fading
+   trails. Particle layout HP-seeded (stable). Honors prefers-reduced-motion
+   (single static frame). cancelAnimationFrame + ResizeObserver cleanup.
+
+4. WaveformOverlay.tsx        SEED: hp, torque, rpm
+   Static SVG oscilloscope. Three overlapping sine waves; values set cycle
+   count 1–5 (not amplitude — this is an aesthetic, not a chart). HP gold 1.5px,
+   torque warm-white 60% 1px, RPM gold 30% 0.5px. 200 points/wave, non-scaling
+   strokes so it stretches full-width cleanly.
+
+5. TradeRouteAnimation.tsx    SEED: weight
+   Canvas 2D particles on a quadratic bezier: China coast → Pacific → ZOFRATACNA
+   (500×180). count = 5 + floor(weight/500); speed = 0.8 − min(0.6, weight/20000).
+   Heavier machine = more, slower particles. Gold dots brighten mid-ocean, dim
+   at the ports. Dashed warm-white 20% route scaffold. rAF cleanup, reduced-motion
+   draws one static frame.
+
+6. CellularAutomaton.tsx      SEED: (gvw·31 + hp·17)
+   32×8 Conway-like grid, LCG-seeded so each product grows its own colony.
+   Toroidal wrap, 600ms tick, living cells gold 80% / dying gold 20% one frame.
+   Initial density also rides the seed. Gentle periodic reseed every 240 gens so
+   the organism never fully stalls. clearInterval + ResizeObserver cleanup.
+
+────────────────────────────────────────────────────────────────────────
+INTEGRATION
+────────────────────────────────────────────────────────────────────────
+ProductGallery.tsx  (only existing file modified)
+   + NoiseField backdrop (hp prop, default 50) behind the gallery image,
+     absolute inset-0, pointer-events-none, inside the existing relative/
+     overflow-hidden container.
+   + Depth of field: radial-gradient mask-image on the image wrapper —
+     sharp center (60%), soft to transparent edges. -webkit- prefixed for Safari.
+   New optional `hp?: number` prop; existing callers unaffected.
+
+────────────────────────────────────────────────────────────────────────
+QUALITY
+────────────────────────────────────────────────────────────────────────
+tsc --noEmit: clean (exit 0).  eslint: clean (exit 0).
+Extraction validated against src/data/seed.json — every product yields a
+distinct fingerprint vector; trucks read payload correctly after tonne scaling.
+All canvas/interval systems clean up on unmount and respect prefers-reduced-motion.
+Brand palette throughout: Navy #001E50 · Gold #C4933F · Warm White #F8F6F0.

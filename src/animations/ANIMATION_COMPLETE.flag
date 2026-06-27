@@ -1,0 +1,47 @@
+ANIMATION_COMPLETE
+
+Motion Personality Statement:
+Wings moves like a machine being configured — precise, inevitable, physical.
+Every transition answers a question: what just changed, what does it mean,
+how powerful is this thing. Nothing decorates. Everything informs.
+
+Files Built:
+
+1. src/components/ui/CountUp.tsx
+   - Reusable animated number count-up using useMotionValue + animate
+   - Auto-duration based on value magnitude (small numbers finish fast)
+   - prefers-reduced-motion: instant final value
+
+2. src/lib/sound.ts
+   - Procedural paper/stamp sound via AudioContext (no audio file)
+   - 80ms decaying white noise burst, gain 0.3
+   - Off by default — user opt-in via localStorage wings_sound_enabled
+
+3. src/components/features/catalog/VariantCeremony.tsx
+   - Context + Provider + hook for the Variant Selection Ceremony
+   - ceremonyKey changes on each variant selection — all subscribed components re-animate
+   - Tracks previousSpecs and currentSpecs for delta-aware transitions
+   - Integration instructions in file header comment
+
+4. src/components/features/catalog/SpecScannerLine.tsx
+   - Gold scan line (1px, opacity 0.6) sweeps down spec table on scroll entry
+   - rAF-based animation: rowCount * 20ms total duration
+   - Absolute positioned, pointer-events none, fades out after scan
+   - prefers-reduced-motion: skip, lines just appear
+
+5. src/components/features/catalog/MagneticButton.tsx
+   - Magnetic cursor pull within configurable radius (default 60px)
+   - useSpring { stiffness: 200, damping: 20 } for smooth return to center
+   - Touch/coarse pointer: no effect (SSR-safe)
+   - Document-level mousemove listener for pull that starts before cursor is over button
+
+6. src/components/features/catalog/ProductHpMeter.tsx (modified)
+   - Dot overshoots target by 5% then settles: spring { stiffness: 300, damping: 18, mass: 1 }
+   - Bar fill delayed 80ms behind dot — the two land separately, reinforcing physicality
+   - Ambient pulse: scale [1, 1.002, 1] on 4s infinite loop — the machine breathes
+   - CountUp component for the HP number (count-up on viewport entry)
+   - prefers-reduced-motion: all animations disabled, CountUp instant
+
+Ceremony Integration Pending:
+  ProductSpecTable.tsx — integration agent to wire VariantCeremonyProvider
+  and per-cell AnimatePresence exit-up/enter-below with ceremonyKey as key prop.

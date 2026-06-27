@@ -1,0 +1,196 @@
+Brand Universe — Mister has an identity, not just a name
+
+---
+
+FONT SYSTEM (non-negotiable)
+All typography uses the three installed fonts only. No external imports.
+
+  --font-display: NissanOpti     → authority, headers, Mister's name
+  --font-body:    Flexo          → Mister's responses, body text
+  --font-mono:    Teko           → technical labels, eyebrows, user annotations
+
+Tailwind utilities: font-display · font-body · font-mono
+
+---
+
+THE CONSULTATION HEADER
+
+Replace the current font-display text-xl font-semibold text-navy "Mister" on a white
+bar with a full-width dark header that feels like a letterhead.
+
+  - "MISTER" in font-display at 48–64px, tracking normal, text-[#F8F6F0]
+  - Eyebrow above it: "ASESOR DE IMPORTACIÓN · WINGS GLOBAL TRADE"
+    font-mono (Teko), weight 300, text-[10px], letter-spacing: 0.2em, text-[#C4933F]
+  - A thin gold rule below the name: border-b border-[#C4933F] at 1px, full width
+  - Below the rule: "CONSULTA #[SESSION_ID]" — font-mono, text-xs, text-[#F8F6F0]/60
+
+SESSION_ID GENERATION
+Generated on AccioChat mount. Not a UUID. A human-readable reference:
+  format: WGT-[YEAR][MONTH]-[6-char base36 from crypto.randomBytes(4)]
+  example: WGT-202601-4KR9MX
+Stored in component state, included in the TPR submission payload as session_ref.
+Renders immediately — no async, no loading state.
+
+---
+
+THE DARK CONSULTATION ROOM
+
+The outer wrapper is bg-[#000C1F]. The inner chat column is bg-[#001E50].
+Warm-white (#F8F6F0) text on navy is the consultation room.
+Not a bright office where the walls are navy — a focused room where the chat column
+is a beam of light.
+
+Structural implementation:
+  - Outer: w-full min-h-screen bg-[#000C1F] flex
+  - Chat column: flex-1 max-w-2xl bg-[#001E50] border-l border-r border-[#C4933F]/20
+    box-shadow: 0 0 60px rgba(196,147,63,0.04) inset
+  - TprSheet: w-[380px] bg-[#000C1F] border-l border-[#C4933F]/15
+
+---
+
+MISTER'S MARK
+
+A static SVG precision seal. Not an avatar. Not a logo. A mark.
+It appears once — in the consultation header, left of "MISTER" — and nowhere else.
+
+6-axis radial glyph. Fixed parameters (never randomized, always identical):
+
+  Axis 1 — Reach:       0.82   (outer ring extension, 82% of max radius)
+  Axis 2 — Density:     0.67   (spoke count multiplier → 12 spokes)
+  Axis 3 — Tension:     0.74   (spoke curve coefficient → slight inward pull)
+  Axis 4 — Weight:      0.55   (stroke width as fraction of radius → medium)
+  Axis 5 — Aperture:    0.38   (gap at center → open core, not filled)
+  Axis 6 — Symmetry:    1.00   (perfect bilateral → no rotation offset)
+
+Visual result: a precise radial form, 12 spokes, open center, slight curve tension,
+medium stroke weight. Reads as an official seal, not a decorative flourish.
+
+Render at 28×28px in the header. Color: stroke #C4933F at 80% opacity.
+SVG lives at: public/images/mister-mark.svg
+Generate once, commit as static asset.
+
+---
+
+MESSAGE TYPOGRAPHY
+
+The advisor and the client are not equal participants in a thread.
+Mister builds the document. The client annotates it with questions.
+
+Mister's messages:
+  - Full-width block, no bubble, no border, no background
+  - font-body (Flexo), weight 400, text-[#F8F6F0], leading-relaxed (1.75)
+  - text-base (16px)
+  - Arrival behavior: full block fades in at once (opacity 0 → 1, 200ms ease-out)
+    NOT word-by-word streaming. NOT fast typewriter.
+    The message appears the way a document is placed on a desk.
+
+User messages:
+  - Right-aligned, self-end
+  - font-mono (Teko), weight 400, text-sm, text-[#F8F6F0]/65
+  - No bubble. A subtle right-border: border-r-2 border-[#C4933F]/40 pr-3
+  - Reads as a marginal annotation — precise, subordinate to the document
+
+---
+
+SESSION DOCUMENT AESTHETIC — TprSheet
+
+The TPR sheet is not a sidebar. It is the document being built in real-time.
+Treat it with the visual language of a formal trade document.
+
+  - Top edge: perforated-edge simulation
+    background-image: repeating-linear-gradient(
+      90deg,
+      transparent, transparent 6px,
+      #C4933F20 6px, #C4933F20 8px
+    )
+    height: 3px, full width, at the top of the sheet
+
+  - Watermark: "BORRADOR — WINGS GLOBAL TRADE"
+    position: absolute, centered, 45deg rotation
+    font-display (NissanOpti), text-4xl, opacity: 0.03, pointer-events-none
+    color: #F8F6F0
+
+  - Session ref: top-right corner, font-mono text-[9px] text-[#F8F6F0]/40
+    same WGT-YYYYMM-XXXXXX value as the header
+
+  - Field rows: label in font-mono text-[10px] tracking-widest text-[#C4933F]/70
+    value in font-body text-sm text-[#F8F6F0]
+    separator: border-b border-[#F8F6F0]/8
+
+WATERMARK STATE CHANGE
+Trigger: when accio chat state reaches completeness === 'minimum'
+  BORRADOR → "CONFIRMADO"
+  Transition: opacity fades 0 → 0 over 400ms, text changes, fades back 0 → 0.03
+  Color shifts from #F8F6F0 to #C4933F at 3% opacity
+  This is a ceremony, not a label swap. The room changes when the document is complete.
+
+---
+
+ENTRY TRANSITION
+
+The user arrives at /accio. The consultation room forms.
+Use the first-message hardcode window (no API latency) to animate the room entering.
+
+Sequence (Framer Motion, staggered):
+  0ms    — outer bg-[#000C1F] is present immediately (no fade, it is the ground)
+  0ms    — chat column renders at opacity: 0, y: 8px
+  100ms  — chat column fades in, y: 0, duration 300ms ease-out
+  150ms  — header eyebrow appears, letter-spacing animates 0.05em → 0.2em, 400ms
+  200ms  — "MISTER" renders, opacity 0 → 1, 250ms
+  280ms  — gold rule draws left to right, scaleX 0 → 1, origin-left, 350ms ease-in-out
+  350ms  — Mister's mark fades in, 200ms
+  500ms  — first message block appears (full block fade, not streaming)
+  600ms  — TprSheet slides in from right, x: 20px → 0, opacity 0 → 1, 400ms
+
+Total entry: 1 second. Unhurried. This is not a loading screen — it is an arrival.
+
+---
+
+EXIT CEREMONY
+
+When the user submits the TPR (POST /api/accio/submit succeeds):
+
+Beat 1 (0ms):
+  Watermark: if not already CONFIRMADO, transition now
+  The perforated edge at top of TprSheet glows briefly — box-shadow pulse on the
+  border-top, #C4933F at 30% opacity, 600ms ease-out
+
+Beat 2 (400ms):
+  A new full-width block appears in the chat column below the last message.
+  No Mister avatar, no bubble. Just text, full-width, font-body, text-[#F8F6F0]:
+
+  "Su consulta ha sido registrada bajo la referencia [WGT-XXXXXX].
+   El equipo de Wings se comunicará dentro de las próximas 24 horas
+   con un análisis preliminar. Puede cerrar esta sesión."
+
+Beat 3 (900ms):
+  The TprSheet header label changes from "TPR EN PROGRESO" to "CONSULTA ENVIADA"
+  font-mono, text-[#C4933F], weight 500
+
+Beat 4 (1200ms):
+  A minimal confirmation line appears below the TPR fields:
+  "Enviado — [timestamp local]" — font-mono, text-[9px], text-[#F8F6F0]/40
+
+No modal. No confetti. No success illustration. The document closes itself
+with the precision it was built with.
+
+---
+
+IMPLEMENTATION NOTES
+
+1. AccioChat component owns the SESSION_ID — generate on mount, pass as prop to
+   TprSheet and include in submit payload.
+
+2. The BORRADOR/CONFIRMADO state is driven by completeness from useTprState.
+   AccioChat reads this and passes a prop to TprSheet: watermarkState: 'draft' | 'confirmed'
+
+3. Mister's mark SVG must be committed as a static file before any other work.
+   It is a fixed asset, not a generated component.
+
+4. Message arrival animation (full block fade) means the streaming text from the
+   Claude API response should be buffered on the server until complete, then sent
+   as a single chunk. Alternatively: stream to client but render only when the
+   stream closes. Do not display partial sentences.
+
+5. The entry transition runs once per /accio page load. It does not replay on
+   subsequent messages. Use a ref to track whether the entry has played.

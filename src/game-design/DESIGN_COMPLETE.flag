@@ -1,0 +1,80 @@
+GAME DESIGN — LAYER 3 COMPLETE
+Wings Global Trade · Product Page · GAMIFY mode
+
+================================================================
+CORE LOOP — The Import Journey as Progression Arc
+================================================================
+Buyer fantasy: "I am a serious procurement professional who knows
+exactly what I need." Every mechanic reinforces that fantasy. No
+gamification theater. Mechanics serve buyer value, never platform
+metrics.
+
+MICRO (seconds):   Read spec → hover a value → learn WHY it matters
+                   → feel more informed → dig deeper.
+                   Drivers: ProductSpecTable hover reward + the
+                   Spec Deep Dive reveal. The reward is knowledge,
+                   not points.
+
+MACRO (minutes):   Self-identify via ReasonChips ("Para carga
+                   pesada" = recognition, not a feature badge) →
+                   explore variants → ImportReadinessMeter advances
+                   silently as the buyer moves toward submission →
+                   open and submit the inquiry. The meter reads as
+                   momentum toward a decision, not a form to fill.
+
+META (days):       SavedInquiryBanner frames elapsed time as
+                   service ("Guardamos tu selección hace N días") —
+                   the platform held the buyer's work FOR them.
+                   CatalogProgress frames the visit as the buyer's
+                   own methodical evaluation, not as tracking.
+                   The buyer returns because the experience felt
+                   like expertise, not a catalog browse.
+
+================================================================
+AUDIT — What was enhanced and why
+================================================================
+- ImportReadinessMeter: was a pulsing loading-bar (anxiety: "is it
+  loading?"). Rebuilt as MOMENTUM — only the leading edge animates,
+  settled segments sit quiet, segments fill with a staggered
+  cascade, and segment 5 (the submission/decision moment) carries
+  extra visual weight via a subtle gold halo. The buyer is
+  advancing toward a decision, not completing a progress bar.
+
+- ReasonChips: were feature-badges (decorative ◆▲⊞ icons,
+  ALL-CAPS, full gold border) reading as spec restatements.
+  Stripped to SELF-IDENTIFICATION — every label now opens with
+  "Para…" so the buyer reads it and recognizes their own
+  operation ("that's me"), normal-case, quiet left-rule accent.
+  Recognition over feature-listing.
+
+- SavedInquiryBanner: 40ms animation (effectively invisible) and
+  an underlined link + faded × that read like an ad to escape.
+  Reframed as SERVICE — perceptible 320ms slide, elapsed-time
+  framing ("Guardamos tu selección…"), "Retomar" as a soft filled
+  action, dismiss relabeled "Empezar de nuevo" (a choice, not a
+  trap). The platform works for the buyer, not to retain them.
+
+- CatalogProgress: "Has explorado 3 de 5" read as surveillance.
+  Reframed as the buyer's own EVALUATION — "Estás evaluando esta
+  categoría", "Llevas N de M modelos revisados", "Has revisado
+  toda la gama". Expertise, not a tracked counter.
+
+================================================================
+ProductSpecTable mechanics — COMPLETE:
+  1. Spec Deep Dive Unlock: collapsed view shows only the 4
+     priority specs (HP, payload, GVW, transmission, label-agnostic
+     matching for snake_case + Spanish labels). "Ver
+     especificaciones completas" toggle (DM Mono 10px gold, rotating
+     chevron) reveals the rest. Revelation = micro-reward.
+  2. Attention Reward on Hover: 1500ms dwell on a spec value with
+     operational context (SPEC_CONTEXT) surfaces a DM Mono tooltip,
+     gold left-rule, warm-white bg. Rewards the curious buyer with
+     WHY the number matters. Timer cleared on leave + unmount.
+
+  NOTE: This file was edited concurrently by the UX agent, who added
+  a complementary click-to-inspect "Inspection Mode" (deep depth).
+  Rather than clobber their work, both mechanics were reconciled into
+  one coherent file: hover (quick knowledge reward) + click (deep
+  investigation) + reveal (progressive disclosure). Full project
+  typecheck passes clean (npx tsc --noEmit, 0 errors).
+================================================================

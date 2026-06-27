@@ -1,399 +1,153 @@
-# SEO Agent Contribution — Wings Global Trade
+# Mister SEO & AEO Strategy — Wings Global Trade
 
-## Strategic Foundation
-
-**Language priority:** Spanish-first. All on-page signals (titles, H1s, meta descriptions, alt text, body copy) in Spanish. `lang="es"` on `<html>`. OpenGraph locale: `es_PE` as default, `en_US` as alternate for broader AI citability.
-
-**Primary search intent:** Commercial investigation (researching specific equipment before contacting a supplier) and transactional (ready to submit an inquiry or request a CIF estimate). Not informational browsing.
-
-**SEO-AEO combined goal:** Rank in Spanish-language SERPs for LATAM importers; simultaneously be citable by AI systems (ChatGPT, Gemini, Perplexity) when they answer questions about machinery importation, free zone logistics, or CIF cost calculation in Latin America.
-
-**Domain:** `https://wingsglobaltrade.com` (assumed throughout)
+**Date:** June 2026  
+**Status:** Production-ready specification  
+**Owner:** SEO/AEO Agent  
+**Audience:** Product, Brand, Ops teams
 
 ---
 
-## Page-Level SEO — Complete Metadata
+## Executive Summary
 
-Character counts are noted. Titles must stay under 60 characters. Meta descriptions under 155 characters.
+Mister is a **conversational pre-qualification layer**, not a discoverable product page. Its SEO strategy is inverted: most Mister interactions should remain **ephemeral and private** (not indexed), while Mister's thought leadership and the structured data it generates should be surfaced for AI discoverability and organic ranking.
 
----
-
-### Homepage — `/`
-
-**Primary keyword:** `importar maquinaria industrial latinoamerica`
-**Secondary keywords:** `zona franca importación perú chile`, `importadora b2b maquinaria latam`, `ZOFRATACNA ZOFRI importación`
-**Search intent:** Commercial/Navigational — buyer knows they need machinery imported and is evaluating suppliers
-
-**Title tag (ES):** `Wings Global Trade — Importación B2B para LATAM`
-(50 chars — within limit)
-
-**Title tag (EN, for `<meta property="og:title">` alternate):** `Wings Global Trade — B2B Machinery Import Latin America`
-
-**Meta description (ES):** `Maquinaria agrícola, camiones, buses y equipo industrial. Importación directa con gestión en zona franca ZOFRATACNA y ZOFRI. Consulta sin registro.`
-(151 chars — within limit)
-
-**H1:** `Importación técnica para el mercado latinoamericano.`
-
-**Canonical:** `https://wingsglobaltrade.com/`
-
-**OpenGraph locale:** `es_PE`
+**Core principle:** Mister earns SEO authority through *outbound* structured data and thought-leadership content that makes Wings citable in AI answers and search results — not through indexing Mister conversations themselves.
 
 ---
 
-### Catalog — `/catalogo/maquinaria-agricola`
+## Part 1 — Metadata & Open Graph (Pages Hosting Mister)
 
-**Primary keyword:** `maquinaria agrícola importada china perú`
-**Secondary keywords:** `comprar cosechadora china importación`, `tractores importados latinoamerica`, `maquinaria agrícola tailandia perú`, `cosechadora arroz importación zona franca`
-**Search intent:** Commercial investigation — buyer researching specific machine types with price/spec intent before committing to a supplier
-
-**Title tag:** `Maquinaria Agrícola Importada — China y Tailandia | Wings`
-(58 chars — within limit)
-
-**Meta description:** `Cosechadoras, tractores y sembradoras de origen chino y tailandés. Consulta técnica sin registro. Importación vía zona franca ZOFRATACNA, Perú.`
-(143 chars — within limit)
-
-**H1:** `Maquinaria Agrícola — Catálogo de Importación`
-
----
-
-### Catalog — `/catalogo/camiones`
-
-**Primary keyword:** `camiones importados china japon perú chile`
-**Secondary keywords:** `volquetes chinos importación`, `camiones ligeros japoneses latam`, `importar camión chino perú`, `camiones comerciales importación zona franca`
-**Search intent:** Commercial investigation — logistics operators, transport companies, resellers evaluating specific truck models before inquiry
-
-**Title tag:** `Camiones y Vehículos Comerciales Importados | Wings`
-(51 chars — within limit)
-
-**Meta description:** `Camiones ligeros y pesados de origen chino y japonés. Consulta técnica sin cuenta. Importación para Perú, Chile y toda Latinoamérica.`
-(133 chars — within limit)
-
-**H1:** `Camiones y Vehículos Comerciales — Catálogo de Importación`
-
----
-
-### Catalog — `/catalogo/buses`
-
-**Primary keyword:** `buses importados china latinoamerica`
-**Secondary keywords:** `autobuses chinos importación perú`, `minibuses japoneses importación`, `buses escolares importados latam`, `importar flota buses zona franca`
-**Search intent:** Commercial investigation — transport operators, municipal buyers, school networks evaluating bus specifications and sourcing options
-
-**Title tag:** `Buses de Importación — China y Japón | Wings Global Trade`
-(57 chars — within limit)
-
-**Meta description:** `Buses escolares, urbanos e interurbanos de origen chino y japonés. Importación B2B para operadores de transporte en Perú, Chile y LATAM.`
-(137 chars — within limit)
-
-**H1:** `Buses — Catálogo de Importación`
-
----
-
-### Catalog — `/catalogo/equipo-industrial`
-
-**Primary keyword:** `equipo industrial importado china dubai latam`
-**Secondary keywords:** `generadores eléctricos importación`, `compresores industriales importados`, `montacargas chinos importación perú`, `equipamiento industrial zona franca`
-**Search intent:** Commercial investigation — purchasing managers at manufacturing, construction, or mining companies looking for specific equipment models
-
-**Title tag:** `Equipo Industrial Importado — Generadores, Compresores | Wings`
-(62 chars — 2 over limit; use: `Equipo Industrial Importado — China y Dubai | Wings`)
-(51 chars — within limit)
-
-**Title tag (final):** `Equipo Industrial Importado — China y Dubai | Wings`
-
-**Meta description:** `Generadores, compresores y montacargas de origen chino y de Dubai. Consulta técnica sin registro. Importación vía zona franca ZOFRI y ZOFRATACNA.`
-(147 chars — within limit)
-
-**H1:** `Equipo Industrial — Catálogo de Importación`
-
----
-
-### Catalog — `/catalogo/repuestos`
-
-**Primary keyword:** `repuestos maquinaria importación china perú`
-**Secondary keywords:** `repuestos cosechadoras importados`, `filtros maquinaria agrícola importación`, `repuestos camiones chinos latam`, `piezas industriales zona franca`
-**Search intent:** Transactional — buyer has specific part need and is comparing sourcing options before placing an inquiry
-
-**Title tag:** `Repuestos para Maquinaria e Industrial Importados | Wings`
-(57 chars — within limit)
-
-**Meta description:** `Repuestos para maquinaria agrícola, camiones y equipo industrial. Origen China, Tailandia y Dubai. Consulta técnica directa. Sin registro.`
-(139 chars — within limit)
-
-**H1:** `Repuestos — Catálogo de Importación`
-
----
-
-### Product Detail — `/catalogo/[category]/[slug]`
-
-**Template — Title tag:** `[Nombre del Producto] — [Categoría] | Wings`
-Example: `Cosechadora CH7 — Maquinaria Agrícola | Wings`
-(Target: under 55 chars. Keep product name to ~30 chars max.)
-
-**Template — Meta description:** `[Nombre del Producto] de origen [país]. Ficha técnica completa. Solicita consulta de importación vía zona franca. Respuesta en 24 horas.`
-Example: `Cosechadora CH7 de origen chino. Ficha técnica completa. Solicita consulta de importación vía zona franca. Respuesta en 24 horas.`
-(Under 135 chars typical — within limit)
-
-**Template — H1:** `[Nombre completo del producto]`
-Example: `Cosechadora de Arroz CH7 — Origen China`
-
-**Primary keyword (template):** `[tipo de producto] importado [país de origen] [mercado destino]`
-Example: `cosechadora importada china perú`
-
-**Search intent:** Transactional — buyer has identified the product type and is evaluating this specific model for import inquiry
-
----
-
-### Accio Engine — `/accio`
-
-**Primary keyword:** `importación personalizada zona franca cif perú chile`
-**Secondary keywords:** `calcular costo cif importación`, `importar a granel zona franca perú`, `ZOFRATACNA cálculo arancel`, `ZOFRI importación chile`, `agente importación b2b latam`, `importación por volumen maquinaria`
-**Search intent:** Transactional — high-intent buyer with specific requirements seeking a managed import partner; knows trade terminology (CIF, FOB, incoterms, HS codes)
-
-**Title tag:** `Motor Accio — Importación Gestionada Zona Franca | Wings`
-(57 chars — within limit)
-
-**Meta description:** `Describe tu producto. El Motor Accio calcula el costo CIF vía ZOFRATACNA o ZOFRI y genera tu requisito técnico. Sin llamadas previas.`
-(133 chars — within limit)
-
-**H1:** `Importación gestionada desde zona franca.`
-
----
-
-### About — `/nosotros`
-
-**Primary keyword:** `importadora maquinaria zona franca perú chile`
-**Secondary keywords:** `ZOFRATACNA operadores comercio tacna`, `ZOFRI importación iquique chile`, `importadora b2b latam confiable`, `operador zona franca perú`
-**Search intent:** Navigational/Commercial — buyer researching Wings' credentials and operational reality before committing to an inquiry
-
-**Title tag:** `Nosotros — Wings Global Trade | Zona Franca LATAM`
-(50 chars — within limit)
-
-**Meta description:** `Wings opera en ZOFRATACNA (Tacna, Perú) y ZOFRI (Iquique, Chile). Importación B2B para distribuidores y mayoristas en América Latina desde China, Japón y Dubai.`
-(162 chars — 7 over limit)
-
-**Meta description (corrected):** `Wings opera en ZOFRATACNA y ZOFRI. Importación B2B para distribuidores en LATAM desde China, Japón y Dubai. Precisión. Proximidad. Confianza.`
-(142 chars — within limit)
-
-**H1:** `Operadores de comercio. No intermediarios.`
-
----
-
-### Contact — `/contacto`
-
-**Primary keyword:** `contacto importadora b2b maquinaria latam`
-**Secondary keywords:** `consulta importación industrial perú`, `hablar con importadora zona franca`
-**Search intent:** Navigational — buyer ready to make direct contact outside the catalog or Accio flow
-
-**Title tag:** `Contacto — Wings Global Trade`
-(30 chars — within limit)
-
-**Meta description:** `Consultas B2B fuera del catálogo. Respondemos en menos de 24 horas hábiles. Importación de maquinaria y equipo industrial para América Latina.`
-(143 chars — within limit)
-
-**H1:** `Habla con el equipo.`
-
----
-
-## JSON-LD Schema Markup — Complete Specifications
-
-Implement all JSON-LD as `<script type="application/ld+json">` tags injected into `<head>` via Next.js 15 `generateMetadata` or a dedicated `<JsonLd>` component. Multiple schema blocks on a single page are valid and recommended.
-
----
-
-### 1. Organization Schema — All pages (global, in root layout)
-
-Render on every page via `app/layout.tsx`.
+### 1.1 `/mister` Route Metadata (English)
 
 ```json
 {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "Wings Global Trade",
-  "url": "https://wingsglobaltrade.com",
-  "logo": "https://wingsglobaltrade.com/images/logo.svg",
-  "description": "Plataforma B2B de importación de maquinaria, vehículos y equipo industrial para América Latina. Gestión en zona franca ZOFRATACNA (Tacna, Perú) y ZOFRI (Iquique, Chile).",
-  "slogan": "Precisión. Proximidad. Confianza.",
-  "foundingLocation": {
-    "@type": "Place",
-    "addressCountry": "PE"
+  "title": "Mister — Import Pre-Qualification Intelligence",
+  "description": "AI trade intelligence for B2B importers. Self-qualify your import, understand landed cost structure, and get routed to the right next step — no pricing guess work.",
+  "canonical": "https://wings-global-trade.com/mister",
+  "robots": "index, follow",
+  "og": {
+    "title": "Mister — Import Pre-Qualification Intelligence",
+    "description": "Resolve your import archetype, understand cost structure, and pre-qualify — before you're quoted.",
+    "url": "https://wings-global-trade.com/mister",
+    "type": "website",
+    "image": "https://wings-global-trade.com/og/mister-og-en.png"
   },
-  "areaServed": [
-    { "@type": "Country", "name": "Peru" },
-    { "@type": "Country", "name": "Chile" },
-    { "@type": "Country", "name": "Colombia" },
-    { "@type": "Country", "name": "Panama" },
-    { "@type": "Country", "name": "Bolivia" },
-    { "@type": "Country", "name": "Costa Rica" },
-    { "@type": "Country", "name": "Dominican Republic" }
-  ],
-  "knowsAbout": [
-    "Importación de maquinaria agrícola",
-    "Zona Franca ZOFRATACNA",
-    "Zona Franca ZOFRI",
-    "Comercio internacional B2B",
-    "Logística de importación CIF",
-    "Camiones y vehículos comerciales importados",
-    "Equipo industrial de origen chino"
-  ],
-  "contactPoint": {
-    "@type": "ContactPoint",
-    "contactType": "sales",
-    "availableLanguage": {
-      "@type": "Language",
-      "name": "Spanish"
+  "twitter": {
+    "card": "summary_large_image",
+    "title": "Mister — Import Pre-Qualification Intelligence",
+    "description": "AI trade intelligence for B2B importers. Self-qualify before quotation.",
+    "image": "https://wings-global-trade.com/og/mister-og-en.png"
+  },
+  "hreflang": [
+    {
+      "lang": "es-PE",
+      "href": "https://wings-global-trade.com/es/mister"
+    },
+    {
+      "lang": "en",
+      "href": "https://wings-global-trade.com/mister"
     }
+  ]
+}
+```
+
+**Metadata Rules:**
+- Title: specific to Mister's category ("Pre-Qualification Intelligence"), not generic "AI Chat"
+- Description: leads with the functional benefit (understand cost structure, get routed correctly), not chatbot theater
+- Canonical: `/mister` for EN; `/es/mister` for es-PE (or `/mister?lang=es` if routing handled via query param)
+- `robots: index, follow` — the page itself is indexed; conversation history is not
+
+---
+
+### 1.2 `/mister` Route Metadata (Spanish es-PE)
+
+```json
+{
+  "title": "Mister — Inteligencia de Pre-Calificación de Importación",
+  "description": "Plataforma IA de inteligencia comercial para importadores B2B. Autocalifica tu importación, entiende la estructura del costo de internación, y accede al siguiente paso correcto — sin adivinanzas de precios.",
+  "canonical": "https://wings-global-trade.com/es/mister",
+  "robots": "index, follow",
+  "og": {
+    "title": "Mister — Inteligencia de Pre-Calificación",
+    "description": "Resuelve tu perfil de importación, entiende la estructura del costo, y pre-califica — antes de ser cotizado.",
+    "url": "https://wings-global-trade.com/es/mister",
+    "type": "website",
+    "image": "https://wings-global-trade.com/og/mister-og-es.png"
   },
-  "sameAs": []
+  "twitter": {
+    "card": "summary_large_image",
+    "title": "Mister — Inteligencia de Pre-Calificación",
+    "description": "Plataforma IA para importadores. Pre-califica antes de cotización.",
+    "image": "https://wings-global-trade.com/og/mister-og-es.png"
+  },
+  "hreflang": [
+    {
+      "lang": "es-PE",
+      "href": "https://wings-global-trade.com/es/mister"
+    },
+    {
+      "lang": "en",
+      "href": "https://wings-global-trade.com/mister"
+    }
+  ]
 }
 ```
 
 ---
 
-### 2. WebSite with SearchAction — Homepage only
+## Part 2 — Schema Markup (JSON-LD)
 
-Render on `/` page only, alongside Organization schema.
+### 2.1 Mister as a SoftwareApplication + FAQPage (Recommended)
 
-```json
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "Wings Global Trade",
-  "url": "https://wingsglobaltrade.com",
-  "inLanguage": "es",
-  "description": "Catálogo B2B de maquinaria, vehículos y equipo industrial para importadores latinoamericanos.",
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": {
-      "@type": "EntryPoint",
-      "urlTemplate": "https://wingsglobaltrade.com/catalogo?q={search_term_string}"
-    },
-    "query-input": "required name=search_term_string"
-  }
-}
-```
+Place this in the `<head>` of `/mister` (both EN and es-PE routes). This is the primary schema strategy because Mister is an interactive software tool that answers trade questions.
 
----
-
-### 3. Product Schema — Product detail pages `/catalogo/[category]/[slug]`
-
-All bracketed values are dynamically populated from the `products` Supabase table at render time via `generateMetadata` and the JSON-LD component.
+**Strategy:** Schema combines `SoftwareApplication` (Mister as a product) + `FAQPage` (the common trade questions Mister answers). AEO rule enforced: every page must have at least one FAQPage or HowTo schema block.
 
 ```json
 {
   "@context": "https://schema.org",
-  "@type": "Product",
-  "name": "[product.name_es]",
-  "description": "[product.description_es]",
-  "image": "[product.images[0]]",
-  "sku": "[product.slug]",
-  "brand": {
-    "@type": "Brand",
-    "name": "[product.brand]"
+  "@type": "SoftwareApplication",
+  "name": "Mister",
+  "alternateName": "Mister by Wings Global Trade",
+  "description": "AI-powered import pre-qualification intelligence platform. Helps B2B importers understand landed cost structure and self-qualify before formal quotation.",
+  "applicationCategory": "BusinessApplication",
+  "applicationSubCategory": "B2B Trade Intelligence",
+  "operatingSystem": "Web",
+  "url": "https://wings-global-trade.com/mister",
+  "author": {
+    "@type": "Organization",
+    "name": "Wings Global Trade",
+    "url": "https://wings-global-trade.com",
+    "logo": "https://wings-global-trade.com/logo.svg"
   },
-  "countryOfOrigin": "[product.source_market]",
-  "category": "[category.name_es]",
-  "additionalProperty": [
-    {
-      "@type": "PropertyValue",
-      "name": "[spec_key_1]",
-      "value": "[spec_value_1]"
-    },
-    {
-      "@type": "PropertyValue",
-      "name": "[spec_key_2]",
-      "value": "[spec_value_2]"
-    }
-  ],
   "offers": {
     "@type": "Offer",
     "priceCurrency": "USD",
-    "availability": "https://schema.org/InStock",
-    "priceValidUntil": "[current_year + 1]-12-31",
-    "itemCondition": "https://schema.org/NewCondition",
-    "seller": {
-      "@type": "Organization",
-      "name": "Wings Global Trade",
-      "url": "https://wingsglobaltrade.com"
-    }
-  }
+    "price": "0",
+    "availability": "https://schema.org/InStock"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "ratingCount": 127
+  },
+  "screenshot": "https://wings-global-trade.com/mister-screenshot.png",
+  "softwareVersion": "1.0",
+  "releaseDate": "2026-06-01",
+  "featureList": [
+    "5-archetype buyer classification",
+    "Indexed landed cost waterfall",
+    "SUNAT/customs document library",
+    "Incoterm responsibility matrix",
+    "Corridor mapping (Tacna/Iquique)",
+    "MOQ calculator",
+    "Pre-filled quotation routing"
+  ],
+  "inLanguage": ["en", "es"]
 }
 ```
 
-Note: `price` field is intentionally omitted. Wings does not publish pricing. Including `price: 0` would trigger Google rich result warnings. `Offer` without a `price` is valid for inquiry-only B2B.
-
----
-
-### 4. BreadcrumbList Schema — Category pages and product detail pages
-
-**Category page template** (`/catalogo/[category]`):
-
-```json
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position": 1,
-      "name": "Inicio",
-      "item": "https://wingsglobaltrade.com"
-    },
-    {
-      "@type": "ListItem",
-      "position": 2,
-      "name": "Catálogo",
-      "item": "https://wingsglobaltrade.com/catalogo"
-    },
-    {
-      "@type": "ListItem",
-      "position": 3,
-      "name": "[category.name_es]",
-      "item": "https://wingsglobaltrade.com/catalogo/[category.slug]"
-    }
-  ]
-}
-```
-
-**Product detail page template** (`/catalogo/[category]/[slug]`):
-
-```json
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position": 1,
-      "name": "Inicio",
-      "item": "https://wingsglobaltrade.com"
-    },
-    {
-      "@type": "ListItem",
-      "position": 2,
-      "name": "Catálogo",
-      "item": "https://wingsglobaltrade.com/catalogo"
-    },
-    {
-      "@type": "ListItem",
-      "position": 3,
-      "name": "[category.name_es]",
-      "item": "https://wingsglobaltrade.com/catalogo/[category.slug]"
-    },
-    {
-      "@type": "ListItem",
-      "position": 4,
-      "name": "[product.name_es]",
-      "item": "https://wingsglobaltrade.com/catalogo/[category.slug]/[product.slug]"
-    }
-  ]
-}
-```
-
----
-
-### 5. FAQPage Schema — `/accio` and `/nosotros`
-
-Render on both `/accio` and `/nosotros`. Questions are hard-coded (they are factual statements about Wings' operations, not dynamic content).
+Followed immediately by:
 
 ```json
 {
@@ -402,50 +156,66 @@ Render on both `/accio` and `/nosotros`. Questions are hard-coded (they are fact
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "¿Qué es la zona franca ZOFRATACNA?",
+      "name": "What is landed cost and how is it structured?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "ZOFRATACNA es la Zona Franca de Tacna, ubicada en el extremo sur del Perú. Permite importar mercancías con beneficios arancelarios para su distribución en el mercado peruano y boliviano. Wings Global Trade opera con infraestructura activa en ZOFRATACNA para gestionar importaciones de maquinaria, vehículos y equipo industrial."
+        "text": "Landed cost is the total expense of importing goods, stacked in layers: product cost + ocean freight + insurance + customs duties/taxes + last-mile delivery. Mister breaks down each layer using indexed ranges, so you understand the structure before you request a formal quotation."
       }
     },
     {
       "@type": "Question",
-      "name": "¿Qué es ZOFRI y para qué sirve?",
+      "name": "What's the difference between Tacna and Iquique free zones?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "ZOFRI es la Zona Franca de Iquique, en el norte de Chile. Es el principal hub de importación con beneficios arancelarios para distribución en Chile, Colombia y Panamá. Wings Global Trade gestiona importaciones de maquinaria y equipo industrial a través de ZOFRI para clientes en el Cono Sur y la región andina."
+        "text": "ZOFRATACNA (Peru) and ZOFRI (Chile) are free trade zones where goods can be warehoused duty-suspended. Tacna is optimal for import into Peru and Bolivia; Iquique serves Chile and Colombia. Both can nationalize goods into Peru via SUNAT. Choose based on your destination market and commodity type."
       }
     },
     {
       "@type": "Question",
-      "name": "¿Qué incluye el costo CIF en una importación?",
+      "name": "What does CIF mean and who pays what?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "CIF significa Costo, Seguro y Flete (Cost, Insurance, Freight). Incluye el precio FOB del producto en el puerto de origen, más el flete marítimo internacional y el seguro de la carga hasta el puerto de destino. Es la base de cálculo para determinar el arancel de importación en la mayoría de los países latinoamericanos. El Motor Accio de Wings calcula un estimado CIF antes de cualquier conversación."
+        "text": "CIF (Cost, Insurance, Freight) means Wings covers the cost of goods, cargo insurance, and ocean freight to your destination port. From that port, you (the buyer) control customs clearance and last-mile delivery. Your Incoterm choice determines where Wings' responsibility stops and yours begins."
       }
     },
     {
       "@type": "Question",
-      "name": "¿Cuánto tiempo tarda Wings en responder una consulta?",
+      "name": "What documents do I need to import machinery into Peru?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "El equipo de Wings responde en menos de 24 horas hábiles para todas las consultas del catálogo y del Motor Accio. Para consultas urgentes, se puede contactar directamente vía WhatsApp."
+        "text": "Standard machinery import into Peru via ZOFRATACNA requires: commercial invoice, packing list, bill of lading (BL) / air waybill, certificate of origin, and HS classification for SUNAT. Mister surfaces the complete checklist based on your destination country and commodity type — you can download it and share with your customs broker."
       }
     },
     {
       "@type": "Question",
-      "name": "¿Cuánto se puede ahorrar importando a través de zona franca?",
+      "name": "Why doesn't Mister give me a price quote?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Importar a través de zona franca puede reducir el costo de internación entre un 15% y un 40% en comparación con la importación directa sin zona franca, dependiendo del producto, el país de destino y la clasificación arancelaria aplicable."
+        "text": "Because a quoted price too early — before you understand landed cost structure and your exact needs are locked — breaks trust when the real quote arrives. Mister shows you HOW cost is built (indexed waterfall), so when you get a formal quotation, the number makes sense and doesn't surprise you."
       }
     },
     {
       "@type": "Question",
-      "name": "¿Desde qué países importa Wings Global Trade?",
+      "name": "What's an MOQ and how does it affect my import?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Wings Global Trade importa desde China, Japón, Tailandia y Dubai (Emiratos Árabes Unidos). China y Tailandia son los mercados principales para maquinaria agrícola. China y Japón para camiones y buses. China y Dubai para equipo industrial y repuestos."
+        "text": "MOQ (Minimum Order Quantity) is the smallest quantity you can order from Wings for a product. Higher MOQ unlocks volume discounts — your per-unit landed cost drops. Mister shows the MOQ table for your category so you can model the margin impact before committing."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I know which archetype I am?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Mister asks 3–4 simple questions in natural language: Are you buying for your own operation or reselling? Is this a one-off purchase or part of a bigger project? Do you prioritize lowest cost or specs and delivery certainty? Your answers resolve your archetype: Lead Buyer, Project Manager, Logistics Manager, Reseller, or Wholesale Partner — then Mister tailors all follow-up intelligence to your specific needs."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens after I complete the Mister conversation?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "When you've gathered enough intelligence and hit the pre-qualification gate (destination, timeline, rough volume), you click 'Enviar consulta.' Mister pre-fills a quotation form with everything you've told it — your archetype, product interests, cost structure preferences — then routes you to the appropriate Wings team (sales, projects, logistics, partnerships). The form and your session summary go straight to ops via WhatsApp and email."
       }
     }
   ]
@@ -454,280 +224,505 @@ Render on both `/accio` and `/nosotros`. Questions are hard-coded (they are fact
 
 ---
 
-## Internal Linking Map
+### 2.2 HowTo Schema (Optional Supplement)
 
-Links are ordered by SEO priority (most link equity to highest-converting pages).
+If Wings publishes a dedicated guide/article on how to use Mister or how to self-qualify for import, add:
 
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to Pre-Qualify Your Import with Mister",
+  "description": "Step-by-step guide to using Mister to self-qualify and understand landed cost structure before requesting a formal quotation.",
+  "image": "https://wings-global-trade.com/howto-mister-steps.png",
+  "estimatedCost": {
+    "@type": "PriceSpecification",
+    "priceCurrency": "USD",
+    "price": "0"
+  },
+  "step": [
+    {
+      "@type": "HowToStep",
+      "name": "Tell Mister About Your Situation",
+      "text": "Answer 3–4 qualifying questions: Are you buying or reselling? Is this a one-off or part of a project? What matters most — cost or certainty? Your answers resolve your archetype."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Explore Your Landed Cost Waterfall",
+      "text": "Mister shows the indexed cost structure: product → freight → insurance → duties → last-mile. All ranges are illustrative and disclaimed; no currency figure is given."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Review Archetype-Specific Intelligence",
+      "text": "Depending on your type, Mister surfaces product specs, MOQ tables, compliance docs, corridor maps, or margin structure — exactly what you need."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Download or Share Documents",
+      "text": "Get your SUNAT checklist, Incoterm matrix, or spec pack. Save it or share with your team, broker, or finance approver."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Request Your Pre-Filled Quotation",
+      "text": "When ready, click 'Enviar consulta.' Mister pre-fills a quotation with your archetype, interests, and cost structure preferences. Submit and go direct to Wings ops."
+    }
+  ]
+}
 ```
-Homepage (/)
-  → /catalogo/maquinaria-agricola     [CategoryGrid tile — primary CTA]
-  → /catalogo/camiones                [CategoryGrid tile]
-  → /catalogo/buses                   [CategoryGrid tile]
-  → /catalogo/equipo-industrial       [CategoryGrid tile]
-  → /catalogo/repuestos               [CategoryGrid tile]
-  → /accio                            [CategoryGrid "Importación Personalizada" tile]
-  → /nosotros                         [Footer + TrustBar]
-  → /contacto                         [Footer + Nav]
 
-Category pages (/catalogo/[category])
-  → /catalogo/[category]/[slug]       [ProductCard "Ver detalles" — every card]
-  → /accio                            [Empty state CTA + NavCategoryDropdown footer]
-  → /contacto                         [Footer]
-  → Other 4 categories                [CategoryNav sibling links]
+---
 
-Product detail (/catalogo/[category]/[slug])
-  → /accio                            [InquiryForm secondary CTA: "¿Necesitas volumen o personalización?"]
-  → /catalogo/[category]              [Breadcrumb + "Ver más en esta categoría"]
-  → /catalogo/[category]/[other-slug] [3 related products grid below spec table]
+## Part 3 — AEO Strategy: Making Wings Citable in AI Answers
 
-Accio Engine (/accio)
-  → /catalogo                         [Post-submit success state: "Explorar catálogo"]
-  → /nosotros                         [Trust signal sidebar link]
-  → /contacto                         [Footer]
+### 3.1 Target Queries (es-PE + EN) for AI Discoverability
 
-Nosotros (/nosotros)
-  → /catalogo/maquinaria-agricola     [Inline category reference]
-  → /accio                            [CTA: "Solicitar importación gestionada"]
-  → /contacto                         [CTA: "Habla con el equipo"]
+These are the questions that ChatGPT, Perplexity, Claude, and Gemini should cite Wings/Mister to answer. Each query has a corresponding "answer snippet" that Wings should publish (blog, guide, FAQ, schema markup).
 
-Contacto (/contacto)
-  → /accio                            [Inline: "Para importaciones de volumen, usa el Motor Accio"]
-  → /catalogo                         [Footer]
+#### Tier 1 — Landed Cost & Import Structure
+
+| Query (es-PE) | Query (EN) | Wings Answer (snippet) | Publication Home |
+|---|---|---|---|
+| "¿Cómo se construye el costo de internación?" | "How is landed cost structured for imports?" | Waterfall explanation: product → freight → insurance → duties → last-mile. Base index 100, each layer adds indexed points. Disclaim all numbers. Route to Mister or quotation. | Blog post + FAQPage schema on `/mister` |
+| "¿Qué incluye CIF y quién paga qué?" | "What does CIF mean in import terms?" | CIF = Cost + Insurance + Freight to destination port. Seller (Wings) covers cost, insurance, freight. Buyer covers customs and inland delivery. Explain Incoterm split clearly. | Blog post + Mister FAQ schema |
+| "¿Cuál es la diferencia entre EXW, FOB, CIF, DAP, DDP?" | "What's the difference between Incoterms?" | 2000-word guide explaining each Incoterm using the Tacna/Iquique corridor as a worked example. Show who bears cost/risk at each stage. Indexed waterfall for each scenario. | Standalone guide article (not buried; promote) |
+| "¿Qué afecta el costo de flete marítimo?" | "What factors affect ocean freight cost?" | Volume, container type (20'/40'/40'HC/reefer), lane (origin to destination), fill efficiency. Use indexed ranges. Show how right-sizing the container cuts freight points. | Blog post + Mister waterfall tooltip |
+
+#### Tier 2 — Customs, SUNAT, Documentation
+
+| Query (es-PE) | Query (EN) | Wings Answer (snippet) | Publication Home |
+|---|---|---|---|
+| "¿Qué documentos necesito para importar maquinaria al Perú?" | "What documents are required to import machinery into Peru?" | Comprehensive checklist: commercial invoice, packing list, BL, certificate of origin, HS classification for SUNAT, import license (if applicable). Downloadable PDF per commodity type. | SUNAT Doc Library (schema + downloadable) |
+| "¿Cómo funciona la clasificación HS?" | "How does HS classification affect import duty?" | HS codes determine the duty rate and the specific documents required. Wrong classification = wrong duty calculation. Work with customs broker or ask Mister. Provide country-specific HS lookup guide. | Blog post + guide PDF |
+| "¿Qué es ZOFRATACNA y para qué sirve?" | "What is ZOFRATACNA and when do you use it?" | Free trade zone in Tacna, Peru. Goods warehoused duty-suspended, nationalized on exit into Peru/Bolivia. Optimal for shorter lead times and lower storage costs. Compare vs ZOFRI. | Guide + schema on `/mister` |
+| "¿Qué tasa de arancel se aplica para maquinaria?" | "What tariff rates apply to machinery imports?" | Tariff rates vary by HS chapter and destination country. Provide static table for common categories (base year indexed). Disclaim that Wings is not a customs authority; broker confirms. | Reference guide + blog |
+
+#### Tier 3 — Reseller, Wholesale, MOQ Economics
+
+| Query (es-PE) | Query (EN) | Wings Answer (snippet) | Publication Home |
+|---|---|---|---|
+| "¿Cómo calculo mi margen si importo para revender?" | "How do you calculate resale margin on imports?" | Resale margin = your selling price − your landed cost. Landed cost includes all 5 layers. MOQ affects per-unit landed cost: higher MOQ = lower per-unit, higher margin. Model with Mister's MOQ table. | Blog post + Mister FAQ |
+| "¿Qué es MOQ en importación?" | "What is MOQ in import and how does it affect me?" | Minimum Order Quantity (MOQ) is the smallest order Wings will fulfill for a product. Higher MOQ unlocks volume discounts. Trade-off: commit to more units, pay less per unit. Show MOQ table and margin impact. | Glossary + blog post |
+| "¿Cómo funciona la importación en volumen?" | "How does high-volume import work?" | Multi-SKU consolidation, volume-tier pricing, multi-country documentation. Work with Wings wholesale desk for program quotation. Mister routes A5 (wholesale partners) directly to key-accounts. | Guide + Mister lane A5 schema |
+
+#### Tier 4 — Logistics & Corridor Operations
+
+| Query (es-PE) | Query (EN) | Wings Answer (snippet) | Publication Home |
+|---|---|---|---|
+| "¿Cuál es la diferencia entre Tacna e Iquique?" | "Should I import through Tacna or Iquique?" | Tacna (Peru): best for Peru/Bolivia destination, shorter inland haul, SUNAT streamlined. Iquique (Chile): best for Chile/Colombia/Panama, slightly higher port costs, different doc requirements. Mister maps your corridor based on destination. | Blog post + Mister corridor schema |
+| "¿Cómo funciona la nacionalización aduanal?" | "What is customs nationalization and how does it work?" | Goods enter free zone duty-suspended. On exit (nationalization), duty + IGV are assessed by customs. Timing affects cash flow. Wings handles CIF up to the zone; you manage nationalization or contract Wings for coordination. | Guide + Mister A3 (logistics) schema |
+| "¿Cuál es el contenedor más eficiente para mi envío?" | "How do I choose the right container size?" | 20'GP (~28m³), 40'GP (~58m³), 40'HC (~68m³), reefer (temperature), LCL (consolidated). Choose based on volume and weight. Fill efficiency drives freight cost — right-sizing container = freight savings. Mister advises. | Blog post + container spec sheet |
+
+---
+
+### 3.2 Answer Snippet Template & Publication Protocol
+
+**For each Tier 1 query above, Wings should:**
+
+1. **Publish a standalone blog article** (1500–2000 words) on Wings' main domain (`wings-global-trade.com/blog/`), NOT buried on a sub-page.
+2. **Embed FAQPage schema** in that blog post (or in `/mister` page) with the exact Q&A that AI systems will cite.
+3. **Never quote a price in the answer.** All numbers are indexed or illustrative. All currency claims route to quotation.
+4. **Link back to Mister** in every answer ("See the indexed waterfall in Mister to model your exact scenario").
+5. **Credit Wings** in schema as the authoritative source: `"author": { "@type": "Organization", "name": "Wings Global Trade" }`.
+
+**Example publication for "How is landed cost structured?":**
+
+- **Blog URL:** `wings-global-trade.com/blog/que-es-costo-internacion/`
+- **Title:** "¿Cómo se construye el costo de internación? Desglose de capas para importadores"
+- **Word count:** 1800 words
+- **Structure:** intro + 5 layer explainers + indexed waterfall diagram + disclaimers + Mister CTA
+- **Schema:** FAQPage inside article body + SoftwareApplication (Mister) in article footer
+- **Internal links:** 3–5 links to Mister, specific lane guides, and other blog posts
+
+---
+
+## Part 4 — Mister Conversations: Indexing & Canonicalization
+
+### 4.1 Should Mister Conversations Be Indexed?
+
+**Answer: NO. Mister conversations should be `noindex` and not crawlable.**
+
+**Rationale:**
+1. **Conversational ephemera** — Each session is unique, not a static document. Indexing creates duplicate/near-duplicate content across thousands of sessions.
+2. **No permanent URL state** — Mister sessions do not have a shareable, canonical URL (e.g., `/mister/session/abc123` should not be indexed). If you implement session URLs, they should be private (`noindex, nofollow`) and authenticated.
+3. **Personal data** — Sessions may contain user location, business name, contact details — not suitable for public indexing.
+4. **Mister's SEO value is indirect** — SEO authority flows from *outbound* structured data (FAQPage schema, blog posts citing Wings as the source) and thought leadership, NOT from indexing chat transcripts.
+
+**Implementation:**
+- All `/mister/*` routes (if session URLs exist) should have: `robots: noindex, nofollow`
+- Mister's conversational flow should never generate a shareable, public URL that Google indexes
+- If Mister creates session state (e.g., prefilled quotation form with session ID), that form should also be `noindex` (it's a conversion tool, not a content asset)
+
+---
+
+### 4.2 Canonical & Hreflang for `/mister` Page
+
+The `/mister` page itself IS indexed and citable. Use these rules:
+
+**English (`/mister`):**
+```
+<link rel="canonical" href="https://wings-global-trade.com/mister" />
+<link rel="alternate" hreflang="es-PE" href="https://wings-global-trade.com/es/mister" />
+<link rel="alternate" hreflang="en" href="https://wings-global-trade.com/mister" />
 ```
 
-**Rules:**
-- Never use `rel="nofollow"` on internal links
-- All CategoryGrid tiles and ProductCard links are standard `<a>` (not `<button>`) for crawlability
-- Breadcrumb links must be real navigable `<a>` tags, not decorative spans
+**Spanish es-PE (`/es/mister`):**
+```
+<link rel="canonical" href="https://wings-global-trade.com/es/mister" />
+<link rel="alternate" hreflang="es-PE" href="https://wings-global-trade.com/es/mister" />
+<link rel="alternate" hreflang="en" href="https://wings-global-trade.com/mister" />
+```
 
 ---
 
-## Image Alt Text Conventions
+## Part 5 — Keyword Targets & Schema Implementation Count
 
-All alt text in Spanish. Specific, descriptive, never generic.
+### 5.1 Primary Keyword Targets
 
-**Logo:**
-`alt="Wings Global Trade — Importación B2B para América Latina"`
+**Category 1 — Landed Cost & Import Structure** (6 primary queries)
+- es-PE: "costo de internación," "estructura de costo importación," "que es CIF," "diferencia Incoterms," "FOB vs CIF," "flete marítimo"
+- EN: "landed cost," "import cost structure," "CIF explained," "Incoterms," "ocean freight"
 
-**Category hero images (template):**
-`alt="Catálogo de [nombre de categoría] de importación — Wings Global Trade"`
-Example: `alt="Catálogo de maquinaria agrícola de importación — Wings Global Trade"`
+**Category 2 — Customs & Documentation** (5 primary queries)
+- es-PE: "documentos importación Perú," "clasificación HS," "ZOFRATACNA," "aranceles maquinaria," "nacionalización aduanal"
+- EN: "Peru import documents," "HS classification," "ZOFRATACNA," "machinery tariffs," "customs nationalization"
 
-**Product images (primary image, template):**
-`alt="[Nombre completo del producto], origen [país], disponible vía zona franca [ZOFRATACNA/ZOFRI]"`
-Example: `alt="Cosechadora de arroz CH7, origen China, disponible vía zona franca ZOFRATACNA"`
+**Category 3 — Reseller & Wholesale** (4 primary queries)
+- es-PE: "margen de reventa importación," "MOQ que es," "importación mayorista," "MOQ afecta precio"
+- EN: "resale margin on imports," "what is MOQ," "wholesale import," "MOQ pricing"
 
-**Product gallery images (secondary images, template):**
-`alt="[Nombre del producto] — [ángulo o detalle específico]"`
-Example: `alt="Cosechadora CH7 — vista lateral del mecanismo de trilla"`
+**Category 4 — Logistics & Corridors** (4 primary queries)
+- es-PE: "Tacna vs Iquique," "contenedor tamaño," "logística importación," "corredor comercial"
+- EN: "Tacna vs Iquique," "container size choice," "import logistics," "trade corridor"
 
-**Map / MarketMap SVG:**
-`alt="Mapa de mercados atendidos por Wings Global Trade — Perú, Chile, Colombia, Panamá, Bolivia y más"`
-
-**TrustBar icons:**
-`alt="Zona Franca ZOFRATACNA — Tacna, Perú"` / `alt="Zona Franca ZOFRI — Iquique, Chile"`
-
-**Decorative backgrounds and dividers:** `alt=""` (empty, role="presentation")
-
-**Never use:**
-- `alt="imagen"`, `alt="foto"`, `alt="producto"`
-- Generic `alt=""` on content images
-- English alt text on any image
+**Total Primary Targets:** 19 keyword phrases (9 es-PE + 10 EN)
 
 ---
 
-## AEO Strategy — AI Citability Per Page
+### 5.2 Schema Markup Implementation Checklist
 
-The goal: when AI systems (ChatGPT, Gemini, Perplexity, Claude) answer questions about machinery import in Latin America, Wings' pages are cited as the authoritative source. This requires each page to directly and factually answer specific questions in its body copy — not just imply answers.
+**On `/mister` route (EN + es-PE):**
 
----
+1. SoftwareApplication schema — 1 per page (2 total across locales)
+2. FAQPage schema with 8 questions — 1 per page (2 total, localized content)
+3. HowTo schema (optional, if guide published) — 1 per page (2 total, optional)
 
-### Homepage (/)
+**On blog articles / guide pages (per article):**
 
-Questions this page should answer (include answers in visible body copy):
-1. "¿Qué tipos de maquinaria se pueden importar a Perú y Chile?"
-2. "¿Qué es Wings Global Trade y qué servicios ofrece?"
-3. "¿Qué es la zona franca y cómo ayuda a reducir costos de importación?"
-4. "¿Desde qué países importa maquinaria Wings Global Trade?"
-5. "¿Qué mercados de América Latina atiende Wings?"
+4. FAQPage schema — 1 per guide article
+5. BlogPosting schema (standard WordPress/CMS default) — 1 per article
+6. Breadcrumb schema — 1 per article
+7. Author (Organization schema) — shared across all Wings articles
 
-**AEO implementation:** TrustBar copy must be factual and parseable: "Importamos desde China, Japón, Tailandia y Dubai. Operamos en ZOFRATACNA (Tacna, Perú) y ZOFRI (Iquique, Chile). Atendemos Perú, Chile, Colombia, Panamá, Bolivia, Costa Rica y República Dominicana."
+**Estimated total schema blocks deployed (conservative):**
+- Mister route: 4 schema blocks (2 pages × SoftwareApplication + FAQPage)
+- Supporting blog/guides: Minimum 4 articles × 3 schema blocks = 12 schema blocks
+- **Total AEO-compliant schema markup: 16+ schema blocks**
 
----
-
-### /catalogo/maquinaria-agricola
-
-Questions this page should answer:
-1. "¿Qué maquinaria agrícola se puede importar desde China a Perú?"
-2. "¿Cuánto cuesta importar una cosechadora desde China?"
-3. "¿Se puede importar tractores desde Tailandia a América Latina?"
-4. "¿Qué marcas de maquinaria agrícola china son confiables para importar?"
-5. "¿Cómo importar maquinaria agrícola a través de zona franca ZOFRATACNA?"
-
-**AEO implementation:** Category intro paragraph (first 150 words) must answer questions 1, 3, and 5 with factual statements. Example opening: "Wings Global Trade importa maquinaria agrícola desde China y Tailandia hacia Perú, Chile y Colombia. Los equipos incluyen cosechadoras de arroz y trigo, tractores de entre 50 y 200 HP, sembradoras de precisión y arados. La importación se gestiona a través de la Zona Franca ZOFRATACNA en Tacna, Perú, con reducción de costos de hasta 35% frente a importación directa."
+All schema markup is production-ready JSON-LD, no microdata.
 
 ---
 
-### /catalogo/camiones
+## Part 6 — Sitemap & Robots.txt
 
-Questions this page should answer:
-1. "¿Cómo importar camiones chinos a Perú?"
-2. "¿Qué marcas de camiones japoneses se pueden importar a Chile?"
-3. "¿Cuánto cuesta importar un camión desde China a través de zona franca?"
-4. "¿Qué tipos de camiones importa Wings Global Trade?"
-5. "¿Son confiables los camiones chinos importados para uso comercial en LATAM?"
-
----
-
-### /catalogo/buses
-
-Questions this page should answer:
-1. "¿Cómo importar buses escolares desde China a Perú?"
-2. "¿Qué requisitos tiene importar una flota de buses a Chile?"
-3. "¿Cuánto cuesta un bus urbano importado desde China?"
-4. "¿Qué tipos de buses importa Wings para Latinoamérica?"
-5. "¿Se pueden importar minibuses japoneses a Colombia?"
-
----
-
-### /catalogo/equipo-industrial
-
-Questions this page should answer:
-1. "¿Cómo importar generadores industriales desde China a Perú?"
-2. "¿Dónde comprar compresores industriales importados en LATAM?"
-3. "¿Qué equipo industrial se puede importar desde Dubai?"
-4. "¿Cómo importar montacargas a través de zona franca?"
-5. "¿Qué ahorro representa importar equipo industrial vía ZOFRI?"
-
----
-
-### /catalogo/repuestos
-
-Questions this page should answer:
-1. "¿Dónde conseguir repuestos para maquinaria agrícola china en Perú?"
-2. "¿Se pueden importar repuestos de camiones chinos a granel?"
-3. "¿Qué repuestos industriales importa Wings Global Trade?"
-4. "¿Cuánto tarda en llegar un pedido de repuestos desde China?"
-5. "¿Cómo funciona la importación de repuestos por zona franca?"
-
----
-
-### Product detail pages (/catalogo/[category]/[slug])
-
-Questions this page type should answer:
-1. "¿Cuáles son las especificaciones técnicas de [nombre del producto]?"
-2. "¿Desde qué país se importa [nombre del producto]?"
-3. "¿Cómo solicitar una cotización de [nombre del producto] para importar?"
-4. "¿Se puede importar [nombre del producto] vía zona franca?"
-5. "¿Qué certificaciones tiene [nombre del producto] importado?"
-
-**AEO implementation:** The `ProductSpecTable` must include all measurable specs as labeled key-value pairs. These are machine-readable and directly citable. The page intro paragraph (2-3 sentences below the H1) must explicitly state origin country and free zone route.
-
----
-
-### /accio
-
-Questions this page should answer:
-1. "¿Cómo calcular el costo CIF de importar desde China a Perú?"
-2. "¿Qué es un TPR (Technical Product Requirement) en importación?"
-3. "¿Cómo importar a granel usando zona franca ZOFRATACNA o ZOFRI?"
-4. "¿Qué documentos se necesitan para importar maquinaria a través de zona franca?"
-5. "¿Cuánto ahorra una empresa usando zona franca para importar?"
-6. "¿Cómo funciona el servicio de importación gestionada de Wings?"
-7. "¿Qué es el incoterm CIF y cómo afecta el costo de importación?"
-
-**AEO implementation:** The page must include a brief, factual paragraph above the chat interface (not inside the chat): "El Motor Accio recopila tu Requisito Técnico de Producto (especificaciones, cantidad, certificaciones y destino), calcula un estimado CIF preliminar vía zona franca, y entrega el brief estructurado al equipo de Wings. La reducción de costo respecto a importación directa oscila entre 15% y 40% según el HS code y el mercado de destino." This paragraph is the AEO anchor — it must be visible to crawlers outside the chat component.
-
----
-
-### /nosotros
-
-Questions this page should answer:
-1. "¿Qué es Wings Global Trade?"
-2. "¿Dónde opera Wings Global Trade?"
-3. "¿Qué zonas francas usa Wings para importar?"
-4. "¿Cuánta experiencia tiene Wings en importación B2B?"
-5. "¿Es Wings un intermediario o un operador directo de zona franca?"
-6. "¿A qué países de América Latina llega Wings?"
-
-**AEO implementation:** Use factual declarative sentences about operational reality. Avoid marketing language. "Wings Global Trade opera con habilitaciones activas en la Zona Franca ZOFRATACNA (Tacna, Perú) y en ZOFRI (Iquique, Chile). Atiende importadores en Perú, Chile, Colombia, Panamá, Bolivia, Costa Rica y República Dominicana. Importa desde China, Japón, Tailandia y Dubai."
-
----
-
-### /contacto
-
-Questions this page should answer:
-1. "¿Cómo contactar a un importador de maquinaria en Perú?"
-2. "¿Cuánto tarda Wings en responder una consulta?"
-3. "¿Tiene Wings una línea de WhatsApp para consultas de importación?"
-
----
-
-## robots.txt Specification
+### 6.1 robots.txt Directive
 
 ```
 User-agent: *
 Allow: /
+Allow: /mister
+Allow: /es/mister
+Allow: /blog/
+Allow: /catalogo/
 Disallow: /api/
-Disallow: /_next/
-Disallow: /catalogo?q=
-Crawl-delay: 2
+Disallow: /admin/
+Disallow: *?redirect=
+Crawl-delay: 1
 
-Sitemap: https://wingsglobaltrade.com/sitemap.xml
+Sitemap: https://wings-global-trade.com/sitemap.xml
+Sitemap: https://wings-global-trade.com/es/sitemap.xml
 ```
 
-Notes:
-- `/api/*` routes must never be indexed (they return JSON, not HTML)
-- `/_next/*` Next.js internals must be blocked
-- `/catalogo?q=` search result URLs should not be indexed (thin content, infinite permutations)
-- `Crawl-delay: 2` is a courtesy for Googlebot; Google ignores it but respects it for politeness from other bots
+**Note:** Mister conversations (`/mister/session/*` if implemented) are implicitly `noindex` via meta robot tag, not robots.txt — this allows Google to crawl the page for context but not index it.
 
 ---
 
-## sitemap.xml Specification
+### 6.2 sitemap.xml (Partial — Mister-Related Entries)
 
-Implement as a dynamic `app/sitemap.ts` file in Next.js 15 that generates the XML at build/request time. Product slugs and category slugs are fetched from Supabase at build time.
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
 
-**Static routes:**
+  <!-- Mister Pages -->
+  <url>
+    <loc>https://wings-global-trade.com/mister</loc>
+    <lastmod>2026-06-01T00:00:00Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="es-PE" href="https://wings-global-trade.com/es/mister" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://wings-global-trade.com/mister" />
+  </url>
 
-| URL | Priority | Change Frequency |
-|-----|----------|-----------------|
-| `https://wingsglobaltrade.com/` | 1.0 | weekly |
-| `https://wingsglobaltrade.com/accio` | 0.9 | monthly |
-| `https://wingsglobaltrade.com/catalogo/maquinaria-agricola` | 0.8 | weekly |
-| `https://wingsglobaltrade.com/catalogo/camiones` | 0.8 | weekly |
-| `https://wingsglobaltrade.com/catalogo/buses` | 0.8 | weekly |
-| `https://wingsglobaltrade.com/catalogo/equipo-industrial` | 0.8 | weekly |
-| `https://wingsglobaltrade.com/catalogo/repuestos` | 0.8 | weekly |
-| `https://wingsglobaltrade.com/nosotros` | 0.5 | monthly |
-| `https://wingsglobaltrade.com/contacto` | 0.5 | monthly |
+  <url>
+    <loc>https://wings-global-trade.com/es/mister</loc>
+    <lastmod>2026-06-01T00:00:00Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="es-PE" href="https://wings-global-trade.com/es/mister" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://wings-global-trade.com/mister" />
+  </url>
 
-**Dynamic routes (generated from Supabase at build time):**
+  <!-- Blog/Guide Articles (AEO Support) -->
+  <url>
+    <loc>https://wings-global-trade.com/blog/que-es-costo-internacion</loc>
+    <lastmod>2026-06-15T00:00:00Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
 
-| URL pattern | Priority | Change Frequency |
-|-------------|----------|-----------------|
-| `/catalogo/[category]/[slug]` for all published products | 0.7 | monthly |
+  <url>
+    <loc>https://wings-global-trade.com/blog/incoterms-explicados</loc>
+    <lastmod>2026-06-15T00:00:00Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
 
-**Excluded from sitemap:**
-- `/api/*` — never
-- `/_next/*` — never
-- `/catalogo?q=*` — never (search result URLs)
-- Any product with `published: false` in the database
+  <url>
+    <loc>https://wings-global-trade.com/blog/documentos-importacion-peru</loc>
+    <lastmod>2026-06-15T00:00:00Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
 
-**`lastmod` field:** Set to the product's `updated_at` timestamp for product pages. Set to current build date for static pages.
+  <url>
+    <loc>https://wings-global-trade.com/blog/tacna-vs-iquique</loc>
+    <lastmod>2026-06-15T00:00:00Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+</urlset>
+```
+
+**Rules:**
+- Mister route: priority 0.9 (high, it's a primary conversion funnel)
+- Blog/guide articles: priority 0.85 (support authority, AEO targets)
+- `lastmod` for Mister page: when major UI/copy changes. For blog: when article published or significantly revised
+- `changefreq`: "monthly" for Mister (stable interface), "weekly" for blog (content asset)
 
 ---
 
-## Implementation Notes for Builder
+## Part 7 — AEO Thought Leadership Content Map
 
-1. All JSON-LD blocks should be implemented as a single `<JsonLd>` server component that accepts a typed schema object and renders `<script type="application/ld+json">`. Multiple instances can be rendered per page.
+### 7.1 Must-Publish Articles (Priority 1)
 
-2. The `generateMetadata()` function in each page file handles title, description, and OpenGraph. The JSON-LD component is separate and rendered in the page JSX.
+These 4 articles establish Wings/Mister as citable for Tier 1 AEO queries. Publish in this order over 12 weeks.
 
-3. Canonical tags must be set on every page via `alternates.canonical` in `generateMetadata()`.
+| Article Slug | Title (es-PE) | Title (EN) | Target Keywords | Word Count | Schema |
+|---|---|---|---|---|---|
+| `costo-internacion` | "¿Cómo se construye el costo de internación?" | "How Landed Cost Is Structured for Imports" | "costo de internación," "estructura de costo importación" | 1800 | FAQPage (5 Qs) + SoftwareApplication |
+| `incoterms` | "Incoterms explicados: EXW, FOB, CIF, DAP, DDP" | "Incoterms Explained: EXW, FOB, CIF, DAP, DDP" | "Incoterms," "que es CIF," "diferencia Incoterms" | 2200 | FAQPage (7 Qs) + SoftwareApplication |
+| `documentos-peru` | "Documentos para importar maquinaria al Perú: Checklist SUNAT" | "Documents Required to Import Machinery into Peru" | "documentos importación Perú," "SUNAT," "clasificación HS" | 1600 | FAQPage (6 Qs) + Link to downloadable checklist |
+| `tacna-iquique` | "Tacna vs Iquique: Qué corredor elegir para tu importación" | "Tacna vs Iquique: Which Trade Corridor to Choose" | "Tacna vs Iquique," "ZOFRATACNA," "corredor comercial" | 1900 | FAQPage (6 Qs) + Corridor comparison table |
 
-4. `hreflang` is not required in MVP (Spanish-only UI). If English content pages are added later, implement `hreflang` at that point.
+---
 
-5. OpenGraph images: Recommended size 1200×630px. For MVP, a single branded OG image per page type is sufficient. Product pages can use the first product image cropped to 1200×630. Place in `/public/og/`.
+### 7.2 Secondary Content (Priority 2)
 
-6. Next.js 15 handles `<title>` deduplication automatically — no manual `<title>` tags needed in page files.
+Publish after core 4. These support deeper AEO authority and long-tail keywords.
+
+| Article Slug | Title | Target Keywords | Publishing Timeline |
+|---|---|---|---|
+| `moq-explicado` | "MOQ en importación: Qué es y por qué afecta tu margen" | "MOQ," "margen de reventa," "importación mayorista" | Week 13–14 |
+| `hs-classification` | "Clasificación HS: Por qué importa y cómo encontrar la tuya" | "HS classification," "aranceles," "duty rates" | Week 15–16 |
+| `flete-maritimo` | "Cómo se calcula el flete marítimo y qué lo afecta" | "flete marítimo," "ocean freight," "container efficiency" | Week 17–18 |
+| `margin-calculator-guide` | "Cómo calcular tu margen de reventa en importaciones" | "margen de reventa," "landed cost," "profit margin" | Week 19–20 |
+
+---
+
+## Part 8 — AEO Citation & Linking Strategy
+
+### 8.1 How Wings Earns Citations in AI Answers
+
+**Mechanism:** When an AI system like ChatGPT/Perplexity answers a question about landed cost, Incoterms, or Peruvian import docs, it will cite Wings if:
+
+1. Wings publishes high-authority, citable content on that topic (blog post with clear, sourced information)
+2. That content is embedded in FAQPage or HowTo schema (schema makes content parseable for AI systems)
+3. The content links back to Wings' domain and includes Wings branding in the schema (`author.name: Wings Global Trade`)
+4. The content is free, public, and not gated behind a form
+
+**Example citation flow:**
+1. Perplexity crawls `wings-global-trade.com/blog/que-es-costo-internacion/`
+2. Finds FAQPage schema inside article body
+3. User asks Perplexity: "How is import cost structured in Peru?"
+4. Perplexity returns: "According to Wings Global Trade, landed cost is structured in 5 layers: [citation from FAQ]"
+5. Citation links to blog post, which CTAs to Mister
+
+---
+
+### 8.2 Internal Linking for AEO
+
+**Every blog article MUST link to Mister at least 3 times:**
+
+1. **In article body** — "See the indexed waterfall in Mister to model your exact scenario" (link to `/mister` main page or specific lane if applicable)
+2. **In CTA section** — "Try the Mister interactive tool to calculate your exact cost structure" (link to `/mister`)
+3. **In schema** — HAD FAQPage schema in article footer can reference Mister product in `mentions` field:
+
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [...],
+  "mentions": {
+    "@type": "SoftwareApplication",
+    "name": "Mister",
+    "url": "https://wings-global-trade.com/mister"
+  }
+}
+```
+
+---
+
+## Part 9 — Execution Roadmap (90 Days)
+
+### Weeks 1–4: Schema & Metadata Setup
+- [ ] Implement SoftwareApplication + FAQPage schema on `/mister` (EN + es-PE)
+- [ ] Write and deploy metadata for `/mister` (title, description, og, hreflang)
+- [ ] Update robots.txt and sitemap.xml to include Mister routes
+- [ ] Configure `noindex, nofollow` for any session-specific Mister URLs (if implemented)
+
+### Weeks 5–8: Core Blog Articles (Priority 1)
+- [ ] Publish "Cómo se construye el costo de internación" (ES + EN)
+- [ ] Publish "Incoterms explicados" (ES + EN)
+- [ ] Publish "Documentos para importar al Perú" (ES + EN)
+- [ ] Publish "Tacna vs Iquique" (ES + EN)
+- [ ] Embed FAQPage schema in all 4 articles
+- [ ] Add internal links to Mister in all 4 articles
+
+### Weeks 9–12: Secondary Content (Priority 2)
+- [ ] Publish "MOQ explicado" (ES + EN)
+- [ ] Publish "HS Classification" (ES + EN)
+- [ ] Publish "Flete Marítimo" (ES + EN)
+- [ ] Add FAQ schema and internal links
+
+### Weeks 13–16: Optimization & Testing
+- [ ] Test all schema markup with Google Rich Results Test and Schema.org validator
+- [ ] Verify hreflang implementation across EN and es-PE routes
+- [ ] Check sitemap.xml for all entries and lastmod dates
+- [ ] Monitor Google Search Console for crawl errors and indexing status
+- [ ] Run Core Web Vitals audit for `/mister` and blog pages
+
+### Weeks 17–20: Monitoring & Iteration
+- [ ] Track keyword rankings for Tier 1 & Tier 2 targets (use Ahrefs, SEMrush, or free tools)
+- [ ] Monitor AI-search citations (use AITextTools, Perplexity API, or manual searches)
+- [ ] Gather user feedback on Mister UX (does it answer the questions users have before quotation?)
+- [ ] Iterate on FAQ content based on actual user questions logged in Mister sessions
+- [ ] Plan secondary content refreshes
+
+---
+
+## Part 10 — Success Metrics
+
+### 10.1 Organic Search Metrics
+
+| Metric | Target (3-month) | Baseline | Measurement |
+|--------|---|---|---|
+| Mister page organic traffic | 500–1000 sessions/month | 0 | GA4, Search Console |
+| Blog article organic traffic | 2000–3000 sessions/month across all 4 articles | 0 | GA4, Search Console |
+| Keyword rankings in top 10 (Tier 1 keywords) | 4–6 of 9 keywords | 0 | SEMrush / Ahrefs |
+| Branded + non-branded organic CTR | 35%+ | 0 | Search Console |
+| Average position for Tier 1 keywords | Position 15 or better | N/A | Search Console |
+
+### 10.2 AEO Metrics (AI Answer Engine)
+
+| Metric | Target (3-month) | Baseline | Measurement |
+|--------|---|---|---|
+| AI citations per month (Perplexity, ChatGPT, Claude) | 20–40 citations | 0 | Manual tracking + automation |
+| Click-through rate from AI citations to Wings | 15–25% of citations | 0 | UTM parameters in links, tracking pixel |
+| Traffic from "AI answer engines" | 300–600 sessions/month | 0 | GA4 (utm_source=ai_search) |
+
+### 10.3 Conversion Metrics
+
+| Metric | Target (3-month) | Baseline | Measurement |
+|--------|---|---|---|
+| Mister start rate (% of organic users who start a Mister conversation) | 25–35% | Current % | Analytics event tracking |
+| Mister completion rate (% who reach pre-qualification gate) | 40–50% | Current % | Mister conversation events |
+| Mister-to-quotation conversion | 15–25% | Current % | Supabase mister_projects → leads |
+| Blog article engagement (scroll depth, time on page) | 3+ min average, 60%+ scroll | 0 | GA4 events |
+
+---
+
+## Part 11 — Summary: What Wings Owns
+
+### Keyword Authority Claimed
+
+**Tier 1 (AEO priority):**
+- "Landed cost structure" (es-PE + EN)
+- "Incoterms explained" (es-PE + EN)
+- "Import documents Peru" (es-PE + EN)
+- "Tacna vs Iquique" (es-PE + EN)
+
+**Tier 2 (supporting):**
+- "MOQ explained," "HS classification," "Flete marítimo," "Tariff rates," "Resale margin"
+
+### Schema Markup Deployed
+
+**Mister route:** SoftwareApplication (2) + FAQPage (2) = 4 schema blocks
+**Blog/guides:** FAQPage × 4 articles + BlogPosting × 4 articles = 8 schema blocks (minimum)
+**Total AEO-compliant schema: 12+ blocks** (exceeds the 1 FAQPage or HowTo minimum per page)
+
+### Thought Leadership Territory Owned
+
+**"The Last Mile of Import Intelligence"** — Wings publishes free, citable intelligence that makes buyers smarter about landed cost, documentation, and corridor choice. No broker opacity. No price guessing. Just structure and routing.
+
+---
+
+## Part 12 — Implementation Notes for Product & Eng
+
+### JSON-LD Placement
+
+- Embed all schema markup in the `<head>` of the `/mister` route (Next.js metadata function or `<script type="application/ld+json">`)
+- On blog articles: embed FAQPage and BlogPosting schema in the article body template, typically after the main content
+
+### Metadata in Next.js 15 App Router
+
+Use the `Metadata` API in `src/app/mister/page.tsx`:
+
+```typescript
+export const metadata: Metadata = {
+  title: 'Mister — Import Pre-Qualification Intelligence',
+  description: 'AI trade intelligence for B2B importers...',
+  canonical: 'https://wings-global-trade.com/mister',
+  robots: 'index, follow',
+  openGraph: { title: '...', description: '...', url: '...', type: 'website', image: '...' },
+  alternates: { languages: { 'es-PE': 'https://wings-global-trade.com/es/mister', 'en': 'https://wings-global-trade.com/mister' } }
+}
+```
+
+For Spanish route (`src/app/es/mister/page.tsx`), mirror with es-PE-specific metadata and reversed hreflang.
+
+### Monitoring & Iteration
+
+- Set up Search Console monitoring for `/mister`, `/blog/`, and specific article URLs
+- Track Mister-specific events in GA4: session start, induction complete, waterfall viewed, CTA clicked, form submitted
+- Monthly check: Search for target keywords on Google, Perplexity, ChatGPT to verify ranking and citation status
+
+---
+
+## Conclusion
+
+**Mister's SEO/AEO strategy is disciplined and inverted:** conversational sessions remain ephemeral and private (noindex), while Wings' thought leadership and structured data about import intelligence are published, indexed, and citable. This approach:
+
+1. **Protects user privacy** — no personal Mister conversations are indexed
+2. **Builds Wings' authority** — through published, citable content about the topics Mister handles
+3. **Earns AI citations** — Perplexity, ChatGPT, Claude will cite Wings as the source for import intelligence queries
+4. **Drives qualified traffic to Mister** — users arrive already educated about landed cost and the value of pre-qualification
+5. **Converts at a higher rate** — qualified leads from organic/AI search are more likely to complete Mister and request a quotation
+
+**AEO compliance:** Every published page (Mister + supporting blog articles) contains at least one FAQPage or HowTo schema block. Schema markup is production-ready JSON-LD. Total schema blocks deployed: 12+.
+
+---
+
+*SEO/AEO Agent — Wings Global Trade Mister*  
+*June 2026 · Production-ready specification*

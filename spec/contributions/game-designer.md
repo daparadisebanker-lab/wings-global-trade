@@ -1,226 +1,222 @@
-# Game Designer Contribution — Wings Global Trade
-
-## Framing Principle
-
-Gamification on Wings is not about points, badges, or leaderboards. The buyer is a purchasing manager or trading company director. They have a container load to price, a finance team to satisfy, and a supplier to replace. The platform's job is to make the path to a CIF estimate feel effortless, intelligent, and professionally satisfying — not cute.
-
-Every mechanic here passes a single test: would this feel at home in a Bloomberg terminal, a customs brokerage dashboard, or a professional procurement tool? If yes, it's in. If not, it's out.
-
-The north star is not engagement time. It is inquiry conversion rate.
+# Mister — Engagement Design
+**Role:** Game Designer / Behavioral Engagement Designer
+**Lens:** Behavioral loops for serious B2B trade buyers. Not arcade. Not consumer. The standard is a Bloomberg terminal or a well-run procurement briefing — information density, professional recognition, progressive clarity.
 
 ---
 
-## The Core Loop
+## 1. Core Engagement Loop
 
-### First-Visit Loop (The One That Matters for MVP)
+**What keeps a senior trade buyer in a Mister conversation is the experience of fog burning away, turn by turn.**
+
+A buyer arrives with a cloud of unknowns: Will Wings actually supply what I need? What will this land at? Is this worth my time or am I going to end up with a generic quote in three days? The intrinsic reward of each Mister turn is not entertainment — it is *precision arriving where ambiguity was*.
+
+The moment-to-moment loop:
 
 ```
-Arrive → Discover entry point → Engage AI or browse catalog → See value (estimate or specs) → Submit inquiry
+1. Buyer inputs a question, need, or signal
+2. Mister responds in the voice of a peer who understood — not a helpdesk that parsed keywords
+3. A new piece of structured information materializes (a surface renders, a field in the session
+   brief populates, a document becomes available)
+4. A specific, tightly scoped next question appears — one that would only be asked by someone
+   who retained everything said before
+5. The buyer answers because the question is relevant, not because they feel obligated
+6. Repeat — with each turn, the session brief fills in and the conversation moves forward
 ```
 
-Wings has no reason to engineer habit loops in v1. The buyer is not here daily. They are here when they need to source a product — which means once per import cycle. The loop to design for is completion on the first visit.
+The reward is recognizable to a trade specialist: the same satisfaction as a well-run supplier briefing, where by the end of 20 minutes the other person clearly has everything they need. The buyer is not playing a game. They are being professionally onboarded.
 
-**What creates urgency within the loop:**
-- The CIF estimate as a tangible deliverable (something to take to their finance team)
-- The TPR Sheet as a growing document (visible proof that work is accumulating)
-- The reference number at submission (turns an inquiry into a real file)
+**What breaks the loop (avoid these):**
+- A response that ignores something the buyer already stated (breaks recognition)
+- A generic question that could have been asked before anything was gathered (signals Mister wasn't listening)
+- A stall — "I'll need more information to help you" without a specific question (removes forward motion)
+- A visible inability to handle trade vocabulary (breaks peer-register; the buyer stops treating Mister as a specialist and reverts to treating it as a chatbot)
 
-### Repeat Use Loop (v2 Foundation)
+---
+
+## 2. The ONE Mechanic: The Live Session Brief
+
+**The single mechanic that would make Mister 10x more engaging for B2B buyers is the real-time accumulation of a professional session brief — visible alongside the conversation, building itself turn by turn.**
+
+Not a progress bar. Not a percentage. Not a checklist with green ticks. A structured document that looks like the notes a senior specialist takes during a supplier briefing.
+
+**What it contains (for a sample A3 — Logistics Manager session):**
 
 ```
-Return for new category → Recall previous estimate → Add to comparison → Submit second inquiry
+SESSION BRIEF — Mister / Wings Global Trade
+─────────────────────────────────────────────
+Archetype:        Logistics Manager
+Corridor:         Tacna (ZOFRATACNA)
+Commodity:        Industrial HVAC units — HS 8415
+Container:        40'HC
+Incoterm:         CIF
+Destination:      [empty]
+Documents held:   Commercial invoice, packing list
+Documents needed: BL, certificate of origin, SUNAT checklist
+RUC / Tax ID:     [empty]
+Next step:        Confirm destination → generate doc checklist
+─────────────────────────────────────────────
 ```
 
-Repeat use is built on professional utility, not gamification. The buyer returns because Wings gave them a useful estimate last time and they want to price another product. Session persistence (even shallow `sessionStorage`) is the primary lever here, not any UI mechanic.
+**Why this mechanic works for B2B buyers specifically:**
+
+A trade specialist's primary anxiety in any supplier conversation is "Am I being heard, or am I going to have to repeat all of this?" The live session brief answers that anxiety structurally, not verbally. The buyer watches their requirements accumulate in real time. They do not have to trust that Mister will remember — they can see that it has.
+
+The gaps in the brief are the signal to continue. The buyer sees that Destination is empty, or that two documents are still outstanding, and continues answering questions not out of gamified obligation but because they want their own brief to be complete. This is the correct B2B motivation: the brief becomes *their* artifact, not Mister's.
+
+The brief also functions as a pre-work document. When the buyer hands off to WhatsApp or shares the quotation request with their team, the brief IS the summary. It was built during the conversation but it looks like a professional intake form they would have filled out anyway.
+
+**Tone calibration for the brief by archetype:**
+
+- A1 (Lead / End Buyer): fewer technical fields, more plain-language labels. "Delivery city" not "destination port."
+- A2 (Project Manager): adds "On-site date," "Approver name," "Budget line status."
+- A3 (Logistics Manager): full trade vocabulary. HS code, corridor, Incoterm, container type, doc checklist.
+- A4 (Reseller): adds "Territory," "Estimated monthly volume," "Exclusivity interest."
+- A5 (Wholesale Partner): adds "Markets," "SKU count," "Ramp timeline," "Legal entities."
+
+The brief renders in a sidebar panel (desktop) or collapsible drawer (mobile) — persistent, never obtrusive. It does not announce when a field populates. It just fills in.
 
 ---
 
-## Gamification Opportunities — Accio Engine TPR Flow
+## 3. Progress Signal
 
-### 1. The TPR Sheet as a Live Dossier (Primary Mechanic)
+**Do not show a percentage. Do not show "60% to quotation." The dignified form of progress is the session brief itself — what is filled, what is empty, and what the next open field is.**
 
-The TPR Sheet is not a form. It is a dossier being assembled in real time. This framing changes the visual and behavioral design.
+The buyer can read progress from the brief without being told it. Empty fields communicate what remains. A trade specialist reads an intake form and knows immediately what's missing. Mister should trust the buyer to do the same.
 
-**Implementation logic:**
+**The secondary progress signal: CTA state.**
 
-The sheet header carries a field-count indicator in DM Mono: `6 / 10 campos`. Not a progress bar. Not a percentage. A precise count, like a document checklist. This language belongs to the trade world — it reads like "6 of 10 line items confirmed."
+The "Get your pre-filled quotation" button (or "Connect me to the Wings team" for A5) renders as inactive — present but clearly unavailable — until the minimum pre-qualification conditions for the archetype are met. It then activates without announcement. The buyer notices the change. This is meaningful signal.
 
-Each field in the TprSheet component passes through three states:
+For A1: activates when destination + product interest are collected.
+For A2: activates when spec confirmed + destination + budget line status given.
+For A3: activates when corridor + commodity + destination confirmed.
+For A4: activates when volume estimate + territory + product category given.
+For A5: CTA routes to human (not form) — activates as soon as volume and market scope are stated.
 
-**State 1 — Empty (session start)**
-- All 10 fields show a dash or blank value
-- Status indicator: small grey circle
-- Label in muted warm-white / 60% opacity
-- Sheet header: "Requisito técnico" in DM Mono, neutral
-
-**State 2 — Minimum (6 of 10 fields captured)**
-- At least these fields are filled: product description, HS code, quantity, target price, destination market, source market preference
-- Status indicator for captured fields: gold dot (the TprField `captured` state already specifies this in component-architecture.md — this is the animation that carries the emotional weight)
-- Sheet header transitions to: "Listo para estimar" in DM Mono gold
-- The CIF estimate card slot appears below the field list — visually gated, navy background, showing "Calculando estimado CIF..." as a placeholder or idle state
-- The "Enviar consulta" button becomes active
-
-**State 3 — Complete (8+ of 10 fields, or all required + at least 2 optional)**
-- Sheet header: "Requisito completo" in DM Mono gold
-- Field count: `10 / 10 campos`
-- All status dots gold
-- Subtle: the entire TPR Sheet border changes from muted to full gold (1px border, not dramatic)
-- CIF estimate card fully populated
-
-The transition from State 1 to State 2 is the key moment. It should feel like a document being signed off — not a game being won.
-
-### 2. The Completeness Meter — The One Mechanic That Unlocks Everything
-
-**This is the single mechanic that makes the platform 10x more engaging.**
-
-The completeness meter is the mechanism by which the CIF estimate is gated and progressively revealed. It works as follows:
-
-**Gate logic:**
-- Below minimum completeness: "Para calcular tu estimado CIF necesito: [list of missing required fields]." The estimate card in the TPR Sheet shows an empty state with the specific blockers listed, not a generic lock icon.
-- At minimum completeness: CIF estimate is calculated immediately and revealed in the TPR Sheet. The reveal is the reward.
-- At full completeness: estimate confidence indicator shows "Alta precisión" vs. "Estimado preliminar" at minimum state.
-
-**Why this works for B2B:**
-- The buyer is not being rewarded with a badge. They are being rewarded with actionable commercial data — a number they can put in a spreadsheet.
-- The gate is not arbitrary. It is logically tied to what is actually needed for the calculation. The AI tells them exactly what is missing. This feels like a smart tool, not a game.
-- The progressive reveal gives Wings a reason to ask for more fields (better estimate precision) after the minimum is met. Post-minimum engagement: "Con el plazo de entrega y las certificaciones requeridas puedo ajustar el estimado de flete. ¿Quieres añadirlos?"
-
-### 3. Momentum Mechanics in the Chat Flow
-
-The Accio chat must maintain forward momentum. These are the micro-mechanics that keep the conversation moving:
-
-**Affirmation without flattery.** Each time the AI captures a field, it reflects the value back precisely before asking the next question. "Entendido — 50 unidades de tractor agrícola con motor diésel de 90 HP. ¿Cuál es tu precio objetivo por unidad en USD?" This is not praise. It is confirmation. For a B2B buyer who is paranoid about miscommunication, this is deeply satisfying.
-
-**One question per turn, always.** No multi-question turns. The cognitive load of a chat asking three things simultaneously is high. One question keeps the session moving without friction. The AI should be architected to never ask more than one question per response.
-
-**Turn count awareness.** The AI should know, at turn 7 of 10 questions, that it is close to completion. At that point: "Tengo casi todo lo que necesito para tu estimado. Solo me faltan dos datos más." This is a verbal completeness indicator — the buyer knows they are close to the reward.
-
-**Typing indicator as anticipation.** The typing indicator (three dots while AI responds) must be present and fast. Latency above 800ms without a typing indicator reads as broken. With a typing indicator it reads as "thinking." This is the difference between a tool that feels live and one that feels broken.
+**What to avoid:**
+- Progress bars with percentages (arcade register)
+- "You're almost there!" copy (consumer register)
+- Step indicators ("Step 2 of 5") — implies a form, not a conversation
+- Blocking gates that require completion before Mister continues ("Answer this to proceed") — paternalistic; the buyer controls the pace
 
 ---
 
-## Variable Reward Opportunities
+## 4. Variable Reward
 
-### Primary Reward: The CIF Estimate
+For B2B buyers, "surprise" is not novelty — it is *unexpected precision* or *unexpected value delivered before the buyer knew to ask for it.* These are the moments where Mister earns the "senior specialist" register.
 
-The CIF estimate is the prize. It is not just a number — it is the output that the buyer takes to their finance team, their import agent, their partner. Wings should treat the estimate reveal with appropriate visual weight.
+**Four designed surprise moments:**
 
-**The reveal sequence:**
-1. AI announces: "Tu estimado CIF está listo. Revísalo en el panel derecho."
-2. The CIF estimate card slides up in the TPR Sheet (y 16→0, opacity 0→1, 0.5s — as specified in animation spec)
-3. The line items populate sequentially: FOB → Flete → Seguro → ─── → CIF Total
-4. The CIF Total value counts up from 0 to its value in 800ms, ease-out, in gold DM Mono
-5. Below: the free zone savings percentage appears last, also counting up: "Ahorro estimado vía zona franca: 18.5%"
+**4.1 — The forward-looking surface**
+When a buyer asks whether a product meets their spec, Mister confirms AND surfaces an adjacent comparison — unprompted — that shows a model landing at a materially different index point at their volume tier. The buyer didn't ask for a comparison. It appeared because Mister thought ahead. That is the surprise: the system doing work the buyer hadn't commissioned yet.
 
-The count-up animation is not decorative. It communicates: this is a real calculation, just computed. It is the same pattern used by financial terminals and customs duty calculators worldwide.
+**4.2 — The document anticipation**
+When a buyer is navigating corridor logistics but has not yet asked about documentation, Mister offers the relevant SUNAT/destination checklist before the question arrives: "You'll need this at nationalization — want it now or at the end of the conversation?" A trade specialist always has the checklist ready before the client asks. Mister should too.
 
-**Variable element:** The savings percentage is the variable reward. It differs by product, source market, destination country, and HS code. Buyers who have used the tool before may see a different savings figure. This creates genuine curiosity. "I wonder what the free zone savings would be on buses vs. trucks."
+**4.3 — The index delta call-out**
+When the LandedCostWaterfall renders for the first time, if the buyer's Incoterm or destination makes one particular layer the dominant variable, Mister names it immediately and specifically: "On these terms, freight is your largest driver — container optimization on this lane typically moves the index 6–9 points. Your destination port matters here." The buyer receives insight they could not have gotten from reading the waterfall header. Specificity is the surprise.
 
-### Secondary Reward: The Reference Number at Submission
-
-After submission, the success state shows a real reference number (the Supabase lead ID formatted as `WGT-[year]-[sequence]`). For example: `WGT-2026-0047`.
-
-This is not a cosmetic detail. A reference number signals:
-- This is a real company with a real tracking system
-- This inquiry has an identity, not just an email in someone's inbox
-- The buyer has something to follow up with: "I'm calling about WGT-2026-0047"
-
-**Specificity in the timestamp:** "El equipo Wings te contactará antes de [current date + 24h formatted as: martes 18 de junio, 18:00]." Not "en las próximas 24 horas." A specific time creates accountability and reads as a professional commitment.
-
-### Tertiary Reward: Source Market Discovery (Catalog Flow)
-
-Product cards in the catalog reveal source market details on hover — the flag abbreviation, the market badge, the port of origin. For a buyer who has been working with an opaque supplier, seeing "Origen: Japón — puerto de Yokohama" is a small but genuine discovery.
-
-This is not implemented as animation for its own sake — it is information revealed at the right moment (when the buyer is evaluating the product, not before).
+**4.4 — Silent archetype correction**
+If a buyer who resolved as A1 (Lead / End Buyer) begins asking about MOQs and territory, Mister silently re-resolves to A4 (Reseller) and the tone and depth of the next response shift accordingly — no announcement, no "I see you're actually a reseller." The buyer experiences this as Mister becoming sharper. The session brief updates silently. The buyer's reaction: "This thing is actually reading what I'm saying." That is the reward.
 
 ---
 
-## Engagement Drop-Off Risks and Prevention
+## 5. Re-engagement: Session Continuity and Save-State
 
-### Risk 1: Accio Chat Abandonment Before Minimum Completeness
+**On return (same session, browser re-open, or WhatsApp-to-web link):**
 
-**Trigger:** Buyer engages 4–5 turns of chat, then leaves without reaching the estimate.
+Mister opens with a professional brief acknowledgment — the opener a trade specialist uses when a client reconnects after a break, not a consumer app welcoming a churned user back.
 
-**Why it happens:** The reward (CIF estimate) is not visible enough early in the flow. The buyer does not know how far they are from it.
+Exact register:
 
-**Prevention:**
-- Show the TPR Sheet field count from the first message. `0 / 10 campos` on session start makes the completion state visible immediately.
-- At 3 fields remaining: AI inserts a natural milestone marker: "Estoy a tres preguntas de poder calcular tu estimado CIF."
-- At 2 fields remaining: "Con tu precio objetivo y el mercado de destino podré darte el estimado."
-- Never let the buyer be more than 2 questions from the estimate without knowing it.
+> "Welcome back. When we last spoke we were working through [commodity] via [corridor] for [destination]. [Field X] and [Field Y] are still open in your brief. Shall we continue from there?"
 
-**On mobile:** The TPR Sheet is hidden in a drawer. The drawer toggle button must always show a field count badge: "Ver resumen · 5/10". This keeps the progress visible even when the panel is collapsed.
+The session brief renders immediately in its current state. The buyer sees what was captured, sees the gaps, and resumes. No re-introduction. No re-induction (unless the session is old enough that archetype confidence is low, in which case Mister re-confirms with one targeted question rather than running full induction again).
 
-### Risk 2: Chat Fatigue (Too Many Turns, Same Energy)
+**WhatsApp continuity:**
 
-**Trigger:** The AI asks questions with the same structure and tone for 10 consecutive turns. The buyer disengages.
+When the buyer accepts a WhatsApp handoff, the session brief is passed to the ops team via the notification payload. The ops team can reference it. If the buyer returns to the web chat after a WhatsApp exchange, the chat UI shows a system message (styled differently from Mister's messages):
 
-**Why it happens:** LLM-generated conversation without tonal variation reads as robotic after 5 turns.
+> "Your inquiry has been received by the Wings team. A specialist will follow up via WhatsApp."
 
-**Prevention:** The AI system prompt should vary the question framing across the conversation arc:
-- Turns 1–3: open, exploratory ("Cuéntame sobre el producto")
-- Turns 4–6: precise, confirmatory ("¿El peso por unidad está entre 800 y 1200 kg?")
-- Turns 7–8: closing, momentum ("Casi listos. ¿Cuál sería el plazo de entrega ideal?")
-- Turns 9–10: wrap-up ("Con eso tengo todo. Calculando tu estimado.")
+This closes the loop and prevents the buyer from treating the web chat and WhatsApp as disconnected channels.
 
-The arc should feel like a structured conversation with a trade specialist, not a form.
+**Abandon detection — non-intrusive save offer:**
 
-### Risk 3: Catalog Inquiry Form Abandonment
+If the session has been idle for 3+ minutes and the conversation has progressed past induction (meaning real data was collected), Mister sends one final message — calm, factual, not needy:
 
-**Trigger:** Buyer reads product specs, clicks "Solicitar cotización," begins the InquiryForm, then abandons mid-fill.
+> "I've saved your session brief. Return here to continue, or pick this up on WhatsApp — the brief travels with you."
 
-**Why it happens:** The form is long (7 fields). After the specs table, a long form reads as a second investment the buyer was not expecting.
+No pop-up. No "Don't go!" modal. One message that makes the brief's persistence explicit, then silence.
 
-**Prevention:**
-- Show the InquiryForm with the minimum visible fields upfront (name, email, phone, quantity). "Additional details" collapses to an optional section.
-- Field validation on blur, not on submit. Immediate inline feedback prevents the frustration of submitting and seeing a list of errors.
-- The sticky CTA on mobile ("Solicitar cotización") must appear only after the buyer has scrolled past the spec table — signaling that they have evaluated the product before being asked to act.
+**Session expiry protocol:**
 
-### Risk 4: Mobile TPR Invisibility
-
-**Trigger:** On mobile, the TPR Sheet is in a bottom drawer. The buyer completes 8 turns of chat and does not know the TPR is being populated. They feel like nothing is happening.
-
-**Prevention:**
-- The "Ver resumen TPR" button is always visible at the bottom of the chat on mobile, above the input field.
-- The button carries a live field count badge in DM Mono: `Ver resumen · 6/10`. This badge updates after every AI turn that captures a field.
-- When minimum completeness is reached, the button label changes: "Ver estimado CIF" with a gold accent — pulling the buyer to open the drawer and see the reward.
-
-### Risk 5: Submit-Gate Frustration
-
-**Trigger:** Buyer sees the "Enviar consulta" button but it is disabled. They click it. Nothing happens. They do not know why.
-
-**Prevention:**
-- The button is never disabled without explanation. Below the disabled button: "Necesito: [list of missing required fields]" — always specific, always actionable.
-- When minimum completeness is reached, the button does not just become active — it transitions in visually (opacity 0→1, 0.3s) so the buyer registers the change.
+Sessions are persistent for 30 days (or per the rate-limiting window design). After expiry, Mister opens clean but offers: "I have a previous brief from [date]. Want to start fresh or review what we had?" Two options, no judgment on either choice.
 
 ---
 
-## Professional Restraint Guidelines
+## 6. Conversation Milestone Moments
 
-These mechanics are explicitly excluded as too juvenile for the audience:
+These are the phase transitions in the Mister conversation — moments that matter and that deserve to be marked. The register for each is not celebration; it is *tonal shift and depth increase.* The milestone is communicated through what Mister does next, not through what Mister says about the milestone.
 
-- No progress bars with percentage fills (too gamified for trade professionals)
-- No confetti or celebration animations on submission
-- No sound effects
-- No level-up language ("You've unlocked the estimate")
-- No streak mechanics
-- No points or scores visible to the buyer
-- No social proof tickers ("47 importers are using Accio right now")
+**6.1 — Archetype resolved**
 
-The design language for all mechanics is: financial terminal, customs dashboard, procurement tool. Every interaction should feel like it belongs in a B2B SaaS tool used by serious operators.
+Mister does not announce it. No "Great, I've identified you as a Project Manager." The acknowledgment is entirely implicit: the very next response is noticeably more targeted. Questions become more specific. Technical vocabulary calibrates to the archetype. Product surfaces and documents offered shift to the archetype's lane.
+
+The buyer's read: "Mister suddenly got smarter." That is the moment landing correctly.
+
+**6.2 — First product surfaced**
+
+A ProductCard or SpecSheet renders alongside Mister's message. Mister does not lead with "Here's a product you might like." It leads with the answer to what was asked, and the surface renders as evidence: "Based on the specs you've described, this model meets your requirements on [specific point]. Before I confirm the full fit — [follow-up question]."
+
+The milestone is the information arriving, not the announcement that it arrived. The surface's presence IS the acknowledgment.
+
+**6.3 — First LandedCostWaterfall shown**
+
+This is the most significant visual moment in the conversation — the first time the indexed cost structure becomes visible. The framing line from Mister:
+
+> "Here's how the cost layers structure for this order — illustrative only, not a quotation."
+
+Then immediately: an insight that only someone reading the buyer's specific situation would offer. Not a generic waterfall explanation — a specific call-out about the buyer's dominant cost driver given their corridor, Incoterm, and container type. The waterfall renders; the conversation deepens. The buyer is not congratulated on reaching the cost structure phase. They are handed a sharper tool.
+
+**6.4 — Quotation triggered**
+
+The CTA activates. The buyer clicks it. Mister's final message before the form opens:
+
+> "I've pre-filled what we've covered. The team will receive your details and brief — add anything else directly in the form if needed."
+
+Two sentences. No "Congratulations." No enthusiasm. A clean, professional handoff. The pre-filled form is the reward — they built it during the conversation and it arrived ready to submit.
+
+**6.5 — Human handoff (WhatsApp / specialist contact)**
+
+A ContactCard renders. The specialist's name, role, and WhatsApp link appear. Mister's closing line:
+
+> "[Name] handles [category] for [corridor]. Your session brief is attached to this handoff — they'll have the full picture before you speak."
+
+This is not a goodbye. It's a warm introduction between two professionals, with the context fully transmitted. The buyer leaves the conversation knowing that Wings received everything, not wondering whether they'll have to repeat it.
 
 ---
 
-## Summary: The Engagement Stack
+## Design Calibration Notes for the Council
 
-| Layer | Mechanic | Impact |
-|---|---|---|
-| PRIMARY | TPR completeness as CIF estimate gate | Drives all 10 fields being answered |
-| PRIMARY | CIF estimate as counted-up financial reveal | Makes the reward feel real and earned |
-| SECONDARY | Turn-count awareness in AI conversation arc | Prevents mid-flow fatigue |
-| SECONDARY | "3 campos restantes" proximity cues | Prevents abandonment near completion |
-| SECONDARY | Mobile field count badge on drawer button | Maintains progress visibility on small screens |
-| TERTIARY | Real reference number at submission | Builds trust, closes the loop |
-| TERTIARY | Specific 24h follow-up timestamp | Creates accountability, not just acknowledgment |
-| FOUNDATION | Session persistence via sessionStorage | Removes loss-aversion as abandon trigger |
-| FOUNDATION | Post-minimum upsell for higher estimate precision | Drives completeness past minimum toward full |
+**What this engagement design is not:**
+- Points, badges, levels, streaks, or any visible reward currency
+- Progress percentages or step counters
+- "Congratulations" moments or celebration copy
+- Urgency manufacture ("Only 2 left in stock" — Mister cannot and must not do this)
+- Retention-bait ("Come back tomorrow for more") — there is no "tomorrow" mechanic; the buyer is here to complete a trade inquiry
+
+**What this engagement design is:**
+- Professional recognition (the buyer feels understood by a peer)
+- Structural trust (the session brief shows the conversation is being retained)
+- Efficient forward motion (every turn moves the brief closer to completion)
+- Unexpected value (surfaces and insights that arrive ahead of the question)
+- Clean closure (the handoff is as professional as the conversation)
+
+The underlying behavioral principle: B2B buyers do not stay because the experience is fun. They stay because the experience is *efficient and accurate and respects their expertise.* Every design decision here should pass the test: "Would a senior trade specialist find this useful, or find it condescending?"
+
+---
+
+*Contribution by: Game Designer / Engagement Designer*
+*Date: 2026-06-27*
+*Scope: Engagement behavioral layer for Mister — Wings Global Trade*

@@ -1,0 +1,51 @@
+ANIMATION_COMPLETE
+Phase 3: Logistics Intelligence Layer
+Completed: 2026-06-19
+
+Files modified:
+- src/components/features/catalog/ProvenanceRibbon.tsx
+- src/components/features/catalog/TradeRouteAnimation.tsx
+
+ProvenanceRibbon changes:
+- Added weightKg and categorySlug props to interface
+- Import added: ORIGIN_PORTS, getTransitDays, inferContainerType from @/lib/product-intelligence
+- nodes[0].label changed from "Origen · ${sourceMarket}" to portInfo.name (ORIGIN_PORTS lookup)
+- viewBox extended: "0 0 800 52" → "0 0 800 58"; height attr 52 → 58; background rect height 52 → 58
+- Transit day text elements rendered between each node pair at y=42
+- Container type badge (rect + text) at nodes[2].x (ZOFRATACNA), y range 26–34
+- Total days annotation (~Nd total) at nodes[3].x - 20, y=12
+
+TradeRouteAnimation changes:
+- Added sourceMarket and categorySlug props to interface
+- Import added: ORIGIN_PORTS, inferContainerType, freightRangeDisplay from @/lib/product-intelligence
+- drawRoute now renders after existing geometry: origin port name above ORIGIN, ZOFRATACNA above DEST,
+  container type bottom-left, freight range bottom-right
+- useEffect deps array extended from [weight] to [weight, sourceMarket]
+- Existing animation loop (requestAnimationFrame, prefers-reduced-motion guard) unchanged
+
+---
+
+Phase 7b: NoiseField ambient calibration
+Completed: 2026-06-19
+
+Files modified:
+- src/components/features/catalog/NoiseField.tsx
+
+NoiseField changes:
+- personality() opacity: 0.04 + t * 0.04  →  0.015 + t * 0.015
+- Range: 0.04–0.08  →  0.015–0.030
+- No other changes (animation loop, cell count, canvas logic all unchanged)
+
+---
+
+Mister Motion System: Animator Contribution
+Completed: 2026-06-27
+
+Deliverable: spec/contributions/animator.md
+Source of truth: src/lib/mister/motion.ts (defined in animator.md — builder creates this file)
+
+Motion personality: Deliberate. Weighted. Final.
+Seven easings defined. Eight-point duration scale. Full variant object library.
+LandedCostWaterfall signature animation: 5-segment staggered scaleX build, 1.54s total, duties pulse.
+prefers-reduced-motion fallbacks on every variant object.
+Existing MisterWaveform / useMisterWaveform: unchanged and correct.

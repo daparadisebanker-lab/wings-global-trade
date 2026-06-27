@@ -267,6 +267,102 @@
   --duration-fast:          0.2s;
   --duration-normal:        0.35s;
   --duration-slow:          0.6s;
+
+  /* ============================================================
+     Mister Design Tokens — Phase 2B
+     Source: spec/contributions/designer.md §7 + ENRICHED_SPEC §2.4
+     Extends Wings Phase 2A tokens above.
+     ============================================================ */
+
+  /* --- Window structure --- */
+  --mister-bg-window:              #000C1F;
+  --mister-bg-header:              #001E50;
+  --mister-bg-composer:            #000C1F;
+  --mister-bg-inset:               #040F22;
+  --mister-bg-message-user:        #F0EDE6;
+  --mister-bg-hover-subtle:        rgba(248, 246, 240, 0.03);
+
+  /* --- Text — dark surfaces --- */
+  --mister-text-primary:           #F8F6F0;
+  --mister-text-secondary:         rgba(248, 246, 240, 0.60);
+  --mister-text-muted:             rgba(248, 246, 240, 0.35);
+  --mister-text-ghost:             rgba(248, 246, 240, 0.15);
+
+  /* --- Text — warm paper surface --- */
+  --mister-text-user:              #001E50;
+  --mister-text-user-muted:        rgba(0, 30, 80, 0.35);
+
+  /* --- Gold — semantic --- */
+  --mister-gold:                   #C4933F;
+  --mister-gold-annotation:        rgba(196, 147, 63, 0.75);
+  --mister-gold-rule:              rgba(196, 147, 63, 0.15);
+  --mister-gold-rule-strong:       rgba(196, 147, 63, 0.30);
+  --mister-gold-fill:              rgba(196, 147, 63, 0.06);
+  --mister-gold-fill-active:       rgba(196, 147, 63, 0.10);
+  --mister-gold-duties:            rgba(196, 147, 63, 0.08);
+
+  /* --- Borders --- */
+  --mister-border-window:          rgba(196, 147, 63, 0.15);
+  --mister-border-surface:         rgba(248, 246, 240, 0.10);
+  --mister-border-row:             rgba(248, 246, 240, 0.06);
+  --mister-border-input:           rgba(248, 246, 240, 0.12);
+  --mister-border-focus:           rgba(196, 147, 63, 0.50);
+
+  /* --- Message left rules --- */
+  --mister-rule-assistant:         rgba(196, 147, 63, 0.18);
+  --mister-rule-assistant-hover:   rgba(196, 147, 63, 0.40);
+
+  /* --- Quick actions --- */
+  --mister-qa-border:              rgba(196, 147, 63, 0.22);
+  --mister-qa-border-hover:        rgba(196, 147, 63, 0.55);
+  --mister-qa-bg-hover:            rgba(196, 147, 63, 0.06);
+
+  /* --- LandedCostWaterfall --- */
+  --mister-wf-bg:                  #001040;
+  --mister-wf-strip-product:       rgba(248, 246, 240, 0.08);
+  --mister-wf-strip-freight:       rgba(248, 246, 240, 0.06);
+  --mister-wf-strip-insurance:     rgba(248, 246, 240, 0.04);
+  --mister-wf-strip-duties:        rgba(196, 147, 63, 0.08);
+  --mister-wf-strip-lastmile:      rgba(248, 246, 240, 0.04);
+  --mister-wf-separator:           rgba(196, 147, 63, 0.12);
+  --mister-wf-base:                #C4933F;
+  --mister-wf-value:               #F8F6F0;
+  --mister-wf-total-separator:     rgba(196, 147, 63, 0.30);
+
+  /* --- Launcher --- */
+  --mister-launcher-bg:            #001040;
+  --mister-launcher-border:        rgba(196, 147, 63, 0.22);
+  --mister-launcher-border-hover:  rgba(196, 147, 63, 0.55);
+
+  /* --- Status indicators --- */
+  --mister-status-unresolved:      rgba(248, 246, 240, 0.25);
+  --mister-status-resolved:        #C4933F;
+  --mister-status-captured:        #C4933F;
+
+  /* --- Elevation --- */
+  --mister-shadow-window:
+    0 8px 48px rgba(0, 0, 0, 0.40),
+    0 0 0 1px rgba(196, 147, 63, 0.12);
+  --mister-shadow-surface:         0 2px 12px rgba(0, 0, 0, 0.24);
+
+  /* --- Spacing --- */
+  --mister-space-xs:               4px;
+  --mister-space-sm:               8px;
+  --mister-space-md:               16px;
+  --mister-space-lg:               20px;
+  --mister-space-xl:               28px;
+  --mister-space-message-group:    20px;
+  --mister-space-message-internal: 8px;
+  --mister-space-same-role:        4px;
+
+  /* --- Window dimensions --- */
+  --mister-window-width:           420px;
+  --mister-window-height:          680px;
+  --mister-window-header-height:   48px;
+  --mister-window-composer-height: 56px;
+  --mister-launcher-width:         96px;
+  --mister-launcher-height:        36px;
+  --mister-margin-column:          32px;
 }
 
 /* ============================================================
@@ -334,10 +430,13 @@
   }
 
   /* Mister dark room — documentary micro-typography exempt from the legibility floor.
-     Teko at 9–12px reads as document artifact, not UI label, in the dark consultation context. */
-  .mister .font-mono.text-\[9px\]  { font-size: 0.5625rem; }
-  .mister .font-mono.text-\[10px\] { font-size: 0.625rem; }
-  .mister .font-mono.text-xs       { font-size: 0.75rem; }
+     Teko at 9–12px reads as document artifact, not UI label, in the dark consultation context.
+     Specificity (0,3,0) beats the global floor (0,2,0). */
+  .mister .font-mono.text-\[9px\]  { font-size: 0.5625rem; }  /* 9px  */
+  .mister .font-mono.text-\[10px\] { font-size: 0.625rem; }   /* 10px */
+  .mister .font-mono.text-\[11px\] { font-size: 0.6875rem; }  /* 11px — turn indices, session ref, spec labels */
+  .mister .font-mono.text-\[12px\] { font-size: 0.75rem; }    /* 12px — contact role, moq labels */
+  .mister .font-mono.text-xs       { font-size: 0.75rem; }    /* 12px — text-xs alias */
 
   /* Premium section spacing */
   .section-padding {
@@ -461,5 +560,60 @@
   .spec-value-inspectable:hover {
     color: #C4933F;
     transition: color 150ms ease;
+  }
+
+  /* ============================================================
+     Mister — CSS utility classes and transitions
+     Source: spec/contributions/animator.md §16
+     ============================================================ */
+
+  /* CSS-only transition utilities (not Framer Motion) */
+  .mister-launcher { transition: border-color 0.15s ease; }
+  .mister-qa-button { transition: border-color 0.15s ease, background-color 0.15s ease; }
+  .mister-composer-border { transition: border-top-color 0.15s ease; }
+  .mister-send-arrow { transition: color 0.15s ease; }
+  .mister-session-ref { transition: color 0.08s ease, opacity 0.08s ease; }
+  .mister-status-dot { transition: background-color 0.12s ease, opacity 0.12s ease; }
+
+  .mister-trade-term {
+    border-bottom: 1px solid var(--mister-gold-annotation);
+  }
+  .mister-trade-term:hover {
+    border-bottom-color: var(--mister-gold);
+    transition: border-bottom-color 0.15s ease;
+  }
+
+  .mister-message-assistant:hover .mister-rule-left {
+    border-left-color: var(--mister-rule-assistant-hover);
+    transition: border-left-color 0.15s ease;
+  }
+
+  /* Elevation — box-shadow via CSS var */
+  .mister-shadow-window {
+    box-shadow: var(--mister-shadow-window);
+  }
+  .mister-shadow-surface {
+    box-shadow: var(--mister-shadow-surface);
+  }
+
+  /* Streaming cursor — gold blinking pipe; CSS only per animator.md §8 */
+  .mister-stream-cursor {
+    display: inline-block;
+    width: 1px;
+    height: 1em;
+    background: var(--mister-gold);
+    opacity: 1;
+    margin-left: 1px;
+    vertical-align: text-bottom;
+    animation: mister-blink 900ms ease-in-out infinite;
+  }
+
+  @keyframes mister-blink {
+    0%, 45%  { opacity: 1; }
+    55%, 100% { opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mister-stream-cursor { animation: none; opacity: 1; }
   }
 }
