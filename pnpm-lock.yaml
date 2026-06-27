@@ -32,6 +32,9 @@ importers:
       resend:
         specifier: ^4.0.1
         version: 4.8.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      simplex-noise:
+        specifier: ^4.0.3
+        version: 4.0.3
       twilio:
         specifier: ^5.3.6
         version: 5.13.1
@@ -2062,6 +2065,9 @@ packages:
   side-channel@1.1.1:
     resolution: {integrity: sha512-6x6dK6zJdpTzF4sQeNYxwtvBzf6Eg4GtlesS94HOvTudUeyK2WXAaIfmDgsyslYrRBeFIlsi54AYsFGUuhmvrQ==}
     engines: {node: '>= 0.4'}
+
+  simplex-noise@4.0.3:
+    resolution: {integrity: sha512-qSE2I4AngLQG7BXqoZj51jokT4WUXe8mOBrvfOXpci8+6Yu44+/dD5zqDpOx3Ux792eamTd2lLcI8jqFntk/lg==}
 
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
@@ -4405,6 +4411,8 @@ snapshots:
       side-channel-list: 1.0.1
       side-channel-map: 1.0.1
       side-channel-weakmap: 1.0.2
+
+  simplex-noise@4.0.3: {}
 
   source-map-js@1.2.1: {}
 
