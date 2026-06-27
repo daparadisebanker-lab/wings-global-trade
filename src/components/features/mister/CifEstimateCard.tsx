@@ -1,8 +1,8 @@
-// src/components/features/accio/CifEstimateCard.tsx
+// src/components/features/mister/CifEstimateCard.tsx
 'use client'
 
 import { motion } from 'framer-motion'
-import type { CifEstimate } from '@/types/accio'
+import type { CifEstimate } from '@/types/mister'
 import { SLIDE_UP } from '@/lib/motion'
 import { useCountUp } from '@/hooks/useCountUp'
 

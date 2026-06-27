@@ -7,7 +7,7 @@
 //   CIF       = FOB + Freight + Insurance
 //   Duty      = CIF * duty_rate / 100
 
-import type { CifInput, CifEstimate } from '@/types/accio'
+import type { CifInput, CifEstimate } from '@/types/mister'
 import type { FreeZone } from '@/types/database'
 import { lookupDutyRate } from '@/lib/duty-rates'
 import { parseQuantityNumeric } from '@/lib/utils'

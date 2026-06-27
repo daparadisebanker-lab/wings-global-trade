@@ -1,8 +1,8 @@
 // src/lib/tpr.ts
 // TPR completeness + missing-field logic shared by chat route and client hook.
 
-import type { TprState, TprFieldKey } from '@/types/accio'
-import { MINIMUM_TPR_FIELDS, ALL_TPR_FIELDS } from '@/types/accio'
+import type { TprState, TprFieldKey } from '@/types/mister'
+import { MINIMUM_TPR_FIELDS, ALL_TPR_FIELDS } from '@/types/mister'
 import type { TprCompleteness } from '@/types/database'
 
 function isFilled(state: TprState, key: TprFieldKey): boolean {

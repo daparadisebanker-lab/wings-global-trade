@@ -1,4 +1,4 @@
-// src/app/api/accio/submit/route.ts
+// src/app/api/mister/submit/route.ts
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { z, ZodError } from 'zod'
@@ -6,9 +6,9 @@ import { createServiceClient } from '@/lib/supabase/server'
 import { insertLead } from '@/lib/leads'
 import { sendWhatsAppNotification } from '@/lib/notifications/whatsapp'
 import { sendEmailNotification } from '@/lib/notifications/email'
-import type { AccioNotificationPayload } from '@/lib/notifications/types'
+import type { MisterNotificationPayload } from '@/lib/notifications/types'
 import { computeCompleteness, missingFields } from '@/lib/tpr'
-import type { TprState } from '@/types/accio'
+import type { TprState } from '@/types/mister'
 
 const SubmitSchema = z.object({
   full_name: z.string().min(2).max(100),
@@ -53,12 +53,12 @@ export async function POST(request: NextRequest) {
     const ipCountry = request.headers.get('x-vercel-ip-country') ?? undefined
     const userAgent = request.headers.get('user-agent') ?? undefined
 
-    // 1. Insert accio_projects record.
+    // 1. Insert mister_projects record.
     let projectId = crypto.randomUUID()
     const supabase = createServiceClient()
     if (supabase) {
       const { data: project, error } = await supabase
-        .from('accio_projects')
+        .from('mister_projects')
         .insert({
           product_description: tpr.product_description,
           hs_code: tpr.hs_code ?? null,
@@ -79,21 +79,22 @@ export async function POST(request: NextRequest) {
           missing_fields: missingFields(tpr),
           conversation_turns: data.conversation_snapshot.length,
           conversation_snapshot: data.conversation_snapshot,
+          session_ref: data.session_id,
         })
         .select('id')
         .single()
 
       if (error || !project) {
-        throw new Error(`accio_projects insert failed: ${error?.message ?? 'unknown'}`)
+        throw new Error(`mister_projects insert failed: ${error?.message ?? 'unknown'}`)
       }
       projectId = project.id as string
     } else {
-      console.info('[api/accio/submit] (dev — no Supabase) project:', projectId)
+      console.info('[api/mister/submit] (dev — no Supabase) project:', projectId)
     }
 
     // 2. Insert lead linked to the project.
     const leadId = await insertLead({
-      flow: 'accio',
+      flow: 'mister',
       full_name: data.full_name,
       company: data.company ?? null,
       email: data.email,
@@ -101,14 +102,14 @@ export async function POST(request: NextRequest) {
       destination_country: tpr.destination_country,
       product_name_snapshot: tpr.product_description,
       quantity: tpr.quantity,
-      accio_project_id: projectId,
+      mister_project_id: projectId,
       user_agent: userAgent,
       ip_country: ipCountry,
     })
 
     // 3. Notifications.
-    const payload: AccioNotificationPayload = {
-      flow: 'accio',
+    const payload: MisterNotificationPayload = {
+      flow: 'mister',
       full_name: data.full_name,
       company: data.company ?? null,
       destination_country: tpr.destination_country,
@@ -139,7 +140,7 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       )
     }
-    console.error('[api/accio/submit]', error)
+    console.error('[api/mister/submit]', error)
     return NextResponse.json(
       { error: 'Error interno del servidor', code: 'INTERNAL_ERROR' },
       { status: 500 },

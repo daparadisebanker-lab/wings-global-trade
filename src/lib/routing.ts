@@ -4,7 +4,7 @@
 
 export type SearchIntent =
   | { type: 'catalog'; category: string | null }
-  | { type: 'accio' }
+  | { type: 'mister' }
   | { type: 'ambiguous' }
 
 const CATALOG_KEYWORDS: Record<string, string> = {
@@ -35,7 +35,7 @@ const CATALOG_KEYWORDS: Record<string, string> = {
   'neumático': 'repuestos',
 }
 
-const ACCIO_KEYWORDS = [
+const MISTER_KEYWORDS = [
   'importar',
   'importacion',
   'importación',
@@ -60,15 +60,15 @@ export function detectSearchIntent(query: string): SearchIntent {
   const q = query.toLowerCase().trim()
   if (!q) return { type: 'ambiguous' }
 
-  // HS code pattern (4-8 digits) routes to Accio.
-  if (/^\d{4,8}$/.test(q)) return { type: 'accio' }
+  // HS code pattern (4-8 digits) routes to Mister.
+  if (/^\d{4,8}$/.test(q)) return { type: 'mister' }
 
   for (const [keyword, category] of Object.entries(CATALOG_KEYWORDS)) {
     if (q.includes(keyword)) return { type: 'catalog', category }
   }
 
-  for (const keyword of ACCIO_KEYWORDS) {
-    if (q.includes(keyword)) return { type: 'accio' }
+  for (const keyword of MISTER_KEYWORDS) {
+    if (q.includes(keyword)) return { type: 'mister' }
   }
 
   return { type: 'ambiguous' }
@@ -85,7 +85,7 @@ export function resolveSearchUrl(query: string): string {
       return intent.category
         ? `/catalogo/${intent.category}?q=${encoded}`
         : `/catalogo?q=${encoded}`
-    case 'accio':
+    case 'mister':
       return `/mister?context=${encoded}`
     case 'ambiguous':
     default:

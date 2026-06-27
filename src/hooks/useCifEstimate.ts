@@ -2,7 +2,7 @@
 'use client'
 
 import { useCallback, useRef, useState } from 'react'
-import type { TprState, CifEstimate } from '@/types/accio'
+import type { TprState, CifEstimate } from '@/types/mister'
 
 export function useCifEstimate() {
   const [estimate, setEstimate] = useState<CifEstimate | null>(null)
@@ -21,7 +21,7 @@ export function useCifEstimate() {
     setError(null)
 
     try {
-      const res = await fetch('/api/accio/estimate', {
+      const res = await fetch('/api/mister/estimate', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({

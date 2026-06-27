@@ -2,7 +2,7 @@
 // API request/response shapes shared between client and server.
 
 import type { Category, Product } from '@/types/database'
-import type { CifEstimate } from '@/types/accio'
+import type { CifEstimate } from '@/types/mister'
 
 export interface ApiError {
   error: string
@@ -58,7 +58,7 @@ export interface EstimateResponse {
   estimate: CifEstimate
 }
 
-export interface AccioSubmitResponse {
+export interface MisterSubmitResponse {
   lead_id: string
   project_id: string
   message: string

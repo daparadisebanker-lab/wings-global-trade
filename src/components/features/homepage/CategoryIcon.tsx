@@ -42,7 +42,7 @@ const paths: Record<string, React.ReactNode> = {
       <path d="M12 4v3M12 17v3M4 12h3M17 12h3" />
     </>
   ),
-  accio: (
+  mister: (
     <>
       <path d="M12 3l2.5 5.5L20 11l-5.5 2.5L12 19l-2.5-5.5L4 11l5.5-2.5z" />
     </>

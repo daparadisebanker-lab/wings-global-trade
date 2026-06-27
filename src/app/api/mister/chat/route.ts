@@ -1,5 +1,5 @@
-// src/app/api/accio/chat/route.ts
-// Accio Engine chat endpoint. Streams Claude responses as SSE, strips embedded
+// src/app/api/mister/chat/route.ts
+// Mister chat endpoint. Streams Claude responses as SSE, strips embedded
 // JSON extraction blocks before sending text to the client, and emits
 // tpr_update + done events. Falls back to a deterministic mock stream when
 // ANTHROPIC_API_KEY is absent so the UI is fully testable offline.
@@ -8,13 +8,13 @@ import type { NextRequest } from 'next/server'
 import { z, ZodError } from 'zod'
 import {
   getAnthropicClient,
-  buildAccioSystemPrompt,
-  ACCIO_CHAT_MODEL,
+  buildMisterSystemPrompt,
+  MISTER_CHAT_MODEL,
   extractTprFields,
   stripJsonMarkers,
 } from '@/lib/claude'
 import { coerceTprValue, computeCompleteness } from '@/lib/tpr'
-import type { TprState, TprFieldKey } from '@/types/accio'
+import type { TprState, TprFieldKey } from '@/types/mister'
 
 export const runtime = 'nodejs'
 export const maxDuration = 30
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
           sse({ type: 'done', tpr_completeness: computeCompleteness(updatedState) }),
         )
       } catch (error) {
-        console.error('[api/accio/chat] stream error', error)
+        console.error('[api/mister/chat] stream error', error)
         controller.enqueue(sse({ type: 'error', message: 'Mister no está disponible en este momento. Intenta nuevamente en unos segundos.' }))
       } finally {
         controller.close()
@@ -109,9 +109,9 @@ async function claudeStream(
   emitFields: (fields: { field: TprFieldKey; value: unknown }[]) => void,
 ) {
   const anthropicStream = await client.messages.stream({
-    model: ACCIO_CHAT_MODEL,
+    model: MISTER_CHAT_MODEL,
     max_tokens: 1024,
-    system: buildAccioSystemPrompt(tprState),
+    system: buildMisterSystemPrompt(tprState),
     messages: messages.map((m) => ({ role: m.role, content: m.content })),
   })
 

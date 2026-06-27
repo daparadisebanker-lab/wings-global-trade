@@ -333,6 +333,12 @@
     font-size: 0.9375rem; /* 15px */
   }
 
+  /* Mister dark room — documentary micro-typography exempt from the legibility floor.
+     Teko at 9–12px reads as document artifact, not UI label, in the dark consultation context. */
+  .mister .font-mono.text-\[9px\]  { font-size: 0.5625rem; }
+  .mister .font-mono.text-\[10px\] { font-size: 0.625rem; }
+  .mister .font-mono.text-xs       { font-size: 0.75rem; }
+
   /* Premium section spacing */
   .section-padding {
     padding-top: clamp(4rem, 8vw, 7rem);
@@ -376,12 +382,12 @@
     box-shadow: 0 0 0 2px rgba(196, 147, 63, 0.15);
   }
 
-  .accio-cursor::after {
+  .mister-cursor::after {
     content: '_';
     margin-left: 2px;
-    animation: accio-blink 1s steps(2, start) infinite;
+    animation: mister-blink 1s steps(2, start) infinite;
   }
-  @keyframes accio-blink {
+  @keyframes mister-blink {
     to {
       visibility: hidden;
     }

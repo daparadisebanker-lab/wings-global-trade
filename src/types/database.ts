@@ -1,7 +1,7 @@
 // src/types/database.ts
 // Mirrors the Supabase schema in /spec/data-model.md.
 
-export type LeadFlow = 'catalog' | 'accio' | 'contact'
+export type LeadFlow = 'catalog' | 'mister' | 'contact'
 export type LeadStatus = 'new' | 'contacted' | 'qualified' | 'closed_won' | 'closed_lost'
 // Phase 2A: added 'standard' level per ai-engineer.md §REGLAS DE COMPLETENESS
 // partial: 1-2 fields | minimum: fields 1,3,4,5 | standard: fields 1-6 | complete: all 10
@@ -141,7 +141,7 @@ export interface Lead {
   product_name_snapshot: string | null
   quantity: string | null
   message: string | null
-  accio_project_id: string | null
+  mister_project_id: string | null
   whatsapp_sent_at: string | null
   whatsapp_error: string | null
   email_sent_at: string | null
@@ -153,7 +153,7 @@ export interface Lead {
   updated_at: string
 }
 
-export interface AccioProject {
+export interface MisterProject {
   id: string
   product_description: string
   hs_code: string | null

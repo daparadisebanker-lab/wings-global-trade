@@ -1,22 +1,19 @@
 // src/lib/claude.ts
-// Anthropic Claude client + Accio Engine system prompt and JSON extraction.
+// Anthropic Claude client + Mister system prompt and JSON extraction.
 // Server-side only — never import into client components.
 
 import Anthropic from '@anthropic-ai/sdk'
-import type { TprState, TprFieldKey } from '@/types/accio'
+import type { TprState, TprFieldKey } from '@/types/mister'
 import type { TprCompleteness } from '@/types/database'
 import {
   WINGS_CATALOG_TEXT,
   WINGS_PROCESS_TEXT,
   WINGS_FAQ_TEXT,
   CATALOG_BEHAVIOR_TEXT,
-  MISTER_GREETING,
 } from '@/lib/mister-knowledge'
 
-export const ACCIO_CHAT_MODEL = 'claude-sonnet-4-6'
-export const ACCIO_ESTIMATE_MODEL = 'claude-sonnet-4-6'
-
-export const ACCIO_GREETING = MISTER_GREETING
+export const MISTER_CHAT_MODEL = 'claude-sonnet-4-6'
+export const MISTER_ESTIMATE_MODEL = 'claude-sonnet-4-6'
 
 let cached: Anthropic | null = null
 
@@ -33,11 +30,11 @@ export function isClaudeConfigured(): boolean {
 }
 
 // ---------------------------------------------------------------------------
-// Production Accio system prompt — Phase 2B (knowledge-grounded)
+// Production Mister system prompt — Phase 2B (knowledge-grounded)
 // Knowledge base injected from mister-knowledge.ts — no hallucination on facts.
-// [TPR_STATE_PLACEHOLDER] is replaced at runtime by buildAccioSystemPrompt()
+// [TPR_STATE_PLACEHOLDER] is replaced at runtime by buildMisterSystemPrompt()
 // ---------------------------------------------------------------------------
-export const ACCIO_SYSTEM_PROMPT = `Eres Mister, el asesor de importación con IA de Wings Global Trade. Tu misión es una sola: recopilar el Requisito Técnico de Producto (TPR) del importador en el menor número de turnos posible, y cuando tengas suficiente información, ofrecer un estimado CIF preliminar.
+export const MISTER_SYSTEM_PROMPT = `Eres Mister, el asesor de importación con IA de Wings Global Trade. Tu misión es una sola: recopilar el Requisito Técnico de Producto (TPR) del importador en el menor número de turnos posible, y cuando tengas suficiente información, ofrecer un estimado CIF preliminar.
 
 ---
 
@@ -381,7 +378,7 @@ PASO 2 — AVANZA al primer campo null en esta secuencia fija:
 
   Cuando los campos estén completos o el usuario confirme que no hay más:
   → "Tu requisito técnico está listo. Completa tus datos en el formulario para enviarlo al equipo Wings."
-  → No captures nombre, email ni teléfono en el chat — ese flujo es del AccioSubmitForm.
+  → No captures nombre, email ni teléfono en el chat — ese flujo es del MisterSubmitForm.
 
 REGLAS INAMOVIBLES DE TURNO:
 - Una sola pregunta por respuesta. Nunca dos. Nunca una pregunta con subopciones.
@@ -423,7 +420,7 @@ RESTRICCIONES ABSOLUTAS:
 - No cites marcas de fabricantes fuera del catálogo Wings (no John Deere, no Kubota, no Caterpillar, no Volvo, no Mercedes, no MAN, no Scania — solo marcas del catálogo Wings listadas en REGLAS DE TURNO).
 - No hagas compromisos de precio, plazo o disponibilidad que el equipo Wings no haya confirmado.
 - No reveles la fórmula CIF, los márgenes de sourcing ni las tasas de ahorro de zona franca como números exactos — solo di "el estimado refleja el costo operativo real de la ruta".
-- No pidas datos de contacto (nombre, email, teléfono, empresa) — eso es responsabilidad del AccioSubmitForm.
+- No pidas datos de contacto (nombre, email, teléfono, empresa) — eso es responsabilidad del MisterSubmitForm.
 - No preguntes sobre tech_specs, certifications, packaging ni delivery_timeline antes de tener product_description, quantity, destination_country y target_price_usd.
 - No expliques cómo funciona el sistema a menos que el usuario lo pregunte directamente.
 - No uses lenguaje de ventas ni frases de marketing ("la mejor opción", "garantizamos", "somos líderes").
@@ -445,8 +442,8 @@ ESTADO ACTUAL DEL TPR:
 [TPR_STATE_PLACEHOLDER]`
 
 /** Build the final system prompt with the current TPR state injected. */
-export function buildAccioSystemPrompt(tprState: TprState): string {
-  return ACCIO_SYSTEM_PROMPT.replace(
+export function buildMisterSystemPrompt(tprState: TprState): string {
+  return MISTER_SYSTEM_PROMPT.replace(
     '[TPR_STATE_PLACEHOLDER]',
     JSON.stringify(tprState, null, 0),
   )

@@ -1,18 +1,18 @@
-// src/components/features/accio/AccioSubmitForm.tsx
+// src/components/features/mister/MisterSubmitForm.tsx
 'use client'
 
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { ConversationTurn } from '@/types/database'
-import type { TprState, CifEstimate, AccioSubmitRequest } from '@/types/accio'
+import type { TprState, CifEstimate, MisterSubmitRequest } from '@/types/mister'
 import { useToast } from '@/components/ui/toast'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { AccioSuccess } from '@/components/features/accio/AccioSuccess'
 
-interface AccioSubmitFormProps {
+interface MisterSubmitFormProps {
   open: boolean
   onClose: () => void
+  onSuccess: () => void
   tpr: TprState
   estimate: CifEstimate | null
   conversation: ConversationTurn[]
@@ -26,19 +26,19 @@ interface Values {
   phone: string
 }
 
-export function AccioSubmitForm({
+export function MisterSubmitForm({
   open,
   onClose,
+  onSuccess,
   tpr,
   estimate,
   conversation,
   sessionId,
-}: AccioSubmitFormProps) {
+}: MisterSubmitFormProps) {
   const { toast } = useToast()
   const [values, setValues] = useState<Values>({ full_name: '', company: '', email: '', phone: '' })
-  const [status, setStatus] = useState<'idle' | 'submitting' | 'success'>('idle')
+  const [status, setStatus] = useState<'idle' | 'submitting'>('idle')
   const [errors, setErrors] = useState<Partial<Record<keyof Values, string>>>({})
-  const [leadId, setLeadId] = useState<string | number | undefined>()
 
   function set(field: keyof Values, value: string) {
     setValues((p) => ({ ...p, [field]: value }))
@@ -80,7 +80,7 @@ export function AccioSubmitForm({
     }
     setStatus('submitting')
 
-    const payload: AccioSubmitRequest = {
+    const payload: MisterSubmitRequest = {
       full_name: values.full_name.trim(),
       company: values.company.trim() || undefined,
       email: values.email.trim(),
@@ -104,18 +104,16 @@ export function AccioSubmitForm({
     }
 
     try {
-      const res = await fetch('/api/accio/submit', {
+      const res = await fetch('/api/mister/submit', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(payload),
       })
       if (!res.ok) throw new Error(`Submit failed: ${res.status}`)
-      const data = await res.json().catch(() => ({}))
-      // Extract lead/project ID for reference number
-      setLeadId(data?.id ?? data?.lead_id ?? data?.accio_project_id)
-      setStatus('success')
+      onSuccess()
+      onClose()
     } catch (error) {
-      console.error('[AccioSubmitForm] submit', error)
+      console.error('[MisterSubmitForm] submit', error)
       setStatus('idle')
       // Per ENRICHED_SPEC §3.6 — exact error copy
       toast('No pudimos enviar tu solicitud. Intenta nuevamente o escríbenos por WhatsApp.', 'error')
@@ -141,74 +139,66 @@ export function AccioSubmitForm({
             onClick={(e) => e.stopPropagation()}
             className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-t-wings-card bg-warm-white sm:rounded-wings-card"
           >
-            {status === 'success' ? (
-              <AccioSuccess tpr={tpr} estimate={estimate} leadId={leadId} />
-            ) : (
-              <form onSubmit={handleSubmit} className="p-6">
-                {/* Per ENRICHED_SPEC §3.3 — Accio submit form heading */}
-                <h3 className="font-body text-sm font-medium tracking-tight text-navy">Enviar consulta técnica</h3>
-                <p className="mt-1 font-body text-sm text-text-muted">
-                  Comparte tus datos de contacto para que el equipo de Wings prepare tu cotización.
-                </p>
+            <form onSubmit={handleSubmit} className="p-6">
+              <h3 className="font-body text-sm font-medium tracking-tight text-navy">Enviar consulta técnica</h3>
+              <p className="mt-1 font-body text-sm text-text-muted">
+                Comparte tus datos de contacto para que el equipo de Wings prepare tu cotización.
+              </p>
+              <p className="mt-2 font-body text-xs text-text-muted">
+                Consulta sin compromiso. Sin cuenta requerida.
+              </p>
 
-                {/* Trust signal — per ENRICHED_SPEC §4.3 */}
-                <p className="mt-2 font-body text-xs text-text-muted">
-                  Consulta sin compromiso. Sin cuenta requerida.
-                </p>
+              <div className="mt-5 space-y-4">
+                <Field label="Nombre completo" error={errors.full_name} required>
+                  <Input
+                    value={values.full_name}
+                    onChange={(e) => set('full_name', e.target.value)}
+                    onBlur={() => validateField('full_name')}
+                    hasError={Boolean(errors.full_name)}
+                    placeholder="Tu nombre completo"
+                    autoComplete="name"
+                  />
+                </Field>
+                <Field label="Empresa">
+                  <Input
+                    value={values.company}
+                    onChange={(e) => set('company', e.target.value)}
+                    placeholder="Empresa o razón social"
+                    autoComplete="organization"
+                  />
+                </Field>
+                <Field label="Email" error={errors.email} required>
+                  <Input
+                    type="email"
+                    value={values.email}
+                    onChange={(e) => set('email', e.target.value)}
+                    onBlur={() => validateField('email')}
+                    hasError={Boolean(errors.email)}
+                    placeholder="correo@empresa.com"
+                    autoComplete="email"
+                  />
+                </Field>
+                <Field label="WhatsApp / teléfono" error={errors.phone} required>
+                  <Input
+                    value={values.phone}
+                    onChange={(e) => set('phone', e.target.value)}
+                    onBlur={() => validateField('phone')}
+                    hasError={Boolean(errors.phone)}
+                    placeholder="+51 999 000 000"
+                    autoComplete="tel"
+                  />
+                </Field>
+              </div>
 
-                <div className="mt-5 space-y-4">
-                  <Field label="Nombre completo" error={errors.full_name} required>
-                    <Input
-                      value={values.full_name}
-                      onChange={(e) => set('full_name', e.target.value)}
-                      onBlur={() => validateField('full_name')}
-                      hasError={Boolean(errors.full_name)}
-                      placeholder="Tu nombre completo"
-                      autoComplete="name"
-                    />
-                  </Field>
-                  <Field label="Empresa">
-                    <Input
-                      value={values.company}
-                      onChange={(e) => set('company', e.target.value)}
-                      placeholder="Empresa o razón social"
-                      autoComplete="organization"
-                    />
-                  </Field>
-                  <Field label="Email" error={errors.email} required>
-                    <Input
-                      type="email"
-                      value={values.email}
-                      onChange={(e) => set('email', e.target.value)}
-                      onBlur={() => validateField('email')}
-                      hasError={Boolean(errors.email)}
-                      placeholder="correo@empresa.com"
-                      autoComplete="email"
-                    />
-                  </Field>
-                  <Field label="WhatsApp / teléfono" error={errors.phone} required>
-                    <Input
-                      value={values.phone}
-                      onChange={(e) => set('phone', e.target.value)}
-                      onBlur={() => validateField('phone')}
-                      hasError={Boolean(errors.phone)}
-                      placeholder="+51 999 000 000"
-                      autoComplete="tel"
-                    />
-                  </Field>
-                </div>
-
-                <div className="mt-6 flex gap-3">
-                  <Button type="button" variant="secondary" onClick={onClose} className="flex-1">
-                    Cancelar
-                  </Button>
-                  {/* Per ENRICHED_SPEC §3.4 — exact Accio submit CTA */}
-                  <Button type="submit" isLoading={status === 'submitting'} className="flex-1">
-                    Enviar consulta técnica
-                  </Button>
-                </div>
-              </form>
-            )}
+              <div className="mt-6 flex gap-3">
+                <Button type="button" variant="secondary" onClick={onClose} className="flex-1">
+                  Cancelar
+                </Button>
+                <Button type="submit" isLoading={status === 'submitting'} className="flex-1">
+                  Enviar consulta técnica
+                </Button>
+              </div>
+            </form>
           </motion.div>
         </motion.div>
       )}

@@ -1,9 +1,9 @@
-// src/types/accio.ts
-// Accio Engine — TPR state, CIF estimate, SSE event shapes.
+// src/types/mister.ts
+// Mister Engine — TPR state, CIF estimate, SSE event shapes.
 
 import type { FreeZone, TprCompleteness, ConversationTurn } from '@/types/database'
 
-/** The 10 TPR fields collected by the Accio chat, all optional during capture. */
+/** The 10 TPR fields collected by Mister, all optional during capture. */
 export interface TprState {
   product_description?: string
   hs_code?: string
@@ -46,8 +46,8 @@ export interface CifEstimate {
   methodology: string
 }
 
-/** SSE event types emitted by /api/accio/chat. */
-export type AccioStreamEvent =
+/** SSE event types emitted by /api/mister/chat. */
+export type MisterStreamEvent =
   | { type: 'delta'; content: string }
   | { type: 'tpr_update'; field: TprFieldKey; value: unknown }
   | { type: 'done'; tpr_completeness: TprCompleteness }
@@ -58,13 +58,13 @@ export interface ChatMessage {
   content: string
 }
 
-export interface AccioChatRequest {
+export interface MisterChatRequest {
   messages: ChatMessage[]
   tpr_state: TprState
   session_id: string
 }
 
-export interface AccioSubmitRequest {
+export interface MisterSubmitRequest {
   full_name: string
   company?: string
   email: string

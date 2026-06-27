@@ -21,8 +21,8 @@ export interface ContactNotificationPayload {
   message: string
 }
 
-export interface AccioNotificationPayload {
-  flow: 'accio'
+export interface MisterNotificationPayload {
+  flow: 'mister'
   full_name: string
   company?: string | null
   destination_country: string
@@ -38,4 +38,4 @@ export interface AccioNotificationPayload {
 export type NotificationPayload =
   | CatalogNotificationPayload
   | ContactNotificationPayload
-  | AccioNotificationPayload
+  | MisterNotificationPayload

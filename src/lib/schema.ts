@@ -137,7 +137,7 @@ export function faqSchema(faqs: Array<{ q: string; a: string }>) {
   }
 }
 
-// AEO-specific FAQs for Accio and Nosotros pages
+// AEO-specific FAQs for Mister and Nosotros pages
 export const WINGS_FAQS = [
   {
     q: '¿Qué es la zona franca ZOFRATACNA?',

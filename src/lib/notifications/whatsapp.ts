@@ -52,12 +52,12 @@ export function formatWhatsAppMessage(payload: NotificationPayload, leadId = '')
     ].filter(Boolean).join('\n')
   }
 
-  if (payload.flow === 'accio') {
+  if (payload.flow === 'mister') {
     return [
       'WINGS GLOBAL TRADE · NUEVA CONSULTA',
       DIVIDER,
       row('REF ·', ref),
-      row('TIPO ·', 'Accio Engine'),
+      row('TIPO ·', 'Mister'),
       DIVIDER,
       row('PRODUCTO', payload.product_description),
       row('CANTIDAD', payload.quantity),

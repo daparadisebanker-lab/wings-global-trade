@@ -16,7 +16,7 @@ export interface LeadInsert {
   product_name_snapshot?: string | null
   quantity?: string | null
   message?: string | null
-  accio_project_id?: string | null
+  mister_project_id?: string | null
   source_url?: string | null
   user_agent?: string | null
   ip_country?: string | null
@@ -45,7 +45,7 @@ export async function insertLead(input: LeadInsert): Promise<string> {
       product_name_snapshot: input.product_name_snapshot ?? null,
       quantity: input.quantity ?? null,
       message: input.message ?? null,
-      accio_project_id: input.accio_project_id ?? null,
+      mister_project_id: input.mister_project_id ?? null,
       source_url: input.source_url ?? null,
       user_agent: input.user_agent ?? null,
       ip_country: input.ip_country ?? null,

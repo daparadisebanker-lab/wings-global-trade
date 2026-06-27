@@ -6,7 +6,7 @@ Wings Global Trade is a B2B trade intelligence and inquiry platform for Latin Am
 
 1. **Catalog Flow** — Browse curated inventory (agricultural machinery, trucks, buses, industrial equipment, spare parts). Submit an inquiry. Conversion = form submission.
 
-2. **Accio Engine Flow** — AI chat collects a Technical Product Requirement (TPR) for custom/volume imports via free trade zones (ZOFRATACNA, Peru + ZOFRI, Chile). AI calculates CIF estimate. Conversion = TPR submission.
+2. **Mister Flow** — AI chat collects a Technical Product Requirement (TPR) for custom/volume imports via free trade zones (ZOFRATACNA, Peru + ZOFRI, Chile). AI calculates CIF estimate. Conversion = TPR submission.
 
 **There is no cart, no checkout, no payment, no user accounts.** The platform exists to convert visitors into documented leads delivered to Wings ops via WhatsApp + email.
 
@@ -93,7 +93,7 @@ src/
     page.tsx                        # Homepage
     catalogo/[category]/page.tsx    # Category grid
     catalogo/[category]/[slug]/page.tsx  # Product detail
-    accio/page.tsx                  # Accio Engine
+    mister/page.tsx                 # Mister
     nosotros/page.tsx
     contacto/page.tsx
     api/
@@ -102,19 +102,19 @@ src/
       products/[slug]/route.ts
       leads/catalog/route.ts
       leads/contact/route.ts
-      accio/chat/route.ts
-      accio/estimate/route.ts
-      accio/submit/route.ts
+      mister/chat/route.ts
+      mister/estimate/route.ts
+      mister/submit/route.ts
   components/
     ui/                             # button, input, textarea, select, badge, card, skeleton, toast
     features/
       homepage/                     # CategoryGrid, SearchBar, HeroSection, TrustBar, MarketMap
       catalog/                      # ProductCard, ProductGrid, ProductSpecTable, InquiryForm
-      accio/                        # AccioChat, TprSheet, CifEstimateCard, AccioSubmitForm
+      mister/                       # MisterChat, TprSheet, CifEstimateCard, MisterSubmitForm
       navigation/                   # SiteNav, MobileMenu
       shared/                       # PageHero, SectionBlock, WhatsAppButton
   hooks/
-    useAccioChat.ts
+    useMisterChat.ts
     useTprState.ts
     useCifEstimate.ts
     useInquiryForm.ts
@@ -130,7 +130,7 @@ src/
     utils.ts
   types/
     database.ts
-    accio.ts
+    mister.ts
     api.ts
   styles/
     globals.css
@@ -153,7 +153,7 @@ Supabase Postgres. Tables: `categories`, `products`, `leads`, `accio_projects`, 
 Read `/spec/data-model.md` for complete schema SQL, RLS policies, and TypeScript types.
 
 Key rules:
-- All inserts to `leads` and `accio_projects` happen via API routes using service role key
+- All inserts to `leads` and `mister_projects` happen via API routes using service role key
 - Client code uses anon key and can only read `categories` and `products`
 - `leads` table has no public read policy — ops-only via service role
 
@@ -165,34 +165,34 @@ The homepage has ONE unified entry: category grid + search bar.
 
 ```
 Standard category tile clicked → /catalogo/[category-slug]
-"Importación Personalizada" tile clicked → /accio
+"Importación Personalizada" tile clicked → /mister
 Search bar with catalog keyword → /catalogo/[matching-category]?q=[query]
-Search bar with sourcing keyword → /accio?context=[query]
-Search bar with HS code (4-8 digits) → /accio?context=[query]
-Ambiguous search → /catalogo?q=[query] (with Accio CTA visible)
+Search bar with sourcing keyword → /mister?context=[query]
+Search bar with HS code (4-8 digits) → /mister?context=[query]
+Ambiguous search → /catalogo?q=[query] (with Mister CTA visible)
 ```
 
 Routing logic lives in `src/lib/routing.ts` as `detectSearchIntent()`.
 
 ---
 
-## Accio Engine — How It Works
+## Mister — How It Works
 
-1. User arrives at `/accio`
+1. User arrives at `/mister`
 2. First AI message renders immediately (hardcoded, not API call — avoids latency)
-3. User types a message → POST `/api/accio/chat` with full conversation history + current TPR state
+3. User types a message → POST `/api/mister/chat` with full conversation history + current TPR state
 4. API calls Claude API with system prompt that instructs it to:
    - Collect 10 TPR fields in natural conversation (one question per turn)
    - Embed JSON extraction blocks (`|||JSON_START|||...|||JSON_END|||`) in each response
 5. Server parses JSON blocks, emits `tpr_update` SSE events to client
 6. Client updates TprSheet in real-time
-7. When `completeness` reaches `'minimum'`, client calls `/api/accio/estimate` for CIF calculation
-8. User clicks "Enviar consulta" → AccioSubmitForm collects contact info → POST `/api/accio/submit`
-9. Server creates `accio_projects` + `leads` records, fires notifications
+7. When `completeness` reaches `'minimum'`, client calls `/api/mister/estimate` for CIF calculation
+8. User clicks "Enviar consulta" → MisterSubmitForm collects contact info → POST `/api/mister/submit`
+9. Server creates `mister_projects` + `leads` records, fires notifications
 
 Claude model: `claude-haiku-4-5` for chat turns. `claude-sonnet-4-6` for CIF estimation on unusual HS codes.
 
-System prompt is in `src/lib/claude.ts` as `ACCIO_SYSTEM_PROMPT`.
+System prompt is in `src/lib/claude.ts` as `MISTER_SYSTEM_PROMPT`.
 
 ---
 

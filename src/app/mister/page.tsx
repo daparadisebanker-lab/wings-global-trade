@@ -1,6 +1,6 @@
 // src/app/mister/page.tsx
 import type { Metadata } from 'next'
-import { AccioChat } from '@/components/features/accio/AccioChat'
+import { MisterChat } from '@/components/features/mister/MisterChat'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { faqSchema, WINGS_FAQS } from '@/lib/schema'
 
@@ -30,7 +30,7 @@ export default async function MisterPage({
   return (
     <div className="bg-[#000C1F] min-h-screen">
       <JsonLd data={faqSchema(WINGS_FAQS)} />
-      <AccioChat initialContext={context} />
+      <MisterChat initialContext={context} />
     </div>
   )
 }

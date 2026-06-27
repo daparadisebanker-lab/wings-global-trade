@@ -1,4 +1,4 @@
-// src/app/api/accio/estimate/route.ts
+// src/app/api/mister/estimate/route.ts
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { z, ZodError } from 'zod'
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       )
     }
-    console.error('[api/accio/estimate]', error)
+    console.error('[api/mister/estimate]', error)
     return NextResponse.json(
       { error: 'Error interno del servidor', code: 'INTERNAL_ERROR' },
       { status: 500 },

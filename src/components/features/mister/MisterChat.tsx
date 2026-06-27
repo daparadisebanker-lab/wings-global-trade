@@ -1,0 +1,309 @@
+// src/components/features/mister/MisterChat.tsx
+'use client'
+
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import Image from 'next/image'
+import { useMisterChat } from '@/hooks/useMisterChat'
+import { useCifEstimate } from '@/hooks/useCifEstimate'
+import { MisterMessage } from '@/components/features/mister/MisterMessage'
+import { MisterInput } from '@/components/features/mister/MisterInput'
+import { TprSheet } from '@/components/features/mister/TprSheet'
+import { MisterSubmitForm } from '@/components/features/mister/MisterSubmitForm'
+import type { TprState, TprFieldKey } from '@/types/mister'
+import type { ConversationTurn } from '@/types/database'
+
+interface MisterChatProps {
+  initialContext?: string
+}
+
+function countCapturedFields(tpr: TprState): number {
+  return Object.values(tpr).filter((v) => {
+    if (v === null || v === undefined) return false
+    if (Array.isArray(v)) return v.length > 0
+    if (typeof v === 'object') return Object.keys(v).length > 0
+    return String(v).length > 0
+  }).length
+}
+
+export function MisterChat({ initialContext }: MisterChatProps) {
+  const {
+    messages,
+    tprState,
+    completeness,
+    isLoading,
+    sessionId,
+    sendMessage,
+    editField,
+  } = useMisterChat({ initialContext })
+  const { estimate, isLoading: estimateLoading, generate } = useCifEstimate()
+
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [submitOpen, setSubmitOpen] = useState(false)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const contextSent = useRef(false)
+  const autoEstimated = useRef(false)
+  const exitTimersRef = useRef<ReturnType<typeof setTimeout>[]>([])
+
+  // Exit ceremony state
+  const [ceremonyMessages, setCeremonyMessages] = useState<ConversationTurn[]>([])
+  const [sheetStatus, setSheetStatus] = useState<'active' | 'sent'>('active')
+  const [sentTimestamp, setSentTimestamp] = useState<string | null>(null)
+  const [submitted, setSubmitted] = useState(false)
+
+  const allMessages = [...messages, ...ceremonyMessages]
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
+  }, [allMessages])
+
+  useEffect(() => {
+    if (contextSent.current) return
+    if (initialContext && messages.length === 1) {
+      contextSent.current = true
+      void sendMessage(initialContext)
+    }
+  }, [initialContext, messages.length, sendMessage])
+
+  useEffect(() => {
+    if (autoEstimated.current) return
+    if ((completeness === 'minimum' || completeness === 'complete') && !estimate && !isLoading) {
+      autoEstimated.current = true
+      void generate(tprState)
+    }
+  }, [completeness, estimate, isLoading, generate, tprState])
+
+  useEffect(() => {
+    return () => { exitTimersRef.current.forEach(clearTimeout) }
+  }, [])
+
+  const triggerExitCeremony = useCallback(() => {
+    const ts = new Date().toLocaleString('es-PE', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+    // Beat 1: perforated edge glow (immediate)
+    setSubmitted(true)
+    // Beats 2–4: staggered ceremony — timers stored for unmount cleanup
+    exitTimersRef.current = [
+      setTimeout(() => {
+        setCeremonyMessages([
+          {
+            role: 'assistant',
+            content: `Su consulta ha sido registrada bajo la referencia ${sessionId}.\nEl equipo de Wings se comunicará dentro de las próximas 24 horas con un análisis preliminar. Puede cerrar esta sesión.`,
+            timestamp: new Date().toISOString(),
+          },
+        ])
+      }, 400),
+      setTimeout(() => setSheetStatus('sent'), 900),
+      setTimeout(() => setSentTimestamp(ts), 1200),
+    ]
+  }, [sessionId])
+
+  const capturedCount = countCapturedFields(tprState)
+  const atMinimum = completeness === 'minimum' || completeness === 'complete'
+  const drawerLabel = atMinimum
+    ? `Ver estimado CIF · ${capturedCount}/10`
+    : `Ver resumen · ${capturedCount}/10`
+
+  const sheet = (
+    <TprSheet
+      tprState={tprState}
+      completeness={completeness}
+      estimate={estimate}
+      estimateLoading={estimateLoading}
+      onEditField={editField}
+      onGenerateEstimate={() => generate(tprState)}
+      onSubmit={() => {
+        setDrawerOpen(false)
+        setSubmitOpen(true)
+      }}
+      sessionId={sessionId}
+      sheetStatus={sheetStatus}
+      sentTimestamp={sentTimestamp}
+      submitted={submitted}
+    />
+  )
+
+  return (
+    <div className="mister flex h-[100dvh] overflow-hidden bg-navy-900 pt-14 md:pt-16">
+      {/* Chat column wrapper — centers the column, fills space on the left */}
+      <div className="flex min-w-0 flex-1 justify-center">
+        <motion.div
+          className="flex min-w-0 flex-1 max-w-2xl flex-col border-l border-r border-[#C4933F]/20 bg-navy"
+          style={{ boxShadow: '0 0 60px rgba(196,147,63,0.04) inset' }}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, ease: 'easeOut', delay: 0.1 }}
+        >
+          {/* Consultation header */}
+          <div className="relative flex-shrink-0 border-b border-[#C4933F]/20 px-6 pb-4 pt-5">
+            {/* Eyebrow */}
+            <motion.p
+              className="font-mono text-[10px] text-gold"
+              initial={{ opacity: 0, letterSpacing: '0.05em' }}
+              animate={{ opacity: 1, letterSpacing: '0.2em' }}
+              transition={{ duration: 0.4, ease: 'easeOut', delay: 0.15 }}
+            >
+              ASESOR DE IMPORTACIÓN · WINGS GLOBAL TRADE
+            </motion.p>
+
+            {/* Mark + MISTER row */}
+            <div className="mt-2 flex items-center gap-3">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.2, delay: 0.35 }}
+                aria-hidden
+              >
+                <Image
+                  src="/images/mister-mark.svg"
+                  alt=""
+                  width={28}
+                  height={28}
+                  priority
+                />
+              </motion.div>
+              <motion.h1
+                className="font-display text-[48px] leading-none text-[#F8F6F0]"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.25, ease: 'easeOut', delay: 0.2 }}
+              >
+                MISTER
+              </motion.h1>
+            </div>
+
+            {/* Gold rule */}
+            <motion.div
+              className="mt-3 h-px w-full origin-left bg-[#C4933F]"
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ duration: 0.35, ease: 'easeInOut', delay: 0.28 }}
+              aria-hidden
+            />
+
+            {/* Session ref */}
+            <motion.p
+              className="mt-2 font-mono text-xs text-[#F8F6F0]/60"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.2, delay: 0.35 }}
+            >
+              CONSULTA #{sessionId}
+            </motion.p>
+          </div>
+
+          {/* Messages */}
+          <div
+            ref={scrollRef}
+            role="log"
+            aria-live="polite"
+            className="no-scrollbar flex-1 overflow-y-auto px-6 py-6"
+          >
+            <div className="mx-auto flex max-w-3xl flex-col gap-5">
+              <AnimatePresence initial={false}>
+                {allMessages.map((m, i) => (
+                  <MisterMessage
+                    key={`${m.role}-${m.timestamp}-${i}`}
+                    message={m}
+                    isFirstMessage={i === 0}
+                  />
+                ))}
+                {isLoading && (
+                  <motion.div
+                    key="loading-dots"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.15 }}
+                    className="flex items-center gap-1.5"
+                  >
+                    {[0, 1, 2].map((i) => (
+                      <motion.span
+                        key={i}
+                        className="h-1.5 w-1.5 rounded-full bg-[#C4933F]/50"
+                        animate={{ y: [0, -5, 0] }}
+                        transition={{ duration: 0.7, repeat: Infinity, delay: i * 0.15, ease: [0.4, 0, 0.2, 1] }}
+                      />
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* Mobile TPR toggle */}
+          {sheetStatus === 'active' && (
+            <button
+              type="button"
+              onClick={() => setDrawerOpen(true)}
+              className={`flex-shrink-0 border-t border-[#C4933F]/15 px-6 py-3 text-left font-mono text-sm font-medium transition-colors lg:hidden ${
+                atMinimum ? 'bg-gold/[0.06] text-gold' : 'text-gold/60'
+              }`}
+            >
+              {drawerLabel} →
+            </button>
+          )}
+
+          <MisterInput
+            onSend={sendMessage}
+            disabled={isLoading || sheetStatus === 'sent'}
+            autoFocus
+            messageCount={allMessages.length}
+          />
+        </motion.div>
+      </div>
+
+      {/* Desktop TprSheet */}
+      <motion.aside
+        className="hidden w-[380px] flex-shrink-0 border-l border-[#C4933F]/15 lg:block"
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.4, ease: 'easeOut', delay: 0.6 }}
+      >
+        {sheet}
+      </motion.aside>
+
+      {/* Mobile TPR drawer */}
+      <AnimatePresence>
+        {drawerOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[80] bg-navy-900/60 lg:hidden"
+            onClick={() => setDrawerOpen(false)}
+          >
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ duration: 0.3, ease: [0, 0, 0.2, 1] }}
+              onClick={(e) => e.stopPropagation()}
+              className="absolute inset-x-0 bottom-0 h-[85vh] overflow-hidden rounded-t-sm"
+            >
+              {sheet}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <MisterSubmitForm
+        open={submitOpen}
+        onClose={() => setSubmitOpen(false)}
+        onSuccess={() => {
+          setSubmitOpen(false)
+          triggerExitCeremony()
+        }}
+        tpr={tprState}
+        estimate={estimate}
+        conversation={messages}
+        sessionId={sessionId}
+      />
+    </div>
+  )
+}
