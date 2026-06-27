@@ -29,6 +29,7 @@ export function useMisterChat({ initialContext }: UseMisterChatOptions = {}) {
   const [tprState, setTprState] = useState<TprState>({})
   const [completeness, setCompleteness] = useState<TprCompleteness>('partial')
   const [isLoading, setIsLoading] = useState(false)
+  const [isStreaming, setIsStreaming] = useState(false)
   const contextSent = useRef(false)
   const abortRef = useRef<AbortController | null>(null)
 
@@ -58,10 +59,12 @@ export function useMisterChat({ initialContext }: UseMisterChatOptions = {}) {
 
       setMessages((prev) => [...prev, userTurn])
       setIsLoading(true)
+      setIsStreaming(false)
 
       let buffered = ''
       const capturedThisTurn: TprFieldKey[] = []
       let errorMessage = ''
+      let streamingStarted = false
 
       abortRef.current?.abort()
       const controller = new AbortController()
@@ -108,6 +111,10 @@ export function useMisterChat({ initialContext }: UseMisterChatOptions = {}) {
             switch (event.type) {
               case 'delta':
                 buffered += event.content
+                if (!streamingStarted) {
+                  streamingStarted = true
+                  setIsStreaming(true)
+                }
                 break
               case 'tpr_update':
                 capturedThisTurn.push(event.field)
@@ -148,6 +155,7 @@ export function useMisterChat({ initialContext }: UseMisterChatOptions = {}) {
           },
         ])
         setIsLoading(false)
+        setIsStreaming(false)
       }
     },
     [isLoading, messages, tprState, sessionId, initialContext],
@@ -170,6 +178,7 @@ export function useMisterChat({ initialContext }: UseMisterChatOptions = {}) {
     tprState,
     completeness,
     isLoading,
+    isStreaming,
     sessionId,
     sendMessage,
     editField,
