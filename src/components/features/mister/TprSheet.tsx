@@ -8,6 +8,7 @@ import type { TprCompleteness } from '@/types/database'
 import { formatCurrency } from '@/lib/utils'
 import { TprField } from '@/components/features/mister/TprField'
 import { CifEstimateCard } from '@/components/features/mister/CifEstimateCard'
+import { CifBreakdownChart } from '@/components/features/mister/CifBreakdownChart'
 import { Button } from '@/components/ui/button'
 
 interface TprSheetProps {
@@ -229,6 +230,13 @@ export function TprSheet({
         {estimate && (
           <div className="mb-4">
             <CifEstimateCard estimate={estimate} />
+            <CifBreakdownChart
+              fob={Math.round(estimate.fob_estimate_usd)}
+              freight={Math.round(estimate.freight_estimate_usd)}
+              insurance={Math.round(estimate.insurance_estimate_usd)}
+              duty={Math.round(estimate.duty_amount_usd)}
+              total={Math.round(estimate.cif_total_usd)}
+            />
           </div>
         )}
 
