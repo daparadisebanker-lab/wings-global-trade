@@ -224,7 +224,7 @@ export function MisterChat({ initialContext }: MisterChatProps) {
             ref={scrollRef}
             role="log"
             aria-live="polite"
-            className="no-scrollbar flex-1 overflow-y-auto px-6 py-6"
+            className="no-scrollbar flex-1 overflow-y-auto overscroll-contain px-6 py-6"
           >
             <div className="mx-auto flex max-w-3xl flex-col gap-5">
               <AnimatePresence initial={false}>
@@ -266,7 +266,7 @@ export function MisterChat({ initialContext }: MisterChatProps) {
           <MisterInput
             onSend={sendMessage}
             disabled={isLoading || sheetStatus === 'sent'}
-            autoFocus
+            autoFocus={typeof window !== 'undefined' && window.innerWidth >= 1024}
             messageCount={allMessages.length}
           />
         </motion.div>
@@ -298,7 +298,7 @@ export function MisterChat({ initialContext }: MisterChatProps) {
               exit={{ y: '100%' }}
               transition={{ duration: 0.3, ease: [0, 0, 0.2, 1] }}
               onClick={(e) => e.stopPropagation()}
-              className="absolute inset-x-0 bottom-0 h-[85vh] overflow-hidden rounded-t-sm"
+              className="absolute inset-x-0 bottom-0 h-[85dvh] overflow-hidden rounded-t-sm"
             >
               {sheet}
             </motion.div>

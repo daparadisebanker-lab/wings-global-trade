@@ -40,7 +40,7 @@ export function MisterInput({ onSend, disabled, autoFocus, messageCount = 1 }: M
   }
 
   return (
-    <div className="border-t border-[#C4933F]/15 bg-navy-900 p-4">
+    <div className="border-t border-[#C4933F]/15 bg-navy-900 px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
       {showChips && (
         <div className="mx-auto mb-3 flex max-w-3xl flex-wrap gap-2">
           {QUICK_ACTIONS_EMPTY.map((action) => (
@@ -49,7 +49,7 @@ export function MisterInput({ onSend, disabled, autoFocus, messageCount = 1 }: M
               type="button"
               onClick={() => !disabled && onSend(action)}
               disabled={disabled}
-              className="rounded-sm border border-[#C4933F]/20 px-3 py-1.5 font-mono text-sm text-[#F8F6F0]/50 transition-colors hover:border-[#C4933F]/50 hover:text-[#F8F6F0]/80 disabled:opacity-40"
+              className="rounded-sm border border-[#C4933F]/20 px-3 py-2 font-mono text-sm text-[#F8F6F0]/50 transition-colors hover:border-[#C4933F]/50 hover:text-[#F8F6F0]/80 disabled:opacity-40"
             >
               {action}
             </button>
@@ -65,6 +65,11 @@ export function MisterInput({ onSend, disabled, autoFocus, messageCount = 1 }: M
           onKeyDown={handleKeyDown}
           rows={1}
           disabled={disabled}
+          inputMode="text"
+          enterKeyHint="send"
+          autoCapitalize="sentences"
+          autoCorrect="off"
+          spellCheck={false}
           placeholder="Describe lo que necesitas importar..."
           aria-label="Mensaje para Mister"
           className="max-h-32 min-h-[48px] w-full resize-none rounded-sm border border-[#C4933F]/20 bg-navy px-4 py-3 font-body text-base text-[#F8F6F0] outline-none transition-shadow placeholder:text-[#F8F6F0]/25 focus:border-[#C4933F]/50 focus:shadow-[0_0_0_3px_rgba(196,147,63,0.08)]"
