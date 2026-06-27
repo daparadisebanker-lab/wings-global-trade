@@ -26,7 +26,7 @@ export default function ContactoPage() {
   return (
     <>
       {/* Hero with image */}
-      <section className="relative flex min-h-[62vh] flex-col overflow-hidden bg-[#000C1F] md:min-h-[68vh]">
+      <section className="relative flex min-h-[min(62vh,_440px)] flex-col overflow-hidden bg-[#000C1F] md:min-h-[min(68vh,_590px)]">
         {/* Background image — object-top shows helmet at the very top */}
         <Image
           src="/Contacto/contacto-hero.png"

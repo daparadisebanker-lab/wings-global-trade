@@ -12,7 +12,7 @@ import {
   CATALOG_BEHAVIOR_TEXT,
 } from '@/lib/mister-knowledge'
 
-export const MISTER_CHAT_MODEL = 'claude-sonnet-4-6'
+export const MISTER_CHAT_MODEL = 'claude-haiku-4-5-20251001'
 export const MISTER_ESTIMATE_MODEL = 'claude-sonnet-4-6'
 
 let cached: Anthropic | null = null
@@ -447,6 +447,20 @@ export function buildMisterSystemPrompt(tprState: TprState): string {
     '[TPR_STATE_PLACEHOLDER]',
     JSON.stringify(tprState, null, 0),
   )
+}
+
+/**
+ * Two-block system prompt for prompt caching.
+ * Block 1: static ~6 000-token body — marked ephemeral, cached across turns.
+ * Block 2: dynamic TPR state JSON — small, changes each turn, never cached.
+ * Cost reduction: ~90% on cached input tokens after the first turn.
+ */
+export function buildMisterSystemBlocks(tprState: TprState) {
+  const [staticPart = '', _] = MISTER_SYSTEM_PROMPT.split('[TPR_STATE_PLACEHOLDER]')
+  return [
+    { type: 'text' as const, text: staticPart, cache_control: { type: 'ephemeral' as const } },
+    { type: 'text' as const, text: `ESTADO ACTUAL DEL TPR:\n${JSON.stringify(tprState, null, 0)}` },
+  ]
 }
 
 const JSON_BLOCK_REGEX = /\|\|\|JSON_START\|\|\|([\s\S]*?)\|\|\|JSON_END\|\|\|/g

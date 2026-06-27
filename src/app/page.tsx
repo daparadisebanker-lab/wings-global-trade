@@ -43,7 +43,7 @@ export default async function HomePage() {
       <StatBar />
 
       {/* Category grid — warm-white */}
-      <SectionBlock theme="warm-white">
+      <SectionBlock theme="warm-white" className="pt-14 md:pt-20">
         <CategoryGrid categories={categories} />
       </SectionBlock>
 
@@ -59,8 +59,8 @@ export default async function HomePage() {
         <TrustBar />
       </SectionBlock>
 
-      {/* Market map — warm-white */}
-      <SectionBlock theme="warm-white">
+      {/* Market map — navy */}
+      <SectionBlock theme="navy" className="pt-10 md:pt-14">
         <MarketMap />
       </SectionBlock>
 

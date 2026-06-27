@@ -19,6 +19,7 @@ function parseStatValue(raw: string): {
   prefix: string
   suffix: string
   isDecimal: boolean
+  zeroPad: number
 } {
   const trimmed = raw.trim()
 
@@ -29,14 +30,16 @@ function parseStatValue(raw: string): {
   const match = trimmed.match(/^([^0-9]*)(\d+(?:\.\d+)?)(.*)$/)
 
   if (!match) {
-    return { num: null, prefix: '', suffix: trimmed, isDecimal: false }
+    return { num: null, prefix: '', suffix: trimmed, isDecimal: false, zeroPad: 0 }
   }
 
   const [, pre, numStr, suf] = match
   const num = parseFloat(numStr)
   const isDecimal = numStr.includes('.')
+  // Detect zero-padded values like "05" or "02"
+  const zeroPad = numStr.startsWith('0') && numStr.length > 1 ? numStr.length : 0
 
-  return { num, prefix: pre, suffix: suf, isDecimal }
+  return { num, prefix: pre, suffix: suf, isDecimal, zeroPad }
 }
 
 export function CountUpStat({ value, label, prefix: prefixProp, suffix: suffixProp }: CountUpStatProps) {
@@ -44,7 +47,7 @@ export function CountUpStat({ value, label, prefix: prefixProp, suffix: suffixPr
   const isInView = useInView(ref, { once: true })
   const shouldReduceMotion = useReducedMotion()
 
-  const { num, prefix: parsedPrefix, suffix: parsedSuffix, isDecimal } = parseStatValue(value)
+  const { num, prefix: parsedPrefix, suffix: parsedSuffix, isDecimal, zeroPad } = parseStatValue(value)
 
   // Allow prop overrides for prefix/suffix, else use parsed values
   const displayPrefix = prefixProp ?? parsedPrefix
@@ -59,7 +62,12 @@ export function CountUpStat({ value, label, prefix: prefixProp, suffix: suffixPr
     // If reduced motion, jump straight to final value
     if (shouldReduceMotion) {
       if (displayRef.current) {
-        displayRef.current.textContent = isDecimal ? num.toFixed(1) : String(Math.round(num))
+        const rounded = Math.round(num)
+        displayRef.current.textContent = isDecimal
+          ? num.toFixed(1)
+          : zeroPad
+            ? String(rounded).padStart(zeroPad, '0')
+            : String(rounded)
       }
       return
     }
@@ -71,15 +79,18 @@ export function CountUpStat({ value, label, prefix: prefixProp, suffix: suffixPr
       ease: [0.16, 1, 0.3, 1],
       onUpdate(latest) {
         if (displayRef.current) {
+          const rounded = Math.round(latest)
           displayRef.current.textContent = isDecimal
             ? latest.toFixed(1)
-            : String(Math.round(latest))
+            : zeroPad
+              ? String(rounded).padStart(zeroPad, '0')
+              : String(rounded)
         }
       },
     })
 
     return () => controls.stop()
-  }, [isInView, num, isDecimal, motionValue, shouldReduceMotion])
+  }, [isInView, num, isDecimal, zeroPad, motionValue, shouldReduceMotion])
 
   // If no parseable number, render value as-is
   if (num === null) {

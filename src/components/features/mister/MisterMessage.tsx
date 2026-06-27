@@ -28,7 +28,7 @@ export function MisterMessage({ message, isFirstMessage }: MisterMessageProps) {
           {message.content}
         </p>
       ) : (
-        <p className="font-body text-base font-normal leading-[1.75] text-[#F8F6F0]">
+        <p className="font-body text-base font-normal leading-[1.75] text-[#F8F6F0] whitespace-pre-wrap">
           {message.content}
         </p>
       )}

@@ -1,7 +1,7 @@
 // src/components/features/mister/TprField.tsx
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { TPR_CAPTURE_DOT, TPR_CAPTURE_VALUE } from '@/lib/motion'
 
@@ -17,40 +17,46 @@ export function TprField({ label, value, status, onEdit }: TprFieldProps) {
   const shouldReduceMotion = useReducedMotion()
 
   const prevCaptured = useRef(false)
-  const justCaptured = useRef(false)
+  const [justCaptured, setJustCaptured] = useState(false)
 
   useEffect(() => {
-    justCaptured.current = captured && !prevCaptured.current
+    if (captured && !prevCaptured.current) setJustCaptured(true)
     prevCaptured.current = captured
   }, [captured])
 
+  useEffect(() => {
+    if (!justCaptured) return
+    const id = setTimeout(() => setJustCaptured(false), 600)
+    return () => clearTimeout(id)
+  }, [justCaptured])
+
   const dotScale = shouldReduceMotion ? [1, 1.1, 1] : [1, 1.4, 1]
   const dotAnimate = captured
-    ? justCaptured.current
+    ? justCaptured
       ? { scale: dotScale, backgroundColor: '#C4933F' }
       : { scale: 1, backgroundColor: '#C4933F' }
     : { scale: 1, backgroundColor: 'rgba(248,246,240,0.2)' }
 
-  const dotTransition = justCaptured.current
+  const dotTransition = justCaptured
     ? shouldReduceMotion
       ? { duration: 0.01 }
       : { duration: TPR_CAPTURE_DOT.transition.duration, ease: TPR_CAPTURE_DOT.transition.ease }
     : { duration: 0.4 }
 
-  const valueInitial = justCaptured.current && !shouldReduceMotion ? { opacity: 0 } : { opacity: 1 }
+  const valueInitial = justCaptured && !shouldReduceMotion ? { opacity: 0 } : { opacity: 1 }
   const valueAnimate = { opacity: 1 }
-  const valueTransition = justCaptured.current
+  const valueTransition = justCaptured
     ? shouldReduceMotion
       ? { duration: 0.01 }
       : { duration: TPR_CAPTURE_VALUE.transition.duration, delay: TPR_CAPTURE_VALUE.transition.delay }
     : { duration: 0 }
 
   const rowAnimate =
-    justCaptured.current && !shouldReduceMotion
+    justCaptured && !shouldReduceMotion
       ? { backgroundColor: ['rgba(196,147,63,0)', 'rgba(196,147,63,0.08)', 'rgba(196,147,63,0)'] }
       : { backgroundColor: 'rgba(196,147,63,0)' }
   const rowTransition =
-    justCaptured.current && !shouldReduceMotion
+    justCaptured && !shouldReduceMotion
       ? { duration: 0.4, ease: 'easeInOut' as const }
       : { duration: 0 }
 

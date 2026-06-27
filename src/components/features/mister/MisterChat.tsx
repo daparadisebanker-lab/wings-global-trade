@@ -41,7 +41,7 @@ export function MisterChat({ initialContext }: MisterChatProps) {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [submitOpen, setSubmitOpen] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
-  const contextSent = useRef(false)
+
   const autoEstimated = useRef(false)
   const exitTimersRef = useRef<ReturnType<typeof setTimeout>[]>([])
 
@@ -58,9 +58,7 @@ export function MisterChat({ initialContext }: MisterChatProps) {
   }, [allMessages])
 
   useEffect(() => {
-    if (contextSent.current) return
     if (initialContext && messages.length === 1) {
-      contextSent.current = true
       void sendMessage(initialContext)
     }
   }, [initialContext, messages.length, sendMessage])
@@ -76,6 +74,10 @@ export function MisterChat({ initialContext }: MisterChatProps) {
   useEffect(() => {
     return () => { exitTimersRef.current.forEach(clearTimeout) }
   }, [])
+
+  useEffect(() => {
+    if (sheetStatus === 'sent') setDrawerOpen(false)
+  }, [sheetStatus])
 
   const triggerExitCeremony = useCallback(() => {
     const ts = new Date().toLocaleString('es-PE', {
@@ -140,7 +142,7 @@ export function MisterChat({ initialContext }: MisterChatProps) {
           transition={{ duration: 0.3, ease: 'easeOut', delay: 0.1 }}
         >
           {/* Consultation header */}
-          <div className="relative flex-shrink-0 border-b border-[#C4933F]/20 px-6 pb-4 pt-5">
+          <div className="relative flex-shrink-0 border-b border-[#C4933F]/20 px-6 pb-4 pt-5" aria-label="Sala de consulta">
             {/* Eyebrow */}
             <motion.p
               className="font-mono text-[10px] text-gold"
@@ -210,7 +212,7 @@ export function MisterChat({ initialContext }: MisterChatProps) {
                   <MisterMessage
                     key={`${m.role}-${m.timestamp}-${i}`}
                     message={m}
-                    isFirstMessage={i === 0}
+                    isFirstMessage={m.isEntryMessage ?? false}
                   />
                 ))}
                 {isLoading && (
@@ -296,7 +298,6 @@ export function MisterChat({ initialContext }: MisterChatProps) {
         open={submitOpen}
         onClose={() => setSubmitOpen(false)}
         onSuccess={() => {
-          setSubmitOpen(false)
           triggerExitCeremony()
         }}
         tpr={tprState}

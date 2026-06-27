@@ -1,277 +1,246 @@
-// src/components/features/homepage/MarketMap.tsx
 'use client'
 
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { FADE_UP, FADE_UP_TRANSITION, VIEWPORT_ONCE } from '@/lib/motion'
 
-// Destination market pins — positioned in viewBox 0 0 400 600
+/*
+  SVG overlay coordinate space: viewBox="0 0 100 125" (matches image 1000:1250 aspect ratio)
+
+  The map SVG (viewBox 2752×1537, landscape) renders inside a 1000×1250 portrait container.
+  With preserveAspectRatio="xMidYMid meet", the map content occupies only:
+    - y=346 to y=904 in the 1250px rendered image (a 558px band, centered)
+    - In overlay units: y ≈ 34.6 to y ≈ 90.4
+
+  Pin positions derived from actual SVG coordinate math:
+    x_overlay = x_svg / 2752 × 100
+    y_overlay = 34.6 + (y_svg / 1537) × 55.8
+
+  Chile lies at y_svg ≈ 2450, which is outside the viewBox — it is placed in the
+  dead space below the map (overlay cy ≈ 110) with a connector line to the map edge.
+
+  CSS filter: invert(1) grayscale(1) + mix-blend-mode: screen
+    After invert+grayscale:
+      - SVG background (#f5f9f9) → near-black (L ≈ 0.024)  → barely brightens navy ✓
+      - Country fills  (#37abc8) → medium grey (L ≈ 0.417) → visibly brightens navy ✓
+    Result: country shapes glow as subtle blue-grey on the dark navy background.
+*/
+
 const DESTINATION_PINS = [
-  { label: 'Colombia', x: 138, y: 185 },
-  { label: 'Panamá', x: 115, y: 160 },
-  { label: 'Perú', x: 148, y: 290 },
-  { label: 'Bolivia', x: 182, y: 328 },
-  { label: 'Chile', x: 158, y: 415 },
+  { label: 'Panamá',   flag: '🇵🇦', cx: 39.5, cy: 36.5, lDx:  3, lDy: -3.5, extended: false },
+  { label: 'Colombia', flag: '🇨🇴', cx: 51,   cy: 43,   lDx:  3, lDy: -3.5, extended: false },
+  { label: 'Perú',     flag: '🇵🇪', cx: 49,   cy: 63,   lDx:  3, lDy: -3.5, extended: false },
+  { label: 'Bolivia',  flag: '🇧🇴', cx: 63,   cy: 60,   lDx:  3, lDy: -3.5, extended: false },
+  { label: 'Chile',    flag: '🇨🇱', cx: 52,   cy: 110,  lDx:  3, lDy: -3.5, extended: true  },
 ]
 
-// Source market labels rendered above the SVG
-const SOURCE_LABELS = ['China', 'Japón', 'Tailandia', 'Dubai']
-
-// Freight corridor arcs: quadratic bezier paths
-// Control point is placed offshore (to the left / above the Pacific) for a natural arc
+// Quadratic bezier arcs. Pacific routes curve LEFT (negative x control point).
+// Dubai/Indian Ocean route curves RIGHT (x > 100 control point).
 const FREIGHT_ARCS = [
-  {
-    // China → Callao (Lima/Peru): arc originates from left-edge label area
-    id: 'arc-china-callao',
-    d: 'M 20 120 Q -60 240 148 290',
-    strokeWidth: 1.5,
-    opacity: 0.45,
-    dashArray: '6 4',
-  },
-  {
-    // China → Valparaíso (Chile)
-    id: 'arc-china-chile',
-    d: 'M 20 120 Q -80 300 158 415',
-    strokeWidth: 1.5,
-    opacity: 0.4,
-    dashArray: '6 4',
-  },
-  {
-    // Japan → Callao
-    id: 'arc-japan-callao',
-    d: 'M 20 90 Q -50 200 148 290',
-    strokeWidth: 1.5,
-    opacity: 0.38,
-    dashArray: '6 4',
-  },
-  {
-    // Thailand → Callao
-    id: 'arc-thailand-callao',
-    d: 'M 20 105 Q -55 220 148 290',
-    strokeWidth: 1.2,
-    opacity: 0.35,
-    dashArray: '5 5',
-  },
-  {
-    // Dubai → Callao (lighter, longer arc from right side)
-    id: 'arc-dubai-callao',
-    d: 'M 380 80 Q 460 220 148 290',
-    strokeWidth: 1,
-    opacity: 0.3,
-    dashArray: '4 6',
-  },
+  { id: 'cn-pa',  d: 'M 2 44 Q -30 37 39.5 36.5', w: 0.32, opacity: 0.55, dash: '2 1.8',  delay: 0    },
+  { id: 'jp-co',  d: 'M 2 47 Q -28 43 51 43',      w: 0.30, opacity: 0.45, dash: '2 1.8',  delay: 0.18 },
+  { id: 'th-pe',  d: 'M 2 51 Q -34 60 49 63',      w: 0.30, opacity: 0.40, dash: '2 1.8',  delay: 0.34 },
+  { id: 'cn-bo',  d: 'M 2 51 Q -30 59 63 60',      w: 0.22, opacity: 0.28, dash: '1.5 2',  delay: 0.50 },
+  { id: 'dxb-co', d: 'M 98 43 Q 114 47 51 43',     w: 0.22, opacity: 0.25, dash: '1.5 2',  delay: 0.65 },
+]
+
+const PACIFIC_SOURCES = [
+  { code: 'CN', cy: 44 },
+  { code: 'JP', cy: 47 },
+  { code: 'TH', cy: 51 },
+]
+
+const SOURCE_MARKETS = [
+  { code: 'CN', label: 'China' },
+  { code: 'JP', label: 'Japón' },
+  { code: 'TH', label: 'Tailandia' },
+  { code: 'DXB', label: 'Dubai' },
 ]
 
 export function MarketMap() {
   return (
     <section className="w-full">
       <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
-        {/* Left column — copy */}
+
+        {/* Left — copy */}
         <motion.div
-          variants={FADE_UP}
-          initial="initial"
-          whileInView="animate"
-          viewport={VIEWPORT_ONCE}
-          transition={FADE_UP_TRANSITION}
+          variants={FADE_UP} initial="initial" whileInView="animate"
+          viewport={VIEWPORT_ONCE} transition={FADE_UP_TRANSITION}
         >
           <p className="mb-3 font-mono text-xs uppercase tracking-widest-2 text-gold">
             Presencia regional
           </p>
-          <h2 className="font-display text-display-md font-light text-navy">
-            Siete mercados, dos zonas francas, una operación
+          <h2 className="font-display text-display-md font-light text-warm-white">
+            Cuatro orígenes. Cinco mercados. Una operación.
           </h2>
-          <p className="mt-4 max-w-md font-body text-base text-text-muted">
-            Operamos corredores de importación hacia los principales mercados de América Latina,
-            con gestión documental y logística desde ZOFRATACNA y ZOFRI.
+          <p className="mt-4 max-w-md font-body text-base text-warm-white/50">
+            Corredores de importación desde Asia y Medio Oriente hacia los principales
+            mercados de América Latina, vía ZOFRATACNA y ZOFRI.
           </p>
-          <ul className="mt-6 grid grid-cols-2 gap-2">
-            {DESTINATION_PINS.map((p) => (
-              <li key={p.label} className="flex items-center gap-2 font-mono text-sm text-navy">
-                <span className="h-2 w-2 rounded-full bg-gold" />
-                {p.label}
-              </li>
-            ))}
-          </ul>
-        </motion.div>
 
-        {/* Right column — SVG map */}
-        <motion.div
-          variants={FADE_UP}
-          initial="initial"
-          whileInView="animate"
-          viewport={VIEWPORT_ONCE}
-          transition={{ ...FADE_UP_TRANSITION, delay: 0.1 }}
-          className="flex flex-col items-center"
-        >
-          {/* Source market labels — DM Mono, 10px, gray */}
-          <div className="mb-3 flex items-center gap-3 font-mono text-[10px] text-navy/40">
-            {SOURCE_LABELS.map((src, i) => (
-              <span key={src}>
-                {src}
-                {i < SOURCE_LABELS.length - 1 && (
-                  <span className="ml-3 opacity-40">·</span>
-                )}
-              </span>
-            ))}
+          <div className="mt-8 border-t border-warm-white/10" />
+
+          {/* Orígenes */}
+          <div className="mt-6">
+            <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-warm-white/30">
+              Orígenes
+            </p>
+            <ul className="grid grid-cols-2 gap-x-6 gap-y-2.5">
+              {SOURCE_MARKETS.map((m) => (
+                <li key={m.code} className="flex items-center gap-2.5">
+                  <span className="font-mono text-[11px] font-medium text-gold tabular-nums">{m.code}</span>
+                  <span className="font-body text-sm text-warm-white/70">{m.label}</span>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          {/*
-            SVG: viewBox 0 0 400 600
-            Left edge (x≈20) represents Asian/Middle East source origin anchors.
-            Right edge (x≈380) represents Dubai anchor.
-            The LATAM continental shape occupies roughly x:90–240, y:80–520.
-          */}
-          <svg
-            viewBox="0 0 400 600"
-            className="h-auto w-full max-w-sm"
-            role="img"
-            aria-labelledby="market-map-title"
-            aria-describedby="market-map-desc"
-          >
-            <title id="market-map-title">Mapa de cobertura de mercados — Wings Global Trade</title>
-            <desc id="market-map-desc">
-              Mapa mostrando corredores de importación desde Asia y Medio Oriente hacia zonas francas
-              en Perú y Chile, con destinos activos en América Latina.
-            </desc>
+          {/* Destinos */}
+          <div className="mt-6">
+            <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.18em] text-warm-white/30">
+              Destinos
+            </p>
+            <ul className="grid grid-cols-2 gap-x-6 gap-y-3">
+              {DESTINATION_PINS.map((p) => (
+                <li key={p.label} className="flex items-center gap-2.5">
+                  <span className="text-base leading-none">{p.flag}</span>
+                  <span className="font-body text-base text-warm-white/80">{p.label}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </motion.div>
 
-            {/*
-              Simplified LATAM continental outline.
-              Covers: Panama (north) down through Colombia, Ecuador/Peru, Bolivia, Chile (south).
-              This is a minimal stylized path — not a GeoJSON projection.
-            */}
-            <path
-              d="
-                M 115 155
-                L 130 148
-                L 148 150
-                L 162 158
-                L 172 172
-                L 175 185
-                L 168 200
-                L 175 215
-                L 180 230
-                L 175 250
-                L 168 265
-                L 172 280
-                L 175 295
-                L 178 315
-                L 185 330
-                L 188 350
-                L 183 370
-                L 175 390
-                L 168 410
-                L 162 430
-                L 155 455
-                L 148 480
-                L 142 500
-                L 136 480
-                L 130 455
-                L 125 430
-                L 120 408
-                L 115 390
-                L 110 370
-                L 108 350
-                L 112 330
-                L 118 310
-                L 122 292
-                L 118 275
-                L 112 258
-                L 108 242
-                L 110 225
-                L 115 210
-                L 112 195
-                L 108 180
-                L 110 165
-                Z
-              "
-              fill="#001E50"
-              fillOpacity="0.08"
+        {/* Right — map */}
+        <motion.div
+          variants={FADE_UP} initial="initial" whileInView="animate"
+          viewport={VIEWPORT_ONCE} transition={{ ...FADE_UP_TRANSITION, delay: 0.1 }}
+          className="flex flex-col items-center"
+        >
+          {/* Route header */}
+          <div className="mb-2 w-full max-w-sm flex items-center justify-between font-mono text-[9px] uppercase tracking-widest text-warm-white/20">
+            <span>Origen</span>
+            <span>Destino</span>
+          </div>
+
+          {/* Map container — image + SVG overlay share the same 4:5 aspect ratio */}
+          {/* overflow-hidden clips SVG overflow: visible bleed that causes horizontal scroll on mobile */}
+          <div className="relative w-full max-w-sm overflow-hidden">
+
+            {/* Continent silhouette
+                filter: invert(1) grayscale(1) → background becomes near-black, countries become medium-grey
+                mix-blend-mode: screen on navy → countries glow, background stays dark */}
+            <Image
+              src="/images/latin-america-map.svg"
+              alt="Mapa América Latina"
+              width={1000}
+              height={1250}
+              className="w-full h-auto"
+              style={{
+                filter: 'invert(1) grayscale(1)',
+                opacity: 0.38,
+                mixBlendMode: 'screen',
+              }}
+              unoptimized
             />
 
-            {/* Source market anchor marks — small navy squares at left/right edges */}
-            <rect x="10" y="85" width="5" height="5" fill="#001E50" fillOpacity="0.5" />
-            <text x="18" y="91" fontFamily="DM Mono, monospace" fontSize="8" fill="#001E50" fillOpacity="0.4">
-              JP
-            </text>
-            <rect x="10" y="100" width="5" height="5" fill="#001E50" fillOpacity="0.5" />
-            <text x="18" y="106" fontFamily="DM Mono, monospace" fontSize="8" fill="#001E50" fillOpacity="0.4">
-              TH
-            </text>
-            <rect x="10" y="115" width="5" height="5" fill="#001E50" fillOpacity="0.5" />
-            <text x="18" y="121" fontFamily="DM Mono, monospace" fontSize="8" fill="#001E50" fillOpacity="0.4">
-              CN
-            </text>
-            <rect x="375" y="75" width="5" height="5" fill="#001E50" fillOpacity="0.5" />
-            <text x="340" y="71" fontFamily="DM Mono, monospace" fontSize="8" fill="#001E50" fillOpacity="0.4">
-              DXB
-            </text>
+            {/* Overlay SVG — viewBox 0 0 100 125 matches the 1000:1250 image aspect */}
+            <svg
+              viewBox="0 0 100 125"
+              className="absolute inset-0 w-full h-full"
+              style={{ overflow: 'visible' }}
+            >
+              {/* Pacific source nodes — left edge */}
+              {PACIFIC_SOURCES.map((src) => (
+                <g key={src.code}>
+                  <circle cx={2} cy={src.cy} r={0.8} fill="#C4933F" fillOpacity={0.55} />
+                  <text
+                    x={4.2} y={src.cy + 0.8}
+                    fontFamily="monospace" fontSize="3" fill="#C4933F" fillOpacity={0.45}
+                  >
+                    {src.code}
+                  </text>
+                </g>
+              ))}
 
-            {/* Freight corridor arcs — Framer Motion pathLength draw-in on scroll entry */}
-            {FREIGHT_ARCS.map((arc, index) => (
-              <motion.path
-                key={arc.id}
-                id={arc.id}
-                d={arc.d}
-                fill="none"
-                stroke="#C4933F"
-                strokeWidth={arc.strokeWidth}
-                strokeDasharray={arc.dashArray}
-                initial={{ pathLength: 0, opacity: 0 }}
-                whileInView={{ pathLength: 1, opacity: arc.opacity }}
-                viewport={{ once: true, margin: '-100px' }}
-                transition={{
-                  pathLength: { duration: 1.8, delay: index * 0.25, ease: [0.16, 1, 0.3, 1] },
-                  opacity: { duration: 0.3, delay: index * 0.25 },
-                }}
-              />
-            ))}
+              {/* Dubai source node — right edge */}
+              <circle cx={98} cy={43} r={0.8} fill="#C4933F" fillOpacity={0.4} />
+              <text
+                x={91.5} y={43.8}
+                fontFamily="monospace" fontSize="3" fill="#C4933F" fillOpacity={0.35}
+              >
+                DXB
+              </text>
 
-            {/* Destination pins — ambient pulse rings active from mount, stable core dots */}
-            {DESTINATION_PINS.map((pin, pinIndex) => (
-              <g key={pin.label}>
-                {/* Outer pulse ring — always animating from mount, not gated by scroll */}
-                <motion.circle
-                  cx={pin.x}
-                  cy={pin.y}
-                  r={6}
-                  fill="#C4933F"
-                  fillOpacity={0}
+              {/* Freight arcs — animated draw-on */}
+              {FREIGHT_ARCS.map((arc) => (
+                <motion.path
+                  key={arc.id}
+                  d={arc.d}
+                  fill="none"
                   stroke="#C4933F"
-                  strokeWidth={1}
-                  animate={{
-                    scale: [1, 1.4, 1],
-                    opacity: [0.6, 0, 0.6],
-                  }}
+                  strokeWidth={arc.w}
+                  strokeDasharray={arc.dash}
+                  strokeLinecap="round"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  whileInView={{ pathLength: 1, opacity: arc.opacity }}
+                  viewport={{ once: true, margin: '-80px' }}
                   transition={{
-                    repeat: Infinity,
-                    duration: 2,
-                    ease: 'easeInOut',
-                    delay: pinIndex * 0.3,
+                    pathLength: { duration: 2.6, delay: arc.delay, ease: [0.16, 1, 0.3, 1] },
+                    opacity:    { duration: 0.4, delay: arc.delay },
                   }}
                 />
-                {/* Core pin — stable, no animation */}
-                <circle
-                  cx={pin.x}
-                  cy={pin.y}
-                  r="4"
-                  fill="#C4933F"
-                  stroke="#001E50"
-                  strokeWidth="1.5"
-                />
-                {/* Pin label */}
-                <text
-                  x={pin.x + 8}
-                  y={pin.y + 4}
-                  fontFamily="DM Mono, monospace"
-                  fontSize="9"
-                  fill="#001E50"
-                  fillOpacity="0.7"
-                >
-                  {pin.label}
-                </text>
-              </g>
-            ))}
-          </svg>
+              ))}
+
+              {/* Chile extension line — south of the visible map area */}
+              <motion.line
+                x1={52} y1={90} x2={52} y2={107.5}
+                stroke="#C4933F" strokeWidth={0.18} strokeDasharray="1 1.8" strokeOpacity={0.22}
+                initial={{ pathLength: 0 }}
+                whileInView={{ pathLength: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.2, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
+              />
+
+              {/* Destination pins */}
+              {DESTINATION_PINS.map((pin, i) => (
+                <g key={pin.label}>
+                  {/* Pulse ring */}
+                  <motion.circle
+                    cx={pin.cx} cy={pin.cy} r={2.6}
+                    fill="none" stroke="#C4933F" strokeWidth={0.35}
+                    animate={{ scale: [1, 1.9, 1], opacity: [0.35, 0, 0.35] }}
+                    transition={{
+                      repeat: Infinity,
+                      duration: 2.8,
+                      ease: 'easeInOut',
+                      delay: i * 0.45,
+                    }}
+                  />
+                  {/* Dot */}
+                  <circle
+                    cx={pin.cx} cy={pin.cy} r={1.4}
+                    fill="#C4933F"
+                    fillOpacity={pin.extended ? 0.5 : 1}
+                  />
+                  {/* Label */}
+                  <text
+                    x={pin.cx + pin.lDx}
+                    y={pin.cy + pin.lDy}
+                    fontFamily="monospace"
+                    fontSize="3.3"
+                    fill="#F8F6F0"
+                    fillOpacity={pin.extended ? 0.35 : 0.7}
+                    letterSpacing="0.04em"
+                  >
+                    {pin.label}
+                  </text>
+                </g>
+              ))}
+            </svg>
+          </div>
         </motion.div>
+
       </div>
     </section>
   )

@@ -34,15 +34,12 @@ export function Footer({ categories }: FooterProps) {
               alt="Wings Global Trade"
               className="h-14 w-auto brightness-0 invert opacity-90"
             />
-            <p className="mt-4 max-w-xs font-display text-sm font-light italic leading-relaxed text-warm-white/30 tracking-wide">
+            <p className="mt-4 max-w-xs font-body text-sm font-light leading-relaxed text-warm-white/30 tracking-wide">
               Importación técnica para el mercado latinoamericano. Zonas francas. Sin intermediarios.
             </p>
           </div>
 
           <div className="flex flex-col items-start gap-3 md:items-end">
-            <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-gold/40">
-              Canal directo
-            </p>
             <a
               href={buildWhatsAppLink(WINGS_PUBLIC_WHATSAPP, 'Hola, me interesa importar equipamiento a través de Wings Global Trade.')}
               target="_blank"
@@ -64,14 +61,14 @@ export function Footer({ categories }: FooterProps) {
       </div>
 
       {/* Links grid */}
-      <div className="px-6 py-16 md:px-10">
+      <div className="px-6 py-10 md:px-10 md:py-12">
         <div className="mx-auto grid w-full max-w-6xl grid-cols-2 gap-10 md:grid-cols-4">
           {/* Catálogo */}
           <div>
             <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.15em] text-gold/35">
               Catálogo
             </p>
-            <ul className="flex flex-col gap-2.5">
+            <ul className="flex flex-col gap-2">
               <li>
                 <Link
                   href="/catalogo"
@@ -98,7 +95,7 @@ export function Footer({ categories }: FooterProps) {
             <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.15em] text-gold/35">
               Servicios
             </p>
-            <ul className="flex flex-col gap-2.5">
+            <ul className="flex flex-col gap-2">
               {NAV_SERVICES.map((s) => (
                 <li key={s.href}>
                   <Link
@@ -117,10 +114,10 @@ export function Footer({ categories }: FooterProps) {
             <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.15em] text-gold/35">
               Operaciones
             </p>
-            <ul className="flex flex-col gap-2.5">
+            <ul className="flex flex-col gap-2">
               {FREE_ZONES.map((z) => (
                 <li key={z.name} className="flex flex-col gap-0.5">
-                  <span className="font-mono text-[11px] text-gold/60">{z.name}</span>
+                  <span className="font-mono text-[11px] text-warm-white/50">{z.name}</span>
                   <span className="font-mono text-[10px] text-warm-white/30">{z.location}</span>
                 </li>
               ))}
@@ -164,14 +161,11 @@ export function Footer({ categories }: FooterProps) {
 
       {/* Bottom bar */}
       <div className="border-t border-warm-white/[0.05] px-6 py-6 md:px-10">
-        <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="mx-auto w-full max-w-6xl">
           <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-warm-white/20">
             © {new Date().getFullYear()} Wings Global Trade
             <span className="mx-2 text-gold/20">·</span>
             Importación industrial para América Latina
-          </p>
-          <p className="font-display text-[11px] italic text-warm-white/15">
-            Precisión. Proximidad. Confianza.
           </p>
         </div>
       </div>

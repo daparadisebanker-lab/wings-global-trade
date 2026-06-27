@@ -5,46 +5,16 @@ import Image from 'next/image'
 import { motion } from 'framer-motion'
 import type { Category } from '@/types/database'
 
-// ---------------------------------------------------------------------------
-// Per-category image map — SVG variants for mobile and desktop
-// ---------------------------------------------------------------------------
-
-const CATEGORY_IMAGES: Record<string, { mobile: string; desktop: string; objectPosition?: string }> = {
-  'maquinaria-agricola': {
-    mobile:  '/images/categories/agricola-mobile.svg',
-    desktop: '/images/categories/agricola-desktop.svg',
-  },
-  buses: {
-    mobile:  '/images/categories/buses-mobile.svg',
-    desktop: '/images/categories/buses-desktop.svg',
-  },
-  'equipo-industrial': {
-    mobile:  '/images/categories/industrial-mobile.svg',
-    desktop: '/images/categories/industrial-desktop.svg',
-  },
-  camiones: {
-    mobile:  '/images/categories/camiones-mobile.svg',
-    desktop: '/images/categories/camiones-desktop.svg',
-  },
-  utv: {
-    mobile:  '/images/categories/utv-mobile.svg',
-    desktop: '/images/categories/utv-desktop.svg',
-  },
-  automoviles: {
-    mobile:  '/images/categories/automoviles-mobile.svg',
-    desktop: '/images/categories/automoviles-desktop.svg',
-  },
-  repuestos: {
-    mobile:  '/images/categories/repuestos-mobile.svg',
-    desktop: '/images/categories/repuestos-desktop.svg',
-  },
+const CATEGORY_IMAGES: Record<string, { src: string; objectPosition?: string }> = {
+  'maquinaria-agricola': { src: '/images/categories/agricola-desktop.png' },
+  buses:                 { src: '/images/categories/buses-desktop.png' },
+  'equipo-industrial':   { src: '/images/categories/industrial-desktop.png' },
+  camiones:              { src: '/images/categories/camiones-desktop.png' },
+  utv:                   { src: '/images/categories/utv.png' },
+  automoviles:           { src: '/images/categories/automoviles.png' },
+  repuestos:             { src: '/images/categories/repuestos-desktop.png' },
 }
 
-// Grid order — 7 categories fill positions 1-7, Mister fills position 8
-// Mobile (2-col):  row1: agricola·buses  row2: industrial·camiones
-//                  row3: utv·automoviles  row4: repuestos·Mister
-// Desktop (4-col): row1: agricola·buses·industrial·camiones
-//                  row2: utv·automoviles·repuestos·Mister
 const ORDERED_SLUGS = [
   'maquinaria-agricola',
   'buses',
@@ -66,11 +36,12 @@ interface CardProps {
   sizes: string
 }
 
+const HOVER_TRANSITION = { duration: 0.7, ease: [0.16, 1, 0.3, 1] as const }
+const EASE = [0.16, 1, 0.3, 1] as const
+
 function CategoryCard({ category, index, priority, sizes }: CardProps) {
   const imgs = CATEGORY_IMAGES[category.slug]
   const num  = String(index + 1).padStart(2, '0')
-  const isSvg = imgs?.mobile.endsWith('.svg')
-  const HOVER_TRANSITION = { duration: 0.7, ease: [0.16, 1, 0.3, 1] as const }
 
   return (
     <Link href={`/catalogo/${category.slug}`} className="block h-full">
@@ -78,56 +49,23 @@ function CategoryCard({ category, index, priority, sizes }: CardProps) {
         whileHover="hover"
         className="group relative h-full overflow-hidden cursor-pointer"
       >
-        {/* SVG illustrations — CSS background avoids rasterization gap artifacts */}
-        {imgs && isSvg && (
-          <>
-            <motion.div
-              className="absolute inset-0 md:hidden"
-              variants={{ hover: { scale: 1.05 } }}
-              transition={HOVER_TRANSITION}
-              style={{
-                backgroundImage: `url('${imgs.mobile}')`,
-                backgroundSize: 'cover',
-                backgroundPosition: imgs.objectPosition ?? 'center',
-              }}
-            />
-            <motion.div
-              className="absolute inset-0 hidden md:block"
-              variants={{ hover: { scale: 1.05 } }}
-              transition={HOVER_TRANSITION}
-              style={{
-                backgroundImage: `url('${imgs.desktop}')`,
-                backgroundSize: 'cover',
-                backgroundPosition: imgs.objectPosition ?? 'center',
-              }}
-            />
-          </>
-        )}
-        {/* Photography (JPG/PNG) — Next.js Image with optimization */}
-        {imgs && !isSvg && (
-          <>
+        {imgs ? (
+          <motion.div
+            className="absolute inset-0"
+            variants={{ hover: { scale: 1.05 } }}
+            transition={HOVER_TRANSITION}
+          >
             <Image
-              src={imgs.mobile}
+              src={imgs.src}
               alt={category.name_es}
               fill
               sizes={sizes}
-              className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05] md:hidden"
+              className="object-cover"
               style={{ objectPosition: imgs.objectPosition ?? 'center' }}
               priority={priority}
             />
-            <Image
-              src={imgs.desktop}
-              alt={category.name_es}
-              fill
-              sizes={sizes}
-              className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.05] hidden md:block"
-              style={{ objectPosition: imgs.objectPosition ?? 'center' }}
-              priority={priority}
-            />
-          </>
-        )}
-        {/* Fallback when no image */}
-        {!imgs && (
+          </motion.div>
+        ) : (
           <div className="absolute inset-0 bg-navy-dark" />
         )}
 
@@ -151,7 +89,7 @@ function CategoryCard({ category, index, priority, sizes }: CardProps) {
             className="mb-3 h-px w-5 bg-gold"
             style={{ originX: 0 }}
             variants={{ hover: { scaleX: 2.8 } }}
-            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.35, ease: EASE }}
           />
           <h3 className="font-display text-xl text-warm-white leading-tight md:text-2xl">
             {category.name_es}
@@ -172,7 +110,7 @@ function CategoryCard({ category, index, priority, sizes }: CardProps) {
 }
 
 // ---------------------------------------------------------------------------
-// Mister card — position 8, uses its own SVG illustration
+// Mister card — position 8
 // ---------------------------------------------------------------------------
 
 function MisterCard({ index }: { index: number }) {
@@ -184,29 +122,21 @@ function MisterCard({ index }: { index: number }) {
         whileHover="hover"
         className="group relative h-full overflow-hidden cursor-pointer bg-[#000C1F]"
       >
-        {/* SVG illustration — CSS background, no rasterization artifacts */}
         <motion.div
-          className="absolute inset-0 md:hidden"
+          className="absolute inset-0"
           variants={{ hover: { scale: 1.05 } }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          style={{
-            backgroundImage: "url('/images/categories/mister-mobile.svg')",
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-        />
-        <motion.div
-          className="absolute inset-0 hidden md:block"
-          variants={{ hover: { scale: 1.05 } }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          style={{
-            backgroundImage: "url('/images/categories/mister-desktop.svg')",
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-        />
+          transition={HOVER_TRANSITION}
+        >
+          <Image
+            src="/images/categories/mister.png"
+            alt="Mister — Asesor de Importación IA"
+            fill
+            sizes="(min-width: 768px) 25vw, 50vw"
+            className="object-cover"
+          />
+        </motion.div>
 
-        {/* Bottom gradient — darker for legibility over illustration */}
+        {/* Bottom gradient */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -241,7 +171,7 @@ function MisterCard({ index }: { index: number }) {
             className="mb-3 h-px w-5 bg-[#C4933F]"
             style={{ originX: 0 }}
             variants={{ hover: { scaleX: 2.8 } }}
-            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.35, ease: EASE }}
           />
           <h3 className="font-display text-xl text-[#F8F6F0] leading-tight md:text-2xl">
             Mister
@@ -273,7 +203,6 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
     .map((slug) => categories.find((c) => c.slug === slug))
     .filter(Boolean) as Category[]
 
-  const EASE = [0.16, 1, 0.3, 1] as const
   const ENTER = (delay = 0) => ({
     initial:    { opacity: 0, y: 28 },
     whileInView:{ opacity: 1, y: 0 },
@@ -282,7 +211,7 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
   })
 
   const CARD_SIZES = '(min-width: 768px) 25vw, 50vw'
-  const CARD_H     = 'h-[52vw] md:h-[28vw] md:max-h-[380px]'
+  const CARD_H     = 'h-[min(52vw,_220px)] md:h-[28vw] md:max-h-[380px]'
 
   return (
     <div>
@@ -309,7 +238,7 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
         </h2>
       </div>
 
-      {/* ── 4 × 2 uniform grid — all 8 cards equal ─────────────────────────── */}
+      {/* 4 × 2 uniform grid */}
       <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
 
         {all.map((cat, i) => (

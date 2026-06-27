@@ -168,7 +168,7 @@ export default function ProcesoPage() {
       <div className="h-16 md:h-[72px] bg-[#000C1F]" />
 
       {/* Containers image — visual hero */}
-      <div className="relative aspect-[16/9] overflow-hidden md:aspect-auto md:h-[88vh]">
+      <div className="relative aspect-[16/9] overflow-hidden md:aspect-auto md:h-[min(88vh,_760px)]">
         <Image
           src="/Importacion/como-importar/containers-port.png"
           alt="Contenedores Wings en puerto de origen"
@@ -187,7 +187,7 @@ export default function ProcesoPage() {
       </section>
 
       {/* Image strip 2 — operative in warehouse — human proof */}
-      <div className="relative h-[72vh] overflow-hidden">
+      <div className="relative h-[min(72vh,_620px)] overflow-hidden">
         <Image
           src="/Importacion/como-importar/operative-warehouse.png"
           alt="Coordinador Wings supervisando operación en almacén"
@@ -205,7 +205,7 @@ export default function ProcesoPage() {
       </section>
 
       {/* Image strip 3 — truck at dock — delivery proof */}
-      <div className="relative h-[46vh] overflow-hidden">
+      <div className="relative h-[min(46vh,_400px)] overflow-hidden">
         <Image
           src="/Importacion/como-importar/truck-dock.png"
           alt="Entrega en destino — último tramo Wings Global Trade"

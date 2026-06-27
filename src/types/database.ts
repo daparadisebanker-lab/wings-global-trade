@@ -126,6 +126,7 @@ export interface ConversationTurn {
   content: string
   timestamp: string
   tpr_fields_captured?: string[]
+  isEntryMessage?: boolean
 }
 
 export interface Lead {

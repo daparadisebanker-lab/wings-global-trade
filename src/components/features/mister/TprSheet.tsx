@@ -109,6 +109,7 @@ export function TprSheet({
   const [watermarkGold, setWatermarkGold] = useState(false)
   const isFirstRender = useRef(true)
   const isMountedRef = useRef(true)
+  const runIdRef = useRef(0)
 
   useEffect(() => {
     return () => { isMountedRef.current = false }
@@ -119,10 +120,12 @@ export function TprSheet({
       isFirstRender.current = false
       return
     }
+    const myId = ++runIdRef.current
+    const isStale = () => !isMountedRef.current || runIdRef.current !== myId
     const run = async () => {
       watermarkControls.stop()
       await watermarkControls.start({ opacity: 0, transition: { duration: 0.2 } })
-      if (!isMountedRef.current) return
+      if (isStale()) return
       setWatermarkText(watermarkState === 'confirmed' ? 'CONFIRMADO' : 'BORRADOR — WINGS GLOBAL TRADE')
       setWatermarkGold(watermarkState === 'confirmed')
       await watermarkControls.start({ opacity: 0.03, transition: { duration: 0.2 } })

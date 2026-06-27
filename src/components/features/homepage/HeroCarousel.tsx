@@ -11,18 +11,26 @@ const SWIPE_THRESHOLD  = 50
 const SLIDES = [
   {
     id: 'importacion',
-    image: '/Importacion/home-carousel/hero-container-crane.png',
-    objectPosition: 'center 20%',
+    image: '/Importacion/home-carousel/hero-container-wings.png',
+    objectPosition: 'center center',
     headline: ['Importación técnica', 'para el mercado', 'latinoamericano.'],
     cta: { label: 'Consulta técnica', href: '/mister' },
     gold: true,
   },
   {
-    id: 'catalogo',
+    id: 'camiones',
     image: '/Importacion/home-carousel/hero-vehicles.png',
     objectPosition: 'center center',
     headline: ['97 modelos.', 'Precio CIF sin', 'intermediarios.'],
-    cta: { label: 'Explorar catálogo', href: '/catalogo/maquinaria-agricola' },
+    cta: { label: 'Ver camiones KAMA', href: '/catalogo/camiones' },
+    gold: false,
+  },
+  {
+    id: 'agricola',
+    image: '/Importacion/home-carousel/hero-tractor.png',
+    objectPosition: 'center 55%',
+    headline: ['Maquinaria agrícola', 'de origen verificado', 'para el agro.'],
+    cta: { label: 'Ver maquinaria agrícola', href: '/catalogo/maquinaria-agricola' },
     gold: false,
   },
 ] as const
@@ -209,7 +217,7 @@ export function HeroCarousel() {
 
       {/* ── Image area — 16:9 on mobile / full-vh on desktop ──────── */}
       <div
-        className="relative aspect-[16/9] w-full overflow-hidden md:aspect-auto md:h-[100dvh] md:min-h-[600px]"
+        className="relative aspect-[16/9] w-full overflow-hidden md:aspect-auto md:h-[min(100dvh,_820px)] md:min-h-[600px]"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
@@ -274,8 +282,7 @@ export function HeroCarousel() {
 
       {/* ── Mobile content panel — below image, never overlaid ─────── */}
       <div className="bg-[#001E50] px-6 pb-8 pt-6 md:hidden">
-        <SlideContent slide={slide} align="left" index={active} total={total} showCounter />
-        <div className="mt-6">{dots}</div>
+        <SlideContent slide={slide} align="left" index={active} total={total} />
       </div>
 
     </section>

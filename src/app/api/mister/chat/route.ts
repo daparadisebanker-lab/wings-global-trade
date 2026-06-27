@@ -8,7 +8,7 @@ import type { NextRequest } from 'next/server'
 import { z, ZodError } from 'zod'
 import {
   getAnthropicClient,
-  buildMisterSystemPrompt,
+  buildMisterSystemBlocks,
   MISTER_CHAT_MODEL,
   extractTprFields,
   stripJsonMarkers,
@@ -111,7 +111,7 @@ async function claudeStream(
   const anthropicStream = await client.messages.stream({
     model: MISTER_CHAT_MODEL,
     max_tokens: 1024,
-    system: buildMisterSystemPrompt(tprState),
+    system: buildMisterSystemBlocks(tprState),
     messages: messages.map((m) => ({ role: m.role, content: m.content })),
   })
 

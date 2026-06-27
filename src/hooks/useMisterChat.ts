@@ -24,7 +24,7 @@ function generateSessionId(): string {
 export function useMisterChat({ initialContext }: UseMisterChatOptions = {}) {
   const [sessionId] = useState(() => generateSessionId())
   const [messages, setMessages] = useState<ConversationTurn[]>(() => [
-    { role: 'assistant', content: MISTER_GREETING, timestamp: new Date().toISOString() },
+    { role: 'assistant', content: MISTER_GREETING, timestamp: new Date().toISOString(), isEntryMessage: true },
   ])
   const [tprState, setTprState] = useState<TprState>({})
   const [completeness, setCompleteness] = useState<TprCompleteness>('partial')
