@@ -148,12 +148,12 @@ export function MisterChat({ initialContext }: MisterChatProps) {
   )
 
   return (
-    <div className="mister relative flex h-[100dvh] overflow-hidden bg-navy-900 pt-14 md:pt-16">
+    <div className="mister relative h-[100dvh] overflow-hidden bg-navy-900 pt-16 md:pt-[4.5rem]">
       {/* Ambient particle field — absolute behind all content */}
       <MisterCanvas isLoading={isLoading} messageCount={allMessages.length} category={category} />
 
-      {/* Chat column wrapper — z-[1] ensures content paints above the canvas */}
-      <div className="relative z-[1] flex min-w-0 flex-1">
+      {/* Centered max-width container — prevents layout stretching on ultra-wide screens */}
+      <div className="relative z-[1] mx-auto flex h-full w-full max-w-7xl min-w-0">
         <motion.div
           className="flex min-w-0 flex-1 flex-col border-r border-[#C4933F]/20 bg-navy"
           style={{ boxShadow: '0 0 60px rgba(196,147,63,0.04) inset' }}
@@ -270,17 +270,17 @@ export function MisterChat({ initialContext }: MisterChatProps) {
             messageCount={allMessages.length}
           />
         </motion.div>
-      </div>
 
-      {/* Desktop TprSheet */}
-      <motion.aside
-        className="relative z-[1] hidden w-[380px] flex-shrink-0 border-l border-[#C4933F]/15 lg:block"
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.4, ease: 'easeOut', delay: 0.6 }}
-      >
-        {sheet}
-      </motion.aside>
+        {/* Desktop TprSheet — inside centered container so it aligns with chat */}
+        <motion.aside
+          className="hidden w-[380px] flex-shrink-0 border-l border-[#C4933F]/15 lg:block"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4, ease: 'easeOut', delay: 0.6 }}
+        >
+          {sheet}
+        </motion.aside>
+      </div>
 
       {/* Mobile TPR drawer */}
       <AnimatePresence>

@@ -15,6 +15,8 @@ import { organizationSchema } from '@/lib/schema'
 import { PageTransition } from '@/components/features/shared/PageTransition'
 
 export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
   themeColor: '#001E50',
   viewportFit: 'cover',
 }
