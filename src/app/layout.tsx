@@ -16,6 +16,7 @@ import { PageTransition } from '@/components/features/shared/PageTransition'
 
 export const viewport: Viewport = {
   themeColor: '#001E50',
+  viewportFit: 'cover',
 }
 
 export const metadata: Metadata = {
