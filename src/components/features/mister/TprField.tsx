@@ -3,7 +3,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
-import { TPR_CAPTURE_DOT, TPR_CAPTURE_VALUE } from '@/lib/motion'
+import { TPR_CAPTURE_DOT } from '@/lib/motion'
 
 interface TprFieldProps {
   label: string
@@ -43,13 +43,23 @@ export function TprField({ label, value, status, onEdit }: TprFieldProps) {
       : { duration: TPR_CAPTURE_DOT.transition.duration, ease: TPR_CAPTURE_DOT.transition.ease }
     : { duration: 0.4 }
 
-  const valueInitial = justCaptured && !shouldReduceMotion ? { opacity: 0 } : { opacity: 1 }
-  const valueAnimate = { opacity: 1 }
-  const valueTransition = justCaptured
-    ? shouldReduceMotion
-      ? { duration: 0.01 }
-      : { duration: TPR_CAPTURE_VALUE.transition.duration, delay: TPR_CAPTURE_VALUE.transition.delay }
-    : { duration: 0 }
+  const valueInitial = shouldReduceMotion
+    ? { opacity: 1 }
+    : justCaptured
+      ? { opacity: 0, scale: 1.0 }
+      : { opacity: 1 }
+
+  const valueAnimate = shouldReduceMotion
+    ? { opacity: 1, scale: 1 }
+    : justCaptured
+      ? { opacity: 1, scale: [1.0, 0.94, 1.03, 1.0] }
+      : { opacity: 1, scale: 1 }
+
+  const valueTransition = shouldReduceMotion
+    ? { duration: 0.01 }
+    : justCaptured
+      ? { type: 'spring' as const, stiffness: 500, damping: 22, duration: 0.35 }
+      : { duration: 0 }
 
   const rowAnimate =
     justCaptured && !shouldReduceMotion
@@ -75,9 +85,13 @@ export function TprField({ label, value, status, onEdit }: TprFieldProps) {
           aria-hidden
         />
         <div className="min-w-0">
-          <p className="font-mono text-[10px] tracking-widest uppercase text-[#C4933F]/70">
+          <motion.p
+            className="font-mono text-[10px] tracking-widest uppercase"
+            animate={{ color: justCaptured ? '#C4933F' : 'rgba(196,147,63,0.70)' }}
+            transition={{ duration: 0.3 }}
+          >
             {label}
-          </p>
+          </motion.p>
           {captured ? (
             <motion.p
               className="mt-0.5 font-body text-sm text-[#F8F6F0] break-words"
