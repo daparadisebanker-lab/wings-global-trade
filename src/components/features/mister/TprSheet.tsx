@@ -227,16 +227,19 @@ export function TprSheet({
           </div>
         ))}
 
+        {estimate && !estimateLoading && (
+          <CifBreakdownChart
+            fob={estimate.fob_estimate_usd}
+            freight={estimate.freight_estimate_usd}
+            insurance={estimate.insurance_estimate_usd}
+            duty={estimate.duty_amount_usd}
+            total={estimate.cif_total_usd}
+          />
+        )}
+
         {estimate && (
           <div className="mb-4">
             <CifEstimateCard estimate={estimate} />
-            <CifBreakdownChart
-              fob={Math.round(estimate.fob_estimate_usd)}
-              freight={Math.round(estimate.freight_estimate_usd)}
-              insurance={Math.round(estimate.insurance_estimate_usd)}
-              duty={Math.round(estimate.duty_amount_usd)}
-              total={Math.round(estimate.cif_total_usd)}
-            />
           </div>
         )}
 
