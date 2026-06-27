@@ -4,7 +4,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
-import { useSearchParams } from 'next/navigation'
 import { useMisterChat } from '@/hooks/useMisterChat'
 import { useCifEstimate } from '@/hooks/useCifEstimate'
 import { MisterMessage } from '@/components/features/mister/MisterMessage'
@@ -13,7 +12,7 @@ import { TprSheet } from '@/components/features/mister/TprSheet'
 import { MisterSubmitForm } from '@/components/features/mister/MisterSubmitForm'
 import { MisterWaveform } from '@/components/features/mister/MisterWaveform'
 import { MisterCanvas } from '@/components/features/mister/MisterCanvas'
-import type { TprState, TprFieldKey } from '@/types/mister'
+import type { TprState } from '@/types/mister'
 import type { ConversationTurn } from '@/types/database'
 
 interface MisterChatProps {
@@ -23,9 +22,9 @@ interface MisterChatProps {
 function detectCategory(context: string | null): string | undefined {
   if (!context) return undefined
   const lower = context.toLowerCase()
-  if (lower.includes('maquinar') || lower.includes('agr') || lower.includes('cosech')) return 'maquinaria-agricola'
-  if (lower.includes('camion')) return 'camiones'
-  if (lower.includes('bus') || lower.includes('autobus')) return 'buses'
+  if (lower.includes('maquinar') || lower.includes('agríc') || lower.includes('cosech')) return 'maquinaria-agricola'
+  if (lower.includes('camion') || lower.includes('camión')) return 'camiones'
+  if (lower.includes('bus') || lower.includes('autobús')) return 'buses'
   if (lower.includes('industrial') || lower.includes('equipo')) return 'equipo-industrial'
   if (lower.includes('repuest') || lower.includes('partes') || lower.includes('pieza')) return 'repuestos'
   return undefined
@@ -41,8 +40,8 @@ function countCapturedFields(tpr: TprState): number {
 }
 
 export function MisterChat({ initialContext }: MisterChatProps) {
-  const searchParams = useSearchParams()
-  const category = detectCategory(searchParams.get('context'))
+  // Derive category from initialContext (already the ?context= value) — avoids useSearchParams Suspense boundary
+  const category = detectCategory(initialContext ?? null)
 
   const {
     messages,
@@ -150,10 +149,11 @@ export function MisterChat({ initialContext }: MisterChatProps) {
 
   return (
     <div className="mister relative flex h-[100dvh] overflow-hidden bg-navy-900 pt-14 md:pt-16">
+      {/* Ambient particle field — absolute behind all content */}
       <MisterCanvas isLoading={isLoading} messageCount={allMessages.length} category={category} />
 
-      {/* Chat column wrapper — centers the column, fills space on the left */}
-      <div className="flex min-w-0 flex-1 justify-center">
+      {/* Chat column wrapper — z-[1] ensures content paints above the canvas */}
+      <div className="relative z-[1] flex min-w-0 flex-1 justify-center">
         <motion.div
           className="flex min-w-0 flex-1 max-w-2xl flex-col border-l border-r border-[#C4933F]/20 bg-navy"
           style={{ boxShadow: '0 0 60px rgba(196,147,63,0.04) inset' }}
@@ -274,7 +274,7 @@ export function MisterChat({ initialContext }: MisterChatProps) {
 
       {/* Desktop TprSheet */}
       <motion.aside
-        className="hidden w-[380px] flex-shrink-0 border-l border-[#C4933F]/15 lg:block"
+        className="relative z-[1] hidden w-[380px] flex-shrink-0 border-l border-[#C4933F]/15 lg:block"
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.4, ease: 'easeOut', delay: 0.6 }}
