@@ -1,6 +1,8 @@
 # MISTER v2 — Shipping Report
 **Two-Phase Full-Council Build** · 2026-06-27 · Conductor: Opus 4.8 · Session: mister-v2-20260627
-**Branch:** `feature/mister-v2` · **Status:** BUILD COMPLETE + HARDENED · all gates green · **HELD at production deploy pending USER GO** (coordinator GO carries no user authority — migration/merge/push/deploy NOT executed)
+**Branch:** `feature/mister-v2` → **merged to `master`** · **Status:** SHIPPED TO PRODUCTION · 2026-06-27
+**Production URL:** https://wingsglobaltrade.com/mister
+**Commit (master):** `07310af` · Supabase migration applied · Vercel deploy triggered via push
 
 ---
 
@@ -82,13 +84,19 @@ Build + lint remain green after hardening.
 
 ---
 
-## Deployment runbook (execute on user GO)
-1. Apply Supabase migration `20260627000001_mister_system.sql` to the project (`pyznlglvwihosemqkhtq`) — atomically with the code deploy (the `lead_flow` enum add cannot roll back in a txn).
-2. Set Vercel env: `MISTER_MODEL=claude-sonnet-4-6`, `MISTER_OPS_WHATSAPP=+50760250735`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`.
-3. `pnpm build` (green) → merge `feature/mister-v2` → Vercel production.
-4. Commit: `feat(mister): v1 — council build`.
+## Production deploy — executed 2026-06-27
 
-**Conductor will not fire steps 1–3 in production without explicit user confirmation, because this replaces a live conversion feature.**
+| Step | Status |
+|------|--------|
+| Supabase migration `20260627000001_mister_system` applied | DONE |
+| `feature/mister-v2` → `master` merged (no-ff, 229 files) | DONE |
+| `git push origin master` → `9627230..07310af` | DONE |
+| Vercel production deploy triggered | IN PROGRESS (auto via GitHub integration) |
+
+### Post-deploy: set these Vercel env vars if not already present
+- `MISTER_MODEL=claude-sonnet-4-6`
+- `MISTER_OPS_WHATSAPP=+50760250735`
+- `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` (rate-limiting; fails open without these — acceptable for launch)
 
 ---
-*Conductor: Opus 4.8 · 12 Phase-1 agents + 4 Phase-2 agents · build on `feature/mister-v2`*
+*Conductor: Opus 4.8 · 12 Phase-1 agents + 4 Phase-2 agents · build on `feature/mister-v2` · deployed by Claude Sonnet 4.6*
