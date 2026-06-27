@@ -4,6 +4,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
+import { useSearchParams } from 'next/navigation'
 import { useMisterChat } from '@/hooks/useMisterChat'
 import { useCifEstimate } from '@/hooks/useCifEstimate'
 import { MisterMessage } from '@/components/features/mister/MisterMessage'
@@ -11,11 +12,23 @@ import { MisterInput } from '@/components/features/mister/MisterInput'
 import { TprSheet } from '@/components/features/mister/TprSheet'
 import { MisterSubmitForm } from '@/components/features/mister/MisterSubmitForm'
 import { MisterWaveform } from '@/components/features/mister/MisterWaveform'
+import { MisterCanvas } from '@/components/features/mister/MisterCanvas'
 import type { TprState, TprFieldKey } from '@/types/mister'
 import type { ConversationTurn } from '@/types/database'
 
 interface MisterChatProps {
   initialContext?: string
+}
+
+function detectCategory(context: string | null): string | undefined {
+  if (!context) return undefined
+  const lower = context.toLowerCase()
+  if (lower.includes('maquinar') || lower.includes('agr') || lower.includes('cosech')) return 'maquinaria-agricola'
+  if (lower.includes('camion')) return 'camiones'
+  if (lower.includes('bus') || lower.includes('autobus')) return 'buses'
+  if (lower.includes('industrial') || lower.includes('equipo')) return 'equipo-industrial'
+  if (lower.includes('repuest') || lower.includes('partes') || lower.includes('pieza')) return 'repuestos'
+  return undefined
 }
 
 function countCapturedFields(tpr: TprState): number {
@@ -28,6 +41,9 @@ function countCapturedFields(tpr: TprState): number {
 }
 
 export function MisterChat({ initialContext }: MisterChatProps) {
+  const searchParams = useSearchParams()
+  const category = detectCategory(searchParams.get('context'))
+
   const {
     messages,
     tprState,
@@ -133,7 +149,9 @@ export function MisterChat({ initialContext }: MisterChatProps) {
   )
 
   return (
-    <div className="mister flex h-[100dvh] overflow-hidden bg-navy-900 pt-14 md:pt-16">
+    <div className="mister relative flex h-[100dvh] overflow-hidden bg-navy-900 pt-14 md:pt-16">
+      <MisterCanvas isLoading={isLoading} messageCount={allMessages.length} category={category} />
+
       {/* Chat column wrapper — centers the column, fills space on the left */}
       <div className="flex min-w-0 flex-1 justify-center">
         <motion.div
