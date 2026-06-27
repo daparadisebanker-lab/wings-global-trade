@@ -153,9 +153,9 @@ export function MisterChat({ initialContext }: MisterChatProps) {
       <MisterCanvas isLoading={isLoading} messageCount={allMessages.length} category={category} />
 
       {/* Chat column wrapper — z-[1] ensures content paints above the canvas */}
-      <div className="relative z-[1] flex min-w-0 flex-1 justify-center">
+      <div className="relative z-[1] flex min-w-0 flex-1">
         <motion.div
-          className="flex min-w-0 flex-1 max-w-2xl flex-col border-l border-r border-[#C4933F]/20 bg-navy"
+          className="flex min-w-0 flex-1 flex-col border-r border-[#C4933F]/20 bg-navy"
           style={{ boxShadow: '0 0 60px rgba(196,147,63,0.04) inset' }}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
