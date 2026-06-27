@@ -2,20 +2,24 @@
 // Mister v2 — streaming POST endpoint.
 // Authoritative: ENRICHED_SPEC §7, ai-engineer.md §2/§3/§4/§5/§6/§7
 //
+// HARDENED (conductor ratifications):
+//  - §7.1: collected comes from the model control block ONLY (no second haiku call).
+//  - §7.5: HOLD-BACK guardrail — the full assistant text is buffered and validated
+//          BEFORE any `token` event is emitted, so a price can never flash to the client.
+//
 // Event sequence per turn:
 //  1. Validate body (Zod)
 //  2. Sanitize user input (injection guard)
 //  3. Rate limit (IP, Upstash)
 //  4. Upsert mister_projects row; atomic in_flight burst guard
 //  5. Parallel context assembly
-//  6. Open SSE stream
-//  7. Emit pre-loaded surface events
-//  8. Call Claude with cached static prompt + dynamic context
-//  9. Stream tokens (fence-detecting mister control block)
-// 10. Post-stream: guardrail scan
-// 11. Post-stream: parse control block → emit actions / state / done SSE
-// 12. Persist: history, collected patch, turn_count, stage, archetype
-// 13. Clear in_flight (always in finally)
+//  6. Open SSE stream; emit pre-loaded surface events
+//  7. Call Claude (cached static prompt + dynamic context); BUFFER the full response
+//  8. Extract control block → clean text; HOLD-BACK guardrail scan on clean text
+//  9. Stream the validated clean text (or routing replacement) as `token` events
+// 10. Emit actions / state / done
+// 11. Persist: history, collected patch (from control block), turn_count, stage, archetype
+// 12. Clear in_flight (always in finally)
 
 import type { NextRequest } from 'next/server'
 import { z, ZodError } from 'zod'
@@ -31,7 +35,7 @@ import {
   buildInjectionFlag,
 } from '@/lib/mister/guardrails'
 import { checkRateLimit, checkTightenedRateLimit } from '@/lib/mister/rateLimit'
-import { inferStage, extractCollected } from '@/lib/mister/stage'
+import { inferStage } from '@/lib/mister/stage'
 import { isValidArchetype, isValidStage } from '@/lib/mister/archetype'
 import { getFallbackActions, isValidQuickAction } from '@/lib/mister/fallback-actions'
 import type {
@@ -40,7 +44,6 @@ import type {
   MisterStage,
   MisterCollected,
   MisterQuickAction,
-  MisterSurfaceType,
   MisterControlBlock,
   SurfaceEventPayload,
 } from '@/types/mister'
@@ -78,38 +81,6 @@ function sseError(code: string, message: string, extra?: Record<string, string>)
 const FENCE_OPEN = '```mister'
 const FENCE_CLOSE = '```'
 
-interface StreamState {
-  accumulator: string
-  fenceStart: number // -1 if fence not yet found
-  safeUpto: number   // index up to which tokens have been emitted
-}
-
-function processChunk(
-  state: StreamState,
-  chunk: string,
-): { tokenToEmit: string | null; state: StreamState } {
-  const acc = state.accumulator + chunk
-  const fenceIdx = acc.indexOf(FENCE_OPEN)
-
-  if (fenceIdx === -1) {
-    const tokenToEmit = acc.slice(state.safeUpto)
-    return {
-      tokenToEmit: tokenToEmit || null,
-      state: { ...state, accumulator: acc, safeUpto: acc.length },
-    }
-  }
-
-  // Fence found — emit only text before the fence start
-  const newSafeUpto = Math.min(fenceIdx, acc.length)
-  const tokenToEmit =
-    newSafeUpto > state.safeUpto ? acc.slice(state.safeUpto, newSafeUpto) : null
-
-  return {
-    tokenToEmit,
-    state: { ...state, accumulator: acc, fenceStart: fenceIdx, safeUpto: newSafeUpto },
-  }
-}
-
 function extractControlBlock(fullText: string): {
   cleanText: string
   block: MisterControlBlock | null
@@ -126,7 +97,6 @@ function extractControlBlock(fullText: string): {
   let block: MisterControlBlock | null = null
   try {
     const parsed = JSON.parse(jsonBody)
-    // Validate structure loosely
     if (parsed && typeof parsed === 'object') {
       block = parsed as MisterControlBlock
     }
@@ -278,7 +248,7 @@ export async function POST(request: NextRequest) {
     { role: 'user', content: cleanMessage },
   ]
 
-  // 7–13. Build and return SSE stream
+  // 7–12. Build and return SSE stream
   const readable = new ReadableStream<Uint8Array>({
     async start(controller) {
       const enqueue = (chunk: Uint8Array) => {
@@ -295,12 +265,12 @@ export async function POST(request: NextRequest) {
       }
 
       try {
-        // Emit pre-loaded surface events
+        // Emit pre-loaded surface events (these are backend-resolved, never a price)
         for (const surface of surfaces) {
           enqueue(sseEvent('surface', surface))
         }
 
-        // Call Claude with prompt caching
+        // Call Claude with prompt caching — BUFFER the entire response (hold-back)
         const anthropicStream = claudeClient.messages.stream({
           model: MISTER_MODEL,
           max_tokens: 2048,
@@ -319,63 +289,48 @@ export async function POST(request: NextRequest) {
           messages: messagesForModel,
         })
 
-        let streamState: StreamState = {
-          accumulator: '',
-          fenceStart: -1,
-          safeUpto: 0,
-        }
         let fullText = ''
-
         for await (const event of anthropicStream) {
-          // Respect client abort
           if (request.signal.aborted) break
-
           if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
-            const chunk = event.delta.text
-            fullText += chunk
-
-            const { tokenToEmit, state: nextState } = processChunk(streamState, chunk)
-            streamState = nextState
-
-            if (tokenToEmit) {
-              enqueue(sseEvent('token', { delta: tokenToEmit }))
-            }
+            // HOLD-BACK: accumulate only. No token events are emitted mid-stream,
+            // so unvalidated text (a possible price) can never reach the client.
+            fullText += event.delta.text
           }
         }
 
-        // 10. Post-stream guardrail scan
+        // 8. Strip control block, then guardrail-scan the COMPLETE clean text
         const { cleanText, block } = extractControlBlock(fullText)
         const guardrailResult = scanGuardrails(cleanText)
 
+        // Decide the visible text: clean text, or routing replacement on violation.
+        let visibleText: string
         if (guardrailResult.violated) {
-          const routingMsg = getRoutingMessage(locale)
           flagsToAppend.push(buildGuardrailFlag(guardrailResult.patterns))
-          enqueue(
-            sseError('CONTENT_REPLACED', routingMsg, { fallback: routingMsg }),
-          )
+          visibleText = getRoutingMessage(locale)
+        } else {
+          visibleText = cleanText
         }
 
-        // 11. Emit actions, state, done
-        const quickActions = resolveQuickActions(
-          block,
-          sessionRow.archetype,
-          sessionRow.stage,
-        )
+        // 9. Stream the VALIDATED text as token events (buffered → fast replay)
+        for (const piece of chunkForStream(visibleText)) {
+          if (request.signal.aborted) break
+          enqueue(sseEvent('token', { delta: piece }))
+          await delay(6)
+        }
+
+        // 10. Actions, state, done
+        const quickActions = resolveQuickActions(block, sessionRow.archetype, sessionRow.stage)
         enqueue(sseEvent('actions', { quickActions }))
 
         const newArchetype = resolveArchetype(block, sessionRow.archetype)
-        const newStage = resolveStage(
-          block,
-          newArchetype,
-          sessionRow.collected,
-          sessionRow.stage,
-        )
+        const newStage = resolveStage(block, newArchetype, sessionRow.collected, sessionRow.stage)
         enqueue(sseEvent('state', { archetype: newArchetype, stage: newStage }))
 
         const messageId = crypto.randomUUID()
         enqueue(sseEvent('done', { messageId }))
 
-        // 12. Persist (best-effort, non-blocking for client)
+        // 11. Persist — collected patch comes from the control block ONLY (no second call)
         const collectedPatch = block?.collected ?? {}
         const mergedCollected: MisterCollected = {
           ...sessionRow.collected,
@@ -385,10 +340,9 @@ export async function POST(request: NextRequest) {
         const updatedHistory = capStoredHistory([
           ...sessionRow.history,
           { role: 'user' as const, content: cleanMessage },
-          { role: 'assistant' as const, content: cleanText },
+          { role: 'assistant' as const, content: visibleText },
         ])
 
-        // Build archetype history entry if archetype changed
         const archetypeHistoryPatch =
           newArchetype !== sessionRow.archetype
             ? [
@@ -418,33 +372,6 @@ export async function POST(request: NextRequest) {
             in_flight: false,
           })
           .eq('session_id', sessionId)
-
-        // 12b. Async collected extraction (fire-and-forget via haiku)
-        if (block === null || Object.keys(collectedPatch).length === 0) {
-          // Only fire haiku extraction if control block had no collected patch
-          void extractCollected(cleanText, cleanMessage, mergedCollected)
-            .then(async (patch) => {
-              if (Object.keys(patch).length === 0) return
-              const { archetypeSignal, ...collectedFields } = patch
-              const refreshed: MisterCollected = { ...mergedCollected, ...collectedFields }
-
-              const updates: Record<string, unknown> = { collected: refreshed }
-              if (
-                archetypeSignal &&
-                isValidArchetype(archetypeSignal) &&
-                archetypeSignal !== newArchetype &&
-                newArchetype === 'unresolved'
-              ) {
-                updates['archetype'] = archetypeSignal
-              }
-
-              await supabase
-                .from('mister_projects')
-                .update(updates)
-                .eq('session_id', sessionId)
-            })
-            .catch((err) => console.warn('[mister/route] async extraction failed:', err))
-        }
       } catch (err) {
         console.error('[mister/route] stream error', err)
         const isAnthropicError = err instanceof Error && err.message.includes('429')
@@ -463,7 +390,6 @@ export async function POST(request: NextRequest) {
             ),
           )
         }
-        // Clear in_flight on error
         await clearInFlight(supabase, sessionId).catch(() => null)
       } finally {
         controller.close()
@@ -477,6 +403,20 @@ export async function POST(request: NextRequest) {
 // ─────────────────────────────────────────────────────────────
 // Helpers
 // ─────────────────────────────────────────────────────────────
+
+function delay(ms: number): Promise<void> {
+  return new Promise((r) => setTimeout(r, ms))
+}
+
+/**
+ * Split validated text into small pieces so the client still renders a
+ * streamed feel, even though the full text was buffered for hold-back validation.
+ * Splits on whitespace, preserving the trailing space.
+ */
+function chunkForStream(text: string): string[] {
+  if (!text) return []
+  return text.match(/\S+\s*/g) ?? [text]
+}
 
 function streamResponse(stream: ReadableStream<Uint8Array>) {
   return new Response(stream, {
@@ -536,13 +476,12 @@ function resolveStage(
 ): MisterStage {
   const declared = block?.state?.stage
   if (declared && isValidStage(declared)) {
-    // Use model-declared stage, but also run server inference as a sanity check.
-    // Never regress the stage below what the model declared.
+    // Use model-declared stage, but never regress below server inference.
     const inferred = inferStage(archetype, collected, currentStage)
     const stageOrder = ['induction', 'discovery', 'consideration', 'pre_qualification', 'support']
     const declaredIdx = stageOrder.indexOf(declared)
     const inferredIdx = stageOrder.indexOf(inferred)
-    return stageOrder[Math.max(declaredIdx, inferredIdx)] as MisterStage ?? declared
+    return (stageOrder[Math.max(declaredIdx, inferredIdx)] as MisterStage) ?? declared
   }
   return inferStage(archetype, collected, currentStage)
 }
@@ -550,11 +489,8 @@ function resolveStage(
 // ─────────────────────────────────────────────────────────────
 // Dev mock stream (no Supabase / no API key)
 // ─────────────────────────────────────────────────────────────
-function devMockStream(
-  sessionId: string,
-  message: string,
-  locale: string,
-): Response {
+function devMockStream(sessionId: string, message: string, locale: string): Response {
+  void sessionId
   const reply =
     locale === 'en'
       ? `I'm Mister — Wings Global Trade's trade intelligence layer. You mentioned: "${message.slice(0, 60)}...". Tell me more about your import operation and I'll route you to the relevant intelligence.`
@@ -571,10 +507,7 @@ function devMockStream(
         sseEvent('actions', {
           quickActions: [
             { label: 'Muéstrame productos para mi uso', action: 'show_product' },
-            {
-              label: 'Explícame cómo se construye el costo de internación',
-              action: 'explain_cost',
-            },
+            { label: 'Explícame cómo se construye el costo de internación', action: 'explain_cost' },
             { label: 'Comparar algunas opciones para mí', action: 'show_comparison' },
           ],
         }),

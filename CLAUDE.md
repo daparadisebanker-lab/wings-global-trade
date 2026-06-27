@@ -6,7 +6,7 @@ Wings Global Trade is a B2B trade intelligence and inquiry platform for Latin Am
 
 1. **Catalog Flow** — Browse curated inventory (agricultural machinery, trucks, buses, industrial equipment, spare parts). Submit an inquiry. Conversion = form submission.
 
-2. **Mister Flow** — AI chat collects a Technical Product Requirement (TPR) for custom/volume imports via free trade zones (ZOFRATACNA, Peru + ZOFRI, Chile). AI calculates CIF estimate. Conversion = TPR submission.
+2. **Mister Flow (v2)** — Mister is an AI trade-intelligence layer. It runs a short induction to resolve one of 5 buyer archetypes (lead_buyer, project_manager, logistics_manager, reseller, wholesale_partner), guides the visitor through discovery -> consideration -> pre_qualification -> support, and educates on landed-cost STRUCTURE using indexed ranges (base 100). Mister NEVER shows an absolute price, availability, or lead time. Conversion = quotation request / WhatsApp handoff / document download.
 
 **There is no cart, no checkout, no payment, no user accounts.** The platform exists to convert visitors into documented leads delivered to Wings ops via WhatsApp + email.
 
@@ -20,7 +20,7 @@ Language:      TypeScript — everywhere, no exceptions
 Styling:       Tailwind CSS — no inline styles, no CSS modules
 Database:      Supabase (Postgres + Storage)
 Auth:          None — no user authentication in MVP
-AI:            Anthropic Claude API (claude-haiku-4-5 for chat, claude-sonnet-4-6 for estimation)
+AI:            Anthropic Claude API (claude-sonnet-4-6 — Mister conversation, streaming SSE)
 Email:         Resend
 WhatsApp:      Twilio WhatsApp API
 Deployment:    Vercel
@@ -102,21 +102,23 @@ src/
       products/[slug]/route.ts
       leads/catalog/route.ts
       leads/contact/route.ts
-      mister/chat/route.ts
-      mister/estimate/route.ts
-      mister/submit/route.ts
+      mister/route.ts             # v2 streaming SSE endpoint
+      mister/quote/route.ts       # quotation prefill token (never a price)
+      mister/submit/route.ts      # lead/quotation submission (no CIF)
+      mister/chat/route.ts        # DEPRECATED (returns 410)
+      mister/estimate/route.ts    # RETIRED (returns 410)
   components/
     ui/                             # button, input, textarea, select, badge, card, skeleton, toast
     features/
       homepage/                     # CategoryGrid, SearchBar, HeroSection, TrustBar, MarketMap
       catalog/                      # ProductCard, ProductGrid, ProductSpecTable, InquiryForm
-      mister/                       # MisterChat, TprSheet, CifEstimateCard, MisterSubmitForm
+      mister/                       # MisterProvider, MisterLauncher, MisterWindow(+Header), MisterMessageList, MisterMessage, MisterStreamingMessage, MisterComposer, MisterQuickActions, MisterEmbedded, MisterWaveform
+      mister/surfaces/              # ProductCard, LandedCostWaterfall, ComparisonView, IndexComparison, MoqTable, SpecSheet, ContactCard, DocumentLink, QuotationFormCTA, SessionBrief, SurfaceRenderer
       navigation/                   # SiteNav, MobileMenu
       shared/                       # PageHero, SectionBlock, WhatsAppButton
   hooks/
-    useMisterChat.ts
-    useTprState.ts
-    useCifEstimate.ts
+    useMister.ts                    # consume MisterProvider context
+    useMisterStream.ts              # SSE consumption + history trim
     useInquiryForm.ts
   lib/
     supabase/client.ts
@@ -124,8 +126,7 @@ src/
     notifications/whatsapp.ts
     notifications/email.ts
     claude.ts
-    cif-calculator.ts
-    duty-rates.ts
+    mister/                         # systemPrompt, buildContext, tools, guardrails, rateLimit, stage, archetype, fallback-actions, waterfall-segments, motion, client
     routing.ts
     utils.ts
   types/
@@ -148,7 +149,7 @@ public/
 
 ## Database
 
-Supabase Postgres. Tables: `categories`, `products`, `leads`, `accio_projects`, `notification_log`.
+Supabase Postgres. Tables: `categories`, `products`, `leads`, `mister_projects`, `mister_contacts`, `mister_documents`, `mister_quote_tokens`, `notification_log`.
 
 Read `/spec/data-model.md` for complete schema SQL, RLS policies, and TypeScript types.
 
@@ -176,25 +177,22 @@ Routing logic lives in `src/lib/routing.ts` as `detectSearchIntent()`.
 
 ---
 
-## Mister — How It Works
+## Mister — How It Works (v2)
 
-1. User arrives at `/mister`
-2. First AI message renders immediately (hardcoded, not API call — avoids latency)
-3. User types a message → POST `/api/mister/chat` with full conversation history + current TPR state
-4. API calls Claude API with system prompt that instructs it to:
-   - Collect 10 TPR fields in natural conversation (one question per turn)
-   - Embed JSON extraction blocks (`|||JSON_START|||...|||JSON_END|||`) in each response
-5. Server parses JSON blocks, emits `tpr_update` SSE events to client
-6. Client updates TprSheet in real-time
-7. When `completeness` reaches `'minimum'`, client calls `/api/mister/estimate` for CIF calculation
-8. User clicks "Enviar consulta" → MisterSubmitForm collects contact info → POST `/api/mister/submit`
-9. Server creates `mister_projects` + `leads` records, fires notifications
+Mister is the indexed-range trade-intelligence layer (it REPLACED the old TPR -> CIF-estimate flow).
 
-Claude model: `claude-haiku-4-5` for chat turns. `claude-sonnet-4-6` for CIF estimation on unusual HS codes.
+1. User opens `/mister` (embedded mode) or the floating launcher (site-wide). First induction message renders immediately.
+2. User types -> POST `/api/mister` (streaming SSE). Server: validates, sanitizes (injection guard), IP rate-limits, atomic `in_flight` burst guard, pre-resolves backend context, calls `claude-sonnet-4-6` with a cached static system prompt + per-turn `<<MISTER_CONTEXT>>`.
+3. The model emits visible text plus ONE fenced ```mister``` control block: `{ quick_actions[3], surfaces[], state{archetype,stage}, collected{patch} }`.
+4. HOLD-BACK guardrail: the full response is buffered and `validateOutput()`-scanned (EN+ES price + availability) BEFORE any token is emitted — a price can never reach the client. On violation, the turn is replaced with a routing message.
+5. Server streams validated text as `token` events, then `surface` / `actions` / `state` / `done` events. Surfaces render via `SurfaceRenderer`.
+6. State persists to `mister_projects` (archetype, archetype_history, stage, collected, history[<=50], turn_count, flags). `collected` comes from the control block only — no second model call.
+7. Escalation: quotation form (`/api/mister/quote` -> prefill token), WhatsApp (+50760250735), or human contact card. A5 (wholesale) is always human-mediated at pre-qual.
 
-System prompt is in `src/lib/claude.ts` as `MISTER_SYSTEM_PROMPT`.
+Hard rules (enforced at prompt + tool-schema + type level): no absolute price/availability/lead-time ever; indexed ranges only (always [low, high] with a disclaimer); no `fetchPrice`/`getLeadTime`/`fetchStock`/`getAvailability` tool exists; route when uncertain.
 
----
+System prompt: `src/lib/mister/systemPrompt.ts` (`MISTER_STATIC_PROMPT`, brief Deliverable 3 verbatim, sent as a cached block). Full spec: `spec/ENRICHED_SPEC.md`.
+
 
 ## Notification Flow
 
@@ -212,25 +210,10 @@ In non-production environments (`process.env.VERCEL_ENV !== 'production'`): log 
 
 ---
 
-## CIF Calculation
+## CIF / Pricing — REMOVED from the Mister surface
 
-Lives in `src/lib/cif-calculator.ts`. Deterministic for standard cases.
+The old `cif-calculator.ts` absolute-USD CIF flow has been retired from Mister (decision A — REPLACE). Mister now educates on cost STRUCTURE only, via `LandedCostWaterfall`, using indexed ranges on base 100 — there is no code path that renders an absolute currency value (enforced at the TypeScript type level in `src/types/mister.ts`: `WaterfallSegment` requires paired `indexLow`/`indexHigh` + a required `disclaimerId`; the total is a computed band, never a scalar prop). Indexed segment data lives in `src/lib/mister/waterfall-segments.ts`. `duty-rates.ts` may persist only as reference data for indexed duty ranges — never to produce an absolute figure.
 
-```
-FOB = target_price_usd × quantity × (1 + sourcing_margin)
-Sourcing margins: machinery 18%, vehicles 15%, parts 22%, equipment 20%
-
-Freight = lookup by (source_market, destination_port, container_type)
-Insurance = (FOB + Freight) × 0.015
-
-CIF = FOB + Freight + Insurance
-Duty = CIF × duty_rate / 100
-Duty rates in: src/lib/duty-rates.ts (static table by destination_country × hs_chapter)
-```
-
-Free zone selection: Peru/Bolivia → ZOFRATACNA. Chile/Colombia/Panama → ZOFRI.
-
----
 
 ## API Error Handling
 

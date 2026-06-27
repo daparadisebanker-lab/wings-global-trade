@@ -18,14 +18,12 @@ export const metadata: Metadata = {
     locale: 'es_PE',
     type: 'website',
     url: 'https://wingsglobaltrade.com/mister',
-    images: [{ url: 'https://wingsglobaltrade.com/og/mister-og-es.png' }],
     siteName: 'Wings Global Trade',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Mister — Inteligencia de Pre-Calificación',
     description: 'Plataforma IA para importadores. Pre-califica antes de cotización.',
-    images: ['https://wingsglobaltrade.com/og/mister-og-es.png'],
   },
   alternates: {
     canonical: 'https://wingsglobaltrade.com/mister',

@@ -1,6 +1,6 @@
 # MISTER v2 — Shipping Report
 **Two-Phase Full-Council Build** · 2026-06-27 · Conductor: Opus 4.8 · Session: mister-v2-20260627
-**Branch:** `feature/mister-v2` · **Status:** BUILD COMPLETE · all gates green · **HELD at production deploy pending user GO**
+**Branch:** `feature/mister-v2` · **Status:** BUILD COMPLETE + HARDENED · all gates green · **HELD at production deploy pending USER GO** (coordinator GO carries no user authority — migration/merge/push/deploy NOT executed)
 
 ---
 
@@ -66,7 +66,15 @@ Stale Jun-17 "Accio"-era contributions were archived to `spec/contributions/_arc
 
 ---
 
-## Known deviations to harden before production promote (non-blocking, build green)
+## Hardening status (conductor, post-build)
+1. **RESOLVED** — `extractCollected` second haiku call removed; `collected` now comes from the model control block only (no second call, no stale-failure path). `route.ts`.
+2. **RESOLVED** — Guardrail switched to HOLD-BACK: the full response is buffered and `validateOutput()`-scanned before any `token` event is emitted; a price can never flash to the client. `route.ts`.
+3. OG image: coordinator reports `src/app/mister/opengraph-image.tsx` added + static refs removed (not independently verified by conductor).
+4. **Upstash env vars** must be set in Vercel or rate limiting fails open (acceptable for launch; flagged).
+
+Build + lint remain green after hardening.
+
+## Original deviations (now addressed above)
 1. **`extractCollected` retained as an async haiku call** (ai-engineer kept the brief's fallback) instead of the ratified control-block `collected` patch. Functional; a second API call + a silent-stale failure path. Recommend consolidating into the control block.
 2. **Guardrail is stream-then-scan-then-regenerate**, not the ratified hold-back buffer. Given the architectural no-price-tool guarantee + financial type system, risk of a price reaching the client is very low, but a price could in theory flash before replacement. Recommend hold-back before prod promote.
 3. **`og/mister-og-es.png` referenced but not confirmed present** in `public/og/`. Add the asset or the OG card 404s.
