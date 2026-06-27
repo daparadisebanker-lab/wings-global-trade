@@ -1,7 +1,7 @@
 // src/components/features/mister/MisterChat.tsx
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
 import { useMisterChat } from '@/hooks/useMisterChat'
@@ -10,6 +10,7 @@ import { MisterMessage } from '@/components/features/mister/MisterMessage'
 import { MisterInput } from '@/components/features/mister/MisterInput'
 import { TprSheet } from '@/components/features/mister/TprSheet'
 import { MisterSubmitForm } from '@/components/features/mister/MisterSubmitForm'
+import { MisterWaveform } from '@/components/features/mister/MisterWaveform'
 import type { TprState, TprFieldKey } from '@/types/mister'
 import type { ConversationTurn } from '@/types/database'
 
@@ -32,6 +33,7 @@ export function MisterChat({ initialContext }: MisterChatProps) {
     tprState,
     completeness,
     isLoading,
+    isStreaming,
     sessionId,
     sendMessage,
     editField,
@@ -51,7 +53,7 @@ export function MisterChat({ initialContext }: MisterChatProps) {
   const [sentTimestamp, setSentTimestamp] = useState<string | null>(null)
   const [submitted, setSubmitted] = useState(false)
 
-  const allMessages = [...messages, ...ceremonyMessages]
+  const allMessages = useMemo(() => [...messages, ...ceremonyMessages], [messages, ceremonyMessages])
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
@@ -217,21 +219,13 @@ export function MisterChat({ initialContext }: MisterChatProps) {
                 ))}
                 {isLoading && (
                   <motion.div
-                    key="loading-dots"
+                    key="loading-waveform"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.15 }}
-                    className="flex items-center gap-1.5"
                   >
-                    {[0, 1, 2].map((i) => (
-                      <motion.span
-                        key={i}
-                        className="h-1.5 w-1.5 rounded-full bg-[#C4933F]/50"
-                        animate={{ y: [0, -5, 0] }}
-                        transition={{ duration: 0.7, repeat: Infinity, delay: i * 0.15, ease: [0.4, 0, 0.2, 1] }}
-                      />
-                    ))}
+                    <MisterWaveform isStreaming={isStreaming} />
                   </motion.div>
                 )}
               </AnimatePresence>
