@@ -73,7 +73,7 @@ export function MisterComposer() {
       </div>
 
       {/* Composer row: input + send arrow */}
-      <div className="flex h-10 items-center gap-0">
+      <div className="flex h-10 items-center gap-0 lg:h-14">
         <textarea
           ref={textareaRef}
           value={value}
@@ -85,7 +85,7 @@ export function MisterComposer() {
           placeholder="Escribe tu consulta"
           rows={1}
           aria-label="Mensaje para Mister"
-          className="h-full flex-1 resize-none overflow-y-hidden bg-transparent px-4 py-2.5 font-body text-[16px] font-[400] leading-[1.40] text-[var(--mister-text-primary)] placeholder-[var(--mister-text-muted)] outline-none disabled:opacity-50 md:text-[14px]"
+          className="h-full flex-1 resize-none overflow-y-hidden bg-transparent px-4 py-2.5 font-body text-[16px] font-[400] leading-[1.40] text-[var(--mister-text-primary)] placeholder-[var(--mister-text-muted)] outline-none disabled:opacity-50 md:text-[14px] lg:px-6 lg:text-[15px]"
         />
 
         {/* Send trigger — bare "→", no button border. Teko 500 16px per designer.md */}
@@ -94,7 +94,7 @@ export function MisterComposer() {
           onClick={handleSend}
           disabled={!hasContent || isDisabled}
           aria-label="Enviar mensaje"
-          className={`mister-send-arrow flex h-full w-12 flex-shrink-0 items-center justify-center font-mono text-[16px] font-[500] disabled:cursor-not-allowed ${
+          className={`mister-send-arrow flex h-full w-12 flex-shrink-0 items-center justify-center font-mono text-[16px] font-[500] disabled:cursor-not-allowed lg:w-16 lg:text-[18px] ${
             hasContent && !isDisabled
               ? 'text-[var(--mister-gold)]'
               : 'text-[var(--mister-text-muted)]'

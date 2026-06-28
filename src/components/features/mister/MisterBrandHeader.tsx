@@ -96,13 +96,17 @@ export function MisterBrandHeader({ mode = 'embedded', onClose }: Props) {
 
   return (
     <div className="flex-shrink-0 border-b border-[var(--mister-gold-rule)] bg-[var(--mister-bg-header)]">
-      <div className="px-6 pt-4 pb-0">
+      {/* Gold crown — the signature element. 2px rule anchors the world boundary at the top. */}
+      <div className="h-0.5 w-full bg-[var(--mister-gold)]" aria-hidden />
+
+      <div className="px-6 pt-3 pb-0 lg:pt-4">
         {/* Top strip: issuing authority + exit control */}
         <div className="flex items-center justify-between">
           <p className="font-mono text-[10px] font-[400] uppercase tracking-[0.20em] text-[var(--mister-text-ghost)]">
             ASESOR DE IMPORTACIÓN · WINGS GLOBAL TRADE
           </p>
 
+          {/* Overlay mode: pill close button */}
           {mode === 'overlay' && onClose && (
             <button
               type="button"
@@ -119,10 +123,25 @@ export function MisterBrandHeader({ mode = 'embedded', onClose }: Props) {
               </span>
             </button>
           )}
+
+          {/* Embedded mode desktop: back link to site (mobile uses browser back) */}
+          {mode === 'embedded' && (
+            <a
+              href="/"
+              aria-label="Volver al sitio Wings Global Trade"
+              className="hidden lg:flex items-center gap-1.5 rounded-full border border-[rgba(248,246,240,0.15)] bg-[rgba(248,246,240,0.03)] px-3 py-1.5 font-mono text-[10px] font-[400] uppercase tracking-[0.14em] text-[var(--mister-text-ghost)] transition-all duration-150 hover:border-[rgba(248,246,240,0.30)] hover:text-[var(--mister-text-primary)]"
+            >
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
+                <line x1="9" y1="5" x2="1" y2="5" stroke="currentColor" strokeWidth="1" />
+                <polyline points="3,2.5 1,5 3,7.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+              </svg>
+              Wings Global Trade
+            </a>
+          )}
         </div>
 
         {/* MISTER wordmark + breathing icon */}
-        <div className="mt-3 flex items-end justify-between">
+        <div className="mt-2 flex items-end justify-between lg:mt-3">
           <div className="flex items-end gap-3">
             {/* Breathing icon — opacity cycles 0.6→1→0.6 over 3s */}
             <motion.div
@@ -133,7 +152,7 @@ export function MisterBrandHeader({ mode = 'embedded', onClose }: Props) {
               <MisterIcon />
             </motion.div>
 
-            <h1 className="font-display text-[48px] font-[400] uppercase leading-none tracking-[-0.01em] text-[var(--mister-text-primary)] md:text-[64px]">
+            <h1 className="font-display text-[48px] font-[400] uppercase leading-none tracking-[-0.01em] text-[var(--mister-text-primary)] md:text-[64px] lg:text-[80px]">
               MISTER
             </h1>
           </div>

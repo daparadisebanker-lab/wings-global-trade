@@ -36,13 +36,10 @@ export const metadata: Metadata = {
 
 export default function MisterPage() {
   return (
-    // h-[calc(100dvh-4rem)] subtracts the SiteNav (h-16=64px mobile).
-    // md: subtracts md:h-18=72px. dvh adjusts for mobile browser chrome.
-    // overflow-hidden keeps the composer anchored; MessageList scrolls internally.
-    <div className="flex h-[calc(100dvh-4rem)] flex-col overflow-hidden bg-[var(--mister-bg-window)] md:h-[calc(100dvh-4.5rem)]">
+    <>
       <JsonLd data={misterSoftwareApplicationSchema()} />
       <JsonLd data={faqSchema(MISTER_FAQS)} />
       <MisterEmbedded currentPage="/mister" />
-    </div>
+    </>
   )
 }
