@@ -18,6 +18,7 @@ import type {
   MisterActionId,
   MisterLocale,
   MisterSurface,
+  MisterCollected,
 } from '@/types/mister'
 import { useMisterStream } from '@/hooks/useMisterStream'
 
@@ -74,6 +75,8 @@ export interface MisterContextValue {
   entries: MisterEntry[]
   /** Current accumulated streaming text (shown in MisterStreamingMessage) */
   streamingContent: string
+  /** Merged collected data — updates after each assistant turn via SSE */
+  collected: MisterCollected
   locale: MisterLocale
   sendMessage: (text: string, actionId?: MisterActionId) => void
   toggle: () => void
@@ -108,6 +111,7 @@ export function MisterProvider({
   const [sessionId] = useState(() => generateSessionId())
   const [archetype, setArchetype] = useState<MisterArchetype>('unresolved')
   const [stage, setStage] = useState<MisterStage>('induction')
+  const [collected, setCollected] = useState<MisterCollected>({})
   const [isOpen, setIsOpen] = useState(false)
   const [inFlight, setInFlight] = useState(false)
   const [streamingContent, setStreamingContent] = useState('')
@@ -180,6 +184,9 @@ export function MisterProvider({
             setArchetype(newArchetype)
             setStage(newStage)
           },
+          onCollected: (newCollected) => {
+            setCollected(newCollected)
+          },
           onDone: () => {
             assistantTurnCountRef.current += 1
             const entry: MisterEntry = {
@@ -238,6 +245,7 @@ export function MisterProvider({
     inFlight,
     entries,
     streamingContent,
+    collected,
     locale,
     sendMessage,
     toggle,

@@ -319,7 +319,7 @@ export async function POST(request: NextRequest) {
           await delay(6)
         }
 
-        // 10. Actions, state, done
+        // 10. Actions, state, collected, done
         const quickActions = resolveQuickActions(block, sessionRow.archetype, sessionRow.stage)
         enqueue(sseEvent('actions', { quickActions }))
 
@@ -327,15 +327,16 @@ export async function POST(request: NextRequest) {
         const newStage = resolveStage(block, newArchetype, sessionRow.collected, sessionRow.stage)
         enqueue(sseEvent('state', { archetype: newArchetype, stage: newStage }))
 
-        const messageId = crypto.randomUUID()
-        enqueue(sseEvent('done', { messageId }))
-
-        // 11. Persist — collected patch comes from the control block ONLY (no second call)
+        // Emit merged collected so the client progress panel can update without a DB fetch
         const collectedPatch = block?.collected ?? {}
         const mergedCollected: MisterCollected = {
           ...sessionRow.collected,
           ...collectedPatch,
         }
+        enqueue(sseEvent('collected', { collected: mergedCollected }))
+
+        const messageId = crypto.randomUUID()
+        enqueue(sseEvent('done', { messageId }))
 
         const updatedHistory = capStoredHistory([
           ...sessionRow.history,

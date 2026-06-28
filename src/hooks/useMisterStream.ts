@@ -14,6 +14,7 @@ import type {
   MisterActionId,
   MisterLocale,
   MisterSurface,
+  MisterCollected,
 } from '@/types/mister'
 
 export interface StreamCallbacks {
@@ -21,6 +22,7 @@ export interface StreamCallbacks {
   onSurface: (surface: MisterSurface) => void
   onActions: (quickActions: MisterQuickAction[]) => void
   onState: (archetype: MisterArchetype, stage: MisterStage) => void
+  onCollected: (collected: MisterCollected) => void
   onDone: (messageId: string) => void
   onError: (code: string, message?: string, fallback?: string) => void
 }
@@ -155,6 +157,12 @@ export function useMisterStream() {
                     archetype as MisterArchetype,
                     stage as MisterStage,
                   )
+                }
+                break
+              }
+              case 'collected': {
+                if (obj.collected && typeof obj.collected === 'object') {
+                  callbacks.onCollected(obj.collected as MisterCollected)
                 }
                 break
               }
