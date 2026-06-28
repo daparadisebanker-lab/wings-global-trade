@@ -118,21 +118,21 @@ export function QuotationFormCTA({ summaryFields }: Props) {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="w-full border-b border-[var(--mister-border-input)] bg-transparent pb-2 font-body text-[14px] text-[var(--mister-text-primary)] placeholder-[var(--mister-text-muted)] outline-none focus:border-[var(--mister-gold)]"
+            className="w-full border-b border-[var(--mister-border-input)] bg-transparent pb-2 font-body text-[16px] text-[var(--mister-text-primary)] placeholder-[var(--mister-text-muted)] outline-none focus:border-[var(--mister-gold)] md:text-[14px]"
           />
           <input
             type="text"
             placeholder="Empresa (opcional)"
             value={company}
             onChange={(e) => setCompany(e.target.value)}
-            className="w-full border-b border-[var(--mister-border-input)] bg-transparent pb-2 font-body text-[14px] text-[var(--mister-text-primary)] placeholder-[var(--mister-text-muted)] outline-none focus:border-[var(--mister-gold)]"
+            className="w-full border-b border-[var(--mister-border-input)] bg-transparent pb-2 font-body text-[16px] text-[var(--mister-text-primary)] placeholder-[var(--mister-text-muted)] outline-none focus:border-[var(--mister-gold)] md:text-[14px]"
           />
           <input
             type="text"
             placeholder="País"
             value={country}
             onChange={(e) => setCountry(e.target.value)}
-            className="w-full border-b border-[var(--mister-border-input)] bg-transparent pb-2 font-body text-[14px] text-[var(--mister-text-primary)] placeholder-[var(--mister-text-muted)] outline-none focus:border-[var(--mister-gold)]"
+            className="w-full border-b border-[var(--mister-border-input)] bg-transparent pb-2 font-body text-[16px] text-[var(--mister-text-primary)] placeholder-[var(--mister-text-muted)] outline-none focus:border-[var(--mister-gold)] md:text-[14px]"
           />
           <input
             type="email"
@@ -140,7 +140,7 @@ export function QuotationFormCTA({ summaryFields }: Props) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full border-b border-[var(--mister-border-input)] bg-transparent pb-2 font-body text-[14px] text-[var(--mister-text-primary)] placeholder-[var(--mister-text-muted)] outline-none focus:border-[var(--mister-gold)]"
+            className="w-full border-b border-[var(--mister-border-input)] bg-transparent pb-2 font-body text-[16px] text-[var(--mister-text-primary)] placeholder-[var(--mister-text-muted)] outline-none focus:border-[var(--mister-gold)] md:text-[14px]"
           />
           <input
             type="tel"
@@ -148,7 +148,7 @@ export function QuotationFormCTA({ summaryFields }: Props) {
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             required
-            className="w-full border-b border-[var(--mister-border-input)] bg-transparent pb-2 font-body text-[14px] text-[var(--mister-text-primary)] placeholder-[var(--mister-text-muted)] outline-none focus:border-[var(--mister-gold)]"
+            className="w-full border-b border-[var(--mister-border-input)] bg-transparent pb-2 font-body text-[16px] text-[var(--mister-text-primary)] placeholder-[var(--mister-text-muted)] outline-none focus:border-[var(--mister-gold)] md:text-[14px]"
           />
         </div>
 

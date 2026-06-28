@@ -61,7 +61,7 @@ export function MisterComposer() {
     /* Single top border — transitions from gold-rule to gold-rule-strong on focus.
        mister-composer-border provides the CSS transition: border-top-color 0.15s ease. */
     <div
-      className={`mister-composer-border flex flex-col border-t bg-[var(--mister-bg-composer)] pb-[env(safe-area-inset-bottom)] ${
+      className={`mister-composer-border flex flex-col border-t bg-[var(--mister-bg-composer)] pb-[env(safe-area-inset-bottom)] touch-manipulation ${
         focused
           ? 'border-[var(--mister-gold-rule-strong)]'
           : 'border-[var(--mister-gold-rule)]'
@@ -85,7 +85,7 @@ export function MisterComposer() {
           placeholder="Escribe tu consulta"
           rows={1}
           aria-label="Mensaje para Mister"
-          className="h-full flex-1 resize-none overflow-y-hidden bg-transparent px-4 py-2.5 font-body text-[14px] font-[400] leading-[1.40] text-[var(--mister-text-primary)] placeholder-[var(--mister-text-muted)] outline-none disabled:opacity-50"
+          className="h-full flex-1 resize-none overflow-y-hidden bg-transparent px-4 py-2.5 font-body text-[16px] font-[400] leading-[1.40] text-[var(--mister-text-primary)] placeholder-[var(--mister-text-muted)] outline-none disabled:opacity-50 md:text-[14px]"
         />
 
         {/* Send trigger — bare "→", no button border. Teko 500 16px per designer.md */}

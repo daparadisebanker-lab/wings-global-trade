@@ -100,7 +100,7 @@ export function MisterFullscreenOverlay() {
             initial={reduced ? 'hiddenReduced' : 'hidden'}
             animate={reduced ? 'visibleReduced' : 'visible'}
             exit={reduced ? 'exitReduced' : 'exit'}
-            className="fixed left-0 right-0 top-0 z-[100] flex h-[var(--mister-vp-height,100dvh)] flex-col overflow-hidden bg-[var(--mister-bg-window)]"
+            className="fixed left-0 right-0 top-0 z-[100] flex h-[var(--mister-vp-height,100dvh)] flex-col overflow-hidden bg-[var(--mister-bg-window)] touch-manipulation"
             role="dialog"
             aria-modal="true"
             aria-label="Mister — asesor de importación Wings Global Trade"
