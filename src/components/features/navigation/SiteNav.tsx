@@ -49,8 +49,10 @@ export function SiteNav({ categories }: SiteNavProps) {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Mister page has its own full-height layout; keep nav solid there.
-  const forceSolid = pathname?.startsWith('/mister') || pathname?.startsWith('/catalogo') || pathname?.startsWith('/repuestos')
+  // Mister page is a fullscreen world takeover — nav would break the world boundary.
+  if (pathname === '/mister') return null
+
+  const forceSolid = pathname?.startsWith('/catalogo') || pathname?.startsWith('/repuestos')
   const solid = scrolled || forceSolid
 
   return (

@@ -1,8 +1,8 @@
 // src/components/features/mister/MisterEmbedded.tsx
-// Full-viewport Mister embedded experience — covers everything (z-100), including SiteNav.
-// Uses fixed positioning identical to MisterFullscreenOverlay so the experience is the same
-// whether the user arrives via /mister URL or opens the site-wide overlay.
-// Body scroll is locked while active; restored on unmount (back navigation / SPA route change).
+// Full-viewport Mister embedded experience on the /mister page.
+// SiteNav hides itself on /mister (world boundary established without z-index fighting).
+// Body scroll is locked on mount so the Footer below is unreachable.
+// Entrance animation matches MisterFullscreenOverlay for experience parity.
 'use client'
 
 import { useEffect } from 'react'
@@ -23,9 +23,8 @@ interface Props {
 export function MisterEmbedded({ currentPage = '/mister', currentProductId = null }: Props) {
   const reduced = useReducedMotion()
 
-  // Body scroll lock — same technique as MisterFullscreenOverlay.
-  // position:fixed prevents iOS Safari from scrolling the Wings catalog
-  // behind the Mister world. Scroll position is restored on unmount.
+  // Body scroll lock — prevents scrolling to the Footer below.
+  // Uses position:fixed (same as overlay) so it works on iOS Safari too.
   useEffect(() => {
     const scrollY = window.scrollY
     Object.assign(document.body.style, {
@@ -53,12 +52,14 @@ export function MisterEmbedded({ currentPage = '/mister', currentProductId = nul
       currentPage={currentPage}
       currentProductId={currentProductId}
     >
-      {/* Fixed fullscreen takeover — covers SiteNav (z≈50) and all site chrome */}
+      {/* Normal flow layout — SiteNav is already hidden on /mister, so this
+          fills 100dvh naturally. overflow-x-clip on <main> would trap fixed
+          children, so we use a regular block instead. */}
       <motion.div
         variants={overlayPanelVariants}
         initial={reduced ? 'hiddenReduced' : 'hidden'}
         animate={reduced ? 'visibleReduced' : 'visible'}
-        className="fixed inset-0 z-[100] flex flex-col overflow-hidden bg-[var(--mister-bg-window)] touch-manipulation"
+        className="flex h-full w-full flex-col overflow-hidden bg-[var(--mister-bg-window)] touch-manipulation"
       >
         {/* Brand header — full identity, embedded mode (back link on desktop) */}
         <MisterBrandHeader mode="embedded" />

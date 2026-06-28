@@ -36,10 +36,11 @@ export const metadata: Metadata = {
 
 export default function MisterPage() {
   return (
-    <>
+    // SiteNav hides itself on /mister, so full 100dvh is available with no offset.
+    <div className="flex h-[100dvh] flex-col overflow-hidden">
       <JsonLd data={misterSoftwareApplicationSchema()} />
       <JsonLd data={faqSchema(MISTER_FAQS)} />
       <MisterEmbedded currentPage="/mister" />
-    </>
+    </div>
   )
 }
