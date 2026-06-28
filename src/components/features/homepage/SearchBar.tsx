@@ -48,7 +48,7 @@ export function SearchBar({ onNavy = true }: SearchBarProps) {
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Busca maquinaria, camiones, equipos industriales..."
           aria-label="Buscar productos o iniciar una importación personalizada"
-          className={`w-full bg-transparent py-4 pl-3 pr-2 font-body text-sm outline-none ${
+          className={`w-full bg-transparent py-4 pl-3 pr-2 font-body text-[16px] md:text-sm outline-none ${
             onNavy
               ? 'text-warm-white placeholder:text-warm-white/30'
               : 'text-navy placeholder:text-navy/25'

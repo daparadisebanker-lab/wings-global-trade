@@ -149,7 +149,7 @@ export function MultiInquiryPanel() {
                     value={form.full_name}
                     onChange={handleChange}
                     required
-                    className="w-full border border-[rgba(0,30,80,0.15)] bg-white px-3 py-2.5 font-body text-sm text-navy focus:border-gold focus:outline-none"
+                    className="w-full border border-[rgba(0,30,80,0.15)] bg-white px-3 py-2.5 font-body text-[16px] md:text-sm text-navy focus:border-gold focus:outline-none"
                   />
                 </div>
 
@@ -161,7 +161,7 @@ export function MultiInquiryPanel() {
                     name="company"
                     value={form.company}
                     onChange={handleChange}
-                    className="w-full border border-[rgba(0,30,80,0.15)] bg-white px-3 py-2.5 font-body text-sm text-navy focus:border-gold focus:outline-none"
+                    className="w-full border border-[rgba(0,30,80,0.15)] bg-white px-3 py-2.5 font-body text-[16px] md:text-sm text-navy focus:border-gold focus:outline-none"
                   />
                 </div>
 
@@ -175,7 +175,7 @@ export function MultiInquiryPanel() {
                     value={form.email}
                     onChange={handleChange}
                     required
-                    className="w-full border border-[rgba(0,30,80,0.15)] bg-white px-3 py-2.5 font-body text-sm text-navy focus:border-gold focus:outline-none"
+                    className="w-full border border-[rgba(0,30,80,0.15)] bg-white px-3 py-2.5 font-body text-[16px] md:text-sm text-navy focus:border-gold focus:outline-none"
                   />
                 </div>
 
@@ -187,7 +187,7 @@ export function MultiInquiryPanel() {
                     name="phone"
                     value={form.phone}
                     onChange={handleChange}
-                    className="w-full border border-[rgba(0,30,80,0.15)] bg-white px-3 py-2.5 font-body text-sm text-navy focus:border-gold focus:outline-none"
+                    className="w-full border border-[rgba(0,30,80,0.15)] bg-white px-3 py-2.5 font-body text-[16px] md:text-sm text-navy focus:border-gold focus:outline-none"
                   />
                 </div>
 
@@ -200,7 +200,7 @@ export function MultiInquiryPanel() {
                     value={form.destination_country}
                     onChange={handleChange}
                     required
-                    className="w-full border border-[rgba(0,30,80,0.15)] bg-white px-3 py-2.5 font-body text-sm text-navy focus:border-gold focus:outline-none"
+                    className="w-full border border-[rgba(0,30,80,0.15)] bg-white px-3 py-2.5 font-body text-[16px] md:text-sm text-navy focus:border-gold focus:outline-none"
                   >
                     <option value="">Selecciona un país</option>
                     <option>Perú</option>
@@ -225,7 +225,7 @@ export function MultiInquiryPanel() {
                     value={form.message}
                     onChange={handleChange}
                     rows={3}
-                    className="w-full border border-[rgba(0,30,80,0.15)] bg-white px-3 py-2.5 font-body text-sm text-navy focus:border-gold focus:outline-none"
+                    className="w-full border border-[rgba(0,30,80,0.15)] bg-white px-3 py-2.5 font-body text-[16px] md:text-sm text-navy focus:border-gold focus:outline-none"
                   />
                 </div>
 
