@@ -609,7 +609,7 @@ export function EngineDatabase() {
             value={filters.search}
             onChange={(e) => setFilters((p) => ({ ...p, search: e.target.value }))}
             placeholder="Buscar código, marca o vehículo…"
-            className="w-full border border-navy/20 bg-[rgba(0,30,80,0.03)] py-2.5 pl-4 pr-10 font-mono text-[12px] text-navy placeholder:text-navy/30 outline-none focus:border-gold/60 transition-colors duration-200"
+            className="w-full border border-navy/20 bg-[rgba(0,30,80,0.03)] py-2.5 pl-4 pr-10 font-mono text-[16px] md:text-[12px] text-navy placeholder:text-navy/30 outline-none focus:border-gold/60 transition-colors duration-200"
           />
           {filters.search && (
             <button

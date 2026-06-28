@@ -274,7 +274,7 @@ export function QuotationForm() {
               <select
                 value={values.unit}
                 onChange={(e) => set('unit', e.target.value)}
-                className="flex-1 min-w-0 bg-transparent font-mono text-[12px] uppercase tracking-[0.08em] text-navy/70 outline-none"
+                className="flex-1 min-w-0 bg-transparent font-mono text-[16px] md:text-[12px] uppercase tracking-[0.08em] text-navy/70 outline-none"
               >
                 {UNITS.map((u) => (
                   <option key={u} value={u}>{u}</option>
