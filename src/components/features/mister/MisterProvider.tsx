@@ -119,7 +119,11 @@ export function MisterProvider({
       turnIndex: 1,
       timestamp: new Date().toISOString(),
       surfaces: [],
-      quickActions: [],
+      quickActions: [
+        { label: 'Para mi propia operación', action: 'ask_followup' as MisterActionId },
+        { label: 'Para revender / distribuir', action: 'ask_followup' as MisterActionId },
+        { label: 'Para un proyecto específico', action: 'ask_followup' as MisterActionId },
+      ],
     },
   ])
 

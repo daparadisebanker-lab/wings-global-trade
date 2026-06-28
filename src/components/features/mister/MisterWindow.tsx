@@ -42,13 +42,13 @@ export function MisterWindow({ mode, isOpen = true }: Props) {
     )
   }
 
-  // Embedded mode — height expands to content
+  // Embedded mode — fills its container; container in page.tsx sets the height.
   return (
     <motion.div
       variants={windowEmbeddedVariants}
       initial="collapsed"
       animate={reduced ? 'expandedReduced' : 'expanded'}
-      className="flex w-full min-h-[var(--mister-window-height)] flex-col overflow-hidden rounded-none border border-[var(--mister-border-window)] bg-[var(--mister-bg-window)]"
+      className="flex h-full w-full flex-col overflow-hidden rounded-none border border-[var(--mister-border-window)] bg-[var(--mister-bg-window)]"
       role="main"
       aria-label="Mister — inteligencia comercial Wings"
     >
