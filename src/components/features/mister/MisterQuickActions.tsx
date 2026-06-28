@@ -12,6 +12,7 @@ import {
   quickActionTapTransition,
 } from '@/lib/mister/motion'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
+import { HAPTIC } from '@/lib/mister/haptics'
 
 interface Props {
   actions: MisterQuickAction[]
@@ -46,7 +47,7 @@ export function MisterQuickActions({ actions, onAction, visible }: Props) {
                 },
               })}
               type="button"
-              onClick={() => onAction(qa.label, qa.action)}
+              onClick={() => { HAPTIC.chip(); onAction(qa.label, qa.action) }}
               className="mister-qa-button h-7 rounded-[2px] border border-[var(--mister-qa-border)] bg-transparent px-[10px] font-body text-[12px] font-[500] tracking-[0.01em] text-[var(--mister-text-primary)] transition-colors duration-[150ms] hover:border-[var(--mister-qa-border-hover)] hover:bg-[var(--mister-qa-bg-hover)] active:bg-[var(--mister-gold-fill-active)]"
             >
               {qa.label}

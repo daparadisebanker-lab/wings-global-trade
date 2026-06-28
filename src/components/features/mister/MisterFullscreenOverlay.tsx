@@ -22,12 +22,48 @@ export function MisterFullscreenOverlay() {
   const { isOpen, close } = useMister()
   const reduced = useReducedMotion()
 
-  // Body scroll lock — zero residue on close (Law 2)
+  // iOS-safe body scroll lock — position:fixed prevents iOS Safari body scroll.
+  // overflow:hidden alone is ignored on iOS Safari, causing the background page to
+  // scroll when the virtual keyboard opens (revealing catalog content behind overlay).
+  // On close: restore body styles, then jump scroll position back (Law 2 — zero residue).
   useEffect(() => {
-    if (isOpen) {
-      const prev = document.body.style.overflow
-      document.body.style.overflow = 'hidden'
-      return () => { document.body.style.overflow = prev }
+    if (!isOpen) return
+    const scrollY = window.scrollY
+    Object.assign(document.body.style, {
+      position: 'fixed',
+      top: `-${scrollY}px`,
+      left: '0',
+      right: '0',
+      overflow: 'hidden',
+    })
+    return () => {
+      Object.assign(document.body.style, {
+        position: '',
+        top: '',
+        left: '',
+        right: '',
+        overflow: '',
+      })
+      window.scrollTo(0, scrollY)
+    }
+  }, [isOpen])
+
+  // Track visualViewport height as a CSS variable so the panel stays within
+  // the visual viewport on iOS — fixed inset-0 shrinks when keyboard opens on iOS 15+,
+  // leaving a gap between panel and keyboard. --mister-vp-height closes that gap.
+  useEffect(() => {
+    if (!isOpen || typeof window === 'undefined' || !window.visualViewport) return
+    const vv = window.visualViewport
+    const update = () => {
+      document.documentElement.style.setProperty('--mister-vp-height', `${vv.height}px`)
+    }
+    update()
+    vv.addEventListener('resize', update)
+    vv.addEventListener('scroll', update)
+    return () => {
+      vv.removeEventListener('resize', update)
+      vv.removeEventListener('scroll', update)
+      document.documentElement.style.removeProperty('--mister-vp-height')
     }
   }, [isOpen])
 
@@ -57,14 +93,14 @@ export function MisterFullscreenOverlay() {
             aria-hidden
           />
 
-          {/* Full-screen panel */}
+          {/* Full-screen panel — height from visualViewport so it stays above iOS keyboard */}
           <motion.div
             key="mister-overlay-panel"
             variants={overlayPanelVariants}
             initial={reduced ? 'hiddenReduced' : 'hidden'}
             animate={reduced ? 'visibleReduced' : 'visible'}
             exit={reduced ? 'exitReduced' : 'exit'}
-            className="fixed inset-0 z-[100] flex flex-col overflow-hidden bg-[var(--mister-bg-window)]"
+            className="fixed left-0 right-0 top-0 z-[100] flex h-[var(--mister-vp-height,100dvh)] flex-col overflow-hidden bg-[var(--mister-bg-window)]"
             role="dialog"
             aria-modal="true"
             aria-label="Mister — asesor de importación Wings Global Trade"

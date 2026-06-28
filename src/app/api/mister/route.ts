@@ -335,6 +335,22 @@ export async function POST(request: NextRequest) {
         }
         enqueue(sseEvent('collected', { collected: mergedCollected }))
 
+        // Emit AI-requested surfaces from the control block.
+        // quotation_form and contact surfaces need no async resolution — emit directly.
+        if (block?.surfaces) {
+          for (const blockSurface of block.surfaces) {
+            if (blockSurface.type === 'quotation_form') {
+              const summaryFields: Record<string, string> = {}
+              if (mergedCollected.destinationCountry) summaryFields['País'] = mergedCollected.destinationCountry
+              if (mergedCollected.productInterest?.length)
+                summaryFields['Interés'] = mergedCollected.productInterest.join(', ')
+              enqueue(sseEvent('surface', { type: 'quotation_form', payload: { summaryFields } }))
+            }
+            // Other surface types (product, comparison, etc.) are resolved in buildMisterContext
+            // before the AI call and already emitted above.
+          }
+        }
+
         const messageId = crypto.randomUUID()
         enqueue(sseEvent('done', { messageId }))
 

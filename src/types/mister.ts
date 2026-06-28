@@ -176,6 +176,7 @@ export type MisterSurfaceType =
   | 'waterfall'
   | 'document'
   | 'contact'
+  | 'quotation_form'
 
 export interface MisterSurface {
   type: MisterSurfaceType
@@ -397,6 +398,11 @@ export interface WaterfallSurface {
   segments: WaterfallSegment[]
 }
 
+/** Pre-fill context passed to the inline quotation collection form. */
+export interface QuotationFormSurface {
+  summaryFields?: Record<string, string>
+}
+
 export type SurfaceEventPayload =
   | { type: 'product'; payload: ProductSurface }
   | { type: 'comparison'; payload: ComparisonSurface }
@@ -405,3 +411,4 @@ export type SurfaceEventPayload =
   | { type: 'contact'; payload: ContactSurface }
   | { type: 'waterfall'; payload: WaterfallSurface }
   | { type: 'specs'; payload: Record<string, string> }
+  | { type: 'quotation_form'; payload: QuotationFormSurface }

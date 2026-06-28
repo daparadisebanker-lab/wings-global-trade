@@ -6,18 +6,38 @@
 // Source: designer.md §4 (MisterComposer), animator.md §16
 'use client'
 
-import { useRef, useState, KeyboardEvent } from 'react'
+import { useRef, useState, useEffect, KeyboardEvent } from 'react'
 import { useMister } from '@/components/features/mister/MisterProvider'
 import { MisterWaveform } from '@/components/features/mister/MisterWaveform'
+import { HAPTIC } from '@/lib/mister/haptics'
 
 export function MisterComposer() {
   const { sendMessage, inFlight, isStreaming } = useMister()
   const [value, setValue] = useState('')
   const [focused, setFocused] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const thinkingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const isDisabled = inFlight || isStreaming
   const hasContent = value.trim().length > 0
+
+  // Stop thinking haptic pulse when response arrives
+  useEffect(() => {
+    if (!inFlight && !isStreaming) {
+      if (thinkingIntervalRef.current) {
+        clearInterval(thinkingIntervalRef.current)
+        thinkingIntervalRef.current = null
+        HAPTIC.thinkingEnd()
+      }
+    }
+  }, [inFlight, isStreaming])
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (thinkingIntervalRef.current) clearInterval(thinkingIntervalRef.current)
+    }
+  }, [])
 
   const handleSend = (): void => {
     const text = value.trim()
@@ -25,6 +45,9 @@ export function MisterComposer() {
     sendMessage(text)
     setValue('')
     textareaRef.current?.focus()
+    // Thinking haptic: start pulse, then rhythm every 1.2s until first token
+    HAPTIC.thinkingStart()
+    thinkingIntervalRef.current = setInterval(() => HAPTIC.thinkingPulse(), 1200)
   }
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>): void => {
@@ -38,7 +61,7 @@ export function MisterComposer() {
     /* Single top border — transitions from gold-rule to gold-rule-strong on focus.
        mister-composer-border provides the CSS transition: border-top-color 0.15s ease. */
     <div
-      className={`mister-composer-border flex flex-col border-t bg-[var(--mister-bg-composer)] ${
+      className={`mister-composer-border flex flex-col border-t bg-[var(--mister-bg-composer)] pb-[env(safe-area-inset-bottom)] ${
         focused
           ? 'border-[var(--mister-gold-rule-strong)]'
           : 'border-[var(--mister-gold-rule)]'

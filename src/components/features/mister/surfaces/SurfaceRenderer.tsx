@@ -13,6 +13,7 @@ import type {
   ContactSurface,
   WaterfallSurface,
   IndexComparisonView,
+  QuotationFormSurface,
 } from '@/types/mister'
 import { ProductCard } from './ProductCard'
 import { ComparisonView } from './ComparisonView'
@@ -22,6 +23,7 @@ import { LandedCostWaterfall } from './LandedCostWaterfall'
 import { IndexComparison } from './IndexComparison'
 import { DocumentLink } from './DocumentLink'
 import { ContactCard } from './ContactCard'
+import { QuotationFormCTA } from './QuotationFormCTA'
 
 interface Props {
   surface: MisterSurface
@@ -51,6 +53,10 @@ export function SurfaceRenderer({ surface }: Props) {
       return <DocumentLink payload={surface.payload as DocumentSurface} />
     case 'contact':
       return <ContactCard payload={surface.payload as ContactSurface} />
+    case 'quotation_form': {
+      const qfPayload = surface.payload as QuotationFormSurface
+      return <QuotationFormCTA summaryFields={qfPayload?.summaryFields} />
+    }
     default:
       return null
   }

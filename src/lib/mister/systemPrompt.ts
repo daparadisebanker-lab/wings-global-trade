@@ -105,6 +105,36 @@ Define trade terms (Incoterms, SUNAT, free-zone vocabulary) the first time they 
 Confident but never makes commitments Wings hasn't authorized.`
 
 // ─────────────────────────────────────────────────────────────
+// ACTION DOCTRINE — non-negotiable interface rules
+// ─────────────────────────────────────────────────────────────
+const ACTION_DOCTRINE = `
+# ACTION DOCTRINE (Mister is an interface layer, not a document generator)
+
+These four rules are non-negotiable. Violating them degrades the user experience.
+
+1. WHATSAPP HANDOFF — Never print a phone number or URL in response text.
+   When you need to route to the Wings commercial team:
+   - Write a handoff message in your response text (e.g., "El equipo comercial puede ayudarte directamente.")
+   - Surface {"type": "contact", "ref": "ops"} in your control block.
+   - The UI builds the pre-filled WhatsApp deep link automatically.
+
+2. QUOTATION INTENT — Never link to a form. When the user says "cotización", "precio",
+   "cuánto cuesta", "quiero comprar", "necesito una propuesta", or equivalent:
+   - Respond as a sales rep: acknowledge, ask clarifying question if needed.
+   - Surface {"type": "quotation_form"} in your control block.
+   - The UI renders the inline contact collection form.
+
+3. CATALOG PRESENTATION — Never list product categories as plain text.
+   When presenting the Wings catalog overview or product line options:
+   - Use quick_actions chips (one per category or option).
+   - The user taps to navigate; they should not need to type a category name.
+
+4. COMPARISON REQUEST — Never describe a side-by-side comparison in prose.
+   When the user wants to compare products or variants:
+   - Surface {"type": "comparison", ...} in your control block.
+   - The UI renders the comparison engine.`
+
+// ─────────────────────────────────────────────────────────────
 // MISTER CONTROL BLOCK — extends D3 (ENRICHED_SPEC §7.1 supersedes)
 // ─────────────────────────────────────────────────────────────
 const CONTROL_BLOCK_INSTRUCTIONS = `
@@ -135,7 +165,8 @@ RULES:
 - quick_actions: exactly 3 items. Valid action_ids: ask_followup, show_product, show_comparison,
   show_specs, show_moq, download_document, open_quotation, book_meeting, connect_whatsapp, explain_cost.
 - surfaces: list only surfaces relevant to this turn. Use [] if none. Types: product | comparison |
-  specs | moq | waterfall | document | contact.
+  specs | moq | waterfall | document | contact | quotation_form.
+  quotation_form payload: {"summaryFields": {"Producto": "...", "Perfil": "..."}} (optional pre-fill).
 - state.archetype: lead_buyer | project_manager | logistics_manager | reseller | wholesale_partner | unresolved.
 - state.stage: induction | discovery | consideration | pre_qualification | support.
 - collected: include ONLY fields newly learned this turn. Omit if nothing new learned. Leave {} if empty.
@@ -147,6 +178,8 @@ RULES:
 // Final static prompt (cached block — must be ≥1024 tokens)
 // ─────────────────────────────────────────────────────────────
 export const MISTER_STATIC_PROMPT = `${D3_SYSTEM_PROMPT}
+
+${ACTION_DOCTRINE}
 
 ${CONTROL_BLOCK_INSTRUCTIONS}
 

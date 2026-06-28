@@ -7,6 +7,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useMister } from '@/components/features/mister/MisterProvider'
+import { HAPTIC } from '@/lib/mister/haptics'
 import type { MisterLeadSubmitRequest } from '@/types/mister'
 import { surfaceCardVariants } from '@/lib/mister/motion'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
@@ -22,6 +23,7 @@ export function QuotationFormCTA({ summaryFields }: Props) {
 
   const [name, setName] = useState('')
   const [company, setCompany] = useState('')
+  const [country, setCountry] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
@@ -56,6 +58,7 @@ export function QuotationFormCTA({ summaryFields }: Props) {
         throw new Error(data.error ?? `Error ${res.status}`)
       }
 
+      HAPTIC.formSubmit()
       setStatus('success')
     } catch (err) {
       setErrorMsg(
@@ -125,6 +128,13 @@ export function QuotationFormCTA({ summaryFields }: Props) {
             className="w-full border-b border-[var(--mister-border-input)] bg-transparent pb-2 font-body text-[14px] text-[var(--mister-text-primary)] placeholder-[var(--mister-text-muted)] outline-none focus:border-[var(--mister-gold)]"
           />
           <input
+            type="text"
+            placeholder="País"
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
+            className="w-full border-b border-[var(--mister-border-input)] bg-transparent pb-2 font-body text-[14px] text-[var(--mister-text-primary)] placeholder-[var(--mister-text-muted)] outline-none focus:border-[var(--mister-gold)]"
+          />
+          <input
             type="email"
             placeholder="Correo electrónico"
             value={email}
@@ -152,7 +162,7 @@ export function QuotationFormCTA({ summaryFields }: Props) {
           disabled={!isValid || status === 'submitting'}
           className="mt-4 h-11 w-full rounded-[2px] bg-[#C4933F] font-body text-[13px] font-[600] text-[#001E50] transition-colors duration-[150ms] hover:bg-[#D4A84F] disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {status === 'submitting' ? 'Enviando…' : 'Generar cotización prefilled'}
+          {status === 'submitting' ? 'Enviando…' : 'Enviar solicitud →'}
         </button>
 
         <p className="mt-2 text-center font-body text-[10px] font-[300] text-[var(--mister-text-muted)]">
