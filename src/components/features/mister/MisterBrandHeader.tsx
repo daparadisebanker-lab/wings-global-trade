@@ -5,6 +5,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useMister } from '@/components/features/mister/MisterProvider'
 import { HAPTIC } from '@/lib/mister/haptics'
@@ -126,7 +127,7 @@ export function MisterBrandHeader({ mode = 'embedded', onClose }: Props) {
 
           {/* Embedded mode desktop: back link to site (mobile uses browser back) */}
           {mode === 'embedded' && (
-            <a
+            <Link
               href="/"
               aria-label="Volver al sitio Wings Global Trade"
               className="hidden lg:flex items-center gap-1.5 rounded-full border border-[rgba(248,246,240,0.15)] bg-[rgba(248,246,240,0.03)] px-3 py-1.5 font-mono text-[10px] font-[400] uppercase tracking-[0.14em] text-[var(--mister-text-ghost)] transition-all duration-150 hover:border-[rgba(248,246,240,0.30)] hover:text-[var(--mister-text-primary)]"
@@ -136,7 +137,7 @@ export function MisterBrandHeader({ mode = 'embedded', onClose }: Props) {
                 <polyline points="3,2.5 1,5 3,7.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" fill="none" />
               </svg>
               Wings Global Trade
-            </a>
+            </Link>
           )}
         </div>
 
