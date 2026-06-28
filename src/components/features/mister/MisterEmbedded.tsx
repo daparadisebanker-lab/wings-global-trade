@@ -23,8 +23,8 @@ export function MisterEmbedded({ currentPage = '/mister', currentProductId = nul
       currentProductId={currentProductId}
     >
       <div className="flex h-full w-full flex-col overflow-hidden bg-[var(--mister-bg-window)]">
-        {/* Brand header — full identity, embedded only */}
-        <MisterBrandHeader />
+        {/* Brand header — full identity, embedded mode (no close control) */}
+        <MisterBrandHeader mode="embedded" />
 
         {/* Two-column body */}
         <div className="flex flex-1 min-h-0">

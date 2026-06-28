@@ -63,6 +63,31 @@ export const windowFloatingVariants: Variants = {
   exitReduced:   { opacity: 0, y: 0, transition: { duration: DURATION.instant } },
 }
 
+// ─── Fullscreen Overlay ──────────────────────────────────────────────────────
+
+export const overlayBackdropVariants: Variants = {
+  hidden:  { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: DURATION.deliberate, ease: 'easeOut' } },
+  exit:    { opacity: 0, transition: { duration: DURATION.standard,   ease: 'easeIn'  } },
+}
+
+export const overlayPanelVariants: Variants = {
+  hidden:  { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: DURATION.window, ease: [...EASE.windowOpen] },
+  },
+  exit: {
+    opacity: 0,
+    y: 16,
+    transition: { duration: DURATION.standard, ease: [...EASE.windowClose] },
+  },
+  hiddenReduced:  { opacity: 0, y: 0 },
+  visibleReduced: { opacity: 1, y: 0, transition: { duration: DURATION.instant } },
+  exitReduced:    { opacity: 0, y: 0, transition: { duration: DURATION.instant } },
+}
+
 // ─── Window — Embedded ───────────────────────────────────────────────────────
 
 export const windowEmbeddedVariants: Variants = {

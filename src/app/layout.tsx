@@ -13,6 +13,7 @@ import { WINGS_TAGLINE } from '@/lib/constants'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { organizationSchema } from '@/lib/schema'
 import { PageTransition } from '@/components/features/shared/PageTransition'
+import { MisterSiteWidget } from '@/components/features/mister/MisterSiteWidget'
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -77,6 +78,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <Footer categories={categories} />
             <CompareBar />
             <MultiInquiryPanel />
+            {/* Mister site-wide widget: floating button + fullscreen overlay */}
+            <MisterSiteWidget />
           </ComparisonProvider>
         </ToastProvider>
       </body>
