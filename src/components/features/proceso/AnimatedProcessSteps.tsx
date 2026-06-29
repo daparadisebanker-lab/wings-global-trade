@@ -1,9 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { EASE_OUT, SPRING } from '@/lib/motion'
+
+gsap.registerPlugin(ScrollTrigger)
 
 interface StepData {
   label: string
@@ -40,6 +44,8 @@ export interface Phase {
 interface AnimatedProcessStepsProps {
   phases: Phase[]
 }
+
+// ─── Shared sub-components ────────────────────────────────────────────────────
 
 function FaqAccordion({ faq }: { faq: StepFaq }) {
   const [open, setOpen] = useState(false)
@@ -79,6 +85,63 @@ function FaqAccordion({ faq }: { faq: StepFaq }) {
   )
 }
 
+// ─── Desktop: horizontal track cards ─────────────────────────────────────────
+
+function PhaseIntroCard({ phase }: { phase: Phase }) {
+  return (
+    <div className="flex min-w-[360px] shrink-0 flex-col justify-center pr-16">
+      <p className="font-mono text-[9px] uppercase tracking-[0.20em] text-gold/50">{phase.label}</p>
+      <p className="mt-2 font-display text-display-sm font-light text-navy leading-tight">
+        {phase.sublabel}
+      </p>
+      <div className="mt-5 h-px w-10 bg-gold/25" />
+      <p className="mt-3 font-mono text-[10px] tracking-[0.06em] text-navy/30">
+        {phase.steps.length} {phase.steps.length === 1 ? 'paso' : 'pasos'}
+      </p>
+    </div>
+  )
+}
+
+function HorizontalStepCard({ step, phaseLabel }: { step: Step; phaseLabel: string }) {
+  return (
+    <div className="flex min-w-[620px] shrink-0 flex-col justify-center border-l border-[rgba(0,30,80,0.06)] px-14">
+      <div className="mb-7 flex items-center gap-3">
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#F8F6F0] ring-1 ring-gold/25">
+          <span className="font-mono text-[9px] tracking-[0.12em] text-gold/55">{step.num}</span>
+        </div>
+        <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-navy/25">
+          {phaseLabel}
+        </span>
+      </div>
+      <h2 className="mb-4 max-w-[360px] font-display text-display-sm font-light text-navy leading-tight">
+        {step.title}
+      </h2>
+      <p className="max-w-[380px] font-body text-body-md leading-relaxed text-navy/65">{step.body}</p>
+      <div className="mt-7 grid grid-cols-2 gap-5 border-t border-[rgba(0,30,80,0.05)] pt-6">
+        {step.data.map((d) => (
+          <div key={d.label}>
+            <p className="mb-1.5 font-mono text-[9px] uppercase tracking-[0.15em] text-gold/50">
+              {d.label}
+            </p>
+            <p className="font-body text-sm font-medium leading-snug text-navy/80">{d.value}</p>
+          </div>
+        ))}
+      </div>
+      {step.cta && (
+        <Link
+          href={step.cta.href}
+          className="mt-6 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-gold transition-colors hover:text-gold-hover"
+        >
+          <span aria-hidden className="h-px w-4 bg-current" />
+          {step.cta.label}
+        </Link>
+      )}
+    </div>
+  )
+}
+
+// ─── Mobile: vertical step row (original layout) ─────────────────────────────
+
 function StepRow({
   step,
   isLast,
@@ -96,18 +159,14 @@ function StepRow({
   return (
     <div
       id={step.id}
-      className={`grid grid-cols-1 gap-10 py-16 lg:grid-cols-[80px_1fr_280px] lg:gap-16${
-        isLast ? '' : ' border-b border-[rgba(0,30,80,0.05)]'
-      }`}
+      className={`grid grid-cols-1 gap-10 py-16${isLast ? '' : ' border-b border-[rgba(0,30,80,0.05)]'}`}
     >
-      {/* Step number — thread anchor circle */}
-      <div className="flex items-start lg:flex-col lg:items-center lg:pt-2">
-        <div className="relative z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-warm-white ring-1 ring-gold/25">
+      <div className="flex items-start gap-4">
+        <div className="relative z-10 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#F8F6F0] ring-1 ring-gold/25">
           <span className="font-mono text-[9px] tracking-[0.12em] text-gold/55">{step.num}</span>
         </div>
       </div>
 
-      {/* Title + body + CTA + FAQ */}
       <motion.div
         initial={reducedMotion ? false : { opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -138,9 +197,8 @@ function StepRow({
         )}
       </motion.div>
 
-      {/* Data block — promoted */}
       <motion.div
-        className="flex flex-col gap-5 lg:border-l-2 lg:border-gold/20 lg:pl-10 lg:pt-1"
+        className="flex flex-col gap-5 border-t border-[rgba(0,30,80,0.05)] pt-6"
         initial={reducedMotion ? false : { opacity: 0, y: 8 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-80px' }}
@@ -161,65 +219,147 @@ function StepRow({
   )
 }
 
+// ─── Main export ──────────────────────────────────────────────────────────────
+
 export function AnimatedProcessSteps({ phases }: AnimatedProcessStepsProps) {
   const shouldReduceMotion = useReducedMotion()
+  const sectionRef = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
+  const progressRef = useRef<HTMLDivElement>(null)
+  // Unique ID per instance (avoids collision when two instances are on the page)
+  const stId = useRef(`h-proc-${phases[0].id}`)
+
+  useEffect(() => {
+    const section = sectionRef.current
+    const track = trackRef.current
+    if (!section || !track) return
+
+    const mm = gsap.matchMedia()
+
+    mm.add('(min-width: 1024px) and (prefers-reduced-motion: no-preference)', () => {
+      const ctx = gsap.context(() => {
+        gsap.to(track, {
+          x: () => -(track.scrollWidth - section.offsetWidth),
+          ease: 'none',
+          scrollTrigger: {
+            id: stId.current,
+            trigger: section,
+            pin: true,
+            pinSpacing: true,
+            scrub: 1,
+            start: 'top top',
+            end: () => `+=${track.scrollWidth - section.offsetWidth}`,
+            invalidateOnRefresh: true,
+            onUpdate: (self) => {
+              if (progressRef.current) {
+                gsap.set(progressRef.current, { scaleX: self.progress })
+              }
+            },
+          },
+        })
+      }, section)
+
+      return () => {
+        ScrollTrigger.getById(stId.current)?.kill()
+        ctx.revert()
+      }
+    })
+
+    return () => mm.revert()
+  }, [])
+
   let globalIdx = 0
 
   return (
-    <div>
-      {phases.map((phase, pi) => (
-        <div key={phase.id} className={pi > 0 ? 'mt-20' : ''}>
-          {/* Phase header */}
-          <motion.div
-            className="mb-2 flex items-center gap-4"
-            initial={shouldReduceMotion ? false : { opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: shouldReduceMotion ? 0 : 0.4 }}
-          >
-            <div className="h-px flex-1 bg-gold/15" />
-            <div className="flex items-center gap-2.5">
-              <span className="font-mono text-[9px] uppercase tracking-[0.20em] text-gold/55">
-                {phase.label}
-              </span>
-              <span className="font-mono text-[9px] text-navy/20">·</span>
-              <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-navy/30">
-                {phase.sublabel}
-              </span>
-            </div>
-            <div className="h-px flex-1 bg-gold/15" />
-          </motion.div>
-
-          {/* Steps — with vertical gold thread on desktop */}
-          <div className="relative">
-            <div
-              aria-hidden
-              className="pointer-events-none absolute hidden lg:block"
-              style={{
-                left: '39px',
-                top: '28px',
-                bottom: '28px',
-                width: '1px',
-                background:
-                  'linear-gradient(to bottom, rgba(196,147,63,0.18), rgba(196,147,63,0.08))',
-              }}
-            />
-            {phase.steps.map((step, si) => {
-              const delay = 0.04 * globalIdx
-              globalIdx++
-              return (
-                <StepRow
-                  key={step.num}
-                  step={step}
-                  isLast={si === phase.steps.length - 1}
-                  delay={delay}
-                  reducedMotion={shouldReduceMotion ?? false}
-                />
-              )
-            })}
-          </div>
+    <>
+      {/* ─── Desktop: horizontal pinned section ────────────────────────────── */}
+      <div
+        ref={sectionRef}
+        className="relative hidden overflow-hidden bg-[#F8F6F0] lg:block"
+        style={{ height: '100svh' }}
+      >
+        <div
+          ref={trackRef}
+          className="flex h-full items-center"
+          style={{ paddingLeft: '8vw', willChange: 'transform' }}
+        >
+          {phases.map((phase, pi) => (
+            <Fragment key={phase.id}>
+              {pi > 0 && (
+                <div className="mx-10 h-[38%] w-px shrink-0 bg-gold/15" />
+              )}
+              <PhaseIntroCard phase={phase} />
+              {phase.steps.map((step) => (
+                <HorizontalStepCard key={step.id} step={step} phaseLabel={phase.label} />
+              ))}
+            </Fragment>
+          ))}
+          {/* Trailing spacer ensures last card can fully enter view */}
+          <div className="shrink-0" style={{ minWidth: '8vw' }} />
         </div>
-      ))}
-    </div>
+
+        {/* Gold progress line — scrubbed by ScrollTrigger onUpdate */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-navy/8">
+          <div ref={progressRef} className="h-full origin-left bg-gold/40" style={{ transform: 'scaleX(0)' }} />
+        </div>
+      </div>
+
+      {/* ─── Mobile: original vertical layout ──────────────────────────────── */}
+      <div className="bg-[#F8F6F0] px-6 pt-16 pb-16 md:px-10 md:pt-20 md:pb-20 lg:hidden">
+        <div className="mx-auto max-w-6xl">
+          {phases.map((phase, pi) => (
+            <div key={phase.id} className={pi > 0 ? 'mt-20' : ''}>
+              <motion.div
+                className="mb-2 flex items-center gap-4"
+                initial={shouldReduceMotion ? false : { opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true, margin: '-60px' }}
+                transition={{ duration: shouldReduceMotion ? 0 : 0.4 }}
+              >
+                <div className="h-px flex-1 bg-gold/15" />
+                <div className="flex items-center gap-2.5">
+                  <span className="font-mono text-[9px] uppercase tracking-[0.20em] text-gold/55">
+                    {phase.label}
+                  </span>
+                  <span className="font-mono text-[9px] text-navy/20">·</span>
+                  <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-navy/30">
+                    {phase.sublabel}
+                  </span>
+                </div>
+                <div className="h-px flex-1 bg-gold/15" />
+              </motion.div>
+
+              <div className="relative">
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute"
+                  style={{
+                    left: '13px',
+                    top: '28px',
+                    bottom: '28px',
+                    width: '1px',
+                    background:
+                      'linear-gradient(to bottom, rgba(196,147,63,0.18), rgba(196,147,63,0.08))',
+                  }}
+                />
+                {phase.steps.map((step, si) => {
+                  const delay = 0.04 * globalIdx
+                  globalIdx++
+                  return (
+                    <StepRow
+                      key={step.num}
+                      step={step}
+                      isLast={si === phase.steps.length - 1}
+                      delay={delay}
+                      reducedMotion={shouldReduceMotion ?? false}
+                    />
+                  )
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
   )
 }

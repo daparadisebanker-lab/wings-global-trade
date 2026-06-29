@@ -182,11 +182,7 @@ export default function ProcesoPage() {
       </div>
 
       {/* Process steps — Fase A */}
-      <section className="bg-[#F8F6F0] px-6 pt-16 pb-16 md:px-10 md:pt-20 md:pb-20">
-        <div className="mx-auto w-full max-w-6xl">
-          <AnimatedProcessSteps phases={[PHASES[0]]} />
-        </div>
-      </section>
+      <AnimatedProcessSteps phases={[PHASES[0]]} />
 
       {/* Image strip 2 — operative in warehouse — human proof */}
       <div className="relative h-[min(72vh,_620px)] overflow-hidden">
@@ -200,11 +196,7 @@ export default function ProcesoPage() {
       </div>
 
       {/* Process steps — Fase B + C */}
-      <section className="bg-[#F8F6F0] px-6 pt-16 pb-20 md:px-10 md:pt-20 md:pb-28">
-        <div className="mx-auto w-full max-w-6xl">
-          <AnimatedProcessSteps phases={PHASES.slice(1)} />
-        </div>
-      </section>
+      <AnimatedProcessSteps phases={PHASES.slice(1)} />
 
       {/* Image strip 3 — truck at dock — delivery proof */}
       <div className="relative h-[min(46vh,_400px)] overflow-hidden">
