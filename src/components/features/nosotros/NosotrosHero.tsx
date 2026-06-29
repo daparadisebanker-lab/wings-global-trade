@@ -10,9 +10,10 @@ const MANIFEST = [
 ]
 
 const LINES = [
-  'Operamos desde dentro',
-  'de la zona. No vendemos',
-  'desde afuera de ella.',
+  'No intermediamos.',
+  'Operamos desde la zona franca misma —',
+  'los precios, los plazos y el acceso',
+  'que otros no pueden darte.',
 ]
 
 const BODY =
@@ -32,7 +33,7 @@ export function NosotrosHero() {
   const reduced = useReducedMotion()
 
   const headline = (
-    <h1 className="font-display text-display-xl font-light text-warm-white leading-[0.95] tracking-[-0.02em]">
+    <h1 className="font-display text-display-xl font-light text-warm-white leading-[1.0] tracking-[-0.02em]">
       {LINES.map((l, i) => (
         <span key={i} className="block">
           {reduced ? l : (
