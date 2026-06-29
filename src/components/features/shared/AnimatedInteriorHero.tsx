@@ -1,7 +1,6 @@
 'use client'
 
 import { motion, useReducedMotion } from 'framer-motion'
-import { useSplitTextReveal } from '@/hooks/useSplitTextReveal'
 
 interface AnimatedInteriorHeroProps {
   overline: string
@@ -10,6 +9,8 @@ interface AnimatedInteriorHeroProps {
   dark?: boolean
 }
 
+const SPRING: [number, number, number, number] = [0.16, 1, 0.3, 1]
+
 export function AnimatedInteriorHero({
   overline,
   headline,
@@ -17,14 +18,6 @@ export function AnimatedInteriorHero({
   dark = false,
 }: AnimatedInteriorHeroProps) {
   const shouldReduceMotion = useReducedMotion()
-
-  const headlineRef = useSplitTextReveal<HTMLHeadingElement>({
-    type: 'lines',
-    trigger: 'mount',
-    delay: 0.2,
-    stagger: 0.1,
-    duration: 0.85,
-  })
 
   const textColor = dark ? 'text-warm-white' : 'text-navy'
   const overlineColor = dark ? 'text-warm-white/30' : 'text-navy/40'
@@ -36,13 +29,9 @@ export function AnimatedInteriorHero({
         <p className={`font-mono text-[10px] uppercase tracking-[0.15em] ${overlineColor} mb-6`}>
           {overline}
         </p>
-        <h1
-          className={`font-display text-display-xl font-light ${textColor} leading-[0.95] tracking-[-0.02em]`}
-        >
+        <h1 className={`font-display text-display-xl font-light ${textColor} leading-[0.95] tracking-[-0.02em]`}>
           {headline.map((line, i) => (
-            <span key={i} className="block">
-              {line}
-            </span>
+            <span key={i} className="block">{line}</span>
           ))}
         </h1>
         {subtitle && (
@@ -65,13 +54,17 @@ export function AnimatedInteriorHero({
         {overline}
       </motion.p>
 
-      <h1
-        ref={headlineRef}
-        className={`font-display text-display-xl font-light ${textColor} leading-[0.95] tracking-[-0.02em]`}
-      >
+      <h1 className={`font-display text-display-xl font-light ${textColor} leading-[0.95] tracking-[-0.02em]`}>
         {headline.map((line, i) => (
-          <span key={i} className="block">
-            {line}
+          <span key={i} className="block overflow-hidden">
+            <motion.span
+              className="block"
+              initial={{ y: '110%' }}
+              animate={{ y: '0%' }}
+              transition={{ duration: 0.85, ease: SPRING, delay: 0.2 + i * 0.1 }}
+            >
+              {line}
+            </motion.span>
           </span>
         ))}
       </h1>

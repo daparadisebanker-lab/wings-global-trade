@@ -3,9 +3,7 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { AnimatedProcessSteps, type Phase } from '@/components/features/proceso/AnimatedProcessSteps'
-import { SplitHeading } from '@/components/features/shared/SplitHeading'
 import { JsonLd } from '@/components/seo/JsonLd'
-import { MagneticWrapper } from '@/components/ui/MagneticWrapper'
 
 export const metadata: Metadata = {
   title: 'Cómo importar con Wings — Proceso de importación B2B LATAM',
@@ -181,22 +179,8 @@ export default function ProcesoPage() {
         />
       </div>
 
-      {/* Process steps — Fase A */}
-      <AnimatedProcessSteps phases={[PHASES[0]]} />
-
-      {/* Image strip 2 — operative in warehouse — human proof */}
-      <div className="relative h-[min(72vh,_620px)] overflow-hidden">
-        <Image
-          src="/Importacion/como-importar/operative-warehouse.png"
-          alt="Coordinador Wings supervisando operación en almacén"
-          fill
-          className="object-cover object-top"
-          sizes="100vw"
-        />
-      </div>
-
-      {/* Process steps — Fase B + C */}
-      <AnimatedProcessSteps phases={PHASES.slice(1)} />
+      {/* Process steps — all phases in a single pinned instance */}
+      <AnimatedProcessSteps phases={PHASES} />
 
       {/* Image strip 3 — truck at dock — delivery proof */}
       <div className="relative h-[min(46vh,_400px)] overflow-hidden">
@@ -215,32 +199,28 @@ export default function ProcesoPage() {
           <div className="wings-rule mb-8" />
           <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
             <div className="max-w-lg">
-              <SplitHeading className="font-display text-display-md font-light text-navy leading-[1.05] tracking-[-0.02em]">
+              <h2 className="font-display text-display-md font-light text-navy leading-[1.05] tracking-[-0.02em]">
                 Más de 50 modelos en catálogo. Precio CIF sin intermediarios.
-              </SplitHeading>
+              </h2>
               <p className="mt-4 font-body text-body-md leading-relaxed text-navy/55">
                 New Holland, John Deere, Massey Ferguson, Kubota, KAMA. Tractores desde 50 hasta
                 140 HP, camiones diésel y eléctricos, buses y equipo industrial.
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
-              <MagneticWrapper>
-                <Link
-                  href="/catalogo"
-                  className="inline-flex items-center gap-3 bg-gold px-8 py-4 font-mono text-[11px] uppercase tracking-[0.12em] text-navy transition-colors duration-200 hover:bg-gold-hover"
-                >
-                  <span aria-hidden className="h-px w-6 bg-current" />
-                  Explorar catálogo
-                </Link>
-              </MagneticWrapper>
-              <MagneticWrapper>
-                <Link
-                  href="/mister"
-                  className="inline-flex items-center gap-3 border border-[rgba(0,30,80,0.18)] px-8 py-4 font-mono text-[11px] uppercase tracking-[0.12em] text-navy/70 transition-all duration-200 hover:border-gold/40 hover:text-gold"
-                >
-                  Hablar con Mister IA
-                </Link>
-              </MagneticWrapper>
+              <Link
+                href="/catalogo"
+                className="inline-flex items-center gap-3 bg-gold px-8 py-4 font-mono text-[11px] uppercase tracking-[0.12em] text-navy transition-colors duration-200 hover:bg-gold-hover"
+              >
+                <span aria-hidden className="h-px w-6 bg-current" />
+                Explorar catálogo
+              </Link>
+              <Link
+                href="/mister"
+                className="inline-flex items-center gap-3 border border-[rgba(0,30,80,0.18)] px-8 py-4 font-mono text-[11px] uppercase tracking-[0.12em] text-navy/70 transition-all duration-200 hover:border-gold/40 hover:text-gold"
+              >
+                Hablar con Mister IA
+              </Link>
             </div>
           </div>
         </div>
