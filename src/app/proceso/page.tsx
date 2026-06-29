@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { AnimatedProcessSteps, type Phase } from '@/components/features/proceso/AnimatedProcessSteps'
 import { JsonLd } from '@/components/seo/JsonLd'
+import { MagneticWrapper } from '@/components/ui/MagneticWrapper'
 
 export const metadata: Metadata = {
   title: 'Cómo importar con Wings — Proceso de importación B2B LATAM',
@@ -230,19 +231,23 @@ export default function ProcesoPage() {
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Link
-                href="/catalogo"
-                className="inline-flex items-center gap-3 bg-gold px-8 py-4 font-mono text-[11px] uppercase tracking-[0.12em] text-navy transition-colors duration-200 hover:bg-gold-hover"
-              >
-                <span aria-hidden className="h-px w-6 bg-current" />
-                Explorar catálogo
-              </Link>
-              <Link
-                href="/mister"
-                className="inline-flex items-center gap-3 border border-[rgba(0,30,80,0.18)] px-8 py-4 font-mono text-[11px] uppercase tracking-[0.12em] text-navy/70 transition-all duration-200 hover:border-gold/40 hover:text-gold"
-              >
-                Hablar con Mister IA
-              </Link>
+              <MagneticWrapper>
+                <Link
+                  href="/catalogo"
+                  className="inline-flex items-center gap-3 bg-gold px-8 py-4 font-mono text-[11px] uppercase tracking-[0.12em] text-navy transition-colors duration-200 hover:bg-gold-hover"
+                >
+                  <span aria-hidden className="h-px w-6 bg-current" />
+                  Explorar catálogo
+                </Link>
+              </MagneticWrapper>
+              <MagneticWrapper>
+                <Link
+                  href="/mister"
+                  className="inline-flex items-center gap-3 border border-[rgba(0,30,80,0.18)] px-8 py-4 font-mono text-[11px] uppercase tracking-[0.12em] text-navy/70 transition-all duration-200 hover:border-gold/40 hover:text-gold"
+                >
+                  Hablar con Mister IA
+                </Link>
+              </MagneticWrapper>
             </div>
           </div>
         </div>

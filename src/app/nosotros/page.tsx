@@ -5,6 +5,7 @@ import { JsonLd } from '@/components/seo/JsonLd'
 import { faqSchema, WINGS_FAQS, breadcrumbSchema } from '@/lib/schema'
 import { FREE_ZONES, SOURCE_MARKETS, MARKETS_SERVED } from '@/lib/constants'
 import { AnimatedInteriorHero } from '@/components/features/shared/AnimatedInteriorHero'
+import { MagneticWrapper } from '@/components/ui/MagneticWrapper'
 
 export const metadata: Metadata = {
   title: 'Nosotros — Wings Global Trade | Zona Franca LATAM',
@@ -122,19 +123,23 @@ export default function NosotrosPage() {
               Conversemos sobre tu próxima importación
             </h2>
             <div className="flex flex-col gap-4 sm:flex-row">
-              <Link
-                href="/mister"
-                className="inline-flex items-center gap-3 bg-gold px-8 py-4 font-mono text-[11px] uppercase tracking-[0.12em] text-navy hover:bg-gold-hover transition-colors duration-200"
-              >
-                <span className="h-px w-6 bg-current" aria-hidden />
-                Hablar con Mister
-              </Link>
-              <Link
-                href="/catalogo"
-                className="inline-flex items-center gap-3 border border-[rgba(0,30,80,0.2)] px-8 py-4 font-mono text-[11px] uppercase tracking-[0.12em] text-navy/70 hover:border-gold/40 hover:text-gold transition-all duration-200"
-              >
-                Ver catálogo
-              </Link>
+              <MagneticWrapper>
+                <Link
+                  href="/mister"
+                  className="inline-flex items-center gap-3 bg-gold px-8 py-4 font-mono text-[11px] uppercase tracking-[0.12em] text-navy hover:bg-gold-hover transition-colors duration-200"
+                >
+                  <span className="h-px w-6 bg-current" aria-hidden />
+                  Hablar con Mister
+                </Link>
+              </MagneticWrapper>
+              <MagneticWrapper>
+                <Link
+                  href="/catalogo"
+                  className="inline-flex items-center gap-3 border border-[rgba(0,30,80,0.2)] px-8 py-4 font-mono text-[11px] uppercase tracking-[0.12em] text-navy/70 hover:border-gold/40 hover:text-gold transition-all duration-200"
+                >
+                  Ver catálogo
+                </Link>
+              </MagneticWrapper>
             </div>
           </div>
         </div>

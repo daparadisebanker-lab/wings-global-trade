@@ -14,6 +14,7 @@ import { JsonLd } from '@/components/seo/JsonLd'
 import { organizationSchema } from '@/lib/schema'
 import { PageTransition } from '@/components/features/shared/PageTransition'
 import { MisterSiteWidget } from '@/components/features/mister/MisterSiteWidget'
+import { SmoothScroll } from '@/components/features/shared/SmoothScroll'
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -71,17 +72,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <JsonLd data={organizationSchema()} />
       </head>
       <body className="font-body antialiased">
-        <ToastProvider>
-          <ComparisonProvider>
-            <SiteNav categories={categories} />
-            <main className="min-h-screen overflow-x-clip"><PageTransition>{children}</PageTransition></main>
-            <Footer categories={categories} />
-            <CompareBar />
-            <MultiInquiryPanel />
-            {/* Mister site-wide widget: floating button + fullscreen overlay */}
-            <MisterSiteWidget />
-          </ComparisonProvider>
-        </ToastProvider>
+        <SmoothScroll>
+          <ToastProvider>
+            <ComparisonProvider>
+              <SiteNav categories={categories} />
+              <main className="min-h-screen overflow-x-clip"><PageTransition>{children}</PageTransition></main>
+              <Footer categories={categories} />
+              <CompareBar />
+              <MultiInquiryPanel />
+              {/* Mister site-wide widget: floating button + fullscreen overlay */}
+              <MisterSiteWidget />
+            </ComparisonProvider>
+          </ToastProvider>
+        </SmoothScroll>
       </body>
     </html>
   )

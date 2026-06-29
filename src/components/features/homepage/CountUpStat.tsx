@@ -1,7 +1,10 @@
 'use client'
 
 import { useRef, useEffect } from 'react'
-import { useMotionValue, animate, useReducedMotion, useInView } from 'framer-motion'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+gsap.registerPlugin(ScrollTrigger)
 
 interface CountUpStatProps {
   value: string
@@ -44,8 +47,7 @@ function parseStatValue(raw: string): {
 
 export function CountUpStat({ value, label, prefix: prefixProp, suffix: suffixProp }: CountUpStatProps) {
   const ref = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: true })
-  const shouldReduceMotion = useReducedMotion()
+  const displayRef = useRef<HTMLSpanElement>(null)
 
   const { num, prefix: parsedPrefix, suffix: parsedSuffix, isDecimal, zeroPad } = parseStatValue(value)
 
@@ -53,14 +55,11 @@ export function CountUpStat({ value, label, prefix: prefixProp, suffix: suffixPr
   const displayPrefix = prefixProp ?? parsedPrefix
   const displaySuffix = suffixProp ?? parsedSuffix
 
-  const motionValue = useMotionValue(0)
-  const displayRef = useRef<HTMLSpanElement>(null)
-
   useEffect(() => {
     if (num === null) return
 
-    // If reduced motion, jump straight to final value
-    if (shouldReduceMotion) {
+    // If reduced motion, jump straight to final value immediately
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       if (displayRef.current) {
         const rounded = Math.round(num)
         displayRef.current.textContent = isDecimal
@@ -72,25 +71,33 @@ export function CountUpStat({ value, label, prefix: prefixProp, suffix: suffixPr
       return
     }
 
-    if (!isInView) return
+    const ctx = gsap.context(() => {
+      const obj = { value: 0 }
+      gsap.to(obj, {
+        value: num,
+        duration: 1.4,
+        ease: 'power3.out',
+        onUpdate() {
+          if (displayRef.current) {
+            const latest = obj.value
+            const rounded = Math.round(latest)
+            displayRef.current.textContent = isDecimal
+              ? latest.toFixed(1)
+              : zeroPad
+                ? String(rounded).padStart(zeroPad, '0')
+                : String(rounded)
+          }
+        },
+        scrollTrigger: {
+          trigger: ref.current,
+          start: 'top 85%',
+          once: true,
+        },
+      })
+    }, ref)
 
-    const controls = animate(motionValue, num, {
-      duration: 1.2,
-      ease: [0.16, 1, 0.3, 1],
-      onUpdate(latest) {
-        if (displayRef.current) {
-          const rounded = Math.round(latest)
-          displayRef.current.textContent = isDecimal
-            ? latest.toFixed(1)
-            : zeroPad
-              ? String(rounded).padStart(zeroPad, '0')
-              : String(rounded)
-        }
-      },
-    })
-
-    return () => controls.stop()
-  }, [isInView, num, isDecimal, zeroPad, motionValue, shouldReduceMotion])
+    return () => ctx.revert()
+  }, [num, isDecimal, zeroPad])
 
   // If no parseable number, render value as-is
   if (num === null) {
@@ -106,15 +113,11 @@ export function CountUpStat({ value, label, prefix: prefixProp, suffix: suffixPr
     )
   }
 
-  const initialDisplay = shouldReduceMotion
-    ? (isDecimal ? num.toFixed(1) : String(Math.round(num)))
-    : '0'
-
   return (
     <div ref={ref}>
       <div className="font-display text-[2.5rem] font-light text-gold leading-none tracking-tight">
         {displayPrefix}
-        <span ref={displayRef}>{initialDisplay}</span>
+        <span ref={displayRef}>0</span>
         {displaySuffix}
       </div>
       <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.15em] text-warm-white/40">
