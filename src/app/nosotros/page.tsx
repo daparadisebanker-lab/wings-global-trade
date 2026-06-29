@@ -29,30 +29,30 @@ const breadcrumbs = [
 ]
 
 const SPEC_ROWS = [
-  { label: 'Régimen aduanero',       value: 'Zona franca industrial · CIF incluido' },
+  { label: 'Régimen',                 value: 'Zona franca industrial — CIF' },
   { label: 'Mercados de origen',      value: 'China · Japón · Tailandia · Emiratos Árabes' },
-  { label: 'Documentación incluida',  value: 'B/L · Factura comercial · Cert. de origen · Fitosanitario' },
-  { label: 'Plazo de respuesta',      value: '24 horas hábiles por consulta documentada' },
-  { label: 'Categorías activas',      value: 'Maquinaria agrícola · Vehículos comerciales · Equipo industrial · Repuestos' },
+  { label: 'Documentación',           value: 'B/L · Factura comercial · Cert. de origen · Fitosanitario' },
+  { label: 'Plazo de respuesta',      value: '24 horas hábiles — consultas documentadas' },
+  { label: 'Categorías',              value: 'Maquinaria agrícola · Vehículos comerciales · Equipo industrial · Repuestos' },
   { label: 'Zonas de operación',      value: 'ZOFRATACNA (Tacna, Perú) · ZOFRI (Iquique, Chile)' },
-  { label: 'Mercados atendidos',      value: 'Perú · Chile · Colombia · Panamá · Costa Rica · Bolivia · R. Dominicana' },
+  { label: 'Mercados de destino',     value: 'Perú · Chile · Colombia · Panamá · Costa Rica · Bolivia · R. Dominicana' },
 ]
 
 const WHY_WINGS = [
   {
     num: '01',
     title: 'Posición en zona franca',
-    body: 'Operar desde ZOFRATACNA y ZOFRI, no desde Lima ni Santiago, significa que la mercancía entra en régimen franco y se despacha desde el nodo logístico, no desde una oficina de intermediación. El costo de internación es diferente desde dentro.',
+    body: 'Operar desde ZOFRATACNA y ZOFRI significa que la mercancía entra en régimen franco y se despacha directamente desde el nodo logístico. El costo de internación es diferente desde dentro.',
   },
   {
     num: '02',
     title: 'Acceso directo a fabricantes',
-    body: 'Wings trabaja con fabricantes verificados en origen. El comprador recibe especificaciones técnicas, certificados y capacidad de producción verificables antes de cualquier compromiso. No presentamos catálogos de terceros.',
+    body: 'Acceso directo a fabricantes verificados en China, Japón, Tailandia y Dubai. El comprador recibe especificaciones técnicas, certificados y capacidad de producción verificable antes de cualquier compromiso.',
   },
   {
     num: '03',
-    title: 'Mister como herramienta de pre-calificación',
-    body: 'Antes de cualquier compromiso económico, el importador puede resolver sus preguntas técnicas y entender la estructura de costo de internación a través de Mister. Menos riesgo de información en la primera llamada.',
+    title: 'Mister — información antes de precio',
+    body: 'Antes de cualquier compromiso, el importador resuelve sus preguntas técnicas y entiende la estructura del costo de internación a través de Mister. Menor incertidumbre en el primer contacto.',
   },
 ]
 
@@ -148,21 +148,30 @@ export default function NosotrosPage() {
       {/* ── 3. Trade Corridor — navy ──────────────────────────────────── */}
       <section className="bg-[#001E50] py-20 md:py-28 px-6 md:px-10">
         <div className="max-w-6xl mx-auto">
-          <AnimatedWingsRule className="mb-12" />
+          <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-warm-white/30 mb-3">
+            02 — Corredor comercial
+          </p>
+          <AnimatedWingsRule className="mb-8" />
+          <h2 className="font-display text-display-md font-light text-warm-white mb-16 max-w-xl leading-[1.1]">
+            Cuatro mercados de origen. Siete países de destino.
+          </h2>
 
-          <div className="grid grid-cols-1 gap-14 md:grid-cols-2">
-            <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-warm-white/30 mb-4">
-                Mercados de origen
+          <div className="grid grid-cols-1 gap-12 md:grid-cols-[5fr_1px_7fr]">
+            <div className="md:pr-10">
+              <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-warm-white/30 mb-5">
+                Origen
               </p>
               <MarketTokenStagger
                 markets={SOURCE_MARKETS}
                 className="font-display text-display-lg font-light text-gold leading-snug"
               />
             </div>
-            <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-warm-white/30 mb-4">
-                Mercados atendidos
+
+            <div className="hidden md:block bg-warm-white/[0.06] self-stretch" />
+
+            <div className="md:pl-10">
+              <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-warm-white/30 mb-5">
+                Destino
               </p>
               <MarketTokenStagger
                 markets={MARKETS_SERVED}
@@ -177,27 +186,23 @@ export default function NosotrosPage() {
       <section className="bg-[#F8F6F0] py-20 md:py-28 px-6 md:px-10">
         <div className="max-w-6xl mx-auto">
           <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-navy/40 mb-3">
-            02 — Perfil operativo
+            03 — Ficha técnica
           </p>
           <AnimatedWingsRule className="mb-8" />
           <h2 className="font-display text-display-md font-light text-navy mb-12 max-w-xl leading-[1.1]">
-            Especificaciones del operador
+            Ficha de operación
           </h2>
 
-          <div className="border-l-2 border-gold/30 pl-0">
-            {SPEC_ROWS.map(({ label, value }, i) => (
+          <div>
+            {SPEC_ROWS.map(({ label, value }) => (
               <div
                 key={label}
-                className={[
-                  'grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-4 py-4 px-6',
-                  i < SPEC_ROWS.length - 1 ? 'border-b border-[rgba(0,30,80,0.06)]' : '',
-                  i % 2 === 0 ? '' : 'bg-[rgba(0,30,80,0.02)]',
-                ].join(' ')}
+                className="grid grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-6 py-5 border-t border-[rgba(0,30,80,0.06)] first:border-0 items-baseline"
               >
-                <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-navy/40 pt-0.5 leading-relaxed">
+                <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-navy/35 leading-relaxed">
                   {label}
                 </span>
-                <span className="font-body text-body-sm text-navy/80 leading-relaxed">
+                <span className="font-body text-body-sm text-navy/70 leading-relaxed">
                   {value}
                 </span>
               </div>
@@ -210,20 +215,23 @@ export default function NosotrosPage() {
       <section className="bg-[#001E50] py-20 md:py-28 px-6 md:px-10">
         <div className="max-w-6xl mx-auto">
           <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-warm-white/30 mb-3">
-            03 — Diferenciación estructural
+            04 — Posición
           </p>
-          <AnimatedWingsRule className="mb-12" />
+          <AnimatedWingsRule className="mb-8" />
+          <h2 className="font-display text-display-md font-light text-warm-white mb-16 max-w-lg leading-[1.1]">
+            La posición es el argumento
+          </h2>
 
           <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
             {WHY_WINGS.map(({ num, title, body }) => (
               <div key={num} className="border-t border-warm-white/[0.08] pt-6">
-                <span className="font-mono text-[10px] text-gold/60 tracking-[0.12em] mb-4 block">
+                <span className="font-mono text-[10px] text-gold/60 tracking-[0.12em] mb-5 block">
                   {num}
                 </span>
                 <h3 className="font-display text-display-sm font-light text-warm-white mb-4 leading-snug">
                   {title}
                 </h3>
-                <p className="font-body text-body-sm text-warm-white/60 leading-relaxed">
+                <p className="font-body text-body-sm text-warm-white/55 leading-relaxed">
                   {body}
                 </p>
               </div>
@@ -236,28 +244,31 @@ export default function NosotrosPage() {
       <section className="bg-[#F8F6F0] py-20 md:py-28 px-6 md:px-10">
         <div className="max-w-6xl mx-auto">
           <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-navy/40 mb-3">
-            04 — Proceso
+            05 — Flujo de operación
           </p>
-          <AnimatedWingsRule className="mb-12" />
+          <AnimatedWingsRule className="mb-8" />
+          <h2 className="font-display text-display-md font-light text-navy mb-16 max-w-lg leading-[1.1]">
+            Tres pasos. Una cotización documentada.
+          </h2>
 
           <div className="grid grid-cols-1 gap-0 md:grid-cols-3">
             {PROCESS_STEPS.map(({ num, title, body }, i) => (
               <div
                 key={num}
                 className={[
-                  'py-8 px-6',
+                  'py-10 px-8',
                   i < PROCESS_STEPS.length - 1
-                    ? 'border-b md:border-b-0 md:border-r border-[rgba(0,30,80,0.08)]'
+                    ? 'border-b md:border-b-0 md:border-r border-[rgba(0,30,80,0.06)]'
                     : '',
                 ].join(' ')}
               >
-                <span className="font-mono text-[10px] text-gold tracking-[0.12em] mb-4 block">
+                <span className="font-mono text-[10px] text-gold tracking-[0.12em] mb-6 block">
                   {num}
                 </span>
-                <h3 className="font-body font-semibold text-navy mb-3 text-body-md">
+                <h3 className="font-display text-display-sm font-light text-navy mb-3 leading-snug">
                   {title}
                 </h3>
-                <p className="font-body text-body-sm text-navy/60 leading-relaxed">
+                <p className="font-body text-body-sm text-navy/55 leading-relaxed">
                   {body}
                 </p>
               </div>
@@ -271,12 +282,17 @@ export default function NosotrosPage() {
         <div className="max-w-6xl mx-auto">
           <AnimatedWingsRule className="mb-8" />
 
-          <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
-            <h2 className="max-w-lg font-display text-display-md font-light text-warm-white leading-[1.05] tracking-[-0.02em]">
-              Conversemos sobre tu próxima importación
-            </h2>
+          <div className="flex flex-col gap-12 md:flex-row md:items-end md:justify-between">
+            <div>
+              <h2 className="max-w-lg font-display text-display-md font-light text-warm-white leading-[1.05] tracking-[-0.02em] mb-5">
+                La primera conversación es técnica. Sin precio adjunto.
+              </h2>
+              <p className="font-body text-body-sm text-warm-white/35 max-w-md leading-relaxed">
+                Mister resuelve las preguntas de estructura antes de cualquier cotización formal. Para el catálogo, respondemos en 24 horas hábiles.
+              </p>
+            </div>
 
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center shrink-0">
               <Link
                 href="/mister"
                 className="inline-flex items-center gap-3 bg-gold px-8 py-4 font-mono text-[11px] uppercase tracking-[0.12em] text-navy hover:bg-gold-hover transition-colors duration-200"
@@ -293,9 +309,14 @@ export default function NosotrosPage() {
             </div>
           </div>
 
-          <p className="mt-10 font-mono text-[11px] tracking-[0.1em] text-warm-white/25 border-t border-warm-white/[0.06] pt-8">
-            WhatsApp directo: +507 6025 0735
-          </p>
+          <div className="mt-10 border-t border-warm-white/[0.06] pt-8 flex items-center justify-between">
+            <p className="font-mono text-[11px] tracking-[0.1em] text-warm-white/20 uppercase">
+              WhatsApp directo
+            </p>
+            <p className="font-mono text-[11px] tracking-[0.08em] text-warm-white/40">
+              +507 6025 0735
+            </p>
+          </div>
         </div>
       </section>
     </>
