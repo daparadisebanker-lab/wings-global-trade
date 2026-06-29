@@ -2,7 +2,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getCategories } from '@/lib/catalog-data'
-import { HeroCarousel } from '@/components/features/homepage/HeroCarousel'
+import { HeroScrollNarrative } from '@/components/features/homepage/HeroScrollNarrative'
 import { StatBar } from '@/components/features/homepage/StatBar'
 import { CategoryGrid } from '@/components/features/homepage/CategoryGrid'
 import { TrustBar } from '@/components/features/homepage/TrustBar'
@@ -36,8 +36,8 @@ export default async function HomePage() {
     <>
       <JsonLd data={websiteSchema()} />
 
-      {/* Hero carousel — dark, full-screen */}
-      <HeroCarousel />
+      {/* Hero — scroll-pinned narrative on desktop, static on mobile */}
+      <HeroScrollNarrative />
 
       {/* Stats bar — dark, anchored to carousel base */}
       <StatBar />
