@@ -121,7 +121,7 @@ export function HeroScrollNarrative() {
   return (
     <section
       ref={sectionRef}
-      className="relative bg-[#000C1F]"
+      className="relative bg-[#000C1F] overflow-hidden"
       style={{ height: '100dvh', minHeight: 600 }}
       aria-label="Wings Global Trade — Importación B2B"
     >
