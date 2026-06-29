@@ -58,6 +58,8 @@ export function MisterComposer() {
           onKeyDown={handleKeyDown}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
+          id="mister-composer"
+          name="mister-composer"
           disabled={isDisabled}
           placeholder="Escribe tu consulta"
           rows={1}
