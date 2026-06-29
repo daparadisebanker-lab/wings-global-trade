@@ -41,13 +41,13 @@ export function MisterMessage({ entry }: Props) {
         variants={userMessageVariants}
         initial="hidden"
         animate={reduced ? 'visibleReduced' : 'visible'}
-        className="flex justify-end"
+        className="group flex justify-end"
       >
         <div className="relative max-w-[72%] rounded-none bg-[var(--mister-bg-message-user)] px-4 py-2.5">
           <p className="font-body text-[14px] font-[400] leading-[1.50] text-[var(--mister-text-user)] whitespace-pre-wrap">
             {entry.content}
           </p>
-          <p className="mt-1 text-right font-mono text-[9px] font-[300] tracking-[0.04em] text-[var(--mister-text-user-muted)]">
+          <p className="mt-1 text-right font-mono text-[9px] font-[300] tracking-[0.04em] text-[var(--mister-text-user-muted)] opacity-0 transition-opacity duration-200 group-hover:opacity-100">
             {formatTime(entry.timestamp)}
           </p>
         </div>
@@ -69,8 +69,8 @@ export function MisterMessage({ entry }: Props) {
         className="absolute left-0 top-0 w-[var(--mister-margin-column)] flex flex-col items-center"
         aria-hidden
       >
-        {/* Turn index */}
-        <span className="mt-4 font-mono text-[11px] font-[300] leading-none tracking-[0.06em] text-[var(--mister-text-ghost)]">
+        {/* Turn index — margin note scale, not punctuation */}
+        <span className="mt-4 font-mono text-[10px] font-[300] leading-none tracking-[0.06em] text-[var(--mister-text-ghost)] opacity-40">
           {String(entry.turnIndex).padStart(2, '0')}
         </span>
         {/* 2px gold left rule — runs full height of message, at x=24px */}
@@ -82,10 +82,10 @@ export function MisterMessage({ entry }: Props) {
       {/* Message content — offset by margin column */}
       <div className="min-w-0 pl-[var(--mister-margin-column)]">
         <div className="pb-3 pr-5 pt-4">
-          <p className="font-body text-[14px] font-[400] leading-[1.65] text-[var(--mister-text-primary)] whitespace-pre-wrap">
+          <p className="font-body text-[15px] font-[400] leading-[1.75] text-[var(--mister-text-primary)] whitespace-pre-wrap">
             {entry.content}
           </p>
-          <p className="mt-1 text-right font-mono text-[9px] font-[300] tracking-[0.04em] text-[var(--mister-text-ghost)]">
+          <p className="mt-1 text-right font-mono text-[9px] font-[300] tracking-[0.04em] text-[var(--mister-text-ghost)] opacity-0 transition-opacity duration-200 group-hover:opacity-100">
             {formatTime(entry.timestamp)}
           </p>
         </div>

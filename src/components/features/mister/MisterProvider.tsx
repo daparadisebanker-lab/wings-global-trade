@@ -21,6 +21,7 @@ import type {
   MisterCollected,
 } from '@/types/mister'
 import { useMisterStream } from '@/hooks/useMisterStream'
+import { HAPTIC } from '@/lib/mister/haptics'
 
 // Q0+Q1 opening message — copywriter.md §1 (es-PE primary)
 const OPENING_MESSAGE =
@@ -137,6 +138,13 @@ export function MisterProvider({
   const pendingActionsRef = useRef<MisterQuickAction[]>([])
   const assistantTurnCountRef = useRef(1) // opening message is turn 1
 
+  // Haptic coordination refs — no re-renders needed, pure side-effects
+  const thinkingPulseRef = useRef<number | null>(null)
+  const firstTokenRef = useRef(false)
+  const prevArchetypeRef = useRef<MisterArchetype>('unresolved')
+  const prevStageRef = useRef<MisterStage>('induction')
+  const prevCollectedRef = useRef<MisterCollected>({})
+
   const { stream, isStreaming } = useMisterStream()
 
   const sendMessage = useCallback(
@@ -160,6 +168,12 @@ export function MisterProvider({
       pendingActionsRef.current = []
       setStreamingContent('')
 
+      // Thinking haptic — start pulse, stop on first token
+      HAPTIC.thinkingStart()
+      firstTokenRef.current = false
+      if (thinkingPulseRef.current) clearInterval(thinkingPulseRef.current)
+      thinkingPulseRef.current = window.setInterval(() => HAPTIC.thinkingPulse(), 1200)
+
       void stream(
         {
           sessionId,
@@ -171,6 +185,15 @@ export function MisterProvider({
         },
         {
           onToken: (delta) => {
+            // Stop thinking pulse on first token arrival
+            if (!firstTokenRef.current) {
+              firstTokenRef.current = true
+              if (thinkingPulseRef.current) {
+                clearInterval(thinkingPulseRef.current)
+                thinkingPulseRef.current = null
+              }
+              HAPTIC.thinkingEnd()
+            }
             streamingContentRef.current += delta
             setStreamingContent(streamingContentRef.current)
           },
@@ -181,13 +204,38 @@ export function MisterProvider({
             pendingActionsRef.current = quickActions
           },
           onState: (newArchetype, newStage) => {
+            // Stage advance haptic
+            if (prevStageRef.current !== newStage) {
+              HAPTIC.stageAdvance()
+            }
+            // Profile lock-in haptic — fires once when archetype resolves
+            if (prevArchetypeRef.current === 'unresolved' && newArchetype !== 'unresolved') {
+              HAPTIC.confirm()
+            }
+            prevStageRef.current = newStage
+            prevArchetypeRef.current = newArchetype
             setArchetype(newArchetype)
             setStage(newStage)
           },
           onCollected: (newCollected) => {
+            const isFilled = (v: unknown): boolean => {
+              if (v === undefined || v === null || v === '') return false
+              return Array.isArray(v) ? v.length > 0 : true
+            }
+            const prev = prevCollectedRef.current
+            const hasNewField = (Object.keys(newCollected) as (keyof MisterCollected)[]).some(
+              (k) => !isFilled(prev[k]) && isFilled(newCollected[k]),
+            )
+            if (hasNewField) HAPTIC.fieldCapture()
+            prevCollectedRef.current = { ...newCollected }
             setCollected(newCollected)
           },
           onDone: () => {
+            // Clear pulse in case no tokens arrived (e.g. empty stream)
+            if (thinkingPulseRef.current) {
+              clearInterval(thinkingPulseRef.current)
+              thinkingPulseRef.current = null
+            }
             assistantTurnCountRef.current += 1
             const entry: MisterEntry = {
               id: makeId(),
@@ -206,6 +254,11 @@ export function MisterProvider({
             setInFlight(false)
           },
           onError: (_code, message, fallback) => {
+            // Clear pulse on error
+            if (thinkingPulseRef.current) {
+              clearInterval(thinkingPulseRef.current)
+              thinkingPulseRef.current = null
+            }
             const content =
               fallback ??
               message ??

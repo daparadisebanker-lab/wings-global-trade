@@ -16,7 +16,7 @@ export function MisterHeader({ mode }: Props) {
 
   return (
     <div
-      className="flex h-[var(--mister-window-header-height)] flex-shrink-0 items-center justify-between border-b border-[var(--mister-gold-rule)] bg-[var(--mister-bg-header)] px-4"
+      className="flex h-[var(--mister-window-header-height)] flex-shrink-0 items-center justify-between border-b border-[rgba(248,246,240,0.08)] bg-[var(--mister-bg-header)] px-4"
       role="banner"
     >
       {/* Left: MISTER + endorsement */}

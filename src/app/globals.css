@@ -309,8 +309,8 @@
   --mister-border-focus:           rgba(196, 147, 63, 0.50);
 
   /* --- Message left rules --- */
-  --mister-rule-assistant:         rgba(196, 147, 63, 0.18);
-  --mister-rule-assistant-hover:   rgba(196, 147, 63, 0.40);
+  --mister-rule-assistant:         rgba(196, 147, 63, 0.35);
+  --mister-rule-assistant-hover:   rgba(196, 147, 63, 0.65);
 
   /* --- Quick actions --- */
   --mister-qa-border:              rgba(196, 147, 63, 0.22);

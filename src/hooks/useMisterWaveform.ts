@@ -5,7 +5,8 @@ import { useEffect, useRef } from 'react'
 const FREQUENCIES = [0.015, 0.025, 0.04]
 const PHASE_OFFSETS = [0, Math.PI / 3, (2 * Math.PI) / 3]
 const BASE_AMPLITUDE = 8
-const COLOR = 'rgba(196,147,63,0.35)'
+const COLOR_IDLE = 'rgba(196,147,63,0.22)'
+const COLOR_ACTIVE = 'rgba(196,147,63,0.70)'
 const LINE_WIDTH = 1.5
 
 export function useMisterWaveform(
@@ -13,7 +14,8 @@ export function useMisterWaveform(
   isStreaming: boolean,
 ) {
   const isStreamingRef = useRef(isStreaming)
-  const amplitudeRef = useRef(1.0)
+  const amplitudeRef = useRef(0.35)
+  const colorRef = useRef(COLOR_IDLE)
   const rafRef = useRef<number | null>(null)
   const timeRef = useRef(0)
 
@@ -48,7 +50,7 @@ export function useMisterWaveform(
     if (prefersReduced) {
       const w = canvas.offsetWidth
       const h = canvas.offsetHeight
-      ctx.strokeStyle = COLOR
+      ctx.strokeStyle = COLOR_IDLE
       ctx.lineWidth = LINE_WIDTH
       ctx.beginPath()
       ctx.moveTo(0, h / 2)
@@ -73,7 +75,7 @@ export function useMisterWaveform(
       const midY = h / 2
       const amp = amplitudeRef.current * BASE_AMPLITUDE
 
-      ctx!.strokeStyle = COLOR
+      ctx!.strokeStyle = colorRef.current
       ctx!.lineWidth = LINE_WIDTH
 
       for (let wi = 0; wi < FREQUENCIES.length; wi++) {
@@ -90,10 +92,12 @@ export function useMisterWaveform(
 
     function loop() {
       if (!paused) {
-        const target = isStreamingRef.current ? 0 : 1.0
-        const factor = isStreamingRef.current ? 0.07 : 0.15
-        amplitudeRef.current += (target - amplitudeRef.current) * factor
-        timeRef.current += 0.016
+        // Thinking/streaming: full amplitude amber. Idle: subtle ambient.
+        const targetAmp = isStreamingRef.current ? 1.0 : 0.35
+        const factor = isStreamingRef.current ? 0.08 : 0.12
+        amplitudeRef.current += (targetAmp - amplitudeRef.current) * factor
+        colorRef.current = isStreamingRef.current ? COLOR_ACTIVE : COLOR_IDLE
+        timeRef.current += isStreamingRef.current ? 0.022 : 0.012
         draw()
       }
       rafRef.current = requestAnimationFrame(loop)

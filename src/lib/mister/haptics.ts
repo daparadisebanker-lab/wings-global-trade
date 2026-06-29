@@ -42,6 +42,7 @@ export const HAPTIC = {
 
   // Confirmations
   confirm:       (): void => haptic([20, 10, 20]),
+  fieldCapture:  (): void => haptic([8, 4, 8]),
 
   // Thinking state — fire-and-forget rhythm while Mister generates
   thinkingStart: (): void => haptic(6),

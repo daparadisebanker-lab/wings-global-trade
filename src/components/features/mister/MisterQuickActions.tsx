@@ -48,7 +48,7 @@ export function MisterQuickActions({ actions, onAction, visible }: Props) {
               })}
               type="button"
               onClick={() => { HAPTIC.chip(); onAction(qa.label, qa.action) }}
-              className="mister-qa-button h-7 rounded-[2px] border border-[var(--mister-qa-border)] bg-transparent px-[10px] font-body text-[12px] font-[500] tracking-[0.01em] text-[var(--mister-text-primary)] transition-colors duration-[150ms] hover:border-[var(--mister-qa-border-hover)] hover:bg-[var(--mister-qa-bg-hover)] active:bg-[var(--mister-gold-fill-active)]"
+              className="mister-qa-button min-h-[36px] rounded-[4px] border border-[rgba(255,255,255,0.18)] bg-transparent px-3 py-2 font-mono text-[12px] font-[400] tracking-[0.04em] text-[rgba(248,246,240,0.85)] transition-colors duration-[150ms] hover:border-[rgba(255,255,255,0.30)] hover:bg-[rgba(255,255,255,0.05)] active:bg-[rgba(255,255,255,0.08)]"
             >
               {qa.label}
             </motion.button>
