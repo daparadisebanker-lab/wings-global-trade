@@ -95,11 +95,93 @@ montacargas-3ton        | Montacargas 3 Toneladas   | 3 T | altura 3 m | diésel
 compresor-tornillo-50hp | Compresor de Tornillo 50 HP | 7 m³/min | 8 bar | 380 V trifásico
 URL base: /catalogo/equipo-industrial/{slug}
 
---- REPUESTOS (lotes de importación) ---
-filtro-aceite-universal | Filtro de Aceite Universal | caja ×50 | diésel multimarca
-kit-embrague-tractor    | Kit Embrague Tractor       | tractores 70–120 HP | disco+plato+rodamiento | cerámico reforzado
-neumatico-agricola-r1   | Neumático Agrícola R1      | 18.4-30 | R1 | 12 PR | diagonal
-URL base: /catalogo/repuestos/{slug}
+--- REPUESTOS — MOTORES JDM (origen Japón, usados, verificados) ---
+Catálogo: /repuestos | Cotización: /cotizar
+8 marcas · ~220 códigos de motor · condición: usado japonés | suministro: importación directa Japón
+CKD (kit sin armado) disponible en algunos códigos; indicar al usuario que consulte para cotización.
+
+DAIHATSU (4 variantes):
+1KR PASSO    | 998cc  | I3 | 58 HP  | Boon, Passo, Perodua Myvi
+1KR VITS     | 998cc  | I3 | 67 HP  | Vitz KSP90, Yaris
+K3           | 1298cc | I4 | 87 HP  | Mira, Sirion
+K3 TERIOS    | 1298cc | I4 | 133 HP | turbo | Terios Kid, Cami
+
+HONDA (32 variantes — selección clave):
+B20B RF1     | 1972cc | I4 | 130 HP | CR-V RD1, Orthia
+D15B NEW     | 1493cc | I4 | 130 HP | Civic EK9, Domani
+F20B         | 1997cc | I4 | 200 HP | Accord CF5, Prelude BB5 | CKD BLUE disponible
+F23A         | 2254cc | I4 | 150 HP | Accord CH9, Odyssey RA6
+K20A         | 1998cc | I4 | 155 HP | CR-V RD5, Accord CL7
+K24A         | 2354cc | I4 | 160 HP | Odyssey RB1/RB3, CR-V RD6
+J30A         | 2997cc | V6 | 210 HP | Odyssey RR3/RR4/RA8
+J35A KB1     | 3471cc | V6 | 265 HP | Legend KB1, Odyssey RR5
+L13A/L15A    | 1339/1497cc | I4 | 86–109 HP | Jazz/Fit GD/GE
+R18A/R20A    | 1798/1997cc | I4 | 140–150 HP | Civic FD, CR-V RE3
+
+MITSUBISHI (22 variantes — selección clave):
+4G63 NO GDI  | 1997cc | I4 | 145 HP | Lancer CP9A, Galant E54A
+4G64 DELICA  | 2350cc | I4 | 134 HP | Delica D:5, Space Gear
+4G69 MIVEC   | 2378cc | I4 | 160 HP | Outlander CW5W, Fortis CX5A
+6G72 FR      | 2972cc | V6 | 230 HP | Pajero V6, GTO Z16A
+6G74 FR      | 3497cc | V6 | 245 HP | Pajero V75W, Montero V6
+4B11/4B12    | 1998/2360cc | I4 | 150–170 HP | Outlander, Lancer CY
+
+MAZDA (21 variantes — selección clave):
+FE           | 1998cc | I4 | 68 HP  | diésel | Bongo E2200, B-series
+WL TURBO     | 2499cc | I4 | 115 HP | diésel turbo | B-series, Ranger
+RF BLACK/NEW | 2184cc | I4 | 100–105 HP | diésel turbo | Capella, Bongo
+R2           | 2209cc | I4 | 72–74 HP | diésel | Bongo SK, Bongo Truck
+L3 TURBO     | 2261cc | I4 | 260 HP | turbo | Mazdaspeed6, CX-7 Turbo
+FS/FP        | 1839/1991cc | I4 | 112–140 HP | Capella GW, 626 GF
+
+NISSAN (35 variantes — selección clave):
+RB20         | 1998cc | I6 | 145 HP | Skyline R31/R32, Laurel C33
+RB25 NEO     | 2498cc | I6 | 210 HP | Skyline R33/R34, Stagea WGNC34
+SR20         | 1998cc | I4 | 145 HP | Primera P11, 200SX S14
+MR20         | 1997cc | I4 | 141 HP | X-Trail T31, Sylphy B17
+QR20/QR25    | 1997/2488cc | I4 | 140–170 HP | X-Trail T30/T31, Navara
+VQ35 DE/HR   | 3498cc | V6 | 280–306 HP | 350Z Z33, Elgrand E51
+VQ37         | 3696cc | V6 | 330 HP | 370Z Z34, G37
+YD25 FF/FR   | 2488cc | I4 | 170–190 HP | diésel turbo | Navara, Pathfinder
+ZD30         | 2953cc | I4 | 150 HP | diésel turbo | Patrol Y61, Caravan
+QD32 EFI     | 3153cc | I4 | 100 HP | diésel | Caravan E24, Elgrand E50
+GA15 EFI     | 1497cc | I4 | 90 HP  | Sunny B13, Sentra
+
+SUBARU (11 variantes):
+EJ20 NA      | 1994cc | B4 | 125 HP | Legacy BH, Forester SF, Impreza
+EJ25 NA      | 2457cc | B4 | 165–173 HP | Outback BP9, Legacy BL9
+EJ25 TURBO   | 2457cc | B4 | 210 HP | Legacy BP9 Spec B, Outback
+FB20/FB25    | 1995/2498cc | B4 | 148–172 HP | Impreza GJ, XV, Forester
+EZ30         | 2999cc | B6 | 212 HP | Outback BH9, Tribeca
+
+SUZUKI (7 variantes):
+K6A FR       | 658cc  | I3 | 58 HP  | Jimny JB23, Wagon R MC22
+K12B         | 1242cc | I4 | 85 HP  | Swift ZC72S
+M13A/M15A    | 1328/1490cc | I4 | 89–99 HP | Swift, Aerio, Liana
+M16A AT/MT   | 1586cc | I4 | 107–110 HP | Swift Sport, SX4
+
+TOYOTA (60+ variantes — selección clave):
+1JZ VVT-i    | 2491cc | I6 | 200 HP | Crown JZS171, Mark II JZX110
+2JZ VVT-i    | 2997cc | I6 | 230 HP | Crown JZS171, Aristo JZS160
+1MZ VVTI     | 2994cc | V6 | 220 HP | Camry MCV30, Harrier MCU30
+1NZ CVT K210 | 1497cc | I4 | 109 HP | Vitz NCP91, Yaris NCP93
+1KZ          | 2982cc | I4 | 130 HP | diésel | Prado KZJ95, Hiace KZH
+2AZ NEW      | 2362cc | I4 | 167 HP | Camry ACV40, RAV4 ACA36
+2GR FF       | 3456cc | V6 | 296 HP | Alphard ANH20, Estima ACR50
+1UZ VVTI     | 3969cc | V8 | 290 HP | Celsior UCF30, Lexus LS430
+3UZ          | 4292cc | V8 | 285 HP | Crown Majesta, Celsior UCF31
+5VZ          | 3378cc | V6 | 190 HP | Prado VZJ95, Hilux Surf
+3RZ          | 2693cc | I4 | 145 HP | Prado RZJ95, Hiace
+1TR LPG      | 1998cc | I4 | 145 HP | GLP | Hiace TRH200, Regius Ace
+1ZZ NEW      | 1794cc | I4 | 140 HP | Corolla Fielder, Auris NZE151
+2ZZ          | 1796cc | I4 | 190 HP | Celica ZZT231, Lotus Elise
+
+GUÍA DE USO PARA MISTER:
+- NUNCA cotizar precio absoluto. Toda consulta de precio → explicar estructura de costo (motor + flete aéreo/marítimo + seguro + arancel + nacionalización) y derivar a /cotizar.
+- "CKD" = kit sin armado, requiere cotización especial.
+- Turbo: indicar siempre si aplica — impacta insumos, diagnóstico y mantenimiento.
+- Si el usuario menciona un vehículo (ej. "Nissan X-Trail T30"), identificar el código de motor correcto y sugerirlo.
+URL catálogo: /repuestos | URL cotización: /cotizar
 `
 
 // ---------------------------------------------------------------------------
