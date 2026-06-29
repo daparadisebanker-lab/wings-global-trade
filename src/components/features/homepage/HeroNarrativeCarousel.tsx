@@ -216,6 +216,18 @@ export function HeroNarrativeCarousel() {
           scrub: 1.5,             // weighted lag — animations trail scroll for cinematic feel
           anticipatePin: 1,
           invalidateOnRefresh: true,
+          // Narrative scrubs freely; snap only kicks in once past the narrative zone
+          // so each scroll impulse advances exactly one slide chapter
+          snap: {
+            snapTo: (raw) => {
+              if (raw < 0.28) return raw
+              const pts = [1 / 3, 2 / 3, 1] as const
+              return pts.reduce((a, b) => (Math.abs(b - raw) < Math.abs(a - raw) ? b : a))
+            },
+            duration: { min: 0.25, max: 0.55 },
+            delay: 0.08,
+            ease: 'power2.inOut',
+          },
           onUpdate: (self) => {
             // Update dot indicator
             if      (self.progress < 0.38) setActiveSlide(0)
