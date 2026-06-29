@@ -617,3 +617,48 @@
     .mister-stream-cursor { animation: none; opacity: 1; }
   }
 }
+
+/* ============================================================
+   Custom cursor — desktop pointer devices only
+   Arrow:   #001E50 navy, 36px, 1px white outline, hotspot (4,3)
+   Pointer: #001E50 body + #C4933F finger at 65%, 34px, hotspot (13,1)
+   Recedes on dark navy sections — intentional (Stillness).
+   ============================================================ */
+@media (hover: hover) and (pointer: fine) {
+  * {
+    cursor: url('/cursors/arrow.svg') 4 3, default !important;
+  }
+
+  a,
+  button,
+  [role="button"],
+  [role="link"],
+  [role="menuitem"],
+  [role="option"],
+  [role="tab"],
+  summary,
+  label,
+  select,
+  [tabindex="0"],
+  [data-cursor="pointer"],
+  .spec-value-inspectable {
+    cursor: url('/cursors/pointer.svg') 13 1, pointer !important;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="search"],
+  input[type="number"],
+  input[type="url"],
+  input[type="tel"],
+  input[type="password"],
+  textarea,
+  [contenteditable="true"] {
+    cursor: text !important;
+  }
+
+  [disabled],
+  [aria-disabled="true"] {
+    cursor: not-allowed !important;
+  }
+}

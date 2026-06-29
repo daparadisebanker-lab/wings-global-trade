@@ -1,5 +1,8 @@
 UX_COMPLETE
-Contribution written: C:\Users\Muaaz\projects\wings-global-trade\spec\contributions\experience.md
-Agent: Experience Architect
-Date: 2026-06-27
-Sections: 5-archetype journey maps, floating vs embedded mode, mobile patterns, trust architecture, friction audit (9 points), induction flow UX, quick action surface UX, escalation UX, single most important moment.
+Agent: Experience (UX Architecture)
+Scope: Nosotros page — journey map, CTA architecture, friction audit
+Date: 2026-06-29
+Files:
+  - /ux/journey-map.md
+  - /ux/cta-architecture.md
+  - /ux/friction-report.md

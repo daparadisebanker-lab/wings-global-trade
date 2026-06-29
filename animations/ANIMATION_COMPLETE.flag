@@ -49,3 +49,17 @@ Seven easings defined. Eight-point duration scale. Full variant object library.
 LandedCostWaterfall signature animation: 5-segment staggered scaleX build, 1.54s total, duties pulse.
 prefers-reduced-motion fallbacks on every variant object.
 Existing MisterWaveform / useMisterWaveform: unchanged and correct.
+
+---
+
+Nosotros Motion System: Round 1 Brainstorm
+Completed: 2026-06-29
+
+Agent: Animator
+Constraint: Framer Motion only (framer-motion@11.18.2) — no GSAP, no SplitText, no custom RAF
+Components requiring replacement:
+- src/hooks/useSplitTextReveal.ts (GSAP SplitText — root cause of page failure)
+- src/components/features/shared/AnimatedInteriorHero.tsx (depends on above)
+- src/components/features/shared/SplitHeading.tsx (depends on above)
+- src/components/ui/MagneticWrapper.tsx (GSAP RAF loop — separate failure vector)
+Motion system output: delivered as council brainstorm text

@@ -218,6 +218,36 @@ export const MISTER_FAQS = [
   },
 ]
 
+export function importHowToSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name: 'Cómo importar desde Asia a LATAM vía zona franca con Wings Global Trade',
+    description:
+      'Proceso de importación B2B desde China, Japón, Tailandia o Dubai hacia América Latina a través de ZOFRATACNA (Tacna, Perú) o ZOFRI (Iquique, Chile).',
+    step: [
+      {
+        '@type': 'HowToStep',
+        position: 1,
+        name: 'Consulta inicial',
+        text: 'Comparta sus necesidades de importación vía Mister (IA) o contacto directo. Wings confirma disponibilidad de producto y ruta logística óptima en 24 horas hábiles.',
+      },
+      {
+        '@type': 'HowToStep',
+        position: 2,
+        name: 'Cotización CIF documentada',
+        text: 'Wings entrega cotización CIF con especificaciones técnicas verificables, documentación de origen (BL, factura comercial, certificado de origen, fitosanitario) y estructura de costo de internación.',
+      },
+      {
+        '@type': 'HowToStep',
+        position: 3,
+        name: 'Coordinación logística y documental',
+        text: 'Wings coordina fabricante, flete marítimo, depósito en zona franca (ZOFRATACNA o ZOFRI), tramitación aduanal y entrega en destino final dentro de América Latina.',
+      },
+    ],
+  }
+}
+
 // Legacy FAQs for general pages — kept for backwards compatibility
 export const WINGS_FAQS = [
   {
