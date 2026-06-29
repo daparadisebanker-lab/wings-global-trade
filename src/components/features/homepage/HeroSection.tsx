@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { motion, useReducedMotion } from 'framer-motion'
 import { SearchBar } from '@/components/features/homepage/SearchBar'
 import { CountUpStat } from '@/components/features/homepage/CountUpStat'
+import { MagneticWrapper } from '@/components/ui/MagneticWrapper'
 import { LINE_REVEAL, COUNT_UP } from '@/lib/motion'
 
 const HEADLINE_LINES = [
@@ -99,18 +100,22 @@ export function HeroSection() {
           <SearchBar onNavy />
 
           <div className="flex flex-wrap items-center gap-3">
-            <Link
-              href="/catalogo/maquinaria-agricola"
-              className="inline-flex items-center gap-2 border border-warm-white/[0.15] px-6 py-3 font-mono text-[11px] uppercase tracking-nav text-warm-white/55 transition-all duration-200 hover:border-gold/40 hover:text-gold"
-            >
-              Explorar catálogo
-            </Link>
-            <Link
-              href="/mister"
-              className="inline-flex items-center gap-2 bg-gold px-6 py-3 font-mono text-[11px] uppercase tracking-nav text-navy transition-colors hover:bg-gold-hover"
-            >
-              Consulta técnica
-            </Link>
+            <MagneticWrapper>
+              <Link
+                href="/catalogo/maquinaria-agricola"
+                className="inline-flex items-center gap-2 border border-warm-white/[0.15] px-6 py-3 font-mono text-[11px] uppercase tracking-nav text-warm-white/55 transition-all duration-200 hover:border-gold/40 hover:text-gold"
+              >
+                Explorar catálogo
+              </Link>
+            </MagneticWrapper>
+            <MagneticWrapper>
+              <Link
+                href="/mister"
+                className="inline-flex items-center gap-2 bg-gold px-6 py-3 font-mono text-[11px] uppercase tracking-nav text-navy transition-colors hover:bg-gold-hover"
+              >
+                Consulta técnica
+              </Link>
+            </MagneticWrapper>
           </div>
 
           <p className="font-mono text-[9px] text-warm-white/20">
