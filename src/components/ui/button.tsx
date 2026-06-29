@@ -1,16 +1,18 @@
 // src/components/ui/button.tsx
 import { forwardRef } from 'react'
-import type { ButtonHTMLAttributes } from 'react'
+import type { ReactNode } from 'react'
 import { motion } from 'framer-motion'
+import type { HTMLMotionProps } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'whatsapp'
 type Size = 'sm' | 'md' | 'lg'
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
   variant?: Variant
   size?: Size
   isLoading?: boolean
+  children?: ReactNode
 }
 
 const base =
