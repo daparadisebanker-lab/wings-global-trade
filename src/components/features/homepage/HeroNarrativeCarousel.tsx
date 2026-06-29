@@ -263,6 +263,7 @@ export function HeroNarrativeCarousel() {
       //  8.3 – 10.0 │ Dwell on Slide 2, pin releases
       const tl = gsap.timeline({
         scrollTrigger: {
+          id: 'hero-narrative-pin',
           trigger: sectionRef.current,
           start: 'top top',
           end: '+=300%',
@@ -316,7 +317,14 @@ export function HeroNarrativeCarousel() {
       return () => { split.revert() }
     })
 
-    return () => mm.revert()
+    return () => {
+      // Kill the pinned ScrollTrigger first so it releases the section from its
+      // spacer wrapper before React's reconciler tries removeChild on the section.
+      // Without this, the pin moves the element out of its React-expected parent
+      // and navigation triggers an Uncaught NotFoundError.
+      ScrollTrigger.getById('hero-narrative-pin')?.kill()
+      mm.revert()
+    }
   }, [isMobile, reduce])
 
   // ── Mobile: auto-advance ──────────────────────────────────────────────────
