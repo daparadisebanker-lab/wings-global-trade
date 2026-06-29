@@ -5,6 +5,7 @@ import { JsonLd } from '@/components/seo/JsonLd'
 import { faqSchema, WINGS_FAQS, breadcrumbSchema } from '@/lib/schema'
 import { FREE_ZONES, SOURCE_MARKETS, MARKETS_SERVED } from '@/lib/constants'
 import { AnimatedInteriorHero } from '@/components/features/shared/AnimatedInteriorHero'
+import { SplitHeading } from '@/components/features/shared/SplitHeading'
 import { MagneticWrapper } from '@/components/ui/MagneticWrapper'
 
 export const metadata: Metadata = {
@@ -55,9 +56,9 @@ export default function NosotrosPage() {
             <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-navy/40 mb-4">
               01 — Qué hacemos
             </p>
-            <h2 className="font-display text-display-sm font-light text-navy mb-6">
+            <SplitHeading className="font-display text-display-sm font-light text-navy mb-6">
               Importación técnica desde el Pacífico
-            </h2>
+            </SplitHeading>
             <p className="font-body text-body-lg leading-relaxed text-navy/70">
               Wings Global Trade conecta a importadores de América Latina con fabricantes
               certificados de China, Japón, Tailandia y Dubái. Gestionamos la importación de
@@ -74,9 +75,9 @@ export default function NosotrosPage() {
             <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-navy/40 mb-4">
               02 — Zonas francas
             </p>
-            <h2 className="font-display text-display-sm font-light text-navy mb-6">
+            <SplitHeading className="font-display text-display-sm font-light text-navy mb-6">
               Infraestructura en origen
-            </h2>
+            </SplitHeading>
             <ul className="space-y-4">
               {FREE_ZONES.map((z) => (
                 <li key={z.name} className="border border-[rgba(0,30,80,0.08)] bg-surface-card p-5">
@@ -119,9 +120,9 @@ export default function NosotrosPage() {
         <div className="max-w-6xl mx-auto">
           <div className="wings-rule mb-8" />
           <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
-            <h2 className="max-w-lg font-display text-display-md font-light text-navy leading-[1.05] tracking-[-0.02em]">
+            <SplitHeading className="max-w-lg font-display text-display-md font-light text-navy leading-[1.05] tracking-[-0.02em]">
               Conversemos sobre tu próxima importación
-            </h2>
+            </SplitHeading>
             <div className="flex flex-col gap-4 sm:flex-row">
               <MagneticWrapper>
                 <Link

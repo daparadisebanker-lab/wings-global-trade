@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { AnimatedProcessSteps, type Phase } from '@/components/features/proceso/AnimatedProcessSteps'
+import { SplitHeading } from '@/components/features/shared/SplitHeading'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { MagneticWrapper } from '@/components/ui/MagneticWrapper'
 
@@ -222,9 +223,9 @@ export default function ProcesoPage() {
           <div className="wings-rule mb-8" />
           <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
             <div className="max-w-lg">
-              <h2 className="font-display text-display-md font-light text-navy leading-[1.05] tracking-[-0.02em]">
+              <SplitHeading className="font-display text-display-md font-light text-navy leading-[1.05] tracking-[-0.02em]">
                 Más de 50 modelos en catálogo. Precio CIF sin intermediarios.
-              </h2>
+              </SplitHeading>
               <p className="mt-4 font-body text-body-md leading-relaxed text-navy/55">
                 New Holland, John Deere, Massey Ferguson, Kubota, KAMA. Tractores desde 50 hasta
                 140 HP, camiones diésel y eléctricos, buses y equipo industrial.
