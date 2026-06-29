@@ -95,7 +95,7 @@ function Chip({ label, count, isActive, isDisabled, onToggle }: ChipProps) {
 }
 
 export function FilterChipRow({ categorySlug, facets, activeFilters }: FilterChipRowProps) {
-  const { setFilter, activeCount } = useCatalogFilters()
+  const { setFilter, clearFilters, activeCount } = useCatalogFilters()
 
   const groups = getChipGroups(categorySlug, facets)
   if (groups.length === 0) return null
@@ -142,13 +142,7 @@ export function FilterChipRow({ categorySlug, facets, activeFilters }: FilterChi
       {activeCount > 0 && (
         <button
           type="button"
-          onClick={() => {
-            for (const group of groups) {
-              if (activeFilters[group.paramKey]) {
-                setFilter(group.paramKey, '')
-              }
-            }
-          }}
+          onClick={clearFilters}
           className="self-start font-mono text-[10px] uppercase tracking-[0.10em] text-navy/35 transition-colors hover:text-navy"
         >
           Limpiar filtros

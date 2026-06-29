@@ -1,7 +1,8 @@
 'use client'
 
+import { useRef } from 'react'
 import Image from 'next/image'
-import { motion } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
 import { FADE_UP, FADE_UP_TRANSITION, VIEWPORT_ONCE } from '@/lib/motion'
 
 /*
@@ -58,6 +59,11 @@ const SOURCE_MARKETS = [
 ]
 
 export function MarketMap() {
+  const mapRef = useRef<HTMLDivElement>(null)
+  // Observe the map container — more reliable than per-path whileInView on SVG elements
+  // whose bounding boxes extend into negative-x territory (outside the clipped viewport)
+  const isInView = useInView(mapRef, { once: true, margin: '0px 0px -60px 0px' })
+
   return (
     <section className="w-full">
       <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
@@ -125,7 +131,7 @@ export function MarketMap() {
 
           {/* Map container — image + SVG overlay share the same 4:5 aspect ratio */}
           {/* overflow-hidden clips SVG overflow: visible bleed that causes horizontal scroll on mobile */}
-          <div className="relative w-full max-w-sm overflow-hidden">
+          <div ref={mapRef} className="relative w-full max-w-sm overflow-hidden">
 
             {/* Continent silhouette
                 filter: invert(1) grayscale(1) → background becomes near-black, countries become medium-grey
@@ -172,7 +178,7 @@ export function MarketMap() {
                 DXB
               </text>
 
-              {/* Freight arcs — animated draw-on */}
+              {/* Freight arcs — draw-on triggered when map container enters viewport */}
               {FREIGHT_ARCS.map((arc) => (
                 <motion.path
                   key={arc.id}
@@ -183,8 +189,7 @@ export function MarketMap() {
                   strokeDasharray={arc.dash}
                   strokeLinecap="round"
                   initial={{ pathLength: 0, opacity: 0 }}
-                  whileInView={{ pathLength: 1, opacity: arc.opacity }}
-                  viewport={{ once: true, margin: '-80px' }}
+                  animate={isInView ? { pathLength: 1, opacity: arc.opacity } : { pathLength: 0, opacity: 0 }}
                   transition={{
                     pathLength: { duration: 2.6, delay: arc.delay, ease: [0.16, 1, 0.3, 1] },
                     opacity:    { duration: 0.4, delay: arc.delay },
@@ -197,8 +202,7 @@ export function MarketMap() {
                 x1={52} y1={90} x2={52} y2={107.5}
                 stroke="#C4933F" strokeWidth={0.18} strokeDasharray="1 1.8" strokeOpacity={0.22}
                 initial={{ pathLength: 0 }}
-                whileInView={{ pathLength: 1 }}
-                viewport={{ once: true }}
+                animate={isInView ? { pathLength: 1 } : { pathLength: 0 }}
                 transition={{ duration: 1.2, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
               />
 

@@ -12,7 +12,6 @@ const DEFAULT_SECTIONS: NavSection[] = [
   { id: 'especificaciones', label: 'Especificaciones' },
   { id: 'aplicaciones', label: 'Aplicaciones' },
   { id: 'consultar', label: 'Consultar' },
-  { id: 'logistica', label: 'Logística' },
 ]
 
 interface JumpNavigationProps {

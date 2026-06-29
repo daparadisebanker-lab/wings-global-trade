@@ -15,15 +15,8 @@ import { VariantTable } from '@/components/features/catalog/VariantTable'
 import SavedInquiryBanner from '@/components/features/catalog/SavedInquiryBanner'
 import JumpNavigation from '@/components/features/catalog/JumpNavigation'
 import { KeySpecsRibbon } from '@/components/features/catalog/KeySpecsRibbon'
-import { TradeRouteAnimation } from '@/components/features/catalog/TradeRouteAnimation'
 import { useComparison } from '@/hooks/useComparison'
 import { cn } from '@/lib/utils'
-import {
-  ORIGIN_PORTS,
-  TRANSIT_DAYS,
-  inferContainerType,
-  freightRangeDisplay,
-} from '@/lib/product-intelligence'
 
 interface ImplementLink {
   label: string
@@ -63,16 +56,6 @@ export function ProductDetail({ product, categorySlug }: ProductDetailProps) {
   const compareDisabled = isFull && !inComparison
 
   const prefersReducedMotion = useReducedMotion()
-
-  const sourceMarket = product.source_markets[0] ?? 'China'
-  const weight = product.variants?.[0]?.gvw_kg ?? 3000
-  const transitData = TRANSIT_DAYS[sourceMarket]
-  const totalTransitDays = transitData
-    ? transitData.originToPort + transitData.oceanTransit + transitData.portToZone
-    : 38
-  const containerType = inferContainerType(weight)
-  const freightRange = freightRangeDisplay(sourceMarket)
-  const originPort = ORIGIN_PORTS[sourceMarket]?.name ?? sourceMarket
 
   function handleCompareToggle() {
     if (inComparison) {
@@ -343,58 +326,6 @@ export function ProductDetail({ product, categorySlug }: ProductDetailProps) {
             </div>
 
           </div>
-
-          {/* ── Logistics section: dedicated anchor below the main grid ── */}
-          <section id="logistica" className="mt-14 rounded-sm bg-navy px-8 py-10 md:px-12 md:py-14">
-
-            <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-gold">
-              Ruta operativa
-            </p>
-            <h2 className="font-display text-display-sm font-light text-warm-white">
-              Logística de importación
-            </h2>
-            <p className="mt-1.5 font-mono text-[10px] tracking-[0.06em] text-warm-white/35">
-              {originPort} → Pacífico Sur → ZOFRATACNA, Tacna
-            </p>
-
-            <div className="mt-8">
-              <TradeRouteAnimation
-                sourceMarket={sourceMarket}
-                weight={weight}
-              />
-            </div>
-
-            <div className="mt-6 grid grid-cols-3 divide-x divide-warm-white/10 border-t border-warm-white/10 pt-6">
-              <div className="pr-6">
-                <p className="mb-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-warm-white/30">
-                  Tiempo en tránsito
-                </p>
-                <p className="font-mono text-sm text-warm-white">
-                  {totalTransitDays} días aprox.
-                </p>
-              </div>
-              <div className="px-6">
-                <p className="mb-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-warm-white/30">
-                  Contenedor
-                </p>
-                <p className="font-mono text-sm text-warm-white">
-                  {containerType}
-                </p>
-              </div>
-              <div className="pl-6">
-                <p className="mb-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-warm-white/30">
-                  Flete estimado
-                </p>
-                <p className="font-mono text-sm text-gold">
-                  {freightRange}
-                </p>
-                <p className="mt-0.5 font-mono text-[9px] text-warm-white/25">
-                  Índice referencial CIF
-                </p>
-              </div>
-            </div>
-
-          </section>
 
         </div>
       </div>

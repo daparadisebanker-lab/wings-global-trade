@@ -2,6 +2,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import { Suspense } from 'react'
 import {
   getCategories,
   getCategoryBySlug,
@@ -309,11 +310,13 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
           )}
 
           {/* Horizontal quick-filter chip row */}
-          <FilterChipRow
-            categorySlug={category}
-            facets={facets}
-            activeFilters={definedFilters}
-          />
+          <Suspense fallback={null}>
+            <FilterChipRow
+              categorySlug={category}
+              facets={facets}
+              activeFilters={definedFilters}
+            />
+          </Suspense>
 
           {/* Active filters chips row */}
           {hasActiveFilters && (
@@ -352,22 +355,26 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
           {/* Main content: filter sidebar + product grid */}
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-[220px_1fr]">
             {/* Desktop sidebar — always visible */}
-            <FilterSidebar
-              categorySlug={category}
-              activeFilters={definedFilters}
-              facets={facets}
-            />
+            <Suspense fallback={null}>
+              <FilterSidebar
+                categorySlug={category}
+                activeFilters={definedFilters}
+                facets={facets}
+              />
+            </Suspense>
             <div>
               <ProductGrid products={products} category={cat} />
             </div>
           </div>
 
           {/* Mobile bottom-sheet drawer — FloatingTriggerButton always visible on mobile */}
-          <FilterPanel
-            categorySlug={category}
-            activeFilters={definedFilters}
-            facets={facets}
-          />
+          <Suspense fallback={null}>
+            <FilterPanel
+              categorySlug={category}
+              activeFilters={definedFilters}
+              facets={facets}
+            />
+          </Suspense>
 
           {/* ── Subcategory gateway — inactive subcategories route to Mister */}
           <SubcategoryGateway
