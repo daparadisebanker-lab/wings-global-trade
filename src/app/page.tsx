@@ -2,8 +2,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getCategories } from '@/lib/catalog-data'
-import { HeroScrollNarrative } from '@/components/features/homepage/HeroScrollNarrative'
-import { HeroCarousel } from '@/components/features/homepage/HeroCarousel'
+import { HeroNarrativeCarousel } from '@/components/features/homepage/HeroNarrativeCarousel'
 import { StatBar } from '@/components/features/homepage/StatBar'
 import { CategoryGrid } from '@/components/features/homepage/CategoryGrid'
 import { TrustBar } from '@/components/features/homepage/TrustBar'
@@ -37,14 +36,11 @@ export default async function HomePage() {
     <>
       <JsonLd data={websiteSchema()} />
 
-      {/* Hero — scroll-pinned narrative on desktop, static on mobile */}
-      <HeroScrollNarrative />
+      {/* Hero — scroll narrative pin → becomes carousel on desktop; straight carousel on mobile */}
+      <HeroNarrativeCarousel />
 
-      {/* Stats bar — dark, anchored to hero base */}
+      {/* Stats bar */}
       <StatBar />
-
-      {/* Featured products carousel — category CTAs (camiones, maquinaria, importación) */}
-      <HeroCarousel />
 
       {/* Category grid — warm-white */}
       <SectionBlock theme="warm-white" className="pt-14 md:pt-20">
