@@ -1,4 +1,6 @@
 // src/components/ui/button.tsx
+'use client'
+
 import { forwardRef } from 'react'
 import type { ReactNode } from 'react'
 import { motion } from 'framer-motion'
