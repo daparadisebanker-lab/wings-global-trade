@@ -93,44 +93,49 @@ export default function NosotrosPage() {
       <section className="bg-[#F8F6F0] py-20 md:py-28 px-6 md:px-10">
         <div className="max-w-6xl mx-auto">
           <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-navy/40 mb-3">
-            01 — Infraestructura
+            01 — Posiciones operativas
           </p>
           <AnimatedWingsRule className="mb-8" />
           <h2 className="font-display text-display-md font-light text-navy mb-16 max-w-xl leading-[1.1]">
-            Infraestructura real en dos zonas francas del Pacífico Sur
+            Dos posiciones en el corredor arancelario del Pacífico Sur
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {FREE_ZONES.map((z) => (
               <div
                 key={z.name}
-                className="relative border border-[rgba(0,30,80,0.08)] bg-white p-8 overflow-hidden"
+                className="relative border border-[rgba(0,30,80,0.07)] bg-[#FAFAF8] p-8 overflow-hidden"
               >
-                {/* Large year watermark */}
+                {/* Year watermark */}
                 <span
-                  className="absolute bottom-4 right-6 font-display text-[7rem] font-light leading-none text-navy/[0.04] select-none pointer-events-none"
+                  className="absolute bottom-4 right-6 font-display text-[7rem] font-light leading-none text-navy/[0.05] select-none pointer-events-none"
                   aria-hidden
                 >
                   {z.name === 'ZOFRATACNA' ? '1988' : '1975'}
                 </span>
 
-                <p className="font-mono text-sm text-gold tracking-[0.06em] mb-1">{z.name}</p>
-                <p className="font-body text-sm text-navy/50 mb-6">{z.location}</p>
+                <div className="flex items-start justify-between mb-1">
+                  <p className="font-mono text-sm text-gold tracking-[0.06em]">{z.name}</p>
+                  <span className="font-mono text-[9px] text-navy/25 tracking-[0.08em] mt-0.5">
+                    {z.name === 'ZOFRATACNA' ? '17°59′ S · 70°14′ O' : '20°13′ S · 70°10′ O'}
+                  </span>
+                </div>
+                <p className="font-body text-sm text-navy/45 mb-7">{z.location}</p>
 
-                <div className="space-y-3 relative">
+                <div className="space-y-0 relative">
                   {z.name === 'ZOFRATACNA' ? (
                     <>
-                      <ZoneRow label="Régimen" value="Zona franca de transformación" />
-                      <ZoneRow label="Ventaja" value="Suspensión arancelaria hasta destino final en Perú y Bolivia" />
-                      <ZoneRow label="Aduana" value="SUNAT — Aduanas del Perú" />
-                      <ZoneRow label="Uso óptimo" value="Importaciones hacia Perú, Bolivia y sur de Colombia" />
+                      <ZoneRow label="Régimen" value="Zona franca de transformación industrial" />
+                      <ZoneRow label="Condición arancelaria" value="Suspensión arancelaria hasta destino final en Perú y Bolivia" />
+                      <ZoneRow label="Autoridad" value="SUNAT — Aduanas del Perú" />
+                      <ZoneRow label="Mercados de destino" value="Perú, Bolivia, sur de Colombia" />
                     </>
                   ) : (
                     <>
                       <ZoneRow label="Régimen" value="Zona franca comercial e industrial" />
-                      <ZoneRow label="Ventaja" value="0% aranceles en tránsito hacia Bolivia, Colombia y Ecuador" />
-                      <ZoneRow label="Aduana" value="Aduana de Chile — Servicio Nacional de Aduanas" />
-                      <ZoneRow label="Uso óptimo" value="Importaciones hacia Chile, Colombia, Panamá y Cono Sur" />
+                      <ZoneRow label="Condición arancelaria" value="Tránsito con 0% aranceles hacia Bolivia, Colombia y Ecuador" />
+                      <ZoneRow label="Autoridad" value="Servicio Nacional de Aduanas de Chile" />
+                      <ZoneRow label="Mercados de destino" value="Chile, Colombia, Panamá, Cono Sur" />
                     </>
                   )}
                 </div>
@@ -299,11 +304,11 @@ export default function NosotrosPage() {
 
 function ZoneRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex gap-3">
-      <span className="font-mono text-[10px] uppercase tracking-[0.08em] text-navy/30 w-20 shrink-0 pt-0.5">
+    <div className="flex gap-4 border-t border-[rgba(0,30,80,0.05)] py-3">
+      <span className="font-mono text-[10px] uppercase tracking-[0.08em] text-navy/30 w-28 shrink-0 pt-0.5 leading-relaxed">
         {label}
       </span>
-      <span className="font-body text-body-sm text-navy/70 leading-snug">{value}</span>
+      <span className="font-body text-body-sm text-navy/65 leading-snug">{value}</span>
     </div>
   )
 }

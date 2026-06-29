@@ -11,10 +11,10 @@ interface StatDef {
 }
 
 const STATS: StatDef[] = [
-  { num: 97, pad: 0,  suffix: '',  label: 'Modelos disponibles' },
-  { num: 5,  pad: 2,  suffix: '',  label: 'Fabricantes verificados' },
+  { num: 97, pad: 0,  suffix: '',  label: 'Modelos en catálogo' },
+  { num: 5,  pad: 2,  suffix: '',  label: 'Fabricantes en origen' },
   { num: 2,  pad: 2,  suffix: '',  label: 'Zonas francas' },
-  { num: 24, pad: 0,  suffix: 'h', label: 'Respuesta garantizada' },
+  { num: 24, pad: 0,  suffix: 'h', label: 'Plazo de respuesta' },
 ]
 
 function fmt(n: number, pad: number) {

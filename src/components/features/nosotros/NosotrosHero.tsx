@@ -15,6 +15,9 @@ const LINES = [
   'desde afuera de ella.',
 ]
 
+const BODY =
+  'Con presencia en ZOFRATACNA y ZOFRI, gestionamos importaciones B2B desde China, Japón, Tailandia y Dubai. Acceso directo a fabricantes. Sin intermediarios en origen.'
+
 const container = {
   hidden: {},
   show: { transition: { staggerChildren: 0.12, delayChildren: 0.2 } },
@@ -44,14 +47,14 @@ export function NosotrosHero() {
 
   if (reduced) {
     return (
-      <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-16 items-end">
+      <div className="w-full max-w-6xl grid grid-cols-1 lg:[grid-template-columns:7fr_5fr] gap-12 lg:gap-20 items-end">
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-warm-white/30 mb-6">
             Nosotros
           </p>
           {headline}
           <p className="mt-8 font-body text-body-lg text-warm-white/60 max-w-lg leading-relaxed">
-            Infraestructura activa en dos zonas francas del Pacífico Sur. Proveedores directos en China, Japón, Tailandia y Dubai. Seguimiento documentado en 24 horas hábiles.
+            {BODY}
           </p>
         </div>
         <ManifestBlock />
@@ -60,7 +63,7 @@ export function NosotrosHero() {
   }
 
   return (
-    <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-16 items-end">
+    <div className="w-full max-w-6xl grid grid-cols-1 lg:[grid-template-columns:7fr_5fr] gap-12 lg:gap-20 items-end">
       <div>
         <motion.p
           className="font-mono text-[10px] uppercase tracking-[0.15em] text-warm-white/30 mb-6"
@@ -81,7 +84,7 @@ export function NosotrosHero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0, 0, 0.2, 1], delay: 0.65 }}
         >
-          Infraestructura activa en dos zonas francas del Pacífico Sur. Proveedores directos en China, Japón, Tailandia y Dubai. Seguimiento documentado en 24 horas hábiles.
+          {BODY}
         </motion.p>
       </div>
 
@@ -98,20 +101,25 @@ export function NosotrosHero() {
 
 function ManifestBlock() {
   return (
-    <div className="border border-warm-white/[0.12] p-6">
-      <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-gold/70 mb-4">
-        Perfil Operativo
-      </p>
-      <div className="space-y-3">
+    <div className="border border-warm-white/[0.10] p-6">
+      <div className="flex items-center justify-between mb-5">
+        <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-gold/70">
+          Perfil Operativo
+        </span>
+        <span className="font-mono text-[9px] text-warm-white/15 tracking-[0.08em]">
+          WGT·OP·001
+        </span>
+      </div>
+      <div className="space-y-0">
         {MANIFEST.map(({ label, value }) => (
           <div
             key={label}
-            className="flex gap-4 border-b border-warm-white/[0.06] pb-3 last:border-0 last:pb-0"
+            className="flex gap-4 border-t border-warm-white/[0.05] py-3 first:border-0 first:pt-0"
           >
-            <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-warm-white/30 w-24 shrink-0 pt-0.5">
+            <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-warm-white/25 w-24 shrink-0 pt-0.5">
               {label}
             </span>
-            <span className="font-body text-sm text-warm-white/80 leading-snug">
+            <span className="font-body text-sm text-warm-white/75 leading-snug">
               {value}
             </span>
           </div>
