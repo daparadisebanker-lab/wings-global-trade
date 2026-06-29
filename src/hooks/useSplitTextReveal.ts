@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef } from 'react'
+import { useLayoutEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { SplitText } from 'gsap/SplitText'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -27,7 +27,7 @@ export function useSplitTextReveal<T extends HTMLElement>(
 
   const ref = useRef<T>(null)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const el = ref.current
     if (!el) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
@@ -69,15 +69,15 @@ export function useSplitTextReveal<T extends HTMLElement>(
     }, el)
 
     return () => {
-      ctx.revert()
-      // Unwrap before split.revert() — prevents orphaned overflow:hidden spans in the DOM
+      // split.revert() FIRST — restores original DOM before React's reconciler removeChild runs
+      split.revert()
       wrappers.forEach((wrapper) => {
         while (wrapper.firstChild) {
           wrapper.parentNode?.insertBefore(wrapper.firstChild, wrapper)
         }
         wrapper.remove()
       })
-      split.revert()
+      ctx.revert()
     }
   }, [type, trigger, delay, stagger, duration])
 
