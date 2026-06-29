@@ -6,9 +6,8 @@ import Link from 'next/link'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { SplitText } from 'gsap/SplitText'
 
-gsap.registerPlugin(ScrollTrigger, SplitText)
+gsap.registerPlugin(ScrollTrigger)
 
 // ── Constants ────────────────────────────────────────────────────────────────
 const SLIDE_MS        = 6000
@@ -237,6 +236,7 @@ export function HeroNarrativeCarousel() {
     if (mobile) return
 
     gsap.set(overlineRef.current,  { opacity: 0, y: 10 })
+    gsap.set(headlineRef.current,  { opacity: 0, y: 18 })
     gsap.set(ctaRef.current,       { opacity: 0, y: 10 })
     gsap.set(ruleRef.current,      { scaleX: 0, transformOrigin: 'left center' })
     gsap.set([slide1Ref.current, slide2Ref.current], { xPercent: 100 })
@@ -252,11 +252,8 @@ export function HeroNarrativeCarousel() {
     mm.add('(min-width: 768px)', () => {
       if (!headlineRef.current) return
 
-      const split = new SplitText(headlineRef.current, { type: 'words' })
-      gsap.set(split.words, { opacity: 0, y: 18 })
-
       // ── Timeline layout (10 units = 300vh of scroll) ──────────────────
-      //  0.0 – 3.3  │ Narrative: word stagger scrub
+      //  0.0 – 3.3  │ Narrative: headline fade-in scrub
       //  3.3 – 5.0  │ Slide 0 → 1 horizontal wipe + image crossfade
       //  5.0 – 6.5  │ Dwell on Slide 1
       //  6.5 – 8.3  │ Slide 1 → 2 horizontal wipe + image crossfade
@@ -296,12 +293,7 @@ export function HeroNarrativeCarousel() {
         .to(img0Ref.current,      { y: 50, ease: 'none', duration: 3.3 }, 0)
         .to(ruleRef.current,      { scaleX: 1, duration: 0.35, ease: 'power2.inOut' }, 0.1)
         .to(overlineRef.current,  { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' }, 0.18)
-        .to(split.words, {
-          opacity: 1, y: 0,
-          stagger: 1.6 / Math.max(split.words.length, 1),
-          duration: 0.5,
-          ease: 'power2.out',
-        }, 0.42)
+        .to(headlineRef.current, { opacity: 1, y: 0, duration: 2.5, ease: 'power2.out' }, 0.42)
         .to(ctaRef.current,    { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 2.5)
         // ── Slide 0 → 1 ─────────────────────────────────────────────────
         .to(slide0Ref.current, { xPercent: -100, duration: 1.7, ease: 'power2.inOut' }, 3.3)
@@ -314,7 +306,6 @@ export function HeroNarrativeCarousel() {
         .to(img1Ref.current,   { opacity: 0,     duration: 0.9, ease: 'power1.out'  }, 6.6)
         .to(img2Ref.current,   { opacity: 1,     duration: 0.9, ease: 'power1.in'   }, 7.4)
 
-      return () => { split.revert() }
     })
 
     return () => {
@@ -415,8 +406,8 @@ export function HeroNarrativeCarousel() {
           <ProgressBar active={activeSlide} paused={!!reduce} />
         </div>
 
-        {/* Text content below image */}
-        <div className="bg-[#001E50] px-6 pb-8 pt-7">
+        {/* Text content below image — min-h prevents layout shift when slides change height */}
+        <div className="bg-[#001E50] px-6 pb-8 pt-7 min-h-[300px]">
           <SlideContent slide={slide} align="left" />
         </div>
       </section>
