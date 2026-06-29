@@ -1,6 +1,7 @@
 // src/components/ui/button.tsx
 import { forwardRef } from 'react'
 import type { ButtonHTMLAttributes } from 'react'
+import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'whatsapp'
@@ -32,10 +33,12 @@ const sizes: Record<Size, string> = {
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = 'primary', size = 'md', isLoading, children, disabled, ...props }, ref) => {
     return (
-      <button
+      <motion.button
         ref={ref}
         disabled={disabled || isLoading}
         className={cn(base, variants[variant], variant !== 'ghost' && sizes[size], className)}
+        whileTap={{ scale: 0.96 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 20 }}
         {...props}
       >
         {isLoading && (
@@ -45,7 +48,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           />
         )}
         {children}
-      </button>
+      </motion.button>
     )
   },
 )
