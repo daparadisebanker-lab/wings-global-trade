@@ -9,6 +9,7 @@ import { Redis } from '@upstash/redis'
 interface LimiterPair {
   perMinute: Ratelimit
   perHour: Ratelimit
+  tightened: Ratelimit
 }
 
 let _limiter: LimiterPair | null | undefined = undefined
@@ -29,6 +30,11 @@ function createLimiter(): LimiterPair | null {
       redis,
       limiter: Ratelimit.slidingWindow(300, '1 h'),
       prefix: 'mister:rl:ip:hr',
+    }),
+    tightened: new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(10, '1 m'),
+      prefix: 'mister:rl:ip:tight',
     }),
   }
 }
@@ -67,20 +73,14 @@ export async function checkRateLimit(ip: string): Promise<RateLimitResult> {
 
 /**
  * Check tightened per-IP rate limits for flagged sessions (halved limits).
+ * Reuses the cached Redis connection from getLimiter().
  */
 export async function checkTightenedRateLimit(ip: string): Promise<RateLimitResult> {
-  const url = process.env.UPSTASH_REDIS_REST_URL
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN
-  if (!url || !token) return { allowed: true }
+  const limiter = getLimiter()
+  if (!limiter) return { allowed: true }
 
   try {
-    const redis = new Redis({ url, token })
-    const tightened = new Ratelimit({
-      redis,
-      limiter: Ratelimit.slidingWindow(10, '1 m'),
-      prefix: 'mister:rl:ip:tight',
-    })
-    const result = await tightened.limit(ip)
+    const result = await limiter.tightened.limit(ip)
     return result.success
       ? { allowed: true }
       : { allowed: false, retryAfterMs: result.reset - Date.now() }

@@ -97,7 +97,7 @@ export async function sendWhatsAppNotification(
   leadId: string,
   payload: NotificationPayload,
 ): Promise<void> {
-  const to = process.env.WINGS_OPS_WHATSAPP
+  const to = process.env.TWILIO_WHATSAPP_TO ?? process.env.WINGS_OPS_WHATSAPP
   const from = process.env.TWILIO_WHATSAPP_FROM
   const sid = process.env.TWILIO_ACCOUNT_SID
   const token = process.env.TWILIO_AUTH_TOKEN
