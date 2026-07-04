@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Category } from '@/types/database'
 import { WINGS_PUBLIC_EMAIL } from '@/lib/constants'
+import { SearchBar } from '@/components/features/homepage/SearchBar'
 
 interface MobileMenuProps {
   open: boolean
@@ -52,6 +53,19 @@ export function MobileMenu({ open, onClose, categories }: MobileMenuProps) {
           <div className="pointer-events-none absolute inset-y-0 left-0 w-px bg-gradient-to-b from-transparent via-gold/20 to-transparent" aria-hidden />
 
           <div className="flex min-h-full flex-col px-8 pb-12 pt-24">
+
+            {/* Search — near the top so it's the first action available */}
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0, transition: { duration: 0.3, delay: 0.05 } }}
+              className="mb-8"
+            >
+              <SearchBar
+                onNavy
+                placeholder="Buscar modelo, categoría o código HS"
+                onNavigate={onClose}
+              />
+            </motion.div>
 
             {/* Primary nav — numbered editorial style */}
             <motion.nav

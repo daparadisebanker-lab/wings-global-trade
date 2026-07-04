@@ -7,6 +7,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useRef,
   useState,
 } from 'react'
@@ -109,7 +110,12 @@ export function MisterProvider({
   currentPage,
   currentProductId,
 }: MisterProviderProps) {
-  const [sessionId] = useState(() => generateSessionId())
+  // sessionId + the opening message timestamp are generated client-side only.
+  // /mister is statically rendered, so a value produced during SSR is baked into
+  // the served HTML once and every client regenerates a different one on hydration
+  // (React #418 text-content mismatch). Empty on first render (server + client
+  // agree), then filled in a mount effect below.
+  const [sessionId, setSessionId] = useState('')
   const [archetype, setArchetype] = useState<MisterArchetype>('unresolved')
   const [stage, setStage] = useState<MisterStage>('induction')
   const [collected, setCollected] = useState<MisterCollected>({})
@@ -122,7 +128,7 @@ export function MisterProvider({
       role: 'assistant',
       content: OPENING_MESSAGE,
       turnIndex: 1,
-      timestamp: new Date().toISOString(),
+      timestamp: '',
       surfaces: [],
       quickActions: [
         { label: 'Para mi propia operación', action: 'ask_followup' as MisterActionId },
@@ -144,6 +150,20 @@ export function MisterProvider({
   const prevArchetypeRef = useRef<MisterArchetype>('unresolved')
   const prevStageRef = useRef<MisterStage>('induction')
   const prevCollectedRef = useRef<MisterCollected>({})
+
+  // Client-only initialization of per-visit values — see sessionId note above.
+  // Runs once after mount, before the user can interact, so sendMessage always
+  // has a real sessionId to send.
+  useEffect(() => {
+    setSessionId(generateSessionId())
+    setEntries((prev) =>
+      prev.map((e) =>
+        e.id === 'opening' && !e.timestamp
+          ? { ...e, timestamp: new Date().toISOString() }
+          : e,
+      ),
+    )
+  }, [])
 
   const { stream, isStreaming } = useMisterStream()
 

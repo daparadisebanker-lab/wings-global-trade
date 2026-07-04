@@ -60,7 +60,7 @@ const FIELDS: FieldDef[] = [
   // Comercial
   {
     key: 'budgetBand',
-    label: 'Band de presupuesto',
+    label: 'Rango de presupuesto',
     group: 'COMERCIAL',
     getValue: (c) => c.budgetBand,
   },
@@ -166,8 +166,11 @@ export function MisterProgressPanel() {
     const v = f.getValue(collected)
     return v !== undefined && v !== '' && (Array.isArray(v) ? v.length > 0 : true)
   })
-  const filledCount = filledFields.length
-  const totalCount = FIELDS.length
+  // The consultation profile = operative profile (archetype) + the qualification
+  // fields. Resolving the archetype during induction counts as the first defined
+  // datum, so answering the opening question visibly advances the ring.
+  const definedCount = (isResolved ? 1 : 0) + filledFields.length
+  const totalCount = FIELDS.length + 1
 
   // Group fields for display
   const groups: Record<string, FieldDef[]> = {}
@@ -203,22 +206,22 @@ export function MisterProgressPanel() {
       <div className="border-b border-[rgba(248,246,240,0.08)] px-5 py-4">
         <div className="flex items-center justify-between">
           <p className="font-mono text-[9px] font-[400] uppercase tracking-[0.16em] text-[var(--mister-text-ghost)]">
-            SESIÓN EN PROGRESO
+            PERFIL DE TU CONSULTA
           </p>
           <p className="font-mono text-[9px] font-[300] tracking-[0.06em] text-[var(--mister-text-ghost)]">
             {sessionId.slice(-8)}
           </p>
         </div>
-        {/* Campo count — arc ring progress indicator */}
+        {/* Definition progress — arc ring showing how complete the profile is */}
         <div className="mt-3 flex items-center gap-3">
-          <FieldRing filled={filledCount} total={totalCount} />
+          <FieldRing filled={definedCount} total={totalCount} />
           <div>
             <p className="font-mono text-[22px] font-[500] leading-none text-[var(--mister-text-primary)]">
-              {filledCount}
-              <span className="text-[var(--mister-text-ghost)]"> / {totalCount}</span>
+              {definedCount}
+              <span className="text-[var(--mister-text-ghost)]"> de {totalCount}</span>
             </p>
             <p className="mt-0.5 font-body text-[10px] font-[300] text-[var(--mister-text-muted)]">
-              campos capturados
+              datos definidos
             </p>
           </div>
         </div>

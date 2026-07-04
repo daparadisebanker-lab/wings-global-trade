@@ -225,6 +225,10 @@ export function HeroNarrativeCarousel() {
   const ctaRef       = useRef<HTMLDivElement>(null)
   const scrollIndRef = useRef<HTMLDivElement>(null)
 
+  // ScrollTrigger instance (for dot navigation) + last computed slide index guard
+  const stRef             = useRef<ScrollTrigger | null>(null)
+  const lastSlideIndexRef = useRef(0)
+
   // ── Mobile refs ───────────────────────────────────────────────────────────
   const timerRef   = useRef<ReturnType<typeof setTimeout> | null>(null)
   const touchStartX = useRef<number | null>(null)
@@ -252,59 +256,69 @@ export function HeroNarrativeCarousel() {
     mm.add('(min-width: 768px)', () => {
       if (!headlineRef.current) return
 
-      // ── Timeline layout (10 units = 300vh of scroll) ──────────────────
-      //  0.0 – 3.3  │ Narrative: headline fade-in scrub
-      //  3.3 – 5.0  │ Slide 0 → 1 horizontal wipe + image crossfade
-      //  5.0 – 6.5  │ Dwell on Slide 1
-      //  6.5 – 8.3  │ Slide 1 → 2 horizontal wipe + image crossfade
-      //  8.3 – 10.0 │ Dwell on Slide 2, pin releases
+      // ── Slide 0 value proposition: time-based entrance on mount ────────
+      // The headline, overline, rule and CTA are readable immediately — this
+      // is a short reveal that plays once on load, NOT tied to scroll, so a
+      // cold visitor sees the full value proposition without scrolling.
+      gsap.timeline({ defaults: { ease: 'power2.out' } })
+        .to(ruleRef.current,     { scaleX: 1, duration: 0.5 }, 0)
+        .to(overlineRef.current, { opacity: 1, y: 0, duration: 0.5 }, 0.1)
+        .to(headlineRef.current, { opacity: 1, y: 0, duration: 0.7 }, 0.2)
+        .to(ctaRef.current,      { opacity: 1, y: 0, duration: 0.5 }, 0.45)
+
+      // ── Scroll timeline (2 units = 200vh of scroll) ───────────────────
+      // Scroll drives ONLY the slide transitions now, one transition per
+      // ~100vh. Snap points sit at the three discrete rest states.
+      //  progress 0.0        │ Slide 0 at rest (value proposition)
+      //  progress 0.0 – 0.4  │ Slide 0 → 1 horizontal wipe + image crossfade
+      //  progress 0.4 – 0.6  │ Dwell on Slide 1 (centered at 0.5)
+      //  progress 0.6 – 1.0  │ Slide 1 → 2 horizontal wipe + image crossfade
       const tl = gsap.timeline({
         scrollTrigger: {
           id: 'hero-narrative-pin',
           trigger: sectionRef.current,
           start: 'top top',
-          end: '+=300%',
+          end: '+=200%',
           pin: true,
-          scrub: 1.5,
+          scrub: 1,
           anticipatePin: 1,
           invalidateOnRefresh: true,
-          // Narrative scrubs freely; snap only kicks in once past the narrative zone
-          // so each scroll impulse advances exactly one slide chapter
+          // Snap only to the three discrete slide rest states, and only in the
+          // scroll direction, so it never fights a user's free wheel input.
           snap: {
-            snapTo: (raw) => {
-              if (raw < 0.28) return raw
-              const pts = [1 / 3, 2 / 3, 1] as const
-              return pts.reduce((a, b) => (Math.abs(b - raw) < Math.abs(a - raw) ? b : a))
-            },
-            duration: { min: 0.25, max: 0.55 },
-            delay: 0.08,
+            snapTo: [0, 0.5, 1],
+            duration: { min: 0.2, max: 0.5 },
+            delay: 0.1,
             ease: 'power2.inOut',
+            directional: true,
           },
           onUpdate: (self) => {
-            if      (self.progress < 0.38) setActiveSlide(0)
-            else if (self.progress < 0.73) setActiveSlide(1)
-            else                            setActiveSlide(2)
+            const p = self.progress
+            const idx = p < 0.25 ? 0 : p < 0.75 ? 1 : 2
+            // Only re-render when the active slide actually changes, not on
+            // every scroll frame.
+            if (idx !== lastSlideIndexRef.current) {
+              lastSlideIndexRef.current = idx
+              setActiveSlide(idx)
+            }
           },
         },
       })
 
+      stRef.current = tl.scrollTrigger ?? null
+
       tl
-        .to(scrollIndRef.current, { opacity: 0, duration: 0.15, ease: 'none' }, 0)
-        .to(img0Ref.current,      { y: 50, ease: 'none', duration: 3.3 }, 0)
-        .to(ruleRef.current,      { scaleX: 1, duration: 0.35, ease: 'power2.inOut' }, 0.1)
-        .to(overlineRef.current,  { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' }, 0.18)
-        .to(headlineRef.current, { opacity: 1, y: 0, duration: 2.5, ease: 'power2.out' }, 0.42)
-        .to(ctaRef.current,    { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 2.5)
+        .to(scrollIndRef.current, { opacity: 0, duration: 0.08, ease: 'none' }, 0)
         // ── Slide 0 → 1 ─────────────────────────────────────────────────
-        .to(slide0Ref.current, { xPercent: -100, duration: 1.7, ease: 'power2.inOut' }, 3.3)
-        .to(slide1Ref.current, { xPercent: 0,    duration: 1.7, ease: 'power2.inOut' }, 3.3)
-        .to(img0Ref.current,   { opacity: 0,     duration: 0.9, ease: 'power1.out'  }, 3.4)
-        .to(img1Ref.current,   { opacity: 1,     duration: 0.9, ease: 'power1.in'   }, 4.1)
+        .to(slide0Ref.current, { xPercent: -100, duration: 0.8, ease: 'power2.inOut' }, 0)
+        .to(slide1Ref.current, { xPercent: 0,    duration: 0.8, ease: 'power2.inOut' }, 0)
+        .to(img0Ref.current,   { opacity: 0,     duration: 0.4, ease: 'power1.out'  }, 0.15)
+        .to(img1Ref.current,   { opacity: 1,     duration: 0.4, ease: 'power1.in'   }, 0.4)
         // ── Slide 1 → 2 ─────────────────────────────────────────────────
-        .to(slide1Ref.current, { xPercent: -100, duration: 1.8, ease: 'power2.inOut' }, 6.5)
-        .to(slide2Ref.current, { xPercent: 0,    duration: 1.8, ease: 'power2.inOut' }, 6.5)
-        .to(img1Ref.current,   { opacity: 0,     duration: 0.9, ease: 'power1.out'  }, 6.6)
-        .to(img2Ref.current,   { opacity: 1,     duration: 0.9, ease: 'power1.in'   }, 7.4)
+        .to(slide1Ref.current, { xPercent: -100, duration: 0.8, ease: 'power2.inOut' }, 1.2)
+        .to(slide2Ref.current, { xPercent: 0,    duration: 0.8, ease: 'power2.inOut' }, 1.2)
+        .to(img1Ref.current,   { opacity: 0,     duration: 0.4, ease: 'power1.out'  }, 1.35)
+        .to(img2Ref.current,   { opacity: 1,     duration: 0.4, ease: 'power1.in'   }, 1.6)
 
     })
 
@@ -314,6 +328,7 @@ export function HeroNarrativeCarousel() {
       // Without this, the pin moves the element out of its React-expected parent
       // and navigation triggers an Uncaught NotFoundError.
       ScrollTrigger.getById('hero-narrative-pin')?.kill()
+      stRef.current = null
       mm.revert()
     }
   }, [isMobile, reduce])
@@ -342,17 +357,34 @@ export function HeroNarrativeCarousel() {
     touchStartX.current = null
   }, [next, prev])
 
-  // ── Desktop dot indicator ─────────────────────────────────────────────────
+  // ── Desktop dot navigation ────────────────────────────────────────────────
+  // Jump to a slide's rest position by scrolling to its progress within the pin.
+  // Rest states map to progress [0, 0.5, 1] across the three slides.
+  const goToSlideDesktop = useCallback((idx: number) => {
+    const st = stRef.current
+    if (!st) return
+    const progress = idx / (SLIDES.length - 1)
+    const target = st.start + (st.end - st.start) * progress
+    window.scrollTo({ top: target, behavior: 'smooth' })
+  }, [])
+
   const desktopDots = (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1">
       {SLIDES.map((s, i) => (
-        <div
+        <button
           key={s.id}
-          aria-hidden
-          className={`h-[2px] transition-all duration-300 ${
-            i === activeSlide ? 'w-8 bg-gold' : 'w-4 bg-warm-white/25'
-          }`}
-        />
+          type="button"
+          onClick={() => goToSlideDesktop(i)}
+          aria-label={`Ir a diapositiva ${i + 1} de ${SLIDES.length}`}
+          aria-current={i === activeSlide ? 'true' : undefined}
+          className="flex items-center rounded-sm px-1 py-2 focus:outline-none focus-visible:ring-1 focus-visible:ring-gold focus-visible:ring-offset-4 focus-visible:ring-offset-[#000C1F]"
+        >
+          <span
+            className={`block h-[2px] transition-all duration-300 ${
+              i === activeSlide ? 'w-8 bg-gold' : 'w-4 bg-warm-white/25 hover:bg-warm-white/50'
+            }`}
+          />
+        </button>
       ))}
     </div>
   )

@@ -19,11 +19,37 @@ export default function NotFound() {
       <p className="font-body text-warm-white/50 mb-10 max-w-sm">
         La ruta que buscas no está en nuestro catálogo.
       </p>
+
+      {/* Onward routes — keep the dead end from ending the visit */}
+      <nav
+        aria-label="Continuar navegando"
+        className="flex flex-col items-center gap-4 border-t border-warm-white/10 pt-8"
+      >
+        <Link
+          href="/catalogo"
+          className="font-mono text-[11px] uppercase tracking-[0.12em] text-gold hover:text-gold/70 transition-colors duration-200"
+        >
+          Ver el catálogo completo →
+        </Link>
+        <Link
+          href="/cotizar"
+          className="font-mono text-[11px] uppercase tracking-[0.12em] text-gold hover:text-gold/70 transition-colors duration-200"
+        >
+          Solicitar una cotización →
+        </Link>
+        <Link
+          href="/mister"
+          className="font-mono text-[11px] uppercase tracking-[0.12em] text-gold hover:text-gold/70 transition-colors duration-200"
+        >
+          Consultar con Mister →
+        </Link>
+      </nav>
+
       <Link
         href="/"
-        className="font-mono text-[11px] uppercase tracking-[0.12em] text-gold hover:text-gold/70 transition-colors duration-200"
+        className="mt-10 font-mono text-[10px] uppercase tracking-[0.2em] text-warm-white/30 hover:text-warm-white/60 transition-colors duration-200"
       >
-        Volver al inicio →
+        Volver al inicio
       </Link>
     </main>
   )

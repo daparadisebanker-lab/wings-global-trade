@@ -30,6 +30,11 @@ interface UseInquiryFormArgs {
   selectedModel?: string
 }
 
+/** Discriminates why submit() did not succeed so the caller can react appropriately —
+ *  'invalid' means client-side validation failed (no toast, guide user to the field);
+ *  'network_error' means the request itself failed (show the WhatsApp-fallback toast). */
+export type InquirySubmitResult = 'ok' | 'invalid' | 'network_error'
+
 export function useInquiryForm({ productId, productName, selectedModel }: UseInquiryFormArgs) {
   const [values, setValues] = useState<InquiryFormState>(EMPTY)
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
@@ -57,9 +62,9 @@ export function useInquiryForm({ productId, productName, selectedModel }: UseInq
     return Object.keys(next).length === 0
   }, [values])
 
-  const submit = useCallback(async (): Promise<boolean> => {
-    if (status === 'submitting') return false
-    if (!validate()) return false
+  const submit = useCallback(async (): Promise<InquirySubmitResult> => {
+    if (status === 'submitting') return 'invalid'
+    if (!validate()) return 'invalid'
     setStatus('submitting')
 
     const effectiveName = selectedModelRef.current
@@ -87,11 +92,11 @@ export function useInquiryForm({ productId, productName, selectedModel }: UseInq
       })
       if (!res.ok) throw new Error(`Request failed: ${res.status}`)
       setStatus('success')
-      return true
+      return 'ok'
     } catch (error) {
       console.error('[useInquiryForm] submit', error)
       setStatus('error')
-      return false
+      return 'network_error'
     }
   }, [status, validate, values, productId, productName])
 

@@ -97,7 +97,7 @@ interface Props {
 }
 
 export function MisterBrandHeader({ mode = 'embedded', onClose }: Props) {
-  const { sessionId, archetype, isResolved, stage } = useMister()
+  const { sessionId, archetype, isResolved, stage, entries } = useMister()
   const reduced = useReducedMotion()
   const router = useRouter()
   const [stageExpanded, setStageExpanded] = useState(false)
@@ -105,6 +105,14 @@ export function MisterBrandHeader({ mode = 'embedded', onClose }: Props) {
 
   const archetypeLabel = ARCHETYPE_LABELS[archetype] ?? ''
   const stageIdx = STAGE_ORDER.indexOf(stage)
+
+  // Collapse the oversized brand hero once the conversation is underway (>=1 user
+  // message), reclaiming the vertical space for the conversation. The full wordmark
+  // animates to zero height; a compact single-line bar keeps brand presence.
+  const collapsed = entries.some((e) => e.role === 'user')
+  const heroTransition = reduced
+    ? { duration: 0 }
+    : { duration: 0.42, ease: [0.16, 1, 0.3, 1] as number[] }
 
   const handleStageToggle = () => {
     HAPTIC.stageExpand()
@@ -132,156 +140,231 @@ export function MisterBrandHeader({ mode = 'embedded', onClose }: Props) {
       {/* Gold crown — the signature element. 2px rule anchors the world boundary at the top. */}
       <div className="h-0.5 w-full bg-[var(--mister-gold)]" aria-hidden />
 
-      <div className="px-6 pt-3 pb-0 lg:pt-4">
-        {/* Top strip: issuing authority + exit control */}
-        <div className="flex items-center justify-between">
-          <p className="font-mono text-[10px] font-[400] uppercase tracking-[0.20em] text-[var(--mister-text-ghost)]">
-            ASESOR DE IMPORTACIÓN · WINGS GLOBAL TRADE
-          </p>
+      <div className={`px-6 pt-3 lg:pt-4 ${collapsed ? 'pb-3' : ''}`}>
+        {/* Top control strip — always a single line. Houses the escape control and,
+            once collapsed, the compact identity (small wordmark + consulta id). */}
+        <div className="flex items-center justify-between gap-3">
+          {/* Left slot: expanded → issuing authority; collapsed → compact identity */}
+          <div className="flex min-w-0 items-center gap-3">
+            {collapsed ? (
+              <motion.div
+                initial={reduced ? false : { opacity: 0, x: -6 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: reduced ? 0 : 0.3, ease: 'easeOut' }}
+                className="flex min-w-0 items-center gap-2.5"
+              >
+                <span className="flex-shrink-0 text-[var(--mister-text-primary)]">
+                  <MisterIcon />
+                </span>
+                <span className="flex-shrink-0 font-display text-[22px] font-[400] uppercase leading-none tracking-[-0.01em] text-[var(--mister-text-primary)]">
+                  MISTER
+                </span>
+                {sessionId && (
+                  <button
+                    type="button"
+                    onClick={handleSessionCopy}
+                    aria-label={sessionCopied ? 'Copiado' : `Copiar referencia ${sessionId}`}
+                    className="flex min-w-0 items-center font-mono text-[10px] font-[300] uppercase tracking-[0.10em] text-[rgba(248,246,240,0.45)] transition-colors duration-150 hover:text-[var(--mister-text-primary)]"
+                  >
+                    <span className="truncate">
+                      {sessionCopied ? 'COPIADO' : `#${sessionId}`}
+                    </span>
+                  </button>
+                )}
+                {isResolved && archetypeLabel && (
+                  <span className="hidden flex-shrink-0 font-mono text-[10px] font-[600] uppercase tracking-[0.08em] text-[var(--mister-gold)] md:inline">
+                    {archetypeLabel}
+                  </span>
+                )}
+              </motion.div>
+            ) : (
+              <p className="font-mono text-[10px] font-[400] uppercase tracking-[0.20em] text-[var(--mister-text-ghost)]">
+                ASESOR DE IMPORTACIÓN · WINGS GLOBAL TRADE
+              </p>
+            )}
+          </div>
 
-          {/* Overlay mode: pill close button */}
-          {mode === 'overlay' && onClose && (
-            <button
-              type="button"
-              onClick={handleClose}
-              aria-label="Volver al sitio"
-              className="flex min-h-[44px] min-w-[44px] items-center justify-center"
-            >
-              <span className="flex items-center gap-1.5 rounded-full border border-[rgba(248,246,240,0.20)] bg-[rgba(248,246,240,0.04)] px-3 py-1.5 font-mono text-[10px] font-[400] uppercase tracking-[0.14em] text-[var(--mister-text-ghost)] transition-all duration-150 hover:border-[rgba(248,246,240,0.35)] hover:text-[var(--mister-text-primary)]">
+          {/* Right slot: mobile stage chip (collapsed only) + exit control */}
+          <div className="flex flex-shrink-0 items-center gap-2">
+            {/* Collapsed mobile stage chip — keeps progress reachable when the panel
+                is hidden (lg:hidden). Toggles the shared stage tracker below. */}
+            {collapsed && (
+              <button
+                type="button"
+                onClick={handleStageToggle}
+                aria-expanded={stageExpanded}
+                aria-label="Ver progreso de consulta"
+                className="flex items-center gap-1 lg:hidden"
+              >
+                <span className="h-1.5 w-1.5 flex-shrink-0 bg-[var(--mister-gold)]" />
+                <span className="font-mono text-[10px] font-[300] uppercase tracking-[0.10em] text-[var(--mister-gold)]">
+                  {STAGE_LABELS[stage]}
+                </span>
+                <motion.span
+                  animate={{ rotate: stageExpanded ? 180 : 0 }}
+                  transition={{ duration: 0.2, ease: 'easeOut' }}
+                  className="font-mono text-[10px] text-[var(--mister-text-ghost)]"
+                  aria-hidden
+                >
+                  ▾
+                </motion.span>
+              </button>
+            )}
+
+            {/* Overlay mode: pill close button */}
+            {mode === 'overlay' && onClose && (
+              <button
+                type="button"
+                onClick={handleClose}
+                aria-label="Volver al sitio"
+                className="flex min-h-[44px] min-w-[44px] items-center justify-center"
+              >
+                <span className="flex items-center gap-1.5 rounded-full border border-[rgba(248,246,240,0.20)] bg-[rgba(248,246,240,0.04)] px-3 py-1.5 font-mono text-[10px] font-[400] uppercase tracking-[0.14em] text-[var(--mister-text-ghost)] transition-all duration-150 hover:border-[rgba(248,246,240,0.35)] hover:text-[var(--mister-text-primary)]">
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
+                    <line x1="9" y1="5" x2="1" y2="5" stroke="currentColor" strokeWidth="1" />
+                    <polyline points="3,2.5 1,5 3,7.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                  </svg>
+                  Volver
+                </span>
+              </button>
+            )}
+
+            {/* Embedded mode: back button — returns to previous page, not hardcoded home */}
+            {mode === 'embedded' && (
+              <button
+                type="button"
+                onClick={() => { HAPTIC.exit(); router.back() }}
+                aria-label="Volver al sitio Wings Global Trade"
+                className="flex min-h-[44px] items-center gap-1.5 rounded-full border border-[rgba(248,246,240,0.15)] bg-[rgba(248,246,240,0.03)] px-3 py-1.5 font-mono text-[10px] font-[400] uppercase tracking-[0.14em] text-[var(--mister-text-ghost)] transition-all duration-150 hover:border-[rgba(248,246,240,0.30)] hover:text-[var(--mister-text-primary)]"
+              >
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
                   <line x1="9" y1="5" x2="1" y2="5" stroke="currentColor" strokeWidth="1" />
                   <polyline points="3,2.5 1,5 3,7.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" fill="none" />
                 </svg>
-                Volver
-              </span>
-            </button>
-          )}
-
-          {/* Embedded mode: back button — returns to previous page, not hardcoded home */}
-          {mode === 'embedded' && (
-            <button
-              type="button"
-              onClick={() => { HAPTIC.exit(); router.back() }}
-              aria-label="Volver al sitio Wings Global Trade"
-              className="flex min-h-[44px] items-center gap-1.5 rounded-full border border-[rgba(248,246,240,0.15)] bg-[rgba(248,246,240,0.03)] px-3 py-1.5 font-mono text-[10px] font-[400] uppercase tracking-[0.14em] text-[var(--mister-text-ghost)] transition-all duration-150 hover:border-[rgba(248,246,240,0.30)] hover:text-[var(--mister-text-primary)]"
-            >
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
-                <line x1="9" y1="5" x2="1" y2="5" stroke="currentColor" strokeWidth="1" />
-                <polyline points="3,2.5 1,5 3,7.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-              </svg>
-              <span className="hidden sm:inline">Wings Global Trade</span>
-            </button>
-          )}
+                <span className="hidden sm:inline">Wings Global Trade</span>
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* MISTER wordmark + breathing icon */}
-        <div className="mt-2 flex items-end justify-between lg:mt-3">
-          <div className="flex items-end gap-3">
-            {/* Breathing icon — opacity cycles 0.6→1→0.6 over 3s */}
-            <motion.div
-              animate={{ opacity: [0.6, 1, 0.6] }}
-              transition={{ duration: 3, ease: 'easeInOut', repeat: Infinity }}
-              className="mb-1 text-[var(--mister-text-primary)]"
-            >
-              <MisterIcon />
-            </motion.div>
+        {/* Brand hero — the full wordmark + session row. Collapses to zero height
+            once the conversation starts, handing the space to the conversation. */}
+        <motion.div
+          initial={false}
+          animate={collapsed ? { height: 0, opacity: 0 } : { height: 'auto', opacity: 1 }}
+          transition={heroTransition}
+          className="overflow-hidden"
+          aria-hidden={collapsed}
+        >
+          {/* MISTER wordmark + breathing icon */}
+          <div className="mt-2 flex items-end justify-between lg:mt-3">
+            <div className="flex items-end gap-3">
+              {/* Breathing icon — opacity cycles 0.6→1→0.6 over 3s */}
+              <motion.div
+                animate={{ opacity: [0.6, 1, 0.6] }}
+                transition={{ duration: 3, ease: 'easeInOut', repeat: Infinity }}
+                className="mb-1 text-[var(--mister-text-primary)]"
+              >
+                <MisterIcon />
+              </motion.div>
 
-            <h1 className="font-display text-[48px] font-[400] uppercase leading-none tracking-[-0.01em] text-[var(--mister-text-primary)] md:text-[64px] lg:text-[80px]">
-              {'MISTER'.split('').map((letter, i) => (
-                <motion.span
-                  key={i}
-                  custom={i}
-                  variants={letterVariants}
-                  initial="hidden"
-                  animate={reduced ? 'visibleReduced' : 'visible'}
-                  className="inline-block"
-                >
-                  {letter}
-                </motion.span>
-              ))}
-            </h1>
+              <h1 className="font-display text-[48px] font-[400] uppercase leading-none tracking-[-0.01em] text-[var(--mister-text-primary)] md:text-[64px] lg:text-[80px]">
+                {'MISTER'.split('').map((letter, i) => (
+                  <motion.span
+                    key={i}
+                    custom={i}
+                    variants={letterVariants}
+                    initial="hidden"
+                    animate={reduced ? 'visibleReduced' : 'visible'}
+                    className="inline-block"
+                  >
+                    {letter}
+                  </motion.span>
+                ))}
+              </h1>
+            </div>
+
+            {/* Archetype badge */}
+            {isResolved && (
+              <div className="mb-1 flex flex-col items-end gap-1">
+                <p className="font-mono text-[9px] font-[400] uppercase tracking-[0.14em] text-[var(--mister-text-ghost)]">
+                  PERFIL IDENTIFICADO
+                </p>
+                <p className="font-mono text-[12px] font-[600] uppercase tracking-[0.08em] text-[var(--mister-gold)]">
+                  {archetypeLabel}
+                </p>
+              </div>
+            )}
           </div>
 
-          {/* Archetype badge */}
-          {isResolved && (
-            <div className="mb-1 flex flex-col items-end gap-1">
-              <p className="font-mono text-[9px] font-[400] uppercase tracking-[0.14em] text-[var(--mister-text-ghost)]">
-                PERFIL IDENTIFICADO
-              </p>
-              <p className="font-mono text-[12px] font-[600] uppercase tracking-[0.08em] text-[var(--mister-gold)]">
-                {archetypeLabel}
-              </p>
-            </div>
-          )}
-        </div>
+          {/* Gold rule */}
+          <div className="mt-3 h-px w-full bg-[rgba(248,246,240,0.08)]" />
 
-        {/* Gold rule */}
-        <div className="mt-3 h-px w-full bg-[rgba(248,246,240,0.08)]" />
-
-        {/* Session row — session ID taps to copy, stage label tappable on mobile */}
-        <div className="flex items-center justify-between py-2">
-          <motion.button
-            type="button"
-            onClick={handleSessionCopy}
-            variants={sessionIdVariants}
-            initial="hidden"
-            animate={reduced ? 'visibleReduced' : 'visible'}
-            aria-label={sessionCopied ? 'Copiado' : `Copiar referencia ${sessionId}`}
-            className="flex min-h-[44px] items-center font-mono text-[10px] font-[300] uppercase tracking-[0.10em] text-[rgba(248,246,240,0.45)] transition-colors duration-150 hover:text-[var(--mister-text-primary)]"
-          >
-            <AnimatePresence mode="wait" initial={false}>
-              {sessionCopied ? (
-                <motion.span
-                  key="copied"
-                  initial={{ opacity: 0, y: -4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 4 }}
-                  transition={{ duration: 0.15 }}
-                  className="text-[var(--mister-gold)]"
-                >
-                  COPIADO
-                </motion.span>
-              ) : (
-                <motion.span
-                  key="id"
-                  initial={{ opacity: 0, y: 4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -4 }}
-                  transition={{ duration: 0.15 }}
-                >
-                  CONSULTA #{sessionId}
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </motion.button>
-
-          {/* Stage toggle — visible only on mobile (lg: shows the progress panel instead) */}
-          <button
-            type="button"
-            onClick={handleStageToggle}
-            aria-expanded={stageExpanded}
-            aria-label="Ver progreso de consulta"
-            className="flex items-center gap-1 lg:hidden"
-          >
-            <span className="h-1.5 w-1.5 flex-shrink-0 bg-[var(--mister-gold)]" />
-            <span className="font-mono text-[10px] font-[300] uppercase tracking-[0.10em] text-[var(--mister-gold)]">
-              {STAGE_LABELS[stage]}
-            </span>
-            <motion.span
-              animate={{ rotate: stageExpanded ? 180 : 0 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="font-mono text-[10px] text-[var(--mister-text-ghost)]"
-              aria-hidden
+          {/* Session row — session ID taps to copy, stage label tappable on mobile */}
+          <div className="flex items-center justify-between py-2">
+            <motion.button
+              type="button"
+              onClick={handleSessionCopy}
+              variants={sessionIdVariants}
+              initial="hidden"
+              animate={reduced ? 'visibleReduced' : 'visible'}
+              aria-label={sessionCopied ? 'Copiado' : `Copiar referencia ${sessionId}`}
+              className="flex min-h-[44px] items-center font-mono text-[10px] font-[300] uppercase tracking-[0.10em] text-[rgba(248,246,240,0.45)] transition-colors duration-150 hover:text-[var(--mister-text-primary)]"
             >
-              ▾
-            </motion.span>
-          </button>
+              <AnimatePresence mode="wait" initial={false}>
+                {sessionCopied ? (
+                  <motion.span
+                    key="copied"
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 4 }}
+                    transition={{ duration: 0.15 }}
+                    className="text-[var(--mister-gold)]"
+                  >
+                    COPIADO
+                  </motion.span>
+                ) : (
+                  <motion.span
+                    key="id"
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    CONSULTA #{sessionId}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </motion.button>
 
-          {/* Static stage label on desktop — panel handles the full tracker */}
-          <p className="hidden font-mono text-[10px] font-[300] uppercase tracking-[0.10em] text-[var(--mister-text-ghost)] lg:block">
-            {STAGE_LABELS[stage]}
-          </p>
-        </div>
+            {/* Stage toggle — visible only on mobile (lg: shows the progress panel instead) */}
+            <button
+              type="button"
+              onClick={handleStageToggle}
+              aria-expanded={stageExpanded}
+              aria-label="Ver progreso de consulta"
+              className="flex items-center gap-1 lg:hidden"
+            >
+              <span className="h-1.5 w-1.5 flex-shrink-0 bg-[var(--mister-gold)]" />
+              <span className="font-mono text-[10px] font-[300] uppercase tracking-[0.10em] text-[var(--mister-gold)]">
+                {STAGE_LABELS[stage]}
+              </span>
+              <motion.span
+                animate={{ rotate: stageExpanded ? 180 : 0 }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+                className="font-mono text-[10px] text-[var(--mister-text-ghost)]"
+                aria-hidden
+              >
+                ▾
+              </motion.span>
+            </button>
+
+            {/* Static stage label on desktop — panel handles the full tracker */}
+            <p className="hidden font-mono text-[10px] font-[300] uppercase tracking-[0.10em] text-[var(--mister-text-ghost)] lg:block">
+              {STAGE_LABELS[stage]}
+            </p>
+          </div>
+        </motion.div>
       </div>
 
       {/* Expandable mobile stage tracker — hidden on lg (progress panel takes over) */}

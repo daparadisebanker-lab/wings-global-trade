@@ -5,11 +5,20 @@
 // context-aware product suggestions.
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { useToast } from '@/components/ui/toast'
 import { REVEAL } from '@/lib/motion'
 import { CategoryIcon } from '@/components/features/homepage/CategoryIcon'
+import { WhatsAppButton } from '@/components/features/shared/WhatsAppButton'
+
+function prefersReducedMotion(): boolean {
+  return (
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  )
+}
 
 // ---------------------------------------------------------------------------
 // Data — category tiles and product suggestions
@@ -102,7 +111,9 @@ export function QuotationForm() {
     set('product', text)
   }
 
-  function validate(): boolean {
+  // Returns the freshly computed errors object (not the `errors` state, which only
+  // updates on next render) so the caller can act on it in the same tick.
+  function validate(): Partial<Record<keyof Values, string>> {
     const next: Partial<Record<keyof Values, string>> = {}
     if (!values.category) next.category = 'Selecciona una categoría'
     if (values.product.trim().length < 2) next.product = 'Describe el producto'
@@ -111,12 +122,36 @@ export function QuotationForm() {
     if (values.full_name.trim().length < 2) next.full_name = 'Ingresa tu nombre'
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) next.email = 'Email inválido'
     setErrors(next)
-    return Object.keys(next).length === 0
+    return next
+  }
+
+  // Field order matches the visual order of the form so the first error scrolled to
+  // is always the first one the user encounters, not just the first key in Values.
+  const FIELD_ORDER: (keyof Values)[] = ['category', 'product', 'destination', 'timeline', 'full_name', 'email']
+
+  function focusFirstInvalidField(errs: Partial<Record<keyof Values, string>>) {
+    for (const field of FIELD_ORDER) {
+      if (!errs[field]) continue
+      const el = document.getElementById(field)
+      if (!el) return
+      el.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'center' })
+      if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLButtonElement) {
+        el.focus()
+      } else {
+        el.querySelector<HTMLElement>('button, input, select')?.focus()
+      }
+      return
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!validate() || status === 'submitting') return
+    if (status === 'submitting') return
+    const validationErrors = validate()
+    if (Object.keys(validationErrors).length > 0) {
+      focusFirstInvalidField(validationErrors)
+      return
+    }
     setStatus('submitting')
 
     const catLabel = CATEGORIES.find((c) => c.slug === values.category)?.label ?? values.category
@@ -161,6 +196,30 @@ export function QuotationForm() {
         <p className="mt-4 max-w-md font-mono text-[10px] uppercase tracking-[0.15em] text-navy/40">
           El equipo de Wings revisará tu solicitud y responderá en menos de 24 horas hábiles.
         </p>
+
+        <p className="mt-10 font-mono text-[9px] uppercase tracking-[0.15em] text-navy/35">
+          Mientras esperas
+        </p>
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <WhatsAppButton
+            message="Hola, acabo de enviar una solicitud de cotización en Wings Global Trade."
+            label="Continuar por WhatsApp"
+          />
+          <Link
+            href="/catalogo"
+            className="inline-flex items-center gap-3 border border-gold/40 px-6 py-3 font-mono text-[11px] uppercase tracking-[0.10em] text-navy transition-colors duration-200 hover:border-gold hover:bg-gold/5"
+          >
+            <span className="h-px w-4 bg-gold" aria-hidden />
+            Explorar el catálogo
+          </Link>
+          <Link
+            href="/proceso"
+            className="inline-flex items-center gap-3 border border-[rgba(0,30,80,0.15)] px-6 py-3 font-mono text-[11px] uppercase tracking-[0.10em] text-navy/70 transition-colors duration-200 hover:border-gold/40 hover:text-navy"
+          >
+            <span className="h-px w-4 bg-navy/30" aria-hidden />
+            Conocer el proceso de importación
+          </Link>
+        </div>
       </motion.div>
     )
   }
@@ -172,7 +231,13 @@ export function QuotationForm() {
 
       {/* ── Section A: Categoría ─────────────────────────────────────────── */}
       <FormSection num="01" title="¿Qué necesitas importar?">
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        <div
+          id="category"
+          role="group"
+          aria-label="Categoría"
+          aria-describedby={errors.category ? 'category-error' : undefined}
+          className="grid grid-cols-2 gap-2 sm:grid-cols-3"
+        >
           {CATEGORIES.map((c) => {
             const active = values.category === c.slug
             return (
@@ -199,7 +264,7 @@ export function QuotationForm() {
           })}
         </div>
         {errors.category && (
-          <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#DC2626]/70">
+          <p id="category-error" className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#DC2626]/70">
             {errors.category}
           </p>
         )}
@@ -241,11 +306,14 @@ export function QuotationForm() {
 
         {/* Free-text description */}
         <div className="mt-6">
-          <LineField label="Descripción del producto" error={errors.product} required>
+          <LineField id="product" label="Descripción del producto" error={errors.product} required>
             <LineInput
+              id="product"
               value={values.product}
               onChange={(e) => set('product', e.target.value)}
               hasError={Boolean(errors.product)}
+              aria-invalid={errors.product ? true : undefined}
+              aria-describedby={errors.product ? 'product-error' : undefined}
               placeholder={
                 values.category === 'maquinaria-agricola'
                   ? 'Ej: Tractor 4WD 100 HP con cabina'
@@ -261,9 +329,10 @@ export function QuotationForm() {
       {/* ── Section B: Detalles ──────────────────────────────────────────── */}
       <FormSection num="02" title="Detalles técnicos">
         <div className="grid grid-cols-1 gap-0 sm:grid-cols-2 sm:gap-8">
-          <LineField label="Cantidad aproximada">
+          <LineField id="quantity" label="Cantidad aproximada">
             <div className="flex gap-3">
               <LineInput
+                id="quantity"
                 type="number"
                 min="1"
                 value={values.quantity}
@@ -283,10 +352,13 @@ export function QuotationForm() {
             </div>
           </LineField>
 
-          <LineField label="País de destino" error={errors.destination} required>
+          <LineField id="destination" label="País de destino" error={errors.destination} required>
             <select
+              id="destination"
               value={values.destination}
               onChange={(e) => set('destination', e.target.value)}
+              aria-invalid={errors.destination ? true : undefined}
+              aria-describedby={errors.destination ? 'destination-error' : undefined}
               className={cn(
                 'w-full bg-transparent font-body text-base text-navy outline-none',
                 !values.destination && 'text-navy/25',
@@ -300,8 +372,13 @@ export function QuotationForm() {
           </LineField>
         </div>
 
-        <LineField label="Plazo estimado" error={errors.timeline} required>
-          <div className="flex flex-wrap gap-2 pt-1">
+        <LineField id="timeline" label="Plazo estimado" error={errors.timeline} required hasControl={false}>
+          <div
+            role="group"
+            aria-label="Plazo estimado"
+            aria-describedby={errors.timeline ? 'timeline-error' : undefined}
+            className="flex flex-wrap gap-2 pt-1"
+          >
             {TIMELINES.map((t) => (
               <button
                 key={t.value}
@@ -324,17 +401,21 @@ export function QuotationForm() {
       {/* ── Section C: Contacto ──────────────────────────────────────────── */}
       <FormSection num="03" title="Tu información">
         <div className="grid grid-cols-1 gap-0 sm:grid-cols-2 sm:gap-8">
-          <LineField label="Nombre completo" error={errors.full_name} required>
+          <LineField id="full_name" label="Nombre completo" error={errors.full_name} required>
             <LineInput
+              id="full_name"
               value={values.full_name}
               onChange={(e) => set('full_name', e.target.value)}
               hasError={Boolean(errors.full_name)}
+              aria-invalid={errors.full_name ? true : undefined}
+              aria-describedby={errors.full_name ? 'full_name-error' : undefined}
               autoComplete="name"
               placeholder="Tu nombre"
             />
           </LineField>
-          <LineField label="Empresa">
+          <LineField id="company" label="Empresa">
             <LineInput
+              id="company"
               value={values.company}
               onChange={(e) => set('company', e.target.value)}
               autoComplete="organization"
@@ -343,18 +424,22 @@ export function QuotationForm() {
           </LineField>
         </div>
         <div className="grid grid-cols-1 gap-0 sm:grid-cols-2 sm:gap-8">
-          <LineField label="Email" error={errors.email} required>
+          <LineField id="email" label="Email" error={errors.email} required>
             <LineInput
+              id="email"
               type="email"
               value={values.email}
               onChange={(e) => set('email', e.target.value)}
               hasError={Boolean(errors.email)}
+              aria-invalid={errors.email ? true : undefined}
+              aria-describedby={errors.email ? 'email-error' : undefined}
               autoComplete="email"
               placeholder="correo@empresa.com"
             />
           </LineField>
-          <LineField label="Teléfono / WhatsApp">
+          <LineField id="phone" label="Teléfono / WhatsApp">
             <LineInput
+              id="phone"
               value={values.phone}
               onChange={(e) => set('phone', e.target.value)}
               autoComplete="tel"
@@ -408,25 +493,40 @@ function FormSection({ num, title, children }: { num: string; title: string; chi
 }
 
 function LineField({
+  id,
   label,
   error,
   required,
+  hasControl = true,
   children,
 }: {
+  id?: string
   label: string
   error?: string
   required?: boolean
+  /** False for fields backed by a button group rather than a single input/select —
+   *  the wrapper carries the id (for scroll-to-error) instead of a <label htmlFor>. */
+  hasControl?: boolean
   children: React.ReactNode
 }) {
+  const errorId = id ? `${id}-error` : undefined
   return (
-    <div className="border-b border-[rgba(0,30,80,0.08)] py-5 first:border-t first:border-t-[rgba(0,30,80,0.08)]">
-      <label className="mb-3 block font-mono text-[11px] uppercase tracking-[0.14em] text-navy/55">
+    <div
+      id={!hasControl ? id : undefined}
+      className="border-b border-[rgba(0,30,80,0.08)] py-5 first:border-t first:border-t-[rgba(0,30,80,0.08)]"
+    >
+      <label
+        htmlFor={hasControl ? id : undefined}
+        className="mb-3 block font-mono text-[11px] uppercase tracking-[0.14em] text-navy/55"
+      >
         {label}
         {required && <span className="ml-1 text-gold/70">*</span>}
       </label>
       {children}
       {error && (
-        <p className="mt-2 font-mono text-[11px] tracking-[0.08em] text-[#DC2626]">{error}</p>
+        <p id={errorId} className="mt-2 font-mono text-[11px] tracking-[0.08em] text-[#DC2626]">
+          {error}
+        </p>
       )}
     </div>
   )

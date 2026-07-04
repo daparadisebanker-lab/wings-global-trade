@@ -179,8 +179,8 @@ export function InquiryForm({ product, selectedVariant, onSuccess }: InquiryForm
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const ok = await submit()
-    if (ok) {
+    const result = await submit()
+    if (result === 'ok') {
       if (!prefersReducedMotion()) {
         // Stamp animation: scale + subtle rotation — proprioceptive confirmation
         await buttonControls.start({
@@ -190,9 +190,24 @@ export function InquiryForm({ product, selectedVariant, onSuccess }: InquiryForm
         })
       }
       onSuccess?.()
-    } else if (status !== 'submitting') {
-      // Per ENRICHED_SPEC §3.6 — exact error copy
+    } else if (result === 'invalid') {
+      // Validation failure — no toast, guide the user straight to the problem field
+      focusFirstInvalidField()
+    } else {
+      // network_error — Per ENRICHED_SPEC §3.6 — exact error copy
       toast('No pudimos enviar tu solicitud. Intenta nuevamente o escríbenos por WhatsApp.', 'error')
+    }
+  }
+
+  function focusFirstInvalidField() {
+    for (const field of FIELD_SEQUENCE) {
+      if (checkFieldValid(field, values[field as keyof typeof values])) continue
+      const el = document.getElementById(field)
+      if (el instanceof HTMLElement) {
+        el.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'center' })
+        el.focus()
+      }
+      return
     }
   }
 
@@ -235,6 +250,8 @@ export function InquiryForm({ product, selectedVariant, onSuccess }: InquiryForm
             onChange={(e) => setField('full_name', e.target.value)}
             onBlur={() => handleBlur('full_name')}
             hasError={Boolean(errors.full_name)}
+            aria-invalid={errors.full_name ? true : undefined}
+            aria-describedby={errors.full_name ? 'full_name-error' : undefined}
             disabled={disabled}
             placeholder="Tu nombre completo"
             autoComplete="name"
@@ -261,6 +278,8 @@ export function InquiryForm({ product, selectedVariant, onSuccess }: InquiryForm
               onChange={(e) => setField('email', e.target.value)}
               onBlur={() => handleBlur('email')}
               hasError={Boolean(errors.email)}
+              aria-invalid={errors.email ? true : undefined}
+              aria-describedby={errors.email ? 'email-error' : undefined}
               disabled={disabled}
               placeholder="correo@empresa.com"
               autoComplete="email"
@@ -273,6 +292,8 @@ export function InquiryForm({ product, selectedVariant, onSuccess }: InquiryForm
               onChange={(e) => setField('phone', e.target.value)}
               onBlur={() => handleBlur('phone')}
               hasError={Boolean(errors.phone)}
+              aria-invalid={errors.phone ? true : undefined}
+              aria-describedby={errors.phone ? 'phone-error' : undefined}
               disabled={disabled}
               placeholder="+51 999 000 000"
               autoComplete="tel"
@@ -296,6 +317,8 @@ export function InquiryForm({ product, selectedVariant, onSuccess }: InquiryForm
                 if (e.target.value) triggerSelectPulse('quantity')
               }}
               hasError={Boolean(errors.destination_country)}
+              aria-invalid={errors.destination_country ? true : undefined}
+              aria-describedby={errors.destination_country ? 'destination_country-error' : undefined}
               disabled={disabled}
             >
               <option value="">Selecciona el país de destino</option>
@@ -313,6 +336,8 @@ export function InquiryForm({ product, selectedVariant, onSuccess }: InquiryForm
               onChange={(e) => setField('quantity', e.target.value)}
               onBlur={() => handleBlur('quantity')}
               hasError={Boolean(errors.quantity)}
+              aria-invalid={errors.quantity ? true : undefined}
+              aria-describedby={errors.quantity ? 'quantity-error' : undefined}
               disabled={disabled}
               placeholder="Ej: 10 unidades"
             />
@@ -415,7 +440,11 @@ function Field({
       >
         {children}
       </div>
-      {error && <p className="mt-1 font-body text-xs text-[#DC2626]">{error}</p>}
+      {error && (
+        <p id={`${htmlFor}-error`} className="mt-1 font-body text-xs text-[#DC2626]">
+          {error}
+        </p>
+      )}
     </div>
   )
 }

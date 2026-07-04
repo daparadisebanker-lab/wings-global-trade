@@ -1,24 +1,40 @@
 // src/components/features/homepage/SearchBar.tsx
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { resolveSearchUrl } from '@/lib/routing'
 
 interface SearchBarProps {
   onNavy?: boolean
+  /** Focus the input as soon as it mounts — used when rendered inside a just-opened panel. */
+  autoFocus?: boolean
+  placeholder?: string
+  /** Called right before navigating to the resolved destination — lets a parent panel/menu close itself. */
+  onNavigate?: () => void
 }
 
-export function SearchBar({ onNavy = true }: SearchBarProps) {
+export function SearchBar({
+  onNavy = true,
+  autoFocus = false,
+  placeholder = 'Busca maquinaria, camiones, equipos industriales...',
+  onNavigate,
+}: SearchBarProps) {
   const [query, setQuery] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (autoFocus) inputRef.current?.focus()
+  }, [autoFocus])
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const q = query.trim()
     if (!q) return
     setIsLoading(true)
+    onNavigate?.()
     router.push(resolveSearchUrl(q))
   }
 
@@ -43,10 +59,11 @@ export function SearchBar({ onNavy = true }: SearchBarProps) {
           <path d="M14 14l4 4" strokeLinecap="round" />
         </svg>
         <input
+          ref={inputRef}
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Busca maquinaria, camiones, equipos industriales..."
+          placeholder={placeholder}
           aria-label="Buscar productos o iniciar una importación personalizada"
           className={`w-full bg-transparent py-4 pl-3 pr-2 font-body text-[16px] md:text-sm outline-none ${
             onNavy
