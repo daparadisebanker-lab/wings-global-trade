@@ -30,7 +30,7 @@ The current logo mark was produced in CorelDRAW with organic paths. It has no do
 
 The current mark is a wings/bird symbol above the wordmark "WINGS". The concept is right — a bird in flight, the sense of crossing borders and distances. The execution needs to be rebuilt from mathematics.
 
-**Source files:** `BRAND ELEMENTS/wings-logo1 - v2.svg` (most recent version)
+**Source files:** `assets/brand-elements/wings-logo1 - v2.svg` (most recent version)
 
 ---
 

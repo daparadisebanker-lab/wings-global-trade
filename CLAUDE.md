@@ -162,6 +162,8 @@ Key rules:
 
 ## Homepage Routing Logic
 
+> STATUS 2026-07-04: `SearchBar` is built (`src/components/features/homepage/SearchBar.tsx`) but not currently mounted anywhere — the homepage ships the hero carousel + category grid only. The routing below describes the intended behavior once search is (re)mounted.
+
 The homepage has ONE unified entry: category grid + search bar.
 
 ```
@@ -285,5 +287,38 @@ All spec files are in `/spec/`:
 | `design-system.md` | All color tokens, typography, component specs |
 | `deployment.md` | Vercel config, environment variables, DNS |
 | `success-metrics.md` | KPIs, conversion funnel, 30/60/90 day targets |
+| `ENRICHED_SPEC.md` | Mister v2 full specification (current) |
+| `MISTER_MASTER_BRIEF.md` | Mister identity + behavior brief |
+| `WINGS_BRAND_SYSTEM.md` | Current brand system (2026-06-27) |
+| `contributions/` | Per-agent Phase 1 spec contributions from the build wave |
 
 When in doubt, read the relevant spec file before making a decision. The spec is authoritative. If something is genuinely ambiguous, resolve it in the direction of simplicity and note it in a code comment.
+
+---
+
+## Repository Map
+
+Runtime (the app — never reorganize without updating imports/configs):
+
+```
+src/            Application code. Catalog renders from src/data/seed.json
+public/         Served assets (fonts, images, logos)
+supabase/       Migrations + config. Never manual SQL edits in production
+data/           Master catalog data (product-catalog.json) + generated seed payloads
+infrastructure/ Data pipeline scripts (enrich, seed) — run from repo root, they read data/ relatively
+scripts/        Utility scripts (icon generation)
+```
+
+Knowledge (context, not code):
+
+```
+spec/           AUTHORITATIVE product + design specification
+docs/           Strategy, creative direction, UX research, build history — see docs/README.md
+assets/         Source design assets (brand SVGs/fonts, product photo masters) — NOT served; web copies live in public/
+```
+
+Rules for agents:
+- `spec/` outranks `docs/` wherever they conflict.
+- Anything under `docs/build-history/` is superseded — never build from it. In particular, the Accio flow (absolute-price CIF) is retired; Mister v2 never displays absolute prices.
+- New strategy/research documents go in `docs/`, not the repo root. The root holds only config, README, DECISIONS.md, and this file.
+- `*_COMPLETE.flag` files are single-run wave artifacts; archive them to `docs/build-history/flags/` when a wave finishes.

@@ -32,7 +32,7 @@ A platform that treats B2B machinery buyers as technical professionals. Not a ca
 ## 3. LOGO
 
 ### Current state
-Two SVG versions exist in `BRAND ELEMENTS/`. Both are CorelDRAW-derived organic paths. Neither has a documented construction grid. The mark collapses at small sizes. No variation set exists.
+Two SVG versions exist in `assets/brand-elements/`. Both are CorelDRAW-derived organic paths. Neither has a documented construction grid. The mark collapses at small sizes. No variation set exists.
 
 ### Required state
 See `spec/LOGO-RECONSTRUCTION-BRIEF.md` for the full designer brief.

@@ -1,0 +1,47 @@
+SEO/AEO Layer Implementation — Mister v2
+Date: 2026-06-27
+Branch: feature/mister-v2
+
+FILES MODIFIED
+==============
+
+1. src/app/mister/page.tsx
+   - Metadata: title, description, robots, openGraph, twitter, alternates
+   - JSON-LD: misterSoftwareApplicationSchema() + faqSchema(MISTER_FAQS)
+   - Campaigner positioning integrated
+
+2. src/lib/schema.ts
+   - New: misterSoftwareApplicationSchema() export
+   - New: MISTER_FAQS constant (8 questions)
+   - Kept: WINGS_FAQS (backwards compat)
+
+3. src/app/robots.ts
+   - Updated: explicit allow list for /mister, /blog, /catalogo
+   - Updated: AEO crawler allowlist active
+
+4. src/app/sitemap.ts
+   - Verified: /mister priority 0.9 already present
+
+SCHEMA COMPLIANCE
+=================
+
+Total Schemas: 2 per page
+- 1x SoftwareApplication
+- 1x FAQPage (8 questions)
+
+AEO Requirement: SATISFIED (FAQPage minimum met)
+
+KEYWORDS
+========
+
+Tier 1 (6): costo de internación, estructura de costo, CIF, Incoterms, FOB vs CIF, flete
+Tier 2 (5): documentos Perú, HS classification, ZOFRATACNA, aranceles, nacionalización
+Tier 3 (4): margen reventa, MOQ, importación mayorista, MOQ precio
+Tier 4 (4): Tacna vs Iquique, contenedor, logística, corredor
+
+Total: 19 keywords
+
+BUILD COMMAND
+=============
+
+cd C:\Users\Muaaz\projects\wings-global-trade && pnpm build
