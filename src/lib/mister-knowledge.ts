@@ -53,7 +53,7 @@ kubota-m954kq | Kubota M954KQ | 95 HP  | Motor: V3800-DI-T | Transm. 12+12 Quad-
 kubota-m1004q | Kubota M1004Q | 100 HP | Motor: Kubota V3800-DI-TI-ES02            | Transm. 12F+12R | Peso: 3.135 kg
 
 Rango tractores: 50 HP (New Holland SH504) a 140 HP (New Holland TM140, JD 6E1404/6B1404).
-Para potencias mayores a 140 HP: sourcing personalizado (flujo TPR).
+Para potencias mayores a 140 HP: sourcing por importación personalizada.
 URL base: /catalogo/maquinaria-agricola/{slug}
 
 --- CAMIONES — KAMA (origen China, 12 series, +50 variantes) ---
@@ -96,7 +96,7 @@ compresor-tornillo-50hp | Compresor de Tornillo 50 HP | 7 m³/min | 8 bar | 380 
 URL base: /catalogo/equipo-industrial/{slug}
 
 --- REPUESTOS — MOTORES JDM (origen Japón, usados, verificados) ---
-Catálogo: /repuestos | Cotización: /cotizar
+Cotización: surface {"type": "quotation_form"} en el bloque de control — no imprimir enlaces.
 8 marcas · ~220 códigos de motor · condición: usado japonés | suministro: importación directa Japón
 CKD (kit sin armado) disponible en algunos códigos; indicar al usuario que consulte para cotización.
 
@@ -177,11 +177,11 @@ TOYOTA (60+ variantes — selección clave):
 2ZZ          | 1796cc | I4 | 190 HP | Celica ZZT231, Lotus Elise
 
 GUÍA DE USO PARA MISTER:
-- NUNCA cotizar precio absoluto. Toda consulta de precio → explicar estructura de costo (motor + flete aéreo/marítimo + seguro + arancel + nacionalización) y derivar a /cotizar.
+- NUNCA cotizar precio absoluto. Toda consulta de precio → explicar la estructura de costo (motor + flete aéreo/marítimo + seguro + arancel + nacionalización) y surface {"type": "quotation_form"} en el bloque de control.
 - "CKD" = kit sin armado, requiere cotización especial.
 - Turbo: indicar siempre si aplica — impacta insumos, diagnóstico y mantenimiento.
 - Si el usuario menciona un vehículo (ej. "Nissan X-Trail T30"), identificar el código de motor correcto y sugerirlo.
-URL catálogo: /repuestos | URL cotización: /cotizar
+- Referencia los productos por nombre completo; no imprimas URLs en el texto.
 `
 
 // ---------------------------------------------------------------------------
@@ -197,8 +197,8 @@ export const WINGS_PROCESS_TEXT = `
 02 VERIFICACIÓN DE FABRICANTE — Wings identifica fabricantes certificados (China, Japón, Tailandia, Dubai).
    Verifica homologaciones CE/ISO/EPA/EURO IV, certificados de origen y capacidad de producción.
 
-03 COTIZACIÓN CIF — Wings entrega precio CIF desglosado: FOB + flete internacional + seguro + arancel estimado.
-   Zonas francas: ZOFRATACNA (Perú/Bolivia) o ZOFRI (Chile/LATAM). Ahorro vs. importación directa: 15–40%.
+03 COTIZACIÓN CIF — El equipo Wings entrega la cotización CIF formal, con la estructura desglosada: FOB + flete internacional + seguro + arancel.
+   Zonas francas: ZOFRATACNA (Perú/Bolivia) o ZOFRI (Chile/LATAM). El régimen suspensivo de zona franca cambia la estructura del costo frente a la importación directa; el ahorro concreto depende del producto y del régimen, y lo cuantifica la cotización.
 
 04 GESTIÓN DOCUMENTAL — Wings abre carta de crédito, gestiona certificados de exportación, permisos
    sanitarios/fitosanitarios y prepara el expediente de importación. Documentos: LC, BL, Cert. Origen, Packing List.
@@ -209,11 +209,9 @@ export const WINGS_PROCESS_TEXT = `
 06 ENTREGA EN DESTINO — Wings coordina transporte de último tramo desde zona franca al almacén o punto de
    recepción del importador. Monitoreo en tránsito y confirmación de entrega.
 
-Tiempos referenciales:
-- Tractores / maquinaria agrícola desde China: 60–90 días
-- Camiones / buses desde China: 75–105 días
-- Repuestos / equipo compacto: 45–70 días
-- Incluye trámites documentales y despacho aduanal
+Plazos:
+- El tiempo total depende de producción, embarque, ingreso a zona franca y despacho aduanal.
+- Los plazos concretos los confirma el equipo Wings en la cotización formal, según el producto y el embarque.
 `
 
 // ---------------------------------------------------------------------------
@@ -233,13 +231,13 @@ No hay mínimo absoluto. Las importaciones más eficientes en costo empiezan des
 No. Wings gestiona todo el proceso documental y aduanal. El importador necesita RUC activo (Perú) o número de identificación tributaria equivalente en el país destino.
 
 ¿Cuánto tarda una importación?
-Maquinaria agrícola desde China: 60–90 días. Camiones: 75–105 días. Repuestos: 45–70 días. Los plazos incluyen producción, embarque, zona franca y despacho aduanal.
+El proceso avanza por fases: producción en origen, embarque, ingreso a zona franca y despacho aduanal. El plazo concreto lo confirma el equipo en la cotización formal, según producción y embarque.
 
 ¿Qué garantía tiene la maquinaria?
 Los tractores New Holland cuentan con garantía de fabricante de 12 meses o 1.000 horas (lo primero que ocurra). John Deere y Massey Ferguson aplican garantías similares según contrato. Wings documenta el expediente de garantía en el proceso de importación.
 
 ¿Importan productos fuera del catálogo?
-Sí. Para cualquier especificación no listada, Mister recoge el Requisito Técnico de Producto (TPR) y Wings cotiza directamente con fabricantes en origen. El catálogo cubre los modelos más solicitados; el resto es importación personalizada.
+Sí. Para cualquier especificación no listada, Mister recoge los requisitos del usuario en la conversación y Wings cotiza directamente con fabricantes en origen. El catálogo cubre los modelos más solicitados; el resto es importación personalizada.
 
 ¿Se pueden ver los productos antes de enviarlos?
 Sí. La zona franca permite inspección de calidad antes de la nacionalización. El comprador puede rechazar la mercancía en zona franca sin haberla importado al territorio nacional.
@@ -249,7 +247,9 @@ ZOFRATACNA (Tacna, Perú): sirve a Perú y Bolivia. ZOFRI (Iquique, Chile): sirv
 `
 
 // ---------------------------------------------------------------------------
-// GREETING — updated to reflect catalog depth
+// GREETING — LEGACY ONLY: consumed by the retired /accio flow via src/lib/claude.ts.
+// Mister v2 does NOT use this (the Provider hardcodes the induction opener).
+// Kept solely so the legacy import resolves; do not wire into any v2 path.
 // ---------------------------------------------------------------------------
 
 export const MISTER_GREETING =
@@ -263,19 +263,19 @@ export const CATALOG_BEHAVIOR_TEXT = `
 == REGLAS DE CATÁLOGO — SIEMPRE PRIORIZAR EL INVENTARIO EXISTENTE ==
 
 Cuando el usuario describe una necesidad (HP, marca, uso, tipo de producto):
-1. BUSCA primero en el catálogo anterior. Si hay coincidencia, responde con el producto específico — no inicies flujo TPR.
-2. PRESENTA la coincidencia así: nombre completo + HP o capacidad + 2 specs clave + URL.
-   Ejemplo: "El New Holland SNH704 tiene 70 HP, tracción 4WD, transmisión 10+2 y pesa 2.500 kg — /catalogo/maquinaria-agricola/new-holland-snh704"
-3. Si hay varias coincidencias (ej: varios modelos de 70 HP), muestra máximo 3 ordenados por marca/precio estimado, y pregunta cuál se ajusta mejor a las condiciones del campo.
+1. BUSCA primero en el catálogo anterior. Si hay coincidencia, responde con el producto específico — no inicies importación personalizada.
+2. PRESENTA la coincidencia así: nombre completo + HP o capacidad + 2 specs clave. No escribas la URL en el texto; emite una superficie de producto en el bloque de control con el slug como ref.
+   Ejemplo: "El New Holland SNH704 tiene 70 HP, tracción 4WD, transmisión 10+2 y pesa 2.500 kg." + surface {"type": "product", "ref": "new-holland-snh704"}
+3. Si hay varias coincidencias (ej: varios modelos de 70 HP), muestra máximo 3 ordenados por marca/potencia, y pregunta cuál se ajusta mejor a las condiciones del campo.
 4. OFRECE la ficha técnica completa: "¿Quieres que detalle todas las especificaciones o lo agregamos a una cotización?"
-5. Para cotización de catálogo: dirige a /cotizar — NO al flujo Mister TPR.
+5. Para cotización de catálogo: surface {"type": "quotation_form"} en el bloque de control — no escribas un enlace ni derives a una URL.
 6. Si el usuario pide una marca que tenemos (New Holland, John Deere, Massey Ferguson, Kubota, KAMA): lista los modelos de esa marca disponibles.
-7. Si piden HP fuera del rango del catálogo (ej: > 140 HP en tractores): informa el rango disponible y ofrece sourcing personalizado (flujo TPR).
-8. Para KAMA: siempre indica la SERIE y el MODELO concreto. Ejemplo: "La serie KAMA W tiene 5 variantes — para 1.5T doble cabina te recomiendo el W15S (WB 3300mm, motor 1249cc 61kW, Euro-VI) — /catalogo/camiones/kama-serie-w".
+7. Si piden HP fuera del rango del catálogo (ej: > 140 HP en tractores): informa el rango disponible y ofrece sourcing por importación personalizada.
+8. Para KAMA: siempre indica la SERIE y el MODELO concreto, y emite una superficie de producto con el slug de la serie como ref. Ejemplo: "La serie KAMA W tiene 5 variantes; para 1.5T doble cabina te recomiendo el W15S (WB 3300mm, motor 1249cc 61kW, Euro-VI)." + surface {"type": "product", "ref": "kama-serie-w"}.
 
 Cuando NO hay match en catálogo:
 - "Eso no lo tenemos en catálogo activo, pero lo gestionamos por importación personalizada."
-- Inicia flujo TPR normal.
+- Importación personalizada: recoge los requisitos del usuario en la conversación y surface {"type": "quotation_form"} en el bloque de control.
 
 Para preguntas de proceso, tiempos, documentos, aranceles, zonas francas:
 - Responde desde el conocimiento definitivo anterior — no inventes, no estimes sin base.

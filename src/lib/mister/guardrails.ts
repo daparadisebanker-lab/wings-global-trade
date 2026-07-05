@@ -27,6 +27,8 @@ export const PRICE_GUARDRAIL_PATTERNS: RegExp[] = [
   /\b(precio|costo|cif\s+total|fob\s+total|total\s+estimado|landed\s+cost)\s*:?\s*\d[\d,.]+/gi,
   // Bare US dollar figure
   /US?\$\d[\d,.]+/gi,
+  // Number-as-words currency — catches "quince mil dólares" / "cinco mil soles"
+  /\b(mil|miles)\s+(de\s+)?(d[oó]lares?|soles?)\b/gi,
 ]
 
 // ─────────────────────────────────────────────────────────────
@@ -45,6 +47,14 @@ export const AVAILABILITY_GUARDRAIL_PATTERNS: RegExp[] = [
   /te\s+(lo\s+)?(entregamos?|enviamos?)\s+en\s+\d/gi,
   // "Llegará/llega en X"
   /(llegará|llega|arrives?)\s+en\s+\d/gi,
+  // Duration verb + number — catches "tarda 60–90 días" / "demora 75 días" / "requiere 3 semanas"
+  // (no prefix required, unlike the "en/in/within" pattern above)
+  /(tarda|demora|toma|requiere|dura)\s+(entre\s+)?\d+(\s*(?:[–-]|y)\s*\d+)?\s+(d[íi]as?|semanas?|meses?)/gi,
+  // Bare day-range near shipping context — ranges of days are always lead-time claims in
+  // this domain (index points use "puntos", never "días"), so no prefix/verb is required
+  /\d+\s*[–-]\s*\d+\s*d[íi]as/gi,
+  // English duration verb + number — catches "takes 60–90 days" / "requires 3 weeks"
+  /(takes|requires)\s+(about\s+)?\d+(\s*[–-]\s*\d+)?\s+(days?|weeks?|months?)/gi,
 ]
 
 export interface GuardrailResult {
@@ -88,6 +98,13 @@ const INJECTION_PATTERNS: RegExp[] = [
   /act\s+as\s+if\s+you\s+(are|were)\s+(not|a|an)/i,
   /jailbreak/i,
   /dan\s+mode/i,
+  // Spanish equivalents — es-PE is the primary locale, so these are not optional
+  /ignora\s+(las\s+)?(instrucciones|reglas)\s+(anteriores|previas|del\s+sistema)/i,
+  /olvida\s+(todo\s+)?(lo\s+anterior|tus\s+instrucciones)/i,
+  /(muestra|repite|imprime|rev[eé]la(?:me)?)\s+(tu|el)\s+(prompt|sistema|instrucciones)/i,
+  /ahora\s+eres\s+(un|una)\s+\w+/i,
+  /act[uú]a\s+como\s+si\s+(no\s+)?(fueras|tuvieras)/i,
+  /modo\s+(desarrollador|developer|dios|sin\s+restricciones)/i,
 ]
 
 export interface SanitizeResult {

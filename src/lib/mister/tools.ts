@@ -17,6 +17,17 @@ import type {
 } from '@/types/mister'
 
 // ─────────────────────────────────────────────────────────────
+// Ref resolution helper — a control-block surface `ref` may be a
+// catalog slug (what the cached knowledge gives the model) or a UUID
+// (what collected.productInterest holds).
+// ─────────────────────────────────────────────────────────────
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+export function isUuid(value: string): boolean {
+  return UUID_RE.test(value.trim())
+}
+
+// ─────────────────────────────────────────────────────────────
 // fetchProduct — fires when currentProductId is non-null
 // ─────────────────────────────────────────────────────────────
 interface ProductRow {
@@ -56,16 +67,70 @@ export async function fetchProduct(
 }
 
 // ─────────────────────────────────────────────────────────────
-// preloadComparison — fires when productInterest has ≥2 entries
+// fetchProductBySlugOrId — resolve a control-block surface ref
+// (product | specs | moq). Accepts a slug OR a UUID.
+// ─────────────────────────────────────────────────────────────
+interface ProductRefRow {
+  id: string
+  slug: string
+  name_es: string
+  description_es: string
+  specs: Record<string, string>
+  images: string[]
+  category_id: string
+}
+
+export async function fetchProductBySlugOrId(
+  ref: string,
+  supabase: SupabaseClient,
+): Promise<ProductSurface | null> {
+  const trimmed = ref.trim()
+  if (!trimmed) return null
+
+  const column = isUuid(trimmed) ? 'id' : 'slug'
+  const { data, error } = await supabase
+    .from('products')
+    .select('id, slug, name_es, description_es, specs, images, category_id')
+    .eq(column, trimmed)
+    .eq('is_active', true)
+    .single<ProductRefRow>()
+
+  if (error || !data) return null
+
+  return {
+    id: data.id,
+    slug: data.slug,
+    name: data.name_es,
+    category: data.category_id,
+    summary: data.description_es.slice(0, 300),
+    specs: data.specs as Record<string, string>,
+    imageUrl: data.images?.[0],
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// preloadComparison — fires when productInterest has ≥2 entries,
+// or when a control-block comparison ref resolves to ≥2 products.
+// Accepts slugs OR UUIDs (mixed): collected.productInterest holds
+// UUIDs, control-block refs arrive as catalog slugs.
 // ─────────────────────────────────────────────────────────────
 export async function preloadComparison(
-  productIds: string[],
+  refs: string[],
   supabase: SupabaseClient,
 ): Promise<ComparisonSurface | null> {
+  const unique = Array.from(new Set(refs.map((r) => r.trim()).filter(Boolean)))
+  const ids = unique.filter(isUuid)
+  const slugs = unique.filter((r) => !isUuid(r))
+
+  const orClauses: string[] = []
+  if (ids.length) orClauses.push(`id.in.(${ids.join(',')})`)
+  if (slugs.length) orClauses.push(`slug.in.(${slugs.join(',')})`)
+  if (orClauses.length === 0) return null
+
   const { data, error } = await supabase
     .from('products')
     .select('id, name_es, specs')
-    .in('id', productIds)
+    .or(orClauses.join(','))
     .eq('is_active', true)
 
   if (error || !data || data.length < 2) return null

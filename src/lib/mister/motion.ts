@@ -88,6 +88,25 @@ export const overlayPanelVariants: Variants = {
   exitReduced:    { opacity: 0, y: 0, transition: { duration: DURATION.instant } },
 }
 
+// ─── Mobile Progress Brief (bottom sheet) ────────────────────────────────────
+// Backdrop reuses overlayBackdropVariants (opacity-only fades are exempt from
+// reduced-motion, matching the fullscreen overlay's own precedent).
+
+export const mobileBriefSheetVariants: Variants = {
+  hidden:  { y: '100%' },
+  visible: {
+    y: 0,
+    transition: { duration: DURATION.window, ease: [...EASE.windowOpen] },
+  },
+  exit: {
+    y: '100%',
+    transition: { duration: DURATION.standard, ease: [...EASE.windowClose] },
+  },
+  hiddenReduced:  { y: 0 },
+  visibleReduced: { y: 0, transition: { duration: DURATION.instant } },
+  exitReduced:    { y: 0, transition: { duration: DURATION.instant } },
+}
+
 // ─── Window — Embedded ───────────────────────────────────────────────────────
 
 export const windowEmbeddedVariants: Variants = {

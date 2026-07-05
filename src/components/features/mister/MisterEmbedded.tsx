@@ -12,6 +12,7 @@ import { MisterBrandHeader } from '@/components/features/mister/MisterBrandHeade
 import { MisterMessageList } from '@/components/features/mister/MisterMessageList'
 import { MisterComposer } from '@/components/features/mister/MisterComposer'
 import { MisterProgressPanel } from '@/components/features/mister/MisterProgressPanel'
+import { MisterMobileBrief } from '@/components/features/mister/MisterMobileBrief'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import { overlayPanelVariants } from '@/lib/mister/motion'
 
@@ -69,6 +70,7 @@ export function MisterEmbedded({ currentPage = '/mister', currentProductId = nul
           {/* Left: chat column */}
           <div className="flex flex-1 flex-col min-h-0">
             <MisterMessageList />
+            <MisterMobileBrief />
             <MisterComposer />
           </div>
 
