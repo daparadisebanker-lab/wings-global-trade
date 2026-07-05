@@ -40,6 +40,10 @@ import { inferStage } from '@/lib/mister/stage'
 import { isValidArchetype, isValidStage } from '@/lib/mister/archetype'
 import { getFallbackActions, isValidQuickAction } from '@/lib/mister/fallback-actions'
 import {
+  REHYDRATION_TOKEN_PATTERN,
+  hashRehydrationToken,
+} from '@/lib/mister/rehydration'
+import {
   fetchProductBySlugOrId,
   preloadComparison,
   fetchContact,
@@ -90,6 +94,9 @@ const ChatSchema = z.object({
   currentPage: z.string().max(256).optional().nullable(),
   currentProductId: z.string().uuid().optional().nullable(),
   locale: z.enum(['es-PE', 'en', 'nl', 'de']).optional().default('es-PE'),
+  // Client-held rehydration secret (audit M2). Hashed set-once onto the row;
+  // never overwritten, so a later request cannot re-key an existing session.
+  rehydrationToken: z.string().regex(REHYDRATION_TOKEN_PATTERN).optional(),
 })
 
 // ─────────────────────────────────────────────────────────────
@@ -269,7 +276,8 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  const { sessionId, message, actionId, currentPage, currentProductId, locale } = parsed
+  const { sessionId, message, actionId, currentPage, currentProductId, locale, rehydrationToken } =
+    parsed
 
   // 2. Input sanitization
   const { clean: cleanMessage, injectionDetected } = sanitizeInput(message)
@@ -594,6 +602,14 @@ export async function POST(request: NextRequest) {
           newFlags.push('TIGHTENED')
         }
 
+        // Rehydration secret: set-once. Only a row that has never been keyed
+        // accepts a hash; an existing hash is never overwritten, so a request
+        // that merely knows the session id cannot re-key the session (M2).
+        const rehydrationHashPatch =
+          rehydrationToken && !(sessionRow.rehydration_token_hash ?? null)
+            ? { rehydration_token_hash: hashRehydrationToken(rehydrationToken) }
+            : {}
+
         await supabase
           .from('mister_projects')
           .update({
@@ -608,6 +624,7 @@ export async function POST(request: NextRequest) {
             turn_count: sessionRow.turn_count + 1,
             flags: newFlags,
             in_flight: false,
+            ...rehydrationHashPatch,
           })
           .eq('session_id', sessionId)
       } catch (err) {

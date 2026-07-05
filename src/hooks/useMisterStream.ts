@@ -34,6 +34,8 @@ export interface StreamOptions {
   currentPage?: string
   currentProductId?: string | null
   locale?: MisterLocale
+  /** Client-held rehydration secret — hashed set-once server-side (audit M2). */
+  rehydrationToken?: string
 }
 
 const SURFACE_TYPES = new Set<MisterSurfaceType>([
@@ -76,6 +78,9 @@ export function useMisterStream() {
           currentProductId: options.currentProductId,
         }),
         ...(options.locale !== undefined && { locale: options.locale }),
+        ...(options.rehydrationToken !== undefined && {
+          rehydrationToken: options.rehydrationToken,
+        }),
       }
 
       try {

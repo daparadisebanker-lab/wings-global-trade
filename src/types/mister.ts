@@ -201,6 +201,13 @@ export interface MisterChatRequest {
   currentPage?: string
   currentProductId?: string | null
   locale?: MisterLocale
+  /**
+   * Client-held rehydration secret (32 bytes hex). Stored set-once on the
+   * session row as a SHA-256 hash; required by GET /api/mister/session
+   * (audit review M2 — the session id alone is printed in the UI and the
+   * WhatsApp handoff, so it cannot act as the rehydration credential).
+   */
+  rehydrationToken?: string
 }
 
 /** POST /api/mister/submit request body (v2 — no CIF fields). */
@@ -228,6 +235,8 @@ export interface MisterProjectRow {
   flags: string[]
   in_flight: boolean
   lead_id: string | null
+  /** SHA-256 of the client-held rehydration secret; null until first turn. */
+  rehydration_token_hash: string | null
   created_at: string
   updated_at: string
 }
