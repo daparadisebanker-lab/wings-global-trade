@@ -10,28 +10,44 @@ import type { NextRequest } from 'next/server'
 import { z, ZodError } from 'zod'
 import { createServiceClient } from '@/lib/supabase/server'
 import { checkRateLimit } from '@/lib/mister/rateLimit'
+import {
+  REHYDRATION_TOKEN_PATTERN,
+  verifyRehydrationToken,
+} from '@/lib/mister/rehydration'
 import type { MisterProjectRow } from '@/types/mister'
 
 export const runtime = 'nodejs'
 
 // Mirror generateSessionId()'s WGT-YYYYMM-XXXXXX shape (MisterProvider.tsx).
+// token: the client-held rehydration secret (audit M2) — the session id is
+// printed in the UI and the WhatsApp handoff, so it is NOT a credential.
 const SessionQuerySchema = z.object({
   id: z
     .string()
     .max(128)
     .regex(/^WGT-\d{6}-[A-Z0-9]{6}$/),
+  token: z.string().regex(REHYDRATION_TOKEN_PATTERN),
 })
 
-// Only the fields a client needs to rebuild its view — no flags, ids, or in_flight.
+// Only the fields a client needs to rebuild its view — no flags, ids, or
+// in_flight. rehydration_token_hash is read for the auth check and never
+// returned to the client.
 type SessionRehydration = Pick<
   MisterProjectRow,
-  'archetype' | 'stage' | 'locale' | 'collected' | 'turn_count' | 'history'
+  | 'archetype'
+  | 'stage'
+  | 'locale'
+  | 'collected'
+  | 'turn_count'
+  | 'history'
+  | 'rehydration_token_hash'
 >
 
 export async function GET(request: NextRequest) {
   try {
-    const { id: sessionId } = SessionQuerySchema.parse({
+    const { id: sessionId, token } = SessionQuerySchema.parse({
       id: request.nextUrl.searchParams.get('id'),
+      token: request.nextUrl.searchParams.get('token'),
     })
 
     // Rate limit (IP) — same limiter the POST endpoint uses.
@@ -64,13 +80,24 @@ export async function GET(request: NextRequest) {
 
     const { data, error } = await supabase
       .from('mister_projects')
-      .select('archetype, stage, locale, collected, turn_count, history')
+      .select('archetype, stage, locale, collected, turn_count, history, rehydration_token_hash')
       .eq('session_id', sessionId)
       .single<SessionRehydration>()
 
     if (error || !data) {
       // A stale id is normal (expired tab, cleared DB) — not worth logging,
       // and the Supabase error must never leak to the client.
+      return NextResponse.json(
+        { error: 'Sesión no encontrada', code: 'NOT_FOUND' },
+        { status: 404 },
+      )
+    }
+
+    // M2 auth gate: the presented secret must match the stored hash. Rows
+    // without a hash (legacy / never-keyed sessions) can never rehydrate.
+    // Same 404 as not-found — a prober cannot distinguish "wrong token"
+    // from "no such session".
+    if (!verifyRehydrationToken(token, data.rehydration_token_hash)) {
       return NextResponse.json(
         { error: 'Sesión no encontrada', code: 'NOT_FOUND' },
         { status: 404 },

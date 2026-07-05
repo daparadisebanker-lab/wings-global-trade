@@ -74,12 +74,25 @@ const SESSION_ID_PATTERN = /^WGT-\d{6}-[A-Z0-9]{6}$/
 // past the cap can never continue, so we start fresh instead.
 const SESSION_TURN_CAP = 40
 
+// Client-held rehydration secret (audit M2): the session id is printed in the
+// UI and the WhatsApp handoff, so it is not a credential. This token never
+// leaves localStorage except toward the Wings API; the server stores only its
+// SHA-256 hash (set-once) and requires it on GET /api/mister/session.
+const REHYDRATION_TOKEN_PATTERN = /^[a-f0-9]{64}$/
+
+function generateRehydrationToken(): string {
+  const buf = new Uint8Array(32)
+  crypto.getRandomValues(buf)
+  return Array.from(buf, (b) => b.toString(16).padStart(2, '0')).join('')
+}
+
 interface StoredSession {
   sessionId: string
+  token: string
   savedAt: number
 }
 
-/** Read the persisted session id. All access guarded (Safari private mode). */
+/** Read the persisted session. All access guarded (Safari private mode). */
 function readStoredSession(): StoredSession | null {
   try {
     const raw = localStorage.getItem(SESSION_STORAGE_KEY)
@@ -89,20 +102,23 @@ function readStoredSession(): StoredSession | null {
       typeof parsed === 'object' &&
       parsed !== null &&
       typeof (parsed as StoredSession).sessionId === 'string' &&
+      typeof (parsed as StoredSession).token === 'string' &&
       typeof (parsed as StoredSession).savedAt === 'number'
     ) {
       return parsed as StoredSession
     }
+    // Pre-M2 payloads (no token) are unusable — their sessions were never
+    // keyed, so the server would 404 the rehydrate anyway.
     return null
   } catch {
     return null
   }
 }
 
-/** Persist the session id, stamping savedAt = now. No-op if storage is blocked. */
-function writeStoredSession(sessionId: string): void {
+/** Persist the session id + secret, stamping savedAt = now. No-op if blocked. */
+function writeStoredSession(sessionId: string, token: string): void {
   try {
-    const payload: StoredSession = { sessionId, savedAt: Date.now() }
+    const payload: StoredSession = { sessionId, token, savedAt: Date.now() }
     localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(payload))
   } catch {
     // Storage disabled / quota / Safari private mode — persistence degrades
@@ -226,6 +242,10 @@ export function MisterProvider({
   // surface one. Cleared in onDone/onError. See audit finding #4.
   const openQuotationPendingRef = useRef(false)
 
+  // Client-held rehydration secret for this session (audit M2). Sent with
+  // every POST turn (hashed set-once server-side) and required on rehydrate.
+  const rehydrationTokenRef = useRef('')
+
   // Client-only initialization of per-visit values — see sessionId note above.
   // Runs once after mount, before the user can interact. Either rehydrates a
   // stored session from the DB or starts fresh; sendMessage is gated by inFlight
@@ -244,13 +264,16 @@ export function MisterProvider({
       )
     }
 
-    // Fresh session: new id, default opening (turn 1), persist. Used both on
-    // first visit and whenever a stored session is stale/expired/capped/failed.
+    // Fresh session: new id + rehydration secret, default opening (turn 1),
+    // persist. Used both on first visit and whenever a stored session is
+    // stale/expired/capped/failed.
     const startFresh = () => {
       const id = generateSessionId()
+      const token = generateRehydrationToken()
+      rehydrationTokenRef.current = token
       setSessionId(id)
       stampOpening()
-      writeStoredSession(id)
+      writeStoredSession(id, token)
       // entries keeps the default opening (turn 1); assistantTurnCountRef stays 1.
     }
 
@@ -275,6 +298,7 @@ export function MisterProvider({
     const storedIsUsable =
       stored !== null &&
       SESSION_ID_PATTERN.test(stored.sessionId) &&
+      REHYDRATION_TOKEN_PATTERN.test(stored.token) &&
       Date.now() - stored.savedAt < SESSION_TTL_MS
 
     if (!storedIsUsable) {
@@ -286,6 +310,8 @@ export function MisterProvider({
     // request must not leave the composer disabled — abort after 5s and fall
     // back to a fresh session via the catch below.
     const storedId = stored.sessionId
+    const storedToken = stored.token
+    rehydrationTokenRef.current = storedToken
     setInFlight(true)
     const abort = new AbortController()
     const abortTimer = window.setTimeout(() => abort.abort(), 5000)
@@ -293,7 +319,7 @@ export function MisterProvider({
     void (async () => {
       try {
         const res = await fetch(
-          `/api/mister/session?id=${encodeURIComponent(storedId)}`,
+          `/api/mister/session?id=${encodeURIComponent(storedId)}&token=${encodeURIComponent(storedToken)}`,
           { method: 'GET', headers: { accept: 'application/json' }, signal: abort.signal },
         )
         window.clearTimeout(abortTimer)
@@ -325,7 +351,7 @@ export function MisterProvider({
           setSessionId(storedId)
           stampOpening()
           restoreState(data)
-          writeStoredSession(storedId) // refresh savedAt after successful rehydrate
+          writeStoredSession(storedId, storedToken) // refresh savedAt after successful rehydrate
           setInFlight(false)
           return
         }
@@ -363,7 +389,7 @@ export function MisterProvider({
         assistantTurnCountRef.current = assistantCount
         restoreState(data)
         setSessionId(storedId)
-        writeStoredSession(storedId) // refresh savedAt after successful rehydrate
+        writeStoredSession(storedId, storedToken) // refresh savedAt after successful rehydrate
         setInFlight(false)
       } catch {
         window.clearTimeout(abortTimer)
@@ -442,6 +468,10 @@ export function MisterProvider({
           currentPage,
           currentProductId,
           locale,
+          // Hashed set-once server-side; keys the session for rehydration (M2).
+          ...(rehydrationTokenRef.current && {
+            rehydrationToken: rehydrationTokenRef.current,
+          }),
         },
         {
           onToken: (delta) => {
