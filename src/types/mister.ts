@@ -185,12 +185,13 @@ export interface MisterSurface {
 
 /** Named SSE events emitted by /api/mister (v2). */
 export type MisterStreamEvent =
-  | { event: 'token';   data: { delta: string } }
-  | { event: 'surface'; data: { type: MisterSurfaceType; payload: unknown } }
-  | { event: 'actions'; data: { quickActions: MisterQuickAction[] } }
-  | { event: 'state';   data: { archetype: MisterArchetype; stage: MisterStage } }
-  | { event: 'done';    data: { messageId: string } }
-  | { event: 'error';   data: { code: string; message?: string; fallback?: string } }
+  | { event: 'token';     data: { delta: string } }
+  | { event: 'surface';   data: { type: MisterSurfaceType; payload: unknown } }
+  | { event: 'actions';   data: { quickActions: MisterQuickAction[] } }
+  | { event: 'state';     data: { archetype: MisterArchetype; stage: MisterStage } }
+  | { event: 'collected'; data: { collected: MisterCollected } }
+  | { event: 'done';      data: { messageId: string } }
+  | { event: 'error';     data: { code: string; message?: string; fallback?: string } }
 
 /** POST /api/mister request body. */
 export interface MisterChatRequest {

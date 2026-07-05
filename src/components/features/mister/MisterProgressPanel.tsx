@@ -66,7 +66,7 @@ const FIELDS: FieldDef[] = [
   },
 ]
 
-const STAGE_ORDER: MisterStage[] = [
+export const STAGE_ORDER: MisterStage[] = [
   'induction',
   'discovery',
   'consideration',
@@ -74,7 +74,7 @@ const STAGE_ORDER: MisterStage[] = [
   'support',
 ]
 
-const STAGE_LABELS: Record<MisterStage, string> = {
+export const STAGE_LABELS: Record<MisterStage, string> = {
   induction: 'Inducción',
   discovery: 'Descubrimiento',
   consideration: 'Consideración',
@@ -82,7 +82,7 @@ const STAGE_LABELS: Record<MisterStage, string> = {
   support: 'Soporte',
 }
 
-const ARCHETYPE_LABELS: Record<string, string> = {
+export const ARCHETYPE_LABELS: Record<string, string> = {
   lead_buyer: 'Comprador Final',
   project_manager: 'Project Manager',
   logistics_manager: 'Gerencia de Logística',
@@ -127,9 +127,11 @@ function FieldRing({ filled, total }: { filled: number; total: number }) {
   )
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// ─── Shared derived state ─────────────────────────────────────────────────────
+// Consumed by both the desktop sidebar (ProgressBriefContent inside
+// MisterProgressPanel) and the mobile bottom sheet (MisterMobileBrief).
 
-export function MisterProgressPanel() {
+export function useProgressBriefData() {
   const { stage, archetype, isResolved, collected, sessionId, sendMessage, inFlight, isStreaming } =
     useMister()
 
@@ -197,11 +199,46 @@ export function MisterProgressPanel() {
         ? 'HABLAR CON ESPECIALISTA'
         : null
 
+  return {
+    stage,
+    archetype,
+    isResolved,
+    collected,
+    sessionId,
+    inFlight,
+    isStreaming,
+    highlightedFields,
+    stageIdx,
+    definedCount,
+    totalCount,
+    groups,
+    handleCta,
+    ctaLabel,
+  }
+}
+
+// ─── Content — shared between the desktop sidebar and the mobile sheet ───────
+
+export function ProgressBriefContent() {
+  const {
+    stage,
+    archetype,
+    isResolved,
+    collected,
+    sessionId,
+    inFlight,
+    isStreaming,
+    highlightedFields,
+    stageIdx,
+    definedCount,
+    totalCount,
+    groups,
+    handleCta,
+    ctaLabel,
+  } = useProgressBriefData()
+
   return (
-    <aside
-      className="hidden w-72 flex-shrink-0 flex-col overflow-y-auto border-l border-[rgba(248,246,240,0.08)] bg-[var(--mister-bg-header)] lg:flex xl:w-80"
-      aria-label="Panel de progreso de sesión"
-    >
+    <>
       {/* Header */}
       <div className="border-b border-[rgba(248,246,240,0.08)] px-5 py-4">
         <div className="flex items-center justify-between">
@@ -361,6 +398,19 @@ export function MisterProgressPanel() {
           </button>
         </div>
       )}
+    </>
+  )
+}
+
+// ─── Desktop sidebar wrapper — visual output unchanged from before the split ──
+
+export function MisterProgressPanel() {
+  return (
+    <aside
+      className="hidden w-72 flex-shrink-0 flex-col overflow-y-auto border-l border-[rgba(248,246,240,0.08)] bg-[var(--mister-bg-header)] lg:flex xl:w-80"
+      aria-label="Panel de progreso de sesión"
+    >
+      <ProgressBriefContent />
     </aside>
   )
 }

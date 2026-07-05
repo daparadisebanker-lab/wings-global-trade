@@ -11,6 +11,7 @@ import type {
   ComparisonSurface,
   DocumentSurface,
   ContactSurface,
+  MisterActionId,
 } from '@/types/mister'
 import {
   fetchProduct,
@@ -40,7 +41,11 @@ export interface BuildContextResult {
  */
 export async function buildMisterContext(
   session: MisterProjectRow,
-  request: { currentPage: string | null; currentProductId: string | null },
+  request: {
+    currentPage: string | null
+    currentProductId: string | null
+    actionId?: MisterActionId | null
+  },
   supabase: SupabaseClient,
 ): Promise<BuildContextResult> {
   const interests = session.collected.productInterest ?? []
@@ -94,6 +99,7 @@ export async function buildMisterContext(
     session,
     currentPage: request.currentPage,
     currentProductId: request.currentProductId,
+    actionId: request.actionId ?? null,
     backend,
     opsWhatsapp: process.env.MISTER_OPS_WHATSAPP ?? '+50760250735',
   })
@@ -109,10 +115,11 @@ function renderContextBlock(params: {
   session: MisterProjectRow
   currentPage: string | null
   currentProductId: string | null
+  actionId: MisterActionId | null
   backend: AssembledContext
   opsWhatsapp: string
 }): string {
-  const { session, currentPage, currentProductId, backend, opsWhatsapp } = params
+  const { session, currentPage, currentProductId, actionId, backend, opsWhatsapp } = params
 
   const productLine = backend.product
     ? JSON.stringify({
@@ -147,6 +154,7 @@ stage: ${session.stage}
 locale: ${session.locale}
 current_page: ${currentPage ?? 'null'}
 current_product_id: ${currentProductId ?? 'null'}
+last_action: ${actionId ?? 'null'}
 current_product: ${productLine}
 collected: ${JSON.stringify(session.collected)}
 backend:

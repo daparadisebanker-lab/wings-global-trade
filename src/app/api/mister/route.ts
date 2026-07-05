@@ -22,6 +22,7 @@
 // 12. Clear in_flight (always in finally)
 
 import type { NextRequest } from 'next/server'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { z, ZodError } from 'zod'
 import { createServiceClient } from '@/lib/supabase/server'
 import { getMisterClient, MISTER_MODEL } from '@/lib/mister/client'
@@ -38,6 +39,15 @@ import { checkRateLimit, checkTightenedRateLimit } from '@/lib/mister/rateLimit'
 import { inferStage } from '@/lib/mister/stage'
 import { isValidArchetype, isValidStage } from '@/lib/mister/archetype'
 import { getFallbackActions, isValidQuickAction } from '@/lib/mister/fallback-actions'
+import {
+  fetchProductBySlugOrId,
+  preloadComparison,
+  fetchContact,
+  fetchDocument,
+  inferMoqSurface,
+  inferProductType,
+} from '@/lib/mister/tools'
+import { DEFAULT_SEGMENTS } from '@/lib/mister/waterfall-segments'
 import type {
   MisterProjectRow,
   MisterArchetype,
@@ -45,6 +55,8 @@ import type {
   MisterCollected,
   MisterQuickAction,
   MisterControlBlock,
+  MisterSurfaceType,
+  MisterActionId,
   SurfaceEventPayload,
 } from '@/types/mister'
 
@@ -54,9 +66,27 @@ export const maxDuration = 60
 // ─────────────────────────────────────────────────────────────
 // Request schema
 // ─────────────────────────────────────────────────────────────
+// Mirrors MisterActionId (types/mister.ts) — kept as a literal tuple so Zod
+// can validate it; a mismatch here is caught at compile time by `satisfies`.
+const MISTER_ACTION_IDS = [
+  'ask_followup',
+  'show_product',
+  'show_comparison',
+  'show_specs',
+  'show_moq',
+  'download_document',
+  'open_quotation',
+  'book_meeting',
+  'connect_whatsapp',
+  'explain_cost',
+] as const satisfies readonly MisterActionId[]
+
 const ChatSchema = z.object({
   sessionId: z.string().min(1).max(128),
   message: z.string().min(1).max(4000),
+  // Without this, Zod's non-strict parse silently drops actionId — the client
+  // sends it, but it never reached the model or the DB (audit finding #4).
+  actionId: z.enum(MISTER_ACTION_IDS).optional(),
   currentPage: z.string().max(256).optional().nullable(),
   currentProductId: z.string().uuid().optional().nullable(),
   locale: z.enum(['es-PE', 'en', 'nl', 'de']).optional().default('es-PE'),
@@ -111,6 +141,114 @@ function extractControlBlock(fullText: string): {
 }
 
 // ─────────────────────────────────────────────────────────────
+// Control-block surface resolution
+// The model requests surfaces by { type, ref }. Each is resolved
+// server-side so the client never receives model-supplied numbers:
+// waterfall segments are ALWAYS the finance constants, and every
+// product/spec/comparison payload is re-read from Supabase by ref.
+// ─────────────────────────────────────────────────────────────
+const MAX_BLOCK_SURFACES = 3
+
+const VALID_SURFACE_TYPES: ReadonlySet<string> = new Set<MisterSurfaceType>([
+  'product',
+  'comparison',
+  'specs',
+  'moq',
+  'waterfall',
+  'document',
+  'contact',
+  'quotation_form',
+])
+
+// Slugs and UUIDs only — defense-in-depth so a model-supplied ref can never
+// smuggle PostgREST filter syntax into preloadComparison's .or() string.
+const SAFE_REF = /^[\w-]+$/
+
+function parseRefList(ref: string): string[] {
+  return ref
+    .split(/[,\s]+/)
+    .map((r) => r.trim())
+    .filter((r) => r.length > 0 && SAFE_REF.test(r))
+}
+
+/**
+ * Resolve a single control-block surface to its emittable payload.
+ * Returns null to skip (unresolved ref, missing data, or nothing to show).
+ * Callers wrap this in .catch — it must never leak a Supabase error.
+ */
+async function resolveBlockSurface(
+  type: MisterSurfaceType,
+  ref: string,
+  ctx: {
+    supabase: SupabaseClient
+    collected: MisterCollected
+    archetype: MisterArchetype
+  },
+): Promise<SurfaceEventPayload | null> {
+  switch (type) {
+    case 'waterfall':
+      // Structural anti-price guarantee: never accept model-supplied segment
+      // numbers — always the finance constants.
+      return { type: 'waterfall', payload: { segments: DEFAULT_SEGMENTS } }
+
+    case 'moq': {
+      const product = ref
+        ? await fetchProductBySlugOrId(ref, ctx.supabase).catch(() => null)
+        : null
+      const moq = inferMoqSurface(product)
+      return moq ? { type: 'moq', payload: moq } : null
+    }
+
+    case 'specs': {
+      if (!ref) return null
+      const product = await fetchProductBySlugOrId(ref, ctx.supabase).catch(() => null)
+      return product ? { type: 'specs', payload: product.specs } : null
+    }
+
+    case 'product': {
+      if (!ref) return null
+      const product = await fetchProductBySlugOrId(ref, ctx.supabase).catch(() => null)
+      return product ? { type: 'product', payload: product } : null
+    }
+
+    case 'comparison': {
+      const refs = [...parseRefList(ref), ...(ctx.collected.productInterest ?? [])]
+      const comparison = await preloadComparison(refs, ctx.supabase).catch(() => null)
+      return comparison ? { type: 'comparison', payload: comparison } : null
+    }
+
+    case 'contact': {
+      // Honors ACTION_DOCTRINE's {"type":"contact","ref":"ops"} and removes the
+      // one-turn lag — archetype drives the routing, the ref is only a hint.
+      const contact = await fetchContact(ctx.archetype, ctx.supabase).catch(() => null)
+      return contact ? { type: 'contact', payload: contact } : null
+    }
+
+    case 'document': {
+      if (!ctx.collected.destinationCountry) return null
+      const doc = await fetchDocument(
+        ctx.collected.destinationCountry,
+        inferProductType(ctx.collected),
+        ctx.supabase,
+      ).catch(() => null)
+      return doc?.available ? { type: 'document', payload: doc } : null
+    }
+
+    case 'quotation_form': {
+      const summaryFields: Record<string, string> = {}
+      if (ctx.collected.destinationCountry)
+        summaryFields['País'] = ctx.collected.destinationCountry
+      if (ctx.collected.productInterest?.length)
+        summaryFields['Interés'] = ctx.collected.productInterest.join(', ')
+      return { type: 'quotation_form', payload: { summaryFields } }
+    }
+
+    default:
+      return null
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
 // Main POST handler
 // ─────────────────────────────────────────────────────────────
 export async function POST(request: NextRequest) {
@@ -131,7 +269,7 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  const { sessionId, message, currentPage, currentProductId, locale } = parsed
+  const { sessionId, message, actionId, currentPage, currentProductId, locale } = parsed
 
   // 2. Input sanitization
   const { clean: cleanMessage, injectionDetected } = sanitizeInput(message)
@@ -181,7 +319,7 @@ export async function POST(request: NextRequest) {
   }
 
   // Atomic burst guard
-  const { data: sessionRow, error: lockError } = await supabase
+  let { data: sessionRow, error: lockError } = await supabase
     .from('mister_projects')
     .update({ in_flight: true })
     .eq('session_id', sessionId)
@@ -190,13 +328,32 @@ export async function POST(request: NextRequest) {
     .single<MisterProjectRow>()
 
   if (lockError || !sessionRow) {
-    return new Response(
-      JSON.stringify({
-        error: 'Mister ya está procesando tu pregunta.',
-        code: 'CONCURRENT_REQUEST',
-      }),
-      { status: 409, headers: { 'content-type': 'application/json' } },
-    )
+    // Stale-lock recovery (one attempt): if the process handling a prior
+    // request died between acquiring the lock and the `finally` that clears
+    // it, in_flight stays true forever and this session 409s on every future
+    // turn with no self-heal. Reclaim the lock only if it has been held
+    // longer than a turn could plausibly take.
+    const staleThreshold = new Date(Date.now() - 90_000).toISOString()
+    const recovery = await supabase
+      .from('mister_projects')
+      .update({ in_flight: true })
+      .eq('session_id', sessionId)
+      .lt('updated_at', staleThreshold)
+      .select()
+      .single<MisterProjectRow>()
+
+    sessionRow = recovery.data
+    lockError = recovery.error
+
+    if (lockError || !sessionRow) {
+      return new Response(
+        JSON.stringify({
+          error: 'Mister ya está procesando tu pregunta.',
+          code: 'CONCURRENT_REQUEST',
+        }),
+        { status: 409, headers: { 'content-type': 'application/json' } },
+      )
+    }
   }
 
   // Check tightened rate limit if session has flags
@@ -225,7 +382,11 @@ export async function POST(request: NextRequest) {
   // 5. Parallel context assembly
   const { contextString, surfaces } = await buildMisterContext(
     sessionRow,
-    { currentPage: currentPage ?? null, currentProductId: currentProductId ?? null },
+    {
+      currentPage: currentPage ?? null,
+      currentProductId: currentProductId ?? null,
+      actionId: actionId ?? null,
+    },
     supabase,
   ).catch((err) => {
     console.error('[mister/route] context assembly error', err)
@@ -335,19 +496,79 @@ export async function POST(request: NextRequest) {
         }
         enqueue(sseEvent('collected', { collected: mergedCollected }))
 
-        // Emit AI-requested surfaces from the control block.
-        // quotation_form and contact surfaces need no async resolution — emit directly.
-        if (block?.surfaces) {
-          for (const blockSurface of block.surfaces) {
-            if (blockSurface.type === 'quotation_form') {
-              const summaryFields: Record<string, string> = {}
-              if (mergedCollected.destinationCountry) summaryFields['País'] = mergedCollected.destinationCountry
-              if (mergedCollected.productInterest?.length)
-                summaryFields['Interés'] = mergedCollected.productInterest.join(', ')
-              enqueue(sseEvent('surface', { type: 'quotation_form', payload: { summaryFields } }))
+        // Resolve and emit AI-requested surfaces from the control block.
+        // Runs AFTER the guardrail decision: if the guardrail fired, only
+        // contact/quotation_form pass (routing needs those). Block surfaces
+        // are deduped against the pre-emitted context surfaces and capped at
+        // 3 per turn. product/specs dedupe per-ref — the model may legitimately
+        // surface product B while the context pass already emitted product A
+        // (recommending an alternative to the page being viewed); every other
+        // type is once-per-turn. Every failure degrades to a skip — resolution
+        // never throws into the stream, and no Supabase error reaches the client.
+        if (block?.surfaces && Array.isArray(block.surfaces)) {
+          const dedupeKey = (type: string, ref: string): string =>
+            type === 'product' || type === 'specs' ? `${type}:${ref}` : type
+          const emittedKeys = new Set<string>()
+          for (const s of surfaces) {
+            if (s.type === 'product') {
+              // Seed both slug and id so a block ref in either form matches.
+              emittedKeys.add(`product:${s.payload.slug}`)
+              emittedKeys.add(`product:${s.payload.id}`)
+            } else {
+              emittedKeys.add(s.type)
             }
-            // Other surface types (product, comparison, etc.) are resolved in buildMisterContext
-            // before the AI call and already emitted above.
+          }
+          let blockSurfaceCount = 0
+
+          for (const entry of block.surfaces) {
+            if (blockSurfaceCount >= MAX_BLOCK_SURFACES) break
+            if (!entry || typeof entry !== 'object' || typeof entry.type !== 'string') {
+              console.warn('[mister/route] malformed control block surface', entry)
+              continue
+            }
+
+            const surfaceType = entry.type
+            const ref = typeof entry.ref === 'string' ? entry.ref : ''
+
+            if (!VALID_SURFACE_TYPES.has(surfaceType)) {
+              console.warn('[mister/route] unknown control block surface type', surfaceType)
+              continue
+            }
+            // Dedupe: skip a surface already emitted by the context pass or an
+            // earlier block surface this turn (per-ref for product/specs).
+            if (emittedKeys.has(dedupeKey(surfaceType, ref))) continue
+            // Hold-back gate: on a guardrail violation the turn was replaced
+            // with a routing message — only routing surfaces may accompany it.
+            if (
+              guardrailResult.violated &&
+              surfaceType !== 'contact' &&
+              surfaceType !== 'quotation_form'
+            ) {
+              continue
+            }
+
+            const resolved = await resolveBlockSurface(surfaceType, ref, {
+              supabase,
+              collected: mergedCollected,
+              archetype: newArchetype,
+            }).catch((err) => {
+              console.error('[mister/route] block surface resolution error', err)
+              return null
+            })
+
+            if (resolved) {
+              enqueue(sseEvent('surface', resolved))
+              emittedKeys.add(dedupeKey(surfaceType, ref))
+              if (resolved.type === 'product') {
+                // Also key the resolved identifiers so a later duplicate in the
+                // other form (slug vs id) can't emit the same card twice.
+                emittedKeys.add(`product:${resolved.payload.slug}`)
+                emittedKeys.add(`product:${resolved.payload.id}`)
+              }
+              blockSurfaceCount++
+            } else {
+              console.warn('[mister/route] unresolved control block surface', surfaceType, ref)
+            }
           }
         }
 

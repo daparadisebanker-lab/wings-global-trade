@@ -2,7 +2,10 @@
 // Self-contained Mister site widget: always mounted in layout.tsx.
 // One MisterProvider wraps both the floating button and the fullscreen overlay,
 // so session state persists across open/close — the conversation never resets.
-// The /mister page has its own isolated session (separate MisterProvider).
+// This provider and the /mister page's provider are separate instances, but
+// both read the same 'wgt-mister-session' localStorage key and rehydrate from
+// the DB, so a visitor keeps one conversation across the widget ↔ /mister
+// hand-off and across reloads (MisterProvider handles this internally).
 'use client'
 
 import { MisterProvider } from '@/components/features/mister/MisterProvider'

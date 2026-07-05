@@ -30,7 +30,7 @@ export function MisterFloatingButton() {
       variants={launcherVariants}
       initial="hidden"
       animate={reduced ? 'visibleReduced' : 'visible'}
-      className="fixed bottom-8 right-8 z-[60]"
+      className="fixed bottom-[max(2rem,env(safe-area-inset-bottom))] right-8 z-[60]"
     >
       <button
         type="button"

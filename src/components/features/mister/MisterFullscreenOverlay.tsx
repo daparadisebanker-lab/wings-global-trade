@@ -5,22 +5,29 @@
 // Law 3: feels like walking through a door — directional motion, clear "back" control.
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useMister } from '@/components/features/mister/MisterProvider'
 import { MisterBrandHeader } from '@/components/features/mister/MisterBrandHeader'
 import { MisterMessageList } from '@/components/features/mister/MisterMessageList'
 import { MisterComposer } from '@/components/features/mister/MisterComposer'
 import { MisterProgressPanel } from '@/components/features/mister/MisterProgressPanel'
+import { MisterMobileBrief } from '@/components/features/mister/MisterMobileBrief'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import {
   overlayBackdropVariants,
   overlayPanelVariants,
 } from '@/lib/mister/motion'
 
+// Elements a Tab trap should cycle through inside the dialog.
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+
 export function MisterFullscreenOverlay() {
   const { isOpen, close } = useMister()
   const reduced = useReducedMotion()
+  const panelRef = useRef<HTMLDivElement>(null)
+  const previouslyFocusedRef = useRef<HTMLElement | null>(null)
 
   // iOS-safe body scroll lock — position:fixed prevents iOS Safari body scroll.
   // overflow:hidden alone is ignored on iOS Safari, causing the background page to
@@ -77,6 +84,41 @@ export function MisterFullscreenOverlay() {
     return () => document.removeEventListener('keydown', handler)
   }, [isOpen, close])
 
+  // Focus management: move focus into the dialog on open, restore it to
+  // whatever triggered the overlay (the launcher button) on close.
+  useEffect(() => {
+    if (!isOpen) return
+    previouslyFocusedRef.current = document.activeElement as HTMLElement | null
+    panelRef.current?.focus()
+    return () => {
+      previouslyFocusedRef.current?.focus()
+    }
+  }, [isOpen])
+
+  // Trap Tab within the dialog while open so keyboard users can't tab into
+  // the dimmed page behind the overlay.
+  useEffect(() => {
+    if (!isOpen) return
+    const handler = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return
+      const panel = panelRef.current
+      if (!panel) return
+      const focusable = Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR))
+      if (focusable.length === 0) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault()
+        first.focus()
+      }
+    }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [isOpen])
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -100,10 +142,12 @@ export function MisterFullscreenOverlay() {
             initial={reduced ? 'hiddenReduced' : 'hidden'}
             animate={reduced ? 'visibleReduced' : 'visible'}
             exit={reduced ? 'exitReduced' : 'exit'}
-            className="fixed left-0 right-0 top-0 z-[100] flex h-[var(--mister-vp-height,100dvh)] flex-col overflow-hidden bg-[var(--mister-bg-window)] touch-manipulation"
+            className="fixed left-0 right-0 top-0 z-[100] flex h-[var(--mister-vp-height,100dvh)] flex-col overflow-hidden bg-[var(--mister-bg-window)] touch-manipulation outline-none"
             role="dialog"
             aria-modal="true"
             aria-label="Mister — asesor de importación Wings Global Trade"
+            ref={panelRef}
+            tabIndex={-1}
           >
             {/* Brand header with overlay-mode exit control */}
             <MisterBrandHeader mode="overlay" onClose={close} />
@@ -112,6 +156,7 @@ export function MisterFullscreenOverlay() {
             <div className="flex flex-1 min-h-0">
               <div className="flex flex-1 flex-col min-h-0">
                 <MisterMessageList />
+                <MisterMobileBrief />
                 <MisterComposer />
               </div>
               <MisterProgressPanel />
