@@ -134,3 +134,52 @@ typecheck clean · 93 vitest tests green (9 files) · `next build` green (14 rou
 SQL-level e2e proof: published products carry v1 snapshots and the public-read join
 returns 99 readable rows for wings/machinery. Full browser click-through (auth →
 draft → publish) is the Verifier's gate (needs running server + real session).
+
+## Wave 3 — Pipeline + Container Desk + hooks · 2026-07-06
+
+### D-15 · Fanned to 3 worktree agents; shared primitive committed up front
+W3.A (Pipeline), W3.B (Container Desk), W3.C (hooks + conversation layer). Learned
+from Wave 2: committed `lib/money.ts` (integer-minor helpers, 5 tests) as `aba3ff7`
+BEFORE fanning out, so both money-touching agents imported a real helper (no stub
+contention). Each brief did an explicit `git reset --hard feature/tower-wave1` step 0
+(fixing the worktree-off-master gap). Only cross-agent contract was `getConversation`.
+
+### D-16 · Conversation contract reconciled at integration
+W3.A improvised a different ConversationPane shape (messages/channel/direction/body)
+than W3.C's real `getConversation` (entries/source/role/text, matching the brief).
+Kept C's data layer; rewrote A's ConversationPane + the `[id]` page fallback to C's
+shape. C's authorize-then-privileged-read pattern (RLS-read the rfq row first, then
+service client for mister_projects/whatsapp scoped to that row) kept as-is — correct.
+
+### D-17 · Applied ONLY the genuinely-new DB objects
+Agents proposed RLS/grants for the container/PO/QC/doc tables believing none existed
+(they only see DATABASE_SCHEMA.sql's single `products` example) — but migrations 8 & 11
+already cover every domain table. Applied only:
+- `tower.commit_container_cbm(...)` (migration 14): atomic CBM capacity — `SELECT … FOR
+  UPDATE` on the container, sums RESERVED/CONFIRMED/LOADED, raises CAPACITY_EXCEEDED;
+  SECURITY DEFINER so it re-checks `has_lane_role(TRADE_OPS/SALES/LANE_DIRECTOR)` itself.
+- `tower.whatsapp_messages` (migration 15): new table (WhatsApp side of ConversationPane).
+  service-role insert only (like events), RLS read via the linked rfq's lane, audit
+  trigger `tower.audit_trigger()`, `authenticated` insert/update revoked (default-priv
+  would have granted them; RLS blocks anyway — defense in depth).
+Skipped the agents' redundant RLS/grants. Created private `trade-documents` bucket.
+B's flagged "accounts/suppliers have no RLS" is a non-issue — secured in mig 8/11.
+
+### D-18 · Integration typecheck/build fixes
+- `PipelineCapabilities` re-exported from pipeline.ts (components imported it there).
+- `committedCbmByContainerId` + `loadRfqContext` typed `ReturnType<SupabaseClient['schema']>`
+  (removed an `any` + an eslint-disable for `@typescript-eslint/no-explicit-any`, a rule
+  the project's ESLint doesn't register — the stray directive was failing `next build`).
+- pipeline.ts Zod array `fieldErrors` → collapsed to `{ lines: issues.map(...) }` (same
+  number-index issue fixed in Wave 2's media.ts).
+
+### D-19 · Verification
+typecheck clean · 163 vitest tests (15 files) · `next build` green (adds /pipeline[/id],
+/containers[/id], /api/hooks/{mister,whatsapp}, /api/public/fill/[...code]). Capacity fn
+proven to reject over-commit: a transactional test (TRADE_OPS member) raised
+CAPACITY_EXCEEDED at 6+5 > 10 capacity; rolled back, zero leak confirmed. Minor open:
+one non-fatal `exhaustive-deps` warning in PipelineBoard.
+
+### D-20 · New deployment env (add to Vercel + .env.local.example)
+`MISTER_HOOK_SECRET`, `WHATSAPP_HOOK_SECRET` (W3.C hook HMAC verification). Still
+outstanding from earlier waves: expose `tower` schema to PostgREST; the Wave-1/2 env set.
