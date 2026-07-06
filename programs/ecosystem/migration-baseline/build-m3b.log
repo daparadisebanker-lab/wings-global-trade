@@ -34,18 +34,18 @@ Route (app)                                                       Size  First Lo
 ├ ƒ /api/products/[slug]/field-report                            198 B         102 kB
 ├ ƒ /api/products/[slug]/intelligence                            198 B         102 kB
 ├ ƒ /api/products/facets                                         198 B         102 kB
-├ ƒ /catalogo                                                    632 B         159 kB
-├ ƒ /catalogo/[category]                                       6.91 kB         165 kB
-├ ƒ /catalogo/[category]/[slug]                                16.5 kB         201 kB
-├ ● /catalogo/[category]/aplicacion/[useCase]                    632 B         159 kB
+├ ƒ /catalogo                                                    643 B         163 kB
+├ ƒ /catalogo/[category]                                       6.91 kB         169 kB
+├ ƒ /catalogo/[category]/[slug]                                13.4 kB         201 kB
+├ ● /catalogo/[category]/aplicacion/[useCase]                    643 B         163 kB
 ├   ├ /catalogo/maquinaria-agricola/aplicacion/arrozal
 ├   ├ /catalogo/maquinaria-agricola/aplicacion/frutales
 ├   ├ /catalogo/maquinaria-agricola/aplicacion/cultivos-surco
 ├   └ /catalogo/maquinaria-agricola/aplicacion/ganaderia
 ├ ƒ /catalogo/comparar                                          1.9 kB         152 kB
-├ ○ /contacto                                                  3.83 kB         153 kB
-├ ○ /cotizar                                                   8.06 kB         155 kB
-├ ○ /mister                                                     2.5 kB         167 kB
+├ ○ /contacto                                                  4.42 kB         157 kB
+├ ○ /cotizar                                                   8.43 kB         159 kB
+├ ○ /mister                                                    3.06 kB         171 kB
 ├ ƒ /mister/opengraph-image                                      198 B         102 kB
 ├ ○ /nosotros                                                   4.7 kB         149 kB
 ├ ƒ /opengraph-image                                             198 B         102 kB

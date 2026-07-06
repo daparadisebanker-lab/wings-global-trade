@@ -11,11 +11,18 @@ from `apps/*`** (enforced by the `no-app-imports` ESLint rule).
 |--------|----------------|-------|
 | `SpecSheet` | `apps/site` mister/surfaces/SpecSheet | scoped blueprint / printed spec page — fully token-driven (`var(--mister-*)`) |
 | `TrustFooter` | `apps/site` navigation/Footer | lane-agnostic footer; Wings content injected as props; Server Component |
+| `RFQFlow` | `apps/site` catalog/InquiryForm | product request-for-quote form; product/countries/endpoint/storage/notify/success injected; verified end-to-end (submit → success) |
+| `Input` `Textarea` `Select` `Button` `ToastProvider`/`useToast` | `apps/site` components/ui/* | primitives; app re-exports so consumers are unchanged |
+| `useRFQForm` | `apps/site` hooks/useInquiryForm | RFQ controller hook; endpoint injected |
 
-## Deferred within M3 (deliberate — see MIGRATION_DECISIONS D-09)
+## Deferred / distinct (see MIGRATION_DECISIONS D-09, D-10)
 
-- **`RFQFlow`** (inquiry/quotation) — extractable like TrustFooter, but couples to
-  the lead-submit endpoints + toast; queued as focused follow-up.
+- **`QuotationForm`** (the `/cotizar` guided quote wizard) is a **different organ**,
+  not RFQFlow — its own category picker, suggestion chips, timelines, line-field
+  styling and a different endpoint (`/api/leads/contact`). Folding it into RFQFlow
+  would be a redesign, not a move. It stays app-local; a future `QuoteBuilder` organ
+  can generalize it. Couples to `CategoryIcon` + `WhatsAppButton` (Wings feature
+  components).
 - **`MisterDock`** (launcher/window shell = `MisterSiteWidget`) and
   **`packages/mister`** (client surface) — the live shell pulls the entire Mister
   provider/streaming/context stack, adjacent to the guardrail/hold-back code paths

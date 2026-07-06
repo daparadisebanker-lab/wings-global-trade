@@ -1,0 +1,27 @@
+$ pnpm --filter site start
+$ next start
+   ▲ Next.js 15.3.9
+   - Local:        http://localhost:3000
+   - Network:      http://172.29.192.1:3000
+
+ ✓ Starting...
+ ✓ Ready in 294ms
+[whatsapp] (skipped — non-production or unconfigured)
+ WINGS GLOBAL TRADE · NUEVA CONSULTA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+REF ·     WGT-1039
+TIPO ·    Catálogo
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PRODUCTO  New Holland SH504
+CANTIDAD  2 unidades
+DESTINO   Perú
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CONTACTO  RFQ Organ Test
+EMPRESA   —
+TELÉFONO  +51 999 111 222
+EMAIL     rfq-organ-test@example.com
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RECIBIDO  06/07/2026, 03:00 p. m. PET
+RESPUESTA ESPERADA < 24H
+[email] (skipped — non-production or unconfigured)
+Subject: Nueva consulta: New Holland SH504 — Perú

@@ -109,3 +109,25 @@ Every step remains deployable and build-green; nothing user-visible changed. M3'
 exit gate ("site imports ALL extracted organs from @wings/trade-ui; swap test green;
 full Mister conversation re-verified") is therefore **partially met** — met for
 SpecSheet + TrustFooter; open for RFQFlow + MisterDock.
+
+## D-10 · M3b — RFQFlow + primitives extracted; QuotationForm is a distinct organ (2026-07-06)
+- **UI primitives** (`Input`, `Textarea`, `Select`, `Button`, Toast) moved to
+  `@wings/trade-ui` verbatim (package-local `cn`); app `components/ui/*` re-export
+  them, so all consumers are unchanged. `DESTINATION_COUNTRIES` stays app-side.
+- **RFQFlow** organ ported verbatim from `InquiryForm`; lane-specific bits injected
+  (productId/name/slug, `countries`, `endpoint`, `storageKeyPrefix`, `notify` toast,
+  `renderSuccess`). `useInquiryForm` is now a thin wrapper over the package
+  `useRFQForm` (catalog endpoint bound). App `InquiryForm` is a Wings adapter.
+  **Verified end-to-end**: filled + submitted a catalog inquiry → validation, gold
+  border-trace/goal-gradient animations, POST `/api/leads/catalog`, and the injected
+  `InquirySuccess` state all behave identically; server logged the notification
+  payload as in the M0 baseline.
+- **QuotationForm** (`/cotizar`) is **NOT** RFQFlow — it is a structurally different
+  guided quote wizard (category picker, suggestion chips, timelines, line-field
+  styling, `/api/leads/contact`). Unifying it would be a redesign, violating
+  zero-change. Left app-local and documented as a future `QuoteBuilder` organ.
+- Copy-debt: RFQFlow keeps its Spanish copy as organ defaults (a future non-Wings
+  lane parameterizes it) — tracked, not blocking, like the token-debt.
+
+M3b done. Remaining for M3: M3c (MisterDock + `packages/mister`, the danger-zone
+wave with full Mister SSE re-verification).
