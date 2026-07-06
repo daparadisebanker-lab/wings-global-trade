@@ -29,6 +29,9 @@ importers:
       '@upstash/redis':
         specifier: ^1.38.0
         version: 1.38.0
+      '@wings/mister':
+        specifier: workspace:*
+        version: link:../../packages/mister
       '@wings/trade-ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -93,6 +96,18 @@ importers:
       tailwindcss:
         specifier: ^3.4.17
         version: 3.4.19
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/mister:
+    devDependencies:
+      '@types/react':
+        specifier: ^19
+        version: 19.2.17
+      react:
+        specifier: ^19
+        version: 19.2.7
       typescript:
         specifier: ^5
         version: 5.9.3

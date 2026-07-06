@@ -13,10 +13,11 @@
 //      other than Wings consumes the organ.
 //
 // Run: node scripts/swap-test.mjs
-import { readdirSync, readFileSync, statSync } from 'fs'
+import { readdirSync, readFileSync, statSync, existsSync } from 'fs'
 import { join } from 'path'
 
-const ROOT = 'packages/ui/src'
+// All shared packages must be free of app imports.
+const ROOTS = ['packages/ui/src', 'packages/mister/src']
 
 function walk(dir) {
   const out = []
@@ -28,7 +29,7 @@ function walk(dir) {
   return out
 }
 
-const files = walk(ROOT)
+const files = ROOTS.filter(existsSync).flatMap(walk)
 const appImport = /from\s+['"](@\/|.*\/apps\/)/
 const rawHex = /#[0-9A-Fa-f]{3,8}\b/g
 

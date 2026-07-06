@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@wings/trade-ui": "workspace:*",
+    "@wings/mister": "workspace:*",
     "@anthropic-ai/sdk": "^0.32.1",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.46.1",

@@ -129,5 +129,40 @@ SpecSheet + TrustFooter; open for RFQFlow + MisterDock.
 - Copy-debt: RFQFlow keeps its Spanish copy as organ defaults (a future non-Wings
   lane parameterizes it) — tracked, not blocking, like the token-debt.
 
-M3b done. Remaining for M3: M3c (MisterDock + `packages/mister`, the danger-zone
+## D-11 · M3c — packages/mister client surface extracted; MisterDock shell stays app-local (2026-07-06)
+Created `@wings/mister` holding the **client surface only**: the full Mister v2
+type/data contract (`types.ts`, incl. control-block schema types) and the SSE
+`useMisterStream` hook. `apps/site/src/types/mister.ts` and
+`src/hooks/useMisterStream.ts` are now thin **re-export seams**, so all 11 server
+importers and every client component import `@/types/mister` /
+`@/hooks/useMisterStream` unchanged (D-03). The package copies the 3 database value
+types it references (`FreeZone`, `TprCompleteness`, `ConversationTurn`) into
+`database-shared.ts` (byte-identical) rather than importing from apps.
+
+**Server/guardrail surface never moved**: `app/api/mister/*`, the HOLD-BACK price
+guardrail, `lib/mister/{guardrails,systemPrompt,tools,client,stage,…}`, and the
+cached system prompt all stay in `apps/site`.
+
+**MisterDock deliberately NOT extracted.** The live shell (`MisterSiteWidget` + ~28
+interwoven client components/surfaces + provider + streaming) is inseparable from the
+guardrail-adjacent stack; deep-moving it risks the verified crown-jewel conversation
+for a purely future theming gain, and packages can't import apps so no thin wrapper is
+possible. Per M3.3's wrap-and-log allowance it stays app-local, documented as a future
+clean-move once the client stack is decoupled from app-local `lib/mister`
+motion/haptics/fallback utilities.
+
+**Danger-zone gate — GREEN.** Re-ran the full Mister SSE conversation against the M0
+baseline: streaming, archetype resolution (COMPRADOR FINAL), all stage transitions
+(INDUCCIÓN→…→PRE-CALIFICACIÓN), product surfaces, control block (quick actions/state/
+collected país=PE), pre-qualification escalation, and the **price hold-back
+("A cotizar", no absolute price) all behaved identically**. No route errors or
+guardrail trips. swap-test extended to scan `packages/mister` (green).
+
+M3 organ extraction is complete for everything safely extractable: SpecSheet,
+TrustFooter, RFQFlow (+ primitives), and the Mister client surface. The two documented
+app-local exceptions (QuotationForm→future QuoteBuilder; MisterDock shell) are
+deliberate risk-managed decisions, not gaps of omission. M4 (law switch) is unblocked.
+
+<!-- historical note kept below -->
+_(Superseded planning note)_ M3b done. Remaining for M3: M3c (MisterDock + `packages/mister`, the danger-zone
 wave with full Mister SSE re-verification).
