@@ -29,6 +29,9 @@ importers:
       '@upstash/redis':
         specifier: ^1.38.0
         version: 1.38.0
+      '@wings/trade-ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       framer-motion:
         specifier: ^11.11.17
         version: 11.18.2(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -93,6 +96,18 @@ importers:
       typescript:
         specifier: ^5
         version: 5.9.3
+
+  packages/ui:
+    dependencies:
+      framer-motion:
+        specifier: ^11
+        version: 11.18.2(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      react:
+        specifier: ^19
+        version: 19.2.7
+      react-dom:
+        specifier: ^19
+        version: 19.2.7(react@19.2.7)
 
 packages:
 

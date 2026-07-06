@@ -1,0 +1,65 @@
+$ pnpm --filter site build
+$ next build
+   ▲ Next.js 15.3.9
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 8.0s
+   Linting and checking validity of types ...
+   Collecting page data ...
+ ⚠ Using edge runtime on a page currently disables static generation for that page
+   Generating static pages (0/28) ...
+   Generating static pages (7/28) 
+   Generating static pages (14/28) 
+   Generating static pages (21/28) 
+ ✓ Generating static pages (28/28)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                                       Size  First Load JS  Revalidate  Expire
+┌ ○ /                                                          8.66 kB         205 kB
+├ ○ /_not-found                                                  198 B         102 kB
+├ ○ /api/categories                                              198 B         102 kB          1h      1y
+├ ƒ /api/leads/catalog                                           198 B         102 kB
+├ ƒ /api/leads/contact                                           198 B         102 kB
+├ ƒ /api/leads/multi                                             198 B         102 kB
+├ ƒ /api/mister                                                  198 B         102 kB
+├ ƒ /api/mister/chat                                             198 B         102 kB
+├ ƒ /api/mister/estimate                                         198 B         102 kB
+├ ƒ /api/mister/quote                                            198 B         102 kB
+├ ƒ /api/mister/session                                          198 B         102 kB
+├ ƒ /api/mister/submit                                           198 B         102 kB
+├ ƒ /api/products                                                198 B         102 kB
+├ ƒ /api/products/[slug]                                         198 B         102 kB
+├ ƒ /api/products/[slug]/field-report                            198 B         102 kB
+├ ƒ /api/products/[slug]/intelligence                            198 B         102 kB
+├ ƒ /api/products/facets                                         198 B         102 kB
+├ ƒ /catalogo                                                    614 B         157 kB
+├ ƒ /catalogo/[category]                                       6.89 kB         163 kB
+├ ƒ /catalogo/[category]/[slug]                                17.2 kB         199 kB
+├ ● /catalogo/[category]/aplicacion/[useCase]                    614 B         157 kB
+├   ├ /catalogo/maquinaria-agricola/aplicacion/arrozal
+├   ├ /catalogo/maquinaria-agricola/aplicacion/frutales
+├   ├ /catalogo/maquinaria-agricola/aplicacion/cultivos-surco
+├   └ /catalogo/maquinaria-agricola/aplicacion/ganaderia
+├ ƒ /catalogo/comparar                                          1.9 kB         152 kB
+├ ○ /contacto                                                  4.34 kB         151 kB
+├ ○ /cotizar                                                   8.39 kB         153 kB
+├ ○ /mister                                                     2.5 kB         165 kB
+├ ƒ /mister/opengraph-image                                      198 B         102 kB
+├ ○ /nosotros                                                   4.7 kB         149 kB
+├ ƒ /opengraph-image                                             198 B         102 kB
+├ ○ /proceso                                                   2.72 kB         199 kB
+├ ○ /repuestos                                                 14.3 kB         155 kB
+├ ○ /robots.txt                                                  198 B         102 kB
+└ ○ /sitemap.xml                                                 198 B         102 kB
++ First Load JS shared by all                                   102 kB
+  ├ chunks/2891-18859753beca913d.js                            46.7 kB
+  ├ chunks/7294d69e-661851448bff14c7.js                        53.2 kB
+  └ other shared chunks (total)                                2.02 kB
+
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+
