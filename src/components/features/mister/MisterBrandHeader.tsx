@@ -8,6 +8,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useMister } from '@/components/features/mister/MisterProvider'
+import { MisterLogo } from '@/components/features/mister/MisterLogo'
 import { HAPTIC } from '@/lib/mister/haptics'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import type { MisterStage } from '@/types/mister'
@@ -43,46 +44,6 @@ const STAGE_DESCRIPTIONS: Record<MisterStage, string> = {
   consideration: 'Evaluando especificaciones y condiciones',
   pre_qualification: 'Definiendo volumen y términos',
   support: 'Conectando con el equipo comercial',
-}
-
-// Minimal cross-hair icon — clinical, technical, alive via breathing animation
-function MisterIcon() {
-  return (
-    <svg
-      width="28"
-      height="28"
-      viewBox="0 0 28 28"
-      fill="none"
-      aria-hidden
-      className="flex-shrink-0"
-    >
-      <circle
-        cx="14"
-        cy="14"
-        r="10.5"
-        stroke="currentColor"
-        strokeWidth="0.75"
-        strokeDasharray="2 3.5"
-        opacity="0.30"
-      />
-      <line x1="14" y1="6" x2="14" y2="10" stroke="currentColor" strokeWidth="1" strokeLinecap="square" />
-      <line x1="14" y1="18" x2="14" y2="22" stroke="currentColor" strokeWidth="1" strokeLinecap="square" />
-      <line x1="6" y1="14" x2="10" y2="14" stroke="currentColor" strokeWidth="1" strokeLinecap="square" />
-      <line x1="18" y1="14" x2="22" y2="14" stroke="currentColor" strokeWidth="1" strokeLinecap="square" />
-      <rect x="12.5" y="12.5" width="3" height="3" fill="currentColor" />
-    </svg>
-  )
-}
-
-// Wordmark letter variants — staggered mechanical assembly on mount
-const letterVariants = {
-  hidden: { opacity: 0, y: -10 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: 0.08 + i * 0.045, duration: 0.18, ease: [0.16, 1, 0.3, 1] as number[] },
-  }),
-  visibleReduced: { opacity: 1, y: 0 },
 }
 
 const sessionIdVariants = {
@@ -154,7 +115,7 @@ export function MisterBrandHeader({ mode = 'embedded', onClose }: Props) {
                 className="flex min-w-0 items-center gap-2.5"
               >
                 <span className="flex-shrink-0 text-[var(--mister-text-primary)]">
-                  <MisterIcon />
+                  <MisterLogo variant="mark" className="h-7 w-7" />
                 </span>
                 <span className="flex-shrink-0 font-display text-[22px] font-[400] uppercase leading-none tracking-[-0.01em] text-[var(--mister-text-primary)]">
                   MISTER
@@ -256,33 +217,31 @@ export function MisterBrandHeader({ mode = 'embedded', onClose }: Props) {
           className="overflow-hidden"
           aria-hidden={collapsed}
         >
-          {/* MISTER wordmark + breathing icon */}
+          {/* Brand lockup — designed logo (mark + wordmark), revealed by a mechanical
+              left→right clip wipe on mount, then a subtle perpetual breath. */}
           <div className="mt-2 flex items-end justify-between lg:mt-3">
-            <div className="flex items-end gap-3">
-              {/* Breathing icon — opacity cycles 0.6→1→0.6 over 3s */}
+            <h1 className="sr-only">Mister — asesor de importación, Wings Global Trade</h1>
+            <motion.div
+              initial={reduced ? false : { clipPath: 'inset(0 100% 0 0)' }}
+              animate={{ clipPath: 'inset(0 0% 0 0)' }}
+              transition={
+                reduced
+                  ? { duration: 0 }
+                  : { delay: 0.1, duration: 0.7, ease: [0.83, 0, 0.17, 1] as number[] }
+              }
+              className="mb-1"
+              aria-hidden
+            >
               <motion.div
-                animate={{ opacity: [0.6, 1, 0.6] }}
-                transition={{ duration: 3, ease: 'easeInOut', repeat: Infinity }}
-                className="mb-1 text-[var(--mister-text-primary)]"
+                animate={reduced ? undefined : { opacity: [0.9, 1, 0.9] }}
+                transition={
+                  reduced ? undefined : { duration: 4, ease: 'easeInOut', repeat: Infinity, delay: 0.9 }
+                }
+                className="text-[var(--mister-text-primary)]"
               >
-                <MisterIcon />
+                <MisterLogo variant="full" className="h-12 w-auto md:h-16 lg:h-20" />
               </motion.div>
-
-              <h1 className="font-display text-[48px] font-[400] uppercase leading-none tracking-[-0.01em] text-[var(--mister-text-primary)] md:text-[64px] lg:text-[80px]">
-                {'MISTER'.split('').map((letter, i) => (
-                  <motion.span
-                    key={i}
-                    custom={i}
-                    variants={letterVariants}
-                    initial="hidden"
-                    animate={reduced ? 'visibleReduced' : 'visible'}
-                    className="inline-block"
-                  >
-                    {letter}
-                  </motion.span>
-                ))}
-              </h1>
-            </div>
+            </motion.div>
 
             {/* Archetype badge */}
             {isResolved && (
