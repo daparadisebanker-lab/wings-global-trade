@@ -1,0 +1,45 @@
+$ next start
+   ▲ Next.js 15.3.9
+   - Local:        http://localhost:3000
+   - Network:      http://172.29.192.1:3000
+
+ ✓ Starting...
+ ✓ Ready in 320ms
+(node:77036) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[whatsapp] (skipped — non-production or unconfigured)
+ WINGS GLOBAL TRADE · NUEVA CONSULTA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+REF ·     WGT-4549
+TIPO ·    Catálogo
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PRODUCTO  New Holland SH504
+CANTIDAD  3 unidades
+DESTINO   Perú
+MENSAJE   Envío de prueba para baseline de migración monorepo — no es un lead real.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CONTACTO  Baseline Test — Migración
+EMPRESA   QA Monorepo SAC
+TELÉFONO  +51 999 000 000
+EMAIL     baseline-test@example.com
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RECIBIDO  06/07/2026, 01:11 p. m. PET
+RESPUESTA ESPERADA < 24H
+[email] (skipped — non-production or unconfigured)
+Subject: Nueva consulta: New Holland SH504 — Perú
+[whatsapp] (skipped — non-production or unconfigured)
+ WINGS GLOBAL TRADE · CONTACTO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+REF ·     WGT-1923
+TIPO ·    Contacto directo
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CONTACTO  Baseline Test — Migración
+EMAIL     baseline-test@example.com
+TELÉFONO  +51 999 000 000
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MENSAJE   [Empresa: QA Monorepo SAC]
+Envío de prueba para baseline de migración monorepo — no es un lead real.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RECIBIDO  06/07/2026, 01:12 p. m. PET
+[email] (skipped — non-production or unconfigured)
+Subject: Nuevo contacto: Baseline Test — Migración
