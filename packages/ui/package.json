@@ -13,5 +13,13 @@
     "framer-motion": "^11",
     "react": "^19",
     "react-dom": "^19"
+  },
+  "devDependencies": {
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "framer-motion": "^11",
+    "react": "^19",
+    "react-dom": "^19",
+    "typescript": "^5"
   }
 }

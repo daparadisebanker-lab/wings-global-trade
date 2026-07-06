@@ -98,7 +98,13 @@ importers:
         version: 5.9.3
 
   packages/ui:
-    dependencies:
+    devDependencies:
+      '@types/react':
+        specifier: ^19
+        version: 19.2.17
+      '@types/react-dom':
+        specifier: ^19
+        version: 19.2.3(@types/react@19.2.17)
       framer-motion:
         specifier: ^11
         version: 11.18.2(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -108,6 +114,9 @@ importers:
       react-dom:
         specifier: ^19
         version: 19.2.7(react@19.2.7)
+      typescript:
+        specifier: ^5
+        version: 5.9.3
 
 packages:
 
