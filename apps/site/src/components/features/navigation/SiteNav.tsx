@@ -1,7 +1,7 @@
 // src/components/features/navigation/SiteNav.tsx
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -157,7 +157,7 @@ export function SiteNav({ categories }: SiteNavProps) {
                 aria-haspopup="true"
                 aria-expanded={menuHovered}
                 aria-controls="catalogo-mega-menu"
-                onClick={(e) => {
+                onClick={(e: ReactMouseEvent) => {
                   e.preventDefault()
                   setSearchOpen(false)
                   setMenuHovered((o) => !o)

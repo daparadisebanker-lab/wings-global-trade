@@ -1,7 +1,13 @@
 // src/components/features/catalog/ProductGallery.tsx
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import {
+  useState,
+  useEffect,
+  useCallback,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type MouseEvent as ReactMouseEvent,
+} from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { cn } from '@/lib/utils'
@@ -87,7 +93,7 @@ export function ProductGallery({ images, alt }: ProductGalleryProps) {
           tabIndex={hasImages ? 0 : undefined}
           onKeyDown={
             hasImages
-              ? (e) => {
+              ? (e: ReactKeyboardEvent) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault()
                     openLightbox()
@@ -196,7 +202,7 @@ export function ProductGallery({ images, alt }: ProductGalleryProps) {
             <motion.div
               layoutId={prefersReducedMotion ? undefined : sharedLayoutId}
               className="relative max-h-[85vh] max-w-[90vw]"
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e: ReactMouseEvent) => e.stopPropagation()}
               style={{ touchAction: 'pinch-zoom' }}
               transition={
                 prefersReducedMotion
