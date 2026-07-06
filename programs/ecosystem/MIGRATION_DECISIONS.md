@@ -80,3 +80,32 @@ Separately noted: running the Python seed pipeline regenerated
 drift between the committed SQL and current `data/product-catalog.json`. That is
 unrelated to the migration and was reverted (not bundled into any wave) — flagged
 for a separate data-reconciliation task.
+
+## D-09 · M3 organ extraction — scope split to protect the Mister danger zone (M3, 2026-07-06)
+`@wings/trade-ui` is stood up and two organs are extracted, verified, and building:
+- **SpecSheet** — moved verbatim; app re-exports from the package; fully
+  token-driven; swap-test clean.
+- **TrustFooter** — moved as a lane-agnostic Server Component; Wings content
+  injected as props via a `renderLink` callback; markup byte-identical, verified at
+  runtime.
+
+Enforcement + QA added: `packages/ui/.eslintrc.json` `no-app-imports` rule, and
+`pnpm swap-test` (hard-gates app imports; itemizes token-purity debt — one inherited
+`#000C1F` in TrustFooter; Tailwind color utilities still resolve to app-theme hex,
+not livery vars).
+
+**Deliberately deferred (not rushed at the tail of this session):**
+- `RFQFlow` — tractable like TrustFooter but couples to lead-submit endpoints/toast.
+- `MisterDock` (= the live `MisterSiteWidget` shell, per D-02) and `packages/mister`
+  (client surface) — these pull the full Mister provider/streaming/context stack,
+  which sits next to the guardrail/hold-back paths marked "never touch" in both
+  CLAUDE.md and the migration prompt. Per M3.3's wrap-and-log allowance for
+  behavior-risky extractions, these are done as a dedicated wave with the full
+  Mister SSE conversation re-verified against the M0 baseline afterward — not
+  folded into a long mixed session. `types/mister.ts` stays in `apps/site` as the
+  re-export seam (D-03) until then.
+
+Every step remains deployable and build-green; nothing user-visible changed. M3's
+exit gate ("site imports ALL extracted organs from @wings/trade-ui; swap test green;
+full Mister conversation re-verified") is therefore **partially met** — met for
+SpecSheet + TrustFooter; open for RFQFlow + MisterDock.
