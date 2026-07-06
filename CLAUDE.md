@@ -312,13 +312,15 @@ scripts/        Utility scripts (icon generation)
 Knowledge (context, not code):
 
 ```
-spec/           AUTHORITATIVE product + design specification
+spec/           AUTHORITATIVE product + design specification (current product only)
 docs/           Strategy, creative direction, UX research, build history — see docs/README.md
+programs/       QUEUED future-state build programs (ecosystem migration, TOWER, Wings Network, shared-container) — see programs/README.md
 assets/         Source design assets (brand SVGs/fonts, product photo masters) — NOT served; web copies live in public/
 ```
 
 Rules for agents:
 - `spec/` outranks `docs/` wherever they conflict.
+- **Nothing under `programs/` is active law.** Those are specs for unbuilt initiatives — never build from them unless explicitly instructed to start that program. When the ecosystem migration is activated, `programs/ecosystem/CLAUDE.ecosystem.md` replaces this file.
 - Anything under `docs/build-history/` is superseded — never build from it. In particular, the Accio flow (absolute-price CIF) is retired; Mister v2 never displays absolute prices.
 - New strategy/research documents go in `docs/`, not the repo root. The root holds only config, README, DECISIONS.md, and this file.
 - `*_COMPLETE.flag` files are single-run wave artifacts; archive them to `docs/build-history/flags/` when a wave finishes.
