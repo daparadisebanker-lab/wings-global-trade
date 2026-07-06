@@ -34,7 +34,7 @@ export async function getLaneMemberships(): Promise<LaneMembership[]> {
     // the DB track; until then this query errors and we degrade to [].
     const { data, error } = await supabase
       .from('lane_memberships')
-      .select('role, lanes(id, code, slug, name, brand_id, accent)')
+      .select('role, lanes(id, code, slug, name, brand_id)')
 
     if (error || !data) return []
 
@@ -49,11 +49,33 @@ export async function getLaneMemberships(): Promise<LaneMembership[]> {
           laneName: String(lane.name),
           role: row.role as Role,
           brandId: String(lane.brand_id),
-          accent: lane.accent ? String(lane.accent) : null,
+          // livery-derived accent; NOT a tower.lanes column. Wired from livery
+          // config in a later wave — null keeps the shell on its default token.
+          accent: null,
         },
       ]
     })
   } catch {
     return []
+  }
+}
+
+/**
+ * Group-admin status is `profiles.is_group_admin` — NOT a lane_memberships role.
+ * Read separately (RLS-scoped: a user reads only their own profile row).
+ * Degrades to false on any failure, so the shell never crashes.
+ */
+export async function getIsGroupAdmin(): Promise<boolean> {
+  const supabase = await createServerSupabase()
+  if (!supabase) return false
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) return false
+    const { data } = await supabase.from('profiles').select('is_group_admin').eq('id', user.id).maybeSingle()
+    return Boolean((data as { is_group_admin?: boolean } | null)?.is_group_admin)
+  } catch {
+    return false
   }
 }

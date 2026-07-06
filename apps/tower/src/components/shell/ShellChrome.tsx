@@ -20,10 +20,12 @@ import { visibleModules, type Role } from '@/lib/rbac'
 export function ShellChrome({
   memberships,
   userEmail,
+  isGroupAdmin = false,
   children,
 }: {
   memberships: LaneMembership[]
   userEmail: string | null
+  isGroupAdmin?: boolean
   children: ReactNode
 }) {
   const [activeLaneId, setActiveLaneId] = useState<string | null>(
@@ -43,7 +45,7 @@ export function ShellChrome({
   }, [])
 
   const roles = useMemo(() => memberships.map((m) => m.role) as Role[], [memberships])
-  const visible = useMemo(() => visibleModules(roles), [roles])
+  const visible = useMemo(() => visibleModules(roles, isGroupAdmin), [roles, isGroupAdmin])
 
   const activeLane = memberships.find((m) => m.laneId === activeLaneId) ?? null
   const rootStyle = activeLane?.accent
@@ -68,7 +70,7 @@ export function ShellChrome({
         <div className="flex min-h-screen flex-col">
           <TopBar
             userEmail={userEmail}
-            isGroupAdmin={roles.includes('group_admin')}
+            isGroupAdmin={isGroupAdmin}
             onOpenSearch={() => setPaletteOpen(true)}
           />
           <main data-lane={activeLane?.laneSlug} className="flex-1">

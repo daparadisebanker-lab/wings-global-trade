@@ -6,33 +6,30 @@
 // exists. The two must never drift into being the actual gate.
 import type { ModuleId } from './nav'
 
-/** Roles per PRODUCT_BRIEF role table. */
-export type Role =
-  | 'group_admin'
-  | 'lane_director'
-  | 'catalog_editor'
-  | 'trade_ops'
-  | 'sales'
-  | 'viewer'
+/**
+ * Lane roles — MUST match the `tower.lane_memberships.role` enum exactly
+ * (uppercase). Group admin is NOT a lane role: it is `profiles.is_group_admin`,
+ * threaded separately into `visibleModules`.
+ */
+export type Role = 'LANE_DIRECTOR' | 'CATALOG_EDITOR' | 'TRADE_OPS' | 'SALES' | 'VIEWER'
+
+const ALL_MODULES: ModuleId[] = ['catalog', 'pipeline', 'containers', 'signals', 'intelligence', 'admin']
 
 const ROLE_MODULES: Record<Role, ModuleId[]> = {
-  group_admin: ['catalog', 'pipeline', 'containers', 'signals', 'intelligence', 'admin'],
-  lane_director: ['catalog', 'pipeline', 'containers', 'signals', 'intelligence'],
-  catalog_editor: ['catalog', 'signals'],
-  trade_ops: ['containers', 'catalog', 'signals'],
-  sales: ['pipeline', 'signals'],
-  viewer: ['signals'],
+  LANE_DIRECTOR: ['catalog', 'pipeline', 'containers', 'signals', 'intelligence'],
+  CATALOG_EDITOR: ['catalog', 'signals'],
+  TRADE_OPS: ['containers', 'catalog', 'signals'],
+  SALES: ['pipeline', 'signals'],
+  VIEWER: ['signals'],
 }
 
 /**
- * Union of modules visible across a user's roles. With NO memberships (fresh
- * scaffold, empty tables) every module is shown so the six placeholders are
- * reachable — the demonstrable scaffold state. Real role data narrows this.
+ * Union of modules visible across a user's lane roles. Group admins see every
+ * module (including `admin`). A user with no roles and no admin flag sees
+ * nothing — which is correct: RLS would return no rows anyway.
  */
-export function visibleModules(roles: Role[]): Set<ModuleId> {
-  if (roles.length === 0) {
-    return new Set<ModuleId>(['catalog', 'pipeline', 'containers', 'signals', 'intelligence', 'admin'])
-  }
+export function visibleModules(roles: Role[], isGroupAdmin = false): Set<ModuleId> {
+  if (isGroupAdmin) return new Set<ModuleId>(ALL_MODULES)
   const out = new Set<ModuleId>()
   for (const role of roles) {
     for (const m of ROLE_MODULES[role] ?? []) out.add(m)

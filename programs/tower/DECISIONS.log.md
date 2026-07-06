@@ -90,3 +90,47 @@ else RETIRED. Reconciliation exact: source 99 = tower 99, active 99 = published
 99, snapshots 99. No money conversion (catalog has no price columns). No
 container/financial/prorrateo source exists in this project's public schema
 (belonged to unrelated Euro Global) — nothing to migrate there.
+
+## Wave 2 — Catalog Studio · 2026-07-06
+
+### D-10 · Fanned to 3 parallel worktree agents, synthesized by Conductor
+W2.A (spec schemas + SpecForm), W2.B (public catalog API + revalidation), W2.C
+(Catalog Studio UI + publish). Disjoint path ownership + interface contracts
+(SpecForm, getSpecSchema, triggerRevalidate, apiError). C left `// CONTRACT STUB`
+placeholders for A/B modules; synthesis discarded them in favour of the real ones.
+All DB writes stayed with the Conductor (agents only produced artifacts).
+
+### D-11 · Foundation bugs fixed during integration
+- `lib/rbac.ts`: roles were lowercase + treated `group_admin` as a lane role.
+  Corrected to the DB enum (UPPERCASE) + group-admin via `profiles.is_group_admin`
+  threaded through `visibleModules(roles, isGroupAdmin)` and the shell.
+- `lib/lanes/memberships.ts`: selected a non-existent `lanes.accent` column (query
+  errored → LaneSwitcher always empty). Removed; accent is livery-derived (null for
+  now). Added `getIsGroupAdmin()`.
+- C's `requireUser()` guard returned a non-discriminated union (`gate.error` inferred
+  `| undefined`); added an `ok` discriminant across catalog.ts + media.ts. Fixed a
+  Zod array-schema `fieldErrors` (number-indexed) not fitting `Record<string,string[]>`.
+
+### D-12 · Spec schemas seeded + storage bucket
+6 archetype-default schemas in `tower.spec_schemas` (idempotent, `where not exists`
+for the NULL-lane_id uniqueness gotcha). Private `product-media` bucket created.
+
+### D-13 · DEPLOYMENT PREREQUISITES (app is non-functional until done)
+1. **Expose `tower` schema to PostgREST** — the JS client (both `.schema('tower')`
+   and default reads) needs it. Dashboard → Settings → API → Exposed schemas → add
+   `tower` (canonical). SQL alternative (verify current list first, additive):
+   `alter role authenticator set pgrst.db_schemas = 'public, storage, graphql_public, tower'; notify pgrst, 'reload config';`
+   Not applied by Conductor — can't read the current exposed list via SQL, won't risk
+   clobbering the live site's API surface.
+2. **Env vars** on Vercel (per BUILD_PROMPT): NEXT_PUBLIC_SUPABASE_URL/ANON_KEY,
+   SUPABASE_SERVICE_ROLE_KEY, ANTHROPIC_API_KEY, INGEST_HMAC_KEY_*, REVALIDATE_SECRET,
+   N8N_WEBHOOK_BASE.
+3. **Storage RLS** for `product-media`: signed-URL upload/read via service role works
+   now; direct `authenticated` object access would need `storage.objects` policies —
+   follow-up (see components/catalog/README.md).
+
+### D-14 · Verification
+typecheck clean · 93 vitest tests green (9 files) · `next build` green (14 routes).
+SQL-level e2e proof: published products carry v1 snapshots and the public-read join
+returns 99 readable rows for wings/machinery. Full browser click-through (auth →
+draft → publish) is the Verifier's gate (needs running server + real session).
