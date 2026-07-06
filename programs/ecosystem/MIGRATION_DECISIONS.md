@@ -56,3 +56,27 @@ M1.4 requires setting the Vercel project Root Directory to `apps/site`. That is 
 dashboard action outside this environment, left for Muaaz to apply before the M1
 preview deploy can be verified. The exit gate ("preview matches baseline") stays
 open until that setting lands.
+
+## D-07 · `.env.local` must live in `apps/site` after the move (M1 defect, found in M2)
+Next loads `.env.local` from its working directory. Once the app moved to
+`apps/site`, `next start`/`next dev` run with cwd `apps/site`, so the repo-root
+`.env.local` was no longer loaded — the local server lost Supabase creds and
+`catalog-data.ts` silently fell back to `seed.json`, 404ing every Supabase-only
+product slug (e.g. `new-holland-sh504`). M1's runtime check missed it because it
+only hit a category page present in both seed and DB; M2's broader visual pass
+surfaced it. Fix: `apps/site/.env.local` (copied from root; both gitignored via
+`.env*.local`). Root `.env.local` left in place for any root-run tooling. On
+Vercel this does not arise — env vars are injected at the project level (confirm
+they carry over per M1.4). Behavior-identical to M0 restored: the slug returns 200
+and renders identically.
+
+## D-08 · M2 token consumption is value-identical; seed-catalog.sql drift left untouched (M2, 2026-07-06)
+`globals.css` now `@import`s `packages/ui/tokens/skeleton.css` (frozen Tier-1) and
+`packages/liveries/wings/livery.css` (Tier-2), and its brand/navy/font `:root` vars
+reference `var(--livery-*)` whose values are byte-identical to the previous
+literals — verified by rendered screenshots (home + product page) matching baseline.
+Separately noted: running the Python seed pipeline regenerated
+`infrastructure/supabase/seed-catalog.sql` with a large diff, revealing pre-existing
+drift between the committed SQL and current `data/product-catalog.json`. That is
+unrelated to the migration and was reverted (not bundled into any wave) — flagged
+for a separate data-reconciliation task.

@@ -1,3 +1,8 @@
+/* Monorepo token tiers (M2). Tier 1 skeleton is frozen & family-wide; the Wings
+   livery maps Tier-2 semantic tokens to this site's exact current values. */
+@import '../../../../packages/ui/tokens/skeleton.css';
+@import '../../../../packages/liveries/wings/livery.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -204,13 +209,14 @@
    Source: /spec/ENRICHED_SPEC.md Section 2.1
    ============================================================ */
 :root {
-  /* BRAND */
-  --color-navy:             #001E50;
-  --color-gold:             #C4933F;
-  --color-gold-hover:       #D4A84F;
-  --color-gold-active:      #A6751A;
-  --color-gold-subtle:      rgba(196, 147, 63, 0.12);
-  --color-warm-white:       #F8F6F0;
+  /* BRAND — sourced from the Wings livery (Tier 2). Values are byte-identical
+     to the previous literals; see packages/liveries/wings/livery.css. */
+  --color-navy:             var(--livery-navy);
+  --color-gold:             var(--livery-gold);
+  --color-gold-hover:       var(--livery-gold-hover);
+  --color-gold-active:      var(--livery-gold-active);
+  --color-gold-subtle:      var(--livery-gold-subtle);
+  --color-warm-white:       var(--livery-warm-white);
 
   /* SURFACES */
   --color-surface-card:         #FAF9F6;   /* warm, not cold pure white */
@@ -240,11 +246,11 @@
   /* Legacy border alias */
   --color-border-default:       rgba(0, 30, 80, 0.10);
 
-  /* Navy variants */
-  --color-navy-light:           #0A2560;
-  --color-navy-dark:            #001040;
-  --color-navy-900:             #000C1F;
-  --color-navy-950:             #00070F;
+  /* Navy variants — from the Wings livery (byte-identical). */
+  --color-navy-light:           var(--livery-navy-light);
+  --color-navy-dark:            var(--livery-navy-dark);
+  --color-navy-900:             var(--livery-navy-900);
+  --color-navy-950:             var(--livery-navy-950);
 
   /* INDICATORS */
   --color-indicator-captured:   #C4933F;
@@ -252,10 +258,11 @@
   --color-indicator-minimum:    #F59E0B;
   --color-indicator-complete:   #16A34A;
 
-  /* Font variables consumed by Tailwind font-* utilities */
-  --font-display: 'NissanOpti';
-  --font-body: 'Flexo';
-  --font-mono: 'Teko';
+  /* Font variables consumed by Tailwind font-* utilities — from the Wings
+     livery (byte-identical family names). */
+  --font-display: var(--livery-font-display);
+  --font-body: var(--livery-font-body);
+  --font-mono: var(--livery-font-mono);
 
   /* Extended tokens */
   --color-gold-muted:       rgba(196, 147, 63, 0.12);

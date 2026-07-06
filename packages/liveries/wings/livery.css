@@ -1,0 +1,34 @@
+/* ============================================================
+   Wings livery — Tier 2 semantic tokens
+   ------------------------------------------------------------
+   Maps the CURRENT Wings site values into livery custom properties
+   with ZERO change to any computed value. These are the exact
+   literals that lived in apps/site globals.css before M2.
+
+   NOTE: the current site is NOT registered as an ecosystem lane
+   (lane onboarding is later ecosystem work), so these tokens are
+   defined at :root rather than under [data-lane="wings"]. When Wings
+   is formally onboarded as a lane, this block re-scopes without value
+   changes.
+   ============================================================ */
+
+:root {
+  /* --- Ground / ink / accent (see ecosystem §Phase-2 livery derivation) --- */
+  --livery-navy:          #001E50;
+  --livery-navy-light:    #0A2560;
+  --livery-navy-dark:     #001040;
+  --livery-navy-900:      #000C1F;
+  --livery-navy-950:      #00070F;
+
+  --livery-gold:          #C4933F;
+  --livery-gold-hover:    #D4A84F;
+  --livery-gold-active:   #A6751A;
+  --livery-gold-subtle:   rgba(196, 147, 63, 0.12);
+
+  --livery-warm-white:    #F8F6F0;
+
+  /* --- Type posture: compressed display + grotesque UI + condensed mono --- */
+  --livery-font-display:  'NissanOpti';
+  --livery-font-body:     'Flexo';
+  --livery-font-mono:     'Teko';
+}

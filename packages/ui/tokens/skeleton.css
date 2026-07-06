@@ -1,0 +1,67 @@
+/* ============================================================
+   @wings/trade-ui · Tier 1 — THE FROZEN SKELETON
+   ------------------------------------------------------------
+   Identical in every lane, forever. Source of truth:
+   programs/ecosystem/CLAUDE.ecosystem.md §2 (frozen skeleton).
+   This file is byte-stable against §2 — do not edit values here
+   to solve a lane need. That need is a livery (Tier 2) problem or
+   a content problem, never a skeleton problem.
+   ============================================================ */
+
+:root {
+  /* --- Spacing scale: 4 8 12 16 24 32 48 64 96 128 --- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 128px;
+
+  /* --- Type scale: 1.25 modular — 14 / 17.5 / 22 / 27 / 34 / 42 / 53 / 66 / 83 --- */
+  --type-0: 14px;
+  --type-1: 17.5px;
+  --type-2: 22px;
+  --type-3: 27px;
+  --type-4: 34px;
+  --type-5: 42px;
+  --type-6: 53px;
+  --type-7: 66px;
+  --type-8: 83px;
+
+  /* --- Grid: 12-col, shared gutters / max-widths / breakpoints --- */
+  --grid-columns: 12;
+  --grid-gutter: 24px;
+  --grid-margin: 32px;
+  --grid-max-width: 1280px;
+  --bp-sm: 640px;
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+  --bp-xl: 1280px;
+
+  /* --- Radii: 0 structural, ≤2px cards --- */
+  --radius-structural: 0;
+  --radius-card: 2px;
+
+  /* --- Motion --- */
+  --ease-gantry: cubic-bezier(0.83, 0, 0.17, 1); /* structural moves */
+  --ease-settle: cubic-bezier(0.22, 1, 0.36, 1); /* reveals */
+  --lane-switch-duration: 700ms; /* livery flood + stamp-settle, 600–800ms */
+}
+
+/* Reduced motion always collapses to crossfade (Tier 1 law). */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ease-gantry: linear;
+    --ease-settle: linear;
+  }
+}
+
+/* All numerals are tabular — CBM, MOQ, lead times, HS codes, prices are
+   brand assets and must not shift width. Apply on the mono/numeric face. */
+:root {
+  --numeric-variant: tabular-nums;
+}
