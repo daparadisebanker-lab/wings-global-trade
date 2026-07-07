@@ -24,6 +24,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: buildDate,
     },
     {
+      url: `${BASE}/contenedor-compartido`,
+      priority: 0.7,
+      changeFrequency: 'monthly',
+      lastModified: buildDate,
+    },
+    {
       url: `${BASE}/nosotros`,
       priority: 0.5,
       changeFrequency: 'monthly',

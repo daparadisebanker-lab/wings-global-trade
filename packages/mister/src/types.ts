@@ -168,6 +168,13 @@ export interface MisterCollected {
   productInterest?: string[] // product UUIDs from products table
   budgetBand?: string
   notes?: string
+  // Contenedor Compartido lane (additive — spec §3). importMode is the fork
+  // answer; containerShortCode marks a session that arrived from an invite
+  // link (/g/{token} → wa.me), so Mister resolves the container_offer surface.
+  importMode?: 'solo' | 'compartido' | 'sumarme'
+  groupSize?: number
+  cargoSummary?: string
+  containerShortCode?: string
 }
 
 export type MisterSurfaceType =
@@ -179,6 +186,7 @@ export type MisterSurfaceType =
   | 'document'
   | 'contact'
   | 'quotation_form'
+  | 'container_offer'
 
 export interface MisterSurface {
   type: MisterSurfaceType
@@ -415,6 +423,26 @@ export interface QuotationFormSurface {
   summaryFields?: Record<string, string>
 }
 
+/**
+ * Contenedor Compartido offer card (spec §3.3 / §4.1). The price and deadline
+ * live in this structured payload — NOT in Mister's text — so the text-only
+ * price/availability guardrails never fire. Server-resolved from an existing
+ * container by short_code; the model never supplies the numbers.
+ */
+export interface ContainerOfferSurface {
+  shortCode: string
+  routeOrigin: string
+  routeDestination: string
+  containerType: string
+  slotPriceUsd: number
+  priceIncludes: string[]
+  fillDeadline: string
+  leadName: string | null
+  slots: { committed: number; reserved: number; open: number; total: number }
+  /** POST target that onboards the member and returns the workspace URL. */
+  joinEndpoint: string
+}
+
 export type SurfaceEventPayload =
   | { type: 'product'; payload: ProductSurface }
   | { type: 'comparison'; payload: ComparisonSurface }
@@ -424,3 +452,4 @@ export type SurfaceEventPayload =
   | { type: 'waterfall'; payload: WaterfallSurface }
   | { type: 'specs'; payload: Record<string, string> }
   | { type: 'quotation_form'; payload: QuotationFormSurface }
+  | { type: 'container_offer'; payload: ContainerOfferSurface }

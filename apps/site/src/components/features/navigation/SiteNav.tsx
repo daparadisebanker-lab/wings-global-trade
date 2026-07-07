@@ -104,7 +104,11 @@ export function SiteNav({ categories }: SiteNavProps) {
   // Mister page is a fullscreen world takeover — nav would break the world boundary.
   if (pathname === '/mister') return null
 
-  const forceSolid = pathname?.startsWith('/catalogo') || pathname?.startsWith('/repuestos')
+  const forceSolid =
+    pathname?.startsWith('/catalogo') ||
+    pathname?.startsWith('/repuestos') ||
+    pathname?.startsWith('/g/') ||
+    pathname?.startsWith('/contenedor')
   const solid = scrolled || forceSolid
 
   return (

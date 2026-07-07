@@ -52,6 +52,7 @@ import {
   inferProductType,
 } from '@/lib/mister/tools'
 import { DEFAULT_SEGMENTS } from '@/lib/mister/waterfall-segments'
+import { getContainerOfferByShortCode } from '@/lib/container/access'
 import type {
   MisterProjectRow,
   MisterArchetype,
@@ -165,6 +166,7 @@ const VALID_SURFACE_TYPES: ReadonlySet<string> = new Set<MisterSurfaceType>([
   'document',
   'contact',
   'quotation_form',
+  'container_offer',
 ])
 
 // Slugs and UUIDs only — defense-in-depth so a model-supplied ref can never
@@ -248,6 +250,15 @@ async function resolveBlockSurface(
       if (ctx.collected.productInterest?.length)
         summaryFields['Interés'] = ctx.collected.productInterest.join(', ')
       return { type: 'quotation_form', payload: { summaryFields } }
+    }
+
+    case 'container_offer': {
+      // Read-only: resolve an EXISTING container by short_code. Prefer the
+      // session-collected code over a model-supplied ref (anti-hallucination).
+      const shortCode = ctx.collected.containerShortCode ?? ref
+      if (!shortCode || !SAFE_REF.test(shortCode)) return null
+      const offer = await getContainerOfferByShortCode(shortCode).catch(() => null)
+      return offer ? { type: 'container_offer', payload: offer } : null
     }
 
     default:

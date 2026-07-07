@@ -193,6 +193,46 @@ export default function ProcesoPage() {
         />
       </div>
 
+      {/* Trae tu grupo — navy (keeps alternation navy → warm → navy footer) */}
+      <section className="bg-[#000C1F] px-6 py-20 md:px-10 md:py-28">
+        <div className="mx-auto w-full max-w-6xl">
+          <div className="wings-rule mb-8" />
+          <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.15em] text-gold">
+            Contenedor compartido
+          </p>
+          <h2 className="max-w-2xl font-display text-display-md font-light text-warm-white leading-[1.05] tracking-[-0.02em]">
+            ¿No llenas un contenedor solo? Trae tu grupo.
+          </h2>
+          <p className="mt-5 max-w-2xl font-body text-body-md leading-relaxed text-warm-white/55">
+            Un contenedor compartido entre tu grupo de socios: cada uno toma su propio cupo con un
+            solo precio todo incluido — flete, seguro, zona franca y despacho. Tu contrato siempre es
+            con Wings, nunca con los demás compradores. Sigues cada hito del embarque por WhatsApp.
+          </p>
+
+          <div className="mt-10 grid grid-cols-1 gap-6 border-t border-warm-white/[0.08] pt-8 sm:grid-cols-3">
+            <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-warm-white/40">
+              Depósito custodiado por Wings
+            </p>
+            <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-warm-white/40">
+              Contrato con Wings
+            </p>
+            <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-warm-white/40">
+              Regla de respaldo publicada
+            </p>
+          </div>
+
+          <div className="mt-10">
+            <Link
+              href="/contenedor-compartido"
+              className="inline-flex items-center gap-3 bg-gold px-8 py-4 font-mono text-[11px] uppercase tracking-[0.12em] text-navy transition-colors duration-200 hover:bg-gold-hover"
+            >
+              <span aria-hidden className="h-px w-6 bg-current" />
+              Cómo funciona el contenedor compartido
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Dual CTA — warm white (separates visually from navy footer) */}
       <section className="bg-[#F8F6F0] px-6 py-20 md:px-10 md:py-28">
         <div className="mx-auto w-full max-w-6xl">

@@ -7,6 +7,8 @@ export { SpecSheet } from './organs/SpecSheet'
 export { TrustFooter } from './organs/TrustFooter'
 export { RFQFlow } from './organs/RFQFlow'
 export type { RFQFlowProps } from './organs/RFQFlow'
+export { FillMeter } from './organs/FillMeter'
+export type { FillMeterProps } from './organs/FillMeter'
 export { useRFQForm } from './hooks/useRFQForm'
 export type { RFQLeadRequest, RFQSubmitResult } from './hooks/useRFQForm'
 export type {

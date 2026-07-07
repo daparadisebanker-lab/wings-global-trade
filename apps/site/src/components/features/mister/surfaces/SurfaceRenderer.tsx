@@ -14,6 +14,7 @@ import type {
   WaterfallSurface,
   IndexComparisonView,
   QuotationFormSurface,
+  ContainerOfferSurface,
 } from '@/types/mister'
 import { ProductCard } from './ProductCard'
 import { ComparisonView } from './ComparisonView'
@@ -24,6 +25,7 @@ import { IndexComparison } from './IndexComparison'
 import { DocumentLink } from './DocumentLink'
 import { ContactCard } from './ContactCard'
 import { QuotationFormCTA } from './QuotationFormCTA'
+import { ContainerOfferCard } from './ContainerOfferCard'
 
 interface Props {
   surface: MisterSurface
@@ -57,6 +59,8 @@ export function SurfaceRenderer({ surface }: Props) {
       const qfPayload = surface.payload as QuotationFormSurface
       return <QuotationFormCTA summaryFields={qfPayload?.summaryFields} />
     }
+    case 'container_offer':
+      return <ContainerOfferCard payload={surface.payload as ContainerOfferSurface} />
     default:
       return null
   }
