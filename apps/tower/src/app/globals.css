@@ -11,10 +11,33 @@
 /* ============================================================
    Typographic voice
    Shared UI grotesque for labels/nav; tabular mono is the dominant voice.
-   The self-hosted Flexo/Teko faces are not yet shipped into apps/tower
-   (that wiring is a later wave) — fall back to the platform grotesque and a
-   true tabular monospace so numerals stay column-stable.
+   Flexo (the ecosystem's UI grotesque) is self-hosted below — same faces the
+   live site ships. Mono stays the platform tabular stack: data columns need a
+   true monospace, and DESIGN_SYSTEM (deeper file) keeps TOWER's chips on mono
+   rather than the site's Teko labels.
    ============================================================ */
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/flexo/Flexo-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/flexo/Flexo-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/flexo/Flexo-Demi.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --font-ui: 'Flexo', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-mono: ui-monospace, 'JetBrains Mono', 'SF Mono', 'Roboto Mono', Menlo, monospace;

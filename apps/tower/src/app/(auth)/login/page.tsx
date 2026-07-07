@@ -65,9 +65,9 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-surface-0 px-6">
       <div className="w-full max-w-sm rounded-card border border-line bg-surface-1 p-8">
-        <span className="font-mono text-t1 tracking-[0.22em] text-ink-primary">TOWER</span>
+        <span className="font-mono text-t1 tracking-[0.22em] text-ink-primary">ADMIN PORTAL</span>
         <p className="mt-2 font-ui text-t0 text-ink-secondary">
-          Acceso interno / Internal access
+          Wings Global Trade · Acceso interno / Internal access
         </p>
 
         {!configured ? (

@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'TOWER — Wings Global Trade',
-  description: 'The control tower behind The Manifest. Internal, never public.',
+  title: 'Admin Portal — Wings Global Trade',
+  description: 'Portal administrativo de Wings Global Trade. Interno, nunca público.',
 }
 
 /**

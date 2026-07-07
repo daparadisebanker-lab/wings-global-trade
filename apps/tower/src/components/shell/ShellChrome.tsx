@@ -57,7 +57,12 @@ export function ShellChrome({
       <div className="grid grid-cols-[minmax(220px,260px)_1fr]">
         <aside className="sticky top-0 h-screen overflow-y-auto border-r border-line bg-surface-1">
           <div className="border-b border-line p-4">
-            <span className="font-mono text-t1 tracking-[0.22em] text-ink-primary">TOWER</span>
+            <span className="font-mono text-t1 tracking-[0.22em] text-ink-primary">
+              ADMIN PORTAL
+            </span>
+            <span className="mt-1 block font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
+              Wings Global Trade
+            </span>
           </div>
           <LaneSwitcher
             lanes={memberships}
