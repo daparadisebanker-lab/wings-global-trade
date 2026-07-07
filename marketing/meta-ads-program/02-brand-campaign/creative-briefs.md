@@ -82,4 +82,4 @@ Precisión. Proximidad. Confianza.
 ## Production notes
 - B1 needs motion design only (no shoot): map, type, grid — all in-system. First in the asset queue.
 - B2 series is pure layout — fastest to ship, launch-day asset.
-- Photography for future brand flights: the corridor itself (container yards Tacna/Iquique, warm-white monoline overlays). Photography brief pending per brand system §8 — until then, no people, no stock.
+- Photography for future brand flights: the corridor itself, in two tiers (per `WINGS_IMAGE_GENERATION_THESIS.md` rule B-1). **Tier 1 — place-claimed:** anything captioned or readable as Tacna/Iquique/ZOFRATACNA/ZOFRI must be real photography; the corridor is the brand's core factual claim and is never generated. Photography brief still pending per brand system §8. **Tier 2 — scenario:** generic corridor imagery (unmarked container yards, cargo in transit, machinery in environment) may be generated now via Register B — documentary-industrial register, livery-graded, no signage, no people — and carries the warm-white monoline overlays the same way. Until the real shoot, Tier 2 only.

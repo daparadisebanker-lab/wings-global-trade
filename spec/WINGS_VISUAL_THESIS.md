@@ -40,7 +40,7 @@ If marketplace listing: redesign or remove.
 | Decision | Certified Document | Marketplace Listing |
 |----------|-------------------|---------------------|
 | Data values | DM Mono always | Any readable font |
-| Photography | Operational, Andean terrain, real work | White background, stock imagery, AI renders |
+| Photography | Operational, Andean terrain, real work | White background, stock imagery, AI renders posing as evidence (campaign photorealism is governed by `WINGS_IMAGE_GENERATION_THESIS.md`) |
 | Copy | Specific: "79 HP efectivos a 3.200 msnm" | Generic: "alta potencia para toda aplicación" |
 | Buttons | 2px border-radius, direct label | Pill shape, "¡Ver más!" |
 | Animation | Ease only, 0.3–0.6s, no bounce | Bouncy, playful, attention-seeking |
@@ -58,7 +58,7 @@ These are categorical rejections. Not "use sparingly" — never.
 
 - Gradient backgrounds of any kind
 - Stock photography (handshakes, generic ports, people at laptops, suits)
-- AI-upscaled or composite product imagery as the primary product image
+- Generatively reinvented product imagery (faithful crisp-upscale restoration of genuine supplier photography IS permitted, incl. as primary product image — amended 2026-07, rules in `WINGS_IMAGE_GENERATION_THESIS.md` Register C)
 - Rounded pill-shaped buttons
 - Exclamation marks in any UI copy
 - "Productos de calidad" or any generic quality claim

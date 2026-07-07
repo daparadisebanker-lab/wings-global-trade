@@ -6,7 +6,8 @@ Formatted for direct hand-off to the creative pipeline (Higgsfield / social-crea
 - Canvases: 1080×1920 (9:16) · 1080×1350 (4:5) · 1080×1080 (1:1)
 - Fonts: NissanOpti 400 (display) · Flexo (body) · Teko (ALL numerals/labels) — files in `public/fonts/`
 - Colors: navy #001E50 · gold #C4933F (CTA + one annotation max) · warm white #F8F6F0
-- Source imagery ONLY from: `public/Importacion/`, `public/Desktop Home/`, `assets/` product masters, real Mister UI captures. No stock. No emojis. No exclamation marks.
+- Source imagery ONLY from: `public/Importacion/`, `public/Desktop Home/`, `assets/` product masters, real Mister UI captures, and `assets/image-generation/library/` (Recraft workshop — eligible only with a MANIFEST.md row and all thesis gates passed; registers per `spec/WINGS_IMAGE_GENERATION_THESIS.md`). No stock. No emojis. No exclamation marks.
+- Evidence rule (thesis B-1, binds every job): generated scenario imagery never carries a place claim — anything captioned or readable as Tacna, Iquique, ZOFRATACNA or ZOFRI must be real photography. Generic corridor scenario (unmarked yards, containers, transit) is the only generated photorealism permitted.
 - Every asset carries a Teko document reference (e.g. `WGT-2847 · ZOFRATACNA`) and the footer tagline where layout allows.
 - Video: 0.3–0.6s moves, ease [0.25,0.1,0.25,1.0], no springs; stamp-sound close.
 
@@ -59,8 +60,8 @@ Formatted for direct hand-off to the creative pipeline (Higgsfield / social-crea
 ## Pre-production dependencies
 
 1. **Mister UI capture session** (for #4, #19, #27): governed by `04-mister-campaign/motion-spec.md` — deterministic captures require the demo/replay mode (feature flag F1) and capture stage (F2) defined there. Until F1/F2 are built, captures on staging burn API tokens and are non-repeatable; motion-spec §5–6 has the build order.
-2. **Product image audit:** inventory `assets/` masters vs `public/Desktop Home/` composites; flag which P1/P2 jobs lack usable imagery → fall back to Technical Silhouette treatment (already brand-preferred).
-3. **Technical silhouettes needed:** bus (3 variants), engine block (RP1), compresor/montacargas (IN2/3) — commission as one SVG batch in the site's existing monoline style (`TechnicalSilhouette.tsx` establishes the treatment).
+2. **Product image audit:** inventory `assets/` masters vs `public/Desktop Home/` composites; flag which P1/P2 jobs lack usable imagery → decide per job: if the ad needs the *actual product* photographic (evidence — e.g. CM2 photo annotation), restore the weak supplier original via Register C (`crisp_upscale` → staged on navy; pipeline in `assets/image-generation/RECRAFT-MODELS.md`); if the document treatment suffices, Technical Silhouette (still brand-preferred for document ads). Never generate a product photorealistically — that path does not exist.
+3. **Technical silhouettes needed:** bus (3 variants), engine block (RP1), compresor/montacargas (IN2/3) — produce in-house as one Recraft workshop batch (Register A: `recraftv4_1_vector` prompted to the `TechnicalSilhouette.tsx` monoline treatment → vectorize → manual cleanup to the site's line grammar). This is the workshop's designated first production session; no external commission.
 4. **Sound kit:** stamp/seal close, container latch, diesel start, room tone — one-time license/record, reused across all video.
 5. **KAMA data verification** (blocks #16 fully, #3 partially for series claims): `kama-trucks.json` notes say series specs are "approximate — verify before production seeding." The count "97 modelos" is already site-published and usable; per-series spec claims are not, until verified.
 

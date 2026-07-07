@@ -44,7 +44,7 @@ The visual thesis is already written: *"Import intelligence should read like a c
 - Display line in NissanOpti (weight 400 only — it has no other), sentence case, periods.
 - ALL numbers in Teko (the live mono/label face): HP, m³, kVA, tonnage, "24h". If it is a measurement, it is Teko — no exceptions (brand rule).
 - One thin warm-white rule (1px) separating header from body — the AnimatedRule motif from the site.
-- Product visual: owned photography (`public/Importacion/`, `public/Desktop Home/`, `assets/` masters) on navy, or the Technical Silhouette monoline treatment. **No stock photography ever** (brand system §8).
+- Product visual: owned photography (`public/Importacion/`, `public/Desktop Home/`, `assets/` masters, incl. Register-C restored supplier masters) on navy, or the Technical Silhouette monoline treatment. Register-B scenario photorealism may set environment and mood in brand-level flights — never the product visual of a specific SKU, never with a place claim. **No stock photography ever** (brand system §8); all generated/restored sources are governed by `spec/WINGS_IMAGE_GENERATION_THESIS.md`.
 - Footer strip: tagline `Precisión. Proximidad. Confianza.` in Teko caps, small.
 - Motion (Reels/video): instrument-like — line draws, staggered text clip-ups (the hero carousel's own 80ms stagger), count-ups on stats. 0.3–0.6s, standard ease, never spring (`src/lib/motion.ts` vocabulary). Blueprint Mode aesthetic (navy + 1px grid overlay + mono data callouts) is the hero treatment for video.
 
