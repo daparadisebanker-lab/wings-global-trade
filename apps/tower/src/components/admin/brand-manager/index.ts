@@ -1,0 +1,1 @@
+export { BrandManager } from './BrandManager'

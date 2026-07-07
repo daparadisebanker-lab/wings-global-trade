@@ -79,7 +79,7 @@ export function ShellChrome({
         </div>
       </div>
 
-      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
+      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} isGroupAdmin={isGroupAdmin} />
     </div>
   )
 }
