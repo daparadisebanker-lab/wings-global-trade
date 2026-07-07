@@ -281,3 +281,24 @@ advisors: security zero new criticals, performance zero criticals (WARNs fixed).
 Still open for post-wave: M-1 atomic publish RPC, M-2 stale comment refs, M-3 ⌘K
 record-jumps/actions, extended per-table RLS fixture, PostgREST exposure (H-3) +
 env vars before deploy, Verifier browser gate for the e2e acceptance flow.
+
+## Deployment · 2026-07-07
+
+### D-33 · PostgREST exposure applied and verified (closes H-3)
+D-13's blocker on the SQL path is resolved: read `authenticator.rolconfig` first
+(no pgrst.db_schemas set; only default schemas + tower exist in the DB), so the
+in-database setting reproduces the platform default additively. Applied as
+tower_21 (`pgrst.db_schemas = 'public, storage, graphql_public, tower'` + reload
+config AND reload schema — both notifies needed; config alone left a stale schema
+cache/404). Verified live over /rest/v1: public probe 200 (site unaffected), tower
+probe 200 via service role (all six lanes), anon correctly denied on tower.
+
+### D-34 · TOWER deploys from feature/tower-wave1 — master merge REJECTED for now
+Merging to master would not just add TOWER: origin/master (25a5d59) is still the
+PRE-monorepo single-app structure (its mister-logo commit touches root src/*), and
+the entire M0–M4 migration exists only on this branch. A master merge is therefore
+the live-site monorepo cutover and must be its own coordinated operation (flip the
+site Vercel project Root Directory to apps/site in the same moment, and reconcile
+25a5d59 — whose monorepo port sits UNCOMMITTED in the working tree as the
+apps/site mister-logo files). Until then: the TOWER Vercel project builds from
+feature/tower-wave1 (Root Directory apps/tower); the site project keeps master.
