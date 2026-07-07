@@ -11,6 +11,7 @@
 import { createHmac, timingSafeEqual } from 'node:crypto'
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { createServiceClient } from '@/lib/supabase/server'
+import { recordWebhookDelivery } from '@/lib/webhook-deliveries'
 
 export interface TriggerRevalidateInput {
   laneSlug: string
@@ -75,9 +76,28 @@ export async function triggerRevalidate(input: TriggerRevalidateInput): Promise<
     for (const path of paths) revalidatePath(path)
     for (const tag of tags) revalidateTag(tag)
 
+    // Record the outbound attempt for <WebhookHealth> (W5.B). Fire-and-forget:
+    // recordWebhookDelivery never throws, so this cannot break or slow a publish
+    // beyond one bounded insert. `reference` is the affected lane/product; the
+    // detail carries only counts + tags, never PII.
+    await recordWebhookDelivery({
+      source: 'REVALIDATE_OUT',
+      direction: 'OUTBOUND',
+      status: 'OK',
+      reference: input.productSlug ? `${input.laneSlug}/${input.productSlug}` : input.laneSlug,
+      detail: { paths: paths.length, tags },
+    })
+
     return { ok: true, paths, tags }
   } catch (error) {
     console.error('[lib/revalidate] triggerRevalidate failed', error)
+    await recordWebhookDelivery({
+      source: 'REVALIDATE_OUT',
+      direction: 'OUTBOUND',
+      status: 'FAILED',
+      reference: input.productSlug ? `${input.laneSlug}/${input.productSlug}` : input.laneSlug,
+      detail: { reason: 'revalidate_failed' },
+    })
     return {
       ok: false,
       paths,
