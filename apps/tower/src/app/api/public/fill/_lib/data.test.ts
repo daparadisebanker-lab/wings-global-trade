@@ -10,7 +10,8 @@ type Call = { method: string; args: unknown[] }
 /** Minimal fake of the supabase-js fluent query builder — same shape as the
  * public catalog's data.test.ts fake (Wave 2 precedent). */
 function fakeSupabase(responses: Record<string, { data: unknown; error: unknown }>, calls: Record<string, Call[]>) {
-  return {
+  const client = {
+    schema: (_schema: string) => client,
     from(table: string) {
       calls[table] ??= []
       const record = (method: string, args: unknown[]) => {
@@ -29,6 +30,7 @@ function fakeSupabase(responses: Record<string, { data: unknown; error: unknown 
       return builder
     },
   }
+  return client
 }
 
 describe('getContainerFillState', () => {

@@ -11,6 +11,9 @@
 // service key is only ever used server-side, inside this route tree, and never
 // serialized back to the client — only the shaped snapshot is.
 import { createServiceClient } from '@/lib/supabase/server'
+
+// The service client defaults to the `public` schema; TOWER tables live in `tower`.
+type TowerDb = ReturnType<NonNullable<ReturnType<typeof createServiceClient>>['schema']>
 import { encodeCursor, type CatalogCursor } from './pagination'
 
 export interface CatalogSnapshot {
@@ -50,7 +53,7 @@ interface VersionRow {
 
 /** Resolves brand slug → id, then lane slug (scoped to that brand) → id. */
 async function resolveBrandAndLane(
-  supabase: NonNullable<ReturnType<typeof createServiceClient>>,
+  supabase: TowerDb,
   brandSlug: string,
   laneSlug: string,
 ): Promise<{ ok: true; brandId: string; laneId: string } | { ok: false; error: CatalogLookupError }> {
@@ -72,7 +75,7 @@ async function resolveBrandAndLane(
 
 /** Latest `product_versions` row per product id (highest `version` wins). */
 async function latestVersionsByProductId(
-  supabase: NonNullable<ReturnType<typeof createServiceClient>>,
+  supabase: TowerDb,
   productIds: string[],
 ): Promise<Map<string, VersionRow> | null> {
   if (productIds.length === 0) return new Map()
@@ -98,8 +101,9 @@ export async function listPublishedProducts(params: {
   limit: number
   cursor: CatalogCursor | null
 }): Promise<CatalogListOutcome> {
-  const supabase = createServiceClient()
-  if (!supabase) return { ok: false, error: 'UNAVAILABLE' }
+  const client = createServiceClient()
+  if (!client) return { ok: false, error: 'UNAVAILABLE' }
+  const supabase = client.schema('tower')
 
   const resolved = await resolveBrandAndLane(supabase, params.brandSlug, params.laneSlug)
   if (!resolved.ok) return resolved
@@ -160,8 +164,9 @@ export async function getPublishedProductBySlug(params: {
   laneSlug: string
   productSlug: string
 }): Promise<CatalogItemOutcome> {
-  const supabase = createServiceClient()
-  if (!supabase) return { ok: false, error: 'UNAVAILABLE' }
+  const client = createServiceClient()
+  if (!client) return { ok: false, error: 'UNAVAILABLE' }
+  const supabase = client.schema('tower')
 
   const resolved = await resolveBrandAndLane(supabase, params.brandSlug, params.laneSlug)
   if (!resolved.ok) return resolved

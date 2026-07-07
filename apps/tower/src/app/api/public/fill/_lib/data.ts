@@ -43,8 +43,10 @@ function toNumber(v: number | string): number {
 }
 
 export async function getContainerFillState(containerCode: string): Promise<FillLookupOutcome> {
-  const supabase = createServiceClient()
-  if (!supabase) return { ok: false, error: 'UNAVAILABLE' }
+  const client = createServiceClient()
+  if (!client) return { ok: false, error: 'UNAVAILABLE' }
+  // Service client defaults to the `public` schema; TOWER lives in `tower`.
+  const supabase = client.schema('tower')
 
   const container = await supabase
     .from('containers')

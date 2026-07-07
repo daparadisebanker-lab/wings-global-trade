@@ -1,0 +1,108 @@
+{
+  "name": "TOWER · Weekly Lane Brief",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "weeksInterval": 1,
+              "triggerAtDay": [1],
+              "triggerAtHour": 7,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      },
+      "id": "schedule-weekly",
+      "name": "Every Monday 07:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Fan the run out to one item per lane, tagged with the current ISO week.\n// Lanes are env-driven so a NEW lane needs zero workflow edits (ecosystem\n// CLAUDE.md: lane N+1 costs a fraction of lane N) — set TOWER_BRIEF_LANES to a\n// comma-separated list of lane slugs (e.g. \"machinery,interiors,provisions\").\nconst raw = ($env.TOWER_BRIEF_LANES || '').trim();\nif (!raw) {\n  throw new Error('TOWER_BRIEF_LANES env var is empty — set a comma-separated list of lane slugs.');\n}\nconst lanes = raw.split(',').map((s) => s.trim()).filter(Boolean);\n\n// ISO-8601 week string, e.g. 2026-W27.\nconst now = new Date();\nconst d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));\nconst dayNum = d.getUTCDay() === 0 ? 7 : d.getUTCDay();\nd.setUTCDate(d.getUTCDate() + 4 - dayNum);\nconst yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));\nconst weekNo = Math.ceil(((d - yearStart) / 86400000 + 1) / 7);\nconst week = `${d.getUTCFullYear()}-W${String(weekNo).padStart(2, '0')}`;\n\nreturn lanes.map((lane) => ({ json: { lane, week } }));"
+      },
+      "id": "prepare-lanes",
+      "name": "Prepare lanes + week",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.TOWER_BASE_URL}}/api/ai/brief",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env.TOWER_SERVICE_TOKEN}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ lane: $json.lane, week: $json.week }) }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "call-brief",
+      "name": "POST /api/ai/brief",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [720, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.TOWER_BRIEF_REVIEW_WEBHOOK}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ status: 'DRAFT', kind: 'weekly_lane_brief', lane: $('Prepare lanes + week').item.json.lane, week: $('Prepare lanes + week').item.json.week, markdown: ($json.data && $json.data.markdown) ? $json.data.markdown : $json.markdown }) }}",
+        "options": {}
+      },
+      "id": "post-for-review",
+      "name": "Post draft for review",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [960, 300]
+    }
+  ],
+  "connections": {
+    "Every Monday 07:00": {
+      "main": [[{ "node": "Prepare lanes + week", "type": "main", "index": 0 }]]
+    },
+    "Prepare lanes + week": {
+      "main": [[{ "node": "POST /api/ai/brief", "type": "main", "index": 0 }]]
+    },
+    "POST /api/ai/brief": {
+      "main": [[{ "node": "Post draft for review", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "description": "Weekly cron that asks TOWER's /api/ai/brief for each lane's digest and posts the result as a DRAFT for human review. Intelligence proposes; a human disposes."
+  },
+  "pinData": {}
+}

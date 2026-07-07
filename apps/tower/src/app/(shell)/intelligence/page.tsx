@@ -1,15 +1,9 @@
-import { EmptyState } from '@/components/ui/EmptyState'
+import { IntelligenceWorkspace } from './IntelligenceWorkspace'
 
-// Intelligence — Wave 4. Placeholder shell surface.
+// Intelligence — Wave 4 (COMPONENT_TREE §5). Replaces the Wave-1 placeholder.
+// Two review surfaces (TriageQueue · SpecExtractReview) where the AI proposes
+// and the operator disposes. RLS is the permission system — these surfaces show
+// only what the (RLS-scoped) W4.B actions return; the UI never enforces access.
 export default function IntelligencePage() {
-  return (
-    <EmptyState
-      tag="INT · Intelligence"
-      title={{ es: 'Inteligencia', en: 'Intelligence' }}
-      description={{
-        es: 'Triage, extracción de especificaciones, scoring y supervisión de Mister. La IA propone, el humano decide. En construcción.',
-        en: 'Triage, spec extraction, scoring, and Mister supervision. Intelligence proposes, humans dispose. Under construction.',
-      }}
-    />
-  )
+  return <IntelligenceWorkspace />
 }

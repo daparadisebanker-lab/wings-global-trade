@@ -183,3 +183,45 @@ one non-fatal `exhaustive-deps` warning in PipelineBoard.
 ### D-20 · New deployment env (add to Vercel + .env.local.example)
 `MISTER_HOOK_SECRET`, `WHATSAPP_HOOK_SECRET` (W3.C hook HMAC verification). Still
 outstanding from earlier waves: expose `tower` schema to PostgREST; the Wave-1/2 env set.
+
+## Wave 4 — Signals + Intelligence · 2026-07-06
+
+### D-21 · Fanned to 3 Opus worktree agents (base 380daf1)
+W4.A (ingest + Signal Deck), W4.B (Intelligence engine / Claude API), W4.C (review
+UIs + n8n). Opus model at Muaaz's request. Only cross-agent contract: lib/actions/intelligence.
+
+### D-22 · Applied ONLY new DB; skipped redundant proposals
+- `tower.ai_drafts` (migration 16): the single reviewable-draft table. Directive 7 in
+  the schema (default DRAFT, confidence NOT NULL). Reused existing `has_brand_access()`
+  instead of B's duplicate `has_brand_membership()`; attached the audit trigger (F1).
+- A's `wave4-signals.sql` REDUNDANT — events/partitions/matview/cron all exist from
+  Wave 1 (migrations 5/9/10/11). Skipped.
+
+### D-23 · Fixed a real latent bug W4.A caught (public read model)
+`api/public/{catalog,fill}/_lib/data.ts` used the service client's `.from(...)` with NO
+`.schema('tower')`. `createServiceClient` defaults to `public`, where `public.products`
+and `public.containers` exist as the WRONG tables (and brands/lanes/product_versions
+don't exist) — so both public endpoints read the wrong schema. Fixed by scoping the
+service client to `tower` (a `TowerDb` type + `client.schema('tower')`); can't change the
+client default because `conversations.ts` deliberately reads `public.mister_projects`
+through it. Updated the two test mocks (`fakeSupabase`) to expose `.schema()`.
+
+### D-24 · Endpoint paths aligned to API_MAP
+B built `/api/intelligence/*` (my brief's wording); API_MAP + C's n8n use `/api/ai/*`.
+Renamed the route dir `intelligence → ai` (moves `_lib/drafts` with it; matches n8n with
+zero edits).
+
+### D-25 · Reconciled the C↔B intelligence contract (deepest of the four waves)
+C built its review UI against imagined flat types (`TriageDraft`/`SpecExtractDraft` with
+inbound text, current-diff, score, inline archetype correction) that B's lean
+`AiDraftRecord<K>` model doesn't carry (triage payload has no score/current; spec-extract
+creates a NEW draft product, so no target to diff). B's data model is the source of truth
+— rewrote all 5 C components (TriageCard/Queue, SpecExtractReview, both query hooks) to
+B's real `TriagePayload`/`SpecExtractPayload`, resolving the spec schema via getSpecSchema.
+
+### D-26 · Verification + env
+typecheck clean · 212 vitest tests (20 files) · `next build` green (adds /api/ai/{triage,
+score,spec-extract,brief}, /api/ingest, /signals[/group], live /intelligence). New env:
+INGEST_HMAC_KEY_WINGS/ALADIN, ANTHROPIC_API_KEY, MISTER/WHATSAPP already noted; n8n vars
+(TOWER_BASE_URL, TOWER_SERVICE_TOKEN, TOWER_BRIEF_LANES, TOWER_BRIEF_REVIEW_WEBHOOK).
+Note: /signals First Load ~255kB (Recharts) — acceptable, flagged.
