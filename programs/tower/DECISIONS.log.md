@@ -225,3 +225,59 @@ score,spec-extract,brief}, /api/ingest, /signals[/group], live /intelligence). N
 INGEST_HMAC_KEY_WINGS/ALADIN, ANTHROPIC_API_KEY, MISTER/WHATSAPP already noted; n8n vars
 (TOWER_BASE_URL, TOWER_SERVICE_TOKEN, TOWER_BRIEF_LANES, TOWER_BRIEF_REVIEW_WEBHOOK).
 Note: /signals First Load ~255kB (Recharts) — acceptable, flagged.
+
+## Wave 5 — Admin + hardening · 2026-07-07
+
+### D-27 · Fanned to 3 Opus worktree agents (base 8ace280)
+W5.A (admin core: UserManager/LaneRegistry/BrandManager + shell wiring — sole shell
+owner), W5.B (AuditExplorer/WebhookHealth + revalidate-callback), W5.C (read-only QA
+sweep + parity map + HANDOVER draft; its brief pre-encoded the D-02 correction so the
+decommission checklist never touches Euro Global). Built-in worktree isolation
+unavailable from the session root — worktrees created manually under
+wings-global-trade.worktrees/. Squash-merged as 82e6d33 (A), bbb66ff (B), 7be94ec (C).
+
+### D-28 · Admin authorization = DB-resolved group-admin → service-role write
+Accepted W5.A's model: every admin action resolves profiles.is_group_admin via the
+RLS client, then writes via service role. Deciding factor: membership revocation is
+a row DELETE that migration-11 grants deliberately deny `authenticated` (append-only
+defense in depth), and inviteUser needs the auth admin API regardless. Same
+authorize-then-privileged-act pattern as commit_container_cbm (D-17) and the D-16
+conversation reads. W5.A's §3 (authenticated-client admin policies incl. a scoped
+DELETE policy) NOT applied — revisit only if admin moves off the service client.
+
+### D-29 · Wave 5 DB changes applied (tower_17–20)
+- tower_17_rls_initplan_fix: all six performance-advisor auth_rls_initplan WARNs —
+  direct auth.uid() wrapped in (select auth.uid()); RLS fixture re-run green,
+  extended with lane-enumeration assertions (closes QA H-1 as a non-issue).
+- tower_18_brands_status: brands.status ACTIVE/RETIRED (W5.A §1). Its §2 audit
+  triggers verified already present from Wave 1 — skipped (D-17 precedent).
+- tower_19_seed_demo: BUILD_PROMPT seed gap closed — 15 demo products (WGT/02–06),
+  SHARED 40HC WGT/01-DEMO1 (kept outside the real C-code sequence) + 2 commitments,
+  6 demo RFQs/lines with real archetype first-stage ids. All DEMO-prefixed, idempotent.
+- tower_20_webhook_deliveries: W5.B's table + RLS; Conductor added the
+  default-privileges revoke for `authenticated` that the proposal missed (same gap
+  D-17 closed for whatsapp_messages). Audit trigger deliberately omitted (F1,
+  events-style telemetry per D-04).
+
+### D-30 · Applied-migration history is now version-controlled (QA H-2)
+All 20 applied tower migrations exported from supabase_migrations.schema_migrations
+into supabase/migrations/ with DB-matched versions. DATABASE_SCHEMA.sql remains the
+original spec; the committed migrations are the applied truth. Noted in passing: the
+DB shows shared_container_phase1 applied as 20260706232008 while the uncommitted
+local file is 20260706000001_* — a version mismatch for the shared-container branch
+to reconcile (not TOWER's).
+
+### D-31 · Decommission gate verdict (PARITY_MAP)
+NOT passable: wings-operations is a Peru SUNAT import-cost engine (incoterm CIF,
+Ad Valorem/ISC/IGV/percepción, prorrateo, stowage simulator, bulk xlsx/PDF loops);
+TOWER's flat 5-term landed cost covers none of it. Closing needs a scheduled
+"Peru-costing extension" build program, not a hardening fix. wings-operations stays
+live as the fallback. Euro Global (rsstxmptehndaipscaou) is never touched (D-02).
+
+### D-32 · Verification
+typecheck clean · 258 vitest tests (26 files) · next build green (32 routes; adds
+/admin{,/users,/lanes,/brands,/audit,/webhooks}, /api/hooks/revalidate-callback) ·
+advisors: security zero new criticals, performance zero criticals (WARNs fixed).
+Still open for post-wave: M-1 atomic publish RPC, M-2 stale comment refs, M-3 ⌘K
+record-jumps/actions, extended per-table RLS fixture, PostgREST exposure (H-3) +
+env vars before deploy, Verifier browser gate for the e2e acceptance flow.

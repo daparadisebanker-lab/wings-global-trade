@@ -1,9 +1,10 @@
 # TOWER · HANDOVER.md
 
 Ops sign-off handover for TOWER (`apps/tower`), the internal CRM+ERP+PIM+analytics
-app on the Wings Global Trade monorepo. Draft as of base `8ace280` (Wave 4
-complete; Wave 5 Admin + hardening in progress). Companion docs:
-`WAVE5_QA_FINDINGS.md` (QA sweep), `PARITY_MAP.md` (wings-operations parity).
+app on the Wings Global Trade monorepo. Drafted at base `8ace280` (Wave 4) by the
+W5.C QA agent; updated by the Conductor at Wave 5 synthesis (2026-07-07, all five
+waves complete). Companion docs: `WAVE5_QA_FINDINGS.md` (QA sweep + Conductor
+resolutions), `PARITY_MAP.md` (wings-operations parity).
 
 Deployment target: `tower.wingsglobaltrade.com` — separate Vercel app, same
 Supabase project `pyznlglvwihosemqkhtq`, schema `tower`.
@@ -47,10 +48,16 @@ Intelligence `/api/ai/{triage,score,spec-extract,brief}` producing reviewable
 (`automation/tower/`). Fixed a latent public-read schema-scoping bug (D-23). 212
 tests green (D-26).
 
-**Wave 5 — Admin + hardening (in progress, this wave).**
-UserManager, LaneRegistry, BrandManager, AuditExplorer, WebhookHealth being built by
-the parallel admin agent; `admin/page.tsx` is currently an EmptyState. This QA sweep
-(WAVE5_QA_FINDINGS.md) + parity map (PARITY_MAP.md) are the hardening deliverables.
+**Wave 5 — Admin + hardening (complete).**
+UserManager (invite + memberships matrix), LaneRegistry (append-only codes,
+forward-only status), BrandManager (retire/reinstate via `brands.status` =
+migration 18), AuditExplorer (cursor-paginated, virtualized, old/new diff),
+WebhookHealth (`webhook_deliveries` = migration 20, service-role insert only) +
+`POST /api/hooks/revalidate-callback` (HMAC, reuses `REVALIDATE_SECRET`); admin
+⌘K/NavRail wiring. Hardening: QA sweep (WAVE5_QA_FINDINGS.md incl. Conductor
+resolutions) + parity map (PARITY_MAP.md); advisor warnings fixed (migration 17);
+applied migrations 01–20 exported to `supabase/migrations/`; BUILD_PROMPT demo
+seed applied (migration 19). 258 tests green.
 
 ---
 
@@ -60,21 +67,21 @@ BUILD_PROMPT seed spec: brands (wings, aladin) · lanes WGT/01–06 with archety
 3 demo products per active lane · one SHARED container on WGT/01 with two commitments
 · one demo RFQ per archetype.
 
+All verified against the DB and completed by the Conductor on 2026-07-07
+(missing rows seeded via migration 19 `tower_19_seed_demo`, idempotent, all
+`DEMO`-prefixed; demo container coded `WGT/01-DEMO1` to stay outside the real
+append-only C-number sequence):
+
 | Seed | Evidence | Status |
 |---|---|---|
-| Brand `wings` | Implied by D-09 import (products under wings/WGT-01) | Likely present — verify |
-| Brand `aladin` | none in DECISIONS.log | **Unverified** |
-| Lane WGT/01 (machinery, EQUIPMENT) | D-09 | Likely present |
-| Lanes WGT/02–06 + archetypes | none in DECISIONS.log | **Unverified** |
+| Brand `wings` | migration 12; count verified | Present |
+| Brand `aladin` | migration 12; count verified | Present |
+| Lanes WGT/01–06 + archetypes | migration 12; count verified (6) | Present |
 | 99 real products on WGT/01 | D-09 (reconciled 99=99) | Present |
-| 3 demo products per *other* active lane | none | **Unverified** |
-| 6 archetype spec schemas | D-12 | Present |
-| SHARED container on WGT/01 + 2 commitments | none | **Unverified** |
-| 1 demo RFQ per archetype | none | **Unverified** |
-
-**Action for the Conductor:** verify every "Unverified" row against the DB and seed
-what's missing. The end-to-end acceptance flow in BUILD_PROMPT depends on the demo
-RFQ + shared container + commitments existing.
+| 3 demo products per lane WGT/02–06 | migration 19; 15 rows verified | Present |
+| 6 archetype spec schemas | D-12; count verified | Present |
+| SHARED container on WGT/01 + 2 commitments | migration 19; verified | Present |
+| 1 demo RFQ per archetype (+ line, real stage ids) | migration 19; 6+6 verified | Present |
 
 ---
 
@@ -132,25 +139,32 @@ Union of BUILD_PROMPT §Env, D-13, D-20, D-26, and the n8n README. Set on Vercel
    confirm the Schedule node timezone; Save; toggle Active (ships `active:false`
    deliberately). Point `TOWER_BRIEF_REVIEW_WEBHOOK` at the review inbox that fronts
    the WhatsApp/email digest send.
-5. **Commit the applied `tower` migrations (WAVE5_QA_FINDINGS H-2).** Before treating
-   TOWER as the system of record, export the applied migration history
-   (`list_migrations`) and commit it to `supabase/migrations/` so the schema is
-   reproducible. Today it lives only inside the Supabase project.
-6. **Run `get_advisors`** (security + performance) on `pyznlglvwihosemqkhtq` and fix
-   all criticals (BUILD_PROMPT Wave-5).
+5. ~~Commit the applied `tower` migrations (H-2)~~ **DONE 2026-07-07** — all 20
+   applied migrations exported to `supabase/migrations/` with DB-matched versions;
+   the `tower` schema is now rebuildable from the repo.
+6. ~~Run `get_advisors`~~ **DONE 2026-07-07** — security: zero new criticals
+   (the `tower.events_*` no-policy INFOs are the deliberate D-04 deny-all pattern);
+   performance: zero criticals, all 6 `auth_rls_initplan` warnings fixed via
+   migration 17 and isolation re-proven with the RLS fixture. Remaining INFOs
+   (unused indexes, unindexed FKs) are pre-traffic noise — revisit under real load.
+   Two pre-existing dashboard-level WARNs are out of TOWER scope:
+   `public.set_updated_at` mutable search_path (live-site function) and Auth
+   leaked-password protection disabled (enable in Dashboard → Auth settings).
 
 ---
 
 ## 5 · Open items
 
-- **H-1 (QA):** verify `tower.lanes` is not cross-tenant readable, then scope the
-  triage candidate-lane query; elevate to CRITICAL if the RLS check fails.
-- **H-2 (QA):** applied `tower` migrations not version-controlled — export + commit.
+- ~~H-1 (QA)~~ **RESOLVED** — `lanes_read` RLS is membership-scoped; fixture test
+  extended with lane-enumeration assertions, green. No code change needed.
+- ~~H-2 (QA)~~ **RESOLVED** — migrations 01–20 exported and committed.
 - **M-1 (QA):** make publish+snapshot (and the other multi-step writes) atomic RPCs.
-- **M-2 (QA):** correct stale `wave3/wave4` migration references in code comments.
-- **M-3 (QA):** ⌘K palette record-jumps and run-actions are dead stubs — wire them.
-- **M-4 (QA):** Admin module (UserManager/LaneRegistry/BrandManager/AuditExplorer/
-  WebhookHealth) is unbuilt — the parallel Wave-5 admin agent owns it.
+- **M-2 (QA):** correct stale `wave3/wave4` migration references in code comments
+  (point at the now-committed `supabase/migrations/` files).
+- **M-3 (QA):** ⌘K palette record-jumps and run-actions are dead stubs — admin
+  destinations were wired in Wave 5, but product/account/container jumps and
+  "publish…/new RFQ…" actions remain.
+- ~~M-4 (QA)~~ **RESOLVED** — Admin module shipped this wave (all five components).
 - **Parity (see PARITY_MAP):** financial/landed-cost engine (Peru SUNAT), prorrateo,
   bulk import + PDF/XLSX export, container stowage simulator, and history/audit view
   are MISSING or PARTIAL — build programs, not hardening fixes.
@@ -178,7 +192,9 @@ Union of BUILD_PROMPT §Env, D-13, D-20, D-26, and the n8n README. Set on Vercel
 - [ ] Prorrateo (multi-item cost allocation) runs in TOWER. *(MISSING)*
 - [ ] Bulk import + PDF/XLSX export restored in TOWER. *(PARTIAL)*
 - [ ] Container stowage simulation confirmed needed-or-not-needed by ops. *(PARTIAL)*
-- [ ] History/audit of past calculations available (AuditExplorer). *(unbuilt)*
+- [ ] History/audit of past calculations available. *(AuditExplorer BUILT this wave;
+      re-opening/re-exporting past cost calculations still depends on the missing
+      financial engine)*
 - [ ] Catalog CRUD parity. *(MET — row 1)*
 - [ ] Ops runs each of their real workflows in TOWER end-to-end and **signs off**.
 

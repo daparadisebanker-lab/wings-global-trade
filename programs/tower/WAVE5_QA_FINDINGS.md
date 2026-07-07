@@ -208,6 +208,29 @@ Notes on the greens:
   live session + the Verifier's browser gate (per D-14/D-19/D-26 these were left to
   the Verifier).
 
+## Conductor resolutions (Wave 5 synthesis, 2026-07-07)
+
+- **H-1 — RESOLVED, no leak.** `lanes_read` (migration 8) scopes SELECT to
+  `is_group_admin() OR` an own-lane membership, so the triage candidate list is
+  RLS-scoped by construction. Proven by extending the RLS fixture with two
+  lane-enumeration assertions (non-admin cannot see other-brand lanes) — green.
+- **H-2 — RESOLVED.** All applied migrations (tower_01…tower_20) exported from
+  `supabase_migrations.schema_migrations` into `supabase/migrations/` with
+  DB-matched version stamps. The `tower` schema is rebuildable from the repo.
+- **H-3 — still open.** PostgREST `tower` exposure remains the top deploy gate
+  (human dashboard action; see HANDOVER §4.1).
+- **M-3 — partially closed.** Wave 5 wired admin destinations/actions into ⌘K;
+  record-jumps (product/account/container) and publish/new-RFQ actions remain stubs.
+- **M-4 — RESOLVED.** Admin module shipped (W5.A + W5.B).
+- **Advisors run:** security — zero new criticals; performance — six
+  `auth_rls_initplan` WARNs fixed (migration 17), isolation re-proven via fixture.
+- **Audit triggers:** verified present on every mutating `tower` table; absent only
+  on `audit_log` + events partitions (correct) and `webhook_deliveries`
+  (deliberate, events-style telemetry — see wave5-webhooks.sql F1).
+- **Seeds:** gaps confirmed and closed via migration 19 (`tower_19_seed_demo`).
+- **M-1, M-2, L-1…L-4** remain open — tracked in HANDOVER §5. Delegated item 2
+  (extended per-table RLS fixture beyond products + lanes) also remains open.
+
 ## DB-level verifications delegated to the Conductor
 
 1. **H-1 blocker:** is `tower.lanes` SELECT-able by a non-admin user outside their
