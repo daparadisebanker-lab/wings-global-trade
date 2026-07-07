@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/client'
 
 /**
@@ -9,13 +9,34 @@ import { createClient, isSupabaseConfigured } from '@/lib/supabase/client'
  * cookie is then refreshed by the middleware. Async errors are handled explicitly
  * and shown as a contained message — never a raw error.
  */
+/** Bilingual copy for callback-reported failures (?error= from /auth/callback). */
+const CALLBACK_ERRORS: Record<string, string> = {
+  link: 'El enlace no es válido o caducó — solicita uno nuevo. / The link is invalid or expired — request a new one.',
+  config: 'Autenticación no configurada. / Authentication is not configured.',
+}
+
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
   const [message, setMessage] = useState<string | null>(null)
 
+  // Surface a failure reported by /auth/callback (?error=). Read on mount, not
+  // in the initializer — the page is prerendered and the URL only exists client-side.
+  useEffect(() => {
+    const error = new URLSearchParams(window.location.search).get('error')
+    if (error && CALLBACK_ERRORS[error]) {
+      setStatus('error')
+      setMessage(CALLBACK_ERRORS[error])
+    }
+  }, [])
+
   const configured = isSupabaseConfigured()
-  const redirectTo = typeof window !== 'undefined' ? `${window.location.origin}/catalog` : undefined
+  // Land on the server-side callback so the PKCE exchange happens before the
+  // shell's auth guard sees the request (see app/auth/callback/route.ts).
+  const redirectTo =
+    typeof window !== 'undefined'
+      ? `${window.location.origin}/auth/callback?next=/catalog`
+      : undefined
 
   async function sendMagicLink(e: React.FormEvent) {
     e.preventDefault()
