@@ -39,8 +39,11 @@ export interface StreamOptions {
   rehydrationToken?: string
 }
 
+// Must mirror every member of MisterSurfaceType — an event whose type is
+// missing here is silently dropped before the renderer sees it.
 const SURFACE_TYPES = new Set<MisterSurfaceType>([
   'product', 'comparison', 'specs', 'moq', 'waterfall', 'document', 'contact',
+  'quotation_form', 'container_offer',
 ])
 
 function isSurfaceType(val: unknown): val is MisterSurfaceType {
