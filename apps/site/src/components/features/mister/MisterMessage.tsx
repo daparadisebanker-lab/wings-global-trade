@@ -62,6 +62,58 @@ export function linkifyContent(content: string): React.ReactNode[] {
   })
 }
 
+// Inline emphasis: **bold** and *italic* (asterisk forms only — underscores
+// stay literal so slugs and file_names never trigger emphasis). Bold first,
+// then italic inside the remainder; the inner text must start and end on a
+// non-space so arithmetic like "3 * 4" stays literal.
+const BOLD_PATTERN = /\*\*(\S(?:[^*\n]*\S)?)\*\*/g
+const ITALIC_PATTERN = /\*(\S(?:[^*\n]*\S)?)\*/g
+
+function renderItalicAndLinks(text: string, keyBase: string): React.ReactNode[] {
+  const nodes: React.ReactNode[] = []
+  let last = 0
+  let m: RegExpExecArray | null
+  ITALIC_PATTERN.lastIndex = 0
+  while ((m = ITALIC_PATTERN.exec(text)) !== null) {
+    if (m.index > last) nodes.push(...linkifyContent(text.slice(last, m.index)))
+    nodes.push(
+      <em key={`${keyBase}-i${m.index}`} className="not-italic font-[500]">
+        {m[1]}
+      </em>,
+    )
+    last = m.index + m[0].length
+  }
+  if (last < text.length) nodes.push(...linkifyContent(text.slice(last)))
+  return nodes
+}
+
+/**
+ * Full inline pipeline for Mister prose: markdown emphasis rendered as real
+ * typography (semibold <strong>, gold <em>) with linkification inside the
+ * plain segments — asterisks never reach the reader. `streaming` trims a
+ * dangling emphasis marker mid-stream so a half-arrived `**` never flashes.
+ */
+export function renderMisterContent(content: string, streaming = false): React.ReactNode[] {
+  let text = content
+  if (streaming) text = text.replace(/\*{1,2}(\S[^*\n]*)?$/, '$1')
+
+  const nodes: React.ReactNode[] = []
+  let last = 0
+  let m: RegExpExecArray | null
+  BOLD_PATTERN.lastIndex = 0
+  while ((m = BOLD_PATTERN.exec(text)) !== null) {
+    if (m.index > last) nodes.push(...renderItalicAndLinks(text.slice(last, m.index), `s${last}`))
+    nodes.push(
+      <strong key={`b${m.index}`} className="font-[600] text-[var(--mister-text-primary)]">
+        {m[1]}
+      </strong>,
+    )
+    last = m.index + m[0].length
+  }
+  if (last < text.length) nodes.push(...renderItalicAndLinks(text.slice(last), `s${last}`))
+  return nodes
+}
+
 function formatTime(iso: string): string {
   // Rehydrated history entries carry no timestamp — render nothing rather
   // than the literal "Invalid Date" (which doesn't throw, so catch won't fire).
@@ -132,7 +184,7 @@ export function MisterMessage({ entry }: Props) {
       <div className="min-w-0 pl-[var(--mister-margin-column)]">
         <div className="pb-3 pr-5 pt-4">
           <p className="font-body text-[15px] font-[400] leading-[1.75] text-[var(--mister-text-primary)] whitespace-pre-wrap">
-            {linkifyContent(entry.content)}
+            {renderMisterContent(entry.content)}
           </p>
           <p className="mt-1 text-right font-mono text-[9px] font-[300] tracking-[0.04em] text-[var(--mister-text-ghost)] opacity-0 transition-opacity duration-200 group-hover:opacity-100">
             {formatTime(entry.timestamp)}

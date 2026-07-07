@@ -8,7 +8,7 @@
 import { motion } from 'framer-motion'
 import { streamingContainerVariants } from '@/lib/mister/motion'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
-import { linkifyContent } from '@/components/features/mister/MisterMessage'
+import { renderMisterContent } from '@/components/features/mister/MisterMessage'
 
 interface Props {
   content: string
@@ -41,7 +41,7 @@ export function MisterStreamingMessage({ content, turnIndex }: Props) {
       <div className="min-w-0 pl-[var(--mister-margin-column)]">
         <div className="pb-3 pr-5 pt-4">
           <p className="font-body text-[14px] font-[400] leading-[1.65] text-[var(--mister-text-primary)] whitespace-pre-wrap">
-            {linkifyContent(content)}
+            {renderMisterContent(content, true)}
             {/* CSS-only blinking cursor — defined in globals.css */}
             <span className="mister-stream-cursor" aria-hidden />
           </p>
