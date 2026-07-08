@@ -1,5 +1,5 @@
 # Wings Global Trade — Image Generation Thesis
-**v2.0 · Authority document for all AI-generated and AI-processed imagery.
+**v2.1 · Authority document for all AI-generated and AI-processed imagery.
 Subordinate to `WINGS_VISUAL_THESIS.md` v2.0 — where they conflict, the
 parent thesis wins.**
 
@@ -258,6 +258,38 @@ Pure black and pure white stay refused. When lanes WGT/01–06 onboard, each
 lane substitutes its registered livery (`packages/liveries/registry.md`)
 into the same laws — the laws do not change, only the tokens.
 
+### INSTRUMENT COLOR (amendment 2026-07-08-B, ratified)
+
+> **A gradient is a reading, never a mood. Multicolor may enter the Wings
+> system only as INSTRUMENT COLOR: a frozen ramp bound to a live variable,
+> rendered as what a measurement device would draw.**
+
+The Mister thermal ramp (tokens frozen pending first-render calibration):
+
+| Stop | Token | Hex | Reading |
+|---|---|---|---|
+| 0.00 | `--ramp-cold` (Wings navy) | `#001E50` | Base / dormant / abundant |
+| 0.25 | `--ramp-active` (Mister azul) | `#1D83F2` | Active / available |
+| 0.50 | `--ramp-neutral` (warm white) | `#F8F6F0` | Midpoint / equilibrium |
+| 0.72 | `--ramp-warm` (gold) | `#C4933F` | Warming / scarce |
+| 1.00 | `--ramp-hot` (signal) | `#C63A1E` | Critical / last units |
+
+Binding rule: every appearance of the ramp is driven by a named variable
+with a legend; the variable is recorded in the asset's MANIFEST row
+(`encodes:` field). **The evidence law extends to color** — rendering a
+hot state on a container that is not hot is a fabricated claim; urgency
+theater through false temperature is refused, gate-level.
+
+Scope: permitted on Mister diagnostic UI (FillMeter, demand maps, slot
+campaigns), legended data visualization, and Mister campaign work with the
+variable stated in the brief. Refused on Wings core document surfaces,
+as ambient/decorative fill anywhere, and in Register B grading (Working
+Daylight unchanged). Interpolation is code (`packages/liveries/mister/
+ramp.ts`), never eyedropper; grain stipple and isotherm banding are the
+only two permitted renderings — smooth airbrush gradients stay refused.
+Full amendment text: `spec/WINGS_PALETTE_LAW_AMENDMENT_2026-07-08B.md`;
+application law: `spec/MISTER_EXPRESSIVE_LAYER_SPEC.md`.
+
 ---
 
 ## THE CANON
@@ -336,7 +368,7 @@ Machine-gate rules ship as `assets/image-generation/thesis.lint.json`:
 
 ```json
 {
-  "version": "2.0",
+  "version": "2.1",
   "banned_terms": ["cinematic","moody","dramatic","atmospheric","epic",
     "stunning","volumetric","fog","golden hour","dusk","sunset","night",
     "neon","lens flare","teal and orange"],
@@ -345,6 +377,12 @@ Machine-gate rules ship as `assets/image-generation/thesis.lint.json`:
   "palette_strict_registers": ["A"],
   "livery": {"navy":"#001E50","gold":"#C4933F","warm_white":"#F8F6F0",
     "tolerance_deltaE": 12},
+  "instrument_color": {
+    "ramp": ["#001E50","#1D83F2","#F8F6F0","#C4933F","#C63A1E"],
+    "requires_manifest_field": "encodes",
+    "permitted_surfaces": ["mister_ui","dataviz","mister_campaign"],
+    "refused_surfaces": ["wings_core","backgrounds","register_B_grading"]
+  },
   "upscale": {"register_C": "crisp_upscale_only"},
   "manifest_required_fields": ["file","class","register","lane","model",
     "seed","prompt_or_source_ops","style_id","date","destination"]
@@ -387,10 +425,12 @@ amendment lands as a changelog row and a version bump.
 | 2026-07-08 | 2.0 | Consistency | Canon-first; V3 style distillation now optional and validation-gated | V3 tonal drift regression risk |
 | 2026-07-08 | 2.0 | Register A | A5 flat system diagrams added | Canon flat-diagram idiom adopted |
 | 2026-07-08 | 2.0 | Provenance | REJECTED.md log added | Close the learning loop |
+| 2026-07-08 | 2.1 | Palette Law | INSTRUMENT COLOR clause added; Mister thermal ramp tokenized | Thermal reference ingested; legalized as data-bound instrument color, refused as decoration. Ratified by founder 2026-07-08 |
+| 2026-07-08 | 2.1 | Evidence law | Extended to color: false temperature = fabricated claim | Urgency theater prevention. Ratified by founder 2026-07-08 |
 
 ---
 
-*Maintained in: `spec/WINGS_IMAGE_GENERATION_THESIS.md` · v2.0, 2026-07-08.*
+*Maintained in: `spec/WINGS_IMAGE_GENERATION_THESIS.md` · v2.1, 2026-07-08.*
 *Operations: `assets/image-generation/CLAUDE.md` · Models:
 `assets/image-generation/RECRAFT-MODELS.md` · Canon:
 `assets/image-generation/CANON/` · Lint: `thesis.lint.json`*

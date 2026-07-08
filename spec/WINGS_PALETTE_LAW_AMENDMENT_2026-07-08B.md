@@ -1,8 +1,8 @@
 # Wings Global Trade — Palette Law Amendment: INSTRUMENT COLOR
 **Amendment 2026-07-08-B · Patches `WINGS_IMAGE_GENERATION_THESIS.md`
 v2.0 → v2.1 and extends `packages/liveries/` with the Mister thermal ramp.
-Founder ratification required; agents apply only after the changelog row
-is signed.**
+RATIFIED by founder 2026-07-08 — merged into the thesis (v2.1) same day;
+this file remains as the amendment record.**
 
 ---
 
