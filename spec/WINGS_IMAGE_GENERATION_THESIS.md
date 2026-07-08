@@ -1,5 +1,5 @@
 # Wings Global Trade — Image Generation Thesis
-**v2.1 · Authority document for all AI-generated and AI-processed imagery.
+**v2.2 · Authority document for all AI-generated and AI-processed imagery.
 Subordinate to `WINGS_VISUAL_THESIS.md` v2.0 — where they conflict, the
 parent thesis wins.**
 
@@ -272,7 +272,7 @@ The Mister thermal ramp (tokens frozen pending first-render calibration):
 | 0.25 | `--ramp-active` (Mister azul) | `#1D83F2` | Active / available |
 | 0.50 | `--ramp-neutral` (warm white) | `#F8F6F0` | Midpoint / equilibrium |
 | 0.72 | `--ramp-warm` (gold) | `#C4933F` | Warming / scarce |
-| 1.00 | `--ramp-hot` (signal) | `#C63A1E` | Critical / last units |
+| 1.00 | `--ramp-hot` (signal) | `#B93400` | Critical / last units — FROZEN 2026-07-08 (calibrated from `#C63A1E`, which sat ΔE 5.42 from the error red) |
 
 Binding rule: every appearance of the ramp is driven by a named variable
 with a legend; the variable is recorded in the asset's MANIFEST row
@@ -378,7 +378,8 @@ Machine-gate rules ship as `assets/image-generation/thesis.lint.json`:
   "livery": {"navy":"#001E50","gold":"#C4933F","warm_white":"#F8F6F0",
     "tolerance_deltaE": 12},
   "instrument_color": {
-    "ramp": ["#001E50","#1D83F2","#F8F6F0","#C4933F","#C63A1E"],
+    "ramp": ["#001E50","#1D83F2","#F8F6F0","#C4933F","#B93400"],
+    "interpolation": "oklab",
     "requires_manifest_field": "encodes",
     "permitted_surfaces": ["mister_ui","dataviz","mister_campaign"],
     "refused_surfaces": ["wings_core","backgrounds","register_B_grading"]
@@ -427,10 +428,12 @@ amendment lands as a changelog row and a version bump.
 | 2026-07-08 | 2.0 | Provenance | REJECTED.md log added | Close the learning loop |
 | 2026-07-08 | 2.1 | Palette Law | INSTRUMENT COLOR clause added; Mister thermal ramp tokenized | Thermal reference ingested; legalized as data-bound instrument color, refused as decoration. Ratified by founder 2026-07-08 |
 | 2026-07-08 | 2.1 | Evidence law | Extended to color: false temperature = fabricated claim | Urgency theater prevention. Ratified by founder 2026-07-08 |
+| 2026-07-08 | 2.2 | Instrument color | `--ramp-hot` FROZEN at `#B93400` (was `#C63A1E`) | Calibration D-1: `#C63A1E` sat ΔE2000 = 5.42 / 5.8° hue from the site error red — scarcity must never read as failure. Ratified by founder 2026-07-08 |
+| 2026-07-08 | 2.2 | Instrument color | Ramp interpolation fixed as piecewise OKLab (not polar OKLCH) | Calibration D-2: OKLCH inherits the near-neutral stop's hue angle and detours azul→white through cyan/green — off the temperature register. OKLab desaturates straight through neutral. Hue-exclusion corridor test in `packages/liveries/mister/ramp.test.ts` is the regression gate. Ratified by founder 2026-07-08 |
 
 ---
 
-*Maintained in: `spec/WINGS_IMAGE_GENERATION_THESIS.md` · v2.1, 2026-07-08.*
+*Maintained in: `spec/WINGS_IMAGE_GENERATION_THESIS.md` · v2.2, 2026-07-08.*
 *Operations: `assets/image-generation/CLAUDE.md` · Models:
 `assets/image-generation/RECRAFT-MODELS.md` · Canon:
 `assets/image-generation/CANON/` · Lint: `thesis.lint.json`*

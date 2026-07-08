@@ -2,7 +2,9 @@
 **Amendment 2026-07-08-B · Patches `WINGS_IMAGE_GENERATION_THESIS.md`
 v2.0 → v2.1 and extends `packages/liveries/` with the Mister thermal ramp.
 RATIFIED by founder 2026-07-08 — merged into the thesis (v2.1) same day;
-this file remains as the amendment record.**
+this file remains as the amendment record. NOTE: `--ramp-hot` was
+subsequently calibrated `#C63A1E` → `#B93400` and the interpolation fixed
+as OKLab (thesis v2.2, D-1/D-2) — the thesis is the living law.**
 
 ---
 

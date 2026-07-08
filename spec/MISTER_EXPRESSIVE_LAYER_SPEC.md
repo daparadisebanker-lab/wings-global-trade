@@ -1,5 +1,5 @@
 # Mister — Expressive Layer Specification
-**v1.0 · Governs all expressive/ambient visual behavior of the Mister
+**v1.1 · Governs all expressive/ambient visual behavior of the Mister
 brand. Subordinate to `WINGS_VISUAL_THESIS.md` v2.0 and the INSTRUMENT
 COLOR amendment (2026-07-08-B). The mark itself is governed by
 `MISTER_LOGO_APPLICATION_STANDARD.md`.**
@@ -57,7 +57,7 @@ fields or isotherm contour bands. Always bound to a demand variable.
 | **FRÍO** | 0–40% | navy → azul | "Contenedor abierto" | Slow grain drift, cold field |
 | **TEMPLADO** | 40–70% | azul → warm white | "Llenándose" | Field brightens toward neutral |
 | **CALIENTE** | 70–90% | warm white → gold | "Quedan pocos cupos" | Gold isotherms appear at the fill edge |
-| **CRÍTICO** | 90–100% | gold → signal `#C63A1E` | "Quedan N cupos" | Hot band at the remaining-capacity edge; N is live |
+| **CRÍTICO** | 90–100% | gold → signal `#B93400` | "Quedan N cupos" | Hot band at the remaining-capacity edge; N is live |
 
 Laws:
 - State transitions are computed from the fill field — never set by hand.
@@ -139,6 +139,7 @@ excitement, any motion faster than its data changes.
 | Date | Ver | Change |
 |---|---|---|
 | 2026-07-08 | 1.0 | Created from the two canon studies (junction luminance; thermal contours). Two-axis law, FillMeter states, motion + implementation law. |
+| 2026-07-08 | 1.1 | Signal hex `#C63A1E` → `#B93400` (founder calibration D-1, frozen — see thesis v2.2 changelog); ramp interpolation fixed as piecewise OKLab (D-2). |
 
 *Maintained in: `spec/MISTER_EXPRESSIVE_LAYER_SPEC.md` · Tokens:
 `packages/liveries/mister/` · Parent: INSTRUMENT COLOR amendment.*

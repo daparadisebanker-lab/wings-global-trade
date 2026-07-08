@@ -8,10 +8,12 @@ never deleted.
 
 ---
 
-## D-1 · Freeze or shift `--ramp-hot` (collision with error red) — OPEN
+## D-1 · Freeze or shift `--ramp-hot` (collision with error red) — RESOLVED
 
-**Status:** `#C63A1E` ships marked FROZEN_PENDING_CALIBRATION in
-`packages/liveries/mister/ramp.ts`; do not treat as frozen.
+**RESOLVED 2026-07-08:** founder ratified **Candidate B `#B93400`** —
+frozen in `ramp.ts` v1.1, thesis bumped to v2.2 (changelog rows there),
+expressive-layer spec to v1.1, `livery.css` regenerated. The calibration
+sheet was re-rendered to show the shipped state.
 
 **Finding:** the site has no error token — every error surface hardcodes
 `#DC2626` (8 sites, see D-3). `--ramp-hot #C63A1E` vs `#DC2626`:
@@ -34,7 +36,16 @@ thesis (INSTRUMENT COLOR lint `ramp` array changes with it).
 
 ---
 
-## D-2 · Ramp midtone interpolation: OKLCH detours through green — OPEN
+## D-2 · Ramp midtone interpolation: OKLCH detours through green — RESOLVED
+
+**RESOLVED 2026-07-08:** founder ratified piecewise **OKLab**. Shipped in
+`ramp.ts` v1.1; the chroma-floor tests were replaced by a hue-exclusion
+corridor suite (`ramp.test.ts`): every sample must be neutral (chroma
+< 0.02) or inside the blue corridor [230°, 290°] (cold side) / warm
+corridor [15°, 100°] (hot side); any hue in the green/cyan band
+[100°, 220°] at visible chroma fails. A companion test reproduces the
+retired OKLCH mode and asserts it violates the band — proof the gate
+catches the regression it was built for.
 
 **Finding:** piecewise OKLCH interpolation (as specified) swings the
 azul→warm-white segment through cyan/mint (`t=0.3 → #00ADDD`,
@@ -53,31 +64,42 @@ RGB grey the OKLCH mandate was protecting against. One-line change in
 
 ---
 
-## D-3 · No semantic error token — 8 hardcoded `#DC2626` literals — OPEN
+## D-3 · Semantic error token `--error` — IMPLEMENTED, PENDING RATIFICATION
 
-**Finding (side effect of D-1 analysis):** error styling hardcodes the
-raw hex in `packages/ui` (Toast, Input, Textarea, Select, RFQFlow) and
+**Finding (side effect of D-1 analysis):** error styling hardcoded
+`#DC2626` in `packages/ui` (Toast, Input, Textarea, Select, RFQFlow) and
 `apps/site` (QuotationForm ×3, ContactForm ×3) — violating Prime
-Directive 3 (semantic tokens only). Inventory in
+Directive 3. Inventory in
 `packages/liveries/mister/review/collision-report.md`.
 
-**Proposal:** introduce a semantic error token in the Tier-1/Tier-2 token
-system and sweep the 8 sites. Independent of the ramp decision, but decide
-D-1 first so the error hue is chosen with the scarcity hue on the table.
+**Implemented 2026-07-08 (value NOT frozen):** `--error: #A61B3A` (cool
+crimson) + alpha variants `--error-70/-40/-glow` defined in
+`packages/liveries/wings/livery.css` marked PROPOSED_PENDING_RATIFICATION;
+all 11 literal instances swept to the token with `#DC2626` fallbacks (so
+consumers without the wings livery keep legacy behavior). Swap test,
+typecheck, build green.
+
+**Why not the ordered starting point `#B91C1C`:** it sits ΔE2000 = 8.34 /
+9.1° hue from the frozen `--ramp-hot #B93400` — it would recreate the D-1
+collision in reverse. `#A61B3A` (hue 15.6°) gives ΔE 18.91 / 21.0° vs
+scarcity, AA 6.84:1 on warm white; the cooler alternative `#9F1239`
+(ΔE 20.67, AA 7.42:1) is on the sheet if more margin is wanted.
+
+**Ratify by eye:** `packages/liveries/mister/review/ramp-calibration-sheet.png`
+row 2. On ratification (or a different hex): update the four `--error*`
+values in the wings livery, remove the PROPOSED marker — call sites need
+no change.
 
 ---
 
-## D-4 · Favicon variant (deepened notches) — NO ACTION, noted
+## D-4 · Favicon variant (deepened notches) — CLOSED
 
-**Finding:** favicon gate PASSED — `mister-m-solid.svg` reads at 16/32 px
-under normal anti-aliased rendering; only a worst-case 1-bit/low-DPI
-downsample closes the upper counters. The deepen-the-notches favicon cut
-was deliberately NOT attempted by agents: the master's metaball M is a
-single flattened path whose junction necks cannot be edited in isolation
-without risking a contour move (= redraw, refused by the logo standard).
-
-**If ever wanted:** a designer cuts it in the vector source and submits
-`review/mister-m-favicon.proposed.svg`; it enters the registry only via a
-changelog row in `MISTER_LOGO_APPLICATION_STANDARD.md`.
+**CLOSED 2026-07-08 by founder ruling: no action — the refusal was
+correct.** The favicon gate PASSED (`mister-m-solid.svg` reads at
+16/32 px; only a worst-case 1-bit/low-DPI downsample closes the upper
+counters), and agents were right not to attempt deepening notches on the
+flattened master path. **If a favicon variant is ever needed, the legal
+route is re-export from the original design file with separate blob
+primitives — never editing the flattened path.**
 **Artifacts:** `packages/liveries/mister/review/favicon-gate.md` +
 `GATE-m-*.png`.

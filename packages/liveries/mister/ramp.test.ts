@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { oklch } from 'culori'
+import { formatHex, interpolate, oklch } from 'culori'
 import { RAMP_STOPS, rampColor } from './ramp'
 
 const encodes = { encodes: 'test-fixture-variable' }
@@ -7,10 +7,10 @@ const encodes = { encodes: 'test-fixture-variable' }
 // oklch() types the return as `Oklch | undefined` because it also accepts
 // arbitrary strings that may fail to parse — every hex here is one this
 // module produced or a frozen ramp stop literal, so it always parses.
-function chromaOf(hex: string): number {
+function lch(hex: string): { c: number; h: number } {
   const color = oklch(hex)
   if (!color) throw new Error(`unparseable color in test fixture: ${hex}`)
-  return color.c ?? 0
+  return { c: color.c ?? 0, h: color.h ?? 0 }
 }
 
 describe('rampColor — endpoints', () => {
@@ -63,54 +63,58 @@ describe('rampColor — t clamping', () => {
   })
 })
 
-describe('rampColor — chroma floor (no muddy-grey dead zones)', () => {
-  // Measured (culori oklch(), this ramp, 2026-07-08) by sampling t from 0.25
-  // to 0.72 in steps of 0.01 (and re-verified at 0.001 resolution):
+describe('rampColor — hue-exclusion corridor (D-2 regression gate)', () => {
+  // Founder ruling D-2 (2026-07-08, spec/DEFERRED.md): the ramp is a thermal
+  // reading — its chromatic path may only occupy the blue corridor on the
+  // cold side and the warm corridor on the hot side. Green/cyan is not on
+  // the instrument's temperature register at ANY visible chroma: the old
+  // polar-OKLCH interpolation detoured the azul→white segment through
+  // h≈220°→150° (cyan→mint), which this suite exists to keep dead.
   //
-  //   - The ramp's chroma forms a smooth V centered exactly at the neutral
-  //     stop (t=0.5, #F8F6F0): chroma descends from ~0.188 at t=0.25 down
-  //     to ~0.0082 at t=0.5, then rises back to ~0.116 at t=0.72.
-  //   - The GLOBAL MINIMUM across the whole band is ~0.0082, occurring
-  //     exactly at t=0.5 — the warm-white stop is near-neutral BY DESIGN
-  //     (spec: "intentionally near-neutral"), so this is not a dead zone.
-  //   - Outside a +/-0.03 window around the neutral stop, the measured
-  //     floor is ~0.0222 (at t=0.53). That is the number that matters:
-  //     it proves OKLCH interpolation does not introduce a SECOND, wider
-  //     dead zone anywhere else in the segment — chroma only ever
-  //     bottoms out in the immediate neighborhood of the neutral stop
-  //     itself, never between arbitrary points on a segment (which is
-  //     the muddy-grey failure mode RGB lerp would produce here).
-  const NEUTRAL_WINDOW = 0.03
-  const OUTSIDE_WINDOW_FLOOR = 0.02
+  // Measured (culori, OKLab piecewise, 2026-07-08, t sampled 0..1 @ 0.01):
+  //   cold-side chromatic hues span 250.1°–259.3°; warm-side 36.6°–81.5°;
+  //   chroma < NEUTRAL_THRESHOLD only inside t ∈ [0.47, 0.53] around the
+  //   warm-white stop. Corridors below carry margin around those spans.
+  const NEUTRAL_THRESHOLD = 0.02 // below this a sample is neutral; hue is noise
+  const COLD_CORRIDOR = [230, 290] as const // blue; measured 250.1–259.3
+  const WARM_CORRIDOR = [15, 100] as const // gold→burnt orange; measured 36.6–81.5
+  const GREEN_CYAN_BAND = [100, 220] as const // fail here at any visible chroma
 
-  it('never dips into muddy grey between stops (outside the neutral stop\'s own neighborhood)', () => {
-    const samples: { t: number; c: number }[] = []
-    for (let i = 0; i <= 47; i++) {
-      const t = 0.25 + i * 0.01
-      samples.push({ t, c: chromaOf(rampColor(t, encodes)) })
-    }
+  const inBand = (h: number, [lo, hi]: readonly [number, number]) =>
+    h >= lo && h <= hi
 
-    const outsideNeutralWindow = samples.filter(
-      (s) => Math.abs(s.t - 0.5) > NEUTRAL_WINDOW,
-    )
-    for (const s of outsideNeutralWindow) {
-      expect(s.c, `chroma dead zone at t=${s.t}`).toBeGreaterThan(
-        OUTSIDE_WINDOW_FLOOR,
-      )
+  it('every sample is neutral or inside its side\'s corridor — never green/cyan', () => {
+    for (let i = 0; i <= 100; i++) {
+      const t = i / 100
+      const { c, h } = lch(rampColor(t, encodes))
+      if (c < NEUTRAL_THRESHOLD) continue // neutral neighborhood — exempt
+
+      expect(
+        inBand(h, GREEN_CYAN_BAND),
+        `green/cyan hue ${h.toFixed(1)}° at t=${t} (chroma ${c.toFixed(3)}) — thermal ramp left the temperature register`,
+      ).toBe(false)
+
+      const corridor = t <= 0.5 ? COLD_CORRIDOR : WARM_CORRIDOR
+      expect(
+        inBand(h, corridor),
+        `hue ${h.toFixed(1)}° at t=${t} outside the ${t <= 0.5 ? 'cold/blue' : 'warm'} corridor [${corridor.join(', ')}]`,
+      ).toBe(true)
     }
   })
 
-  it('the neutral stop\'s own low point never dips below the neutral stop\'s own chroma', () => {
-    const neutralChroma = chromaOf(RAMP_STOPS[2].hex) // #F8F6F0
-    const EPSILON = 1e-4
-
-    for (let i = 0; i <= 47; i++) {
-      const t = 0.25 + i * 0.01
-      const c = chromaOf(rampColor(t, encodes))
-      expect(
-        c,
-        `chroma at t=${t} fell below the neutral stop's own chroma`,
-      ).toBeGreaterThanOrEqual(neutralChroma - EPSILON)
+  it('proves the gate catches the failure it was built for: polar-OKLCH azul→white violates the corridor', () => {
+    // The retired interpolation mode, reproduced locally. If this ever stops
+    // violating the band, the corridor bounds have gone soft — tighten them.
+    const oldSegment = interpolate(
+      [RAMP_STOPS[1].hex, RAMP_STOPS[2].hex],
+      'oklch',
+    )
+    const violations: number[] = []
+    for (let i = 1; i < 25; i++) {
+      const { c, h } = lch(formatHex(oldSegment(i / 25)))
+      if (c >= NEUTRAL_THRESHOLD && inBand(h, GREEN_CYAN_BAND))
+        violations.push(h)
     }
+    expect(violations.length).toBeGreaterThan(0)
   })
 })

@@ -1,18 +1,28 @@
 // packages/liveries/mister/ramp.ts
 //
 // The Mister thermal ramp — single source of truth for INSTRUMENT COLOR.
-// Governed by spec/WINGS_IMAGE_GENERATION_THESIS.md (Palette Law v2,
-// INSTRUMENT COLOR amendment 2026-07-08-B) and
+// Governed by spec/WINGS_IMAGE_GENERATION_THESIS.md (Palette Law,
+// INSTRUMENT COLOR — amendment 2026-07-08-B) and
 // spec/MISTER_EXPRESSIVE_LAYER_SPEC.md (Axis 2 — TEMPERATURE = DEMAND).
 //
-// Interpolation runs in OKLCH, not linear RGB: RGB interpolation across
-// these stops crosses through muddy grey dead zones in the midtones
-// (navy -> azul -> warm white -> gold -> signal red spans too much hue
-// and lightness for RGB lerp to stay legible as a "reading").
+// Interpolation runs in OKLab (rectangular), not linear RGB and not
+// polar OKLCH. RGB lerp crosses muddy grey dead zones in the midtones;
+// polar OKLCH inherits the near-neutral warm-white stop's arbitrary hue
+// angle and detours the azul->white segment through cyan/green (founder
+// ruling D-2, 2026-07-08 — see spec/DEFERRED.md). OKLab desaturates in
+// a straight line through neutral with no hue detour. The hue-exclusion
+// corridor test in ramp.test.ts is the regression gate for this.
 //
 // The ramp is never eyedropper-picked at a call site. `rampColor()` is
 // the only sanctioned color source, and it enforces the `encodes:` law:
 // every rendered color must be driven by a named variable, or it throws.
+//
+// CHANGELOG
+// | Date       | Ver | Change |
+// |------------|-----|--------|
+// | 2026-07-08 | 1.0 | Created (OKLCH piecewise; --ramp-hot #C63A1E pending calibration) |
+// | 2026-07-08 | 1.1 | --ramp-hot FROZEN at #B93400 (founder ratification D-1: #C63A1E was ΔE 5.42 from the error red — scarcity must not read as failure). Interpolation OKLCH→OKLab (founder ratification D-2: kill the cyan/green midtone detour). |
+export const RAMP_VERSION = '1.1'
 
 import { interpolate, formatHex } from 'culori'
 
@@ -30,8 +40,9 @@ export const RAMP_STOPS = [
   { t: 0.25, hex: '#1D83F2', token: '--ramp-active' },
   { t: 0.5, hex: '#F8F6F0', token: '--ramp-neutral' },
   { t: 0.72, hex: '#C4933F', token: '--ramp-warm' },
-  // FROZEN_PENDING_CALIBRATION — founder has not frozen this hex yet.
-  { t: 1.0, hex: '#C63A1E', token: '--ramp-hot' },
+  // FROZEN 2026-07-08 by founder ratification (D-1). Was #C63A1E, which sat
+  // ΔE2000 = 5.42 from the site error red — indistinguishable from failure.
+  { t: 1.0, hex: '#B93400', token: '--ramp-hot' },
 ] as const satisfies readonly RampStop[]
 
 /** Token names in ramp order, for callers that just need the CSS var names. */
@@ -50,7 +61,7 @@ export interface RampMeta {
 
 /**
  * Resolves a position on the thermal ramp to a hex color, interpolating
- * piecewise between the nearest two stops in OKLCH.
+ * piecewise between the nearest two stops in OKLab.
  *
  * Throws unless `meta.encodes` is a non-empty, non-whitespace string — a
  * gradient without a named variable behind it is a decoration, not a
@@ -85,6 +96,6 @@ export function rampColor(t: number, meta: RampMeta): string {
   }
 
   const localT = (clamped - lo.t) / (hi.t - lo.t)
-  const segment = interpolate([lo.hex, hi.hex], 'oklch')
+  const segment = interpolate([lo.hex, hi.hex], 'oklab')
   return formatHex(segment(localT))
 }
