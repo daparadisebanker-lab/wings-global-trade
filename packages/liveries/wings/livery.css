@@ -27,14 +27,15 @@
 
   --livery-warm-white:    #F8F6F0;
 
-  /* --- Error / failure state — PROPOSED_PENDING_RATIFICATION (DEFERRED D-3)
+  /* --- Error / failure state — RATIFIED by founder 2026-07-08 (DEFERRED D-3)
      Cool crimson, deliberately separated from the Mister scarcity signal
      --ramp-hot #B93400 (ΔE2000 = 18.91, hue Δ = 21.0°): failure must never
      read as scarcity, and vice versa. AA on warm white: 6.84:1.
-     Was 8–11 hardcoded #DC2626 literals across packages/ui + apps/site
-     (that legacy red sat ΔE 5.42 from the old --ramp-hot — the collision
-     that triggered D-1). Alpha variants exist because Tailwind slash
-     opacity cannot modify var() colors (precedent: --livery-gold-subtle). */
+     Replaced 11 hardcoded #DC2626 literals across packages/ui + apps/site
+     (that legacy red sat ΔE 5.42 from the pre-calibration --ramp-hot — the
+     collision that triggered D-1). Alpha variants exist because Tailwind
+     slash opacity cannot modify var() colors (precedent:
+     --livery-gold-subtle). */
   --error:      #A61B3A;
   --error-70:   rgba(166, 27, 58, 0.70);
   --error-40:   rgba(166, 27, 58, 0.40);

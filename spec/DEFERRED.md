@@ -64,7 +64,12 @@ RGB grey the OKLCH mandate was protecting against. One-line change in
 
 ---
 
-## D-3 · Semantic error token `--error` — IMPLEMENTED, PENDING RATIFICATION
+## D-3 · Semantic error token `--error` — RESOLVED
+
+**RESOLVED 2026-07-08:** founder ratified **`--error: #A61B3A`** by eye
+from the calibration sheet. PROPOSED marker removed from the wings livery;
+the token and its alpha variants are law. Legacy `#DC2626` survives only
+as `var()` fallbacks for consumers without the wings livery.
 
 **Finding (side effect of D-1 analysis):** error styling hardcoded
 `#DC2626` in `packages/ui` (Toast, Input, Textarea, Select, RFQFlow) and
