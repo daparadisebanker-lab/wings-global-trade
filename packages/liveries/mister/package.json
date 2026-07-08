@@ -1,0 +1,27 @@
+{
+  "name": "@wings/livery-mister",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./ramp.ts",
+  "types": "./ramp.ts",
+  "exports": {
+    ".": "./ramp.ts",
+    "./ramp": "./ramp.ts",
+    "./grain": "./grain.ts",
+    "./livery.css": "./livery.css"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "build": "tsx scripts/build-livery.ts"
+  },
+  "dependencies": {
+    "culori": "^4.0.1"
+  },
+  "devDependencies": {
+    "@types/culori": "^4.0.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5",
+    "vitest": "^2.1.8"
+  }
+}

@@ -2,6 +2,9 @@
    livery maps Tier-2 semantic tokens to this site's exact current values. */
 @import '../../../../packages/ui/tokens/skeleton.css';
 @import '../../../../packages/liveries/wings/livery.css';
+/* Mister livery — brand tokens (--mister-azul, COLOR LAW) + thermal ramp.
+   Generated from ramp.ts; see packages/liveries/mister/livery.css. */
+@import '../../../../packages/liveries/mister/livery.css';
 
 @tailwind base;
 @tailwind components;

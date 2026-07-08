@@ -1,0 +1,43 @@
+/* ============================================================
+   GENERATED FROM ramp.ts — DO NOT EDIT.
+   Generated: 2026-07-08T18:54:06.654Z
+   Regenerate with: pnpm --filter @wings/livery-mister build
+   ============================================================ */
+
+/* Unit b (clearspace) = 271.389 master-canvas units.
+   Field: "b" in logo/geometry.json.
+   Derivation: satellite. Method 1 (metaball-M bbox width / 3) = 312.677; Method 2 (largest satellite diameter) = 271.389; they disagree 13.2% (>10% threshold), so the satellite method is used per spec..
+   spec/MISTER_LOGO_APPLICATION_STANDARD.md — CLEARSPACE:
+   "Unit b = the diameter of one core blob of the metaball M". */
+
+/* Scoped under both :root and [data-lane="mister"]: unlike the Wings house
+   livery (packages/liveries/wings/livery.css, which lives at :root only
+   because the current site is not yet lane-split), the Mister ramp is
+   explicitly REFUSED on Wings core document surfaces
+   (spec/WINGS_IMAGE_GENERATION_THESIS.md — INSTRUMENT COLOR, "refused_surfaces":
+   ["wings_core", ...]). The [data-lane="mister"] scope is the containment
+   mechanism that keeps these tokens off surfaces that never opted in. */
+:root,
+[data-lane='mister'] {
+  /* --- Thermal ramp (Axis 2 — TEMPERATURE = DEMAND) --- */
+  --mister-ramp-0: #001E50;
+  --mister-ramp-10: #0a438d;
+  --mister-ramp-20: #176dcf;
+  --mister-ramp-30: #00addd;
+  --mister-ramp-40: #9cd8b2;
+  --mister-ramp-50: #F8F6F0;
+  --mister-ramp-60: #decaa2;
+  --mister-ramp-70: #c89d52;
+  --mister-ramp-80: #c87d22;
+  --mister-ramp-90: #c95e0b;
+  --mister-ramp-100: #C63A1E;
+
+  /* --- Fixed Mister brand tokens (spec/MISTER_LOGO_APPLICATION_STANDARD.md — COLOR LAW) --- */
+  --mister-azul: #1D83F2;
+  --mister-cielo: #65AFFF;
+  --mister-navy: #001E50;
+  --mister-warm-white: #F8F6F0;
+
+  /* --- Clearspace --- */
+  --mister-b: 271.389;
+}
