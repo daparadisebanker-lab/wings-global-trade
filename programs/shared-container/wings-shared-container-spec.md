@@ -305,12 +305,12 @@ Extend the existing Wings brand system — do not invent a parallel one. Typogra
 
 ## 5. GO-TO-MARKET LAYER
 
-### 5.1 Three campaign lanes (extends the existing meta-ads-program structure)
-This feature adds a lane to `marketing/meta-ads-program/` with a rhythm the existing lanes don't have:
+### 5.1 Three campaign lanes (folds into the ads program)
+This feature adds a campaign lane with a rhythm the brand/category lanes don't have. (The original meta-ads-program it extended was deleted 2026-07-08; these lanes fold into its replacement when that program is written.)
 
 | Lane | Rhythm | Hook |
 |---|---|---|
-| Brand / category (existing) | Always-on | Existing program |
+| Brand / category | Always-on | The base ads program |
 | **«Trae tu grupo»** | Always-on | The behavior buyers already have: importing in group |
 | **Slot campaigns** | **Perishable** — launched per container, dead at close | «Quedan {n} de {total} cupos · ${price} todo incluido · cierra {date}» |
 

@@ -10,7 +10,7 @@ BUILD_PROMPT / spec is the entry point.
 | `ecosystem/` | Multi-lane monorepo migration — "same box, different livery"; frozen skeleton + per-lane livery, lanes WGT/01–06 | **Migration COMPLETE** (M0–M4, 2026-07) — `CLAUDE.ecosystem.md` is now the root `CLAUDE.md`; `apps/site` + `packages/*` live. Lane onboarding (§4 Phases 0–6) is the remaining, separately-ordered work. | `MIGRATION_DECISIONS.md` (D-01…D-11) · `CLAUDE.ecosystem.md` (source of the root law) |
 | `tower/` | TOWER — internal CRM+ERP+PIM+analytics at `apps/tower` (`tower.wingsglobaltrade.com`); absorbs the deployed `wings-operations` app | **UNBLOCKED** — monorepo root + ecosystem law + `packages/ui` all exist; `BUILD_PROMPT.md` runs as written | `BUILD_PROMPT.md` (5 waves) |
 | `network/` | Wings Network — supplier marketplace (subscription for presence, commission at the logistics rail); `marketplace` schema | Spec complete, phase-gated | `WINGS_MARKETPLACE_STRATEGY.md` (Layer 11 gates) → `BUILD_PROMPT.md` |
-| `shared-container/` | Contenedor Compartido — «Trae tu grupo» group container imports; additive Mister lanes | Spec complete | `wings-shared-container-spec.md` · GTM: `marketing/meta-ads-program/06-contenedor-compartido/` |
+| `shared-container/` | Contenedor Compartido — «Trae tu grupo» group container imports; additive Mister lanes | Spec complete | `wings-shared-container-spec.md` · GTM: pending — meta-ads program deleted 2026-07-08, replacement not yet written |
 
 ## Sequencing constraints (decided facts, not suggestions)
 
