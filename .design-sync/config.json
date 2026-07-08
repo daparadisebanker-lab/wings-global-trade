@@ -1,0 +1,15 @@
+{
+  "projectId": "147cc726-016b-4b73-9a34-1bd96182346b",
+  "shape": "package",
+  "pkg": "@wings/trade-ui",
+  "globalName": "WingsTradeUI",
+  "tsconfig": "tsconfig.json",
+  "buildCmd": "node .design-sync/build-styles.mjs",
+  "componentSrcMap": {
+    "MisterMark": "../../apps/site/src/components/features/mister/MisterMark.tsx"
+  },
+  "extraEntries": ["../../apps/site/src/components/features/mister/MisterMark.tsx"],
+  "cssEntry": ".ds-styles.css",
+  "extraFonts": ["../../.design-sync/fonts.css"],
+  "readmeHeader": ".design-sync/conventions.md"
+}

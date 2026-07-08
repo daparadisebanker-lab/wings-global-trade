@@ -47,3 +47,11 @@ Euro-Global-claude-nextjs-14-typescript-setup-WYGxI/
 # recraft raw output — exploration dumps incl. rejects; only accepted files
 # graduate to assets/image-generation/library/ (workshop CLAUDE.md)
 assets/image-generation/raw/
+
+# design-sync (machine state; .design-sync/{config.json,NOTES.md,conventions.md,previews/,overrides/} ARE committed)
+.ds-sync/
+ds-bundle/
+.design-sync/.cache/
+.design-sync/learnings/
+.design-sync/node_modules
+packages/ui/.ds-styles.css
