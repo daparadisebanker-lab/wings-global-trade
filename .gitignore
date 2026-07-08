@@ -43,3 +43,7 @@ Euro-Global-claude-nextjs-14-typescript-setup-WYGxI/
 
 # claude code
 .claude/
+
+# recraft raw output — exploration dumps incl. rejects; only accepted files
+# graduate to assets/image-generation/library/ (workshop CLAUDE.md)
+assets/image-generation/raw/

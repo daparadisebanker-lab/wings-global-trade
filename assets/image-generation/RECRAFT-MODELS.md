@@ -10,8 +10,9 @@ update this file in the same session.
 - MCP tools: `generate_image` · `image_to_image` · `vectorize_image` ·
   `remove_background` · `replace_background` · `crisp_upscale` ·
   `creative_upscale` · `create_style` · `get_user` (credits balance).
-- Raw files land in `C:\Users\Muaaz\tools\recraft-images` (server env), not in
-  the repo. See this folder's CLAUDE.md for how accepted files move here.
+- Raw files land in `assets/image-generation/raw/` (git-ignored; server env
+  `IMAGE_STORAGE_DIRECTORY`). See this folder's CLAUDE.md for how accepted
+  files move to `library/`.
 - **The API serves only Recraft's own models.** External models visible in
   Recraft Studio (GPT Image, Flux, Imagen, Seedream, Ideogram, video models)
   are Studio-only — never reachable from here. Don't plan around them.
@@ -19,6 +20,16 @@ update this file in the same session.
   (inpaint, outpaint, erase region, remix, explore, enhance prompt) are
   unavailable unless the server adds them — check the tool schema before
   promising a workflow that needs them.
+- **MCP schema reality (verified 2026-07-07, first production session):** the
+  server's `generate_image` exposes **only `recraftv3` and `recraftv2`** —
+  no V4/V4.1 ids — and **no `random_seed`, no `controls.colors`, no
+  `negative_prompt`, no `style_id` on generate** (custom styles via `styleID`
+  param do work). Consequences until the server widens:
+  - Exploration default is `recraftv3` + `style` + `substyle`, not V4.1.
+  - Palette is enforced **in-prompt** (name the hexes/tones in words);
+    MANIFEST provenance logs prompt + model + style/substyle in place of seed.
+  - Photoreal substyle shortlist for Register B: `natural_light`,
+    `evening_light`, `hdr`, `urban_drama`, `enterprise`.
 
 ## Model matrix (exact API ids)
 

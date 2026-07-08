@@ -2,12 +2,15 @@
 
 Read order before generating anything: `spec/WINGS_IMAGE_GENERATION_THESIS.md`
 (law — permitted/refused classes, palette, gates), then `RECRAFT-MODELS.md`
-here (tool — model ids, prompting, parameters).
+here (tool — model ids, prompting, parameters). For catalog/product-card
+hero cutouts, `spec/WINGS_CATALOG_HERO_STANDARD.md` (C-HERO) governs on top.
 
-- The `recraft` MCP server writes raw output to
-  `C:\Users\Muaaz\tools\recraft-images` (user-global env) — never point it at
-  the repo. Move **accepted** files into `library/{class}/` here, kebab-case,
-  lane-prefixed: `wgt-03-provisions-plate-coffee-01.svg` (`wings-` for house).
+- The `recraft` MCP server writes raw output to `raw/` in this folder
+  (`IMAGE_STORAGE_DIRECTORY` in `~/.claude.json`; changed from the old
+  user-global `tools\recraft-images` on 2026-07-07). `raw/` is git-ignored —
+  exploration dumps and rejects never enter git history. Move **accepted**
+  files into `library/{class}/` here, kebab-case, lane-prefixed:
+  `wgt-03-provisions-plate-coffee-01.svg` (`wings-` for house).
 - Nothing enters `library/` without passing all six thesis gates, and nothing
   enters without a MANIFEST.md row (file · class · lane · model · seed ·
   prompt · style_id · date · destination). Always set `random_seed`; an
@@ -23,9 +26,8 @@ here (tool — model ids, prompting, parameters).
   optimized per the asset budget, SVG preferred for plates/stamps/cargo.
 - V3 custom-style ids are recorded only in MANIFEST.md — losing one means
   regenerating the style from the library set.
-- The meta-ads program consumes `library/` under its own source rules
-  (`marketing/meta-ads-program/05-execution/asset-production-queue.md`,
-  global constants) — its evidence rule (no place-claimed generated scenario)
-  binds even after an asset passes every gate here. Designated first
-  production session: the technical-silhouette batch in that queue's
-  pre-production dependency #3.
+- Marketing/ads programs consume `library/` under their own source rules.
+  The previous meta-ads program was deleted 2026-07-08 (replacement pending);
+  until the new program defines its rules, the evidence rule (no place-claimed
+  generated scenario) binds directly from the thesis on any campaign use of
+  `library/` assets.
