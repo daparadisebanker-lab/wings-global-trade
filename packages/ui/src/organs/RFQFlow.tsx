@@ -446,7 +446,7 @@ function Field({
         {children}
       </div>
       {error && (
-        <p id={`${htmlFor}-error`} className="mt-1 font-body text-xs text-[#DC2626]">
+        <p id={`${htmlFor}-error`} className="mt-1 font-body text-xs text-[var(--error,#DC2626)]">
           {error}
         </p>
       )}

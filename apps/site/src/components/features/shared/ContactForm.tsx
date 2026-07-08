@@ -175,7 +175,7 @@ function LineField({
       </label>
       {children}
       {error && (
-        <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#DC2626]/70">{error}</p>
+        <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[var(--error-70,rgba(220,38,38,0.7))]">{error}</p>
       )}
     </div>
   )
@@ -191,7 +191,7 @@ function LineInput({
       className={[
         'w-full bg-transparent font-body text-base text-navy outline-none placeholder:text-navy/25',
         'transition-colors duration-200',
-        hasError ? 'placeholder:text-[#DC2626]/40' : '',
+        hasError ? 'placeholder:text-[var(--error-40,rgba(220,38,38,0.4))]' : '',
         className ?? '',
       ].join(' ')}
       {...props}
@@ -209,7 +209,7 @@ function LineTextarea({
       className={[
         'w-full resize-none bg-transparent font-body text-base text-navy outline-none placeholder:text-navy/25',
         'transition-colors duration-200',
-        hasError ? 'placeholder:text-[#DC2626]/40' : '',
+        hasError ? 'placeholder:text-[var(--error-40,rgba(220,38,38,0.4))]' : '',
         className ?? '',
       ].join(' ')}
       {...props}

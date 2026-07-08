@@ -22,7 +22,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
               ? 'bg-white/[0.06] border border-[rgba(248,246,240,0.2)] text-warm-white'
               : 'bg-white border border-border-default text-navy',
             'focus:border-gold focus:shadow-[0_0_0_3px_rgba(196,147,63,0.15)]',
-            hasError && 'border-[#DC2626]',
+            hasError && 'border-[var(--error,#DC2626)]',
             className,
           )}
           {...props}

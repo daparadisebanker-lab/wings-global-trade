@@ -264,7 +264,7 @@ export function QuotationForm() {
           })}
         </div>
         {errors.category && (
-          <p id="category-error" className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#DC2626]/70">
+          <p id="category-error" className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[var(--error-70,rgba(220,38,38,0.7))]">
             {errors.category}
           </p>
         )}
@@ -524,7 +524,7 @@ function LineField({
       </label>
       {children}
       {error && (
-        <p id={errorId} className="mt-2 font-mono text-[11px] tracking-[0.08em] text-[#DC2626]">
+        <p id={errorId} className="mt-2 font-mono text-[11px] tracking-[0.08em] text-[var(--error,#DC2626)]">
           {error}
         </p>
       )}
@@ -541,7 +541,7 @@ function LineInput({
     <input
       className={cn(
         'w-full bg-transparent font-body text-base text-navy outline-none placeholder:text-navy/25 transition-colors duration-200',
-        hasError && 'placeholder:text-[#DC2626]/40',
+        hasError && 'placeholder:text-[var(--error-40,rgba(220,38,38,0.4))]',
         className,
       )}
       {...props}

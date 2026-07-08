@@ -23,7 +23,7 @@ const ToastContext = createContext<ToastContextValue | null>(null)
 
 const typeStyles: Record<ToastType, string> = {
   success: 'border-l-[#16A34A]',
-  error: 'border-l-[#DC2626]',
+  error: 'border-l-[var(--error,#DC2626)]',
   info: 'border-l-gold',
 }
 
