@@ -4,6 +4,10 @@ Read order before generating anything: `spec/WINGS_IMAGE_GENERATION_THESIS.md`
 (law — permitted/refused classes, palette, gates), then `RECRAFT-MODELS.md`
 here (tool — model ids, prompting, parameters). For catalog/product-card
 hero cutouts, `spec/WINGS_CATALOG_HERO_STANDARD.md` (C-HERO) governs on top.
+The Mister mark is NEVER generated/traced/vectorized by any model —
+registered masters live in `packages/liveries/mister/logo/`, governed by
+`spec/MISTER_LOGO_APPLICATION_STANDARD.md` (expressive/ambient behavior:
+`spec/MISTER_EXPRESSIVE_LAYER_SPEC.md`).
 
 - The `recraft` MCP server writes raw output to `raw/` in this folder
   (`IMAGE_STORAGE_DIRECTORY` in `~/.claude.json`; changed from the old
