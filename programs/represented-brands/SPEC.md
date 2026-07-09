@@ -314,6 +314,12 @@ with brand #1's real tokens AND a deliberately clashing fictitious brand
 components, not static images. The ASCII frames above are the structural
 contract; the mockups are the visual one.
 
+**Kit assets:** the brand-agnostic asset system these components consume
+(parametric container SVGs, RB seal, packing-diagram generator, route map,
+stencil treatment, icon set, OG generator, motion signatures) is cataloged in
+`EXPERIENCE-KIT.md`; built files live in `kit/`. Kit pieces obey the same
+token contract and swap test as everything else in §2.
+
 ---
 
 ## 3 · TOWER — workflows and data model (`tower` schema)

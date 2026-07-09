@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Sello de representación oficial">
+  <!--
+    RB KIT · rb-seal · the representation stamp (LaneStamp's sibling for brands)
+    Parametric: --rb-seal-ink (default near-black, for the white canvas).
+    Slots: #seal-code (RB/nn) · #seal-year (DESDE {year}).
+    Usage: MandateSeal corner, brand tiles, OG images, trade documents,
+    shelf colophon. Rotate -8deg in CSS for the stamped feel; never bake
+    rotation into the SVG.
+  -->
+  <defs>
+    <path id="seal-arc-top" d="M 100 100 m -74 0 a 74 74 0 1 1 148 0" fill="none"/>
+    <path id="seal-arc-bot" d="M 100 100 m -74 0 a 74 74 0 1 0 148 0" fill="none"/>
+  </defs>
+
+  <g fill="none" stroke="var(--rb-seal-ink, #17181A)">
+    <circle cx="100" cy="100" r="92" stroke-width="3"/>
+    <circle cx="100" cy="100" r="86" stroke-width="1"/>
+    <circle cx="100" cy="100" r="56" stroke-width="1.5"/>
+  </g>
+
+  <g font-family="ui-monospace, 'Courier New', monospace" fill="var(--rb-seal-ink, #17181A)">
+    <text font-size="12.5" letter-spacing="2.5">
+      <textPath href="#seal-arc-top" startOffset="50%" text-anchor="middle">REPRESENTACI&#211;N OFICIAL</textPath>
+    </text>
+    <text font-size="12.5" letter-spacing="2.5">
+      <textPath href="#seal-arc-bot" startOffset="50%" text-anchor="middle">WINGS GLOBAL TRADE</textPath>
+    </text>
+    <text id="seal-code" x="100" y="103" text-anchor="middle" font-size="30" font-weight="700" letter-spacing="1">RB/00</text>
+    <text id="seal-year" x="100" y="126" text-anchor="middle" font-size="10.5" letter-spacing="2">DESDE 2026</text>
+    <g opacity="0.85">
+      <circle cx="30" cy="100" r="2.2"/>
+      <circle cx="170" cy="100" r="2.2"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1220 310" role="img" aria-label="Contenedor 40HC — vista lateral">
+  <!--
+    RB KIT · container-40hc-side · parametric closed-container elevation
+    Real proportions 12 192 × 2 896 mm (40HC). Tint architecture: every shading
+    layer is white/black at low opacity over ONE base fill, so any brand color
+    works without editing paths.
+
+    CSS custom properties (set on the host, e.g. [data-brand="{slug}"]):
+      --rb-container   container body paint        (default #2E3338 neutral steel)
+      --rb-accent      optional livery stripe      (default transparent)
+      --rb-brand-ink   logo + stencil ink          (default #F4F4F2)
+
+    Slots (replace children, keep the group id):
+      #brand-zone      logo area, safe rect x=340 y=88 w=540 h=130
+      #container-code  stencil code, bind to tower container code (RB{nn}-40HC-{seq})
+  -->
+  <defs>
+    <pattern id="corr" width="24" height="12" patternUnits="userSpaceOnUse">
+      <rect x="0"  width="5" height="12" fill="#ffffff" opacity="0.09"/>
+      <rect x="5"  width="3" height="12" fill="#ffffff" opacity="0.035"/>
+      <rect x="13" width="3" height="12" fill="#000000" opacity="0.08"/>
+      <rect x="16" width="5" height="12" fill="#000000" opacity="0.16"/>
+    </pattern>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0"    stop-color="#ffffff" stop-opacity="0.10"/>
+      <stop offset="0.25" stop-color="#ffffff" stop-opacity="0.02"/>
+      <stop offset="0.85" stop-color="#000000" stop-opacity="0.06"/>
+      <stop offset="1"    stop-color="#000000" stop-opacity="0.14"/>
+    </linearGradient>
+  </defs>
+
+  <!-- ground shadow -->
+  <ellipse cx="610" cy="298" rx="575" ry="8" fill="#000000" opacity="0.18"/>
+
+  <!-- body -->
+  <rect x="8" y="12" width="1204" height="272" fill="var(--rb-container, #2E3338)"/>
+  <rect x="8" y="12" width="1204" height="272" fill="url(#sheen)"/>
+
+  <!-- corrugated wall -->
+  <rect x="26" y="30" width="1168" height="236" fill="url(#corr)"/>
+
+  <!-- optional livery stripe (accent) -->
+  <rect x="26" y="30" width="1168" height="7" fill="var(--rb-accent, transparent)"/>
+
+  <!-- structural rails + corner posts -->
+  <rect x="8"    y="12"  width="1204" height="14" fill="#000000" opacity="0.22"/>
+  <rect x="8"    y="270" width="1204" height="14" fill="#000000" opacity="0.30"/>
+  <rect x="8"    y="12"  width="18"   height="272" fill="#000000" opacity="0.26"/>
+  <rect x="1194" y="12"  width="18"   height="272" fill="#000000" opacity="0.26"/>
+  <!-- corner castings -->
+  <g fill="#000000" opacity="0.38">
+    <rect x="8"    y="12"  width="18" height="18"/>
+    <rect x="1194" y="12"  width="18" height="18"/>
+    <rect x="8"    y="266" width="18" height="18"/>
+    <rect x="1194" y="266" width="18" height="18"/>
+  </g>
+  <!-- forklift pockets -->
+  <rect x="410" y="272" width="64" height="10" fill="#000000" opacity="0.40"/>
+  <rect x="746" y="272" width="64" height="10" fill="#000000" opacity="0.40"/>
+  <!-- vents, top corners -->
+  <g fill="#000000" opacity="0.25">
+    <rect x="44"   y="36" width="26" height="9"/>
+    <rect x="1150" y="36" width="26" height="9"/>
+  </g>
+
+  <!-- BRAND ZONE · safe rect x=340 y=88 w=540 h=130 · replace children with brand logo -->
+  <g id="brand-zone" fill="var(--rb-brand-ink, #F4F4F2)">
+    <text x="610" y="172" text-anchor="middle" font-family="Arial, sans-serif"
+          font-size="76" font-weight="700" letter-spacing="14">BRAND</text>
+  </g>
+
+  <!-- stencil markings -->
+  <g font-family="ui-monospace, 'Courier New', monospace" fill="var(--rb-brand-ink, #F4F4F2)">
+    <g id="container-code" text-anchor="end">
+      <text x="1176" y="62" font-size="24" letter-spacing="3" opacity="0.92">RBGU 000000 0</text>
+      <text x="1176" y="84" font-size="15" letter-spacing="2" opacity="0.65">40HC &#183; 76.4 M&#179;</text>
+    </g>
+    <text x="46" y="252" font-size="12" letter-spacing="2" opacity="0.55">WINGS GLOBAL TRADE &#183; CARGA REPRESENTADA</text>
+    <text x="1176" y="252" text-anchor="end" font-size="12" letter-spacing="2" opacity="0.55">MAX GROSS 32 500 KG</text>
+  </g>
+</svg>

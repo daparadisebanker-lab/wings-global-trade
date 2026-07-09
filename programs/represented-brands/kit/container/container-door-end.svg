@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 310" role="img" aria-label="Contenedor — vista de puertas">
+  <!--
+    RB KIT · container-door-end · parametric door elevation (2 438 × 2 896 mm)
+    Same tint architecture + custom properties as container-40hc-side.svg.
+    Slots: #brand-zone-door (small mark, safe rect x=32 y=48 w=80 h=44)
+           #container-code-door (stencil, right door)
+  -->
+  <defs>
+    <pattern id="corr-d" width="16" height="12" patternUnits="userSpaceOnUse">
+      <rect x="0"  width="3" height="12" fill="#ffffff" opacity="0.08"/>
+      <rect x="10" width="4" height="12" fill="#000000" opacity="0.12"/>
+    </pattern>
+    <linearGradient id="sheen-d" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.09"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.14"/>
+    </linearGradient>
+  </defs>
+
+  <ellipse cx="130" cy="298" rx="118" ry="7" fill="#000000" opacity="0.18"/>
+
+  <!-- frame -->
+  <rect x="10" y="12" width="240" height="272" fill="var(--rb-container, #2E3338)"/>
+  <rect x="10" y="12" width="240" height="272" fill="url(#sheen-d)"/>
+  <rect x="10" y="12"  width="240" height="12" fill="#000000" opacity="0.24"/>
+  <rect x="10" y="272" width="240" height="12" fill="#000000" opacity="0.32"/>
+  <rect x="10"  y="12" width="12" height="272" fill="#000000" opacity="0.28"/>
+  <rect x="238" y="12" width="12" height="272" fill="#000000" opacity="0.28"/>
+
+  <!-- door leaves -->
+  <rect x="24" y="26" width="104" height="244" fill="url(#corr-d)"/>
+  <rect x="132" y="26" width="104" height="244" fill="url(#corr-d)"/>
+  <!-- center seam -->
+  <rect x="128" y="26" width="4" height="244" fill="#000000" opacity="0.34"/>
+
+  <!-- lock rods + cam handles -->
+  <g fill="#000000" opacity="0.38">
+    <rect x="44"  y="20" width="5" height="262"/>
+    <rect x="92"  y="20" width="5" height="262"/>
+    <rect x="163" y="20" width="5" height="262"/>
+    <rect x="211" y="20" width="5" height="262"/>
+  </g>
+  <g fill="#000000" opacity="0.52">
+    <rect x="38"  y="150" width="17" height="6"/>
+    <rect x="86"  y="150" width="17" height="6"/>
+    <rect x="157" y="158" width="17" height="6"/>
+    <rect x="205" y="158" width="17" height="6"/>
+  </g>
+
+  <!-- brand mark, left door -->
+  <g id="brand-zone-door" fill="var(--rb-brand-ink, #F4F4F2)">
+    <text x="72" y="80" text-anchor="middle" font-family="Arial, sans-serif"
+          font-size="20" font-weight="700" letter-spacing="3">BRAND</text>
+  </g>
+
+  <!-- stencil code, right door -->
+  <g id="container-code-door" font-family="ui-monospace, 'Courier New', monospace"
+     fill="var(--rb-brand-ink, #F4F4F2)" text-anchor="middle">
+    <text x="184" y="70" font-size="13" letter-spacing="1.5" opacity="0.92">RBGU 000000 0</text>
+    <text x="184" y="86" font-size="10" letter-spacing="1" opacity="0.65">40HC</text>
+  </g>
+
+  <!-- CSC plate -->
+  <g opacity="0.8">
+    <rect x="186" y="222" width="42" height="30" fill="#ffffff" opacity="0.10"
+          stroke="var(--rb-brand-ink, #F4F4F2)" stroke-opacity="0.45" stroke-width="1"/>
+    <text x="207" y="240" text-anchor="middle" font-family="ui-monospace, monospace"
+          font-size="8" fill="var(--rb-brand-ink, #F4F4F2)" opacity="0.6">CSC</text>
+  </g>
+</svg>
