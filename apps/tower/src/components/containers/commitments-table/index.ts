@@ -1,0 +1,1 @@
+export { CommitmentsTable } from './CommitmentsTable'

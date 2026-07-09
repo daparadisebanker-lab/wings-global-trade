@@ -1,0 +1,10 @@
+$ pnpm --filter site start
+$ next start
+   ▲ Next.js 15.3.9
+   - Local:        http://localhost:3000
+   - Network:      http://172.29.192.1:3000
+
+ ✓ Starting...
+ ✓ Ready in 456ms
+(node:89312) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `node --trace-deprecation ...` to show where the warning was created)

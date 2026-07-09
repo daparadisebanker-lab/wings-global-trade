@@ -1,0 +1,18 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": { "ecmaVersion": 2022, "sourceType": "module", "ecmaFeatures": { "jsx": true } },
+  "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["@/*", "**/apps/*", "**/../apps/*"],
+            "message": "@wings/trade-ui must never import from apps/* (ecosystem §Phase-3.1). Organs consume tokens + props only."
+          }
+        ]
+      }
+    ]
+  }
+}

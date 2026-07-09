@@ -1,0 +1,110 @@
+/* TOWER global stylesheet.
+   Tier-1 skeleton (frozen, family-wide) is imported first; the control-room
+   livery below defines only TOWER-specific tokens (DESIGN_SYSTEM.md). No
+   component may hardcode any value defined here — tokens only. */
+@import '../../../../packages/ui/tokens/skeleton.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Typographic voice
+   Shared UI grotesque for labels/nav; tabular mono is the dominant voice.
+   Flexo (the ecosystem's UI grotesque) is self-hosted below — same faces the
+   live site ships. Mono stays the platform tabular stack: data columns need a
+   true monospace, and DESIGN_SYSTEM (deeper file) keeps TOWER's chips on mono
+   rather than the site's Teko labels.
+   ============================================================ */
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/flexo/Flexo-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/flexo/Flexo-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/flexo/Flexo-Demi.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-ui: 'Flexo', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'JetBrains Mono', 'SF Mono', 'Roboto Mono', Menlo, monospace;
+  /* Mono micro-label — the uppercase stamped chips/tags sit one step below the
+     14px type floor (DESIGN_SYSTEM status language). Tokenized so components
+     never inline a raw px size. */
+  --type-label: 11px;
+}
+
+/* ============================================================
+   The Control-Room Livery — the seventh identity (internal, never public).
+   Painted for vigilance: the room where every lane is watched at 03:00.
+   ============================================================ */
+[data-app='tower'] {
+  --surface-0: #101214; /* graphite — the room */
+  --surface-1: #16191c; /* raised panel */
+  --ink-primary: #e8eaed;
+  --ink-secondary: #9aa0a6;
+  --line: #26292d;
+  --accent: #ffb020; /* signal amber — attention, pending, in-motion */
+  --positive: #37b26c; /* radar green — cleared, passed, filled */
+  --negative: #e5484d; /* alarm — failed QC, over-capacity, expired */
+  --stamp: #e8eaed;
+  --texture: none; /* the control room is textureless; data is the texture */
+
+  /* Active-lane accent — set by LaneSwitcher on lane selection. Defaults to
+     signal amber until a lane is chosen. Tints stamps / chart series / status
+     chips ONLY — surfaces never change with the lane. */
+  --lane-accent: var(--accent);
+
+  background-color: var(--surface-0);
+  color: var(--ink-primary);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* All numerals tabular — CBM, MOQ, currency, codes, timestamps are brand
+   assets and must not shift width. */
+[data-app='tower'] .font-mono,
+[data-app='tower'] [data-numeric] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* The single permitted ambient animation: a slow 2s pulse on in-motion states
+   (FILLING, IN_TRANSIT). Everything else is laid-out or not at all. */
+@keyframes tower-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+.tower-pulse {
+  animation: tower-pulse 2s ease-in-out infinite;
+}
+
+/* prefers-reduced-motion: pulses and floods off (DESIGN_SYSTEM motion). */
+@media (prefers-reduced-motion: reduce) {
+  .tower-pulse {
+    animation: none;
+  }
+}
+
+/* Keyboard focus is always visible — every board/table is keyboard reachable. */
+[data-app='tower'] :focus-visible {
+  outline: 2px solid var(--lane-accent);
+  outline-offset: 2px;
+}

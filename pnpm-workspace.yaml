@@ -1,4 +1,9 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+  - 'packages/liveries/*'
 allowBuilds:
+  esbuild: set this to true or false
   sharp: true
   unrs-resolver: false
 onlyBuiltDependencies:

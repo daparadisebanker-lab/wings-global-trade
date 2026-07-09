@@ -1,5 +1,20 @@
 # DECISIONS.md — WINGS Homepage Build
 
+## Monorepo migration — COMPLETE (waves M0–M4, 2026-07)
+
+- The repo is now the ecosystem monorepo: `apps/site` (the live site) + `packages/*`
+  (`@wings/trade-ui`, `@wings/mister`, `packages/liveries/wings`). Zero user-visible
+  change — verified per wave against the M0 baseline (routes, full Mister SSE flow with
+  the price hold-back intact, both lead submissions).
+- The ecosystem law (`programs/ecosystem/CLAUDE.ecosystem.md`) is now the root
+  `CLAUDE.md`; the distilled site law lives in `apps/site/CLAUDE.md`.
+- Full rationale and every judgment call: `programs/ecosystem/MIGRATION_DECISIONS.md`
+  (D-01…D-11). Deliberate app-local exceptions: `QuotationForm` (a distinct future
+  `QuoteBuilder`, not RFQFlow) and the `MisterDock` shell (kept next to the guardrail
+  flow it can't be safely separated from yet).
+- Supabase untouched (zero new migrations, zero schema changes). Git history shows the
+  app moves as renames.
+
 ## Revision 4 — coverage band, platform-consistent type/color, navy-adaptive chrome
 
 - **Tractor crossing retired → CoverageBand** — bold-typography statement of geographic scope: "TODA LATINOAMÉRICA" headline + two oversized country rows (South America solid navy, Central America outlined) counter-scrubbing horizontally. Coverage expanded from 6 to 12 countries (added GT, SV, HN, NI, CR, PA — also in the org schema areaServed and the homepage stats).

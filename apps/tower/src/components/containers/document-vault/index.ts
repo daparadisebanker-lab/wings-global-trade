@@ -1,0 +1,1 @@
+export { DocumentVault } from './DocumentVault'

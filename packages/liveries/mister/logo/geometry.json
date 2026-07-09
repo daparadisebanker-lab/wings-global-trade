@@ -1,0 +1,14 @@
+{
+  "b": 271.389,
+  "unit": "svg user units (master canvas)",
+  "method": "satellite. Method 1 (metaball-M bbox width / 3) = 312.677; Method 2 (largest satellite diameter) = 271.389; they disagree 13.2% (>10% threshold), so the satellite method is used per spec.",
+  "b_method1_m_bbox_over_3": 312.677,
+  "b_method2_largest_satellite_diameter": 271.389,
+  "disagreement_pct": 13.2,
+  "m_bbox": [2413.94, 3750.83, 938.03, 732.76],
+  "mark_bbox": [1789.96, 3054.47, 2186.27, 2164.4],
+  "wordmark_bbox": [4512.16, 3488.38, 5391.73, 1317.4],
+  "largest_satellite_diameter": 271.389,
+  "derived": "2026-07-08",
+  "notes": "m_bbox and wordmark_bbox from alpha-bbox render (@resvg/resvg-js, 9000px master render, ~1.3 user-unit precision). mark_bbox is exact: driven by the outer satellite circles whose extents are analytic (center +/- r*scale from each transform matrix; the metaball-M path is interior). Satellite effective radius = 160.41 * hypot(a,b) from each circle's transform matrix; three distinct satellite scales present, diameters {135.19, 175.37, 271.39}."
+}

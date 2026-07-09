@@ -1,326 +1,237 @@
-# Wings Global Trade — Project CLAUDE.md
+# CLAUDE.md — Wings Global Trade Ecosystem
+## The Lane Intelligence Layer
 
-## What You Are Building
-
-Wings Global Trade is a B2B trade intelligence and inquiry platform for Latin American importers. It has two flows:
-
-1. **Catalog Flow** — Browse curated inventory (agricultural machinery, trucks, buses, industrial equipment, spare parts). Submit an inquiry. Conversion = form submission.
-
-2. **Mister Flow (v2)** — Mister is an AI trade-intelligence layer. It runs a short induction to resolve one of 5 buyer archetypes (lead_buyer, project_manager, logistics_manager, reseller, wholesale_partner), guides the visitor through discovery -> consideration -> pre_qualification -> support, and educates on landed-cost STRUCTURE using indexed ranges (base 100). Mister NEVER shows an absolute price, availability, or lead time. Conversion = quotation request / WhatsApp handoff / document download.
-
-**There is no cart, no checkout, no payment, no user accounts.** The platform exists to convert visitors into documented leads delivered to Wings ops via WhatsApp + email.
+This file is the operating brain for the Wings Global Trade multi-lane platform. Any agent working in this repo reads this first. Its purpose: make onboarding a **new lane** (division/category) a deterministic process — whether the lane is furniture, food, chemicals, medical equipment, or something that doesn't exist yet. The framework does not care what the cargo is. It cares what the *buyer logic* is.
 
 ---
 
-## Stack
+## 0 · Current state (read before anything)
+
+The repo-to-monorepo migration is **complete** (waves M0–M4, 2026-07). Where things stand:
+
+- **`apps/site`** is the live Wings Global Trade site — it is **NOT yet split into lanes**. It has its own `apps/site/CLAUDE.md` (site-specific law) that extends this file. Deeper file overrides root; it never restates.
+- **`apps/tower`** (TOWER: internal CRM/ERP/PIM/analytics) is **unblocked but not built** — see `programs/tower/`.
+- **`packages/`** exist and are consumed by `apps/site`: `@wings/trade-ui` (skeleton organs + primitives + Tier-1 tokens), `@wings/mister` (Mister client contract + SSE hook), `packages/liveries/wings` (Tier-2 livery). Two organs remain deliberately app-local (`QuotationForm`, the `MisterDock` shell) — see `programs/ecosystem/MIGRATION_DECISIONS.md` D-10/D-11.
+- **`programs/`** are still QUEUED specs, not active law: TOWER, Network, shared-container. Never build from them unless explicitly told to start that program.
+
+### Repository Map
 
 ```
-Framework:     Next.js 15 (App Router)
-Language:      TypeScript — everywhere, no exceptions
-Styling:       Tailwind CSS — no inline styles, no CSS modules
-Database:      Supabase (Postgres + Storage)
-Auth:          None — no user authentication in MVP
-AI:            Anthropic Claude API (claude-sonnet-4-6 — Mister conversation, streaming SSE)
-Email:         Resend
-WhatsApp:      Twilio WhatsApp API
-Deployment:    Vercel
-Package mgr:   pnpm — never npm or yarn
-Animation:     Framer Motion
+apps/site/          The live site (Next.js App Router). Its @/ alias resolves within apps/site/src.
+apps/tower/         TOWER app (queued; not built).
+packages/ui/        @wings/trade-ui — frozen organs + primitives; tokens/skeleton.css (Tier 1, frozen).
+packages/liveries/  {slug}/ livery.css + lane.config.ts; registry.md (append-only hue registry).
+packages/mister/    @wings/mister — Mister client surface (types/contract + useMisterStream). Server/guardrails stay in apps/site.
+content/            (placeholder) per-lane content, ES/EN — not yet populated.
+supabase/           Migrations + config (single project pyznlglvwihosemqkhtq). Never manual prod SQL.
+data/               Master catalog data + generated seed payloads (read by infrastructure/ from repo root).
+infrastructure/     Data pipeline scripts (run from repo root, read data/ relatively).
+scripts/            Utility scripts (icon generation, swap-test).
+spec/               AUTHORITATIVE product + design spec for apps/site. Outranks docs/.
+docs/               Strategy/research/build-history. docs/build-history/ is superseded — never build from it.
+programs/           QUEUED future-state build programs (tower · network · shared-container · ecosystem). Not active law.
+assets/             Source design assets (not served; web copies live in apps/site/public/).
 ```
+
+Root holds only config, README, DECISIONS.md, this file, and the knowledge/program dirs above. Runtime app code lives under `apps/*`. `*_COMPLETE.flag` files are single-run wave artifacts.
 
 ---
 
-## Conventions — Non-Negotiable
+## 1 · Prime Directives (never violate)
 
-- TypeScript everywhere. No `.js` files.
-- `pnpm` only. Never `npm install` or `yarn`.
-- Functional components with hooks. No class components.
-- Tailwind CSS utility classes only. No inline styles.
-- Absolute imports with `@/` prefix.
-- 2-space indent, Prettier defaults.
-- camelCase for variables/functions, PascalCase for components, kebab-case for files.
-- Always handle async errors. No silent catches.
-- Never hardcode secrets. Always `.env.local`. Always in `.gitignore`.
-- Supabase service role key used ONLY in server-side code (`src/app/api/**`).
-- RLS enabled on every Supabase table — no exceptions.
-- All Claude API calls are server-side only. API key never in client bundle.
+1. **Same box, different livery.** Structure is family-wide and frozen. Identity is per-lane and derived by rule. No lane ever forks a shared component; it themes it.
+2. **Wholesale only.** No carts, no prices-per-unit-retail, no "shop/buy now/add to cart" language anywhere, in any locale. The primary action of every lane is always: *start a quote conversation* (RFQ or Mister).
+3. **Components consume semantic tokens only.** Never a raw hex, never a raw px outside the primitive scale. If a design need can't be expressed in tokens, the token system gets extended at Tier 2 — the component never gets a hardcoded value.
+4. **One brain, many mouths.** Mister is a single engine. Lanes get knowledge packs and livery chrome, never a separate bot.
+5. **Numbers are exhibited, not hidden.** CBM, MOQ, lead times, HS codes, pallet counts — tabular mono, treated as brand assets.
+6. **The refusals are law:** no rounded-soft SaaS aesthetics (radius 0–2px only), no stock photography, no gradient meshes, no retail vocabulary, no lane without a stamp.
 
 ---
 
-## Copy Rules
+## 2 · The Frozen Skeleton (Tier 1 — identical in every lane, forever)
 
-- All UI copy in Spanish
-- No exclamation marks
-- Specific over generic ("Maquinaria de origen chino certificada" not "Productos de calidad")
-- Tagline: "Precisión. Proximidad. Confianza."
-- Tone: technical, direct, trustworthy — like a serious trade partner
+- Spacing: `4 8 12 16 24 32 48 64 96 128`
+- Type scale: 1.25 modular — `14 / 17.5 / 22 / 27 / 34 / 42 / 53 / 66 / 83`
+- Grid: 12-col, shared gutters/max-widths/breakpoints
+- Radii: 0 structural, ≤2px cards
+- Motion: `--ease-gantry: cubic-bezier(0.83,0,0.17,1)` (structural moves) · `--ease-settle: cubic-bezier(0.22,1,0.36,1)` (reveals) · reduced-motion always collapses to crossfade
+- UI typeface: the shared grotesque (labels, tables, nav, Mister) + tabular mono for all numerals
+- Shared organs: `ManifestTable` · `LaneStamp` · `FillMeter` (container visualizer) · `RFQFlow` · `SpecSheet` (scoped blueprint mode) · `MisterDock` · `TrustFooter`
+- The lane-switch transition (livery flood + stamp-settle, 600–800ms, interruptible)
 
----
-
-## Brand Colors
-
-```
-Navy:        #001E50   (primary background, headers)
-Gold:        #C4933F   (accent, CTAs, captured TPR indicators)
-Warm White:  #F8F6F0   (page background, alternate sections)
-```
-
-Section alternation: navy ↔ warm-white. Never two same-color sections adjacent. Footer always navy.
-
-## Typography
-
-```
-Display/Headings: NissanOpti (self-hosted OTF) — Regular + Italic only
-Body/UI:          Flexo (self-hosted TTF) — full 8-weight range (100–900)
-Labels/Technical: Teko (self-hosted TTF) — condensed, 5 weights (300–700)
-```
-
-All fonts are in `public/fonts/`. No Google Fonts dependencies.
-Font variables: `--font-display` (NissanOpti), `--font-body` (Flexo), `--font-mono` (Teko).
-Set in `globals.css :root` — no next/font imports needed.
-
-Tailwind utilities: `font-display`, `font-body`, `font-mono` map to these variables.
-NissanOpti has only weight 400 — never apply font-weight: 300 to display elements.
+If a new lane "needs" to change any of the above, the answer is no. That need is a livery problem or a content problem, never a skeleton problem.
 
 ---
 
-## Project Structure
+## 3 · Purchase-Logic Archetypes (the actual intelligence)
+
+Every lane — current or future — maps to exactly one archetype. The archetype determines IA pattern, RFQ math, Mister vocabulary, and visualizer cargo logic. **This is what makes the framework category-agnostic: you never design for the product, you design for how it is bought.**
+
+| Archetype | Buyer buys… | Unit math | IA pattern | Current examples |
+|-----------|-------------|-----------|------------|------------------|
+| **EQUIPMENT** | Specified units + after-sale confidence | per unit / per crate CBM | Catalog by function → spec sheet | WGT/01 Machinery |
+| **PROJECT** | A scoped delivery tied to milestones | per key / per room / per m² | **Dual taxonomy** (discipline + space) → spec sheet → project RFQ | WGT/02 Interiors |
+| **COMMODITY** | Volume at grade + price window | per pallet / per container / per MT | Commodity table (grades, seasons, availability) → contract RFQ | WGT/03 Provisions |
+| **PROGRAM** | Repeating SKU assortments | per SKU program / per carton run | Assortment builder → program RFQ | WGT/04 Living |
+| **CREDENTIAL** | Access + legitimacy (a mandate) | per territory / per scope | Roster → credential page → mandate inquiry | WGT/05 Representation |
+| **ORIGIN** | Provenance + documentation outbound | per container / per certificate | Origin catalog + seasonality → export RFQ | WGT/06 Export |
+
+**Decision tree — new category arrives:**
 
 ```
-src/
-  app/
-    layout.tsx
-    page.tsx                        # Homepage
-    catalogo/[category]/page.tsx    # Category grid
-    catalogo/[category]/[slug]/page.tsx  # Product detail
-    mister/page.tsx                 # Mister
-    nosotros/page.tsx
-    contacto/page.tsx
-    api/
-      categories/route.ts
-      products/route.ts
-      products/[slug]/route.ts
-      leads/catalog/route.ts
-      leads/contact/route.ts
-      mister/route.ts             # v2 streaming SSE endpoint
-      mister/quote/route.ts       # quotation prefill token (never a price)
-      mister/submit/route.ts      # lead/quotation submission (no CIF)
-      mister/chat/route.ts        # DEPRECATED (returns 410)
-      mister/estimate/route.ts    # RETIRED (returns 410)
-  components/
-    ui/                             # button, input, textarea, select, badge, card, skeleton, toast
-    features/
-      homepage/                     # CategoryGrid, SearchBar, HeroSection, TrustBar, MarketMap
-      catalog/                      # ProductCard, ProductGrid, ProductSpecTable, InquiryForm
-      mister/                       # MisterProvider, MisterLauncher, MisterWindow(+Header), MisterMessageList, MisterMessage, MisterStreamingMessage, MisterComposer, MisterQuickActions, MisterEmbedded, MisterWaveform
-      mister/surfaces/              # ProductCard, LandedCostWaterfall, ComparisonView, IndexComparison, MoqTable, SpecSheet, ContactCard, DocumentLink, QuotationFormCTA, SessionBrief, SurfaceRenderer
-      navigation/                   # SiteNav, MobileMenu
-      shared/                       # PageHero, SectionBlock, WhatsAppButton
-  hooks/
-    useMister.ts                    # consume MisterProvider context
-    useMisterStream.ts              # SSE consumption + history trim
-    useInquiryForm.ts
-  lib/
-    supabase/client.ts
-    supabase/server.ts
-    notifications/whatsapp.ts
-    notifications/email.ts
-    claude.ts
-    mister/                         # systemPrompt, buildContext, tools, guardrails, rateLimit, stage, archetype, fallback-actions, waterfall-segments, motion, client
-    routing.ts
-    utils.ts
-  types/
-    database.ts
-    mister.ts
-    api.ts
-  styles/
-    globals.css
-public/
-  fonts/
-    flexo-regular.woff2
-    flexo-medium.woff2
-    flexo-bold.woff2
-  images/
-    logo.svg
-    logo-dark.svg
+Is the buyer distinct AND the purchase logic distinct from every existing lane?
+├─ NO  → it is a sub-category of an existing lane. Extend that lane's taxonomy. Stop.
+└─ YES → it is a new lane.
+    ├─ Does it map to one of the six archetypes?
+    │   ├─ YES → run the Onboarding Protocol (§4) with that archetype's templates.
+    │   └─ NO  → STOP. Do not improvise. Propose a new archetype to Muaaz with:
+    │            buyer definition, unit math, IA pattern, RFQ shape.
+    │            A new archetype is a framework amendment, not a build task.
 ```
+
+Examples of the test: *medical equipment* → EQUIPMENT (new lane, existing archetype). *Bar stools* → sub-category of WGT/02. *Construction chemicals in drums* → COMMODITY. *A European lighting brand wanting LatAm distribution* → CREDENTIAL roster entry, not a lane.
 
 ---
 
-## Database
+## 4 · Lane Onboarding Protocol
 
-Supabase Postgres. Tables: `categories`, `products`, `leads`, `mister_projects`, `mister_contacts`, `mister_documents`, `mister_quote_tokens`, `notification_log`.
+Run these phases in order. Each phase has a gate; do not proceed past an unmet gate.
 
-Read `/spec/data-model.md` for complete schema SQL, RLS policies, and TypeScript types.
+### Phase 0 — Qualification interview (with Muaaz, one question at a time)
 
-Key rules:
-- All inserts to `leads` and `mister_projects` happen via API routes using service role key
-- Client code uses anon key and can only read `categories` and `products`
-- `leads` table has no public read policy — ops-only via service role
+Answers required before any code:
 
----
+1. Buyer: who signs the PO? (role, region, sophistication)
+2. Archetype: which of the six? (confirm with the decision tree)
+3. Unit math: what number does the buyer negotiate in?
+4. Taxonomy: top-level categories (≤8 at launch)
+5. Photography feasibility: can the livery's photo standard be met at launch? If not, launch is typography-and-spec-led until it can.
+6. Lane knowledge sources for Mister (supplier docs, spec sheets, incoterm defaults)
+7. Commercial readiness: is there at least one shippable program/product today?
 
-## Homepage Routing Logic
+**Gate:** all seven answered. Write them into the lane config (Phase 1).
 
-> STATUS 2026-07-04: `SearchBar` is built (`src/components/features/homepage/SearchBar.tsx`) but not currently mounted anywhere — the homepage ships the hero carousel + category grid only. The routing below describes the intended behavior once search is (re)mounted.
+### Phase 1 — Lane registration
 
-The homepage has ONE unified entry: category grid + search bar.
+Create `packages/liveries/{slug}/lane.config.ts`:
 
-```
-Standard category tile clicked → /catalogo/[category-slug]
-"Importación Personalizada" tile clicked → /mister
-Search bar with catalog keyword → /catalogo/[matching-category]?q=[query]
-Search bar with sourcing keyword → /mister?context=[query]
-Search bar with HS code (4-8 digits) → /mister?context=[query]
-Ambiguous search → /catalogo?q=[query] (with Mister CTA visible)
-```
-
-Routing logic lives in `src/lib/routing.ts` as `detectSearchIntent()`.
-
----
-
-## Mister — How It Works (v2)
-
-Mister is the indexed-range trade-intelligence layer (it REPLACED the old TPR -> CIF-estimate flow).
-
-1. User opens `/mister` (embedded mode) or the floating launcher (site-wide). First induction message renders immediately.
-2. User types -> POST `/api/mister` (streaming SSE). Server: validates, sanitizes (injection guard), IP rate-limits, atomic `in_flight` burst guard, pre-resolves backend context, calls `claude-sonnet-4-6` with a cached static system prompt + per-turn `<<MISTER_CONTEXT>>`.
-3. The model emits visible text plus ONE fenced ```mister``` control block: `{ quick_actions[3], surfaces[], state{archetype,stage}, collected{patch} }`.
-4. HOLD-BACK guardrail: the full response is buffered and `validateOutput()`-scanned (EN+ES price + availability) BEFORE any token is emitted — a price can never reach the client. On violation, the turn is replaced with a routing message.
-5. Server streams validated text as `token` events, then `surface` / `actions` / `state` / `done` events. Surfaces render via `SurfaceRenderer`.
-6. State persists to `mister_projects` (archetype, archetype_history, stage, collected, history[<=50], turn_count, flags). `collected` comes from the control block only — no second model call.
-7. Escalation: quotation form (`/api/mister/quote` -> prefill token), WhatsApp (+50760250735), or human contact card. A5 (wholesale) is always human-mediated at pre-qual.
-
-Hard rules (enforced at prompt + tool-schema + type level): no absolute price/availability/lead-time ever; indexed ranges only (always [low, high] with a disclaimer); no `fetchPrice`/`getLeadTime`/`fetchStock`/`getAvailability` tool exists; route when uncertain.
-
-System prompt: `src/lib/mister/systemPrompt.ts` (`MISTER_STATIC_PROMPT`, brief Deliverable 3 verbatim, sent as a cached block). Full spec: `spec/ENRICHED_SPEC.md`.
-
-
-## Notification Flow
-
-Both flows fire WhatsApp + email notifications:
-
-```
-1. API route receives valid submission
-2. Insert to Supabase (service role key) — MUST succeed before notifications
-3. sendWhatsAppNotification(leadId, payload) — fire-and-forget, errors logged not thrown
-4. sendEmailNotification(leadId, payload) — fire-and-forget, errors logged not thrown
-5. Return 201 to client
-```
-
-In non-production environments (`process.env.VERCEL_ENV !== 'production'`): log notification payload to console, skip actual Twilio/Resend calls.
-
----
-
-## CIF / Pricing — REMOVED from the Mister surface
-
-The old `cif-calculator.ts` absolute-USD CIF flow has been retired from Mister (decision A — REPLACE). Mister now educates on cost STRUCTURE only, via `LandedCostWaterfall`, using indexed ranges on base 100 — there is no code path that renders an absolute currency value (enforced at the TypeScript type level in `src/types/mister.ts`: `WaterfallSegment` requires paired `indexLow`/`indexHigh` + a required `disclaimerId`; the total is a computed band, never a scalar prop). Indexed segment data lives in `src/lib/mister/waterfall-segments.ts`. `duty-rates.ts` may persist only as reference data for indexed duty ranges — never to produce an absolute figure.
-
-
-## API Error Handling
-
-All API routes follow this pattern:
-
-```typescript
-try {
-  // validate with Zod
-  // do work
-  return NextResponse.json(result, { status: 201 })
-} catch (error) {
-  if (error instanceof ZodError) {
-    return NextResponse.json(
-      { error: 'Datos inválidos', code: 'VALIDATION_ERROR', details: error.errors },
-      { status: 400 }
-    )
-  }
-  console.error('[route-name]', error)
-  return NextResponse.json(
-    { error: 'Error interno del servidor', code: 'INTERNAL_ERROR' },
-    { status: 500 }
-  )
+```ts
+export const lane = {
+  code: "WGT/07",            // next integer; codes are NEVER reused or reordered
+  slug: "medical",           // path segment
+  name: "Medical & Clinical",
+  scope: "One-line scope statement, ES + EN",
+  archetype: "EQUIPMENT",
+  buyer: ["clinic groups", "hospital procurement", "distributors"],
+  unitMath: "per unit CBM",
+  cargoSet: "medical-crates",  // FillMeter asset set id
+  misterPack: "wgt-07-medical",// Supabase knowledge pack key
+  status: "OPENING",           // OPENING → ACTIVE → (never deleted; ARCHIVED at most)
 }
 ```
 
-Never expose raw error messages to client. Never leak Supabase errors or stack traces.
+Register the lane in: The Manifest lane index, the hero lane map, the footer colophon, `sitemap.ts`, and analytics lane dimension. A lane is not real until it appears on The Manifest — even as an `OPENING` stamp.
+
+### Phase 2 — Livery derivation (rules, not taste)
+
+Derive, don't invent:
+
+1. **Ground** = the environment the cargo lives in (steel shop → cold blue; timber/stone → bone; grain → kraft; clinic → clinical cool white; ocean → document cream). Light or dark ground is an archetype hint: PROJECT/ORIGIN lean light-editorial; EQUIPMENT/CREDENTIAL may go dark.
+2. **Ink** = derived from ground temperature (warm ground → warm ink, never pure #000 on warm grounds).
+3. **Accent** = the cargo's most premium material signal (brass, harvest gold, verdigris, seal gold, surgical teal…). Must pass 4.5:1 on ground for text, or ship with an `--accent-ink` pair.
+4. **Hue separation:** a new accent must sit ≥30° in hue OR a clearly distinct value register from every existing lane accent. Check against the registry in `packages/liveries/registry.md`.
+5. **Texture:** exactly one, from the library (`blueprint-grid`, `linen-paper`, `kraft`, `document-grain`, `none/high-key`). New textures require approval.
+6. **Type posture:** one of — `compressed-caps` (EQUIPMENT), `editorial-light` (PROJECT/ORIGIN), `warm-mid` (COMMODITY/PROGRAM), `formal-smallcaps` (CREDENTIAL). Same variable family, different posture. No new typefaces.
+7. Output: `livery.css` overriding **Tier 2 semantic tokens only** under `[data-lane="{slug}"]`.
+
+**Gate:** livery passes contrast audit + hue-separation check + renders all shared organs without a single component-level override.
+
+### Phase 3 — IA generation (from archetype template)
+
+- EQUIPMENT → function-first catalog → spec sheets → unit RFQ
+- PROJECT → dual taxonomy (canonical discipline URLs + curated space overlay) → spec sheets → project RFQ with per-key math
+- COMMODITY → grade/season availability table (the ManifestTable is the hero) → contract RFQ
+- PROGRAM → assortment/SKU program builder → program RFQ
+- CREDENTIAL → roster → credential pages → mandate inquiry
+- ORIGIN → origin catalog + seasonality layer → export RFQ
+
+Every lane page keeps the shared skeleton order: Lane header → capability statement → category architecture → container logic (FillMeter + CBM/MOQ math) → proof → Mister + RFQ. One primary action per page.
+
+### Phase 4 — Shared organ wiring
+
+- **FillMeter:** commission the lane cargo set (crates/pallets/cartons modeled to the shared container grammar); cargo tints from `--cargo`.
+- **Mister knowledge pack** (Supabase, key = `misterPack`):
+  - `vocabulary`: lane terms in ES/EN
+  - `unit_math`: formulas + defaults (e.g., FF&E per key; MT per container by product density)
+  - `diagnosis_set`: 5–9 lane-specific qualification questions layered onto the shared archetype engine
+  - `handoff`: WhatsApp line + CRM pipeline id
+  - `register`: one paragraph describing Mister's posture in this lane (character never changes; vocabulary and pace do)
+  - `forbidden`: claims Mister may never make in this lane (pricing guarantees, regulatory claims, etc.)
+- **RFQFlow:** configure line-item shape to the lane's unit math. The flow itself is untouched.
+- **n8n:** clone the lane pipeline template; set lane dimension on every event into the wings Supabase project (`pyznlglvwihosemqkhtq`).
+
+### Phase 5 — Content launch gate
+
+A lane goes `ACTIVE` only when it has: ≥1 fully specified flagship program/collection (depth over breadth — a curated 12 beats a thin 100), photography meeting the livery standard **or** an explicit typography-led interim design, full ES/EN content, and its Mister pack answering the diagnosis set correctly in test transcripts.
+
+### Phase 6 — QA gates (all must pass)
+
+1. **Awwwards test:** one deliberate moment of tension per key view; would a jury stop scrolling?
+2. **Token lint:** zero raw values in lane code.
+3. **Wholesale-language lint:** scan all locales for the forbidden retail vocabulary.
+4. **Performance:** LCP < 2s on 4G; FillMeter lazy-loaded; livery = pure CSS custom properties.
+5. **Reduced motion + keyboard:** full parity.
+6. **The swap test:** put another lane's livery on this lane's pages — structure must still work perfectly. If it breaks, someone forked the skeleton. Fix that.
 
 ---
 
-## Build Order Recommendation
+## 5 · Endorsed Brands & White-Label Mode
 
-Build in this order to unblock yourself at each step:
+Some businesses in the ecosystem are **not lanes** — they are standalone brands with their own identity, where Wings acts as representative or trade backbone (first case: **Áladín**). Rules:
 
-1. Project scaffolding + Supabase setup + environment variables
-2. Database migrations (run all 5 migration files)
-3. Supabase client utilities (`lib/supabase/client.ts`, `lib/supabase/server.ts`)
-4. TypeScript types (`types/database.ts`)
-5. UI primitives (`components/ui/*`)
-6. Root layout with nav and fonts
-7. Homepage (static version, no API calls)
-8. `/api/categories` + `/api/products` routes
-9. Catalog pages (category grid, product detail)
-10. Inquiry form + `/api/leads/catalog` route
-11. Notification utilities (WhatsApp + email)
-12. Accio Engine chat UI (static, no API)
-13. `/api/accio/chat` route (Claude integration)
-14. CIF calculator + `/api/accio/estimate`
-15. Accio submit form + `/api/accio/submit`
-16. Nosotros + Contacto pages
-17. Search intent routing
-18. Animations (Framer Motion passes)
-19. SEO metadata + JSON-LD
-20. Responsive polish + accessibility
-21. Staging test → Production deploy
+1. The skeleton ships as `@wings/trade-ui` — brand-agnostic. Endorsed brands consume the same components with **their own token system**, and (unlike lanes) they MAY redefine Tier-1 expressive choices: display typeface, radii feel, texture library. They may NOT change component structure, RFQ logic, or the wholesale directives.
+2. Endorsed brands do **not** use Mister. Mister is Wings IP. They get their own named advisor persona running on the same white-label engine (shared diagnosis architecture, separate persona, separate knowledge base, separate WhatsApp/CRM lanes).
+3. Endorsement lockup: the Wings credit appears in the colophon/footer and on trade documents ("Represented by Wings Global Trade") — never in the hero. A standalone brand must stand alone.
+4. On the Wings side, the endorsed brand appears as a **credential page** on WGT/05 Representation (and, where relevant, as a flagship client of WGT/06 Export).
+5. Data separation: separate Supabase schema per endorsed brand; shared n8n instance, separate pipelines; cross-reporting only at the group analytics layer.
 
 ---
 
-## Spec Files Reference
+## 6 · Repo Conventions
 
-All spec files are in `/spec/`:
+```
+app/(manifest)/           group pages
+app/(lanes)/{slug}/       lane routes — layout sets data-lane
+packages/ui/              @wings/trade-ui — the skeleton (frozen organs)
+packages/liveries/{slug}/ lane.config.ts + livery.css + textures
+packages/liveries/registry.md   ← lane codes, accents, hue registry (append-only)
+packages/mister/          engine client; packs live in Supabase
+content/{slug}/           lane content, ES/EN, spec data
+```
 
-| File | Contents |
-|------|---------|
-| `vision.md` | Product vision, personas, business models |
-| `user-stories.md` | All user stories with acceptance criteria |
-| `data-model.md` | Full Supabase schema SQL + TypeScript types |
-| `api-design.md` | All API routes with request/response shapes |
-| `component-architecture.md` | Full component tree + hook specifications |
-| `design-system.md` | All color tokens, typography, component specs |
-| `deployment.md` | Vercel config, environment variables, DNS |
-| `success-metrics.md` | KPIs, conversion funnel, 30/60/90 day targets |
-| `ENRICHED_SPEC.md` | Mister v2 full specification (current) |
-| `MISTER_MASTER_BRIEF.md` | Mister identity + behavior brief |
-| `WINGS_BRAND_SYSTEM.md` | Current brand system (2026-06-27) |
-| `contributions/` | Per-agent Phase 1 spec contributions from the build wave |
+> **Path note (migration reconciliation, logged as decision — not open for
+> reinterpretation).** The `app/(manifest)/` and `app/(lanes)/{slug}/` paths above are
+> written root-relative but resolve **inside `apps/site/src/`**. The migration
+> established `apps/site` (live site) + `apps/tower` (queued) + `packages/*`; there is
+> no top-level `app/` directory. Until `apps/site` is split into lanes, its routes live
+> under `apps/site/src/app/` in their current single-site form.
 
-When in doubt, read the relevant spec file before making a decision. The spec is authoritative. If something is genuinely ambiguous, resolve it in the direction of simplicity and note it in a code comment.
+- Stack: Next.js App Router · TypeScript · Tailwind reading CSS custom properties · Supabase (wings project `pyznlglvwihosemqkhtq` — the single Supabase project for the entire ecosystem, incl. TOWER) · n8n · Vercel.
+- Commits touching shared organs require the swap test (§4 QA-6) run against at least two lanes.
+- Lane codes are append-only. WGT/03 stays WGT/03 even if Provisions ever pauses — infrastructure numbering never reshuffles.
 
 ---
 
-## Repository Map
+## 7 · Definition of Done — new lane
 
-Runtime (the app — never reorganize without updating imports/configs):
+- [ ] Phase 0 interview answered & stored in `lane.config.ts`
+- [ ] Archetype confirmed via decision tree (or amendment proposed, approved)
+- [ ] Lane registered on The Manifest (index, map, colophon, sitemap, analytics)
+- [ ] Livery derived by §Phase-2 rules; contrast + hue registry pass
+- [ ] IA generated from archetype template; one primary action per page
+- [ ] FillMeter cargo set live; Mister pack tested; RFQ math correct; n8n pipeline firing
+- [ ] Content launch gate met (flagship depth, ES/EN, photo standard)
+- [ ] All six QA gates green
+- [ ] Status flipped `OPENING → ACTIVE`
 
-```
-src/            Application code. Catalog renders from src/data/seed.json
-public/         Served assets (fonts, images, logos)
-supabase/       Migrations + config. Never manual SQL edits in production
-data/           Master catalog data (product-catalog.json) + generated seed payloads
-infrastructure/ Data pipeline scripts (enrich, seed) — run from repo root, they read data/ relatively
-scripts/        Utility scripts (icon generation)
-```
-
-Knowledge (context, not code):
-
-```
-spec/           AUTHORITATIVE product + design specification (current product only)
-docs/           Strategy, creative direction, UX research, build history — see docs/README.md
-programs/       QUEUED future-state build programs (ecosystem migration, TOWER, Wings Network, shared-container) — see programs/README.md
-assets/         Source design assets (brand SVGs/fonts, product photo masters) — NOT served; web copies live in public/
-```
-
-Rules for agents:
-- `spec/` outranks `docs/` wherever they conflict.
-- **Nothing under `programs/` is active law.** Those are specs for unbuilt initiatives — never build from them unless explicitly instructed to start that program. When the ecosystem migration is activated, `programs/ecosystem/CLAUDE.ecosystem.md` replaces this file.
-- Anything under `docs/build-history/` is superseded — never build from it. In particular, the Accio flow (absolute-price CIF) is retired; Mister v2 never displays absolute prices.
-- New strategy/research documents go in `docs/`, not the repo root. The root holds only config, README, DECISIONS.md, and this file.
-- `*_COMPLETE.flag` files are single-run wave artifacts; archive them to `docs/build-history/flags/` when a wave finishes.
+The payoff this file protects: **lane N+1 must always cost a fraction of lane N.** Any change that makes the next lane more expensive to open is architecturally wrong, no matter how good it looks.

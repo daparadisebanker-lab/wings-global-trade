@@ -1,0 +1,674 @@
+/* Monorepo token tiers (M2). Tier 1 skeleton is frozen & family-wide; the Wings
+   livery maps Tier-2 semantic tokens to this site's exact current values. */
+@import '../../../../packages/ui/tokens/skeleton.css';
+@import '../../../../packages/liveries/wings/livery.css';
+/* Mister livery — brand tokens (--mister-azul, COLOR LAW) + thermal ramp.
+   Generated from ramp.ts; see packages/liveries/mister/livery.css. */
+@import '../../../../packages/liveries/mister/livery.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* ============================================================
+   NissanOpti — brand display face
+   ============================================================ */
+@font-face {
+  font-family: 'NissanOpti';
+  src: url('/fonts/NissanOpti.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+  /* NissanOpti lacks ¡ (U+00A1) and ¿ (U+00BF) — restrict its range so the
+     supplemental declaration below handles those two glyphs instead */
+  unicode-range: U+0000-003E, U+0040-00A0, U+00A2-00BE, U+00C0-FFFF;
+}
+@font-face {
+  font-family: 'NissanOpti';
+  src: url('/fonts/NissanOpti-Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: block;
+  unicode-range: U+0000-003E, U+0040-00A0, U+00A2-00BE, U+00C0-FFFF;
+}
+/* Supplemental: Flexo-Medium (usWeightClass 500) matches NissanOpti's visual
+   weight exactly. Covers ? ! ¡ ¿ so both question marks and both exclamation
+   marks render from the same font at the same weight. */
+@font-face {
+  font-family: 'NissanOpti';
+  src: url('/fonts/flexo-medium.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+  unicode-range: U+003F, U+0021, U+00A1, U+00BF;
+}
+@font-face {
+  font-family: 'NissanOpti';
+  src: url('/fonts/Flexo-MediumIt.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: block;
+  unicode-range: U+003F, U+0021, U+00A1, U+00BF;
+}
+
+/* ============================================================
+   Flexo — self-hosted body font (full weight range)
+   ============================================================ */
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/Flexo-Thin.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/Flexo-ThinIt.ttf') format('truetype');
+  font-weight: 100;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/Flexo-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/Flexo-LightIt.ttf') format('truetype');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/flexo/Flexo-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/Flexo-It.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/flexo/Flexo-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/Flexo-MediumIt.ttf') format('truetype');
+  font-weight: 500;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/Flexo-Demi.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/Flexo-DemiIt.ttf') format('truetype');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/flexo/Flexo-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/Flexo-BoldIt.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/Flexo-Heavy.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/Flexo-HeavyIt.ttf') format('truetype');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/Flexo-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/Flexo-BlackIt.ttf') format('truetype');
+  font-weight: 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ============================================================
+   Teko — condensed technical label face
+   ============================================================ */
+@font-face {
+  font-family: 'Teko';
+  src: url('/fonts/Teko-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Teko';
+  src: url('/fonts/Teko-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Teko';
+  src: url('/fonts/Teko-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Teko';
+  src: url('/fonts/Teko-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Teko';
+  src: url('/fonts/Teko-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ============================================================
+   Design tokens — Phase 2A full token set
+   Source: /spec/ENRICHED_SPEC.md Section 2.1
+   ============================================================ */
+:root {
+  /* BRAND — sourced from the Wings livery (Tier 2). Values are byte-identical
+     to the previous literals; see packages/liveries/wings/livery.css. */
+  --color-navy:             var(--livery-navy);
+  --color-gold:             var(--livery-gold);
+  --color-gold-hover:       var(--livery-gold-hover);
+  --color-gold-active:      var(--livery-gold-active);
+  --color-gold-subtle:      var(--livery-gold-subtle);
+  --color-warm-white:       var(--livery-warm-white);
+
+  /* SURFACES */
+  --color-surface-card:         #FAF9F6;   /* warm, not cold pure white */
+  --color-surface-card-navy:    #0A2560;
+  --color-surface-chat-user:    #F0EDE6;
+  --color-surface-tpr:          #F8F6F0;
+  --color-surface-overlay:      rgba(0, 30, 80, 0.72);
+
+  /* Legacy surface aliases */
+  --color-surface-chat-ai:      #FFFFFF;
+  --color-surface-tpr-captured: #F8F6F0;
+  --color-surface-tpr-pending:  #F3F3F3;
+
+  /* TEXT */
+  --color-text-primary:         #001E50;
+  --color-text-inverse:         #F8F6F0;
+  --color-text-muted:           rgba(0, 30, 80, 0.45);     /* navy-derived, not Tailwind gray */
+  --color-text-muted-inverse:   rgba(248, 246, 240, 0.45); /* warm-white-derived */
+  --color-text-mono:            rgba(0, 30, 80, 0.65);
+
+  /* BORDERS */
+  --color-border:               rgba(0, 30, 80, 0.10);
+  --color-border-navy:          rgba(248, 246, 240, 0.12);
+  --color-border-gold:          #C4933F;
+  --color-border-focus:         rgba(196, 147, 63, 0.40);
+
+  /* Legacy border alias */
+  --color-border-default:       rgba(0, 30, 80, 0.10);
+
+  /* Navy variants — from the Wings livery (byte-identical). */
+  --color-navy-light:           var(--livery-navy-light);
+  --color-navy-dark:            var(--livery-navy-dark);
+  --color-navy-900:             var(--livery-navy-900);
+  --color-navy-950:             var(--livery-navy-950);
+
+  /* INDICATORS */
+  --color-indicator-captured:   #C4933F;
+  --color-indicator-pending:    #D1D5DB;
+  --color-indicator-minimum:    #F59E0B;
+  --color-indicator-complete:   #16A34A;
+
+  /* Font variables consumed by Tailwind font-* utilities — from the Wings
+     livery (byte-identical family names). */
+  --font-display: var(--livery-font-display);
+  --font-body: var(--livery-font-body);
+  --font-mono: var(--livery-font-mono);
+
+  /* Extended tokens */
+  --color-gold-muted:       rgba(196, 147, 63, 0.12);
+  --color-gold-subtle-2:    rgba(196, 147, 63, 0.06);
+  --color-text-display:     #F8F6F0;
+  --spacing-section:        clamp(4rem, 8vw, 7rem);
+  --easing-spring:          cubic-bezier(0.16, 1, 0.3, 1);
+  --easing-out:             cubic-bezier(0, 0, 0.2, 1);
+  --duration-fast:          0.2s;
+  --duration-normal:        0.35s;
+  --duration-slow:          0.6s;
+
+  /* ============================================================
+     Mister Design Tokens — Phase 2B
+     Source: spec/contributions/designer.md §7 + ENRICHED_SPEC §2.4
+     Extends Wings Phase 2A tokens above.
+     ============================================================ */
+
+  /* --- Window structure --- */
+  --mister-bg-window:              #000C1F;
+  --mister-bg-header:              #001E50;
+  --mister-bg-composer:            #000C1F;
+  --mister-bg-inset:               #040F22;
+  --mister-bg-message-user:        #F0EDE6;
+  --mister-bg-hover-subtle:        rgba(248, 246, 240, 0.03);
+
+  /* --- Text — dark surfaces --- */
+  --mister-text-primary:           #F8F6F0;
+  --mister-text-secondary:         rgba(248, 246, 240, 0.60);
+  --mister-text-muted:             rgba(248, 246, 240, 0.35);
+  --mister-text-ghost:             rgba(248, 246, 240, 0.15);
+
+  /* --- Text — warm paper surface --- */
+  --mister-text-user:              #001E50;
+  --mister-text-user-muted:        rgba(0, 30, 80, 0.35);
+
+  /* --- Gold — semantic --- */
+  --mister-gold:                   #C4933F;
+  --mister-gold-annotation:        rgba(196, 147, 63, 0.75);
+  --mister-gold-rule:              rgba(196, 147, 63, 0.15);
+  --mister-gold-rule-strong:       rgba(196, 147, 63, 0.30);
+  --mister-gold-fill:              rgba(196, 147, 63, 0.06);
+  --mister-gold-fill-active:       rgba(196, 147, 63, 0.10);
+  --mister-gold-duties:            rgba(196, 147, 63, 0.08);
+
+  /* --- Borders --- */
+  --mister-border-window:          rgba(196, 147, 63, 0.15);
+  --mister-border-surface:         rgba(248, 246, 240, 0.10);
+  --mister-border-row:             rgba(248, 246, 240, 0.06);
+  --mister-border-input:           rgba(248, 246, 240, 0.12);
+  --mister-border-focus:           rgba(196, 147, 63, 0.50);
+
+  /* --- Message left rules --- */
+  --mister-rule-assistant:         rgba(196, 147, 63, 0.35);
+  --mister-rule-assistant-hover:   rgba(196, 147, 63, 0.65);
+
+  /* --- Quick actions --- */
+  --mister-qa-border:              rgba(196, 147, 63, 0.22);
+  --mister-qa-border-hover:        rgba(196, 147, 63, 0.55);
+  --mister-qa-bg-hover:            rgba(196, 147, 63, 0.06);
+
+  /* --- LandedCostWaterfall --- */
+  --mister-wf-bg:                  #001040;
+  --mister-wf-strip-product:       rgba(248, 246, 240, 0.08);
+  --mister-wf-strip-freight:       rgba(248, 246, 240, 0.06);
+  --mister-wf-strip-insurance:     rgba(248, 246, 240, 0.04);
+  --mister-wf-strip-duties:        rgba(196, 147, 63, 0.08);
+  --mister-wf-strip-lastmile:      rgba(248, 246, 240, 0.04);
+  --mister-wf-separator:           rgba(196, 147, 63, 0.12);
+  --mister-wf-base:                #C4933F;
+  --mister-wf-value:               #F8F6F0;
+  --mister-wf-total-separator:     rgba(196, 147, 63, 0.30);
+
+  /* --- Launcher --- */
+  --mister-launcher-bg:            #001040;
+  --mister-launcher-border:        rgba(196, 147, 63, 0.22);
+  --mister-launcher-border-hover:  rgba(196, 147, 63, 0.55);
+
+  /* --- Status indicators --- */
+  --mister-status-unresolved:      rgba(248, 246, 240, 0.25);
+  --mister-status-resolved:        #C4933F;
+  --mister-status-captured:        #C4933F;
+
+  /* --- Elevation --- */
+  --mister-shadow-window:
+    0 8px 48px rgba(0, 0, 0, 0.40),
+    0 0 0 1px rgba(196, 147, 63, 0.12);
+  --mister-shadow-surface:         0 2px 12px rgba(0, 0, 0, 0.24);
+
+  /* --- Spacing --- */
+  --mister-space-xs:               4px;
+  --mister-space-sm:               8px;
+  --mister-space-md:               16px;
+  --mister-space-lg:               20px;
+  --mister-space-xl:               28px;
+  --mister-space-message-group:    20px;
+  --mister-space-message-internal: 8px;
+  --mister-space-same-role:        4px;
+
+  /* --- Window dimensions --- */
+  --mister-window-width:           420px;
+  --mister-window-height:          680px;
+  --mister-window-header-height:   48px;
+  --mister-window-composer-height: 56px;
+  --mister-launcher-width:         96px;
+  --mister-launcher-height:        36px;
+  --mister-margin-column:          32px;
+}
+
+/* ============================================================
+   Base styles
+   ============================================================ */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+    overflow-x: hidden;
+  }
+
+  body {
+    background-color: #000C1F;
+    color: #F8F6F0;
+    font-family: var(--font-body), system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display), Georgia, serif;
+    font-weight: 400;
+    line-height: 1.05;
+  }
+
+  *:focus-visible {
+    outline: 3px solid var(--color-gold);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: rgba(196, 147, 63, 0.25);
+    color: #F8F6F0;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display), Georgia, serif;
+  }
+  .font-body {
+    font-family: var(--font-body), system-ui, sans-serif;
+  }
+  /* Teko — condensed label face; tabular-nums for data displays */
+  .font-mono {
+    font-family: var(--font-mono), system-ui, sans-serif;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Teko legibility floor — condensed uppercase needs 15px minimum on screen.
+     Two-class specificity (0,2,0) beats individual Tailwind utilities (0,1,0).
+     Covers every font-mono label at sub-15px without touching 100+ component files. */
+  .font-mono.text-\[9px\],
+  .font-mono.text-\[10px\],
+  .font-mono.text-\[11px\],
+  .font-mono.text-\[12px\],
+  .font-mono.text-xs,
+  .font-mono.text-sm {
+    font-size: 0.9375rem; /* 15px */
+  }
+
+  /* Mister dark room — documentary micro-typography exempt from the legibility floor.
+     Teko at 9–12px reads as document artifact, not UI label, in the dark consultation context.
+     Specificity (0,3,0) beats the global floor (0,2,0). */
+  .mister .font-mono.text-\[9px\]  { font-size: 0.5625rem; }  /* 9px  */
+  .mister .font-mono.text-\[10px\] { font-size: 0.625rem; }   /* 10px */
+  .mister .font-mono.text-\[11px\] { font-size: 0.6875rem; }  /* 11px — turn indices, session ref, spec labels */
+  .mister .font-mono.text-\[12px\] { font-size: 0.75rem; }    /* 12px — contact role, moq labels */
+  .mister .font-mono.text-xs       { font-size: 0.75rem; }    /* 12px — text-xs alias */
+
+  /* Premium section spacing */
+  .section-padding {
+    padding-top: clamp(4rem, 8vw, 7rem);
+    padding-bottom: clamp(4rem, 8vw, 7rem);
+  }
+
+  /* Warm section (light background) */
+  .section-warm {
+    background-color: #F8F6F0;
+    color: #001E50;
+  }
+
+  /* Navy section */
+  .section-navy {
+    background-color: #000C1F;
+    color: #F8F6F0;
+  }
+
+  /* Gold horizontal rule accent */
+  .wings-rule {
+    width: 2.5rem;
+    height: 1px;
+    background-color: #C4933F;
+    display: block;
+  }
+
+  /* Refined mono label */
+  .mono-label {
+    font-family: var(--font-mono), system-ui, sans-serif;
+    font-size: 0.9375rem; /* 15px */
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Gold border focus — used on inputs */
+  .gold-focus:focus-visible,
+  .gold-focus:focus {
+    outline: none;
+    border-color: rgba(196, 147, 63, 0.6);
+    box-shadow: 0 0 0 2px rgba(196, 147, 63, 0.15);
+  }
+
+  .typing-dot {
+    animation: typing-pulse 0.6s ease-in-out infinite;
+  }
+  .typing-dot:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+  .typing-dot:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+  @keyframes typing-pulse {
+    0%,
+    100% {
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  @keyframes brand-scroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .brand-marquee {
+    animation: brand-scroll 36s linear infinite;
+    will-change: transform;
+  }
+  /* Pause-on-hover is now handled via JS state in BrandMarquee.tsx (animationPlayState inline style) */
+
+  /* ============================================================
+     Hero immersion layer — CSS only, 0 KB JS
+     Source: /spec/ENRICHED_SPEC.md §2.6 + immersion-engineer.md §1
+     ============================================================ */
+
+  /* Base navy layer with two radial-gradient mesh light sources */
+  .hero-mesh {
+    background-color: #000C1F;
+    background-image:
+      radial-gradient(ellipse at 15% 35%, rgba(196, 147, 63, 0.055) 0%, transparent 50%),
+      radial-gradient(ellipse at 85% 75%, rgba(0, 14, 45, 0.8) 0%, transparent 55%),
+      radial-gradient(ellipse at 50% 0%, rgba(0, 30, 80, 0.4) 0%, transparent 60%);
+  }
+
+  /* Static SVG feTurbulence grain overlay at ~4% opacity */
+  .hero-grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23grain)' opacity='1'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Gold bottom rule on hero */
+  .hero-gold-rule {
+    border-bottom: 1px solid rgba(196, 147, 63, 0.10);
+  }
+
+  /* ============================================================
+     Inspection Mode — click a spec value to open its document panel.
+     Distinct from the hover tooltip: this is deliberate investigation.
+     ============================================================ */
+  .spec-value-inspectable {
+    cursor: pointer;
+    position: relative;
+  }
+  .spec-value-inspectable:hover {
+    color: #C4933F;
+    transition: color 150ms ease;
+  }
+
+  /* ============================================================
+     Mister — CSS utility classes and transitions
+     Source: spec/contributions/animator.md §16
+     ============================================================ */
+
+  /* CSS-only transition utilities (not Framer Motion) */
+  .mister-launcher { transition: border-color 0.15s ease; }
+  .mister-qa-button { transition: border-color 0.15s ease, background-color 0.15s ease; }
+  .mister-composer-border { transition: border-top-color 0.15s ease; }
+  .mister-send-arrow { transition: color 0.15s ease; }
+  .mister-session-ref { transition: color 0.08s ease, opacity 0.08s ease; }
+  .mister-status-dot { transition: background-color 0.12s ease, opacity 0.12s ease; }
+
+  .mister-trade-term {
+    border-bottom: 1px solid var(--mister-gold-annotation);
+  }
+  .mister-trade-term:hover {
+    border-bottom-color: var(--mister-gold);
+    transition: border-bottom-color 0.15s ease;
+  }
+
+  .mister-message-assistant:hover .mister-rule-left {
+    border-left-color: var(--mister-rule-assistant-hover);
+    transition: border-left-color 0.15s ease;
+  }
+
+  /* Elevation — box-shadow via CSS var */
+  .mister-shadow-window {
+    box-shadow: var(--mister-shadow-window);
+  }
+  .mister-shadow-surface {
+    box-shadow: var(--mister-shadow-surface);
+  }
+
+  /* Streaming cursor — gold blinking pipe; CSS only per animator.md §8 */
+  .mister-stream-cursor {
+    display: inline-block;
+    width: 1px;
+    height: 1em;
+    background: var(--mister-gold);
+    opacity: 1;
+    margin-left: 1px;
+    vertical-align: text-bottom;
+    animation: mister-blink 900ms ease-in-out infinite;
+  }
+
+  @keyframes mister-blink {
+    0%, 45%  { opacity: 1; }
+    55%, 100% { opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mister-stream-cursor { animation: none; opacity: 1; }
+  }
+}
+
+/* ============================================================
+   Custom cursor — desktop pointer devices only
+   Arrow:   #001E50 navy, 36px, 1px white outline, hotspot (4,3)
+   Pointer: #001E50 body + #C4933F finger at 65%, 34px, hotspot (13,1)
+   Recedes on dark navy sections — intentional (Stillness).
+   ============================================================ */
+@media (hover: hover) and (pointer: fine) {
+  * {
+    cursor: url('/cursors/arrow.svg') 4 3, default !important;
+  }
+
+  a,
+  button,
+  [role="button"],
+  [role="link"],
+  [role="menuitem"],
+  [role="option"],
+  [role="tab"],
+  summary,
+  label,
+  select,
+  [tabindex="0"],
+  [data-cursor="pointer"],
+  .spec-value-inspectable {
+    cursor: url('/cursors/pointer.svg') 13 1, pointer !important;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="search"],
+  input[type="number"],
+  input[type="url"],
+  input[type="tel"],
+  input[type="password"],
+  textarea,
+  [contenteditable="true"] {
+    cursor: text !important;
+  }
+
+  [disabled],
+  [aria-disabled="true"] {
+    cursor: not-allowed !important;
+  }
+}
