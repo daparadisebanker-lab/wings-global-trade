@@ -647,10 +647,33 @@ QA gates, status `LIVE`. Payoff rule applies: **brand N+1 must cost a fraction
 of brand N** — anything hand-built for brand #1 that isn't template/token/data
 is architecturally wrong.
 
-Sequencing vs. other programs: depends on TOWER being deployed (currently
-built on `feature/tower-wave1`, not deployed) — Phase 1 lands as TOWER
-migrations 22+ on that line. Reuses shared-container's slot/FillMeter
-substrate; does not block or modify Network.
+### Workstream topology — this is a multi-end program
+
+Represented-brands is not one build line. It has four ends with independent
+growth paths; only one of them is coupled to TOWER. **The program's home is
+`programs/represented-brands/` on `master`** — spec evolution never rides
+another program's feature branch.
+
+| Workstream | Covers | Lives in | Branch/merge target | Coupled to |
+|---|---|---|---|---|
+| **WS-DOC** — the program | this spec, decisions, gates | `programs/represented-brands/` | `master`, directly | nothing |
+| **WS-TOWER** — registration + designation + allocation | Phase 1; server math of Phase 3 | `tower` schema (migrations 22+) + `apps/tower` | the TOWER line (`feature/tower-wave1` until merged/deployed) | TOWER deployment |
+| **WS-SITE** — shelves + instrument UI | Phases 2–3 (site side) | `apps/site` `(brands)` route group | `feature/rb-shelf-*` off `master` (post tower-wave1 merge) | not TOWER UI — see fixture rule |
+| **WS-MISTER** — the brand data loop | Phase 4 | pack compiler + `apps/site` Mister | `feature/rb-mister` off `master` | WS-TOWER's public views in prod only |
+
+**Fixture rule (what lets the ends grow apart):** a dev-only seed migration
+ships `rb_public_brands` / `rb_public_containers` fixtures (one fictitious
+brand, full kit manifest, two containers mid-fill). WS-SITE and WS-MISTER
+develop and pass their gates against the fixtures; they bind to real TOWER
+data at integration, not during development. The public views are therefore
+the **only contract between the ends** — schema changes to them require
+touching every workstream and are flagged accordingly.
+
+Cross-program: reuses shared-container's slot/FillMeter substrate; does not
+block or modify Network. Note: `master` currently predates the monorepo
+migration (all of it sits unmerged on `feature/tower-wave1`); WS-SITE and
+WS-MISTER branch from `master` only after that merge lands — until then their
+work would have no `apps/site` to land in.
 
 ---
 
