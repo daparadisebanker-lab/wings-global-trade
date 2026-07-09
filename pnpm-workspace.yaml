@@ -3,9 +3,7 @@ packages:
   - 'packages/*'
   - 'packages/liveries/*'
 allowBuilds:
-  esbuild: set this to true or false
+  esbuild: true
   sharp: true
   unrs-resolver: false
-onlyBuiltDependencies:
-  - sharp
 verifyDepsBeforeRun: false
