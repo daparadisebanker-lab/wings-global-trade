@@ -53,14 +53,21 @@ brand tiles, trade documents, OG images, colophon. On the white canvas the
 seal is the *only* Wings-voiced mark inside the brand world besides the
 mandate block — keep it that scarce.
 
-## 3 · Container-corrugation texture — **NEEDS-APPROVAL**
+## 3 · Container-corrugation texture — **BUILT · RATIFIED** `kit/textures/`
 
-The corrugation pattern from asset 1, extracted as a standalone tileable
-background (2–4% opacity) for section bands on brand shelves. This adds a
-texture to the root-law library (`blueprint-grid`, `linen-paper`, `kraft`,
-`document-grain`) — **new textures require Muaaz's approval** (root CLAUDE.md
-Phase-2.5). Proposed name: `container-corrugation`. Until ratified, the
-pattern lives only inside the container SVGs.
+`container-corrugation.svg` — the corrugation from asset 1 as a standalone
+tileable texture (24×12 tile, relief opacities baked in). **Ratified by Muaaz
+2026-07-09 as a texture-library exemption**, scoped to represented-brand
+shelves and kit assets; it enters the root-law texture library
+(`blueprint-grid`, `linen-paper`, `kraft`, `document-grain`) formally at the
+Phase-0 root-CLAUDE.md amendment. Usage law: 2–4% opacity as section bands on
+the white canvas, never stronger.
+
+**Kit legibility rule (learned 2026-07-09, applies to every asset):** stencil
+or label text below 24px rendered size is never set on top of corrugation —
+markings get a smooth band, exactly as real containers reserve the lower side
+rail for them. Asset 1's marking line sits on the smooth lower-rail band; the
+door-end code sits on a painted placard patch.
 
 ## 4 · Packing Diagram Generator — **READY** (highest de-generic value)
 

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="12" viewBox="0 0 24 12">
+  <!--
+    RB KIT · container-corrugation · tileable texture
+    RATIFIED as a texture-library exemption by Muaaz, 2026-07-09.
+    Scope: represented-brand shelves + kit assets. Enters the root-law
+    texture library at the Phase-0 amendment.
+
+    Usage: CSS background-image (inline as data URI), repeat, layered over a
+    solid ground. The tile carries its own relief opacities; when used as a
+    page-section band on the white canvas, wrap it in a container with
+    opacity 0.02–0.04 — never stronger. Stencil/label text is NEVER set on
+    top of this texture below 24px — give text a smooth band (the kit
+    legibility rule).
+  -->
+  <rect x="0"  width="5" height="12" fill="#ffffff" opacity="0.09"/>
+  <rect x="5"  width="3" height="12" fill="#ffffff" opacity="0.035"/>
+  <rect x="13" width="3" height="12" fill="#000000" opacity="0.08"/>
+  <rect x="16" width="5" height="12" fill="#000000" opacity="0.16"/>
+</svg>

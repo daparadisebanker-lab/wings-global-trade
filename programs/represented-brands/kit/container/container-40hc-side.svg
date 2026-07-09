@@ -36,8 +36,10 @@
   <rect x="8" y="12" width="1204" height="272" fill="var(--rb-container, #2E3338)"/>
   <rect x="8" y="12" width="1204" height="272" fill="url(#sheen)"/>
 
-  <!-- corrugated wall -->
-  <rect x="26" y="30" width="1168" height="236" fill="url(#corr)"/>
+  <!-- corrugated wall (ends high: the smooth lower-rail band below is the
+       marking zone — stencil text is never set over corrugation, see kit rule) -->
+  <rect x="26" y="30" width="1168" height="212" fill="url(#corr)"/>
+  <rect x="26" y="242" width="1168" height="2" fill="#000000" opacity="0.10"/>
 
   <!-- optional livery stripe (accent) -->
   <rect x="26" y="30" width="1168" height="7" fill="var(--rb-accent, transparent)"/>
@@ -75,7 +77,7 @@
       <text x="1176" y="62" font-size="24" letter-spacing="3" opacity="0.92">RBGU 000000 0</text>
       <text x="1176" y="84" font-size="15" letter-spacing="2" opacity="0.65">40HC &#183; 76.4 M&#179;</text>
     </g>
-    <text x="46" y="252" font-size="12" letter-spacing="2" opacity="0.55">WINGS GLOBAL TRADE &#183; CARGA REPRESENTADA</text>
-    <text x="1176" y="252" text-anchor="end" font-size="12" letter-spacing="2" opacity="0.55">MAX GROSS 32 500 KG</text>
+    <text x="46" y="262" font-size="14" letter-spacing="2" opacity="0.85">WINGS GLOBAL TRADE &#183; CARGA REPRESENTADA</text>
+    <text x="1176" y="262" text-anchor="end" font-size="14" letter-spacing="2" opacity="0.85">MAX GROSS 32 500 KG</text>
   </g>
 </svg>
