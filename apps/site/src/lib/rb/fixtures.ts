@@ -97,18 +97,28 @@ export const ALADIN: RbPublicBrand = {
     isotipo: '/brands/aladin/isotipo.svg',
     sello: '/brands/aladin/sello.svg',
   },
+  // All three images attested brand_supplied by Muaaz 2026-07-10
+  // (extracted from the brand's own brandboard PDFs).
   heroSlides: [
     {
       kind: 'image',
       src: '/brands/aladin/hero-rolls.jpeg',
       alt: 'Papel higiénico Aladín de fibra de bambú, presentación en rollo',
-      // Attested brand_supplied by Muaaz 2026-07-10 (extracted from the
-      // brand's own brandboard). Further frames (bare-roll stack, bamboo
-      // forest) enter here once their licenses are confirmed — never before.
+      source: 'brand_supplied',
+    },
+    {
+      kind: 'image',
+      src: '/brands/aladin/hero-stack.jpeg',
+      alt: 'Rollos de papel de bambú sin blanquear, apilados',
       source: 'brand_supplied',
     },
     { kind: 'type' },
-    { kind: 'seal' },
+    {
+      kind: 'image',
+      src: '/brands/aladin/hero-bamboo.jpeg',
+      alt: 'Bosque de bambú — el origen de la fibra',
+      source: 'brand_supplied',
+    },
   ],
 }
 
