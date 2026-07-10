@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { getCategories, getProducts } from '@/lib/catalog-data'
+import { RB_BRANDS } from '@/lib/rb/fixtures'
 
 const BASE = 'https://wingsglobaltrade.com'
 const buildDate = new Date().toISOString().split('T')[0]
@@ -30,6 +31,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: buildDate,
     },
     {
+      url: `${BASE}/marcas`,
+      priority: 0.8,
+      changeFrequency: 'weekly',
+      lastModified: buildDate,
+    },
+    {
       url: `${BASE}/nosotros`,
       priority: 0.5,
       changeFrequency: 'monthly',
@@ -42,6 +49,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: buildDate,
     },
   ]
+
+  // Represented-brand shelves — the highest-intent brand-name queries
+  // («{marca} Perú distribuidor oficial») resolve here (SPEC §8.6).
+  const brandRoutes: MetadataRoute.Sitemap = RB_BRANDS.flatMap((b) => [
+    { url: `${BASE}/marcas/${b.slug}`, priority: 0.8, changeFrequency: 'weekly' as const, lastModified: buildDate },
+    { url: `${BASE}/marcas/${b.slug}/productos`, priority: 0.7, changeFrequency: 'weekly' as const, lastModified: buildDate },
+    { url: `${BASE}/marcas/${b.slug}/contenedor`, priority: 0.7, changeFrequency: 'weekly' as const, lastModified: buildDate },
+  ])
 
   // Category pages with priority 0.8 and weekly change frequency
   const categoryRoutes: MetadataRoute.Sitemap = categories.map((c) => ({
@@ -60,5 +75,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: p.updated_at ? p.updated_at.split('T')[0] : buildDate,
   }))
 
-  return [...staticRoutes, ...categoryRoutes, ...productRoutes]
+  return [...staticRoutes, ...brandRoutes, ...categoryRoutes, ...productRoutes]
 }

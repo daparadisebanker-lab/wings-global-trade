@@ -19,6 +19,7 @@ interface SiteNavProps {
 const LINKS = [
   { href: '/proceso',    label: 'Cómo importar' },
   { href: '/repuestos',  label: 'Motores' },
+  { href: '/marcas',     label: 'Marcas' },
   { href: '/mister',     label: 'Mister IA' },
   { href: '/nosotros',   label: 'Nosotros' },
 ]

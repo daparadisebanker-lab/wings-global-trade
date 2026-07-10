@@ -1,0 +1,32 @@
+/* ============================================================
+   Represented Brands — white canvas + per-brand token contracts
+   ------------------------------------------------------------
+   Root law §5-bis: the (brands) route group uses a PURE WHITE
+   ground — a deliberate Tier-2 exception (partner palettes need
+   a neutral ground; the Wings warm cast would tint them). Scoped
+   to [data-canvas="brand"] only; global chrome never changes.
+
+   Brand identity enters ONLY through the --rb-* contract below,
+   applied via [data-brand="{slug}"]. Values come from the brand's
+   TOWER kit manifest (fixture phase: KIT-INTAKE.md, validated
+   2026-07-10). Components consume the variables — never a brand
+   hex outside this file.
+   ============================================================ */
+
+[data-canvas='brand'] {
+  --rb-ground: #ffffff;
+  background: var(--rb-ground);
+  color: var(--rb-ink, #1a1a1a);
+}
+
+/* --- RB/01 Áladín — tokens per KIT-INTAKE.md (contrast-validated) --- */
+[data-brand='aladin'] {
+  --rb-accent: #5e8a16;        /* principal green — 4,10:1 on white (large type / graphics) */
+  --rb-accent-ink: #4c7012;    /* required ink pair — 5,78:1 (text on white) */
+  --rb-accent-2: #c77029;      /* copper — 3,63:1, large type / decoration only */
+  --rb-ink: #44650f;           /* brand-tinted near-black — 6,74:1 */
+  --rb-surface-tint: #fcfcf7;  /* ≤4% tint — the only relief from pure white */
+  --rb-accent-soft: rgba(94, 138, 22, 0.10);   /* alpha variants: Tailwind slash
+  opacity cannot modify var() colors (precedent: --livery-gold-subtle) */
+  --rb-accent-border: rgba(94, 138, 22, 0.28);
+}

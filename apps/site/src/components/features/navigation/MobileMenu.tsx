@@ -16,11 +16,12 @@ interface MobileMenuProps {
 const PRIMARY_NAV = [
   { href: '/catalogo',   label: 'Catálogo',       num: '01' },
   { href: '/repuestos',  label: 'Motores',        num: '02' },
-  { href: '/cotizar',    label: 'Cotizar',         num: '03' },
-  { href: '/proceso',    label: 'Cómo importar',   num: '04' },
-  { href: '/mister',     label: 'Mister IA',       num: '05' },
-  { href: '/nosotros',   label: 'Nosotros',        num: '06' },
-  { href: '/contacto',   label: 'Contacto',        num: '07' },
+  { href: '/marcas',     label: 'Marcas',          num: '03' },
+  { href: '/cotizar',    label: 'Cotizar',         num: '04' },
+  { href: '/proceso',    label: 'Cómo importar',   num: '05' },
+  { href: '/mister',     label: 'Mister IA',       num: '06' },
+  { href: '/nosotros',   label: 'Nosotros',        num: '07' },
+  { href: '/contacto',   label: 'Contacto',        num: '08' },
 ]
 
 // Fix #14 — stagger container drives timing; items use shared variants
