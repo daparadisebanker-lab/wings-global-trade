@@ -2,7 +2,10 @@
 
 > **Status: QUEUED spec — not active law.** Engineering + design considerations to
 > settle before any code. Entry point for the build when Muaaz activates it.
-> Written 2026-07-09. First partner brand: TBD (pending Muaaz).
+> Written 2026-07-09. First partner brand: **Áladín (RB/01 provisional)** —
+> kit intake staged 2026-07-10 at `brands/rb-01-aladin/KIT-INTAKE.md`.
+> Coexist ruling: the shelf is Áladín's first channel; the standalone
+> origin-house plan stands (endorsed path remains the endgame).
 
 ---
 
@@ -697,8 +700,14 @@ work would have no `apps/site` to land in.
 - **G4 · Relationship to WGT/05 Representation:** brand shelves also appear as
   credential pages on WGT/05 when lanes split (recommended: yes, one-line
   cross-link, no duplication), or `/marcas` fully replaces that part of WGT/05.
-- **G5 · Brand #1:** identity, mandate scope, packing data. The spec is
-  brand-agnostic by design; Phase 0 cannot close without it.
+- **G5 · Brand #1:** **CLOSED 2026-07-10 — Áladín (consumer hygiene, bamboo
+  paper, aladin.pe); kit + packing data staged in
+  `brands/rb-01-aladin/KIT-INTAKE.md`.** Category ratified consumer-hygiene;
+  mandate resolved (own brand — G7 capital model collapses to
+  purchase/own-inventory for RB/01); packing facts received (1.000 cajas/40ft
+  · 6 paquetes/caja · 10 rollos/paquete · 10 kg/caja · 15 cajas/pallet).
+  Residual within G5: slot-size ratification, container kind, box dims,
+  hero photography.
 - **G6 · Template adoption mode:** ratify §2.6 — the Odd Ritual clone as
   interaction *grammar* ported into `apps/site` (recommended; one port serves
   every brand, keeps Mister/TOWER/TypeScript law intact). The alternative —
