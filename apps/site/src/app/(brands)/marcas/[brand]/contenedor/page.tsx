@@ -1,12 +1,17 @@
 // src/app/(brands)/marcas/[brand]/contenedor/page.tsx
-// The buy-in-container instrument (SPEC §4). Server component reads the
-// fixture data (TOWER integration swaps this for the rb_public_* views) and
+// The buy-in-container instrument (SPEC §4). Server component reads live
+// fill state from the rb_public_* views (fixture fallback without env) and
 // hands serializable props to the client configurator.
 import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
-import { getBrand, ALADIN_CONTAINERS, ALADIN_PRODUCTS, ALADIN_TEMPLATE_40HC } from '@/lib/rb/fixtures'
+import { getBrand, ALADIN_PRODUCTS } from '@/lib/rb/fixtures'
+import { getRbContainers, getRbTemplateForBrand } from '@/lib/rb/data'
 import { ContainerConfigurator } from '@/components/features/brands/ContainerConfigurator'
+
+// Fill-state staleness rule (SPEC §2.7④): a stale «quedan 3» destroys the
+// trust the page exists to build — revalidate at most every 60 s.
+export const revalidate = 60
 
 interface PageProps {
   params: Promise<{ brand: string }>
@@ -27,7 +32,13 @@ export default async function BrandContainerPage({ params }: PageProps) {
   const brand = getBrand(slug)
   if (!brand) notFound()
 
-  // The page stays static; the ?producto= deep link is read client-side.
+  const [containers, template] = await Promise.all([
+    getRbContainers(brand.slug),
+    getRbTemplateForBrand(brand.slug),
+  ])
+  if (!template) notFound()
+
+  // The ?producto= deep link is read client-side (page stays ISR-cacheable).
   const productNames = Object.fromEntries(ALADIN_PRODUCTS.map((p) => [p.slug, p.name]))
 
   return (
@@ -48,8 +59,8 @@ export default async function BrandContainerPage({ params }: PageProps) {
         <Suspense fallback={null}>
           <ContainerConfigurator
             brand={{ code: brand.code, slug: brand.slug, name: brand.name }}
-            containers={ALADIN_CONTAINERS}
-            template={ALADIN_TEMPLATE_40HC}
+            containers={containers}
+            template={template}
             productNames={productNames}
           />
         </Suspense>

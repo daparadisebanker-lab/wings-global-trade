@@ -620,7 +620,21 @@ engine change.
 interview (root-law Phase-0 questions adapted: mandate scope, packing data
 availability, photography feasibility, one shippable container composition).
 
-**Phase 1 — TOWER foundation.** Migrations `tower_22+` (§3 tables, `RB_KIT`
+**Phase 1 — TOWER foundation.**
+> **Status 2026-07-10 — data core LIVE on prod** (migration `rb_wave1`,
+> repo file `supabase/migrations/20260710120000_rb_wave1.sql`):
+> `tower.represented_brands` + `rb_packing_profiles` + `rb_container_templates`
+> + `rb_containers` + `rb_slot_allocations`, atomic `tower.rb_reserve`
+> (row-locked subtraction, 72 h self-expiring reservations), public views +
+> `public.rb_reserve` wrapper (tower schema is not PostgREST-exposed), RLS on
+> all tables, RB/01 seeded (brand LIVE · template PUBLISHED · RB01-40HC-001
+> OPEN). Documented deviations: `rb_containers` is its own table
+> (tower.containers binds lane_id NOT NULL); packing profiles carry
+> product_slug, not a tower.products FK; the `tower.containers` /
+> `container_commitments` mirror + `RB_KIT` drafts + TOWER UI remain for the
+> TOWER-app wave.
+
+Migrations `tower_22+` (§3 tables, `RB_KIT`
 enum extension on `ai_drafts.kind`, subtraction functions, mirror trigger,
 public views, RLS on every table). TOWER UI: brand registration (auto-minted
 code + AI kit compiler → pre-filled kit review, validators, the structural

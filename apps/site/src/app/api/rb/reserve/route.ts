@@ -1,14 +1,15 @@
 // src/app/api/rb/reserve/route.ts
 // ALLOCATION reservation (SPEC §4.3): no cart, no checkout — the action
-// produces a DOCUMENTED RESERVATION LEAD. Insert-first, notify
-// fire-and-forget (site notification law). Server recomputes the cascade;
-// client numbers are display only.
+// produces a DOCUMENTED RESERVATION: a row-locked slot allocation in
+// tower.rb_slot_allocations (72 h expiry, self-healing subtraction) plus a
+// lead. Insert-first, notify fire-and-forget (site notification law). All
+// authoritative math and availability decisions are server-side.
 //
-// Fixture phase: slot availability checks against the fixture container and
-// the allocation ledger is the lead itself. TOWER Phase 1 replaces this with
-// rb_slot_allocations + row-locked subtraction; the `leads.flow` enum gains
-// a dedicated value in those migrations (until then reservations ride
-// 'contact' with structured context — flagged in KIT-INTAKE follow-ups).
+// Order of writes: lead first (contact context must never be lost), then the
+// atomic allocation RPC. If the RPC loses the race → 409 waitlist; the lead
+// remains as the waitlist record, and the notification says so.
+// leads.flow rides 'contact' until a dedicated enum value ships with the
+// TOWER UI wave.
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { z, ZodError } from 'zod'
@@ -16,15 +17,16 @@ import { insertLead } from '@/lib/leads'
 import { sendWhatsAppNotification } from '@/lib/notifications/whatsapp'
 import { sendEmailNotification } from '@/lib/notifications/email'
 import type { ContactNotificationPayload } from '@/lib/notifications/types'
-import { getBrand, getContainer, getTemplate } from '@/lib/rb/fixtures'
+import { getBrand } from '@/lib/rb/fixtures'
+import { getRbContainerById, getRbTemplateByRef, reserveRbSlots } from '@/lib/rb/data'
 import { cascadeForSlots, fmt, slotsRemaining } from '@/lib/rb/packing'
 
 const ReserveSchema = z.object({
   brand: z.string().min(2).max(40),
   containerId: z.string().min(3).max(40),
-  /** 'shared' reserves slots on the filling container (availability-checked);
-   *  'dedicated' is a full-container request scheduled against production —
-   *  no shared fill state to race on. */
+  /** 'shared' reserves slots on the filling container (row-locked,
+   *  availability-checked); 'dedicated' is a full-container request scheduled
+   *  against production — no shared fill state to race on. */
   allocation: z.enum(['shared', 'dedicated']).default('shared'),
   slots: z.number().int().min(1).max(100),
   full_name: z.string().min(2).max(100),
@@ -39,16 +41,15 @@ export async function POST(request: NextRequest) {
     const data = ReserveSchema.parse(await request.json())
 
     const brand = getBrand(data.brand)
-    const container = brand ? getContainer(data.containerId) : undefined
-    const template = container ? getTemplate(container.templateRef) : undefined
+    const container = brand ? await getRbContainerById(data.containerId) : null
+    const template = container ? await getRbTemplateByRef(container.templateRef) : null
     if (!brand || !container || !template) {
       return NextResponse.json({ error: 'Contenedor no encontrado', code: 'NOT_FOUND' }, { status: 404 })
     }
 
-    // Server-side availability check — the client never decides this.
+    // Fast pre-check for honest UX; the RPC re-checks under a row lock.
     const remaining = slotsRemaining(container)
     if (data.allocation === 'shared' && data.slots > remaining) {
-      // Lost the race / over-ask → waitlist path, never a dead end (SPEC §4).
       return NextResponse.json(
         { error: 'Cupos insuficientes en este contenedor', code: 'SLOTS_UNAVAILABLE', remaining },
         { status: 409 },
@@ -67,7 +68,7 @@ export async function POST(request: NextRequest) {
         : `[${brand.code} ${brand.name} · reserva de cupos]`,
       data.allocation === 'dedicated'
         ? `Plantilla: ${template.ref} · ${template.kindLabel} · programación contra producción`
-        : `Contenedor: ${container.id} · ${template.kindLabel} · ${container.route.origin} → ${container.route.destination} · cierra ${container.closesAt}`,
+        : `Contenedor: ${container.code ?? container.id} · ${template.kindLabel} · ${container.route.origin} → ${container.route.destination} · cierra ${container.closesAt}`,
       `Asignación: ${cascadeLine}`,
       data.company ? `Empresa: ${data.company}` : null,
       data.message ? `Mensaje: ${data.message}` : null,
@@ -76,6 +77,8 @@ export async function POST(request: NextRequest) {
       .filter(Boolean)
       .join('\n')
 
+    // 1 · Lead first — the contact context is never lost, even if the
+    //     allocation loses the race (the lead then IS the waitlist record).
     const leadId = await insertLead({
       flow: 'contact',
       full_name: data.full_name,
@@ -91,18 +94,61 @@ export async function POST(request: NextRequest) {
       ip_country: ipCountry,
     })
 
+    // 2 · Atomic allocation (shared only) — row lock in tower.rb_reserve.
+    let allocationId: string | undefined
+    let waitlisted = false
+    if (data.allocation === 'shared') {
+      const result = await reserveRbSlots({
+        containerId: container.id,
+        slots: data.slots,
+        leadId,
+        quantityUnits: cascade.units,
+      })
+      if (!result.ok) {
+        if (result.reason === 'insufficient' || result.reason === 'closed') {
+          waitlisted = true
+        } else {
+          return NextResponse.json({ error: 'Contenedor no encontrado', code: 'NOT_FOUND' }, { status: 404 })
+        }
+      } else {
+        allocationId = result.allocationId
+      }
+    }
+
+    // 3 · Notify — fire-and-forget, with the real outcome stated.
     const payload: ContactNotificationPayload = {
       flow: 'contact',
       full_name: data.full_name,
       email: data.email,
       phone: data.phone,
-      message: structuredMessage,
+      message: `${structuredMessage}\nESTADO: ${
+        waitlisted
+          ? 'LISTA DE ESPERA — cupos insuficientes al confirmar'
+          : data.allocation === 'dedicated'
+            ? 'SOLICITUD DE CONTENEDOR DEDICADO'
+            : `RESERVADO (72 h) · asignación ${allocationId ?? ''}`
+      }`,
     }
     void sendWhatsAppNotification(leadId, payload)
     void sendEmailNotification(leadId, payload)
 
+    if (waitlisted) {
+      return NextResponse.json(
+        {
+          error: 'Cupos insuficientes en este contenedor',
+          code: 'SLOTS_UNAVAILABLE',
+          lead_id: leadId,
+        },
+        { status: 409 },
+      )
+    }
+
     return NextResponse.json(
-      { lead_id: leadId, reservation: { slots: data.slots, cascade, expiresHours: 72 } },
+      {
+        lead_id: leadId,
+        allocation_id: allocationId ?? null,
+        reservation: { slots: data.slots, cascade, expiresHours: 72 },
+      },
       { status: 201 },
     )
   } catch (error) {

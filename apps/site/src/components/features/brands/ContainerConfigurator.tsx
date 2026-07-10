@@ -168,8 +168,8 @@ export function ContainerConfigurator({ brand, containers, template, productName
         </h3>
         <p className="mt-3 max-w-xl text-body-md text-neutral-700">
           Otro comprador tomó cupos de este contenedor mientras configuraba su reserva.
-          Podemos anotarlo en lista de espera o avisarle cuando abra el siguiente
-          contenedor de {brand.name}.
+          Su solicitud quedó registrada con sus datos de contacto; podemos priorizarlo
+          en lista de espera o avisarle cuando abra el siguiente contenedor de {brand.name}.
         </p>
         <div className="mt-5 flex flex-wrap gap-3">
           <button

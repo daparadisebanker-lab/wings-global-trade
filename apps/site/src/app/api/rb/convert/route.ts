@@ -7,7 +7,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { z, ZodError } from 'zod'
-import { getTemplate } from '@/lib/rb/fixtures'
+import { getRbTemplateByRef } from '@/lib/rb/data'
 import { slotsForQuantity } from '@/lib/rb/packing'
 
 const ConvertSchema = z.object({
@@ -19,7 +19,7 @@ const ConvertSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const data = ConvertSchema.parse(await request.json())
-    const template = getTemplate(data.templateRef)
+    const template = await getRbTemplateByRef(data.templateRef)
     if (!template) {
       return NextResponse.json({ error: 'Plantilla no encontrada', code: 'NOT_FOUND' }, { status: 404 })
     }

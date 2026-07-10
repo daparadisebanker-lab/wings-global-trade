@@ -52,6 +52,8 @@ export interface RbContainerTemplate {
 
 export interface RbPublicContainer {
   id: string
+  /** Ops container code (RB01-40HC-001); absent on fixtures. */
+  code?: string
   templateRef: string
   route: { origin: string; destination: string }
   closesAt: string // ISO date
