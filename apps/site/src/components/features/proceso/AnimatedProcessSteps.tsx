@@ -1,6 +1,7 @@
 'use client'
 
 import { Fragment, useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import gsap from 'gsap'
@@ -38,6 +39,8 @@ export interface Phase {
   id: string
   label: string
   sublabel: string
+  /** GRANO panel plate (site-graded webp) shown on the desktop phase card. */
+  plate?: string
   steps: Step[]
 }
 
@@ -88,6 +91,40 @@ function FaqAccordion({ faq }: { faq: StepFaq }) {
 // ─── Desktop: horizontal track cards ─────────────────────────────────────────
 
 function PhaseIntroCard({ phase }: { phase: Phase }) {
+  if (phase.plate) {
+    // Section-entry panel: the GRANO plate is the ground (full-bleed, hard
+    // panel edges), type sits on the plate's own shadow pole via the scrim.
+    return (
+      <div className="relative flex min-w-[440px] shrink-0 basis-[440px] flex-col justify-end self-stretch overflow-hidden">
+        {/* sizes overshoots the 440px slot: object-cover fills the full track
+            height, so the needed source width is height-driven (~720 CSS px) */}
+        <Image
+          src={phase.plate}
+          alt=""
+          aria-hidden
+          fill
+          className="object-cover"
+          sizes="720px"
+        />
+        <div
+          aria-hidden
+          className="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-[#000C1F]/90 via-[#000C1F]/40 to-transparent"
+        />
+        <div className="relative p-10 pb-14">
+          <p className="font-mono text-[9px] uppercase tracking-[0.20em] text-gold/80">
+            {phase.label}
+          </p>
+          <p className="mt-3 font-display text-display-sm font-light text-warm-white leading-tight">
+            {phase.sublabel}
+          </p>
+          <div className="mt-5 h-px w-10 bg-gold/40" />
+          <p className="mt-3 font-mono text-[10px] tracking-[0.06em] text-warm-white/45">
+            {phase.steps.length} {phase.steps.length === 1 ? 'paso' : 'pasos'}
+          </p>
+        </div>
+      </div>
+    )
+  }
   return (
     <div className="flex min-w-[360px] shrink-0 flex-col justify-center pr-16">
       <p className="font-mono text-[9px] uppercase tracking-[0.20em] text-gold/50">{phase.label}</p>
@@ -310,23 +347,50 @@ export function AnimatedProcessSteps({ phases }: AnimatedProcessStepsProps) {
           {phases.map((phase, pi) => (
             <div key={phase.id} className={pi > 0 ? 'mt-20' : ''}>
               <motion.div
-                className="mb-2 flex items-center gap-4"
                 initial={shouldReduceMotion ? false : { opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true, margin: '-60px' }}
                 transition={{ duration: shouldReduceMotion ? 0 : 0.4 }}
               >
-                <div className="h-px flex-1 bg-gold/15" />
-                <div className="flex items-center gap-2.5">
-                  <span className="font-mono text-[9px] uppercase tracking-[0.20em] text-gold/55">
-                    {phase.label}
-                  </span>
-                  <span className="font-mono text-[9px] text-navy/20">·</span>
-                  <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-navy/30">
-                    {phase.sublabel}
-                  </span>
-                </div>
-                <div className="h-px flex-1 bg-gold/15" />
+                {phase.plate ? (
+                  <div className="relative mb-2 flex h-44 flex-col justify-end overflow-hidden">
+                    <Image
+                      src={phase.plate}
+                      alt=""
+                      aria-hidden
+                      fill
+                      className="object-cover"
+                      sizes="100vw"
+                    />
+                    <div
+                      aria-hidden
+                      className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-[#000C1F]/90 via-[#000C1F]/40 to-transparent"
+                    />
+                    <div className="relative flex items-center gap-2.5 p-5">
+                      <span className="font-mono text-[9px] uppercase tracking-[0.20em] text-gold/80">
+                        {phase.label}
+                      </span>
+                      <span className="font-mono text-[9px] text-warm-white/30">·</span>
+                      <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-warm-white/60">
+                        {phase.sublabel}
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mb-2 flex items-center gap-4">
+                    <div className="h-px flex-1 bg-gold/15" />
+                    <div className="flex items-center gap-2.5">
+                      <span className="font-mono text-[9px] uppercase tracking-[0.20em] text-gold/55">
+                        {phase.label}
+                      </span>
+                      <span className="font-mono text-[9px] text-navy/20">·</span>
+                      <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-navy/30">
+                        {phase.sublabel}
+                      </span>
+                    </div>
+                    <div className="h-px flex-1 bg-gold/15" />
+                  </div>
+                )}
               </motion.div>
 
               <div className="relative">

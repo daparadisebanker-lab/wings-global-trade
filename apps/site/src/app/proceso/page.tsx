@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
 import { AnimatedProcessSteps, type Phase } from '@/components/features/proceso/AnimatedProcessSteps'
+import { SharedContainerFigure } from '@/components/features/proceso/SharedContainerFigure'
 import { JsonLd } from '@/components/seo/JsonLd'
 
 export const metadata: Metadata = {
@@ -27,6 +28,7 @@ const PHASES: Phase[] = [
     id: 'fase-a',
     label: 'Fase A',
     sublabel: 'Origen y verificación',
+    plate: '/proceso/grano/phase-a.webp',
     steps: [
       {
         id: 'paso-01',
@@ -71,6 +73,7 @@ const PHASES: Phase[] = [
     id: 'fase-b',
     label: 'Fase B',
     sublabel: 'Precio y documentación',
+    plate: '/proceso/grano/phase-b.webp',
     steps: [
       {
         id: 'paso-03',
@@ -105,6 +108,7 @@ const PHASES: Phase[] = [
     id: 'fase-c',
     label: 'Fase C',
     sublabel: 'Logística y entrega',
+    plate: '/proceso/grano/phase-c.webp',
     steps: [
       {
         id: 'paso-05',
@@ -197,17 +201,23 @@ export default function ProcesoPage() {
       <section className="bg-[#000C1F] px-6 py-20 md:px-10 md:py-28">
         <div className="mx-auto w-full max-w-6xl">
           <div className="wings-rule mb-8" />
-          <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.15em] text-gold">
-            Contenedor compartido
-          </p>
-          <h2 className="max-w-2xl font-display text-display-md font-light text-warm-white leading-[1.05] tracking-[-0.02em]">
-            ¿No llenas un contenedor solo? Trae tu grupo.
-          </h2>
-          <p className="mt-5 max-w-2xl font-body text-body-md leading-relaxed text-warm-white/55">
-            Un contenedor compartido entre tu grupo de socios: cada uno toma su propio cupo con un
-            solo precio todo incluido — flete, seguro, zona franca y despacho. Tu contrato siempre es
-            con Wings, nunca con los demás compradores. Sigues cada hito del embarque por WhatsApp.
-          </p>
+          <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-[1fr_minmax(0,580px)]">
+            <div>
+              <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.15em] text-gold">
+                Contenedor compartido
+              </p>
+              <h2 className="max-w-2xl font-display text-display-md font-light text-warm-white leading-[1.05] tracking-[-0.02em]">
+                ¿No llenas un contenedor solo? Trae tu grupo.
+              </h2>
+              <p className="mt-5 max-w-2xl font-body text-body-md leading-relaxed text-warm-white/55">
+                Un contenedor compartido entre tu grupo de socios: cada uno toma su propio cupo con
+                un solo precio todo incluido — flete, seguro, zona franca y despacho. Tu contrato
+                siempre es con Wings, nunca con los demás compradores. Sigues cada hito del embarque
+                por WhatsApp.
+              </p>
+            </div>
+            <SharedContainerFigure />
+          </div>
 
           <div className="mt-10 grid grid-cols-1 gap-6 border-t border-warm-white/[0.08] pt-8 sm:grid-cols-3">
             <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-warm-white/40">
