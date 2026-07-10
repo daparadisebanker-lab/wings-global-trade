@@ -15,3 +15,13 @@ Notes:
   ≥30° separation against this row.
 - When Wings is formally onboarded (or split into lanes WGT/01–06), each lane's
   accent registers here at that time.
+
+## Represented brands (RB/xx — append-only, same law as lane codes)
+
+RB accents render only inside the `(brands)` white canvas via the `--rb-*` token
+contract — they never touch lane chrome. Registered here for the one-ledger rule
+and hue-adjacency eyeballing against lane accents.
+
+| Code | Slug | Name | Accent | Accent hue | Ink pair | Status |
+|------|------|------|--------|-----------|----------|--------|
+| RB/01 | aladin | Áladín (bamboo hygiene paper) | `#5E8A16` green | ~83° (45° vs house) | `#4C7012` (5,78:1) | ONBOARDING |

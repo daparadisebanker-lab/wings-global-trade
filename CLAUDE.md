@@ -75,6 +75,7 @@ Every lane — current or future — maps to exactly one archetype. The archetyp
 | **PROGRAM** | Repeating SKU assortments | per SKU program / per carton run | Assortment builder → program RFQ | WGT/04 Living |
 | **CREDENTIAL** | Access + legitimacy (a mandate) | per territory / per scope | Roster → credential page → mandate inquiry | WGT/05 Representation |
 | **ORIGIN** | Provenance + documentation outbound | per container / per certificate | Origin catalog + seasonality → export RFQ | WGT/06 Export |
+| **ALLOCATION** | A share of a planned container of a represented brand | per slot / per quantity-in-container (server-converted to slots) | Brand shelf → brand catalog → container allocation instrument | RB/01 Áladín (§5-bis) |
 
 **Decision tree — new category arrives:**
 
@@ -194,6 +195,17 @@ Some businesses in the ecosystem are **not lanes** — they are standalone brand
 3. Endorsement lockup: the Wings credit appears in the colophon/footer and on trade documents ("Represented by Wings Global Trade") — never in the hero. A standalone brand must stand alone.
 4. On the Wings side, the endorsed brand appears as a **credential page** on WGT/05 Representation (and, where relevant, as a flagship client of WGT/06 Export).
 5. Data separation: separate Supabase schema per endorsed brand; shared n8n instance, separate pipelines; cross-reporting only at the group analytics layer.
+
+## 5-bis · Represented Brands — hosted (RB/xx)
+
+A third structural category (ratified 2026-07-10, program law in `programs/represented-brands/SPEC.md`): brands Wings officially represents and sells **container-only** (full container or slot allocation, never units), inventory Wings-managed in TOWER. Distinct from both lanes and endorsed brands:
+
+1. They live **inside the Wings site** at `/marcas/{brand}` — the `(brands)` route group in `apps/site`. The group uses a **pure-white ground**: a deliberate Tier-2 exception (multiple partner palettes need a neutral ground; the Wings warm cast would tint them). Scoped to the route group only — global chrome never changes ground.
+2. Brand identity enters through the fixed `--rb-*` token contract only (`accent`, `accent-ink`, `accent-2`, `ink`, `surface-tint` + logo + photography), applied via `[data-brand="{slug}"]`. Wings type system throughout; no brand typefaces, radii, or motion. Swap test applies (render brand A with brand B's tokens).
+3. Advisor is **Mister**, fed by an auto-compiled knowledge pack (`rb-{slug}`) — never a separate persona (that is the endorsed path).
+4. Purchase logic = **ALLOCATION** archetype (§3). Slot subtraction and packing math are server-side only; display math never overrides.
+5. Brand codes **RB/01, RB/02…** are append-only and ledgered in `packages/liveries/registry.md`, same law as lane codes. Entity is `tower.represented_brands` — never overload `tower.brands` (that means operating tenant).
+6. A brand may hold both statuses (endorsed standalone site + hosted shelf) — first case: Áladín, RB/01.
 
 ---
 

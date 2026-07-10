@@ -1,7 +1,11 @@
 # Represented Brands — Partner Brand Shelves, Container-Only Commerce
 
-> **Status: QUEUED spec — not active law.** Engineering + design considerations to
-> settle before any code. Entry point for the build when Muaaz activates it.
+> **Status: ACTIVE — program activated by Muaaz 2026-07-10** («I want to see
+> it real and full function»). Phase 0 closed: ALLOCATION archetype + §5-bis
+> amended into root CLAUDE.md, RB/01 registered in the livery registry;
+> recommendations adopted as ratified: G2 `/marcas` · G3 «a cotizar» at
+> launch · G4 cross-link · G6 grammar-port. Build order: WS-SITE against
+> fixtures first (this file §6).
 > Written 2026-07-09. First partner brand: **Áladín (RB/01 provisional)** —
 > kit intake staged 2026-07-10 at `brands/rb-01-aladin/KIT-INTAKE.md`.
 > Coexist ruling: the shelf is Áladín's first channel; the standalone
