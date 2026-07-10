@@ -8,6 +8,7 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { getBrand } from '@/lib/rb/fixtures'
 import { MandateSeal } from '@/components/features/brands/MandateSeal'
+import { BrandHero } from '@/components/features/brands/BrandHero'
 
 interface PageProps {
   params: Promise<{ brand: string }>
@@ -66,16 +67,9 @@ export default async function BrandAboutPage({ params }: PageProps) {
             </Link>
           </div>
         </div>
-        <div className="flex items-center justify-center bg-[var(--rb-surface-tint)] p-10">
-          <Image
-            src={brand.logo.sello}
-            alt=""
-            aria-hidden
-            width={220}
-            height={220}
-            className="h-44 w-44 md:h-56 md:w-56"
-          />
-        </div>
+        <BrandHero
+          brand={{ name: brand.name, claim: brand.claim, logo: brand.logo, heroSlides: brand.heroSlides }}
+        />
       </header>
 
       {/* Mandate */}

@@ -8,6 +8,15 @@
 // RB/01 Áladín data source: programs/represented-brands/brands/rb-01-aladin/
 // (KIT-INTAKE.md + PRODUCTS.md, ratified 2026-07-10).
 
+export interface RbHeroSlide {
+  kind: 'image' | 'type' | 'seal'
+  /** image slides only */
+  src?: string
+  alt?: string
+  /** §8.7 asset integrity: only brand_supplied | wings_studio may render. */
+  source?: 'brand_supplied' | 'wings_studio'
+}
+
 export interface RbPublicBrand {
   code: string
   slug: string
@@ -21,6 +30,8 @@ export interface RbPublicBrand {
   mandateScope: string[]
   certificationsNote: string
   logo: { isologo: string; positivo: string; isotipo: string; sello: string }
+  /** BrandHero slider frames (SPEC §2.7① — Odd Ritual home-hero pattern). */
+  heroSlides: RbHeroSlide[]
 }
 
 export interface RbProduct {
@@ -86,6 +97,19 @@ export const ALADIN: RbPublicBrand = {
     isotipo: '/brands/aladin/isotipo.svg',
     sello: '/brands/aladin/sello.svg',
   },
+  heroSlides: [
+    {
+      kind: 'image',
+      src: '/brands/aladin/hero-rolls.jpeg',
+      alt: 'Papel higiénico Aladín de fibra de bambú, presentación en rollo',
+      // Attested brand_supplied by Muaaz 2026-07-10 (extracted from the
+      // brand's own brandboard). Further frames (bare-roll stack, bamboo
+      // forest) enter here once their licenses are confirmed — never before.
+      source: 'brand_supplied',
+    },
+    { kind: 'type' },
+    { kind: 'seal' },
+  ],
 }
 
 export const ALADIN_PRODUCTS: RbProduct[] = [
