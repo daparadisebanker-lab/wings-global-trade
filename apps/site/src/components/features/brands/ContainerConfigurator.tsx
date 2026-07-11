@@ -14,8 +14,8 @@ import type { RbContainerTemplate, RbPublicBrand, RbPublicContainer } from '@/li
 import { fmt } from '@/lib/rb/packing'
 import { PackingCascade } from '@/components/features/brands/PackingCascade'
 import { SlotGrid } from '@/components/features/brands/SlotGrid'
-import { CupoContainerDiagram } from '@/components/features/brands/CupoContainerDiagram'
-import { TechDraw } from '@/components/features/brands/TechDraw'
+import { ContainerSliceDiagram } from '@/components/features/shared/ContainerSliceDiagram'
+import { TechDraw } from '@/components/features/shared/TechDraw'
 
 type Allocation = 'shared' | 'dedicated'
 type Mode = 'slots' | 'quantity'
@@ -320,12 +320,27 @@ export function ContainerConfigurator({ brand, containers, template, productName
                   {/* The container itself, sliced into cupos — same states
                       and selection semantics as the grid below it */}
                   <TechDraw>
-                    <CupoContainerDiagram
-                      container={container}
-                      template={template}
-                      selected={slots}
-                      onSelect={(n) => setSlots(Math.max(1, Math.min(n, remaining)))}
-                    />
+                    {/* Brand canvas overrides the diagram tokens to --rb-* */}
+                    <div
+                      style={
+                        {
+                          '--csd-accent': 'var(--rb-accent)',
+                          '--csd-accent-ink': 'var(--rb-accent-ink)',
+                          '--csd-accent-soft': 'var(--rb-accent-soft)',
+                          '--csd-ink': 'var(--rb-ink)',
+                          '--csd-tint': 'var(--rb-surface-tint)',
+                        } as React.CSSProperties
+                      }
+                    >
+                      <ContainerSliceDiagram
+                        kind={template.kind}
+                        slots={container.slots}
+                        selected={slots}
+                        onSelect={(n) => setSlots(Math.max(1, Math.min(n, remaining)))}
+                        headline={`${template.kind} · ${container.slots.total} cupos · ${fmt(template.totalPackages)} cajas · vendido ■ reservado ▨ disponible □`}
+                        caption={`1 cupo = ${template.packagesPerSlot} cajas = ${fmt(template.packagesPerSlot * template.unitsPerPackage)} ${template.unitNamePlural} — seleccione en el contenedor o en la cuadrícula`}
+                      />
+                    </div>
                   </TechDraw>
                   <SlotGrid
                     container={container}

@@ -1,5 +1,5 @@
-// src/components/features/brands/TechDraw.tsx
-// Drafting-table animation for the RB technical drawings — one client
+// src/components/features/shared/TechDraw.tsx
+// Drafting-table animation for the platform's technical drawings — one client
 // wrapper, attribute-driven (the Odd Ritual grammar approach applied to
 // SVG): the figure DRAFTS ITSELF when scrolled into view.
 //

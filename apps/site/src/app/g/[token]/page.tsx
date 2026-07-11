@@ -10,6 +10,8 @@ import Link from 'next/link'
 import { FillMeter } from '@wings/trade-ui'
 import { resolveInvite, recordInviteEvent } from '@/lib/container/access'
 import { InviteActions } from '@/components/features/container/InviteActions'
+import { ContainerSliceDiagram } from '@/components/features/shared/ContainerSliceDiagram'
+import { TechDraw } from '@/components/features/shared/TechDraw'
 import { FALLBACK_LABELS_ES } from '@/types/container'
 import { WINGS_PUBLIC_WHATSAPP } from '@/lib/constants'
 
@@ -76,6 +78,16 @@ export default async function InviteLandingPage({ params }: PageProps) {
           {p.routeDestination}
           <span className="text-[var(--color-text-muted)]"> · {p.containerType}</span>
         </div>
+
+        {/* The container as a technical object (Áladín doctrine — one
+            visual grammar for both cupo products) */}
+        <TechDraw>
+          <ContainerSliceDiagram
+            kind={p.containerType}
+            slots={p.slots}
+            headline={`${p.containerType} · ${p.slots.open} de ${p.slots.total} cupos disponibles`}
+          />
+        </TechDraw>
 
         <FillMeter
           totalSlots={p.slots.total}

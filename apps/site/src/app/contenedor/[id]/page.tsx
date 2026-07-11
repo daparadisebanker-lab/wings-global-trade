@@ -10,6 +10,8 @@
 import Link from 'next/link'
 import { cookies } from 'next/headers'
 import { FillMeter } from '@wings/trade-ui'
+import { ContainerSliceDiagram } from '@/components/features/shared/ContainerSliceDiagram'
+import { TechDraw } from '@/components/features/shared/TechDraw'
 import { getWorkspace, type Workspace, type MemberStripEntry } from '@/lib/container/access'
 import { verifyMemberToken } from '@/lib/container/identity'
 import { computeCostShare } from '@/lib/container/cost'
@@ -82,6 +84,10 @@ function ContainerHeader({ ws }: { ws: Workspace }) {
         </div>
         <StatusPill status={c.status} />
       </div>
+      {/* The container as a technical object (Áladín doctrine) */}
+      <TechDraw>
+        <ContainerSliceDiagram kind={c.container_type} slots={ws.slots} />
+      </TechDraw>
       <FillMeter
         totalSlots={ws.slots.total}
         committedSlots={ws.slots.committed}

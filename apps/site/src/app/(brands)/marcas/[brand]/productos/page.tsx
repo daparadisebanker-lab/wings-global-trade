@@ -10,7 +10,7 @@ import { PackingDiagram } from '@/components/features/brands/PackingDiagram'
 import { ExplodedDiagram } from '@/components/features/brands/ExplodedDiagram'
 import { PalletDiagram } from '@/components/features/brands/PalletDiagram'
 import { SpecIcon } from '@/components/features/brands/SpecIcons'
-import { TechDraw } from '@/components/features/brands/TechDraw'
+import { TechDraw } from '@/components/features/shared/TechDraw'
 
 interface PageProps {
   params: Promise<{ brand: string }>
