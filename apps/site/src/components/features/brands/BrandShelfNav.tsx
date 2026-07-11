@@ -24,7 +24,9 @@ export function BrandShelfNav({ brand }: Props) {
     <nav
       aria-label={`Secciones de ${brand.name}`}
       // Sticks below the fixed site header (h-16 / md:h-18), never under it.
-      className="sticky top-16 z-20 border-b border-neutral-200 bg-white/95 backdrop-blur md:top-18"
+      // The ::before mask fills the header-height strip above the tabs so
+      // content never peeks through when the header auto-hides on scroll.
+      className="sticky top-16 z-20 border-b border-neutral-200 bg-white/95 backdrop-blur before:absolute before:inset-x-0 before:-top-16 before:h-16 before:bg-white before:content-[''] md:top-18 md:before:-top-18 md:before:h-18"
     >
       <div className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-5 md:px-8">
         <Link

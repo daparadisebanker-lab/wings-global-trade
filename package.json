@@ -11,6 +11,8 @@
     "generate-icons": "node scripts/generate-icons.mjs"
   },
   "devDependencies": {
-    "@resvg/resvg-js": "^2.6.2"
+    "@resvg/resvg-js": "^2.6.2",
+    "sharp": "^0.35.3",
+    "tsx": "^4.23.0"
   }
 }

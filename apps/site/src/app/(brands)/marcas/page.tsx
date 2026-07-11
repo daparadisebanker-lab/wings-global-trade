@@ -60,6 +60,7 @@ export default function MarcasPage() {
               key={brand.slug}
               href={`/marcas/${brand.slug}`}
               data-brand={brand.slug}
+              data-reveal
               className="group border border-neutral-200 bg-white p-8 transition-colors hover:border-[var(--rb-accent)]"
             >
               <div className="flex h-20 items-center">
@@ -88,7 +89,7 @@ export default function MarcasPage() {
       <section className="mt-20 border-t border-neutral-200 pt-14" aria-labelledby="how-heading">
         <div className="grid gap-10 lg:grid-cols-[1fr_minmax(280px,380px)] lg:items-start">
           <div>
-            <h2 id="how-heading" className="font-display text-display-sm text-neutral-900">
+            <h2 id="how-heading" className="font-display text-display-sm text-neutral-900" data-split>
               Cómo funciona la compra por contenedor
             </h2>
             <ol className="mt-8 grid gap-8 md:grid-cols-3">

@@ -32,6 +32,8 @@ export interface RbPublicBrand {
   logo: { isologo: string; positivo: string; isotipo: string; sello: string }
   /** BrandHero slider frames (SPEC §2.7① — Odd Ritual home-hero pattern). */
   heroSlides: RbHeroSlide[]
+  /** Marquee vocabulary strip (SPEC §2.7⑥). */
+  vocabulary: string[]
 }
 
 export interface RbProduct {
@@ -119,6 +121,14 @@ export const ALADIN: RbPublicBrand = {
       alt: 'Bosque de bambú — el origen de la fibra',
       source: 'brand_supplied',
     },
+  ],
+  vocabulary: [
+    'Cuida tu salud',
+    'Fibra 100% virgen de bambú',
+    'Sin químicos ni lejía',
+    '4 capas · 30 metros por rollo',
+    'Biodegradable',
+    'RB/01 · Representada desde 2026',
   ],
 }
 

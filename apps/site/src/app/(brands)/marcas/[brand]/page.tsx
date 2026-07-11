@@ -9,6 +9,8 @@ import { notFound } from 'next/navigation'
 import { getBrand } from '@/lib/rb/fixtures'
 import { MandateSeal } from '@/components/features/brands/MandateSeal'
 import { BrandHero } from '@/components/features/brands/BrandHero'
+import { BrandMarquee } from '@/components/features/brands/BrandMarquee'
+import { BrandGallery } from '@/components/features/brands/BrandGallery'
 
 interface PageProps {
   params: Promise<{ brand: string }>
@@ -73,7 +75,7 @@ export default async function BrandAboutPage({ params }: PageProps) {
       </header>
 
       {/* Mandate */}
-      <section className="mt-16 max-w-2xl" aria-label="Mandato de representación">
+      <section className="mt-16 max-w-2xl" aria-label="Mandato de representación" data-reveal>
         <MandateSeal
           brandName={brand.name}
           territory={brand.territory}
@@ -82,21 +84,48 @@ export default async function BrandAboutPage({ params }: PageProps) {
         />
       </section>
 
-      {/* Story */}
-      <section className="mt-16 border-t border-neutral-200 pt-12" aria-labelledby="story-heading">
+      {/* Vocabulary marquee — §2.7⑥, full-bleed inside the canvas */}
+      <div className="mt-16 -mx-5 md:-mx-8">
+        <BrandMarquee items={brand.vocabulary} />
+      </div>
+
+      {/* Story — word-scrub per the Odd Ritual grammar */}
+      <section className="mt-16" aria-labelledby="story-heading">
         <h2 id="story-heading" className="font-mono text-mono-sm uppercase tracking-widest-2 text-neutral-500">
           La marca
         </h2>
         <div className="mt-6 grid gap-6 md:grid-cols-3">
           {brand.story.map((block) => (
-            <p key={block.slice(0, 24)} className="text-body-md leading-relaxed text-neutral-700">
+            <p
+              key={block.slice(0, 24)}
+              data-split-words
+              className="text-body-md leading-relaxed text-neutral-700"
+            >
               {block}
             </p>
           ))}
         </div>
-        <p className="mt-8 border-l-2 border-[var(--rb-accent)] pl-4 text-body-sm text-neutral-500">
+        <p className="mt-8 border-l-2 border-[var(--rb-accent)] pl-4 text-body-sm text-neutral-500" data-reveal>
           {brand.certificationsNote}
         </p>
+      </section>
+
+      {/* Gallery — drag-to-explore (attested imagery only) */}
+      <section className="mt-16 border-t border-neutral-200 pt-12" aria-label="Galería de la marca">
+        <h2 className="font-mono text-mono-sm uppercase tracking-widest-2 text-neutral-500" data-reveal>
+          En imágenes
+        </h2>
+        <div className="mt-6">
+          <BrandGallery
+            items={brand.heroSlides
+              .filter((s) => s.kind === 'image' && s.src)
+              .map((s, i) => ({
+                src: s.src as string,
+                alt: s.alt ?? brand.name,
+                caption: ['Producto · pack ×10 rollos', 'Rollo de fibra sin blanquear', 'Origen · fibra de bambú'][i] ?? brand.name,
+              }))}
+          />
+        </div>
       </section>
     </div>
   )

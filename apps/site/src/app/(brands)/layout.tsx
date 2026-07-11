@@ -4,9 +4,16 @@
 // deliberately NOT the Wings warm-white: partner palettes need a neutral
 // ground. Scoped here only; nav/footer chrome above and below is untouched.
 import './rb-canvas.css'
+import { BrandChoreography, BrandCurtain } from '@/components/features/brands/BrandChoreography'
 
 export default function BrandsLayout({ children }: { children: React.ReactNode }) {
   // pt offsets the fixed site header (h-16 / md:h-18) — the white canvas has
   // no dark hero for the transparent nav to float over.
-  return <div data-canvas="brand" className="pt-16 md:pt-18">{children}</div>
+  return (
+    <div data-canvas="brand" className="pt-16 md:pt-18">
+      {/* Odd Ritual grammar port (§2.6): scroll choreography + route curtain */}
+      <BrandCurtain />
+      <BrandChoreography>{children}</BrandChoreography>
+    </div>
+  )
 }

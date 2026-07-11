@@ -44,6 +44,7 @@ export default async function BrandProductsPage({ params }: PageProps) {
         {products.map((product) => (
           <article
             key={product.slug}
+            data-reveal
             className="flex flex-col border border-neutral-200 bg-white"
           >
             <div className="border-b border-neutral-100 bg-[var(--rb-surface-tint)] p-7">
