@@ -8,11 +8,12 @@
 
 import { useEffect, useRef } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 
 interface Props {
-  brand: { slug: string; name: string; code: string }
+  brand: { slug: string; name: string; code: string; isologo: string }
 }
 
 export function BrandShelfNav({ brand }: Props) {
@@ -45,10 +46,15 @@ export function BrandShelfNav({ brand }: Props) {
     <nav
       aria-label={`Secciones de ${brand.name}`}
       // Sticks below the fixed site header (h-16 / md:h-18), never under it.
-      // The ::before mask fills the header-height strip above the tabs so
-      // content never peeks through when the header auto-hides on scroll.
-      className="sticky top-16 z-20 border-b border-neutral-200 bg-white/95 backdrop-blur before:absolute before:inset-x-0 before:-top-16 before:h-16 before:bg-white before:content-[''] md:top-18 md:before:-top-18 md:before:h-18"
+      className="sticky top-16 z-20 border-b border-neutral-200 bg-white/95 backdrop-blur md:top-18"
     >
+      {/* The header-height strip above the tabs: instead of an empty white
+          mask, it is the brand's band — isologo centered — so when the site
+          header auto-hides, the space reads unmistakably as Áladín's
+          (Muaaz 2026-07-11). Sits under the fixed header when visible. */}
+      <div className="absolute inset-x-0 -top-16 flex h-16 items-center justify-center bg-white md:-top-18 md:h-18">
+        <Image src={brand.isologo} alt="" aria-hidden width={120} height={44} className="h-9 w-auto md:h-10" />
+      </div>
       {/* Brand-accent scroll progress — the shelf's own pulse line */}
       <div
         ref={progressRef}

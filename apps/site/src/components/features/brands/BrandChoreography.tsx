@@ -205,12 +205,12 @@ export function BrandCurtain() {
       className="pointer-events-none fixed inset-0 z-40 opacity-0"
       style={{ background: 'var(--livery-navy)', transform: 'translateY(101%)' }}
     >
-      {/* The mark rides the flood — centered, near the block's top padding */}
+      {/* The mark rides the flood — dead center, generously sized */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         ref={markRef}
         alt=""
-        className="absolute left-1/2 top-[8%] h-24 w-auto -translate-x-1/2 md:h-28"
+        className="absolute left-1/2 top-1/2 h-40 w-auto -translate-x-1/2 -translate-y-1/2 md:h-56"
         style={{ display: 'none' }}
       />
     </div>
