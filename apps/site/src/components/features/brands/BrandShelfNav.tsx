@@ -1,8 +1,12 @@
 // src/components/features/brands/BrandShelfNav.tsx
 // Shelf-local section nav: About · Productos · Comprar en contenedor.
 // Sits under the Wings chrome; themes via --rb-* tokens only.
+// Carries the same scroll-progress line device as the site header's gold
+// bottom rule — here in the brand accent, on the shelf nav's TOP edge:
+// the brand space has its own pulse.
 'use client'
 
+import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
@@ -13,6 +17,23 @@ interface Props {
 
 export function BrandShelfNav({ brand }: Props) {
   const pathname = usePathname()
+  const progressRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    // Same pattern as SiteNav's gold rule: drive the transform via ref —
+    // no re-render per scrolled pixel.
+    const onScroll = () => {
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight
+      const progress = docHeight > 0 ? window.scrollY / docHeight : 0
+      if (progressRef.current) {
+        progressRef.current.style.transform = `scaleX(${progress})`
+      }
+    }
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [pathname])
+
   const base = `/marcas/${brand.slug}`
   const tabs = [
     { href: base, label: 'La marca' },
@@ -28,6 +49,13 @@ export function BrandShelfNav({ brand }: Props) {
       // content never peeks through when the header auto-hides on scroll.
       className="sticky top-16 z-20 border-b border-neutral-200 bg-white/95 backdrop-blur before:absolute before:inset-x-0 before:-top-16 before:h-16 before:bg-white before:content-[''] md:top-18 md:before:-top-18 md:before:h-18"
     >
+      {/* Brand-accent scroll progress — the shelf's own pulse line */}
+      <div
+        ref={progressRef}
+        aria-hidden
+        className="absolute left-0 top-0 z-10 h-[2px] w-full origin-left bg-[var(--rb-accent)]"
+        style={{ transform: 'scaleX(0)' }}
+      />
       <div className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-5 md:px-8">
         <Link
           href="/marcas"
