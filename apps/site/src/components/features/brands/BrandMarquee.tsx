@@ -1,6 +1,8 @@
 // src/components/features/brands/BrandMarquee.tsx
-// Brand vocabulary strip at --rb-accent (SPEC §2.7⑥ — the clone's marquee
-// pattern). Pure transform loop; reduced-motion renders a static strip.
+// Brand vocabulary strip on --rb-accent-ink (SPEC §2.7⑥ — the clone's marquee
+// pattern). Uses the -ink, not --rb-accent: white on the lighter accent is only
+// ~4.1:1 at 13px (Áladín green); --rb-accent-ink pairs with white ≥4.5:1 for
+// every conformant brand. Pure transform loop; reduced-motion renders a static strip.
 'use client'
 
 import { useRef } from 'react'
@@ -30,7 +32,7 @@ export function BrandMarquee({ items }: Props) {
   return (
     <div
       aria-hidden
-      className="overflow-hidden border-y border-[var(--rb-accent-border)] bg-[var(--rb-accent)] py-3"
+      className="overflow-hidden border-y border-[var(--rb-accent-border)] bg-[var(--rb-accent-ink)] py-3"
     >
       <div ref={trackRef} className="flex w-max whitespace-nowrap will-change-transform">
         {[0, 1].map((copy) => (

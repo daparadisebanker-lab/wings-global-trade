@@ -18,7 +18,7 @@
 //   --csd-tint         top-face tint
 'use client'
 
-import { useId } from 'react'
+import { useId, useState } from 'react'
 
 const DIMS: Record<string, { l: number; h: number }> = {
   '20GP': { l: 5898, h: 2393 },
@@ -59,6 +59,7 @@ export function ContainerSliceDiagram({
   className,
 }: ContainerSliceDiagramProps) {
   const hatchId = useId().replace(/[:]/g, '')
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(null)
   const dims = DIMS[kind] ?? DIMS['40HC']
   const L = 560
   const H = (dims.h / dims.l) * L * 1.6
@@ -91,15 +92,26 @@ export function ContainerSliceDiagram({
     const state = stateOf(i)
     const availIndex = i - committed - reserved
     const clickable = onSelect && state !== 'committed' && state !== 'reserved'
+    const select = () => onSelect?.(availIndex + 1 === selected ? availIndex : availIndex + 1)
     return (
       <g
         key={i}
         data-td-pop
-        onClick={
+        onClick={clickable ? select : undefined}
+        onKeyDown={
           clickable
-            ? () => onSelect(availIndex + 1 === selected ? availIndex : availIndex + 1)
+            ? (e) => {
+                // An SVG <g role="button"> is not natively operable — wire Enter/Space.
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  select()
+                }
+              }
             : undefined
         }
+        onFocus={clickable ? () => setFocusedIndex(i) : undefined}
+        onBlur={clickable ? () => setFocusedIndex((f) => (f === i ? null : f)) : undefined}
+        tabIndex={clickable ? 0 : undefined}
         className={clickable ? 'cursor-pointer' : undefined}
         role={clickable ? 'button' : undefined}
         aria-label={`Cupo ${i + 1} · ${
@@ -125,6 +137,18 @@ export function ContainerSliceDiagram({
         />
         {state === 'selected' && (
           <rect x={sx} y={yTop} width={sliceW} height={H} fill="none" stroke={ACCENT_INK} strokeWidth="2" />
+        )}
+        {clickable && focusedIndex === i && (
+          <rect
+            x={sx + 2}
+            y={yTop + 2}
+            width={sliceW - 4}
+            height={H - 4}
+            fill="none"
+            stroke={ACCENT_INK}
+            strokeWidth="2"
+            strokeDasharray="4 3"
+          />
         )}
         <text
           x={sx + sliceW / 2}
