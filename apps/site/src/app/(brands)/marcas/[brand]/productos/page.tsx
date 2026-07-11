@@ -6,6 +6,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getBrand, ALADIN_PRODUCTS } from '@/lib/rb/fixtures'
+import { PackingDiagram } from '@/components/features/brands/PackingDiagram'
+import { SpecIcon } from '@/components/features/brands/SpecIcons'
 
 interface PageProps {
   params: Promise<{ brand: string }>
@@ -40,26 +42,27 @@ export default async function BrandProductsPage({ params }: PageProps) {
         </p>
       </header>
 
-      <div className="mt-12 grid gap-8 lg:grid-cols-2">
-        {products.map((product) => (
+      <div className="mt-12 space-y-14">
+        {products.map((product, idx) => (
           <article
             key={product.slug}
             data-reveal
-            className="flex flex-col border border-neutral-200 bg-white"
+            className="border border-neutral-200 bg-white"
           >
-            <div className="border-b border-neutral-100 bg-[var(--rb-surface-tint)] p-7">
-              <p className="font-mono text-[11px] uppercase tracking-widest-2 text-[var(--rb-accent-ink)]">
+            {/* Header band */}
+            <div className="border-b border-neutral-100 bg-[var(--rb-surface-tint)] p-7 md:p-9">
+              <p className="font-mono text-[12px] uppercase tracking-widest-2 text-[var(--rb-accent-ink)]">
                 {brand.name} · {product.unitLabel}
               </p>
-              <h2 className="mt-2 font-display text-display-sm text-neutral-900">
+              <h2 className="mt-2 font-display text-display-md text-neutral-900">
                 {product.name}
               </h2>
-              <p className="mt-3 text-body-sm text-neutral-600">{product.descriptionEs}</p>
-              <ul className="mt-4 flex flex-wrap gap-2">
+              <p className="mt-4 max-w-2xl text-body-lg text-neutral-600">{product.descriptionEs}</p>
+              <ul className="mt-5 flex flex-wrap gap-2">
                 {product.highlights.map((h) => (
                   <li
                     key={h}
-                    className="border border-[var(--rb-accent-border)] bg-white px-2.5 py-1 text-[12px] text-[var(--rb-accent-ink)]"
+                    className="border border-[var(--rb-accent-border)] bg-white px-3 py-1.5 text-body-sm text-[var(--rb-accent-ink)]"
                   >
                     {h}
                   </li>
@@ -67,24 +70,40 @@ export default async function BrandProductsPage({ params }: PageProps) {
               </ul>
             </div>
 
-            {/* Spec sheet — exhibited numbers, tabular mono */}
-            <dl className="flex-1 divide-y divide-neutral-100 px-7">
-              {product.specs.map((row) => (
-                <div key={row.label} className="grid grid-cols-[140px_1fr] gap-4 py-2.5">
-                  <dt className="text-[12px] uppercase tracking-widest-2 text-neutral-400">
-                    {row.label}
-                  </dt>
-                  <dd className="font-mono text-mono-sm tabular-nums text-neutral-800">
-                    {row.value}
-                  </dd>
-                </div>
-              ))}
-            </dl>
+            {/* Technical body: packing drawing + spec sheet */}
+            <div
+              className={`grid gap-8 p-7 md:gap-10 md:p-9 lg:grid-cols-[minmax(320px,460px)_1fr] ${
+                idx % 2 === 1 ? 'lg:[direction:rtl]' : ''
+              }`}
+            >
+              <div className="lg:[direction:ltr]">
+                <PackingDiagram spec={product.packing} />
+              </div>
 
-            <div className="p-7 pt-5">
+              <dl className="divide-y divide-neutral-100 lg:[direction:ltr]">
+                {product.specs.map((row) => (
+                  <div
+                    key={row.label}
+                    className="grid grid-cols-[28px_150px_1fr] items-baseline gap-4 py-3.5 md:grid-cols-[28px_180px_1fr]"
+                  >
+                    <span className="self-center text-[var(--rb-accent-ink)]">
+                      <SpecIcon id={row.icon} />
+                    </span>
+                    <dt className="text-[13px] uppercase tracking-widest-2 text-neutral-500">
+                      {row.label}
+                    </dt>
+                    <dd className="font-mono text-mono-md tabular-nums text-neutral-900">
+                      {row.value}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+
+            <div className="px-7 pb-7 md:px-9 md:pb-9">
               <Link
                 href={`/marcas/${brand.slug}/contenedor?producto=${product.slug}`}
-                className="inline-flex h-12 w-full items-center justify-center rounded-wings bg-[var(--rb-accent-ink)] px-6 text-label-lg font-semibold text-white transition-opacity hover:opacity-90"
+                className="inline-flex h-12 w-full items-center justify-center rounded-wings bg-[var(--rb-accent-ink)] px-6 text-label-lg font-semibold text-white transition-opacity hover:opacity-90 md:w-auto md:px-10"
               >
                 Ver disponibilidad en contenedor
               </Link>

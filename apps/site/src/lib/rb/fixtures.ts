@@ -38,13 +38,19 @@ export interface RbPublicBrand {
   manifesto: string
 }
 
+import type { SpecIconId } from '@/components/features/brands/SpecIcons'
+import type { PackingSpec } from '@/components/features/brands/PackingDiagram'
+
 export interface RbProduct {
   slug: string
   name: string
   gtin: string
   unitLabel: string
   /** Spec rows rendered on the product card — exhibited, tabular mono. */
-  specs: Array<{ label: string; value: string }>
+  specs: Array<{ label: string; value: string; icon: SpecIconId }>
+  /** Caja-máster interior geometry (SPSA codification dims) for the
+   *  technical isometric drawing — true proportions, never decorative. */
+  packing: PackingSpec
   descriptionEs: string
   highlights: string[]
 }
@@ -143,15 +149,25 @@ export const ALADIN_PRODUCTS: RbProduct[] = [
     gtin: '0723707931803',
     unitLabel: 'pack × 10 rollos',
     specs: [
-      { label: 'Presentación', value: 'Pack × 10 rollos · 30 m · 4 capas' },
-      { label: 'Hoja', value: '103 × 102 mm · hoja simple' },
-      { label: 'Peso por rollo', value: '160 g' },
-      { label: 'Caja máster', value: '6 packs · 60 rollos · 330 × 440 × 535 mm' },
-      { label: 'Peso caja', value: '9,7 kg · 0,0777 m³' },
-      { label: 'GTIN', value: '0723707931803' },
-      { label: 'Origen', value: 'Importado' },
-      { label: 'Registro sanitario', value: 'No requerido' },
+      { label: 'Presentación', value: 'Pack × 10 rollos · 30 m · 4 capas', icon: 'package' },
+      { label: 'Hoja', value: '103 × 102 mm · hoja simple', icon: 'sheet' },
+      { label: 'Peso por rollo', value: '160 g', icon: 'weight' },
+      { label: 'Caja máster', value: '6 packs · 60 rollos · 330 × 440 × 535 mm', icon: 'box' },
+      { label: 'Peso caja', value: '9,7 kg · 0,0777 m³', icon: 'ruler' },
+      { label: 'GTIN', value: '0723707931803', icon: 'barcode' },
+      { label: 'Origen', value: 'Importado', icon: 'ship' },
+      { label: 'Registro sanitario', value: 'No requerido', icon: 'seal' },
     ],
+    packing: {
+      // SPSA: alto 330 · ancho 440 · profundo 535. Los paquetes van
+      // echados: 2 pilas de 3 (2 a lo ancho × 3 de alto), largo del
+      // paquete a lo profundo — 6 paquetes × 10 rollos = 60 rollos.
+      box: { w: 440, d: 535, h: 330 },
+      cells: { x: 2, z: 1, y: 3 },
+      detail: 'rolls',
+      title: 'Caja máster · 330 × 440 × 535 mm · vista técnica',
+      composition: '6 paquetes (2 pilas de 3) · 10 rollos c/u = 60 rollos · 9,7 kg',
+    },
     descriptionEs:
       'Papel higiénico ecológico elaborado a base de fibras 100% vírgenes de bambú. Suave, resistente y antialérgico; biodegradable y libre de químicos.',
     highlights: ['100% fibra virgen de bambú', 'Sin químicos ni lejía', '4 capas · 30 metros por rollo'],
@@ -162,14 +178,24 @@ export const ALADIN_PRODUCTS: RbProduct[] = [
     gtin: '0723707931797',
     unitLabel: 'empaque × 390 hojas',
     specs: [
-      { label: 'Presentación', value: 'Empaque × 390 hojas · 3 capas' },
-      { label: 'Empaque unitario', value: '70 × 95 × 175 mm · 190 g' },
-      { label: 'Caja máster', value: '9 packs × 5 · 45 empaques · 360 × 295 × 555 mm' },
-      { label: 'Peso caja', value: '9,7 kg · 0,0590 m³' },
-      { label: 'GTIN', value: '0723707931797' },
-      { label: 'Origen', value: 'Importado' },
-      { label: 'Registro sanitario', value: 'No requerido' },
+      { label: 'Presentación', value: 'Empaque × 390 hojas · 3 capas', icon: 'package' },
+      { label: 'Empaque unitario', value: '70 × 95 × 175 mm · 190 g', icon: 'ruler' },
+      { label: 'Caja máster', value: '9 pilas × 5 · 45 empaques · 360 × 295 × 555 mm', icon: 'box' },
+      { label: 'Peso caja', value: '9,7 kg · 0,0590 m³', icon: 'weight' },
+      { label: 'GTIN', value: '0723707931797', icon: 'barcode' },
+      { label: 'Origen', value: 'Importado', icon: 'ship' },
+      { label: 'Registro sanitario', value: 'No requerido', icon: 'seal' },
     ],
+    packing: {
+      // SPSA: alto 360 · ancho 295 · profundo 555. Los empaques van en
+      // 9 pilas (3 columnas × 3 líneas de fondo), 5 unidades por pila
+      // (5 × 70 mm ≈ 360 mm de alto) = 45 empaques.
+      box: { w: 295, d: 555, h: 360 },
+      cells: { x: 3, z: 3, y: 1 },
+      detail: 'slabs',
+      title: 'Caja máster · 360 × 295 × 555 mm · vista técnica',
+      composition: '9 pilas (3 × 3) · 5 empaques c/u = 45 empaques · 9,7 kg',
+    },
     descriptionEs:
       'Papel facial ultra suave de fibra de bambú, 3 capas. No irrita ni raspa la piel; fragancia natural, producto ecológico.',
     highlights: ['390 hojas ultra suaves', '3 capas', 'No irrita la piel'],
