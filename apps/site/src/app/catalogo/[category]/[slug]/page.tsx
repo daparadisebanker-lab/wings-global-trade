@@ -9,6 +9,7 @@ import { ProductCard } from '@/components/features/catalog/ProductCard'
 import { Breadcrumb } from '@/components/ui/breadcrumb'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { productSchema, breadcrumbSchema } from '@/lib/schema'
+import { dimsFromSpecs } from '@/lib/cubicaje/fit'
 import { Button } from '@/components/ui/button'
 import { MagneticButton } from '@/components/features/catalog/MagneticButton'
 
@@ -107,6 +108,32 @@ export default async function ProductPage({ params }: PageProps) {
       </div>
 
       <ProductDetail product={product} categorySlug={category} totalInCategory={related.length + 1} />
+
+      {/* Cubicaje door — opt-in threshold into the blueprint tool (scoped-
+          experience law: the page stays clean; the mode lives at /cubicaje).
+          Rendered only when the product's dims parse. */}
+      {dimsFromSpecs(product.specs as Record<string, string>) && (
+        <section className="bg-warm-white px-6 pb-16 md:px-10">
+          <div className="mx-auto w-full max-w-6xl">
+            <Link
+              href={`/cubicaje?producto=${product.slug}`}
+              className="group flex flex-col gap-1 border border-navy bg-navy px-5 py-4 transition-colors hover:bg-navy-light sm:flex-row sm:items-center sm:justify-between"
+            >
+              <span>
+                <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-gold">
+                  Herramienta técnica · Cubicaje
+                </span>
+                <span className="mt-1 block text-body-md text-warm-white">
+                  ¿Cuántas unidades de {product.name_es} entran en un contenedor? Véalo dibujado.
+                </span>
+              </span>
+              <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-gold transition-transform group-hover:translate-x-1">
+                Abrir cubicaje →
+              </span>
+            </Link>
+          </div>
+        </section>
+      )}
 
       {/* "También podría interesarte" strip — same category, up to 4 products */}
       {related.length > 0 && cat && (
