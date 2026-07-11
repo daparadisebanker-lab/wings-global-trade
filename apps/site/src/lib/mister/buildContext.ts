@@ -21,6 +21,7 @@ import {
   inferProductType,
   isEscalationStage,
 } from '@/lib/mister/tools'
+import { getRbMisterPacks, type RbMisterPack } from '@/lib/rb/misterPack'
 
 interface AssembledContext {
   product: ProductSurface | null
@@ -50,7 +51,7 @@ export async function buildMisterContext(
 ): Promise<BuildContextResult> {
   const interests = session.collected.productInterest ?? []
 
-  const [productResult, documentResult, contactResult] = await Promise.allSettled([
+  const [productResult, documentResult, contactResult, rbPacksResult] = await Promise.allSettled([
     request.currentProductId
       ? fetchProduct(request.currentProductId, supabase)
       : Promise.resolve(null),
@@ -66,6 +67,10 @@ export async function buildMisterContext(
     isEscalationStage(session.stage)
       ? fetchContact(session.archetype, supabase)
       : Promise.resolve(null),
+
+    // Represented-brands packs (RB lane) — compiled from the same views the
+    // shelf reads; a failure degrades to no pack, never breaks the turn.
+    getRbMisterPacks(),
   ])
 
   let comparisonResult: ComparisonSurface | null = null
@@ -101,6 +106,7 @@ export async function buildMisterContext(
     currentProductId: request.currentProductId,
     actionId: request.actionId ?? null,
     backend,
+    rbPacks: rbPacksResult.status === 'fulfilled' ? rbPacksResult.value : [],
     opsWhatsapp: process.env.MISTER_OPS_WHATSAPP ?? '+50760250735',
   })
 
@@ -117,9 +123,10 @@ function renderContextBlock(params: {
   currentProductId: string | null
   actionId: MisterActionId | null
   backend: AssembledContext
+  rbPacks: RbMisterPack[]
   opsWhatsapp: string
 }): string {
-  const { session, currentPage, currentProductId, actionId, backend, opsWhatsapp } = params
+  const { session, currentPage, currentProductId, actionId, backend, rbPacks, opsWhatsapp } = params
 
   const productLine = backend.product
     ? JSON.stringify({
@@ -163,6 +170,7 @@ backend:
   moq: null
   logistics_docs: ${logisticsLine}
   contacts: ${contactsLine}
+represented_brands: ${rbPacks.length > 0 ? JSON.stringify(rbPacks) : 'null'}
 ops_whatsapp: ${opsWhatsapp}
 ${turnWarning}
 <<END_CONTEXT>>`

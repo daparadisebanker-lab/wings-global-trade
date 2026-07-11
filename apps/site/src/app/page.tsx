@@ -1,6 +1,8 @@
 // src/app/page.tsx
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
+import { RB_BRANDS } from '@/lib/rb/fixtures'
 import { getCategories } from '@/lib/catalog-data'
 import { HeroNarrativeCarousel } from '@/components/features/homepage/HeroNarrativeCarousel'
 import { StatBar } from '@/components/features/homepage/StatBar'
@@ -45,6 +47,53 @@ export default async function HomePage() {
       {/* Category grid — warm-white */}
       <SectionBlock theme="warm-white" className="pt-14 md:pt-20">
         <CategoryGrid categories={categories} />
+      </SectionBlock>
+
+      {/* Marcas representadas — program intro (SPEC §2.1: after category
+          architecture, before proof; the white brand canvas starts at /marcas,
+          never here — brand logos render on white tiles inside the navy band) */}
+      <SectionBlock theme="navy">
+        <div className="flex flex-col gap-10 lg:flex-row lg:items-center lg:justify-between">
+          <div className="max-w-xl">
+            <p className="mb-4 font-mono text-[10px] uppercase tracking-widest-3 text-warm-white/30">
+              Marcas representadas
+            </p>
+            <h2 className="font-display text-display-sm font-light text-warm-white">
+              Representación oficial de marcas — venta exclusivamente por contenedor
+            </h2>
+            <p className="mt-4 font-body text-body-lg text-warm-white/45">
+              Wings gestiona el inventario y vende por contenedor completo o por cupos,
+              con la equivalencia exacta en cajas, unidades y kilos siempre visible.
+            </p>
+            <Link
+              href="/marcas"
+              className="mt-8 inline-flex items-center gap-3 bg-gold px-8 py-4 font-mono text-[11px] uppercase tracking-[0.12em] text-navy transition-colors duration-200 hover:bg-gold-hover"
+            >
+              <span className="h-px w-6 bg-current" aria-hidden />
+              Ver marcas
+            </Link>
+          </div>
+          <div className="flex flex-wrap gap-4">
+            {RB_BRANDS.map((brand) => (
+              <Link
+                key={brand.slug}
+                href={`/marcas/${brand.slug}`}
+                className="group flex w-56 flex-col items-center gap-3 bg-white p-8 transition-transform duration-200 hover:-translate-y-0.5"
+              >
+                <Image
+                  src={brand.logo.isologo}
+                  alt={`Logotipo de ${brand.name}`}
+                  width={150}
+                  height={54}
+                  className="h-12 w-auto"
+                />
+                <span className="font-mono text-[10px] uppercase tracking-widest-2 text-neutral-500">
+                  {brand.code} · desde {brand.representedSince}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
       </SectionBlock>
 
       {/* Trust bar — navy */}
