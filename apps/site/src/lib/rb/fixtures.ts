@@ -34,6 +34,8 @@ export interface RbPublicBrand {
   heroSlides: RbHeroSlide[]
   /** Marquee vocabulary strip (SPEC §2.7⑥). */
   vocabulary: string[]
+  /** Colophon manifesto — the sello band at the foot of the shelf. */
+  manifesto: string
 }
 
 export interface RbProduct {
@@ -130,6 +132,8 @@ export const ALADIN: RbPublicBrand = {
     'Biodegradable',
     'RB/01 · Representada desde 2026',
   ],
+  manifesto:
+    'El bambú crece sin pedir permiso y vuelve a la tierra sin dejar rastro. Papel que cuida tu salud y nuestro planeta — hecho para durar lo que debe y desaparecer cuando debe.',
 }
 
 export const ALADIN_PRODUCTS: RbProduct[] = [

@@ -127,6 +127,32 @@ export default async function BrandAboutPage({ params }: PageProps) {
           />
         </div>
       </section>
+
+      {/* Colophon — the sello band (dark-story-block pattern, light) */}
+      <section
+        className="mt-24 flex flex-col items-center gap-10 border-t border-neutral-200 pt-16 text-center"
+        aria-label="Sello de la marca"
+      >
+        <p className="font-mono text-[11px] uppercase tracking-widest-3 text-neutral-500" data-reveal>
+          {brand.name} © {brand.representedSince} · {brand.code} — Representada por Wings Global Trade
+        </p>
+        <p
+          data-split-words
+          className="max-w-3xl font-body text-body-lg font-semibold uppercase leading-relaxed tracking-[0.02em] text-[var(--rb-ink)]"
+        >
+          {brand.manifesto}
+        </p>
+        <div data-reveal>
+          <Image
+            src={brand.logo.sello}
+            alt=""
+            aria-hidden
+            width={120}
+            height={120}
+            className="h-28 w-28"
+          />
+        </div>
+      </section>
     </div>
   )
 }

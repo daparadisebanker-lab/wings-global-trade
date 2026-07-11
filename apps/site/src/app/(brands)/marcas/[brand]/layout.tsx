@@ -6,6 +6,7 @@
 import { notFound } from 'next/navigation'
 import { getBrand, RB_BRANDS } from '@/lib/rb/fixtures'
 import { BrandShelfNav } from '@/components/features/brands/BrandShelfNav'
+import { BrandReveal } from '@/components/features/brands/BrandReveal'
 
 export function generateStaticParams() {
   return RB_BRANDS.map((b) => ({ brand: b.slug }))
@@ -24,6 +25,9 @@ export default async function BrandLayout({
 
   return (
     <div data-brand={brand.slug}>
+      {/* Entry reveal — the clone's preloader with the genie isotipo;
+          plays per hard load, SPA navs use BrandCurtain instead */}
+      <BrandReveal brand={{ name: brand.name, claim: brand.claim, isotipo: brand.logo.isotipo }} />
       <BrandShelfNav brand={{ slug: brand.slug, name: brand.name, code: brand.code }} />
       {children}
     </div>
