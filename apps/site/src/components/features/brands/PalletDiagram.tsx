@@ -97,7 +97,7 @@ export function PalletDiagram({ spec }: { spec: PalletSpec }) {
   }
 
   return (
-    <figure className="border border-neutral-200 bg-[var(--rb-surface-tint)] p-5 md:p-6">
+    <figure className="border border-neutral-200 bg-[var(--rb-surface-tint)] p-3 md:p-6">
       <svg
         viewBox={`0 0 ${canvas.width.toFixed(0)} ${canvas.height.toFixed(0)}`}
         role="img"

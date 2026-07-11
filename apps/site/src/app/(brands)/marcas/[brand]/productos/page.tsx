@@ -75,7 +75,7 @@ export default async function BrandProductsPage({ params }: PageProps) {
 
             {/* Technical body: packing drawing + spec sheet */}
             <div
-              className={`grid gap-8 p-7 md:gap-10 md:p-9 lg:grid-cols-[minmax(320px,460px)_1fr] ${
+              className={`grid gap-8 p-4 md:gap-10 md:p-9 lg:grid-cols-[minmax(320px,460px)_1fr] ${
                 idx % 2 === 1 ? 'lg:[direction:rtl]' : ''
               }`}
             >

@@ -110,7 +110,7 @@ export function CupoContainerDiagram({ container, template, selected, onSelect }
           y={yBot - 8}
           textAnchor="middle"
           fontFamily="var(--livery-font-mono), monospace"
-          fontSize="11"
+          fontSize="14"
           fill={state === 'committed' ? '#ffffff' : 'var(--rb-accent-ink)'}
           opacity="0.9"
         >
@@ -155,17 +155,15 @@ export function CupoContainerDiagram({ container, template, selected, onSelect }
           strokeWidth="0.6"
           opacity="0.6"
         />
-        {/* kind label */}
-        <text
-          x={x0}
-          y={height - 6}
-          fontFamily="var(--livery-font-mono), monospace"
-          fontSize="12"
-          fill="var(--rb-accent-ink)"
-        >
-          {template.kind} · {total} cupos · {fmt(template.totalPackages)} cajas · vendido ■ reservado ▨ disponible □
-        </text>
       </svg>
+      {/* Legend + cascade live in HTML, not the SVG — fixed type size on
+          mobile where the viewBox scales down */}
+      <div className="mt-2 flex flex-wrap items-baseline gap-x-4 gap-y-1 font-mono text-[12px] tabular-nums text-[var(--rb-accent-ink)]">
+        <span className="font-semibold">
+          {template.kind} · {total} cupos · {fmt(template.totalPackages)} cajas
+        </span>
+        <span className="text-neutral-500">vendido ■ · reservado ▨ · disponible □</span>
+      </div>
       <figcaption className="mt-1 font-mono text-[11px] uppercase tracking-widest-2 text-neutral-500">
         1 cupo = {template.packagesPerSlot} cajas = {fmt(template.packagesPerSlot * template.unitsPerPackage)}{' '}
         {template.unitNamePlural} — seleccione en el contenedor o en la cuadrícula

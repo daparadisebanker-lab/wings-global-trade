@@ -152,7 +152,7 @@ export function PackingDiagram({ spec }: { spec: PackingSpec }) {
   )
 
   return (
-    <figure className="border border-neutral-200 bg-[var(--rb-surface-tint)] p-5 md:p-6">
+    <figure className="border border-neutral-200 bg-[var(--rb-surface-tint)] p-3 md:p-6">
       <svg
         viewBox={`0 0 ${vbW.toFixed(0)} ${vbH.toFixed(0)}`}
         role="img"
@@ -186,7 +186,7 @@ export function PackingDiagram({ spec }: { spec: PackingSpec }) {
           stroke="var(--rb-accent-ink)"
           strokeWidth="0.8"
           fontFamily="var(--livery-font-mono), monospace"
-          fontSize="12.5"
+          fontSize="17"
           fill="var(--rb-accent-ink)"
         >
           {dimW}
