@@ -7,6 +7,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getBrand, ALADIN_PRODUCTS } from '@/lib/rb/fixtures'
 import { PackingDiagram } from '@/components/features/brands/PackingDiagram'
+import { ExplodedDiagram } from '@/components/features/brands/ExplodedDiagram'
+import { PalletDiagram } from '@/components/features/brands/PalletDiagram'
 import { SpecIcon } from '@/components/features/brands/SpecIcons'
 
 interface PageProps {
@@ -76,8 +78,14 @@ export default async function BrandProductsPage({ params }: PageProps) {
                 idx % 2 === 1 ? 'lg:[direction:rtl]' : ''
               }`}
             >
-              <div className="lg:[direction:ltr]">
+              <div className="space-y-6 lg:[direction:ltr]">
                 <PackingDiagram spec={product.packing} />
+                <ExplodedDiagram
+                  spec={product.packing}
+                  axis={product.explodeAxis}
+                  caption={product.explodeCaption}
+                />
+                <PalletDiagram spec={product.pallet} />
               </div>
 
               <dl className="divide-y divide-neutral-100 lg:[direction:ltr]">

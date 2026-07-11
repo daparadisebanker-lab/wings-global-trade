@@ -14,6 +14,7 @@ import type { RbContainerTemplate, RbPublicBrand, RbPublicContainer } from '@/li
 import { fmt } from '@/lib/rb/packing'
 import { PackingCascade } from '@/components/features/brands/PackingCascade'
 import { SlotGrid } from '@/components/features/brands/SlotGrid'
+import { CupoContainerDiagram } from '@/components/features/brands/CupoContainerDiagram'
 
 type Allocation = 'shared' | 'dedicated'
 type Mode = 'slots' | 'quantity'
@@ -314,12 +315,22 @@ export function ContainerConfigurator({ brand, containers, template, productName
           <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_minmax(280px,360px)]">
             <div>
               {mode === 'slots' ? (
-                <SlotGrid
-                  container={container}
-                  template={template}
-                  selected={slots}
-                  onSelect={(n) => setSlots(Math.max(1, Math.min(n, remaining)))}
-                />
+                <div className="space-y-6">
+                  {/* The container itself, sliced into cupos — same states
+                      and selection semantics as the grid below it */}
+                  <CupoContainerDiagram
+                    container={container}
+                    template={template}
+                    selected={slots}
+                    onSelect={(n) => setSlots(Math.max(1, Math.min(n, remaining)))}
+                  />
+                  <SlotGrid
+                    container={container}
+                    template={template}
+                    selected={slots}
+                    onSelect={(n) => setSlots(Math.max(1, Math.min(n, remaining)))}
+                  />
+                </div>
               ) : (
                 <div className="max-w-md space-y-3">
                   <div className="flex gap-2">

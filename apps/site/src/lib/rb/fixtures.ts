@@ -40,6 +40,7 @@ export interface RbPublicBrand {
 
 import type { SpecIconId } from '@/components/features/brands/SpecIcons'
 import type { PackingSpec } from '@/components/features/brands/PackingDiagram'
+import type { PalletSpec } from '@/components/features/brands/PalletDiagram'
 
 export interface RbProduct {
   slug: string
@@ -51,6 +52,10 @@ export interface RbProduct {
   /** Caja-máster interior geometry (SPSA codification dims) for the
    *  technical isometric drawing — true proportions, never decorative. */
   packing: PackingSpec
+  /** Explode axis for the assembly view: 'y' lifts pilas, 'z' splits rows. */
+  explodeAxis: 'y' | 'z'
+  explodeCaption: string
+  pallet: PalletSpec
   descriptionEs: string
   highlights: string[]
 }
@@ -168,6 +173,16 @@ export const ALADIN_PRODUCTS: RbProduct[] = [
       title: 'Caja máster · 330 × 440 × 535 mm · vista técnica',
       composition: '6 paquetes (2 pilas de 3) · 10 rollos c/u = 60 rollos · 9,7 kg',
     },
+    explodeAxis: 'y',
+    explodeCaption: '3 camadas de 2 paquetes · cada paquete lleva 10 rollos',
+    pallet: {
+      // Pallet tradicional (ops): 5 cajas por camada × 3 camadas = 15.
+      // La sexta posición de la retícula queda punteada — posición alterna.
+      grid: { x: 3, z: 2, skip: 1 },
+      layers: 3,
+      boxDims: { w: 440, d: 535, h: 330 },
+      note: '5 cajas por camada × 3 camadas = 15 cajas · 900 paquetes · 145,5 kg',
+    },
     descriptionEs:
       'Papel higiénico ecológico elaborado a base de fibras 100% vírgenes de bambú. Suave, resistente y antialérgico; biodegradable y libre de químicos.',
     highlights: ['100% fibra virgen de bambú', 'Sin químicos ni lejía', '4 capas · 30 metros por rollo'],
@@ -195,6 +210,15 @@ export const ALADIN_PRODUCTS: RbProduct[] = [
       detail: 'slabs',
       title: 'Caja máster · 360 × 295 × 555 mm · vista técnica',
       composition: '9 pilas (3 × 3) · 5 empaques c/u = 45 empaques · 9,7 kg',
+    },
+    explodeAxis: 'z',
+    explodeCaption: '3 líneas de fondo × 3 pilas · 5 empaques por pila',
+    pallet: {
+      // Paletizado del CD (codificación SPSA): 8 bultos/camada × 5 camadas.
+      grid: { x: 4, z: 2, skip: 0 },
+      layers: 5,
+      boxDims: { w: 295, d: 555, h: 360 },
+      note: '8 cajas por camada × 5 camadas = 40 cajas · 1.800 empaques · 388 kg',
     },
     descriptionEs:
       'Papel facial ultra suave de fibra de bambú, 3 capas. No irrita ni raspa la piel; fragancia natural, producto ecológico.',
