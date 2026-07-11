@@ -23,6 +23,8 @@ gsap.registerPlugin(ScrollTrigger, useGSAP)
 const EASE_GANTRY = 'cubic-bezier(0.83,0,0.17,1)'
 const EASE_SETTLE = 'cubic-bezier(0.22,1,0.36,1)'
 
+// (Split-text mutation lives in BrandChoreography, not here — TechDraw only
+// animates attributes/styles, which React tolerates.)
 export function TechDraw({ children }: { children: React.ReactNode }) {
   const rootRef = useRef<HTMLDivElement>(null)
 

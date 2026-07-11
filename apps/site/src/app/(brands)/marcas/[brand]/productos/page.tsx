@@ -73,16 +73,42 @@ export default async function BrandProductsPage({ params }: PageProps) {
               </ul>
             </div>
 
-            {/* Technical body: packing drawing + spec sheet */}
-            <div
-              className={`grid gap-8 p-4 md:gap-10 md:p-9 lg:grid-cols-[minmax(320px,460px)_1fr] ${
-                idx % 2 === 1 ? 'lg:[direction:rtl]' : ''
-              }`}
-            >
-              <div className="space-y-6 lg:[direction:ltr]">
-                <TechDraw>
-                  <PackingDiagram spec={product.packing} />
-                </TechDraw>
+            {/* Technical body — row 1: vista técnica beside the spec sheet;
+                row 2: explosionada + pallet as a side-by-side pair (no dead
+                column space on desktop) */}
+            <div className="space-y-8 p-4 md:space-y-10 md:p-9">
+              <div
+                className={`grid gap-8 md:gap-10 lg:grid-cols-[minmax(320px,460px)_1fr] ${
+                  idx % 2 === 1 ? 'lg:[direction:rtl]' : ''
+                }`}
+              >
+                <div className="lg:[direction:ltr]">
+                  <TechDraw>
+                    <PackingDiagram spec={product.packing} />
+                  </TechDraw>
+                </div>
+
+                <dl className="divide-y divide-neutral-100 lg:[direction:ltr]">
+                  {product.specs.map((row) => (
+                    <div
+                      key={row.label}
+                      className="grid grid-cols-[28px_150px_1fr] items-baseline gap-4 py-3.5 md:grid-cols-[28px_180px_1fr]"
+                    >
+                      <span className="self-center text-[var(--rb-accent-ink)]">
+                        <SpecIcon id={row.icon} />
+                      </span>
+                      <dt className="text-[13px] uppercase tracking-widest-2 text-neutral-500">
+                        {row.label}
+                      </dt>
+                      <dd className="font-mono text-mono-md tabular-nums text-neutral-900">
+                        {row.value}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+
+              <div className="grid gap-8 md:gap-10 lg:grid-cols-2">
                 <TechDraw>
                   <ExplodedDiagram
                     spec={product.packing}
@@ -94,25 +120,6 @@ export default async function BrandProductsPage({ params }: PageProps) {
                   <PalletDiagram spec={product.pallet} />
                 </TechDraw>
               </div>
-
-              <dl className="divide-y divide-neutral-100 lg:[direction:ltr]">
-                {product.specs.map((row) => (
-                  <div
-                    key={row.label}
-                    className="grid grid-cols-[28px_150px_1fr] items-baseline gap-4 py-3.5 md:grid-cols-[28px_180px_1fr]"
-                  >
-                    <span className="self-center text-[var(--rb-accent-ink)]">
-                      <SpecIcon id={row.icon} />
-                    </span>
-                    <dt className="text-[13px] uppercase tracking-widest-2 text-neutral-500">
-                      {row.label}
-                    </dt>
-                    <dd className="font-mono text-mono-md tabular-nums text-neutral-900">
-                      {row.value}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
             </div>
 
             <div className="px-7 pb-7 md:px-9 md:pb-9">

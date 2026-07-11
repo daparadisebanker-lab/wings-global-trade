@@ -24,7 +24,7 @@ export default async function BrandLayout({
   if (!brand) notFound()
 
   return (
-    <div data-brand={brand.slug}>
+    <div data-brand={brand.slug} data-brand-isotipo={brand.logo.isotipo}>
       {/* Entry reveal — the clone's preloader with the genie isotipo;
           plays per hard load, SPA navs use BrandCurtain instead */}
       <BrandReveal brand={{ name: brand.name, claim: brand.claim, isotipo: brand.logo.isotipo }} />

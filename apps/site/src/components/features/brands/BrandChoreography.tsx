@@ -26,8 +26,17 @@ gsap.registerPlugin(ScrollTrigger, useGSAP)
 const EASE_GANTRY = 'cubic-bezier(0.83,0,0.17,1)' // structural moves
 const EASE_SETTLE = 'cubic-bezier(0.22,1,0.36,1)' // reveals
 
+// innerHTML mutation destroys the nodes React rendered; if React later
+// reconciles that subtree (router-cache revisit, client re-render) against
+// stale references it throws NotFoundError → the "Application error"
+// screen. Every split therefore records the original markup and the
+// cleanup below RESTORES it before the next route's children reconcile
+// (incident fix 2026-07-11, confirmed by the code-audit agent).
+const ORIGINAL_KEY = 'tdOriginalHtml'
+
 function splitLines(el: HTMLElement) {
   if (el.querySelector('.split_line')) return
+  el.dataset[ORIGINAL_KEY] = el.innerHTML
   const lines = el.innerHTML.split(/<br\s*\/?>/i)
   el.innerHTML = lines
     .map(
@@ -39,11 +48,22 @@ function splitLines(el: HTMLElement) {
 
 function splitWords(el: HTMLElement) {
   if (el.querySelector('.split_word')) return
+  el.dataset[ORIGINAL_KEY] = el.innerHTML
   el.innerHTML = (el.textContent ?? '')
     .trim()
     .split(/\s+/)
     .map((w) => `<span class="split_word">${w}</span>`)
     .join(' ')
+}
+
+function restoreSplits(root: HTMLElement) {
+  root.querySelectorAll<HTMLElement>('[data-td-original-html]').forEach((el) => {
+    const original = el.dataset[ORIGINAL_KEY]
+    if (typeof original === 'string') {
+      el.innerHTML = original
+      delete el.dataset[ORIGINAL_KEY]
+    }
+  })
 }
 
 export function BrandChoreography({ children }: { children: React.ReactNode }) {
@@ -101,6 +121,13 @@ export function BrandChoreography({ children }: { children: React.ReactNode }) {
       })
 
       ScrollTrigger.refresh()
+
+      // Cleanup: gsap context reverts styles/triggers automatically; the
+      // innerHTML splits must be restored by hand or React reconciles
+      // against destroyed nodes (the /marcas navigation crash).
+      return () => {
+        if (rootRef.current) restoreSplits(rootRef.current)
+      }
     },
     // Re-choreograph on every route change inside the canvas; revert cleans
     // all triggers and inline styles from the outgoing page.
@@ -113,12 +140,19 @@ export function BrandChoreography({ children }: { children: React.ReactNode }) {
 /**
  * Route curtain (SPEC §2.6): Barba's curtain is an MPA technique — the App
  * Router equivalent is an arrival wipe on route change WITHIN the canvas.
- * The flood uses --rb-accent, so moving between a brand's pages is a
- * brand-colored moment; /marcas (no brand scope) falls back to Wings navy.
+ *
+ * Color + mark resolve AT TRANSITION TIME from the [data-brand] scope the
+ * page is arriving into (the curtain itself mounts outside that scope, so
+ * a static var() lookup always fell back to navy — the bug Muaaz caught).
+ * Inside a brand space the flood is the brand accent and carries the
+ * brand's isotipo centered near the top edge of the block (the odd-ritual
+ * image-wrapped wipe): «right now, you are in an Áladín space». On the
+ * /marcas roster (no brand scope) it stays Wings navy, mark-less.
  */
 export function BrandCurtain() {
   const pathname = usePathname()
   const curtainRef = useRef<HTMLDivElement>(null)
+  const markRef = useRef<HTMLImageElement>(null)
   const firstRender = useRef(true)
 
   useGSAP(
@@ -130,6 +164,24 @@ export function BrandCurtain() {
       }
       const el = curtainRef.current
       if (!el) return
+
+      // The new page has committed by effect time — read ITS brand scope.
+      const brandEl = document.querySelector<HTMLElement>('[data-brand]')
+      const accent = brandEl
+        ? getComputedStyle(brandEl).getPropertyValue('--rb-accent').trim()
+        : ''
+      el.style.background = accent || 'var(--livery-navy)'
+
+      const isotipo = brandEl?.dataset.brandIsotipo ?? ''
+      if (markRef.current) {
+        if (isotipo) {
+          markRef.current.src = isotipo
+          markRef.current.style.display = 'block'
+        } else {
+          markRef.current.style.display = 'none'
+        }
+      }
+
       gsap.fromTo(
         el,
         { yPercent: 0, autoAlpha: 1 },
@@ -151,7 +203,16 @@ export function BrandCurtain() {
       ref={curtainRef}
       aria-hidden
       className="pointer-events-none fixed inset-0 z-40 opacity-0"
-      style={{ background: 'var(--rb-accent, var(--livery-navy))', transform: 'translateY(101%)' }}
-    />
+      style={{ background: 'var(--livery-navy)', transform: 'translateY(101%)' }}
+    >
+      {/* The mark rides the flood — centered, near the block's top padding */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        ref={markRef}
+        alt=""
+        className="absolute left-1/2 top-[8%] h-24 w-auto -translate-x-1/2 md:h-28"
+        style={{ display: 'none' }}
+      />
+    </div>
   )
 }
