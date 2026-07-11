@@ -30,13 +30,18 @@
 
 ## Where each practice lands (by payoff × effort)
 
-### Wave A — quick wins, existing engines (days)
-- **Contenedor compartido gets the instruments**: `CupoContainerDiagram` on
-  `/contenedor/[id]` workspaces and `/g/[token]` invites (visual fill state,
-  same slot grammar); `PackingCascade` for member cargo CBM. One visual
-  language for both cupo products — §8.4 disambiguation copy stays.
-- **TechDraw on the existing technical figures**: `/proceso` GRANO container
-  figure + esquema panels draft themselves on entry. Attributes only.
+### Wave A — quick wins, existing engines ✅ SHIPPED 2026-07-11 (6b979a8)
+- **Contenedor compartido got the instruments**: `ContainerSliceDiagram`
+  (the RB cupo container generalized into `features/shared/`, token-only
+  theming via `--csd-*` with Wings livery fallbacks) on `/contenedor/[id]`
+  workspaces and `/g/[token]` invites; RB configurator refactored onto the
+  same organ — extended, not forked. §8.4 disambiguation copy untouched.
+- **TechDraw moved to `features/shared/`.** The `/proceso` GRANO figures
+  were already animated by their own session (framer-motion, reduced-motion
+  aware) — wrapping them would double-animate; resolved as N/A.
+- Deferred within A: `PackingCascade` for member cargo CBM (shared-container
+  cargo is heterogeneous CBM, not a packing profile — an honest cascade
+  needs member volume data, revisit with shared-container Phase 2).
 
 ### Wave B — catalog technical fiches (the EQUIPMENT translation)
 - Product pages get the RB fiche treatment: spec icons, mono-md values, and
