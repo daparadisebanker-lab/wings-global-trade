@@ -21,6 +21,11 @@ paper. Regulatory screen (§8.3) proceeds on the hygiene basis.
 
 ## Mandate + capital model — own brand (Muaaz, 2026-07-10)
 
+**Territory (amended 2026-07-10, Muaaz):** Sudamérica, Centroamérica y el
+Caribe — not Perú-only. Site copy, fixture contract, and the
+`tower.represented_brands.mandate` jsonb all carry the regional territory;
+ops hub remains Callao.
+
 Áladín is **our own brand** — the signed mandate is not a blocker. Two
 consequences recorded:
 - **§8.1 / G7 resolved for RB/01:** capital model is purchase/own-inventory

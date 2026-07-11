@@ -9,7 +9,7 @@ import { RB_BRANDS } from '@/lib/rb/fixtures'
 export const metadata: Metadata = {
   title: 'Marcas representadas — venta exclusiva por contenedor',
   description:
-    'Wings Global Trade es socio comercial oficial de marcas internacionales en Perú. Venta mayorista exclusivamente por contenedor completo o por cupos, con inventario gestionado por Wings.',
+    'Wings Global Trade es socio comercial oficial de marcas internacionales para Sudamérica, Centroamérica y el Caribe. Venta mayorista exclusivamente por contenedor completo o por cupos, con inventario gestionado por Wings.',
 }
 
 const STEPS = [
@@ -43,9 +43,9 @@ export default function MarcasPage() {
         </h1>
         <p className="mt-5 text-body-lg text-neutral-600">
           Wings Global Trade actúa como socio comercial oficial de marcas internacionales
-          para el territorio peruano. La venta es exclusivamente mayorista y por
-          contenedor — completo o por cupos — con inventario gestionado por Wings de
-          origen a Callao.
+          para Sudamérica, Centroamérica y el Caribe. La venta es exclusivamente
+          mayorista y por contenedor — completo o por cupos — con inventario gestionado
+          por Wings desde el origen hasta el puerto de destino.
         </p>
       </header>
 

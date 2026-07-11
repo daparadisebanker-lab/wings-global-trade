@@ -21,8 +21,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const brand = getBrand(slug)
   if (!brand) return {}
   return {
-    title: `${brand.name} Perú — distribuidor oficial por contenedor`,
-    description: `Wings Global Trade es socio comercial oficial de ${brand.name} en ${brand.territory}. ${brand.categoryLabel}. Venta mayorista exclusiva por contenedor completo o por cupos.`,
+    title: `${brand.name} — distribuidor oficial por contenedor`,
+    description: `Wings Global Trade es socio comercial oficial de ${brand.name} para ${brand.territory}. ${brand.categoryLabel}. Venta mayorista exclusiva por contenedor completo o por cupos.`,
   }
 }
 

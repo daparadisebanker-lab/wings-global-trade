@@ -92,17 +92,17 @@ export const ALADIN: RbPublicBrand = {
   name: 'Áladín',
   claim: 'Cuida tu salud',
   categoryLabel: 'Higiene · papel ecológico de bambú',
-  territory: 'Perú',
+  territory: 'Sudamérica, Centroamérica y el Caribe',
   representedSince: 2026,
   story: [
     'Áladín fabrica papel de higiene a base de fibras 100% vírgenes de bambú: papel higiénico de 4 capas y papel facial de 3 capas, sin químicos ni lejía, biodegradable y de vida útil ilimitada.',
     'Cada SKU viaja con su especificación técnica completa — GTIN, empaque máster, paletizado y ficha logística. Toda esa documentación forma parte del paquete con el que gestionamos su logística desde las zonas francas ZOFRATACNA y ZOFRI de Iquique.',
-    'Wings Global Trade es su socio comercial oficial para el territorio peruano: gestiona el inventario, consolida la carga en origen y vende exclusivamente por contenedor — completo o por cupos.',
+    'Wings Global Trade es su socio comercial oficial para Sudamérica, Centroamérica y el Caribe: gestiona el inventario, consolida la carga en origen y vende exclusivamente por contenedor — completo o por cupos.',
   ],
   mandateScope: [
-    'Venta mayorista exclusiva por contenedor para Perú',
+    'Venta mayorista exclusiva por contenedor para Sudamérica, Centroamérica y el Caribe',
     'Gestión de inventario y consolidación en origen',
-    'Documentación de importación y entrega en Callao',
+    'Documentación de importación y entrega en puerto de destino — hub Callao',
   ],
   certificationsNote:
     'Registro sanitario: no requerido para ambas líneas. Las fichas técnicas por SKU están documentadas e incluidas en el paquete logístico — gestión desde las zonas francas ZOFRATACNA y ZOFRI.',
