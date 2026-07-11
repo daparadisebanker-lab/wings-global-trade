@@ -34,7 +34,7 @@ export function PalletDiagram({ spec }: { spec: PalletSpec }) {
   // Pallet: two deck slabs + three bearer blocks along the depth
   const deck = isoBox(o, -6 * s, (PALLET_H - 28) * s, -6 * s, totalW * s + 12 * s, 28 * s, totalD * s + 12 * s)
   nodes.push(
-    <g key="deck" fill="#ffffff" stroke="var(--rb-ink)" strokeWidth="1.1" strokeLinejoin="round">
+    <g key="deck" data-td-fade fill="#ffffff" stroke="var(--rb-ink)" strokeWidth="1.1" strokeLinejoin="round">
       <polygon points={deck.top} fill="var(--rb-surface-tint)" />
       <polygon points={deck.right} />
       <polygon points={deck.left} fill="var(--rb-accent-soft)" />
@@ -44,7 +44,7 @@ export function PalletDiagram({ spec }: { spec: PalletSpec }) {
     const bx = (totalW * s - 30 * s) * (b / 2)
     const block = isoBox(o, bx, 0, -6 * s, 30 * s, (PALLET_H - 28) * s, totalD * s + 12 * s)
     nodes.push(
-      <g key={`block-${b}`} fill="#ffffff" stroke="var(--rb-ink)" strokeWidth="0.9" strokeLinejoin="round" opacity="0.8">
+      <g key={`block-${b}`} data-td-fade fill="#ffffff" stroke="var(--rb-ink)" strokeWidth="0.9" strokeLinejoin="round" opacity="0.8">
         <polygon points={block.right} />
         <polygon points={block.left} fill="var(--rb-accent-soft)" />
       </g>,
@@ -73,12 +73,14 @@ export function PalletDiagram({ spec }: { spec: PalletSpec }) {
               strokeWidth="0.7"
               strokeDasharray="3 3"
               opacity="0.4"
+              data-td-late
             />,
           )
         } else {
           nodes.push(
             <g
               key={`bx-${layer}-${cellIndex}`}
+              data-td-pop
               fill="#ffffff"
               stroke="var(--rb-ink)"
               strokeWidth="1"

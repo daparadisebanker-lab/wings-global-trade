@@ -68,6 +68,7 @@ export function CupoContainerDiagram({ container, template, selected, onSelect }
     return (
       <g
         key={i}
+        data-td-pop
         onClick={
           clickable
             ? () => onSelect(availIndex + 1 === selected ? availIndex : availIndex + 1)
@@ -90,6 +91,7 @@ export function CupoContainerDiagram({ container, template, selected, onSelect }
           fill={fills[state]}
           stroke="var(--rb-ink)"
           strokeWidth="0.9"
+          style={{ transition: 'fill 0.25s ease' }}
         />
         {/* top strip (receding) */}
         <polygon
@@ -138,6 +140,7 @@ export function CupoContainerDiagram({ container, template, selected, onSelect }
         {slices}
         {/* door-end face (receding) */}
         <polygon
+          data-td-late
           points={`${x0 + L},${yTop} ${x0 + L + D * DX},${yTop - D * DY} ${x0 + L + D * DX},${yTop - D * DY + H} ${x0 + L},${yBot}`}
           fill="var(--rb-accent-soft)"
           stroke="var(--rb-ink)"

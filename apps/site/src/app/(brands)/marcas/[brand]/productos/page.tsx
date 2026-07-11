@@ -10,6 +10,7 @@ import { PackingDiagram } from '@/components/features/brands/PackingDiagram'
 import { ExplodedDiagram } from '@/components/features/brands/ExplodedDiagram'
 import { PalletDiagram } from '@/components/features/brands/PalletDiagram'
 import { SpecIcon } from '@/components/features/brands/SpecIcons'
+import { TechDraw } from '@/components/features/brands/TechDraw'
 
 interface PageProps {
   params: Promise<{ brand: string }>
@@ -79,13 +80,19 @@ export default async function BrandProductsPage({ params }: PageProps) {
               }`}
             >
               <div className="space-y-6 lg:[direction:ltr]">
-                <PackingDiagram spec={product.packing} />
-                <ExplodedDiagram
-                  spec={product.packing}
-                  axis={product.explodeAxis}
-                  caption={product.explodeCaption}
-                />
-                <PalletDiagram spec={product.pallet} />
+                <TechDraw>
+                  <PackingDiagram spec={product.packing} />
+                </TechDraw>
+                <TechDraw>
+                  <ExplodedDiagram
+                    spec={product.packing}
+                    axis={product.explodeAxis}
+                    caption={product.explodeCaption}
+                  />
+                </TechDraw>
+                <TechDraw>
+                  <PalletDiagram spec={product.pallet} />
+                </TechDraw>
               </div>
 
               <dl className="divide-y divide-neutral-100 lg:[direction:ltr]">

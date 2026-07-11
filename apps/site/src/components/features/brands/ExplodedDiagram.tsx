@@ -2,7 +2,7 @@
 // Exploded view of the caja máster: the packing layers lift out of the box
 // along the explode axis, with dashed leader guides — assembly-drawing
 // convention, generated from the same packing data as PackingDiagram.
-import { isoBox, isoCanvas, isoPt } from '@/lib/rb/iso'
+import { isoBox, isoCanvas, isoPoint, isoPt } from '@/lib/rb/iso'
 import type { PackingSpec } from '@/components/features/brands/PackingDiagram'
 
 interface Props {
@@ -28,20 +28,23 @@ export function ExplodedDiagram({ spec, axis, caption }: Props) {
   const canvas = isoCanvas(W, H + extraH, D + extraD, 42)
   const o = canvas.origin
 
+  const COS = 0.866
+  const SIN = 0.5
+
   const slabs: React.ReactNode[] = []
+  const leaders: React.ReactNode[] = []
   for (let g = 0; g < groups; g++) {
-    const lift = (groups - 1 - g) * 0 // groups indexed bottom-up; offset below
-    void lift
-    const offY = axis === 'y' ? g * (H / cells.y + gap) - g * (H / cells.y) + g * gap : 0
-    const offZ = axis === 'z' ? g * gap : 0
-    const y0 = axis === 'y' ? (H / cells.y) * g + offY : 0
-    const z0 = axis === 'z' ? (D / cells.z) * g + offZ : 0
+    // Rendered ASSEMBLED; TechDraw flies each slab to its exploded offset.
+    const y0 = axis === 'y' ? (H / cells.y) * g : 0
+    const z0 = axis === 'z' ? (D / cells.z) * g : 0
     const slabH = axis === 'y' ? H / cells.y : H
     const slabD = axis === 'z' ? D / cells.z : D
+    const lift = g * gap
+    const dx = axis === 'z' ? -(COS * lift) : 0
+    const dy = axis === 'y' ? -lift : SIN * lift
 
     const faces = isoBox(o, 0, y0, z0, W, slabH, slabD)
     const inner: React.ReactNode[] = []
-    // Internal pack divisions across the slab width
     for (let i = 1; i < cells.x; i++) {
       const x = (W / cells.x) * i
       inner.push(
@@ -51,7 +54,6 @@ export function ExplodedDiagram({ spec, axis, caption }: Props) {
         />,
       )
     }
-    // For y-explosions with depth cells, show them on the top face
     if (axis === 'y' && cells.z > 1) {
       for (let i = 1; i < cells.z; i++) {
         const z = (slabD / cells.z) * i
@@ -64,19 +66,27 @@ export function ExplodedDiagram({ spec, axis, caption }: Props) {
       }
     }
 
+    // Leader guide from the base position to the exploded resting place
+    if (g > 0) {
+      const [bx, by] = isoPoint(o, 0, y0, z0)
+      leaders.push(
+        <line
+          key={`lead-${g}`}
+          x1={bx}
+          y1={by}
+          x2={bx + dx}
+          y2={by + dy}
+          stroke="var(--rb-accent-ink)"
+          strokeWidth="0.7"
+          strokeDasharray="2 3"
+          opacity="0.55"
+          data-td-late
+        />,
+      )
+    }
+
     slabs.push(
-      <g key={g}>
-        {/* leader guides down to the base position */}
-        {g > 0 && (
-          <path
-            d={`M${isoPt(o, 0, y0, z0)} L${isoPt(o, 0, axis === 'y' ? (H / cells.y) * g : 0, axis === 'z' ? (D / cells.z) * g : 0)}`}
-            stroke="var(--rb-accent-ink)"
-            strokeWidth="0.7"
-            strokeDasharray="2 3"
-            opacity="0.55"
-            fill="none"
-          />
-        )}
+      <g key={g} data-td-slab data-td-dx={dx.toFixed(1)} data-td-dy={dy.toFixed(1)}>
         <g fill="#ffffff" stroke="var(--rb-ink)" strokeWidth="1.2" strokeLinejoin="round">
           <polygon points={faces.top} fill="var(--rb-surface-tint)" />
           <polygon points={faces.right} />
@@ -105,7 +115,9 @@ export function ExplodedDiagram({ spec, axis, caption }: Props) {
           strokeWidth="1"
           strokeDasharray="4 4"
           opacity="0.45"
+          data-td-late
         />
+        {leaders}
         {slabs}
       </svg>
       <figcaption className="mt-4 border-t border-neutral-200 pt-3">

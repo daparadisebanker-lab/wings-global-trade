@@ -15,6 +15,7 @@ import { fmt } from '@/lib/rb/packing'
 import { PackingCascade } from '@/components/features/brands/PackingCascade'
 import { SlotGrid } from '@/components/features/brands/SlotGrid'
 import { CupoContainerDiagram } from '@/components/features/brands/CupoContainerDiagram'
+import { TechDraw } from '@/components/features/brands/TechDraw'
 
 type Allocation = 'shared' | 'dedicated'
 type Mode = 'slots' | 'quantity'
@@ -318,12 +319,14 @@ export function ContainerConfigurator({ brand, containers, template, productName
                 <div className="space-y-6">
                   {/* The container itself, sliced into cupos — same states
                       and selection semantics as the grid below it */}
-                  <CupoContainerDiagram
-                    container={container}
-                    template={template}
-                    selected={slots}
-                    onSelect={(n) => setSlots(Math.max(1, Math.min(n, remaining)))}
-                  />
+                  <TechDraw>
+                    <CupoContainerDiagram
+                      container={container}
+                      template={template}
+                      selected={slots}
+                      onSelect={(n) => setSlots(Math.max(1, Math.min(n, remaining)))}
+                    />
+                  </TechDraw>
                   <SlotGrid
                     container={container}
                     template={template}

@@ -80,7 +80,7 @@ export function PackingDiagram({ spec }: { spec: PackingSpec }) {
       for (let iy = 0; iy < cells.y; iy++) {
         const [cx, cy] = P(rw * (ix + 0.5), rh * (iy + 0.5), 0)
         details.push(
-          <g key={`roll-${ix}-${iy}`} transform={`translate(${cx.toFixed(1)} ${cy.toFixed(1)})`}>
+          <g key={`roll-${ix}-${iy}`} data-td-pop transform={`translate(${cx.toFixed(1)} ${cy.toFixed(1)})`}>
             {/* circle on the x/y iso plane → ellipse rotated to the face */}
             <ellipse rx={r} ry={r * 0.82} transform="rotate(-30) skewX(-30) scale(1,0.864)" />
             <ellipse rx={r * 0.32} ry={r * 0.28} transform="rotate(-30) skewX(-30) scale(1,0.864)" />
@@ -101,6 +101,7 @@ export function PackingDiagram({ spec }: { spec: PackingSpec }) {
             key={`slab-${iy}-${u}`}
             d={`M${pt(0, y, 0)} L${pt(W, y, 0)}`}
             strokeDasharray="2.5 3"
+            data-td-late
           />,
         )
       }
@@ -159,15 +160,15 @@ export function PackingDiagram({ spec }: { spec: PackingSpec }) {
         className="mx-auto w-full max-w-[430px]"
       >
         {/* faces */}
-        <g fill="#ffffff" stroke="var(--rb-ink)" strokeWidth="1.4" strokeLinejoin="round">
+        <g data-td-fade fill="#ffffff" stroke="var(--rb-ink)" strokeWidth="1.4" strokeLinejoin="round">
           <polygon points={topFace} fill="var(--rb-surface-tint)" />
           <polygon points={rightFace} />
           <polygon points={leftFace} fill="var(--rb-accent-soft)" />
         </g>
-        {/* internal packing divisions */}
+        {/* internal packing divisions — line-drawn on entry */}
         <g fill="none" stroke="var(--rb-accent-ink)" strokeWidth="0.9">
           {divisions.map((d, i) => (
-            <path key={i} d={d} />
+            <path key={i} d={d} data-td-draw pathLength={1} />
           ))}
         </g>
         {/* pack detail on the front face */}
@@ -175,12 +176,13 @@ export function PackingDiagram({ spec }: { spec: PackingSpec }) {
           {details}
         </g>
         {/* hidden rear edges */}
-        <g fill="none" stroke="var(--rb-ink)" strokeWidth="0.8" strokeDasharray="3 4" opacity="0.4">
+        <g data-td-late fill="none" stroke="var(--rb-ink)" strokeWidth="0.8" strokeDasharray="3 4" opacity="0.4">
           <path d={`M${pt(W, 0, 0)} L${pt(W, 0, D)} L${pt(0, 0, D)}`} />
           <path d={`M${pt(W, 0, D)} L${pt(W, H, D)}`} />
         </g>
         {/* dimensions */}
         <g
+          data-td-late
           stroke="var(--rb-accent-ink)"
           strokeWidth="0.8"
           fontFamily="var(--livery-font-mono), monospace"
