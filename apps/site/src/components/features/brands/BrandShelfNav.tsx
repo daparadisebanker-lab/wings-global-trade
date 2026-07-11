@@ -23,7 +23,8 @@ export function BrandShelfNav({ brand }: Props) {
   return (
     <nav
       aria-label={`Secciones de ${brand.name}`}
-      className="sticky top-0 z-20 border-b border-neutral-200 bg-white/95 backdrop-blur"
+      // Sticks below the fixed site header (h-16 / md:h-18), never under it.
+      className="sticky top-16 z-20 border-b border-neutral-200 bg-white/95 backdrop-blur md:top-18"
     >
       <div className="mx-auto flex max-w-6xl items-center gap-1 overflow-x-auto px-5 md:px-8">
         <Link

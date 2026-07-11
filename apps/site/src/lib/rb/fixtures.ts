@@ -81,7 +81,7 @@ export const ALADIN: RbPublicBrand = {
   representedSince: 2026,
   story: [
     'Áladín fabrica papel de higiene a base de fibras 100% vírgenes de bambú: papel higiénico de 4 capas y papel facial de 3 capas, sin químicos ni lejía, biodegradable y de vida útil ilimitada.',
-    'La marca fue codificada en el sistema de artículos de Supermercados Peruanos (Plaza Vea / Vivanda), con especificación logística completa por SKU: GTIN, empaque máster, paletizado y validación regulatoria.',
+    'Cada SKU viaja con su especificación técnica completa — GTIN, empaque máster, paletizado y ficha logística. Toda esa documentación forma parte del paquete con el que gestionamos su logística desde las zonas francas ZOFRATACNA y ZOFRI de Iquique.',
     'Wings Global Trade es su socio comercial oficial para el territorio peruano: gestiona el inventario, consolida la carga en origen y vende exclusivamente por contenedor — completo o por cupos.',
   ],
   mandateScope: [
@@ -90,7 +90,7 @@ export const ALADIN: RbPublicBrand = {
     'Documentación de importación y entrega en Callao',
   ],
   certificationsNote:
-    'Registro sanitario: no requerido para ambas líneas (validación de codificación SPSA). Fichas técnicas por SKU disponibles en la reserva.',
+    'Registro sanitario: no requerido para ambas líneas. Las fichas técnicas por SKU están documentadas e incluidas en el paquete logístico — gestión desde las zonas francas ZOFRATACNA y ZOFRI.',
   logo: {
     isologo: '/brands/aladin/isologo.svg',
     positivo: '/brands/aladin/positivo.svg',

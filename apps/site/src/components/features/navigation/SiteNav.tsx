@@ -109,7 +109,9 @@ export function SiteNav({ categories }: SiteNavProps) {
     pathname?.startsWith('/catalogo') ||
     pathname?.startsWith('/repuestos') ||
     pathname?.startsWith('/g/') ||
-    pathname?.startsWith('/contenedor')
+    pathname?.startsWith('/contenedor') ||
+    // Brand shelves sit on the pure-white canvas — transparent nav is illegible there
+    pathname?.startsWith('/marcas')
   const solid = scrolled || forceSolid
 
   return (

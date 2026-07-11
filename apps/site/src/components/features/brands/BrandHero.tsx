@@ -12,7 +12,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
 import type { RbHeroSlide, RbPublicBrand } from '@/lib/rb/fixtures'
 
-const SLIDE_MS = 6000
+const SLIDE_MS = 4500
 
 interface Props {
   brand: Pick<RbPublicBrand, 'name' | 'claim' | 'logo' | 'heroSlides'>
@@ -34,7 +34,9 @@ export function BrandHero({ brand }: Props) {
   }, [reduced, paused, slides.length])
 
   if (slides.length === 0) return null
-  const active = reduced ? slides[0] : slides[index]
+  // Reduced-motion disables autoplay and crossfade — never manual navigation.
+  const active = slides[index]
+  const step = (dir: 1 | -1) => setIndex((i) => (i + dir + slides.length) % slides.length)
 
   return (
     <div
@@ -49,34 +51,52 @@ export function BrandHero({ brand }: Props) {
     >
       <AnimatePresence initial={false} mode="popLayout">
         <motion.div
-          key={reduced ? 'static' : index}
+          key={index}
           initial={reduced ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={reduced ? undefined : { opacity: 0 }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
+          transition={{ duration: reduced ? 0 : 0.8, ease: 'easeOut' }}
           className="absolute inset-0"
         >
           <Slide slide={active} brand={brand} priority={index === 0} />
         </motion.div>
       </AnimatePresence>
 
-      {!reduced && slides.length > 1 && (
-        <div className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 gap-2">
-          {slides.map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              aria-label={`Ir a la imagen ${i + 1}`}
-              aria-current={i === index}
-              onClick={() => setIndex(i)}
-              className={
-                i === index
-                  ? 'h-2 w-6 rounded-full bg-[var(--rb-accent-ink)] transition-all'
-                  : 'h-2 w-2 rounded-full bg-neutral-300 transition-all hover:bg-[var(--rb-accent)]'
-              }
-            />
-          ))}
-        </div>
+      {slides.length > 1 && (
+        <>
+          <button
+            type="button"
+            aria-label="Imagen anterior"
+            onClick={() => step(-1)}
+            className="absolute left-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-neutral-200 bg-white/85 text-[18px] leading-none text-[var(--rb-accent-ink)] backdrop-blur transition-colors hover:bg-white"
+          >
+            ‹
+          </button>
+          <button
+            type="button"
+            aria-label="Imagen siguiente"
+            onClick={() => step(1)}
+            className="absolute right-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-neutral-200 bg-white/85 text-[18px] leading-none text-[var(--rb-accent-ink)] backdrop-blur transition-colors hover:bg-white"
+          >
+            ›
+          </button>
+          <div className="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 gap-2">
+            {slides.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                aria-label={`Ir a la imagen ${i + 1}`}
+                aria-current={i === index}
+                onClick={() => setIndex(i)}
+                className={
+                  i === index
+                    ? 'h-2 w-6 rounded-full bg-[var(--rb-accent-ink)] transition-all'
+                    : 'h-2 w-2 rounded-full bg-neutral-300 transition-all hover:bg-[var(--rb-accent)]'
+                }
+              />
+            ))}
+          </div>
+        </>
       )}
     </div>
   )

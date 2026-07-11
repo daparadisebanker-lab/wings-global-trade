@@ -6,5 +6,7 @@
 import './rb-canvas.css'
 
 export default function BrandsLayout({ children }: { children: React.ReactNode }) {
-  return <div data-canvas="brand">{children}</div>
+  // pt offsets the fixed site header (h-16 / md:h-18) — the white canvas has
+  // no dark hero for the transparent nav to float over.
+  return <div data-canvas="brand" className="pt-16 md:pt-18">{children}</div>
 }
