@@ -11,7 +11,7 @@ BUILD_PROMPT / spec is the entry point.
 | `tower/` | TOWER — internal CRM+ERP+PIM+analytics at `apps/tower` (`tower.wingsglobaltrade.com`); absorbs the deployed `wings-operations` app | **UNBLOCKED** — monorepo root + ecosystem law + `packages/ui` all exist; `BUILD_PROMPT.md` runs as written | `BUILD_PROMPT.md` (5 waves) |
 | `network/` | Wings Network — supplier marketplace (subscription for presence, commission at the logistics rail); `marketplace` schema | Spec complete, phase-gated | `WINGS_MARKETPLACE_STRATEGY.md` (Layer 11 gates) → `BUILD_PROMPT.md` |
 | `shared-container/` | Contenedor Compartido — «Trae tu grupo» group container imports; additive Mister lanes | Spec complete | `wings-shared-container-spec.md` · GTM: pending — meta-ads program deleted 2026-07-08, replacement not yet written |
-| `represented-brands/` | Partner brands sold container-only (full or shared, never units) — hosted brand shelves at `/marcas`, TOWER brand/designation/allocation workflows, Mister brand data loop | Spec complete — Phase-0 decisions (archetype `ALLOCATION`, brand #1) pending Muaaz | `SPEC.md` (§7 gates) |
+| `represented-brands/` | Partner brands sold container-only (full or shared, never units) — hosted brand shelves at `/marcas`, TOWER brand/designation/allocation workflows, Mister brand data loop | **ACTIVE** — Phase 0 closed; RB/01 Áladín shelf + ledger LIVE on prod (2026-07-10). GTM campaign drafted: `brands/rb-01-aladin/GTM-CAMPAIGN.md` (gates pending Muaaz) | `SPEC.md` (§7 gates) |
 
 ## Sequencing constraints (decided facts, not suggestions)
 
