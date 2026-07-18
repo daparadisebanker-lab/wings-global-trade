@@ -1,0 +1,98 @@
+{
+  "program": "C-HERO KAMA intake — fetch-and-stage",
+  "generated": "2026-07-08",
+  "source_of_truth": "Supabase products table (pyznlglvwihosemqkhtq); full variant specs live there — this file is a distilled work queue only",
+  "rights_status": "UNRESOLVED — Step 0 blocking. No downloads permitted until packages/catalog/manufacturer-domains.json is founder-ratified.",
+  "note_existing_sources": "kama-serie-v / kama-serie-w / kama-serie-x already have supplier photos in assets/products-source/camiones/ and are NOT in this queue.",
+  "skus": [
+    {
+      "sku": "kama-serie-gm",
+      "name": "KAMA Serie GM — Volquetes Diésel (Diesel Dumper Trucks)",
+      "priority": 1,
+      "priority_reason": "only SKU with a truly empty images array",
+      "body_type": "dump truck (volquete) — tipper body, one-and-half or single cabin",
+      "models": ["GM36B", "GM37D", "GM66B", "GM67E"],
+      "visual_identifiers": "6-wheel dumper, cabin widths 1900/2030mm, tipper box 3650–4200mm, GVW 11.2–18.3t"
+    },
+    {
+      "sku": "kama-gm67e",
+      "name": "KAMA GM67E — Diésel Euro-V",
+      "priority": 2,
+      "body_type": "dump truck, single cabin (2030)",
+      "models": ["GM67E"],
+      "visual_identifiers": "9.00R20 tyres, 4200x2300x800 tipper box, GVW 16.62t, Yunnei YNF40E1. Same unit family as kama-serie-gm — one good GM67E source can serve both, staged twice."
+    },
+    {
+      "sku": "kama-serie-k",
+      "name": "KAMA Serie K — Camión Ligero-Medio (Light-Medium Truck)",
+      "priority": 3,
+      "body_type": "light cargo truck, flatbed/stake box, single or one-and-half cabin",
+      "models": ["GK36E", "K66A", "K67B", "K68B", "K69B"],
+      "visual_identifiers": "narrow cabins 1580–1680mm, cargo boxes ~2880–3600mm, GVW 4.3–6.3t"
+    },
+    {
+      "sku": "kama-serie-m1",
+      "name": "KAMA Serie M1 — Camión Ligero (Light Truck)",
+      "priority": 3,
+      "body_type": "light cargo truck, 1760mm cabin",
+      "models": ["M11D", "M15C", "M16C", "M16D", "M18E", "M19E"],
+      "visual_identifiers": "cargo boxes 3000–3720mm, GVW 4.3–5.9t"
+    },
+    {
+      "sku": "kama-serie-m3",
+      "name": "KAMA Serie M3 — Camión Medio (Medium Truck)",
+      "priority": 3,
+      "body_type": "medium cargo truck, 1900mm cabin",
+      "models": ["M31", "M33CNG", "M36C", "M36F", "M37E", "M39B"],
+      "visual_identifiers": "cargo boxes 3800–4160mm, GVW up to 7.1t"
+    },
+    {
+      "sku": "kama-m36f",
+      "name": "KAMA M36F — Diésel Euro-VI",
+      "priority": 3,
+      "body_type": "medium cargo truck, single cabin (1900)",
+      "models": ["M36F"],
+      "visual_identifiers": "4160x2100 cargo box, GVW 5.58t, Isuzu JE493ZLQ6A. Same unit family as kama-serie-m3 — one good M36F source can serve both, staged twice."
+    },
+    {
+      "sku": "kama-serie-m6",
+      "name": "KAMA Serie M6 — Carga Media/Pesada (Medium/Heavy Cargo)",
+      "priority": 3,
+      "body_type": "medium/heavy cargo truck, extra-wide 2030–2050mm cabin",
+      "models": ["M61", "M66B", "M67B", "M68E", "M69E"],
+      "visual_identifiers": "long cargo boxes 4300–6250mm, GVW 6.3–14.9t"
+    },
+    {
+      "sku": "kama-serie-s",
+      "name": "KAMA Serie S — Mini Van",
+      "priority": 4,
+      "body_type": "mini van / minibus (cargo van S6–S8, passenger SP6–SP8)",
+      "models": ["S6", "S7CNG", "S8", "SP6", "SP7", "SP8"],
+      "visual_identifiers": "unitized body ~4.9–5.3m long, gasoline/CNG"
+    },
+    {
+      "sku": "kama-serie-es-esp",
+      "name": "KAMA ES/ESP — Furgón Eléctrico (Electric Van)",
+      "priority": 4,
+      "body_type": "electric van (cargo ES6–ES8, passenger ESP6–ESP8) — visually similar body to Serie S",
+      "models": ["ES6", "ES7", "ES8", "ESP6", "ESP7", "ESP8"],
+      "visual_identifiers": "BEV, unitized body, no exhaust, charge port; distinguish from Serie S by EV badging/grille"
+    },
+    {
+      "sku": "kama-serie-ew-ev",
+      "name": "KAMA EW/EV — Eléctrico Mini (Electric Mini Truck)",
+      "priority": 4,
+      "body_type": "electric mini flatbed truck, single cabin",
+      "models": ["EW1", "EW2", "EV1", "EV2", "EV3"],
+      "visual_identifiers": "small BEV flatbed 4.1–5.6m, GVW 2.1–3.4t; EW1/EW2 records say RHD — verify facing/steering side in any source"
+    },
+    {
+      "sku": "kama-serie-ex-em",
+      "name": "KAMA EX/EM — Eléctrico Pesado (Heavy Electric Truck)",
+      "priority": 4,
+      "body_type": "electric cargo truck, single cabin 1750–2030mm",
+      "models": ["EX1", "EX2", "EM31", "EM32", "EM61"],
+      "visual_identifiers": "BEV flatbed/box 6.0–6.5m, GVW 3.5–8t"
+    }
+  ]
+}

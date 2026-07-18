@@ -1,0 +1,17 @@
+{
+  "sku": "kama-serie-s",
+  "model_shown": "KAMA S6 — Gasoline Cargo Mini Van, LHD",
+  "family_match_rationale": "Serie S covers cargo van S6-S8 + passenger SP6-SP8. S6 is a cargo mini van, LHD, gasoline — body type, cabin config and class match the family spec. Representative cargo-van hero for the SKU.",
+  "source_url": "https://www.kamaauto.cn/zb_users/upload/2026/05/202605111778486013100910.jpg",
+  "page_url": "https://www.kamaauto.cn/product/fuel-mini-van/kama-s6-gasoline-mini-van/",
+  "domain": "kamaauto.cn",
+  "rights": "manufacturer_kit",
+  "rights_source": "KAMA Auto export brand site — footer names Shandong KAMA Automobile Manufacturing Co., Ltd. as parent; self-hosted product photography (registry ratified 2026-07-08)",
+  "fetch_date": "2026-07-08",
+  "source_dimensions": "1122x1402",
+  "format": "jpeg",
+  "source_note": "Source is a kamaauto.cn MARKETING POSTER (baked-in title text + spec callouts + composited warehouse/skyline background). The vehicle within is a real photograph; poster text sits on the background, NOT on the product. Cropped to the vehicle region (790x545, box L330 T495 W790 H545) BEFORE upscale — no poster text crosses the vehicle silhouette. This is a Register C restoration (crop + faithful enlargement + extraction + Route-1 staging), not a reinvention.",
+  "angle": "3/4 front",
+  "facing": "left",
+  "preflight": "PASS — 3/4 front angle, no occlusions crossing silhouette, no platform watermark on product. Raw van crop long edge 790px; crisp_upscale (faithful enlargement, Register C permitted) to 3160x2180 before extraction; staged cutout bbox long edge 2644px, clears 1200px floor."
+}

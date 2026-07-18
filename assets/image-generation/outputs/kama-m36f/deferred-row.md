@@ -1,0 +1,5 @@
+| type | sku | url | reason | date |
+|---|---|---|---|---|
+| sku-mismatch / no-exact-source | kama-m36f | (none — no source names M36F) | kama-m36f is a SINGLE-MODEL SKU: founder policy requires an exact-unit match (single-model SKUs do not accept family-level photography). No source in discovery or this pass shows an "M36F" badge/decal anywhere. The closest is the kamaauto.cn M3-series page and the kamaqc M37A listing — both M3-FAMILY (1900mm cabin) but neither names M36F; staging a family sibling as the exact M36F would be a fabricated model claim. Deferred rather than substituted. | 2026-07-08 |
+
+**Note:** the queue's suggestion that "one good M36F source can serve both kama-serie-m3 and kama-m36f, staged twice" is unreachable because no M36F-specific source exists. If the founder confirms a specific M36F listing on a registry domain (kamaqc.com / global-kama.com / kamaauto.cn / the two made-in-china storefronts), it can be staged; otherwise M36F stays blocked pending a better source.

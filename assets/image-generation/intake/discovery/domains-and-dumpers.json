@@ -1,0 +1,205 @@
+{
+  "program": "C-HERO KAMA intake — discovery only (no downloads performed, rights gate UNRESOLVED)",
+  "generated": "2026-07-08",
+  "researcher_note": "This file is research output only. No image bytes were downloaded, saved, or copied to disk at any point — all image_url values below are unverified pointers recorded from page text/HTML, not fetched binaries. Every domain and candidate needs founder ratification before any staging step touches packages/catalog/manufacturer-domains.json.",
+  "corporate_background": {
+    "parent_entity": "Shandong KAMA (Kaima) Automobile Manufacturing Co., Ltd. (山东凯马汽车制造有限公司), Shouguang City, Weifang, Shandong Province, China. Founded 1993, listed on the Shanghai Stock Exchange (also referenced with Hong Kong listing stock code 900953 on one export-site mirror — treat as unverified until cross-checked). A subsidiary of SINOMACH (China National Machinery Industry Corporation), a Fortune Global 500 central state-owned enterprise. Also operates under group name 'Dongfeng Kama' after Dongfeng Motor Corp took an equity stake in 2010, forming Shandong Dongfeng Kama Vehicle Co., Ltd in 2011 — so 'Dongfeng Kama' and plain 'Kama'/'Kaima' refer to the same manufacturing entity family, not two brands.",
+    "brand_names_used": ["KAMA", "Kaima (凯马)", "Dongfeng Kama", "sub-brands: Jubao (聚宝), Aofeng (奥峰)"],
+    "confusable_unrelated_brand": "KAMAZ (Russian truck maker, kamaz.ru / kamazexport.ae / kamatruck.ru) is a COMPLETELY DIFFERENT COMPANY. Several search results surfaced KAMAZ noise — none of it is included below."
+  },
+  "official_domains": [
+    {
+      "domain": "kamaqc.com",
+      "what_it_is": "Chinese-language domestic corporate site of Shandong KAMA Automobile Manufacturing Co., Ltd.",
+      "language": "Simplified Chinese only",
+      "confidence": "HIGH — genuinely official",
+      "evidence": [
+        "Header/footer identify the company verbatim as 山东凯马汽车制造有限公司",
+        "Address matches the manufacturer's known Shouguang HQ: 山东省寿光市东环路5888号",
+        "Displays a live Chinese ICP registration number in the footer: 鲁ICP备10210494号 (a real government business-registration filing number, not something a reseller would fake)",
+        "Contains an outbound 'English gateway' link to global-kama.com for international visitors — a domestic site linking to its own export mirror is strong corroboration both are the same operator"
+      ],
+      "hosts_downloadable_product_photography": "Has a full product showroom (微卡/轻卡/中重卡/工程车/电动车/出口 categories) but WebFetch could not render it directly (expired/invalid TLS certificate on the live domain — content was only accessible via a text-extraction proxy). Treat as present but not yet directly crawled.",
+      "notes": "TLS certificate issue is common for domestic Chinese corporate sites and is not itself a red flag for authenticity, but it does mean a normal browser will show a security warning — worth noting for anyone visiting manually."
+    },
+    {
+      "domain": "global-kama.com",
+      "what_it_is": "English-language international/export site of the same manufacturer",
+      "language": "English",
+      "confidence": "HIGH — genuinely official",
+      "evidence": [
+        "Directly linked FROM kamaqc.com's Chinese site as the designated English gateway",
+        "Identical HQ address in the footer: No.5888, Donghuan Road, Shouguang City, Shandong Province, China",
+        "Consistent brand name and product-line structure (Mini/Light/Medium Truck, Special Vehicle, Electric Vehicle) matching the domestic site's categories"
+      ],
+      "hosts_downloadable_product_photography": "Yes — an EmpireCMS-style catalog with per-category thumbnail images at paths like /e/data/tmp/titlepic/*.jpg, including a 'Special Vehicle' category (this is where dump/tipper trucks are most likely filed). The Special Vehicle detail page returned '此信息不存在' (page not found) when probed directly — the category listing exists but the specific sub-page path used in this pass was wrong; needs a real crawl/sitemap pass, not a guessed URL.",
+      "notes": "This is the single best candidate root to re-crawl properly (with a sitemap or by paginating the CMS listing) before falling back to marketplace sources."
+    },
+    {
+      "domain": "kamaauto.cn",
+      "what_it_is": "English-language site, 'KAMA Auto', branded 'CKD/SKD Export Specialist', electric + fuel commercial vehicles",
+      "language": "English",
+      "confidence": "MEDIUM-HIGH — likely official or directly manufacturer-authorized, but not fully corroborated against kamaqc.com's ICP/address",
+      "evidence": [
+        "Footer copyright: 'Copyright ©2024 All Rights Reserved by Kama Automobile Manufacturing Co.,Ltd.' — names the parent company directly",
+        "Product categories align with the parent's line (Fuel Mini Vans, EV Light Trucks, EV Mini Trucks, Fuel Light Trucks, EV Van Trucks)"
+      ],
+      "hosts_downloadable_product_photography": "Yes, product category images present, but no GM-series dump/tipper trucks found in the categories surfaced so far (site skews toward vans/EVs).",
+      "notes": "Did not cross-verify address/ICP against kamaqc.com in this pass — treat as a second export-facing property until confirmed, not a duplicate of global-kama.com."
+    },
+    {
+      "domain": "kama-automotive.com",
+      "what_it_is": "'Kama Automotive International' — English site, office in Xiamen, Fujian (not Shandong)",
+      "language": "English",
+      "confidence": "MEDIUM — plausible official international sales arm, but headquartered at a different address than the manufacturing plant, so best treated as a corporate/trading affiliate rather than the manufacturer's own primary domain",
+      "evidence": [
+        "Describes the 2010 Dongfeng equity stake and 2011 formation of 'Shandong Dongfeng Kama Vehicle Co., LTD', i.e. it correctly narrates the real corporate history",
+        "Office listed at Jimei North Avenue, Software Park Phase III, Xiamen, Fujian — this is a sales/trading-office address pattern, not the Shouguang factory address"
+      ],
+      "hosts_downloadable_product_photography": "Only broad category navigation (Minivan Series, Light Truck Series, EVs) was visible; no product photo pages reached in this pass.",
+      "notes": "Worth keeping in the official tier given accurate corporate-history detail, but rank it below kamaqc.com/global-kama.com for sourcing rights until the relationship is confirmed directly (e.g. a mutual link from kamaqc.com)."
+    },
+    {
+      "domain": "kamavehicle.com",
+      "what_it_is": "Multi-language (EN/中文/Russian) site identifying itself as 'Ronglei Industrial Co., Ltd (affiliated with Shandong KAMA Automobile Company)', footer copyright 'CHTC'",
+      "language": "English, Simplified Chinese, Russian",
+      "confidence": "LOW-MEDIUM — self-describes as 'affiliated' rather than being the manufacturer itself; footer entity name (Ronglei Industrial / CHTC) does not match Shandong KAMA Automobile Manufacturing Co., Ltd. directly",
+      "evidence": [
+        "States the Shouguang address (No.5888, Donghuan Road) matching the genuine factory location",
+        "But copyright line reads 'Copyright © 2022 CHTC All rights reserved' and contact email is admin@chtcvehicle.ltd — a third-party-sounding operator, not the manufacturer's own legal name",
+        "Product mix skews toward a 'Used Vehicle Series' (used dump trucks, tractors, buses, concrete mixers, refurbished engines) — a used-equipment trading profile, not a factory-direct new-vehicle catalog"
+      ],
+      "hosts_downloadable_product_photography": "Has a specific dump truck product page found via search (凯马1680自卸车 at /cn/products/89.html) but not fetched in this pass (TLS certificate error).",
+      "notes": "Classify as an authorized/affiliated trading arm at best, not a primary manufacturer domain. Do not treat its photography as manufacturer-original without provenance confirmation — used-truck traders often reshoot or source photos from elsewhere."
+    }
+  ],
+  "non_manufacturer_sources": [
+    {
+      "domain": "cnkama.en.made-in-china.com",
+      "what_it_is": "'KAMA Automobile Import and Export (Chongqing) Company Limited' storefront on the Made-in-China B2B marketplace",
+      "relationship_to_manufacturer": "Search results describe this entity as 'the professional export window of KAMA Automobile' — i.e. plausibly an official export-trading subsidiary — but it operates entirely as a storefront ON a third-party marketplace (made-in-china.com), not on an owned domain. Treat photography here as marketplace-hosted, not manufacturer-owned-domain hosted, even though the seller is likely KAMA-affiliated.",
+      "value_for_this_task": "HIGH — this is the only source in this pass that surfaced GM-family model codes matching the queue's naming convention (see candidates below)."
+    },
+    {
+      "domain": "kama.goldsupplier.com",
+      "what_it_is": "GoldSupplier.com B2B marketplace storefront for 'Shandong Kama Automobile Manufacturing Co., Ltd.', contact 'Mr. Kevin Cai'",
+      "relationship_to_manufacturer": "Names the manufacturer directly as the account holder, so likely a genuine factory sales-rep storefront, but again hosted on a third-party trading platform.",
+      "value_for_this_task": "LOW in this pass — the Dump Truck category page (kama.goldsupplier.com/123683-Dump-Truck/) loaded 40+ SKUs (KMC-prefixed model codes) but every image reference resolved to placeholder assets (circle-loading.svg, default_product_banner.jpg) rather than real photos, likely because the page renders images via JavaScript that the fetch could not execute. Would need a JS-capable browser fetch to recover real URLs."
+    },
+    {
+      "domain": "kama.hellbam.store",
+      "what_it_is": "'KAMA AUTO ECUADOR' — Importadora Hellbam S.A., described in search results as the exclusive KAMA distributor for Ecuador",
+      "relationship_to_manufacturer": "Authorized regional distributor, not the manufacturer. Uses the same KMC-prefixed model-code convention as the factory (e.g. KMC1100P4, KMC1040A26S5), which corroborates KMC is the real chassis-code family.",
+      "value_for_this_task": "LOW in this pass — direct fetch returned HTTP 403 (bot-protected), and the pages successfully retrieved via a text-extraction proxy showed only cargo/diesel truck models, not the volquete (dump truck) category specifically. Worth a follow-up pass with a JS-capable browser."
+    },
+    {
+      "domain": "criscar.com.pe",
+      "what_it_is": "CRISCAR — a Peru-based dealership (confirmed Peru business hours, 'EXPOMOTOR PLAZA NORTE' showroom) selling KAMA volquetes",
+      "relationship_to_manufacturer": "Authorized regional (Peru) distributor, not the manufacturer.",
+      "value_for_this_task": "MEDIUM — same target market as Wings (Peru), and has real hosted photography, but the specific units found (KMC3060P4 4m³ 7.72t GVW, KMC3080P4 6m³) are lighter-duty than the queue's 11.2–18.3t GM-series range."
+    },
+    {
+      "domain": "cominkamotors.com",
+      "what_it_is": "Cominka Motors — a Peru-based KAMA distributor (Trujillo, Peru; has a public Facebook page 'Camiones Kama - Cominka Motors | Trujillo')",
+      "relationship_to_manufacturer": "Authorized regional (Peru) distributor, not the manufacturer.",
+      "value_for_this_task": "MEDIUM — same caveat as CRISCAR; units found (6m³, 8m³ volquetes, 4x2) sit below the queue's GVW range, but the site clearly stocks a volquete line and is worth a deeper crawl."
+    },
+    {
+      "domain": "alibaba.com / chinese.alibaba.com listings",
+      "what_it_is": "General B2B marketplace, multiple resellers listing 'Kama' trucks",
+      "relationship_to_manufacturer": "Mixed — some listings are the same 'KAMA Automobile Import and Export (Chongqing)' export window seen on made-in-china; others are unrelated resellers/traders.",
+      "value_for_this_task": "Not directly used for candidates in this pass; flagged for a follow-up if made-in-china sourcing proves insufficient."
+    },
+    {
+      "domain": "auto-che.com, tradewheel.com, marklines.com, crunchbase.com, cccme.cn",
+      "what_it_is": "Directory/aggregator/industry-database listings about the manufacturer",
+      "relationship_to_manufacturer": "None directly — these are third-party business directories, useful only for corroborating corporate facts (address, founding year, asset size), not for photography.",
+      "value_for_this_task": "None for images."
+    }
+  ],
+  "candidates": {
+    "kama-serie-gm": [
+      {
+        "page_url": "https://cnkama.en.made-in-china.com/product/fGLUtqDJTCWm/China-Chinese-High-Quality-Kama-GM3-Dump-Tipping-Truck-Light-4X2-7ton-Tipper-Cargo-Truck-Rhd-or-LHD-Trucks-for-Cheap-Price-Sale-OEM-ODM-Used-New-Dumper-Lorry-Truck.html",
+        "image_url": "https://image.made-in-china.com/155f0j00DrSCQLhqhboV/Chinese-High-Quality-Kama-GM3-Dump-Tipping-Truck-Light-4X2-7ton-Tipper-Cargo-Truck-Rhd-or-LHD-Trucks-for-Cheap-Price-Sale-OEM-ODM-Used-New-Dumper-Lorry-Truck.webp",
+        "domain": "cnkama.en.made-in-china.com",
+        "is_manufacturer_domain": false,
+        "is_manufacturer_domain_reason": "Marketplace storefront of 'KAMA Automobile Import and Export (Chongqing) Company Limited' — likely an official export-trading subsidiary of the manufacturer, but hosted on the made-in-china.com platform, not an owned KAMA domain.",
+        "estimated_resolution": "Unknown — page HTML exposed only a webp thumbnail reference; made-in-china typically serves multiple sizes off the same asset ID (…/thumb/, /show/, /freesize/ path variants) but a live fetch/zoom-click would be needed to confirm true pixel dimensions. Do not assume ≥1200px without verification.",
+        "angle": "3/4 front (reported by one fetch pass; not independently re-verified)",
+        "facing_direction": "Not determined — needs visual confirmation",
+        "model_variant_shown": "Labeled 'GM3' family, 4x2, 7-ton rated load, GVW 11,200 kg, container 3650x2100x800mm, 8.25R16LT tires. This GVW (11.2t) and container length (3650mm) match the LOW end of the kama-serie-gm queue spec exactly ('GVW 11.2–18.3t', 'tipper box 3650–4200mm') — strong circumstantial match to GM36B specifically, but the marketplace listing itself never uses the 'GM36B' suffix, only 'GM3'.",
+        "occlusions_or_watermarks": "Not determined from HTML alone — made-in-china listings frequently carry a corner logo/watermark; needs visual check.",
+        "notes": "Best lead found this pass for the SKU. Price listed at US$16,300–16,600/unit for reference only (not part of the image task)."
+      },
+      {
+        "page_url": "https://cnkama.en.made-in-china.com/product/XfBYNwFvQVkp/China-New-Cheap-Product-Kama-6-Wheel-Transport-Truck-4X2-4X4-Dump-Truck-Mini-7-Ton-9-Ton-Medium-Tipper-Diesel-Trucks-in-China.html",
+        "image_url": "https://image.made-in-china.com/155f0j00gYWMZqeJlzbS/New-Cheap-Product-Kama-6-Wheel-Transport-Truck-4X2-4X4-Dump-Truck-Mini-7-Ton-9-Ton-Medium-Tipper-Diesel-Trucks-in-China.webp",
+        "domain": "cnkama.en.made-in-china.com",
+        "is_manufacturer_domain": false,
+        "is_manufacturer_domain_reason": "Same export-window marketplace storefront as above.",
+        "estimated_resolution": "Unknown, unverified.",
+        "angle": "Not determined in this pass",
+        "facing_direction": "Not determined",
+        "model_variant_shown": "Page text labels this 'HM6' (not 'GM6'/'GM66B'/'GM67E' as spec'd) — GVW 16,200 kg, rated load 9,205 kg, container 5330x2260x600mm, wheelbase 4200mm. GVW is close to the GM67E spec (16.62t) but the model prefix mismatch (HM6 vs GM67E) is unresolved — could be the same underlying chassis marketed under two code systems (export listing vs. domestic/Peru-market naming), or could be a genuinely different sub-model. Do not treat as confirmed GM67E without founder/supplier confirmation.",
+        "occlusions_or_watermarks": "Not determined.",
+        "notes": "Flagged for the model-code reconciliation open question below rather than as a ready-to-use hero candidate."
+      }
+    ],
+    "kama-gm67e": [
+      {
+        "page_url": "https://cnkama.en.made-in-china.com/product/XfBYNwFvQVkp/China-New-Cheap-Product-Kama-6-Wheel-Transport-Truck-4X2-4X4-Dump-Truck-Mini-7-Ton-9-Ton-Medium-Tipper-Diesel-Trucks-in-China.html",
+        "image_url": "https://image.made-in-china.com/155f0j00gYWMZqeJlzbS/New-Cheap-Product-Kama-6-Wheel-Transport-Truck-4X2-4X4-Dump-Truck-Mini-7-Ton-9-Ton-Medium-Tipper-Diesel-Trucks-in-China.webp",
+        "domain": "cnkama.en.made-in-china.com",
+        "is_manufacturer_domain": false,
+        "is_manufacturer_domain_reason": "Same export-window marketplace storefront.",
+        "estimated_resolution": "Unknown, unverified.",
+        "angle": "Not determined in this pass",
+        "facing_direction": "Not determined",
+        "model_variant_shown": "Listed as 'HM6', GVW 16,200 kg vs. spec'd GM67E GVW 16.62t — a ~2.5% difference, plausibly the same vehicle, plausibly not. Engine (D40TCIF1 per this listing) was NOT cross-checked against the queue's specified Yunnei YNF40E1 — this is the single biggest fact-check gap in this candidate.",
+        "occlusions_or_watermarks": "Not determined.",
+        "notes": "This is the closest GVW match found for GM67E in this pass, but confidence is LOW pending engine-code and tire-size (9.00R20) cross-check, which were not visible on this listing."
+      },
+      {
+        "page_url": "https://cnkama.en.made-in-china.com/product/UtarjdiyEeWq/China-Kama-Tipper-Light-Trucks-4X2-3-5m-7-Ton-9-Ton-New-Medium-Dump-Vehicle-Lorry-Dump-Truck-From-China.html",
+        "image_url": null,
+        "domain": "cnkama.en.made-in-china.com",
+        "is_manufacturer_domain": false,
+        "is_manufacturer_domain_reason": "Same export-window marketplace storefront.",
+        "estimated_resolution": "Not fetched",
+        "angle": "Not fetched",
+        "facing_direction": "Not fetched",
+        "model_variant_shown": "Title references '7 Ton 9 Ton' medium dump, wheelbase 3400mm per one search snippet — not individually fetched/verified this pass, listed here only as an unexplored lead for a follow-up crawl.",
+        "occlusions_or_watermarks": "Not determined",
+        "notes": "Unexplored — image_url intentionally left null; do not treat as a real candidate until fetched."
+      }
+    ]
+  },
+  "open_questions": [
+    {
+      "question": "Model-code reconciliation: the queue specifies GM36B / GM37D / GM66B / GM67E, but no source found in this pass (official domains, made-in-china, Peru/Ecuador distributors, or GoldSupplier) uses those exact suffixed codes verbatim. The closest matches use 'GM3' and 'HM6' (made-in-china export window) or entirely different 'KMC'-prefixed codes (kamaqc-family distributor sites in Peru/Ecuador). It's unclear whether GM36B/GM37D/GM66B/GM67E are: (a) KAMA's own internal/domestic trim-level suffixes not surfaced in export marketing copy, (b) a Peru-market-specific renaming used by whichever supplier originally fed Wings' Supabase specs, or (c) a transcription/normalization Wings applied when building the intake queue.",
+      "why_it_matters": "C-HERO's 'correct model designation' gate cannot be satisfied with confidence until this is resolved — staging a GM3-family photo against a 'GM36B' SKU card risks a wrong-model claim even if the specs line up closely.",
+      "suggested_next_step": "Check whether the Supabase products table (source of truth per QUEUE.json) has a supplier-invoice or spec-sheet PDF attached for these four models — that document likely carries the exact code KAMA itself printed, which can then be searched verbatim."
+    },
+    {
+      "question": "global-kama.com's 'Special Vehicle' category — does it contain the GM-series dump trucks at all? The category thumbnail exists on the homepage but the specific sub-page path guessed in this pass (classid=13) 404'd.",
+      "why_it_matters": "This is the highest-authority domain in the whole landscape (English export site, directly linked from the verified-official Chinese domestic site) — if it carries GM-series photography directly, that photography would outrank every marketplace candidate found so far.",
+      "suggested_next_step": "Re-crawl global-kama.com properly: fetch its sitemap.xml or robots.txt, or paginate the EmpireCMS listing (typical pattern: /e/action/ListInfo.php?classid=13&page=N) rather than guessing a single detail-page ID."
+    },
+    {
+      "question": "kama.goldsupplier.com's Dump Truck catalog (40+ KMC-prefixed SKUs, contact 'Kevin Cai', explicitly attributed to Shandong Kama Automobile Manufacturing Co., Ltd.) could not be image-mined because the fetch tool only saw JS-rendered placeholders (circle-loading.svg).",
+      "why_it_matters": "This looked like the most directly manufacturer-attributed marketplace source found, and the KMC-prefix taxonomy also appears on the Peru/Ecuador distributor sites, suggesting it may be the master code list that GM-codes map onto.",
+      "suggested_next_step": "Re-fetch with a JS-capable tool (e.g. a real headless browser) rather than a static HTML fetch."
+    },
+    {
+      "question": "kama.hellbam.store (Ecuador) returned HTTP 403 on direct fetch and its volquete/dump-truck category specifically was never reached (only cargo/diesel and parts categories were retrieved via the text-proxy fallback).",
+      "why_it_matters": "As an authorized regional LatAm distributor using the same KMC-code family as the manufacturer, its dump-truck category is a plausible source of clean, rights-cleaner-than-marketplace photography.",
+      "suggested_next_step": "Retry with a browser-based fetch (the site is likely bot-protected, not actually gated by auth) and navigate directly to whatever category ID corresponds to 'volquetes'."
+    },
+    {
+      "question": "No image was independently visually verified in this pass (per the hard no-download constraint) — every 'angle', 'facing direction', and 'resolution' field above is either taken from a text-extraction tool's description of the page or marked unknown. None of it should be treated as equivalent to a human or vision-model looking at the actual photo.",
+      "why_it_matters": "The C-HERO acceptance criteria (angle, occlusions, watermarks, true pixel resolution) genuinely require looking at the image, not just page metadata.",
+      "suggested_next_step": "Once the rights gate clears, the staging step should fetch these URLs with a tool capable of returning actual image dimensions/content (or a vision-capable fetch) before scoring against C-HERO — do not accept this discovery pass's angle/resolution notes as pre-verified."
+    }
+  ]
+}

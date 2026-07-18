@@ -1,0 +1,94 @@
+{
+  "sku": "kama-serie-s",
+  "facing": "left",
+  "input": "C:\\Users\\Muaaz\\projects\\wings-global-trade\\assets\\image-generation\\intake\\kama-serie-s\\cutout.png",
+  "source": {
+    "width": 3160,
+    "height": 2180
+  },
+  "alphaBbox": {
+    "left": 85,
+    "top": 0,
+    "width": 2644,
+    "height": 2113
+  },
+  "scale": 0.49692380501656414,
+  "scaledCutout": {
+    "width": 1570,
+    "height": 1083
+  },
+  "groundLineY": 1260,
+  "placement": {
+    "left": 381,
+    "top": 210,
+    "bboxCanvas": {
+      "left": 423.24,
+      "right": 1737.11,
+      "width": 1313.87,
+      "height": 1050,
+      "bottom": 1260
+    },
+    "leftMargin": 423.24,
+    "rightMargin": 262.89,
+    "centerMargin": 343.07,
+    "facingMarginTarget": 423.07
+  },
+  "shadow": {
+    "navy": "#001E50",
+    "contactPatchesDetected": 1,
+    "fallbackUsed": true,
+    "contactLayer": {
+      "opacity": 0.2,
+      "blurPx": 40,
+      "ellipses": [
+        {
+          "cx": 751.53,
+          "cy": 1260,
+          "rx": 197.08,
+          "ry": 35.47
+        },
+        {
+          "cx": 1408.47,
+          "cy": 1260,
+          "rx": 197.08,
+          "ry": 35.47
+        }
+      ]
+    },
+    "bodyLayer": {
+      "opacity": 0.1,
+      "blurPx": 120,
+      "ellipse": {
+        "cx": 1080,
+        "cy": 1260,
+        "rx": 591.24,
+        "ry": 65.69
+      }
+    }
+  },
+  "outputs": {
+    "master": "C:\\Users\\Muaaz\\projects\\wings-global-trade\\outputs\\kama-serie-s\\kama-serie-s_hero_master.png",
+    "4x3": "C:\\Users\\Muaaz\\projects\\wings-global-trade\\outputs\\kama-serie-s\\kama-serie-s_hero_4x3.webp",
+    "1x1": "C:\\Users\\Muaaz\\projects\\wings-global-trade\\outputs\\kama-serie-s\\kama-serie-s_hero_1x1.webp",
+    "16x9": "C:\\Users\\Muaaz\\projects\\wings-global-trade\\outputs\\kama-serie-s\\kama-serie-s_hero_16x9.webp"
+  },
+  "checks": {
+    "G1": {
+      "groundLineFrac": 0.84,
+      "groundLineOk": true,
+      "safeAreaOk": true,
+      "facingMarginOk": true,
+      "pass": true
+    },
+    "G6": {
+      "corners": {
+        "topLeft": "#F8F6F0",
+        "topRight": "#F8F6F0",
+        "bottomLeft": "#F8F6F0",
+        "bottomRight": "#F8F6F0"
+      },
+      "expected": "#F8F6F0",
+      "pass": true
+    }
+  }
+}

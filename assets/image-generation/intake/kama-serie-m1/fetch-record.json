@@ -1,0 +1,25 @@
+{
+  "sku": "kama-serie-m1",
+  "candidates_evaluated": [
+    {
+      "label": "M15C (exact model, manufacturer domain)",
+      "source_url": "https://www.kamaauto.cn/zb_users/upload/2026/05/202605111778487305156121.png",
+      "page_url": "https://www.kamaauto.cn/product/fuel-light-truck/kama-m15c-diesel-3-ton-light-truck/",
+      "domain": "kamaauto.cn",
+      "rights": "manufacturer_kit",
+      "dimensions": "1080x720 (product long edge ~600px after crop)",
+      "outcome": "pre-flight kill — product long edge well below the 1200px C-HERO floor; CMS original is only 1080px (no larger variant)."
+    },
+    {
+      "label": "cnkama 3.7m single-2seats (marketplace)",
+      "source_url": "https://image.made-in-china.com/2f0j00SQhvMyltEKoL/Kama-4X2-Chinese-Light-Truck-3-7m-Single-2seats-New-2-Ton-Cargo-Truck-with-Low-Truck-Price.webp",
+      "page_url": "https://cnkama.en.made-in-china.com/product/XAGRiuflaWky/China-Kama-4X2-Chinese-Light-Truck-3-7m-Single-2seats-New-2-Ton-Cargo-Truck-with-Low-Truck-Price.html",
+      "domain": "cnkama.en.made-in-china.com",
+      "rights": "supplier_provided",
+      "dimensions": "1200x781 (product long edge ~900px)",
+      "outcome": "pre-flight kill — full-size original is only 1200px; product long edge below the 1200px floor. Single-image listing."
+    }
+  ],
+  "fetch_date": "2026-07-08",
+  "notes": "See rejected-row.md. Both located M1 candidates are sub-floor resolution. The kamaqc storefront serves ~2500px originals for other series, so a full-res M1/1760 flatbed likely exists there but was not surfaced in discovery or this pass (two kamaqc probes were bot-blocked)."
+}

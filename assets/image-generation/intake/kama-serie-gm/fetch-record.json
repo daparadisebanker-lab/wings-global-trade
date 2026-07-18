@@ -1,0 +1,20 @@
+{
+  "sku": "kama-serie-gm",
+  "source_url": "https://image.made-in-china.com/2f0j00EktoCIlSCNpB/Dumper-Truck-8t-4-2-Yc4fa120-33-1900-One-and-Half-Cabin-8GS46-Air-Brake-Factory.jpg",
+  "page_url": "https://kamaqc.en.made-in-china.com/product/gmnrEGfJDCUv/China-Dumper-Truck-8t-4-2-Yc4fa120-33-1900-One-and-Half-Cabin-8GS46-Air-Brake-Factory.html",
+  "domain": "kamaqc.en.made-in-china.com",
+  "rights": "supplier_provided",
+  "rights_source": "Made-in-China storefront operated by Shandong KAMA Automobile Manufacturing Co., Ltd. (manufacturer's own storefront) — packages/catalog/manufacturer-domains.json entry, ratified 2026-07-08",
+  "fetch_date": "2026-07-08",
+  "dimensions": { "width": 1706, "height": 1279 },
+  "format": "JPEG",
+  "tls_note": "Downloaded over plain HTTPS with a valid certificate (made-in-china.com platform CDN image.made-in-china.com). No -k needed. Full-size asset obtained via the 2f0j00 size-prefix; the storefront's own page also exposes smaller derivatives.",
+  "listing_specs": "Dumper (tipper) truck, 4x2, one-and-half cabin, 1900mm cab width, engine Yc4fa120-33 (Yuchai), 8t class, air brake, 8GS46 gearbox.",
+  "candidate_selection_note": "Selected from four photos on the listing (source original saved as sf-dumper-2.jpg). The other three are a portrait cab-door/interior shot (sf-dumper-1), and two identical dashboard interiors (sf-dumper-3/4) — none usable as an exterior hero. sf-dumper-2 is the only 3/4-front exterior.",
+  "rejected_alternatives": [
+    { "url": "https://image.made-in-china.com/2f0j00DrSCQLhqhboV/...Kama-GM3-Dump-Tipping-Truck...jpg", "domain": "cnkama.en.made-in-china.com", "reason": "genuine GM-family blue dumper, 3/4 front, void bg, but full-size caps at 800x800 (product long edge ~780px) < 1200px pre-flight floor" },
+    { "url": "http://www.kamaqc.com/d/file/chanpin/gongcheng/gongcheng/2017-07-28/a011f470bb31817b2ec18ea2fe2f12ec.jpg", "domain": "kamaqc.com", "reason": "genuine KAMA dumper (composited-environment bg) but 700x491 < 1200px floor" },
+    { "url": "http://www.kamaqc.com/d/file/chanpin/zhuanyongche/gongcheng/zixie/2017-07-18/5692e0767dfb041c6c79ec7297999b59.jpg", "domain": "kamaqc.com", "reason": "genuine KAMA dumper (grey studio bg) but 700x491 < 1200px floor" },
+    { "note": "global-kama.com Special Vehicle category (crane/tanker/fire/rollback bodies) and truck categories (banners + spec tables only) host no GM-family dumper photo. kamaauto.cn has no dumper category (vans/EVs/light trucks only)." }
+  ]
+}

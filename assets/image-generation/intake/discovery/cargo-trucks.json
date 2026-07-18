@@ -1,0 +1,232 @@
+{
+  "program": "C-HERO KAMA intake — image source discovery (cargo trucks)",
+  "generated": "2026-07-08",
+  "rights_status": "UNRESOLVED — this file is discovery-only. No images downloaded, saved, or copied. All entries are page_url / image_url metadata for the rights-verification gate to review.",
+  "skus_covered": ["kama-serie-k", "kama-serie-m1", "kama-serie-m3", "kama-m36f", "kama-serie-m6"],
+
+  "domains_encountered": [
+    {
+      "domain": "www.kamaauto.cn",
+      "is_manufacturer_domain": true,
+      "why": "Self-identifies as 'KAMA Auto | Electric & Fuel Commercial Vehicles Manufacturer | CKD/SKD Export'; self-hosted CMS (zb_users/upload/ media paths), own product taxonomy (Fuel Light Truck / EV Light Truck / EV Mini Truck / EV Van Truck / Fuel Mini Van), no marketplace branding. Best candidate for a founder-ratified manufacturer domain.",
+      "coverage": "Strong on M1/M3-family light trucks and one K6-family news post. No dedicated M6 (medium/heavy) or full K-series listing found on this domain."
+    },
+    {
+      "domain": "kamaqc.en.made-in-china.com",
+      "is_manufacturer_domain": false,
+      "why": "Marketplace domain (Made-in-China), but the storefront operator is 'Shandong Kama Automobile Manufacturing Co., Ltd.' — the same legal entity named as KAMA's manufacturer in company-overview text elsewhere. Manufacturer-affiliated seller, non-manufacturer domain. Very likely to fail a strict manufacturer-domain-only rights gate; flagged accordingly on every candidate from this domain.",
+      "coverage": "Best source found for K-series (K67) and several M3-family (M37A) listings; also the only M6-family (labelled 'Model M67') listing found."
+    },
+    {
+      "domain": "cnkama.en.made-in-china.com",
+      "is_manufacturer_domain": false,
+      "why": "Marketplace domain (Made-in-China), storefront operator 'KAMA Automobile Import and Export (Chongqing) Company Limited' — KAMA's export/trading arm, not the manufacturing entity itself. Manufacturer-affiliated but not manufacturer-owned domain.",
+      "coverage": "Used for one M6-family (10-ton medium/heavy) candidate; also has many K6-family and general cargo-truck listings not individually captured here."
+    },
+    {
+      "domain": "www.kama-automotive.com",
+      "is_manufacturer_domain": "unclear",
+      "why": "'Kama Automotive International' — presents as an authorized international distributor/assembly partner (CKD/SKD language), not clearly the OEM. Products page only showed generic category images (microvan, microtruck, 'light and medium duty trucks') with no per-model photos or URLs — not usable for SKU-specific sourcing at this time.",
+      "coverage": "None usable — no model-level candidates extracted."
+    },
+    {
+      "domain": "www.global-kama.com",
+      "is_manufacturer_domain": "dead / unverifiable",
+      "why": "Domain resolves to an Alibaba Cloud (阿里云万网) hosting-error placeholder page ('阿里云万网虚机IP访问报错提示'), not the actual site. A prior search snippet titled 'Light Truck - KAMA AUTOMOBILE COMPANY' pointed here but the site is currently unreachable/misconfigured. Do not use until re-verified.",
+      "coverage": "None — site is down."
+    },
+    {
+      "domain": "www.kamavehicle.com / kamavehicle.com",
+      "is_manufacturer_domain": "dead / unverifiable",
+      "why": "Domain shows a Chinese hosting-suspension notice ('抱歉，站点已暂停 / 该站点已经被管理员停止运行'). A search snippet referenced a page at /kama_1760_m1_series/ titled 'KAMA 1760 M1 Series Cargo Truck' — exactly the M1-series cabin width in the queue's visual_identifiers — but that URL now 404s and the whole site appears suspended. Worth re-checking later in case it's a temporary outage; not usable today.",
+      "coverage": "None currently — site is down."
+    },
+    {
+      "domain": "www.kama.com.cn",
+      "is_manufacturer_domain": "unclear — possible naming collision",
+      "why": "Search result labelled 'Shandong Kaima Automobile Manufacturing Co. Ltd. - hengtiankaima'. 'Kaima' (凯马) vs 'Kama' romanization overlap is a known ambiguity for this brand; not independently verified as the same legal entity as kamaauto.cn. Not explored further — flagged as an open question rather than a source.",
+      "coverage": "Not explored."
+    },
+    {
+      "domain": "m.chinatrucks.org / www.chinatrucks.org",
+      "is_manufacturer_domain": false,
+      "why": "Third-party Chinese truck trade catalog/directory. Has an organized KAMA manufacturer page with real product photos (e.g. 'KAMA Kaijie M3 Cargo Dropside Truck', 'KAMA Ruihang' models) but is clearly an aggregator, not KAMA itself. Not pulled into candidates below (lower priority than the made-in-china manufacturer-affiliated storefronts) but noted as a fallback pool if more candidates are needed.",
+      "coverage": "Not used for candidates in this pass — noted as backup pool."
+    },
+    {
+      "domain": "manbaauto.en.made-in-china.com, usedsinotruck.en.made-in-china.com, elorry-ind.com, semanba.com, www.alibaba.com, www.cnqixinggroup.com",
+      "is_manufacturer_domain": false,
+      "why": "Third-party dealers/resellers (Mamba Automobile, Qixing Group, generic Alibaba showrooms, elorry-ind) reselling KAMA-branded trucks under their own listings. Clearly non-manufacturer; would very likely fail the rights gate. Not used for candidates.",
+      "coverage": "Not used."
+    }
+  ],
+
+  "candidates": {
+    "kama-serie-k": [
+      {
+        "page_url": "https://www.kamaauto.cn/news/kama-double%E2%80%91cabin-k6-mini-truck-%E2%80%93-2-ton-diesel-5%E2%80%91seat-4%C3%972-light-cargo-vehicle/",
+        "image_urls": [
+          "https://www.kamaauto.cn/zb_users/upload/2025/07/202507271753667002360008.webp",
+          "https://www.kamaauto.cn/zb_users/upload/2025/07/202507271753667003689323.jpg",
+          "https://www.kamaauto.cn/zb_users/upload/2025/07/202507271753667003571200.jpg",
+          "https://www.kamaauto.cn/zb_users/upload/2025/07/202507271753667003149826.jpg",
+          "https://www.kamaauto.cn/zb_users/upload/2025/07/202507271753667003378956.jpg",
+          "https://www.kamaauto.cn/zb_users/upload/2025/07/202507271753667003878799.jpg"
+        ],
+        "domain": "www.kamaauto.cn",
+        "is_manufacturer_domain": true,
+        "estimated_resolution": "Unknown — URL/CMS pattern gives no dimension hint; self-hosted upload path suggests originals may be full-size (not pre-scaled CDN thumbnails like the marketplace domains). Needs a direct header check before scoring.",
+        "angle": "Multiple: image 1 is 3/4 front, image 2 side profile, images 3 and 6 rear-quarter, image 4 front detail, image 5 cargo-bed/side detail. At least one 3/4-front frame exists.",
+        "facing_direction": "Not determinable from metadata alone — needs visual check.",
+        "model_variant_shown": "Labelled generically 'K6 Double-Cabin' in the article; NOT explicitly tied to GK36E/K66A/K67B/K68B/K69B. This is a double-cabin (crew cab) unit — the queue's visual_identifiers describe single or one-and-half cabin for Serie K, so this may be the wrong body configuration.",
+        "occlusions_or_watermarks": "None visible per fetch.",
+        "notes": "Official domain but a blog/news post, not a structured product page — treat model match as unconfirmed until a human checks the image against the exact GK36E/K66/K67/K68/K69 badge and cabin config."
+      },
+      {
+        "page_url": "https://kamaqc.en.made-in-china.com/product/OTCRDsygZGpz/China-Kama-K6-Series-Truck-The-Light-Truck-Diesel-Vehicle.html",
+        "image_urls": [
+          "https://image.made-in-china.com/318f0j00UQBRatIsBhur/Kseriesdumper-1-mp4.webp",
+          "https://image.made-in-china.com/202f0j00oOWbnYjtZMuR/Kama-K6-Series-Truck-The-Light-Truck-Diesel-Vehicle.webp",
+          "https://image.made-in-china.com/202f0j00bOlqNHZIrMuY/Kama-K6-Series-Truck-The-Light-Truck-Diesel-Vehicle.webp",
+          "https://image.made-in-china.com/202f0j00bOWqnksfrvgR/Kama-K6-Series-Truck-The-Light-Truck-Diesel-Vehicle.webp",
+          "https://image.made-in-china.com/202f0j00enVbyJsryMzU/Kama-K6-Series-Truck-The-Light-Truck-Diesel-Vehicle.webp",
+          "https://image.made-in-china.com/202f0j00sFikOGZgfBrR/Kama-K6-Series-Truck-The-Light-Truck-Diesel-Vehicle.webp",
+          "https://image.made-in-china.com/202f0j00ZyhkODKdQBuU/Kama-K6-Series-Truck-The-Light-Truck-Diesel-Vehicle.webp"
+        ],
+        "domain": "kamaqc.en.made-in-china.com",
+        "is_manufacturer_domain": false,
+        "domain_note": "Manufacturer-affiliated storefront (Shandong Kama Automobile Manufacturing Co., Ltd.) on a marketplace domain — likely to fail a strict manufacturer-domain gate.",
+        "estimated_resolution": "Made-in-China product galleries typically serve ~1000x750px webp derivatives; long edge likely below the ~1200px C-HERO floor. Needs direct check, but pre-score as marginal.",
+        "angle": "Multiple gallery frames, includes a video thumbnail (Kseriesdumper-1-mp4.webp — note filename says 'dumper', possibly mismatched/generic asset reused across listings). Individual angles not labelled by the page.",
+        "facing_direction": "Not determinable without visual check.",
+        "model_variant_shown": "Page explicitly references 'K67' in title/description — good match for K67B in the queue.",
+        "occlusions_or_watermarks": "Standard Made-in-China platform watermark/branding present on marketplace image chrome (typical for this domain, not confirmed pixel-by-pixel here).",
+        "notes": "First video-thumbnail image filename ('Kseriesdumper-1-mp4.webp') suggests possible cross-listing reuse — verify it actually depicts the K67 cargo truck and not a dumper variant before use."
+      }
+    ],
+
+    "kama-serie-m1": [
+      {
+        "page_url": "https://www.kamaauto.cn/product/fuel-light-truck/kama-m15c-diesel-3-ton-light-truck/",
+        "image_urls": [
+          "https://www.kamaauto.cn/zb_users/upload/2026/05/202605111778487305156121.png",
+          "https://www.kamaauto.cn/zb_users/upload/2026/05/202605111778487305479230.png",
+          "https://www.kamaauto.cn/zb_users/upload/2026/05/202605111778487306134367.png"
+        ],
+        "domain": "www.kamaauto.cn",
+        "is_manufacturer_domain": true,
+        "estimated_resolution": "Unknown — PNG originals on self-hosted CMS, plausibly full resolution; needs direct header check.",
+        "angle": "Not individually labelled by the page; product-page gallery format (typically 3/4-front hero + side + rear on this site's template, consistent with the M3-series page pattern below, but not independently confirmed per-image here).",
+        "facing_direction": "Not determinable without visual check.",
+        "model_variant_shown": "M15C — exact match to a Serie M1 model in the queue. Page explicitly states 1760mm single cabin, which matches the SKU's visual_identifiers ('1760mm cabin') precisely.",
+        "occlusions_or_watermarks": "KAMA Auto company logo appears in page chrome; no watermark reported directly on the product photos themselves.",
+        "notes": "Strongest single match found in this pass — official domain, exact model, exact cabin spec. Only covers M15C; M11D/M16C/M16D/M18E/M19E have no confirmed source yet (see open_questions)."
+      }
+    ],
+
+    "kama-serie-m3": [
+      {
+        "page_url": "https://www.kamaauto.cn/product/fuel-light-truck/kama-m3-light-truck-series/",
+        "image_urls": [
+          "https://www.kamaauto.cn/zb_users/upload/2026/05/202605111778487835444402.png",
+          "https://www.kamaauto.cn/zb_users/upload/2026/05/202605111778487836359880.png",
+          "https://www.kamaauto.cn/zb_users/upload/2026/05/202605111778487986334324.jpg"
+        ],
+        "domain": "www.kamaauto.cn",
+        "is_manufacturer_domain": true,
+        "estimated_resolution": "Unknown — needs direct header check; self-hosted PNG/JPG originals.",
+        "angle": "Not individually labelled; gallery format consistent with other kamaauto.cn product pages (mixed 3/4-front and side typical).",
+        "facing_direction": "Not determinable without visual check.",
+        "model_variant_shown": "Page covers M31, M36 (gasoline+CNG), M37A, M37B — a near-miss on the queue's exact list (M31, M33CNG, M36C, M36F, M37E, M39B) but same 1900mm-cabin M3 family. Treat as family-representative, not an exact-designation match; a human should confirm badge/decal legibility before accepting for a specific model page.",
+        "occlusions_or_watermarks": "None reported.",
+        "notes": "Official-domain, whole-series page — good general M3-family cutout source, but does not resolve which exact sub-model (e.g. M36C vs M36F) is depicted."
+      },
+      {
+        "page_url": "https://kamaqc.en.made-in-china.com/product/WAJRqKyrOUYH/China-Kama-Powerful-3-Ton-Diesel-Light-Truck.html",
+        "image_urls": [
+          "https://image.made-in-china.com/202f0j00QNkbcwMtrqgZ/Kama-Powerful-3-Ton-Diesel-Light-Truck.webp",
+          "https://image.made-in-china.com/202f0j00UncobGCInqpK/Kama-Powerful-3-Ton-Diesel-Light-Truck.webp",
+          "https://image.made-in-china.com/202f0j00RnkboPeMLquj/Kama-Powerful-3-Ton-Diesel-Light-Truck.webp",
+          "https://image.made-in-china.com/202f0j00GOkboqCWLcpS/Kama-Powerful-3-Ton-Diesel-Light-Truck.webp",
+          "https://image.made-in-china.com/202f0j00GFkbcKBsyqrS/Kama-Powerful-3-Ton-Diesel-Light-Truck.webp",
+          "https://image.made-in-china.com/202f0j00GyqbcwBELkuZ/Kama-Powerful-3-Ton-Diesel-Light-Truck.webp"
+        ],
+        "domain": "kamaqc.en.made-in-china.com",
+        "is_manufacturer_domain": false,
+        "domain_note": "Manufacturer-affiliated storefront on marketplace domain — likely to fail a strict manufacturer-domain gate.",
+        "estimated_resolution": "Likely ~1000x750px webp derivative; marginal against the ~1200px long-edge floor, needs direct check.",
+        "angle": "Multi-frame gallery, individual angles not labelled by page fetch.",
+        "facing_direction": "Not determinable without visual check.",
+        "model_variant_shown": "M37A — matches the M3-family (single cabin, 1900mm width per page text). Listing text mentions an 'ultra-wide high-top cab' — verify this isn't actually describing an M6-family cab before use.",
+        "occlusions_or_watermarks": "Standard Made-in-China platform chrome/watermark expected.",
+        "notes": "Cross-check cabin width claim against the 1900mm M3 spec — the 'ultra-wide' language is a minor red flag for possible mislabeling."
+      }
+    ],
+
+    "kama-m36f": [
+      {
+        "page_url": "https://www.kamaauto.cn/product/fuel-light-truck/kama-m3-light-truck-series/",
+        "image_urls": [
+          "https://www.kamaauto.cn/zb_users/upload/2026/05/202605111778487835444402.png",
+          "https://www.kamaauto.cn/zb_users/upload/2026/05/202605111778487836359880.png",
+          "https://www.kamaauto.cn/zb_users/upload/2026/05/202605111778487986334324.jpg"
+        ],
+        "domain": "www.kamaauto.cn",
+        "is_manufacturer_domain": true,
+        "estimated_resolution": "Unknown — needs direct header check.",
+        "angle": "Same M3-series family gallery as kama-serie-m3 above (queue note: 'one good M36F source can serve both, staged twice').",
+        "facing_direction": "Not determinable without visual check.",
+        "model_variant_shown": "M31/M36/M37A/M37B shown on page — none explicitly labelled M36F. This is a family match, not a confirmed exact-model match. No page found anywhere in this pass that names M36F specifically.",
+        "occlusions_or_watermarks": "None reported.",
+        "notes": "Duplicated entry from kama-serie-m3 per queue guidance. Flag to founder: no source in this pass shows the M36F badge/decal directly — closest is generic 'M36' gasoline+CNG mention."
+      }
+    ],
+
+    "kama-serie-m6": [
+      {
+        "page_url": "https://cnkama.en.made-in-china.com/product/gaCRlAcVAZWj/China-Wholesale-Custom-Kama-4-85m-10-Ton-Cargo-Transport-Lorry-Medium-Heavy-Duty-Commercial-Truck.html",
+        "image_urls": [
+          "https://image.made-in-china.com/155f0j00yLMCNrBsQJqQ/Wholesale-Custom-Kama-4-85m-10-Ton-Cargo-Transport-Lorry-Medium-Heavy-Duty-Commercial-Truck.webp"
+        ],
+        "domain": "cnkama.en.made-in-china.com",
+        "is_manufacturer_domain": false,
+        "domain_note": "Manufacturer-affiliated (KAMA Automobile Import and Export, Chongqing — KAMA's trading/export arm) but a marketplace domain — likely to fail a strict manufacturer-domain gate.",
+        "estimated_resolution": "Only a single main image was retrievable from this fetch (no gallery captured); likely a ~1000px-class marketplace derivative. Needs direct check; may not clear the C-HERO floor and only one frame exists so far.",
+        "angle": "Not determinable — only one image URL was retrieved this pass; the page may have more in its full gallery that weren't surfaced by the fetch.",
+        "facing_direction": "Not determinable without visual check.",
+        "model_variant_shown": "Listing self-labels 'KAMA M6', 10-ton payload, 4.85m cargo box, 4x2, 181HP diesel — plausibly in the M6 family (M61/M66B/M67B/M68E/M69E) by GVW range (6.3–14.9t) but not tied to one specific sub-model designation.",
+        "occlusions_or_watermarks": "Made-in-China tracking pixel noted (//stat.made-in-china.com/event/rec.gif) — not a visible image watermark, just an analytics beacon.",
+        "notes": "Weakest candidate found for this SKU — single image, unconfirmed sub-model, unconfirmed resolution. Re-fetch the full page gallery before relying on this one."
+      },
+      {
+        "page_url": "https://kamaqc.en.made-in-china.com/product/UnorsRmvqBYx/China-Kama-6-Wheels-Middle-Cargo-Truck-7t-Base-Fuel-Type.html",
+        "image_urls": [
+          "https://image.made-in-china.com/202f0j00AqOkVWulfegz/Kama-6-Wheels-Middle-Cargo-Truck-7t-Base-Fuel-Type.webp",
+          "https://image.made-in-china.com/202f0j00wcnklBpWLvgr/Kama-6-Wheels-Middle-Cargo-Truck-7t-Base-Fuel-Type.webp",
+          "https://image.made-in-china.com/202f0j00JqFkVngCSBpr/Kama-6-Wheels-Middle-Cargo-Truck-7t-Base-Fuel-Type.webp",
+          "https://image.made-in-china.com/202f0j00tbOklTrEqMgL/Kama-6-Wheels-Middle-Cargo-Truck-7t-Base-Fuel-Type.webp",
+          "https://image.made-in-china.com/202f0j00TbnklgrzJeuI/Kama-6-Wheels-Middle-Cargo-Truck-7t-Base-Fuel-Type.webp",
+          "https://image.made-in-china.com/202f0j00TkycVWzaJBrI/Kama-6-Wheels-Middle-Cargo-Truck-7t-Base-Fuel-Type.webp"
+        ],
+        "domain": "kamaqc.en.made-in-china.com",
+        "is_manufacturer_domain": false,
+        "domain_note": "Manufacturer-affiliated storefront (Shandong Kama Automobile Manufacturing Co., Ltd., 'Diamond Member since 2025, Audited Supplier') on a marketplace domain — likely to fail a strict manufacturer-domain gate.",
+        "estimated_resolution": "Six-frame webp gallery, typical Made-in-China derivative size (~1000x750px estimate) — needs direct header check against the ~1200px floor.",
+        "angle": "Six gallery frames plus a 360°-tour video thumbnail; individual angles not labelled by the fetch.",
+        "facing_direction": "Not determinable without visual check.",
+        "model_variant_shown": "Page text explicitly ties this listing to 'Model M67' — a plausible match for M67B in the queue, though the exact suffix isn't shown.",
+        "occlusions_or_watermarks": "Standard Made-in-China platform chrome expected; not individually confirmed.",
+        "notes": "Best-covered M6-family candidate in this pass (most images, explicit model reference), but still a marketplace domain and an inexact designation match."
+      }
+    ]
+  },
+
+  "open_questions": [
+    "No candidate anywhere in this pass shows an exact badge/decal match for GK36E, K66A, K68B, K69B, M11D, M16C, M16D, M18E, M19E, M31, M33CNG, M36C, M36F, M37E, M39B, M61, M66B, M68E, or M69E specifically — every hit is either a family/series page or a differently-suffixed sibling model (e.g. M37A instead of M37E/M39B, generic 'K6'/'M67' instead of the exact suffixed code). Founder/product team should confirm whether family-level photography is acceptable for SKUs where the exact sub-model can't be sourced, or whether these SKUs stay blocked pending a better source.",
+    "kamavehicle.com (site currently suspended) had a search-indexed page at /kama_1760_m1_series/ that looked like a strong M1-series match by title alone. Worth a retry in a few days in case the outage is temporary — do not treat as permanently dead yet.",
+    "kama.com.cn appeared in search results under the name 'Shandong Kaima Automobile Manufacturing Co. Ltd.' — 'Kaima' vs 'Kama' may be the same brand (romanization variance) or a distinct, confusingly-similar manufacturer. Needs verification before use as a source for either rights or sourcing purposes.",
+    "None of the fetches in this pass could determine actual pixel dimensions (WebFetch reads rendered/extracted text, not image headers) — every 'estimated_resolution' above is a domain-pattern guess. Before the C-HERO acceptance scoring, someone with image-header access (HEAD request or download-under-rights-clearance) needs to confirm actual long-edge pixel size for every shortlisted candidate.",
+    "www.kama-automotive.com and m.chinatrucks.org were only lightly explored (products page had no per-model links / catalog page not deep-dived respectively). Both are plausible secondary pools if the founder wants more candidates per SKU before the rights gate is ratified.",
+    "The K6 double-cabin news post on kamaauto.cn (kama-serie-k candidate #1) may show the wrong cabin configuration — queue visual_identifiers call for single/one-and-half cabin at 1580–1680mm, but this post explicitly documents a double (crew) cabin. Needs visual confirmation, not just domain trust."
+  ]
+}

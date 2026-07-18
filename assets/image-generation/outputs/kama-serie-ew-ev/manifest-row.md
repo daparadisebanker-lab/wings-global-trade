@@ -1,0 +1,13 @@
+# kama-serie-ew-ev — C-HERO manifest row
+
+| file(s) | sku | register | source_url | fetch_date | rights | rights_source | operations (with values) | staging route | gates passed | date | destination |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| kama-serie-ew-ev_hero_master.png · _hero_4x3.webp · _hero_1x1.webp · _hero_16x9.webp | kama-serie-ew-ev | C (evidence / supplier restoration) | https://www.kamaauto.cn/zb_users/upload/2024/11/202411221732281166239595.jpg (page: https://www.kamaauto.cn/product/ev-mini-truck/new-energy-vehicles-mini-truck-electric-cargo-trucks-pickup-truck/) | 2026-07-08 | manufacturer_kit | KAMA Auto export brand site (Shandong KAMA Automobile Manufacturing Co., Ltd. parent); registry ratified 2026-07-08; self-hosted, no watermark | (1) crop truck (L70/T400/1880×1290); (2) crisp_upscale: NONE (native 2500px source already well above floor); (3) remove_background native crop — clean, thin rails retained with see-through transparency; (4) keep-largest-connected-component (removed 22.5k stray fringe px); (5) bounded correction: NONE; (6) stage-hero.ts Route 1, facing left, scale 0.8387, ground line 83.98% | Route 1 (deterministic composite) | G1 PASS (ground 83.98%, safe-area, facing margin) · G2 PASS (edges clean; headboard rails + bed stake-rails intact with correct see-through gaps at 200%) · G3 PASS (two-layer navy #001E50 shadow) · G4 PASS (color/geometry/badges/condition identical; HV cabling + battery pack + decal faithful) · G5 PASS (legible) · G6 PASS (#F8F6F0 ground) · G7 PASS (facing left, '3060kg/360mm' decal reads correctly, not mirrored) | 2026-07-08 | apps/site catalog hero — EW/EV electric mini flatbed card |
+
+**Model shown:** KAMA single-cab electric mini flatbed (family-level; no model-suffix badge on source). Family match per founder SKU-match policy.
+
+**EV-evidence:** POSITIVE — orange high-voltage cabling + battery pack under chassis, no exhaust/fuel filler.
+
+**Angle note:** straight SIDE PROFILE, the C-HERO permitted secondary standard. No 3/4-front image of this electric-flatbed family exists at manufacturer-domain quality (the EW1 news article has no photo; the EW2 3/4 source is a ~550px made-in-china derivative below the resolution floor; the only kamaauto.cn 'EV1' candidate is a double-cabin body conflicting with the single-cab spec — not used).
+
+**Steering side (founder note):** EW1/EW2 records specify RHD; this generic family photo appears LHD from the visible steering position. Not authoritative — recorded as observed. If a specific RHD hero is required for EW1/EW2, a dedicated RHD source is needed.

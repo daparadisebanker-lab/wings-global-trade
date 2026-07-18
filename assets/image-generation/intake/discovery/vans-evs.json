@@ -1,0 +1,388 @@
+{
+  "program": "C-HERO KAMA intake — image source discovery (vans + EVs)",
+  "generated": "2026-07-08",
+  "scope": "kama-serie-s, kama-serie-es-esp, kama-serie-ew-ev, kama-serie-ex-em",
+  "rights_status_reminder": "UNRESOLVED — no downloads performed. All entries below are URLs/metadata only, gathered via WebSearch/WebFetch.",
+  "domains_encountered": [
+    {
+      "domain": "kamaauto.cn",
+      "is_manufacturer_domain": false,
+      "why": "Its own About page self-describes as 'a commercial vehicle export brand' that 'provides electric and fuel commercial vehicles for distributors, fleet operators, logistics companies and project buyers' and 'supports left-hand drive vehicle supply, model selection, export documentation... for qualified partners' — i.e. an authorized export/trading brand, NOT the OEM factory. Notes the OEM relationship: 'In 2010, Shandong Dongfeng KAMA Vehicle Co., Ltd. was established through strategic cooperation between KAMA and Dongfeng.'",
+      "notes": "Despite not being the factory, this is by far the highest-quality source found: self-hosted images (zb_users/upload/ CMS paths, not a marketplace CDN), dedicated /news/ articles with precise model-coded titles (ES7, ES8, ESP7, ESP8, EV1/EW1) and dedicated /product/fuel-mini-van/ pages with clean model pages for S6/S7/S8/SP6/SP7/SP8. Category pages under /product/ev-van-truck/, /product/ev-mini-truck/, /product/ev-light-truck/ use generic SEO titles with NO model code confirmation — treat those as unconfirmed-family candidates only."
+    },
+    {
+      "domain": "kamaqc.cn",
+      "is_manufacturer_domain": false,
+      "why": "Self-titled 'KAMA Export Supply & Quality Control Center', explicitly serving 'overseas distributors, importers and fleet buyers' — a trading/QC intermediary, not the factory.",
+      "notes": "Has clean product pages (e.g. ESP8) but several embedded images are re-hosted from sc04.alicdn.com (Alibaba CDN), i.e. marketplace-sourced imagery laundered through a branded page."
+    },
+    {
+      "domain": "kamaqc.com",
+      "is_manufacturer_domain": "likely, unverified",
+      "why": "Search snippets attribute this domain to '山东凯马汽车制造有限公司' / 'Shandong Kama Automobile Manufacturing Co. Ltd.' — the actual OEM factory name.",
+      "notes": "FETCH FAILED: certificate has expired. Content could not be verified or read. This is the single most promising candidate for a true manufacturer domain and should be retried once the cert issue clears (or via a tool that can bypass strict TLS verification with founder sign-off)."
+    },
+    {
+      "domain": "kamavehicle.com",
+      "is_manufacturer_domain": "unverified",
+      "why": "Titled 'KAMA Vehicles_KAMA Truck', reads as an official-style brand site.",
+      "notes": "FETCH FAILED: unable to verify the first certificate. Not explored beyond search snippets."
+    },
+    {
+      "domain": "kama.com.cn",
+      "is_manufacturer_domain": "unverified",
+      "why": "Search result attributes this to 'Shandong Kaima Automobile Manufacturing Co. Ltd.' (note: 'Kaima' spelling variant) under a page titled 'hengtiankaima'.",
+      "notes": "Not fetched — surfaced only in search snippets. Possibly a related/renamed factory entity; needs manual disambiguation before trusting it as core KAMA OEM."
+    },
+    {
+      "domain": "kama-automotive.com",
+      "is_manufacturer_domain": false,
+      "why": "'Kama Automotive International' — homepage frames itself around '/oem-projects' and serving international buyers; no model-specific pages found (site nav only exposes /products, /oem-projects, /contact-us, /about-us with no deep links surfaced).",
+      "notes": "Not useful for this pass — no model pages located."
+    },
+    {
+      "domain": "kamaqc.en.made-in-china.com / cnkama.en.made-in-china.com / kamaautomobile.en.made-in-china.com",
+      "is_manufacturer_domain": false,
+      "why": "made-in-china.com marketplace storefronts. Even though the storefront names reference Kama-affiliated export entities ('Shandong Kama Automobile Manufacturing Co., Ltd.', 'KAMA Automobile Import and Export (Chongqing) Company Limited'), the domain itself is a third-party B2B marketplace.",
+      "notes": "FLAGGED — will likely fail the rights gate per program instructions. Currently the ONLY source found for EX1, EM31, EM32, EM61, EW2, and several ES/ESP variants (ES6, ESP6, ESP7 supplementary). Images are served from image.made-in-china.com CDN with two resolution tiers per asset (202f0j00... standard, 3f2j00... larger) and carry made-in-china.com branding/watermarking risk."
+    },
+    {
+      "domain": "alibaba.com",
+      "is_manufacturer_domain": false,
+      "why": "General B2B marketplace.",
+      "notes": "FLAGGED — surfaced as source for ESP6, ESP7, EM32 listings but not deep-fetched for images since kamaauto.cn/made-in-china already covered those or better manufacturer-adjacent alternatives existed."
+    }
+  ],
+  "candidates": {
+    "kama-serie-s": {
+      "note_family": "Gasoline/CNG mini van & minibus. All candidates below are from kamaauto.cn dedicated model pages — clean, non-marketplace, model-code-confirmed via URL slug and alt text.",
+      "S6": [
+        {
+          "page_url": "https://www.kamaauto.cn/product/fuel-mini-van/kama-s6-gasoline-mini-van/",
+          "image_url": "https://www.kamaauto.cn/zb_users/upload/2026/05/202605111778486013100910.jpg",
+          "domain": "kamaauto.cn",
+          "is_manufacturer_domain": false,
+          "estimated_resolution": "unknown — no explicit width/height attrs seen; CMS-native upload, likely ≥1200px based on file-size pattern of same-batch site images",
+          "angle": "3/4 front (main gallery image)",
+          "facing_direction": "unconfirmed — needs visual check",
+          "model_variant_shown": "S6 (gasoline), LHD",
+          "occlusions_watermarks": "none reported",
+          "notes": "Two additional gallery PNGs on the same page (202605111778485993607088.png, ...544526.png, ...417957.png) — likely a 3-4 shot set of front/side angles; re-check angle assignment visually before staging."
+        }
+      ],
+      "S7CNG": [
+        {
+          "page_url": "https://www.kamaauto.cn/product/fuel-mini-van/kama-s7-gasoline-mini-van/",
+          "image_url": "https://www.kamaauto.cn/zb_users/upload/2026/05/202605111778486394469190.jpg",
+          "domain": "kamaauto.cn",
+          "is_manufacturer_domain": false,
+          "estimated_resolution": "unknown, CMS-native",
+          "angle": "3/4 front",
+          "facing_direction": "unconfirmed",
+          "model_variant_shown": "S7 GASOLINE — NOT CNG. No dedicated S7CNG page or photo found anywhere in this pass.",
+          "occlusions_watermarks": "none reported",
+          "notes": "OPEN QUESTION: S7CNG variant likely shares the S6/S7 unitized body with a CNG badge/tank difference that may not be visually distinct. Flagging as best-available body-match, not a confirmed CNG-spec photo."
+        }
+      ],
+      "S8": [
+        {
+          "page_url": "https://www.kamaauto.cn/product/fuel-mini-van/kama-s8-gasoline-mini-van/",
+          "image_url": "https://www.kamaauto.cn/zb_users/upload/2026/05/202605111778486859696678.jpg",
+          "domain": "kamaauto.cn",
+          "is_manufacturer_domain": false,
+          "estimated_resolution": "unknown, CMS-native",
+          "angle": "3/4 front (alt text: 'KAMA S8 Gasoline Mini Van')",
+          "facing_direction": "unconfirmed",
+          "model_variant_shown": "S8, LHD, 7.6m³ cargo van",
+          "occlusions_watermarks": "none reported",
+          "notes": "Two supporting PNGs on same page for alternate angles."
+        }
+      ],
+      "SP6": [
+        {
+          "page_url": "https://www.kamaauto.cn/product/fuel-mini-van/kama-sp6-gasoline-mini-bus/",
+          "image_url": "https://www.kamaauto.cn/zb_users/upload/2026/05/202605111778483990394174.jpg",
+          "domain": "kamaauto.cn",
+          "is_manufacturer_domain": false,
+          "estimated_resolution": "unknown, CMS-native",
+          "angle": "3/4 front (detail shot)",
+          "facing_direction": "unconfirmed",
+          "model_variant_shown": "SP6, 11-seat LHD mini bus",
+          "occlusions_watermarks": "none reported",
+          "notes": "Page also has side-profile and rear-view PNGs (202605111778483876726928.png side, ...878442423.png rear) — a full 3-angle set exists here, better coverage than most SKUs."
+        }
+      ],
+      "SP7": [
+        {
+          "page_url": "https://www.kamaauto.cn/product/fuel-mini-van/kama-sp7-gasoline-mini-bus/",
+          "image_url": "https://www.kamaauto.cn/zb_users/upload/2026/05/202605111778484713628019.jpg",
+          "domain": "kamaauto.cn",
+          "is_manufacturer_domain": false,
+          "estimated_resolution": "unknown, CMS-native",
+          "angle": "3/4 front",
+          "facing_direction": "unconfirmed",
+          "model_variant_shown": "SP7, 14-seat LHD mini bus",
+          "occlusions_watermarks": "none reported",
+          "notes": "Full angle set present (side: ...442155240.png, 3/4 rear: ...442177998.png)."
+        }
+      ],
+      "SP8": [
+        {
+          "page_url": "https://www.kamaauto.cn/product/fuel-mini-van/kama-sp8-gasoline-mini-bus/",
+          "image_url": "https://www.kamaauto.cn/zb_users/upload/2026/05/202605111778485362457777.jpg",
+          "domain": "kamaauto.cn",
+          "is_manufacturer_domain": false,
+          "estimated_resolution": "unknown, CMS-native",
+          "angle": "3/4 front (gallery-labeled)",
+          "facing_direction": "unconfirmed",
+          "model_variant_shown": "SP8, 15-19 seat LHD passenger van",
+          "occlusions_watermarks": "none reported",
+          "notes": "Full angle set present (front: ...4995543545.png, side: ...4997669317.png, rear/alt-3/4: ...4998141163.png)."
+        }
+      ]
+    },
+    "kama-serie-es-esp": {
+      "note_family": "Electric van, visually near-identical body to Serie S. Distinguish by EV badging/grille/charge port — NONE of the fetched pages textually confirmed visible charge-port location; needs a visual pass before staging.",
+      "ES6": [
+        {
+          "page_url": "https://cnkama.en.made-in-china.com/product/BaVYiNZOluWL/China-Kama-Es6-Electric-Truck-Cargo-Van-96HP-General-Transport-Cargo-Truck.html",
+          "image_url": "not fetched — marketplace listing only, image URLs not extracted this pass",
+          "domain": "made-in-china.com",
+          "is_manufacturer_domain": false,
+          "estimated_resolution": "unknown",
+          "angle": "unknown",
+          "facing_direction": "unknown",
+          "model_variant_shown": "ES6 claimed in title",
+          "occlusions_watermarks": "made-in-china.com watermarking likely",
+          "notes": "OPEN QUESTION: no manufacturer-adjacent (kamaauto.cn/kamaqc.cn) source found for ES6 specifically. Only marketplace hits (this one, plus 'Kama Es6 Esp6 LHD Rhd Pessenger and Cargo Electric Van' bundling ES6+ESP6 in one listing). Needs a dedicated fetch pass if this SKU proceeds past the rights gate on a marketplace exception, or a deeper search on kamaqc.com once its cert is fixed."
+        }
+      ],
+      "ES7": [
+        {
+          "page_url": "https://www.kamaauto.cn/news/kama-es7-41-93-kwh-electric-enclosed-cargo-van-5-27-m-1-5-t-payload/",
+          "image_url": "https://www.kamaauto.cn/zb_users/upload/2025/07/202507231753255588193741.jpg",
+          "domain": "kamaauto.cn",
+          "is_manufacturer_domain": false,
+          "estimated_resolution": "unknown, CMS-native, news-article embed (2025 upload path, likely full-size editorial photo rather than thumbnail)",
+          "angle": "unconfirmed — 6 images in article, angles not individually verified visually",
+          "facing_direction": "unconfirmed",
+          "model_variant_shown": "ES7, 41.93 kWh, 5.27m, 1.5T payload — explicitly named in article title and (per tool extraction) image captions",
+          "occlusions_watermarks": "none reported, but article-embedded images may carry inline caption text — verify no burned-in text crosses the vehicle silhouette",
+          "notes": "5 additional images on same article: 202507231753255574820229.png, ...574413054.png, ...574506450.png, ...575152186.png, ...577338189.png. Best-documented ES-series candidate found — dedicated editorial feature, not a generic listing."
+        }
+      ],
+      "ES8": [
+        {
+          "page_url": "https://www.kamaauto.cn/news/kama-es8-%E2%80%93-3-2-t-5-27-m-electric-enclosed-cargo-van-41-9-kwh-for-global-markets/",
+          "image_url": "https://www.kamaauto.cn/zb_users/upload/2025/07/202507211753149381250823.jpg",
+          "domain": "kamaauto.cn",
+          "is_manufacturer_domain": false,
+          "estimated_resolution": "unknown, CMS-native, news-article embed",
+          "angle": "unconfirmed across the 6-image set (front/side/rear/detail claimed by extraction tool but not independently verified visually)",
+          "facing_direction": "unconfirmed",
+          "model_variant_shown": "ES8, 3.2T, 5.27m, 41.9kWh — explicitly named in article",
+          "occlusions_watermarks": "extraction pass reported 'watermark: model title overlay' on each image — VERIFY this is an HTML caption, not a burned-in graphic overlay on the photo itself, before treating as C-HERO clean",
+          "notes": "5 additional images: 202507211753149379362443.png, ...380551120.png, ...380362201.png, ...380367294.png, ...380614679.png."
+        }
+      ],
+      "ESP6": [
+        {
+          "page_url": "https://kamaqc.en.made-in-china.com/product/VfvYCptGmArx/China-Kama-Esp6-The-Electric-Passenger-Van-with-11seater-The-Mini-Coach-Bus.html",
+          "image_url": "not fetched — marketplace listing only, image URLs not extracted this pass",
+          "domain": "made-in-china.com",
+          "is_manufacturer_domain": false,
+          "estimated_resolution": "unknown",
+          "angle": "unknown",
+          "facing_direction": "unknown",
+          "model_variant_shown": "ESP6, 11-seater claimed in title",
+          "occlusions_watermarks": "made-in-china.com watermarking likely",
+          "notes": "OPEN QUESTION: no manufacturer-adjacent source found. Alibaba listing 'Kama ESP6 Electric Passenger 220km Mileage' also exists as a secondary marketplace option, not fetched."
+        }
+      ],
+      "ESP7": [
+        {
+          "page_url": "https://www.kamaauto.cn/news/kama-esp7-%E2%80%93-14%E2%80%91seat-electric-microbus-zero%E2%80%91emission-minibus-for-global-urban-rural-transport/",
+          "image_url": "NONE — article confirmed to contain no dedicated ESP7 product photography (only unrelated related-post thumbnails: Nepal Electric Mini Bus, mini cargo pickup, 18-seat passenger van).",
+          "domain": "kamaauto.cn",
+          "is_manufacturer_domain": false,
+          "estimated_resolution": "n/a",
+          "angle": "n/a",
+          "facing_direction": "n/a",
+          "model_variant_shown": "n/a — text-only editorial coverage of ESP7",
+          "occlusions_watermarks": "n/a",
+          "notes": "OPEN QUESTION: strongest manufacturer-adjacent text source has zero usable imagery. Marketplace fallbacks not yet image-extracted: 'KAMA ESP7 14-Seat Electric Microbus' (made-in-china, 'Kama Classic Esp7 Van for Passenger 14 Seats'), and Alibaba 'KAMA EV ESP7 Electric Mini Ev Bus 14seats'."
+        }
+      ],
+      "ESP8": [
+        {
+          "page_url": "https://www.kamaauto.cn/news/2025-kama-esp8-electric-minibus-the-best-minivan/",
+          "image_url": "https://www.kamaauto.cn/zb_users/upload/2025/03/202503281743153449461789.jpg",
+          "domain": "kamaauto.cn",
+          "is_manufacturer_domain": false,
+          "estimated_resolution": "unknown, CMS-native",
+          "angle": "3/4 front",
+          "facing_direction": "unconfirmed",
+          "model_variant_shown": "ESP8, 18-seat electric minibus — explicitly named",
+          "occlusions_watermarks": "extraction reported per-image caption overlay text — verify not burned into photo",
+          "notes": "Full 3-shot set on this article: side profile (...497269247.jpg), 3/4 rear-side (...517244665.jpg). Second, independent source below."
+        },
+        {
+          "page_url": "https://www.kamaqc.cn/ev-vans/kama-esp8-fast-charging-electric-minibus-18-seats/",
+          "image_url": "https://www.kamaqc.cn/zb_users/upload/2026/04/202604271777275065141037.jpg",
+          "domain": "kamaqc.cn",
+          "is_manufacturer_domain": false,
+          "estimated_resolution": "unknown, CMS-native (this one at least is self-hosted, not alicdn)",
+          "angle": "3/4 front",
+          "facing_direction": "unconfirmed",
+          "model_variant_shown": "ESP8 confirmed",
+          "occlusions_watermarks": "none reported on this specific self-hosted image; NOTE the same page also embeds multiple sc04.alicdn.com images (Alibaba-CDN, marketplace-sourced) mixed in — do not use those, only the two kamaqc.cn-hosted ones (this .jpg and a companion .png technical diagram at ...066830977.png).",
+          "notes": "Independent second source corroborating ESP8 body/badge; useful for cross-checking against the kamaauto.cn version."
+        }
+      ]
+    },
+    "kama-serie-ew-ev": {
+      "note_family": "Electric mini flatbed truck. EW1/EW2 spec says RHD — confirmed for EW2 via marketplace listing. EV2/EV3 could not be confirmed as distinct marketed model names anywhere in this pass.",
+      "EW1": [
+        {
+          "page_url": "https://www.kamaauto.cn/news/kama-ev1-ew1-%E2%80%93-1-5-ton-electric-pickup-cargo-truck-41-93-kwh/",
+          "image_url": "NONE — article confirmed to contain no embedded product photography for EV1/EW1, text/spec only.",
+          "domain": "kamaauto.cn",
+          "is_manufacturer_domain": false,
+          "estimated_resolution": "n/a",
+          "angle": "n/a",
+          "facing_direction": "n/a",
+          "model_variant_shown": "n/a",
+          "occlusions_watermarks": "n/a",
+          "notes": "Best-named source has no photo. Fallback candidates below are generic 'mini truck' listings on kamaauto.cn's ev-mini-truck category with NO confirmed model code — treat as unconfirmed-family, not EW1-confirmed."
+        },
+        {
+          "page_url": "https://www.kamaauto.cn/product/ev-mini-truck/new-energy-vehicles-mini-truck-electric-cargo-trucks-pickup-truck/",
+          "image_url": "https://www.kamaauto.cn/zb_users/upload/2024/11/202411221732281166239595.jpg",
+          "domain": "kamaauto.cn",
+          "is_manufacturer_domain": false,
+          "estimated_resolution": "unknown, CMS-native",
+          "angle": "unconfirmed",
+          "facing_direction": "unconfirmed",
+          "model_variant_shown": "UNCONFIRMED — page titled generically 'Kama New Energy Mini Cargo Pickup Truck', no EW1/EV1 code stated",
+          "occlusions_watermarks": "none reported",
+          "notes": "Body type (single-cab electric flatbed) plausibly matches EW1/EV1 family per spec sheet, but this is a body-shape guess, not a badge-confirmed match. Spec sheet states 'Left/Right' steering options available — does not resolve LHD vs RHD for this specific photo."
+        }
+      ],
+      "EW2": [
+        {
+          "page_url": "https://kamaqc.en.made-in-china.com/product/OtuYPdNvARpW/China-Kama-Ew2-The-Electric-Mini-Cargo-Truck-Rhd-Vehicle-The-New-Energy-Truck-.html",
+          "image_url": "https://image.made-in-china.com/202f0j00TySovZlWrspu/Kama-Ew2-The-Electric-Mini-Cargo-Truck-Rhd-Vehicle-The-New-Energy-Truck-.webp",
+          "domain": "made-in-china.com",
+          "is_manufacturer_domain": false,
+          "estimated_resolution": "two tiers referenced in URL pattern — 202f0j00 (standard) vs 3f2j00 (larger/original); this is the standard tier",
+          "angle": "unconfirmed across 6-image set",
+          "facing_direction": "RHD — steering wheel should read on vehicle's right when viewed from front; verify visually",
+          "model_variant_shown": "EW2 confirmed — title states 'Rhd Vehicle', spec table lists 'single cabin(1600)RHD'",
+          "occlusions_watermarks": "made-in-china.com watermarking likely present",
+          "notes": "5 more images at same path with different IDs (...EysoCwijSZgz, ...UyKqCGlcnsgr, ...UnjoCPiFLKup, ...YFZqvcVDEjgr, ...fnKcCZhMksrz). This is currently the ONLY source found with an explicit RHD spec match for EW2 — flagged marketplace, will need rights-gate exception or a manufacturer-domain equivalent search once kamaqc.com/kamavehicle.com TLS issues are resolved."
+        }
+      ],
+      "EV1": [
+        {
+          "page_url": "https://www.kamaauto.cn/product/ev-mini-truck/2025-made-in-china-pure-electric-mini-truck-with-double-cabin/",
+          "image_url": "https://www.kamaauto.cn/zb_users/upload/2024/12/202412161734338268397367.jpg",
+          "domain": "kamaauto.cn",
+          "is_manufacturer_domain": false,
+          "estimated_resolution": "unknown, CMS-native",
+          "angle": "front/side per extraction (unverified)",
+          "facing_direction": "unconfirmed",
+          "model_variant_shown": "UNCONFIRMED — generic title '2025 pure electric mini truck with double cabin', no EV1 code stated. NOTE: this is a DOUBLE-CABIN body — EV1 per the queue spec should be single-cabin RHD/flatbed family (EW1/EW2/EV1/EV2/EV3 all listed together); double-cab may actually be a different, unlisted variant. Flag for founder/spec review before treating as EV1.",
+          "occlusions_watermarks": "none reported",
+          "notes": "2 more images on page: ...269454024.jpg, ...269744571.jpg."
+        }
+      ],
+      "EV2": [],
+      "EV3": []
+    },
+    "kama-serie-ex-em": {
+      "note_family": "Heavy electric cargo truck. NO manufacturer-adjacent (kamaauto.cn/kamaqc.cn) source found for any model in this family — every candidate below is a made-in-china.com marketplace listing under the 'kamaqc' storefront (self-described Shandong Kama Automobile Manufacturing Co., Ltd. account name on that marketplace, per its company page — but the domain itself is still made-in-china.com).",
+      "EX1": [
+        {
+          "page_url": "https://kamaqc.en.made-in-china.com/product/EmyrlLAPOZpv/China-Kama-Ex1-Rhd-Electric-Truck-Right-Hand-Drive-Pickup-Export-Tropical-Climate-Adaptation-CKD-Optional.html",
+          "image_url": "https://image.made-in-china.com/202f0j00mBRkKevdKwzj/Kama-Ex1-Rhd-Electric-Truck-Right-Hand-Drive-Pickup-Export-Tropical-Climate-Adaptation-CKD-Optional.webp",
+          "domain": "made-in-china.com",
+          "is_manufacturer_domain": false,
+          "estimated_resolution": "standard tier (202f0j00 prefix); larger tier likely available by swapping to 3f2j00 prefix per site pattern seen elsewhere",
+          "angle": "unconfirmed across the 6-image set",
+          "facing_direction": "RHD explicitly stated in title/listing",
+          "model_variant_shown": "EX1 confirmed, RHD, tropical-climate export spec, 6+1 wheels",
+          "occlusions_watermarks": "made-in-china.com watermarking likely",
+          "notes": "5 more images: ...mBUkZNMzpApj, ...tCYkZQMahJuN, ...TMYkSpBPAwuF, ...aCfbZVeBlwpN, ...EMGosvCwwApO."
+        },
+        {
+          "page_url": "https://kamaqc.en.made-in-china.com/product/kmjpicGJqdYn/China-Kama-Ex1-Low-Cost-Electric-Truck-80km-H-Max-Speed-6-1-Wheels-MP5-Media-A-C.html",
+          "image_url": "https://image.made-in-china.com/202f0j00WKuqGHwgJEpl/Kama-Ex1-Low-Cost-Electric-Truck-80km-H-Max-Speed-6-1-Wheels-MP5-Media-A-C.webp",
+          "domain": "made-in-china.com",
+          "is_manufacturer_domain": false,
+          "estimated_resolution": "standard tier; 3f2j00-prefixed originals also referenced on page",
+          "angle": "unconfirmed",
+          "facing_direction": "RHD stated as export feature",
+          "model_variant_shown": "EX1 confirmed, low-cost variant, 6+1 wheels, MP5 media/A-C",
+          "occlusions_watermarks": "made-in-china.com watermarking likely",
+          "notes": "Second independent EX1 listing — useful for cross-checking body panel/grille details against the first."
+        }
+      ],
+      "EX2": [],
+      "EM31": [
+        {
+          "page_url": "https://kamaqc.en.made-in-china.com/product/wJUrIHRTYZpB/China-Kama-Em31-Light-Duty-Electric-Truck-6-1-Wheels-Configuration-A-C-Power-Windows-Export-Oriented.html",
+          "image_url": "https://image.made-in-china.com/202f0j00yvgkcaKqkjpF/Kama-Em31-Light-Duty-Electric-Truck-6-1-Wheels-Configuration-A-C-Power-Windows-Export-Oriented.webp",
+          "domain": "made-in-china.com",
+          "is_manufacturer_domain": false,
+          "estimated_resolution": "standard tier",
+          "angle": "unconfirmed across 6-image set",
+          "facing_direction": "LHD stated in spec table",
+          "model_variant_shown": "EM31 confirmed, light-duty, 6+1 wheels, open cargo box 4160x2100x400mm",
+          "occlusions_watermarks": "made-in-china.com watermarking likely",
+          "notes": "5 more images: ...CvrcqOSzysuN, ...vBgcqejdPsuy, ...KezcklsBwZpy, ...KBgckFSrwjzN, ...yCrkohsGkKuF. A second EM31 listing exists ('Kama Em31 Bev for Emerging Markets 2.5t Capacity', https://kamaqc.en.made-in-china.com/product/UEhRaOIlgZYc/...) not yet image-extracted."
+        }
+      ],
+      "EM32": [
+        {
+          "page_url": "https://kamaqc.en.made-in-china.com/product/ofXRExBjVTYa/China-Kama-Em32-The-Electric-Light-Truck-Range-of-350km-Electro-Hydraulic-Braking-System-Catl-Brand-Battery-New-Energy-Truck-.html",
+          "image_url": "https://image.made-in-china.com/202f0j00yFskWUYthcgP/",
+          "domain": "made-in-china.com",
+          "is_manufacturer_domain": false,
+          "estimated_resolution": "standard tier; page also referenced higher-resolution '3f2j00'-prefixed gallery variants",
+          "angle": "unconfirmed",
+          "facing_direction": "LHD stated in spec table",
+          "model_variant_shown": "EM32 confirmed, 350km range, CATL battery, open cargo box, single cabin 2030mm width",
+          "occlusions_watermarks": "made-in-china.com watermarking likely",
+          "notes": "5 more images: ...nFskhLRKLorH, ...ONKkVbRhrcgP, ...FnjoWKUBMqzH, ...nySkhAfPkqgD, ...AOZkhRfabqgP. NOTE: extracted image_url is missing its filename suffix in the raw fetch — re-verify exact URL before staging."
+        }
+      ],
+      "EM61": [
+        {
+          "page_url": "https://kamaqc.en.made-in-china.com/product/HZbAeKFOiyGM/China-Kama-Factory-Product-Fast-Charging-Electric-Truck-for-Cargo-Hauling-Services.html",
+          "image_url": "https://image.made-in-china.com/3f2j00tNTVyEdPEmRO/Kama-Factory-Product-Fast-Charging-Electric-Truck-for-Cargo-Hauling-Services.webp",
+          "domain": "made-in-china.com",
+          "is_manufacturer_domain": false,
+          "estimated_resolution": "3f2j00 prefix = larger/original tier per site pattern",
+          "angle": "unconfirmed",
+          "facing_direction": "unconfirmed",
+          "model_variant_shown": "EM61 confirmed via spec match (360km WLTP range, 4160x2100x400mm cargo box, 6+1 wheels, fast-charging, 70/140kW motor, 140.15kWh battery matches queue's EM61 identifiers) — note the listing TITLE itself is generic ('Kama Factory Product Fast-Charging Electric Truck'), model code is inferred from spec match, not stated in title. Verify before treating as fully confirmed.",
+          "occlusions_watermarks": "made-in-china.com watermarking likely",
+          "notes": "5 more images: ...TyaVNrdEAmGF, ...anElyVmzLwYF, ...ENtVnMJdpmGO, ...tNQhFyJfMAUO, ...fOElNtJFMdYy."
+        }
+      ]
+    }
+  },
+  "open_questions": [
+    "No confirmed OEM factory domain was successfully accessed. kamaqc.com (attributed in search results to 'Shandong Kama Automobile Manufacturing Co. Ltd.') returned 'certificate has expired' on fetch; kamavehicle.com returned 'unable to verify the first certificate'. Both deserve a retry — possibly the founder can access these directly in a browser where cert warnings can be manually bypassed, to confirm whether either is the true factory site before the rights gate is ratified.",
+    "kamaauto.cn, the single richest image source found, explicitly self-identifies as an export/trading BRAND, not the OEM factory. Its images are clean and self-hosted (not marketplace-watermarked), which may still make it a reasonable rights-gate candidate as an 'authorized reseller/distributor' tier — but that is a policy call for whoever ratifies packages/catalog/manufacturer-domains.json, not something this discovery pass can resolve.",
+    "S7CNG: no image found showing the CNG-specific badge/tank; only the gasoline S7 was found. If CNG visual distinction matters for the catalog, this needs a dedicated follow-up search.",
+    "ES6 and ESP6: zero manufacturer-adjacent (kamaauto.cn/kamaqc.cn) images found — only marketplace hits, and even those weren't image-extracted this pass (listing URLs recorded, image URLs are not).",
+    "ESP7: the best manufacturer-adjacent source (kamaauto.cn news article) confirmed to contain ZERO product photography. Only marketplace fallbacks exist and were not image-extracted.",
+    "EV1 vs EW1 vs the 'double cabin' variant: the queue lists EW1/EW2/EV1/EV2/EV3 as one family, but the only kamaauto.cn candidate found for 'EV1' is a DOUBLE-CABIN body, which structurally conflicts with the single-cabin flatbed description in the queue's visual_identifiers. This needs founder/spec clarification — it's possible 'EV1' generic photos found are actually a different, unlisted double-cab variant, not true EV1.",
+    "EV2 and EV3: no distinct marketed imagery, model pages, or even marketplace listings found under these exact codes anywhere in this pass. They may be spec-sheet-only trim levels of EV1 (battery/range tiers) rather than visually distinct vehicles — worth confirming against the Supabase products table before assuming a photo gap needs filling.",
+    "EX2: no marketed imagery, model page, or marketplace listing found under this exact code anywhere in this pass — same open question as EV2/EV3, may be a non-visually-distinct trim of EX1.",
+    "Several 'estimated_resolution' fields are genuinely unknown — none of the fetched HTML exposed explicit width/height attributes or CDN resolution-suffix conventions (except made-in-china.com's two-tier 202f0j00/3f2j00 URL-prefix pattern, which is a resolution signal but not a pixel count). Actual pixel dimensions will need a real HTTP HEAD/image-metadata check once download is authorized — none of this was verified by fetching bytes, per the no-download constraint.",
+    "Several images across kamaauto.cn news articles were reported by the fetch tool as carrying a 'watermark' that appears to be HTML caption/alt-text rather than a burned-in graphic overlay — this couldn't be verified without rendering the actual image, and should be re-checked visually before assuming C-HERO watermark-free status.",
+    "kama.com.cn ('Shandong Kaima Automobile Manufacturing Co. Ltd.') was not explored — surfaced only in one search snippet with a name-spelling variant ('Kaima' vs 'Kama'). Worth a dedicated follow-up to determine if it's a related OEM entity with its own product photography."
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "sku": "kama-serie-ew-ev",
+  "model_shown": "KAMA electric mini flatbed truck (single cabin) — family-level, exact model code not stated on source",
+  "ev_evidence": "POSITIVE — orange high-voltage cabling and a black battery pack are visible along the chassis underframe; no exhaust, no fuel filler. Confirmed BEV. Decal '总质量 3060 kg / 栏板高度 360mm' (GVW 3.06t, side-panel height 360mm) — within the EW/EV family GVW range (2.1-3.4t).",
+  "family_match_rationale": "EW/EV = electric mini flatbed truck, single cabin, GVW 2.1-3.4t. This is a single-cab electric flatbed at 3.06t GVW — body type, cabin config and class match the family spec. Per founder SKU-match policy, family-level photography is acceptable for series SKUs without exact model-suffix badges.",
+  "source_url": "https://www.kamaauto.cn/zb_users/upload/2024/11/202411221732281166239595.jpg",
+  "page_url": "https://www.kamaauto.cn/product/ev-mini-truck/new-energy-vehicles-mini-truck-electric-cargo-trucks-pickup-truck/",
+  "domain": "kamaauto.cn",
+  "rights": "manufacturer_kit",
+  "rights_source": "KAMA Auto export brand site (Shandong KAMA Automobile Manufacturing Co., Ltd. parent); registry ratified 2026-07-08. Self-hosted CMS image (zb_users/upload), no marketplace watermark.",
+  "fetch_date": "2026-07-08",
+  "source_dimensions": "2500x2500",
+  "format": "jpeg",
+  "angle": "straight side profile (permitted secondary standard per C-HERO Step 1; 3/4 front was not available at manufacturer-domain quality for this family)",
+  "facing": "left",
+  "steering_side": "Appears LHD from the visible near-side steering position, but this is a generic family-level photo with no stated model code. EW1/EW2 records specify RHD; EV1/EV2/EV3 unconfirmed. Steering side NOT authoritative from this source — recorded as observed only.",
+  "preflight": "PASS — straight side profile (secondary standard), no motion blur, no occlusions crossing silhouette, no platform watermark. Product long edge 2500px native; no upscale needed. Distinguished from the flagged EV1 double-cabin candidate — this is single-cabin, matching the family spec.",
+  "processing_note": "Cropped to truck (L70/T400/1880x1290). remove_background on native crop was clean — thin headboard rails and bed stake-rails retained with correct see-through transparency (audited at 200%; one minor residual haze speck between two rails, non-disqualifying). keep-largest-connected-component pass removed stray fringe. No upscale, no product alteration."
+}

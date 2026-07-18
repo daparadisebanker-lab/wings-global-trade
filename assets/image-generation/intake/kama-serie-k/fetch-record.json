@@ -1,0 +1,25 @@
+{
+  "sku": "kama-serie-k",
+  "candidates_evaluated": [
+    {
+      "label": "k67-orig-2 (primary — best SKU match)",
+      "source_url": "https://image.made-in-china.com/2f0j00oOWbnYjtZMuR/Kama-K6-Series-Truck-The-Light-Truck-Diesel-Vehicle.webp",
+      "page_url": "https://kamaqc.en.made-in-china.com/product/OTCRDsygZGpz/China-Kama-K6-Series-Truck-The-Light-Truck-Diesel-Vehicle.html",
+      "domain": "kamaqc.en.made-in-china.com",
+      "rights": "supplier_provided",
+      "dimensions": "1958x1306",
+      "outcome": "rejected — background worker overlaps the front-left silhouette (mirror arm / headlamp / bumper). Alpha analysis confirmed the person's pixels are entangled with the truck front-left across rows; no clean automated separation (manual-mask trigger)."
+    },
+    {
+      "label": "k6-1 (fallback — clean background)",
+      "source_url": "https://www.kamaauto.cn/zb_users/upload/2025/07/202507271753667002360008.webp",
+      "page_url": "https://www.kamaauto.cn/news/kama-double-cabin-k6-mini-truck-2-ton-diesel-5-seat-4x2-light-cargo-vehicle/",
+      "domain": "kamaauto.cn",
+      "rights": "manufacturer_kit",
+      "dimensions": "2500x2500",
+      "outcome": "deferred — single-cab frame (compliant cabin, meeting founder's condition on the K6 post), clean street background, manufacturer domain. BUT it is a van-derived rounded-cab microtruck whose GVW/class cannot be verified against Serie K (4.3-6.3t); source calls it a '2-ton mini truck', likely at/below the low end. Staging it as Serie K risks a fabricated class claim."
+    }
+  ],
+  "fetch_date": "2026-07-08",
+  "notes": "See deferred-row.md. kamaqc K67 = the verifiable K67B (correct family, traditional light-truck cab) but occluded; kamaauto.cn K6 = clean but class-doubtful. Neither yields a defensible clean hero."
+}

@@ -1,0 +1,19 @@
+{
+  "sku": "kama-serie-es-esp",
+  "model_shown": "KAMA ES6 (骏航 ES6) — Electric Cargo Van, LHD",
+  "ev_evidence": "POSITIVE — closed body-colored EV front (no radiator grille), blue new-energy emblem, visible door decal '骏航 ES6' (model badge) + '总质量 3150 kg'. Source is an explicitly-electric ES6 listing. Satisfies the es-esp EV-evidence rule; this is an EV, not a Serie S gasoline body.",
+  "family_match_rationale": "ES/ESP = electric van family (cargo ES6-ES8 + passenger ESP6-ESP8). ES6 is the electric cargo van; body type, cabin config and class match the family spec.",
+  "source_url": "https://image.made-in-china.com/2f0j00lmYqjIkZrWbg/Kama-Es6-Electric-Truck-Cargo-Van-96HP-General-Transport-Cargo-Truck.webp",
+  "page_url": "https://cnkama.en.made-in-china.com/product/BaVYiNZOluWL/China-Kama-Es6-Electric-Truck-Cargo-Van-96HP-General-Transport-Cargo-Truck.html",
+  "domain": "cnkama.en.made-in-china.com",
+  "rights": "supplier_provided",
+  "rights_source": "Made-in-China storefront operated by KAMA Automobile Import and Export (Chongqing) Co., Ltd. (manufacturer's export arm); registry ratified 2026-07-08. Image served from image.made-in-china.com CDN (the platform CDN for that storefront, anticipated by the registry note).",
+  "fetch_date": "2026-07-08",
+  "source_dimensions": "1400x1050 (larger tier; standard 155f0j00 tier was 400x300 and rejected)",
+  "format": "webp",
+  "watermark_provenance_flag": "FOUNDER REVIEW: the source image carries a small '汽车之家' (Autohome) watermark in the bottom-right CORNER, on the background pavement — NOT on the product. Indicates the KAMA storefront re-hosted an Autohome-origin photo. The watermark sits outside the vehicle and was excluded by the crop + background removal; it is not present in any deliverable. Not a categorical pre-flight kill (spec kills only platform watermarks ON the product), but flagged because it reveals a third-party provenance chain the registry ratification does not explicitly cover.",
+  "angle": "3/4 front",
+  "facing": "left",
+  "preflight": "PASS — 3/4 front, doors CLOSED, no occlusions on the vehicle (distant parked vehicles at far-right excluded by crop), watermark off-product. Chosen over the kamaauto.cn ESP8 photo, which was rejected (open sliding door interior void + a second vehicle intruding at the front-right).",
+  "processing_note": "remove_background on the 4096px upscale retained building/tree/ground fragments (white van vs light-grey background). One re-extraction on the native-res crop was clean; its silhouette mask was then applied deterministically (sharp dest-in composite) to the clean 4096px upscaled RGB, then a keep-largest-connected-component pass removed stray fringe islands. Pure raster masking — no product pixels altered, nothing invented."
+}
