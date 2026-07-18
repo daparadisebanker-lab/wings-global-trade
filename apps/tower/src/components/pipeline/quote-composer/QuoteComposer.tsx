@@ -20,6 +20,7 @@ import {
   type QuoteRow,
   type RfqLineRow,
 } from '@/lib/actions/pipeline'
+import { issueQuotation } from '@/lib/actions/quotation'
 
 interface DraftQuoteLine {
   key: string
@@ -161,6 +162,20 @@ export function QuoteComposer({
     })
   }
 
+  function handleDocument(quoteId: string) {
+    setError(null)
+    startTransition(async () => {
+      // Idempotent: mints the quote number once, recomputes the tax split
+      // server-side, then opens the print-ready official document.
+      const result = await issueQuotation(quoteId)
+      if (result.error) {
+        setError(result.error.message)
+        return
+      }
+      window.open(`/quote/${quoteId}/document`, '_blank', 'noopener')
+    })
+  }
+
   function handleConvert() {
     if (!latest) return
     setError(null)
@@ -297,6 +312,18 @@ export function QuoteComposer({
 
               {i === 0 ? (
                 <div className="flex items-center gap-2">
+                  {capabilities.canSendQuote ? (
+                    <button
+                      type="button"
+                      onClick={() => handleDocument(q.id)}
+                      disabled={isPending}
+                      title="Emitir y ver la cotización oficial / Issue and view the official quotation"
+                      className="rounded-card border border-line px-3 py-1.5 font-mono text-label uppercase tracking-[0.1em] text-ink-primary hover:border-lane-accent disabled:opacity-40"
+                    >
+                      Documento oficial ↗
+                    </button>
+                  ) : null}
+
                   {capabilities.canSendQuote && q.status === 'DRAFT' ? (
                     <>
                       <input

@@ -1,0 +1,74 @@
+/* Page frame for the quotation document. Forces a light ground over TOWER's
+   dark root <body>, centers the A4 sheet, and prints clean (toolbar hidden). */
+
+.qdoc-page {
+  min-height: 100vh;
+  background: #52555a; /* neutral desk behind the white sheet */
+  padding: 32px 16px 64px;
+  color: #0f1216;
+}
+
+.qdoc-page .qdoc {
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.35);
+}
+
+/* Print / save-PDF toolbar */
+.qdoc-toolbar {
+  max-width: 820px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 14px;
+  background: #1b1e22;
+  border: 1px solid #34383e;
+  color: #e8eaed;
+  font-family: var(--font-ui, system-ui, sans-serif);
+}
+.qdoc-toolbar-label {
+  font-family: var(--font-mono, monospace);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+.qdoc-toolbar-btn {
+  padding: 8px 14px;
+  background: #ffb020;
+  color: #101214;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.qdoc-toolbar-btn:hover {
+  background: #ffc04d;
+}
+
+.qdoc-error {
+  max-width: 820px;
+  margin: 80px auto;
+  padding: 40px;
+  background: #ffffff;
+  text-align: center;
+  font-family: var(--font-ui, system-ui, sans-serif);
+}
+.qdoc-error-sub {
+  margin-top: 8px;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+@media print {
+  .qdoc-page {
+    background: #ffffff;
+    padding: 0;
+  }
+  .qdoc-page .qdoc {
+    box-shadow: none;
+  }
+  [data-print-hidden] {
+    display: none !important;
+  }
+}

@@ -1,0 +1,281 @@
+/* Official "Cotización" document — a self-contained LIGHT surface printed on
+   white, deliberately independent of TOWER's dark control-room livery (this is
+   a client-facing artifact, not app chrome). Everything is scoped under .qdoc so
+   it never leaks into the shell. Sized for A4 portrait; grey bars are forced to
+   print via print-color-adjust. */
+
+.qdoc {
+  --qd-ink: #0f1216;
+  --qd-muted: #6b7280;
+  --qd-line: #d1d5db;
+  --qd-bar: #ececec;
+  --qd-placeholder: #f3f4f6;
+
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 48px 56px 40px;
+  background: #ffffff;
+  color: var(--qd-ink);
+  font-family: var(--font-ui, system-ui, sans-serif);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.qdoc *,
+.qdoc *::before,
+.qdoc *::after {
+  box-sizing: border-box;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+.qdoc-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+.qdoc-title {
+  margin: 0;
+  font-size: 52px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 0.95;
+}
+.qdoc-number {
+  margin-top: 12px;
+  font-family: var(--font-mono, monospace);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: var(--qd-ink);
+}
+.qdoc-number[data-draft='true'] {
+  color: var(--qd-muted);
+}
+.qdoc-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.qdoc-logo {
+  height: 58px;
+  width: auto;
+  /* Force the color imagotipo to solid black to match the reference. */
+  filter: brightness(0);
+}
+.qdoc-tagline {
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: var(--qd-muted);
+  text-transform: uppercase;
+}
+
+/* Accent-weighted rule under the header (thick left segment + thin line). */
+.qdoc-rule {
+  position: relative;
+  height: 3px;
+  margin: 14px 0 26px;
+  background: var(--qd-line);
+}
+.qdoc-rule::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 168px;
+  background: var(--qd-ink);
+}
+
+/* ── Bill-to block ──────────────────────────────────────────────────────── */
+.qdoc-billto-lead {
+  font-weight: 600;
+}
+.qdoc-billto-company {
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.qdoc-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 40px;
+}
+.qdoc-meta-row {
+  display: flex;
+  gap: 10px;
+}
+.qdoc-meta-label {
+  color: var(--qd-muted);
+  min-width: 92px;
+}
+.qdoc-meta-value {
+  color: var(--qd-ink);
+}
+
+.qdoc-intro {
+  margin: 22px 0 14px;
+}
+
+/* ── Line-item table ────────────────────────────────────────────────────── */
+.qdoc-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.qdoc-table thead th {
+  background: var(--qd-bar);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 10px 10px;
+  text-align: center;
+  border: 1px solid var(--qd-line);
+}
+.qdoc-table th.qd-col-desc {
+  width: 40%;
+}
+.qdoc-table th.qd-col-item {
+  width: 9%;
+}
+.qdoc-table th.qd-col-qty {
+  width: 11%;
+}
+.qdoc-table tbody td {
+  border: 1px solid var(--qd-line);
+  padding: 14px 10px;
+  vertical-align: middle;
+  font-size: 13px;
+}
+.qd-cell-center {
+  text-align: center;
+}
+.qd-cell-num {
+  text-align: center;
+  font-family: var(--font-mono, monospace);
+  font-variant-numeric: tabular-nums;
+}
+.qd-item {
+  font-weight: 600;
+  text-align: center;
+}
+.qd-desc {
+  text-align: center;
+}
+.qd-desc-img {
+  display: block;
+  margin: 0 auto 8px;
+  max-height: 88px;
+  max-width: 160px;
+  object-fit: contain;
+}
+.qd-desc-placeholder {
+  display: block;
+  margin: 0 auto 8px;
+  height: 72px;
+  width: 150px;
+  background: var(--qd-placeholder);
+  border: 1px solid var(--qd-line);
+}
+.qd-desc-caption {
+  font-size: 13px;
+}
+
+/* ── Totals ─────────────────────────────────────────────────────────────── */
+.qdoc-totals {
+  margin: 0 0 8px auto;
+  width: 320px;
+}
+.qdoc-total-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 9px 6px;
+  border-top: 1px solid var(--qd-line);
+}
+.qdoc-total-row .qd-total-label {
+  font-weight: 600;
+}
+.qdoc-total-row .qd-total-value {
+  font-family: var(--font-mono, monospace);
+  font-variant-numeric: tabular-nums;
+}
+.qdoc-total-row[data-emphasis='true'] .qd-total-label,
+.qdoc-total-row[data-emphasis='true'] .qd-total-value {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* ── Section bars (Condiciones / Observaciones) ─────────────────────────── */
+.qdoc-section-bar {
+  background: var(--qd-bar);
+  padding: 8px 12px;
+  margin: 28px 0 14px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.qdoc-terms {
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  gap: 8px 16px;
+  padding: 0 4px;
+}
+.qdoc-term-label {
+  font-weight: 600;
+}
+.qdoc-observations {
+  margin: 0;
+  padding: 0 4px;
+  list-style: none;
+}
+.qdoc-observations li {
+  position: relative;
+  padding-left: 18px;
+  margin-bottom: 4px;
+}
+.qdoc-observations li::before {
+  content: '•';
+  position: absolute;
+  left: 4px;
+}
+
+/* ── Close + footer ─────────────────────────────────────────────────────── */
+.qdoc-close {
+  margin: 34px 0 0;
+}
+.qdoc-close-signoff {
+  margin-top: 2px;
+  font-weight: 600;
+}
+.qdoc-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 40px;
+  padding-top: 14px;
+  border-top: 1px solid var(--qd-line);
+  color: var(--qd-muted);
+  font-size: 12px;
+}
+.qdoc-footer .qd-foot-right {
+  text-align: right;
+}
+
+/* ── Print ──────────────────────────────────────────────────────────────── */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm;
+  }
+  .qdoc {
+    max-width: none;
+    padding: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
