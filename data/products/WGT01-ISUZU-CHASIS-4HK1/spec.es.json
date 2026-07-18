@@ -1,0 +1,110 @@
+{
+  "meta": {
+    "producto_id": "WGT01-ISUZU-CHASIS-4HK1",
+    "derivado_de": "spec.source.json (extracción verbatim, Branch V)",
+    "glosario": "data/GLOSARIO.md",
+    "estado_glosario": "PROPUESTO — pendiente de ratificación del fundador",
+    "idioma": "es",
+    "fecha": "2026-07-08",
+    "regla": "Terminología corregida por glosario; valores nunca corregidos. Unidades sin conversión. Campos sin mapeo cierto por variante: pendiente_proveedor (ver AMBIGUEDADES.md)."
+  },
+  "producto": {
+    "nombre": "Chasis de bus ISUZU · motor 4HK1-TCG61",
+    "fabricante": "ISUZU (representado por GP Motors Technology, Chongqing)",
+    "origen": "Chongqing, China",
+    "descripcion_corta": "Chasis de bus 4x2, PBV 10 500 kg, motor diésel 4HK1-TCG61 Euro VI, seis variantes: tres distancias entre ejes, con y sin semicabina.",
+    "general": {
+      "traccion": "4x2",
+      "peso_bruto_vehicular_kg": "10500",
+      "carga_eje_delantero_kg": "3500",
+      "carga_eje_trasero_kg": "7050"
+    },
+    "motor": {
+      "modelo": "4HK1-TCG61",
+      "tipo": "4 cilindros en línea, sistema de inyección diésel de riel común electrónico de alta presión, refrigeración por agua, turboalimentado con intercooler",
+      "norma_de_emisiones": "Euro VI",
+      "cilindrada_l": "5.139",
+      "potencia_nominal": "139 kW / 2600 rpm",
+      "par_maximo": "507 N·m / 1600–2600 rpm",
+      "nota": "Potencia bajo consulta al proveedor: la portada del catálogo menciona '150 horsepower' (ambigüedad f). El valor de la tabla es el registrado."
+    },
+    "transmision": {
+      "modelo": "Manual MLD, 6 velocidades + 1 reversa",
+      "relaciones_de_caja": "6.720 / 4.244 / 2.580 / 1.540 / 1.000 / 0.763 · reversa 6.823"
+    },
+    "frenos": {
+      "freno_de_servicio": "Freno de tambor delantero y trasero",
+      "accionamiento": "Freno neumático",
+      "freno_de_estacionamiento": "Válvula de corte de aire"
+    },
+    "tanque_de_combustible": {
+      "capacidad": "100 L",
+      "material": "Acero al carbono"
+    },
+    "desempeno": {
+      "angulo_de_ataque_salida_grados": "17/15, 20/19 — asignación por variante: pendiente_proveedor (ambigüedad c)",
+      "velocidad_maxima_kmh": "110"
+    },
+    "eje_trasero": {
+      "relacion_impresa": "4.1/5.375 — asignación por variante: pendiente_proveedor (ambigüedad a)"
+    },
+    "bastidor": {
+      "ancho_mm": "850"
+    },
+    "suspension": {
+      "hojas_de_ballesta": "8/10+6 — configuración por eje y variante: pendiente_proveedor (ambigüedad b)",
+      "neumaticos": "235/75R17.5"
+    },
+    "dimensiones": {
+      "estado": "pendiente_proveedor",
+      "nota": "Los planos del catálogo imprimen solo los códigos FOH · WB · ROH · OAL · EH · AW · OW · OH · HH · CW · BW, sin valores numéricos (ambigüedad g). Distancia entre ejes conocida por la tabla de variantes."
+    },
+    "volante": {
+      "estado": "pendiente_proveedor",
+      "nota": "Catálogo anuncia RHD/LHD sin mapeo por variante (ambigüedad d)."
+    },
+    "variantes": [
+      {
+        "id": "WGT01-ISUZU-CHASIS-4HK1-4175-SC",
+        "estado_de_cabina": "sin cabina",
+        "distancia_entre_ejes_mm": "4175",
+        "peso_en_vacio_kg": "2600"
+      },
+      {
+        "id": "WGT01-ISUZU-CHASIS-4HK1-4175-CC",
+        "estado_de_cabina": "semicabina",
+        "distancia_entre_ejes_mm": "4175",
+        "peso_en_vacio_kg": "3005"
+      },
+      {
+        "id": "WGT01-ISUZU-CHASIS-4HK1-4475-SC",
+        "estado_de_cabina": "sin cabina",
+        "distancia_entre_ejes_mm": "4475",
+        "peso_en_vacio_kg": "2795"
+      },
+      {
+        "id": "WGT01-ISUZU-CHASIS-4HK1-4475-CC",
+        "estado_de_cabina": "semicabina",
+        "distancia_entre_ejes_mm": "4475",
+        "peso_en_vacio_kg": "3025"
+      },
+      {
+        "id": "WGT01-ISUZU-CHASIS-4HK1-5200-SC",
+        "estado_de_cabina": "sin cabina",
+        "distancia_entre_ejes_mm": "5200",
+        "peso_en_vacio_kg": "2980"
+      },
+      {
+        "id": "WGT01-ISUZU-CHASIS-4HK1-5200-CC",
+        "estado_de_cabina": "semicabina",
+        "distancia_entre_ejes_mm": "5200",
+        "peso_en_vacio_kg": "3445"
+      }
+    ]
+  },
+  "procedencia": {
+    "linea_de_fuente": "Datos del fabricante · catálogo abril 2025",
+    "documento": "source/ISUZU_Bus_Chassis_Catalog.pdf",
+    "descargo_del_fabricante": "Las especificaciones están sujetas a cambio sin previo aviso (descargo impreso en el catálogo, p. 2)."
+  }
+}

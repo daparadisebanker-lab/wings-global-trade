@@ -1,0 +1,98 @@
+{
+  "meta": {
+    "product_id": "WGT01-ISUZU-CHASIS-4HK1",
+    "pipeline": "spec/WINGS_INGESTA_PIPELINE.md",
+    "case": "001",
+    "source_document": "source/ISUZU_Bus_Chassis_Catalog.pdf",
+    "source_language": "en (supplier English, Chinese company block on p2 footer)",
+    "extraction_branch": "V",
+    "extraction_method": "vision over native page rasters (2480x3508 embedded JPEGs, no text layer)",
+    "pdf_creation_date": "2025-04-29",
+    "reception_date": "2026-07-08",
+    "rights": "supplier_provided",
+    "supplier": {
+      "company_en": "GP MOTORS TECHNOLOGY (CHONGQING)CO.LTD",
+      "company_zh": "高标汽车技术（重庆）有限公司",
+      "brand_line": "GP MOTORS · GO BEST BE BEST",
+      "tel": "0086 13594129198",
+      "email": "LuckyXia@gobestgroup.com",
+      "web": "www.isuzukd.com",
+      "address": "Rm. 27-04, YugaoZhibo Center, No.68 Kecheng Road, Jiulongpo District, ChongQing, China"
+    },
+    "verbatim_note": "All values exactly as printed, supplier errors preserved. Fields whose variant mapping cannot be read with certainty are listed in AMBIGUEDADES.md and marked pendiente_proveedor in spec.es.json."
+  },
+  "product": {
+    "catalog_title_p1": "RHD/LHD BUS CHASSIS",
+    "catalog_title_p2": "BUS CHASSIS PRODUCTS",
+    "table_title": "THREE TYPE CHASSIS SPECIFICATION",
+    "manufacturer_mark": "ISUZU · KING OF TRUCKS",
+    "general_shared": {
+      "drive_type": "4x2",
+      "gvw_kg": "10500",
+      "front_axle_load_kg": "3500",
+      "rear_axle_load_kg": "7050"
+    },
+    "engine": {
+      "model": "4HK1-TCG61",
+      "type": "4 Cylinders in line, high presure, electrical commom-rail diesel fuel injection system, water cooling, turb charging, inter cooling",
+      "emission_standard": "Euro VI",
+      "displacement_l": "5.139",
+      "rated_power": "139KW/2600rpm",
+      "max_torque": "507N.m/1600-2600rpm"
+    },
+    "transmission": {
+      "model": "Manual MLD / 6 Forward + 1 Reverse",
+      "gearbox_ratio": "6.720;4.244;2.580;1.540;1.000;0.763;R;6.823"
+    },
+    "brake_system": {
+      "service_brake": "Front and Rear Drum Brake",
+      "brake_air_oil": "Air Brake",
+      "parking_brake": "Air Cut Brake Valve"
+    },
+    "fuel_tank": {
+      "capacity": "100L",
+      "material": "Carbon Steel"
+    },
+    "brake_system_2_as_printed": {
+      "_note": "The catalog prints a second section header 'Brake System' over these rows; the grouping is the supplier's layout error, preserved here as printed.",
+      "approaching_departure_angle": "17/15,20/19",
+      "reax_axle_ratio": "4.1/5.375",
+      "max_speed_kmh": "110"
+    },
+    "frame": {
+      "width_mm": "850"
+    },
+    "suspension": {
+      "qty": "8/10+6",
+      "tires": "235/75R17.5"
+    },
+    "variantes": [
+      { "cabin_status": "No Cabin",  "wheelbase_mm": "4175", "curb_weight_kg": "2600" },
+      { "cabin_status": "Cut cabin", "wheelbase_mm": "4175", "curb_weight_kg": "3005" },
+      { "cabin_status": "No Cabin",  "wheelbase_mm": "4475", "curb_weight_kg": "2795" },
+      { "cabin_status": "Cut cabin", "wheelbase_mm": "4475", "curb_weight_kg": "3025" },
+      { "cabin_status": "No Cabin",  "wheelbase_mm": "5200", "curb_weight_kg": "2980" },
+      { "cabin_status": "Cut cabin", "wheelbase_mm": "5200", "curb_weight_kg": "3445" }
+    ]
+  },
+  "marketing_claims_p1_verbatim": {
+    "_note": "Supplier marketing copy, page 1. Claims, not spec evidence. '150 horsepower' conflicts with the table's 139KW (~186 hp) — filed as ambiguity (f).",
+    "banner": "STRONGER, BIGGER, AND MORE COST-EFFECTIVE!",
+    "abs_badge": "ABS",
+    "blurbs": [
+      "Powerful and fuel efficient. Equipped with a super common rail engine, model ISUZU 4HK1-TCG61, 150 horsepower, providing high torque, and similar to ISUZU The gearbox cooperates to provide continuous power.",
+      "Multifunctional cabin design Features a large, strong, durable chassis.",
+      "Drive with confidence Using anti-roll bars (stabilizers) front and rear helpS.Excellent grip when entering corners.",
+      "It adopts carefully designed suspension and is extremely stable. When transporting, it is best equipped with tubeless tires to better maintain the road surface.",
+      "Air brake system: double guarantee of safe braking and reliable starting. Equipped with ABS, it improves the stability and reliability of braking and starting, making every driving safer."
+    ],
+    "footer_banner": "One-stop R&D And Integration Solution Provider"
+  },
+  "disclaimer_p2_verbatim": "* THE SPECIFICATIONS ARE SUBJECT TO CHANGE WITHOUT NOTICE. THE PICTURES MAY INCLUDE OPTIONS. THE ACTU AL COLOR & APPEARANCE OF THE PRODUCT MAY DIFFER FROM WHAT IS SHOWN.",
+  "dimension_diagram_labels_p2": {
+    "_note": "Letter codes printed on the three line drawings, p2 bottom. Numeric dimension values are NOT printed in the catalog — only the letter codes. Filed as ambiguity (g): request the dimension table.",
+    "side_view": ["FOH", "WB", "ROH", "OAL", "EH"],
+    "front_view": ["AW"],
+    "rear_view": ["OW", "OH", "HH", "CW", "BW"]
+  }
+}

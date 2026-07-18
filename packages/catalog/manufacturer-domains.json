@@ -1,0 +1,45 @@
+{
+  "$comment": "Rights registry for the /fetch-and-stage C-HERO intake pipeline (Step 0). An exact domain match here resolves rights automatically to the class recorded on the entry. Entries are added ONLY with the founder's explicit confirmation — an agent may propose, never register. Domains not listed require a direct rights answer from the founder.",
+  "version": 2,
+  "updated": "2026-07-08",
+  "status": "RATIFIED by founder 2026-07-08 (KAMA scope) — in-session confirmation, C-HERO KAMA intake",
+  "domains": {
+    "kamaqc.com": {
+      "rights": "manufacturer_kit",
+      "rights_source": "Shandong KAMA Automobile Manufacturing Co., Ltd. — official Chinese corporate site (ICP 鲁ICP备10210494号)",
+      "brand": "KAMA",
+      "ratified": "2026-07-08"
+    },
+    "global-kama.com": {
+      "rights": "manufacturer_kit",
+      "rights_source": "Shandong KAMA Automobile Manufacturing Co., Ltd. — official English export site (linked from kamaqc.com)",
+      "brand": "KAMA",
+      "ratified": "2026-07-08"
+    },
+    "kamaauto.cn": {
+      "rights": "manufacturer_kit",
+      "rights_source": "KAMA Auto export brand site — footer names Shandong KAMA Automobile Manufacturing Co., Ltd. as parent; self-hosted product photography",
+      "brand": "KAMA",
+      "ratified": "2026-07-08",
+      "note": "Self-describes as export/trading brand, not the factory — founder accepted as manufacturer_kit for KAMA product photography."
+    },
+    "kamaqc.en.made-in-china.com": {
+      "rights": "supplier_provided",
+      "rights_source": "Made-in-China storefront operated by Shandong KAMA Automobile Manufacturing Co., Ltd. (manufacturer's own storefront)",
+      "brand": "KAMA",
+      "ratified": "2026-07-08",
+      "note": "Marketplace domain; images are platform derivatives (~1000px class) — expect pre-flight kills on resolution and platform watermarks."
+    },
+    "cnkama.en.made-in-china.com": {
+      "rights": "supplier_provided",
+      "rights_source": "Made-in-China storefront operated by KAMA Automobile Import and Export (Chongqing) Co., Ltd. (manufacturer's export arm)",
+      "brand": "KAMA",
+      "ratified": "2026-07-08",
+      "note": "Marketplace domain; same caveats as kamaqc storefront."
+    }
+  },
+  "policy_notes": {
+    "sku_match": "Founder ruling 2026-07-08: family-level photography is acceptable for series SKUs (kama-serie-*) when body type, cabin configuration and GVW class verifiably match the family spec. Single-model SKUs (kama-gm67e, kama-m36f) require an exact-unit match or defer.",
+    "not_ratified": "kama-automotive.com (trading arm, unclear), kamavehicle.com (CHTC used-vehicle trader), chinatrucks.org and all third-party dealers/aggregators — every fetch from these requires a fresh founder decision."
+  }
+}
