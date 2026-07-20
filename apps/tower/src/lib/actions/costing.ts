@@ -11,9 +11,16 @@ import { z } from 'zod'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { fail, ok, type ActionResult } from './result'
 import { computeImportCost } from '@/lib/costing/engine'
-import { costCalcMoney } from '@/lib/costing/persistence'
+import { calcularProrrateo } from '@/lib/costing/prorrateo'
+import { costCalcMoney, toMinor } from '@/lib/costing/persistence'
 import type { AdValoremRate } from '@/lib/costing/ad-valorem'
-import type { ImportInputs, ImportResult } from '@/lib/costing/types'
+import type {
+  GastoProrrateo,
+  ImportInputs,
+  ImportResult,
+  ItemProrrateo,
+  ResultadoProrrateo,
+} from '@/lib/costing/types'
 
 const uuidSchema = z.string().uuid()
 
@@ -290,6 +297,86 @@ export async function saveBulkCostCalculations(
   if (error || !data) return fail('FORBIDDEN_LANE', 'No se pudo guardar el lote / Could not save the batch')
 
   return ok((data as unknown as RawCostRow[]).map(mapRow))
+}
+
+// ── Prorrateo: allocate shared costs across items (Wave 6.4 / ERP) ───────────
+const itemSchema = z.object({
+  item_id: z.string().min(1).max(64),
+  sku: z.string().max(120),
+  descripcion: z.string().max(200),
+  cantidad: z.number().min(0),
+  peso_total_kg: z.number().min(0),
+  cbm_total: z.number().min(0),
+  valor_total_cif: z.number().min(0),
+})
+const gastoSchema = z.object({
+  gasto_id: z.string().min(1).max(64),
+  nombre: z.string().max(120),
+  monto_total: z.number().min(0),
+  moneda: z.enum(['USD', 'PEN']),
+  metodo: z.enum(['cbm', 'peso', 'valor_cif', 'unidad']),
+})
+const prorrateoSchema = z.object({
+  laneId: uuidSchema,
+  containerId: uuidSchema.nullish(),
+  exchangeRate: z.number().gt(0).max(100),
+  items: z.array(itemSchema).min(1).max(200),
+  gastos: z.array(gastoSchema).min(1).max(50),
+})
+export type SaveProrrateoInput = z.input<typeof prorrateoSchema>
+
+export interface ProrrateoRunResult {
+  runId: string
+  result: ResultadoProrrateo
+}
+
+export async function saveProrrateoRun(input: SaveProrrateoInput): Promise<ActionResult<ProrrateoRunResult>> {
+  const parsed = prorrateoSchema.safeParse(input)
+  if (!parsed.success) {
+    return fail('VALIDATION', 'Datos inválidos / Invalid data', parsed.error.flatten().fieldErrors as Record<string, string[]>)
+  }
+  const auth = await requireUser()
+  if (!auth.ok) return auth.error
+  const { supabase } = auth
+
+  const { data: lane, error: laneError } = await supabase
+    .from('lanes')
+    .select('brand_id')
+    .eq('id', parsed.data.laneId)
+    .maybeSingle()
+  if (laneError || !lane) return fail('FORBIDDEN_LANE', 'Lane no encontrado / Lane not found')
+
+  // Allocate server-side (authoritative).
+  const result = calcularProrrateo(
+    parsed.data.items as ItemProrrateo[],
+    parsed.data.gastos as GastoProrrateo[],
+    parsed.data.exchangeRate,
+  )
+
+  const { data: run, error: runError } = await supabase
+    .from('prorrateo_runs')
+    .insert({
+      brand_id: (lane as { brand_id: string }).brand_id,
+      lane_id: parsed.data.laneId,
+      container_id: parsed.data.containerId ?? null,
+      exchange_rate_milli: Math.round(parsed.data.exchangeRate * 1000),
+      gastos: parsed.data.gastos,
+    })
+    .select('id')
+    .single()
+  if (runError || !run) return fail('FORBIDDEN_LANE', 'No se pudo guardar el prorrateo / Could not save')
+  const runId = (run as { id: string }).id
+
+  const items = result.items.map((r) => ({
+    run_id: runId,
+    item: r.item,
+    result: r,
+    costo_total_minor: toMinor(r.costo_total_puesto_almacen_total_usd),
+  }))
+  const { error: itemsError } = await supabase.from('prorrateo_items').insert(items)
+  if (itemsError) return fail('FORBIDDEN_LANE', 'No se pudieron guardar los ítems / Could not save items')
+
+  return ok({ runId, result })
 }
 
 interface RawCostRow {

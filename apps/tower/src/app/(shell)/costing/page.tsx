@@ -36,6 +36,9 @@ export default async function CostingPage() {
           <Link href="/costing/bulk" className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary hover:text-lane-accent">
             Importación masiva →
           </Link>
+          <Link href="/costing/prorrateo" className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary hover:text-lane-accent">
+            Prorrateo →
+          </Link>
         </div>
         <h1 className="font-ui text-t2 text-ink-primary">Costo de importación (Perú)</h1>
       </header>
