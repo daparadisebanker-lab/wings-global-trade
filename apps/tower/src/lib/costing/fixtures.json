@@ -1,0 +1,569 @@
+{
+  "meta": {
+    "engine": "lib/calculations.ts + lib/prorrateo.ts",
+    "commit": "c74b60e",
+    "generatedAt": "2026-07-09T19:36:23.019Z"
+  },
+  "importCases": {
+    "A": {
+      "label": "DEFAULT_INPUTS — FOB, gasoline 1500cc, TC 3.70",
+      "inputs": {
+        "productName": "",
+        "brand": "Toyota",
+        "model": "",
+        "fuelType": "gasoline",
+        "engineCC": 1500,
+        "origin": "china",
+        "year": 2026,
+        "incoterm": "FOB",
+        "fob": 14000,
+        "transportOrigin": 0,
+        "freightInternational": 2000,
+        "freightZofratacna": 500,
+        "portExpenses": 375,
+        "customsAgency": 300,
+        "handlingStowage": 0,
+        "adValoremRate": 0,
+        "igvRate": 0.18,
+        "percepcionRate": 0.035,
+        "insuranceRate": 0.015,
+        "exchangeRate": 3.7,
+        "marginMode": "percent",
+        "marginPercent": 0.1,
+        "targetSalePrice": 25000
+      },
+      "iscRate": 0.075,
+      "result": {
+        "insurance": 240,
+        "cif": 16240,
+        "adValorem": 0,
+        "iscRate": 0.075,
+        "isc": 1218,
+        "igvImportacion": 3142.44,
+        "percepcion": 721.02,
+        "gastosVinculados": 1175,
+        "landedCost": 18633,
+        "cashOutlay": 22496.46,
+        "marginRate": 0.1,
+        "marginUSD": 1863.3,
+        "salePrice": 20496.3,
+        "igvVentas": 3689.33,
+        "salePriceFinal": 24185.63,
+        "igvNetPayable": 2023.49,
+        "netProfit": 1863.3,
+        "margenBruto": 1863.3,
+        "margenBrutoPct": 0.1,
+        "impuestosRecuperablesUSD": 3863.46,
+        "impuestosRecuperablesPEN": 14294.8,
+        "margenNetoReal": 1863.3,
+        "margenNetoRealPct": 0.1,
+        "margenNetoCaja": -2000.16,
+        "margenNetoCajaPct": -0.10734503300595717
+      }
+    },
+    "B": {
+      "label": "Incoterm CIF + hybrid — ISC 0, seguro 0, cifBase = valor CIF directo",
+      "inputs": {
+        "productName": "",
+        "brand": "Toyota",
+        "model": "",
+        "fuelType": "hybrid",
+        "engineCC": 1500,
+        "origin": "china",
+        "year": 2026,
+        "incoterm": "CIF",
+        "fob": 14000,
+        "transportOrigin": 0,
+        "freightInternational": 2000,
+        "freightZofratacna": 500,
+        "portExpenses": 375,
+        "customsAgency": 300,
+        "handlingStowage": 0,
+        "adValoremRate": 0,
+        "igvRate": 0.18,
+        "percepcionRate": 0.035,
+        "insuranceRate": 0.015,
+        "exchangeRate": 3.7,
+        "marginMode": "percent",
+        "marginPercent": 0.1,
+        "targetSalePrice": 25000
+      },
+      "iscRate": 0,
+      "result": {
+        "insurance": 0,
+        "cif": 14000,
+        "adValorem": 0,
+        "iscRate": 0,
+        "isc": 0,
+        "igvImportacion": 2520,
+        "percepcion": 578.2,
+        "gastosVinculados": 1175,
+        "landedCost": 15175,
+        "cashOutlay": 18273.2,
+        "marginRate": 0.1,
+        "marginUSD": 1517.5,
+        "salePrice": 16692.5,
+        "igvVentas": 3004.65,
+        "salePriceFinal": 19697.15,
+        "igvNetPayable": 1793.21,
+        "netProfit": 1517.5,
+        "margenBruto": 1517.5,
+        "margenBrutoPct": 0.1,
+        "impuestosRecuperablesUSD": 3098.2,
+        "impuestosRecuperablesPEN": 11463.34,
+        "margenNetoReal": 1517.5,
+        "margenNetoRealPct": 0.1,
+        "margenNetoCaja": -1580.7,
+        "margenNetoCajaPct": -0.10416474464579902
+      }
+    },
+    "C": {
+      "label": "EXW + diesel + 1400cc — transporte origen activo, ISC 0 por diesel",
+      "inputs": {
+        "productName": "",
+        "brand": "Toyota",
+        "model": "",
+        "fuelType": "diesel",
+        "engineCC": 1400,
+        "origin": "china",
+        "year": 2026,
+        "incoterm": "EXW",
+        "fob": 14000,
+        "transportOrigin": 800,
+        "freightInternational": 2000,
+        "freightZofratacna": 500,
+        "portExpenses": 375,
+        "customsAgency": 300,
+        "handlingStowage": 0,
+        "adValoremRate": 0,
+        "igvRate": 0.18,
+        "percepcionRate": 0.035,
+        "insuranceRate": 0.015,
+        "exchangeRate": 3.7,
+        "marginMode": "percent",
+        "marginPercent": 0.1,
+        "targetSalePrice": 25000
+      },
+      "iscRate": 0,
+      "result": {
+        "insurance": 252,
+        "cif": 17052,
+        "adValorem": 0,
+        "iscRate": 0,
+        "isc": 0,
+        "igvImportacion": 3069.36,
+        "percepcion": 704.25,
+        "gastosVinculados": 1175,
+        "landedCost": 18227,
+        "cashOutlay": 22000.61,
+        "marginRate": 0.1,
+        "marginUSD": 1822.7,
+        "salePrice": 20049.7,
+        "igvVentas": 3608.95,
+        "salePriceFinal": 23658.65,
+        "igvNetPayable": 1996.48,
+        "netProfit": 1822.7,
+        "margenBruto": 1822.7,
+        "margenBrutoPct": 0.1,
+        "impuestosRecuperablesUSD": 3773.61,
+        "impuestosRecuperablesPEN": 13962.36,
+        "margenNetoReal": 1822.7,
+        "margenNetoRealPct": 0.1,
+        "margenNetoCaja": -1950.91,
+        "margenNetoCajaPct": -0.10703407033521699
+      }
+    },
+    "C2": {
+      "label": "FOB + gasoline 1400cc — ISC boundary (≤1400 → 5%)",
+      "inputs": {
+        "productName": "",
+        "brand": "Toyota",
+        "model": "",
+        "fuelType": "gasoline",
+        "engineCC": 1400,
+        "origin": "china",
+        "year": 2026,
+        "incoterm": "FOB",
+        "fob": 14000,
+        "transportOrigin": 0,
+        "freightInternational": 2000,
+        "freightZofratacna": 500,
+        "portExpenses": 375,
+        "customsAgency": 300,
+        "handlingStowage": 0,
+        "adValoremRate": 0,
+        "igvRate": 0.18,
+        "percepcionRate": 0.035,
+        "insuranceRate": 0.015,
+        "exchangeRate": 3.7,
+        "marginMode": "percent",
+        "marginPercent": 0.1,
+        "targetSalePrice": 25000
+      },
+      "iscRate": 0.05,
+      "result": {
+        "insurance": 240,
+        "cif": 16240,
+        "adValorem": 0,
+        "iscRate": 0.05,
+        "isc": 812,
+        "igvImportacion": 3069.36,
+        "percepcion": 704.25,
+        "gastosVinculados": 1175,
+        "landedCost": 18227,
+        "cashOutlay": 22000.61,
+        "marginRate": 0.1,
+        "marginUSD": 1822.7,
+        "salePrice": 20049.7,
+        "igvVentas": 3608.95,
+        "salePriceFinal": 23658.65,
+        "igvNetPayable": 1996.48,
+        "netProfit": 1822.7,
+        "margenBruto": 1822.7,
+        "margenBrutoPct": 0.1,
+        "impuestosRecuperablesUSD": 3773.61,
+        "impuestosRecuperablesPEN": 13962.36,
+        "margenNetoReal": 1822.7,
+        "margenNetoRealPct": 0.1,
+        "margenNetoCaja": -1950.91,
+        "margenNetoCajaPct": -0.10703407033521699
+      }
+    },
+    "D": {
+      "label": "marginMode target_price — ÷1.18 ex-IGV step",
+      "inputs": {
+        "productName": "",
+        "brand": "Toyota",
+        "model": "",
+        "fuelType": "gasoline",
+        "engineCC": 1500,
+        "origin": "china",
+        "year": 2026,
+        "incoterm": "FOB",
+        "fob": 14000,
+        "transportOrigin": 0,
+        "freightInternational": 2000,
+        "freightZofratacna": 500,
+        "portExpenses": 375,
+        "customsAgency": 300,
+        "handlingStowage": 0,
+        "adValoremRate": 0,
+        "igvRate": 0.18,
+        "percepcionRate": 0.035,
+        "insuranceRate": 0.015,
+        "exchangeRate": 3.7,
+        "marginMode": "target_price",
+        "marginPercent": 0.1,
+        "targetSalePrice": 25000
+      },
+      "iscRate": 0.075,
+      "result": {
+        "insurance": 240,
+        "cif": 16240,
+        "adValorem": 0,
+        "iscRate": 0.075,
+        "isc": 1218,
+        "igvImportacion": 3142.44,
+        "percepcion": 721.02,
+        "gastosVinculados": 1175,
+        "landedCost": 18633,
+        "cashOutlay": 22496.46,
+        "marginRate": 0.137039,
+        "marginUSD": 2553.44,
+        "salePrice": 21186.44,
+        "igvVentas": 3813.56,
+        "salePriceFinal": 25000,
+        "igvNetPayable": 2483.14,
+        "netProfit": 2553.44,
+        "margenBruto": 2553.44,
+        "margenBrutoPct": 0.137039,
+        "impuestosRecuperablesUSD": 3863.46,
+        "impuestosRecuperablesPEN": 14294.8,
+        "margenNetoReal": 2553.44,
+        "margenNetoRealPct": 0.137039,
+        "margenNetoCaja": -1310.02,
+        "margenNetoCajaPct": -0.07030644555358773
+      }
+    },
+    "E": {
+      "label": "Margin floor binding — 1000/landedCost > marginPercent",
+      "inputs": {
+        "productName": "",
+        "brand": "Toyota",
+        "model": "",
+        "fuelType": "gasoline",
+        "engineCC": 1500,
+        "origin": "china",
+        "year": 2026,
+        "incoterm": "FOB",
+        "fob": 3000,
+        "transportOrigin": 0,
+        "freightInternational": 500,
+        "freightZofratacna": 200,
+        "portExpenses": 150,
+        "customsAgency": 100,
+        "handlingStowage": 0,
+        "adValoremRate": 0,
+        "igvRate": 0.18,
+        "percepcionRate": 0.035,
+        "insuranceRate": 0.015,
+        "exchangeRate": 3.7,
+        "marginMode": "percent",
+        "marginPercent": 0.1,
+        "targetSalePrice": 25000
+      },
+      "iscRate": 0.075,
+      "result": {
+        "insurance": 52.5,
+        "cif": 3552.5,
+        "adValorem": 0,
+        "iscRate": 0.075,
+        "isc": 266.44,
+        "igvImportacion": 687.41,
+        "percepcion": 157.72,
+        "gastosVinculados": 450,
+        "landedCost": 4268.94,
+        "cashOutlay": 5114.07,
+        "marginRate": 0.2342501885714018,
+        "marginUSD": 1000,
+        "salePrice": 5268.94,
+        "igvVentas": 948.41,
+        "salePriceFinal": 6217.35,
+        "igvNetPayable": 965.7,
+        "netProfit": 1000,
+        "margenBruto": 1000,
+        "margenBrutoPct": 0.2342501885714018,
+        "impuestosRecuperablesUSD": 845.13,
+        "impuestosRecuperablesPEN": 3126.98,
+        "margenNetoReal": 1000,
+        "margenNetoRealPct": 0.2342501885714018,
+        "margenNetoCaja": 154.87,
+        "margenNetoCajaPct": 0.036278326704053
+      }
+    }
+  },
+  "prorrateoCase": {
+    "label": "F — 3 items × 4 gastos, all métodos, USD+PEN, adjuster fires",
+    "items": [
+      {
+        "item_id": "I1",
+        "sku": "SKU-001",
+        "descripcion": "Motor eléctrico 5kW",
+        "cantidad": 3,
+        "peso_total_kg": 120.5,
+        "cbm_total": 1.25,
+        "valor_total_cif": 5000
+      },
+      {
+        "item_id": "I2",
+        "sku": "SKU-002",
+        "descripcion": "Panel de control",
+        "cantidad": 7,
+        "peso_total_kg": 89.3,
+        "cbm_total": 2.1,
+        "valor_total_cif": 7300
+      },
+      {
+        "item_id": "I3",
+        "sku": "SKU-003",
+        "descripcion": "Kit de repuestos",
+        "cantidad": 2,
+        "peso_total_kg": 44.7,
+        "cbm_total": 0.85,
+        "valor_total_cif": 2450
+      }
+    ],
+    "gastos": [
+      {
+        "gasto_id": "G1",
+        "nombre": "Flete marítimo",
+        "monto_total": 1000,
+        "moneda": "USD",
+        "metodo": "cbm"
+      },
+      {
+        "gasto_id": "G2",
+        "nombre": "Agencia de aduanas",
+        "monto_total": 355.55,
+        "moneda": "PEN",
+        "metodo": "valor_cif"
+      },
+      {
+        "gasto_id": "G3",
+        "nombre": "Transporte local",
+        "monto_total": 777.77,
+        "moneda": "PEN",
+        "metodo": "peso"
+      },
+      {
+        "gasto_id": "G4",
+        "nombre": "Handling",
+        "monto_total": 100,
+        "moneda": "USD",
+        "metodo": "unidad"
+      }
+    ],
+    "tipo_cambio": 3.7,
+    "adjusterFiredFor": [
+      "G2",
+      "G3"
+    ],
+    "result": {
+      "items": [
+        {
+          "item": {
+            "item_id": "I1",
+            "sku": "SKU-001",
+            "descripcion": "Motor eléctrico 5kW",
+            "cantidad": 3,
+            "peso_total_kg": 120.5,
+            "cbm_total": 1.25,
+            "valor_total_cif": 5000
+          },
+          "desglose": {
+            "G1": {
+              "monto": 297.62,
+              "moneda": "USD",
+              "metodo": "cbm",
+              "proporcion": 0.2976190476190476
+            },
+            "G2": {
+              "monto": 120.53,
+              "moneda": "PEN",
+              "metodo": "valor_cif",
+              "proporcion": 0.3389830508474576
+            },
+            "G3": {
+              "monto": 368.25,
+              "moneda": "PEN",
+              "metodo": "peso",
+              "proporcion": 0.47347740667976423
+            },
+            "G4": {
+              "monto": 25,
+              "moneda": "USD",
+              "metodo": "unidad",
+              "proporcion": 0.25
+            }
+          },
+          "costo_logistico_total_usd": 454.72,
+          "costo_logistico_unitario_usd": 151.57,
+          "costo_compra_unitario_usd": 1666.67,
+          "costo_total_puesto_almacen_unitario_usd": 1818.24,
+          "costo_total_puesto_almacen_total_usd": 5454.72
+        },
+        {
+          "item": {
+            "item_id": "I2",
+            "sku": "SKU-002",
+            "descripcion": "Panel de control",
+            "cantidad": 7,
+            "peso_total_kg": 89.3,
+            "cbm_total": 2.1,
+            "valor_total_cif": 7300
+          },
+          "desglose": {
+            "G1": {
+              "monto": 500,
+              "moneda": "USD",
+              "metodo": "cbm",
+              "proporcion": 0.5
+            },
+            "G2": {
+              "monto": 175.96,
+              "moneda": "PEN",
+              "metodo": "valor_cif",
+              "proporcion": 0.49491525423728816
+            },
+            "G3": {
+              "monto": 272.91,
+              "moneda": "PEN",
+              "metodo": "peso",
+              "proporcion": 0.35088408644400787
+            },
+            "G4": {
+              "monto": 58.33,
+              "moneda": "USD",
+              "metodo": "unidad",
+              "proporcion": 0.5833333333333334
+            }
+          },
+          "costo_logistico_total_usd": 679.65,
+          "costo_logistico_unitario_usd": 97.09,
+          "costo_compra_unitario_usd": 1042.86,
+          "costo_total_puesto_almacen_unitario_usd": 1139.95,
+          "costo_total_puesto_almacen_total_usd": 7979.65
+        },
+        {
+          "item": {
+            "item_id": "I3",
+            "sku": "SKU-003",
+            "descripcion": "Kit de repuestos",
+            "cantidad": 2,
+            "peso_total_kg": 44.7,
+            "cbm_total": 0.85,
+            "valor_total_cif": 2450
+          },
+          "desglose": {
+            "G1": {
+              "monto": 202.38,
+              "moneda": "USD",
+              "metodo": "cbm",
+              "proporcion": 0.20238095238095236
+            },
+            "G2": {
+              "monto": 59.06,
+              "moneda": "PEN",
+              "metodo": "valor_cif",
+              "proporcion": 0.16610169491525423
+            },
+            "G3": {
+              "monto": 136.61,
+              "moneda": "PEN",
+              "metodo": "peso",
+              "proporcion": 0.1756385068762279
+            },
+            "G4": {
+              "monto": 16.67,
+              "moneda": "USD",
+              "metodo": "unidad",
+              "proporcion": 0.16666666666666666
+            }
+          },
+          "costo_logistico_total_usd": 271.93,
+          "costo_logistico_unitario_usd": 135.97,
+          "costo_compra_unitario_usd": 1225,
+          "costo_total_puesto_almacen_unitario_usd": 1360.97,
+          "costo_total_puesto_almacen_total_usd": 2721.94
+        }
+      ],
+      "validacion": {
+        "G1": {
+          "monto_original": 1000,
+          "moneda": "USD",
+          "suma_prorrateada": 1000,
+          "coincide": true
+        },
+        "G2": {
+          "monto_original": 355.55,
+          "moneda": "PEN",
+          "suma_prorrateada": 355.55,
+          "coincide": true
+        },
+        "G3": {
+          "monto_original": 777.77,
+          "moneda": "PEN",
+          "suma_prorrateada": 777.77,
+          "coincide": true
+        },
+        "G4": {
+          "monto_original": 100,
+          "moneda": "USD",
+          "suma_prorrateada": 100,
+          "coincide": true
+        }
+      },
+      "tipo_cambio": 3.7
+    }
+  }
+}
