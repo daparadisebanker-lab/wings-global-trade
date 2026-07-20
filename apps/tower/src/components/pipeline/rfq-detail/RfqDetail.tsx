@@ -18,6 +18,7 @@ import {
 import type { Conversation } from '@/lib/conversations'
 import { LineItems } from '@/components/pipeline/line-items'
 import { QuoteComposer } from '@/components/pipeline/quote-composer'
+import { JourneyPanel } from '@/components/pipeline/journey'
 import { ConversationPane } from '@/components/pipeline/conversation-pane'
 
 export function RfqDetail({
@@ -133,6 +134,7 @@ export function RfqDetail({
           onQuotesChange={setQuotes}
           onOrderCreated={setOrder}
         />
+        {quotes[0] ? <JourneyPanel quoteId={quotes[0].id} /> : null}
       </section>
 
       <section className="flex flex-col gap-2">

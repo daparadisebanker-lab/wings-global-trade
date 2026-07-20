@@ -25,6 +25,7 @@ create table if not exists import_journeys (
   -- tamper-evident: if the figure changes the signature no longer verifies.
   committed_by uuid references profiles(id) default auth.uid(),
   signature jsonb not null default '{}',   -- { signed_by, signed_at, cif_minor, currency, alg, sig }
+  access_token text unique,                -- unguessable; the client tracker link (/importacion/{token})
   created_at timestamptz default now(),
   unique (quote_id)
 );

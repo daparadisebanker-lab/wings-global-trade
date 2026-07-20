@@ -6,6 +6,7 @@
 // DERIVED server-side from the underlying quote/order/container states + the
 // append-only milestone log — never trusted from the client. G1: opening a
 // journey captures the committing rep's digital signature over the CIF figure.
+import { randomBytes } from 'node:crypto'
 import { z } from 'zod'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { createServerSupabase } from '@/lib/supabase/server'
@@ -55,6 +56,7 @@ export interface ImportJourney {
   committedBy: string | null
   signature: Commitment | Record<string, never>
   signatureValid: boolean
+  accessToken: string | null
   milestones: JourneyMilestone[]
 }
 
@@ -69,9 +71,10 @@ interface RawJourney {
   incoterm: string | null
   committed_by: string | null
   signature: Commitment | Record<string, never>
+  access_token: string | null
 }
 const JOURNEY_COLS =
-  'id,quote_id,order_id,container_id,lane_id,phase_set,current_phase,incoterm,committed_by,signature'
+  'id,quote_id,order_id,container_id,lane_id,phase_set,current_phase,incoterm,committed_by,signature,access_token'
 
 // ── Derive the current phase from live underlying state + milestones ─────────
 async function recomputePhase(supabase: TowerClient, journey: RawJourney): Promise<PhaseCode> {
@@ -141,6 +144,7 @@ async function assembleJourney(supabase: TowerClient, row: RawJourney): Promise<
     committedBy: row.committed_by,
     signature: sig,
     signatureValid,
+    accessToken: row.access_token,
     milestones,
   }
 }
@@ -179,6 +183,7 @@ export async function openImportJourney(quoteId: string): Promise<ActionResult<I
       incoterm: q.terms?.incoterm ?? null,
       current_phase: 'COTIZACION_RECIBIDA',
       signature,
+      access_token: randomBytes(18).toString('hex'),
     })
     .select(JOURNEY_COLS)
     .single()
@@ -256,5 +261,16 @@ export async function getImportJourney(journeyId: string): Promise<ActionResult<
 
   const { data, error } = await auth.supabase.from('import_journeys').select(JOURNEY_COLS).eq('id', parsed.data).maybeSingle()
   if (error || !data) return fail('FORBIDDEN_LANE', 'Seguimiento no encontrado / Journey not found')
+  return assembleJourney(auth.supabase, data as unknown as RawJourney).then(ok)
+}
+
+/** Find the journey for a quote (null if not opened yet) — the RFQ-detail panel. */
+export async function getJourneyByQuote(quoteId: string): Promise<ActionResult<ImportJourney | null>> {
+  const parsed = uuidSchema.safeParse(quoteId)
+  if (!parsed.success) return fail('VALIDATION', 'ID inválido / Invalid id')
+  const auth = await requireUser()
+  if (!auth.ok) return auth.error
+  const { data } = await auth.supabase.from('import_journeys').select(JOURNEY_COLS).eq('quote_id', parsed.data).maybeSingle()
+  if (!data) return ok(null)
   return assembleJourney(auth.supabase, data as unknown as RawJourney).then(ok)
 }
