@@ -13,6 +13,7 @@ BUILD_PROMPT / spec is the entry point.
 | `shared-container/` | Contenedor Compartido — «Trae tu grupo» group container imports; additive Mister lanes | Spec complete | `wings-shared-container-spec.md` · GTM: pending — meta-ads program deleted 2026-07-08, replacement not yet written |
 | `represented-brands/` | Partner brands sold container-only (full or shared, never units) — hosted brand shelves at `/marcas`, TOWER brand/designation/allocation workflows, Mister brand data loop | Spec complete — Phase-0 decisions (archetype `ALLOCATION`, brand #1) pending Muaaz | `SPEC.md` (§7 gates) |
 | `quotation-intelligence/` | Live import‑tracking layer — a private per‑order tracker (CIF document + phase‑by‑phase shipment tracker + quote‑validity countdown + installment ledger), all written in TOWER, read by a tokenized client surface on `apps/site` | **PROPOSAL** — Phase‑0 (G1–G6) pending Muaaz; extends built TOWER + adds one `apps/site` surface; touches the no‑absolute‑price site law (ratification gate) | `SPEC.md` (§7 gates) |
+| `peru-costing/` | TOWER Wave 6 — port `wings-operations`' Peru SUNAT import‑cost engine (landed cost + prorrateo + bulk import + PDF/XLSX export + stowage sim + history) into TOWER, plus the remaining TOWER completion items; closes the wings‑operations **decommission gate** | **PROPOSAL** — Phase‑0 (G1–G6) pending Muaaz; faithful port with a 185‑row parity oracle (`wings-operations/fixtures.json`) | `SPEC.md` (§7 waves · §8 gates) |
 
 ## Sequencing constraints (decided facts, not suggestions)
 
