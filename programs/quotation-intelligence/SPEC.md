@@ -297,12 +297,18 @@ a shared container.
 
 Answer one at a time; each becomes law recorded here + in the relevant CLAUDE.md.
 
-- **G1 · Pricing‑privacy exception (the big one).** May the private, tokenized,
-  `noindex` per‑order tracker display the **absolute contracted CIF figure** to
-  the client who received the quote? (Recommended: **yes** — it is a 1:1
-  contract artifact, physically isolated from Mister's guardrails; §3.) If no →
-  render CIF as a PDF download, page shows phases + countdown + payment status
-  only.
+- **G1 · Pricing‑privacy exception (the big one). — RATIFIED (2026‑07‑20):
+  YES, show the real number, plus the PDF.** The private, tokenized, `noindex`
+  per‑order tracker displays the **absolute contracted CIF figure**. It is a
+  real, attributable operation: the figure is **digitally signed by the rep who
+  committed the quote from TOWER** — an HMAC‑SHA256 attestation over
+  `(rep, cif_minor, currency, signed_at)` (`lib/journeys/signature.ts`), stored
+  on `import_journeys.signature`, unforgeable without the server secret and
+  tamper‑evident (a changed figure fails `verifyCommitment`). The document is
+  also available as the signed **PDF**. Physically isolated from Mister's
+  guardrails (§3). *Status: the milestone + phase‑derivation layer (§2.1) is
+  BUILT (`tower_30_import_journeys`, `lib/journeys/*`, `lib/actions/journeys.ts`);
+  the tokenized client surface, countdown, and installment ledger remain queued.*
 - **G2 · Client access mechanism.** Tokenized no‑login link, mirroring
   `/g/{token}` (**recommended** — zero new auth, in the repo's grain), vs. real
   authenticated client accounts on `apps/site` (large — the site currently has
