@@ -141,6 +141,14 @@ const paths: Record<string, React.ReactNode> = {
       <path d="M12 8V4" />
     </>
   ),
+  car: (
+    <>
+      <path d="M3 13l1.8-5.2A2 2 0 0 1 6.7 6.5h10.6a2 2 0 0 1 1.9 1.3L21 13v4h-2M5 17H3v-4" />
+      <path d="M3 13h18" />
+      <circle cx="7" cy="17" r="2" />
+      <circle cx="17" cy="17" r="2" />
+    </>
+  ),
 }
 
 export function CategoryIcon({ iconKey, className }: IconProps) {
