@@ -3,3 +3,4 @@
 // apps/tower. Later waves add tech-sheet section builders here (SPEC R6/R18).
 export * from './packing'
 export * from './promo'
+export * from './wings-logo'

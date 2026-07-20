@@ -45,7 +45,7 @@ describe('buildPromoCardSvg', () => {
     const svg = buildPromoCardSvg(promo)
     expect(svg.startsWith('<svg')).toBe(true)
     expect(svg).toContain('width="1080" height="1080"')
-    expect(svg).toContain('WINGS GLOBAL TRADE')
+    expect(svg).toContain('#004389') // the inlined Wings imagotipo mark
     expect(svg).toContain('Papel higiénico Áladín')
     expect(svg).toContain('7 de 20 cupos disponibles')
     expect(svg).toContain(promo.listingUrl)

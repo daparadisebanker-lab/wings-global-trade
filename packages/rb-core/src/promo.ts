@@ -7,6 +7,8 @@
 // it to resvg → PNG/JPG. Copy honors the site law: Spanish, no exclamation marks,
 // technical and direct.
 
+import { wingsLogo } from './wings-logo'
+
 export interface ContainerPromoSpec {
   label: string
   value: string
@@ -191,10 +193,10 @@ export function buildPromoCardSvg(p: ContainerPromo): string {
     </pattern>
   </defs>
   <rect width="${S}" height="${S}" fill="${CARD.bg}"/>
-  <!-- wordmark -->
-  <text x="${pad}" y="${pad + 24}" font-family="Arial, sans-serif" font-size="30" font-weight="700" letter-spacing="2" fill="${CARD.ink}">WINGS GLOBAL TRADE</text>
-  <text x="${S - pad}" y="${pad + 24}" text-anchor="end" font-family="Arial, sans-serif" font-size="20" fill="${CARD.sub}">${esc(p.ownerLabel)} · ${esc(p.containerCode)}</text>
-  <line x1="${pad}" y1="${pad + 44}" x2="${S - pad}" y2="${pad + 44}" stroke="${CARD.ink}" stroke-width="2"/>
+  <!-- Wings imagotipo (the real mark, inlined) -->
+  ${wingsLogo(pad, pad - 6, 62)}
+  <text x="${S - pad}" y="${pad + 34}" text-anchor="end" font-family="Arial, sans-serif" font-size="20" fill="${CARD.sub}">${esc(p.ownerLabel)} · ${esc(p.containerCode)}</text>
+  <line x1="${pad}" y1="${pad + 70}" x2="${S - pad}" y2="${pad + 70}" stroke="${CARD.ink}" stroke-width="2"/>
 
   <!-- headline -->
   <text x="${pad}" y="240" font-family="Arial, sans-serif" font-size="64" font-weight="800" fill="${CARD.ink}">Contenedor de</text>
