@@ -30,7 +30,9 @@ export function MisterFloatingButton() {
       variants={launcherVariants}
       initial="hidden"
       animate={reduced ? 'visibleReduced' : 'visible'}
-      className="fixed bottom-[max(2rem,env(safe-area-inset-bottom))] right-8 z-[60]"
+      // Hidden < lg — on mobile the Mister entry point lives in MobileTabBar,
+      // so there are never two competing bottom-right controls.
+      className="fixed bottom-[max(2rem,env(safe-area-inset-bottom))] right-8 z-[60] hidden lg:block"
     >
       <button
         type="button"

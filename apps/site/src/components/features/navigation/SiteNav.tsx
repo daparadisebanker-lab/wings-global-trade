@@ -1,7 +1,7 @@
 // src/components/features/navigation/SiteNav.tsx
 'use client'
 
-import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -164,10 +164,13 @@ export function SiteNav({ categories }: SiteNavProps) {
                 aria-haspopup="true"
                 aria-expanded={menuHovered}
                 aria-controls="catalogo-mega-menu"
-                onClick={(e: ReactMouseEvent) => {
-                  e.preventDefault()
+                // Click NAVIGATES to the gateway (the menu is a hover/focus
+                // affordance, not a click-trap); focus opens the mega for
+                // keyboard users, Enter then follows through to /catalogo.
+                onClick={() => setSearchOpen(false)}
+                onFocus={() => {
+                  setMenuHovered(true)
                   setSearchOpen(false)
-                  setMenuHovered((o) => !o)
                 }}
                 className={cn(
                   'flex items-center gap-1 font-mono text-[11px] uppercase tracking-nav text-warm-white/70 transition-colors hover:text-warm-white',

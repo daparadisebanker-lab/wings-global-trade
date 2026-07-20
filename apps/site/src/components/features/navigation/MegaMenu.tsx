@@ -167,7 +167,19 @@ export function MegaMenu({ categories: _categories, open }: MegaMenuProps) {
           role="region"
           aria-label="Menú de catálogo"
         >
-          <div className="mx-auto grid max-w-7xl grid-cols-6 gap-0 px-10 py-10">
+          {/* Gateway link — both hover and click on "Catálogo" now resolve to
+              the same canonical landing page */}
+          <div className="mx-auto max-w-7xl px-10 pt-7">
+            <Link
+              href="/catalogo"
+              className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-nav text-gold transition-colors hover:text-gold-hover"
+            >
+              Ver todo el catálogo
+              <span aria-hidden>→</span>
+            </Link>
+          </div>
+
+          <div className="mx-auto grid max-w-7xl grid-cols-6 gap-0 px-10 pb-10 pt-6">
             {/* ---- Category columns ---- */}
             {COLUMNS.map((col) => (
               <div key={col.categorySlug} className="pr-8">

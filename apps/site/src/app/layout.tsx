@@ -4,6 +4,7 @@ import './globals.css'
 
 import { getCategories } from '@/lib/catalog-data'
 import { SiteNav } from '@/components/features/navigation/SiteNav'
+import { MobileTabBar } from '@/components/features/navigation/MobileTabBar'
 import { Footer } from '@/components/features/navigation/Footer'
 import { ToastProvider } from '@/components/ui/toast'
 import { CompareBar } from '@/components/features/catalog/CompareBar'
@@ -71,7 +72,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="preload" href="/fonts/NissanOpti.otf" as="font" type="font/opentype" crossOrigin="anonymous" />
         <JsonLd data={organizationSchema()} />
       </head>
-      <body className="font-body antialiased">
+      {/* Bottom padding on mobile reserves space for the fixed MobileTabBar so
+          it never covers footer content; cleared at lg where the bar is hidden. */}
+      <body className="font-body antialiased pb-[calc(3.5rem+env(safe-area-inset-bottom))] lg:pb-0">
         <SmoothScroll>
           <ToastProvider>
             <ComparisonProvider>
@@ -80,8 +83,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <Footer categories={categories} />
               <CompareBar />
               <MultiInquiryPanel />
-              {/* Mister site-wide widget: floating button + fullscreen overlay */}
+              {/* Mister site-wide widget: floating button (desktop) + fullscreen overlay */}
               <MisterSiteWidget />
+              {/* Persistent mobile thumb-zone nav — primary conversion paths */}
+              <MobileTabBar />
             </ComparisonProvider>
           </ToastProvider>
         </SmoothScroll>
