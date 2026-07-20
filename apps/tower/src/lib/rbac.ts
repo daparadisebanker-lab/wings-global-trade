@@ -13,12 +13,12 @@ import type { ModuleId } from './nav'
  */
 export type Role = 'LANE_DIRECTOR' | 'CATALOG_EDITOR' | 'TRADE_OPS' | 'SALES' | 'VIEWER'
 
-const ALL_MODULES: ModuleId[] = ['catalog', 'pipeline', 'containers', 'signals', 'intelligence', 'admin']
+const ALL_MODULES: ModuleId[] = ['catalog', 'pipeline', 'containers', 'costing', 'signals', 'intelligence', 'admin']
 
 const ROLE_MODULES: Record<Role, ModuleId[]> = {
-  LANE_DIRECTOR: ['catalog', 'pipeline', 'containers', 'signals', 'intelligence'],
+  LANE_DIRECTOR: ['catalog', 'pipeline', 'containers', 'costing', 'signals', 'intelligence'],
   CATALOG_EDITOR: ['catalog', 'signals'],
-  TRADE_OPS: ['containers', 'catalog', 'signals'],
+  TRADE_OPS: ['containers', 'costing', 'catalog', 'signals'],
   SALES: ['pipeline', 'signals'],
   VIEWER: ['signals'],
 }

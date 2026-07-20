@@ -1,0 +1,232 @@
+'use server'
+
+// src/lib/actions/costing.ts
+// Peru costing persistence — peru-costing SPEC Wave 6.2. Mutation law:
+// auth → Zod parse → RLS-scoped query (tower.cost_calculations "SALES/TRADE_OPS/
+// LANE_DIRECTOR write"). The SUNAT engine runs HERE, server-side and
+// authoritative (the client's copy is a live preview only); the integer-minor
+// split is extracted at persistence (lib/costing/persistence). Saved sheets are
+// append-only — a re-run is a new row, never an edit.
+import { z } from 'zod'
+import { createServerSupabase } from '@/lib/supabase/server'
+import { fail, ok, type ActionResult } from './result'
+import { computeImportCost } from '@/lib/costing/engine'
+import { costCalcMoney } from '@/lib/costing/persistence'
+import type { ImportInputs, ImportResult } from '@/lib/costing/types'
+
+const uuidSchema = z.string().uuid()
+
+async function requireUser() {
+  const supabase = await createServerSupabase()
+  if (!supabase) return { ok: false, error: fail('UNAUTHORIZED', 'Auth no configurado / Auth not configured') } as const
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return { ok: false, error: fail('UNAUTHORIZED', 'Sesión requerida / Session required') } as const
+  return { ok: true, supabase: supabase.schema('tower'), user } as const
+}
+
+// ── Import inputs schema (mirrors lib/costing/types#ImportInputs) ────────────
+const importInputsSchema = z.object({
+  productName: z.string().max(200).default(''),
+  brand: z.string().max(120).default(''),
+  model: z.string().max(120).default(''),
+  fuelType: z.enum(['hybrid', 'gasoline', 'diesel', 'electric']),
+  engineCC: z.number().int().min(0).max(100_000),
+  origin: z.enum(['china', 'other']),
+  year: z.number().int().min(1900).max(2100),
+  incoterm: z.enum(['EXW', 'FOB', 'CFR', 'CIF']),
+  fob: z.number().min(0),
+  transportOrigin: z.number().min(0),
+  freightInternational: z.number().min(0),
+  freightZofratacna: z.number().min(0),
+  portExpenses: z.number().min(0),
+  customsAgency: z.number().min(0),
+  handlingStowage: z.number().min(0),
+  adValoremRate: z.number().min(0).max(1),
+  igvRate: z.number().min(0).max(1),
+  percepcionRate: z.number().min(0).max(1),
+  insuranceRate: z.number().min(0).max(1),
+  exchangeRate: z.number().gt(0).max(100),
+  marginMode: z.enum(['percent', 'target_price']),
+  marginPercent: z.number().min(0).max(10),
+  targetSalePrice: z.number().min(0),
+})
+
+const saveSchema = z.object({
+  laneId: uuidSchema,
+  containerId: uuidSchema.nullish(),
+  orderId: uuidSchema.nullish(),
+  productId: uuidSchema.nullish(),
+  label: z.string().trim().max(200).nullish(),
+  inputs: importInputsSchema,
+})
+export type SaveCostCalculationInput = z.input<typeof saveSchema>
+
+export interface CostCalculationRow {
+  id: string
+  laneId: string
+  incoterm: string
+  landedMinor: number
+  cashOutlayMinor: number
+  salePriceMinor: number
+  marginMinor: number
+  label: string | null
+  createdAt: string
+  result: ImportResult
+  inputs: ImportInputs
+}
+
+export interface CostingLane {
+  id: string
+  code: string
+  name: string
+  archetype: string
+}
+
+// ── Lanes the user may cost for ──────────────────────────────────────────────
+export async function listCostingLanes(): Promise<ActionResult<CostingLane[]>> {
+  const auth = await requireUser()
+  if (!auth.ok) return auth.error
+  const { supabase, user } = auth
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('is_group_admin')
+    .eq('id', user.id)
+    .maybeSingle()
+
+  const select = 'id,code,name,archetype'
+  if ((profile as { is_group_admin?: boolean } | null)?.is_group_admin) {
+    const { data, error } = await supabase.from('lanes').select(select).order('code')
+    if (error) return fail('FORBIDDEN_LANE', 'No se pudieron leer los lanes / Could not read lanes')
+    return ok((data ?? []) as unknown as CostingLane[])
+  }
+
+  const { data: memberships } = await supabase
+    .from('lane_memberships')
+    .select('lane_id,role')
+    .eq('user_id', user.id)
+    .in('role', ['LANE_DIRECTOR', 'TRADE_OPS', 'SALES'])
+  const laneIds = Array.from(new Set(((memberships ?? []) as { lane_id: string }[]).map((m) => m.lane_id)))
+  if (laneIds.length === 0) return ok([])
+
+  const { data, error } = await supabase.from('lanes').select(select).in('id', laneIds).order('code')
+  if (error) return fail('FORBIDDEN_LANE', 'No se pudieron leer los lanes / Could not read lanes')
+  return ok((data ?? []) as unknown as CostingLane[])
+}
+
+// ── Save a computed cost sheet (append-only) ─────────────────────────────────
+export async function saveCostCalculation(
+  input: SaveCostCalculationInput,
+): Promise<ActionResult<CostCalculationRow>> {
+  const parsed = saveSchema.safeParse(input)
+  if (!parsed.success) {
+    return fail('VALIDATION', 'Datos inválidos / Invalid data', parsed.error.flatten().fieldErrors as Record<string, string[]>)
+  }
+  const auth = await requireUser()
+  if (!auth.ok) return auth.error
+  const { supabase } = auth
+
+  // Resolve the lane's brand (RLS lets a member read their lane).
+  const { data: lane, error: laneError } = await supabase
+    .from('lanes')
+    .select('brand_id')
+    .eq('id', parsed.data.laneId)
+    .maybeSingle()
+  if (laneError || !lane) return fail('FORBIDDEN_LANE', 'Lane no encontrado / Lane not found')
+
+  // Compute server-side (authoritative).
+  const inputs = parsed.data.inputs as ImportInputs
+  const result = computeImportCost(inputs)
+  const money = costCalcMoney(inputs, result)
+
+  const { data, error } = await supabase
+    .from('cost_calculations')
+    .insert({
+      brand_id: (lane as { brand_id: string }).brand_id,
+      lane_id: parsed.data.laneId,
+      container_id: parsed.data.containerId ?? null,
+      order_id: parsed.data.orderId ?? null,
+      product_id: parsed.data.productId ?? null,
+      inputs,
+      result,
+      incoterm: money.incoterm,
+      exchange_rate_milli: money.exchange_rate_milli,
+      landed_minor: money.landed_minor,
+      cash_outlay_minor: money.cash_outlay_minor,
+      sale_price_minor: money.sale_price_minor,
+      margin_minor: money.margin_minor,
+      label: parsed.data.label ?? null,
+    })
+    .select('id,lane_id,incoterm,landed_minor,cash_outlay_minor,sale_price_minor,margin_minor,label,created_at,result,inputs')
+    .single()
+  if (error || !data) return fail('FORBIDDEN_LANE', 'No se pudo guardar / Could not save')
+
+  return ok(mapRow(data as unknown as RawCostRow))
+}
+
+interface RawCostRow {
+  id: string
+  lane_id: string
+  incoterm: string
+  landed_minor: number | string
+  cash_outlay_minor: number | string
+  sale_price_minor: number | string
+  margin_minor: number | string
+  label: string | null
+  created_at: string
+  result: ImportResult
+  inputs: ImportInputs
+}
+
+function toNum(v: number | string): number {
+  return typeof v === 'string' ? Number(v) : v
+}
+
+function mapRow(r: RawCostRow): CostCalculationRow {
+  return {
+    id: r.id,
+    laneId: r.lane_id,
+    incoterm: r.incoterm,
+    landedMinor: toNum(r.landed_minor),
+    cashOutlayMinor: toNum(r.cash_outlay_minor),
+    salePriceMinor: toNum(r.sale_price_minor),
+    marginMinor: toNum(r.margin_minor),
+    label: r.label,
+    createdAt: r.created_at,
+    result: r.result,
+    inputs: r.inputs,
+  }
+}
+
+const COST_COLS =
+  'id,lane_id,incoterm,landed_minor,cash_outlay_minor,sale_price_minor,margin_minor,label,created_at,result,inputs'
+
+// ── History: saved cost sheets for a lane ────────────────────────────────────
+export async function listCostCalculations(laneId: string): Promise<ActionResult<CostCalculationRow[]>> {
+  const parsed = uuidSchema.safeParse(laneId)
+  if (!parsed.success) return fail('VALIDATION', 'ID inválido / Invalid id')
+  const auth = await requireUser()
+  if (!auth.ok) return auth.error
+
+  const { data, error } = await auth.supabase
+    .from('cost_calculations')
+    .select(COST_COLS)
+    .eq('lane_id', parsed.data)
+    .order('created_at', { ascending: false })
+    .limit(50)
+  if (error) return fail('FORBIDDEN_LANE', 'No se pudo leer el historial / Could not read history')
+  return ok(((data ?? []) as unknown as RawCostRow[]).map(mapRow))
+}
+
+export async function getCostCalculation(id: string): Promise<ActionResult<CostCalculationRow>> {
+  const parsed = uuidSchema.safeParse(id)
+  if (!parsed.success) return fail('VALIDATION', 'ID inválido / Invalid id')
+  const auth = await requireUser()
+  if (!auth.ok) return auth.error
+
+  const { data, error } = await auth.supabase.from('cost_calculations').select(COST_COLS).eq('id', parsed.data).maybeSingle()
+  if (error || !data) return fail('FORBIDDEN_LANE', 'Cálculo no encontrado / Calculation not found')
+  return ok(mapRow(data as unknown as RawCostRow))
+}
