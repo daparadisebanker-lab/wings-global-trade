@@ -7,7 +7,7 @@
 import { z } from 'zod'
 import type { ContainerPromo, ContainerPromoSpec, ShippingPhase } from '@wings/rb-core'
 
-export const SHIPPING_PHASES: ShippingPhase[] = ['EN_ORIGEN', 'EN_TRANSITO', 'ARRIBADO']
+export const SHIPPING_PHASES: ShippingPhase[] = ['EN_ORIGEN', 'EN_TRANSITO', 'ARRIBADO', 'NACIONALIZADO']
 
 /** The rep-authored overrides stored in rb_containers.promo_copy. Every field is
  *  optional — an empty object means "use the derived defaults". */

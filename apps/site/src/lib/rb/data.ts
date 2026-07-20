@@ -239,7 +239,7 @@ export interface RbActiveContainer {
   closesAt: string | null
   containerKind: string
   /** Shipping phase from the container spec. */
-  shippingPhase: 'EN_ORIGEN' | 'EN_TRANSITO' | 'ARRIBADO'
+  shippingPhase: 'EN_ORIGEN' | 'EN_TRANSITO' | 'ARRIBADO' | 'NACIONALIZADO'
   slots: { total: number; committed: number; reserved: number; taken: number; available: number }
   productFacts: {
     packetsPerPackage?: number
@@ -261,7 +261,7 @@ interface ActiveContainerRow {
   route: { origin?: string; destination?: string } | null
   closes_at: string | null
   container_kind: string
-  shipping_phase: 'EN_ORIGEN' | 'EN_TRANSITO' | 'ARRIBADO'
+  shipping_phase: 'EN_ORIGEN' | 'EN_TRANSITO' | 'ARRIBADO' | 'NACIONALIZADO'
   total_slots: number
   taken_slots: number
   available_slots: number

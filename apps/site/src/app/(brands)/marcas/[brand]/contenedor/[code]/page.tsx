@@ -25,6 +25,7 @@ const PHASE_LABELS: Record<RbActiveContainer['shippingPhase'], string> = {
   EN_ORIGEN: 'En origen',
   EN_TRANSITO: 'En tránsito',
   ARRIBADO: 'Arribado',
+  NACIONALIZADO: 'Nacionalizado',
 }
 
 function routeLabel(c: RbActiveContainer): string {
@@ -34,7 +35,9 @@ function routeLabel(c: RbActiveContainer): string {
 /** Human status straight from the container spec: phase + where it is/goes. */
 function statusLabel(c: RbActiveContainer): string {
   const phase = PHASE_LABELS[c.shippingPhase]
-  if (c.shippingPhase === 'ARRIBADO') return `${phase} a ${c.route.destination ?? 'Callao'}`
+  const dest = c.route.destination ?? 'Callao'
+  if (c.shippingPhase === 'ARRIBADO') return `${phase} a ${dest}`
+  if (c.shippingPhase === 'NACIONALIZADO') return `${phase} en ${dest}`
   return `${phase} · ${routeLabel(c)}`
 }
 

@@ -15,13 +15,17 @@ export interface ContainerPromoSpec {
 }
 
 /** Where the container physically is — driven by the container spec, not copy. */
-export type ShippingPhase = 'EN_ORIGEN' | 'EN_TRANSITO' | 'ARRIBADO'
+export type ShippingPhase = 'EN_ORIGEN' | 'EN_TRANSITO' | 'ARRIBADO' | 'NACIONALIZADO'
 
 export const SHIPPING_PHASE_LABELS: Record<ShippingPhase, string> = {
   EN_ORIGEN: 'En origen',
   EN_TRANSITO: 'En tránsito',
   ARRIBADO: 'Arribado',
+  NACIONALIZADO: 'Nacionalizado',
 }
+
+/** Phases at/after arrival — read as a completed state (navy badge). */
+const ARRIVED_PHASES: ShippingPhase[] = ['ARRIBADO', 'NACIONALIZADO']
 
 /** The normalized input any container type maps into (RB, shared, lane…). */
 export interface ContainerPromo {
@@ -175,8 +179,8 @@ function shipmentStatus(p: ContainerPromo, x: number, y: number): string {
   let cx = x
   if (phase) {
     const bw = phase.length * 15 + 32
-    // Arrived reads as a completed state (navy); in-transit/origin use the accent.
-    const badge = p.phase === 'ARRIBADO' ? CARD.ink : (p.accent && /^#[0-9a-fA-F]{6}$/.test(p.accent) ? p.accent : CARD.gold)
+    // Arrived/nationalized read as completed states (navy); origin/transit use accent.
+    const badge = p.phase && ARRIVED_PHASES.includes(p.phase) ? CARD.ink : (p.accent && /^#[0-9a-fA-F]{6}$/.test(p.accent) ? p.accent : CARD.gold)
     out +=
       `<rect x="${cx}" y="${y - 30}" width="${bw}" height="40" fill="${badge}"/>` +
       `<text x="${cx + bw / 2}" y="${y - 2}" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="1" fill="#ffffff">${esc(phase.toUpperCase())}</text>`

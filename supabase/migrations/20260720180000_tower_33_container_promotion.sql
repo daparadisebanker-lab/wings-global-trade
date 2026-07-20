@@ -26,7 +26,7 @@ alter table rb_containers
   -- or arrived at destination. Route + phase come from the container spec — the
   -- rep advances the phase, never re-types the ports.
   add column if not exists shipping_phase      text not null default 'EN_ORIGEN'
-    check (shipping_phase in ('EN_ORIGEN','EN_TRANSITO','ARRIBADO'));
+    check (shipping_phase in ('EN_ORIGEN','EN_TRANSITO','ARRIBADO','NACIONALIZADO'));
 
 -- ── Public read contract — the active-container marketing surface ───────────
 -- One row per PROMOTED, still-open container of a LIVE brand. Carries everything
