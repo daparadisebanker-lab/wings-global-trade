@@ -13,10 +13,14 @@ import type { ModuleId } from './nav'
  */
 export type Role = 'LANE_DIRECTOR' | 'CATALOG_EDITOR' | 'TRADE_OPS' | 'SALES' | 'VIEWER'
 
-const ALL_MODULES: ModuleId[] = ['catalog', 'pipeline', 'containers', 'costing', 'signals', 'intelligence', 'admin']
+const ALL_MODULES: ModuleId[] = ['catalog', 'pipeline', 'containers', 'costing', 'marcas', 'signals', 'intelligence', 'admin']
 
+// 'marcas' (Represented-Brands console) visibility is driven by rb_memberships at
+// the DB/RLS layer, not lane roles — the module is shown to lane staff who also
+// hold a brand membership; group admins always see it (visibleModules). Shown to
+// LANE_DIRECTOR here so brand-managing staff reach it; RLS returns only their brands.
 const ROLE_MODULES: Record<Role, ModuleId[]> = {
-  LANE_DIRECTOR: ['catalog', 'pipeline', 'containers', 'costing', 'signals', 'intelligence'],
+  LANE_DIRECTOR: ['catalog', 'pipeline', 'containers', 'costing', 'marcas', 'signals', 'intelligence'],
   CATALOG_EDITOR: ['catalog', 'signals'],
   TRADE_OPS: ['containers', 'costing', 'catalog', 'signals'],
   SALES: ['pipeline', 'signals'],

@@ -1,0 +1,1 @@
+export { RepresentedBrandManager } from './RepresentedBrandManager'

@@ -8,6 +8,7 @@ export type ModuleId =
   | 'pipeline'
   | 'containers'
   | 'costing'
+  | 'marcas'
   | 'signals'
   | 'intelligence'
   | 'admin'
@@ -25,6 +26,7 @@ export const MODULES: NavModule[] = [
   { id: 'pipeline', href: '/pipeline', label: { es: 'Pipeline', en: 'Pipeline' }, tag: 'PIP' },
   { id: 'containers', href: '/containers', label: { es: 'Contenedores', en: 'Containers' }, tag: 'CTN' },
   { id: 'costing', href: '/costing', label: { es: 'Costeo', en: 'Costing' }, tag: 'CST' },
+  { id: 'marcas', href: '/marcas', label: { es: 'Marcas', en: 'Brands' }, tag: 'MRC' },
   { id: 'signals', href: '/signals', label: { es: 'Señales', en: 'Signals' }, tag: 'SIG' },
   { id: 'intelligence', href: '/intelligence', label: { es: 'Inteligencia', en: 'Intelligence' }, tag: 'INT' },
   { id: 'admin', href: '/admin', label: { es: 'Administración', en: 'Admin' }, tag: 'ADM' },
