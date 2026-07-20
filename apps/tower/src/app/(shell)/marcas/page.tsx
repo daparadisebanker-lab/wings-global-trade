@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { RepresentedBrandManager, RepMembershipMatrix } from '@/components/marcas'
 import { listRepresentedBrands } from '@/lib/actions/represented-brands'
@@ -23,9 +24,17 @@ export default async function MarcasPage() {
 
   return (
     <div className="flex h-full flex-col gap-4 overflow-y-auto p-6">
-      <header className="flex flex-col gap-1 border-b border-line pb-4">
-        <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">MRC · Marcas Representadas</span>
-        <h1 className="font-ui text-t2 text-ink-primary">Marcas representadas (RB)</h1>
+      <header className="flex flex-wrap items-end justify-between gap-3 border-b border-line pb-4">
+        <div className="flex flex-col gap-1">
+          <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">MRC · Marcas Representadas</span>
+          <h1 className="font-ui text-t2 text-ink-primary">Marcas representadas (RB)</h1>
+        </div>
+        <Link
+          href="/marcas/promocion"
+          className="rounded-card border border-line px-3 py-1.5 font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:border-lane-accent"
+        >
+          Promoción de contenedores →
+        </Link>
       </header>
       <RepresentedBrandManager initialBrands={result.data} />
       <RepMembershipMatrix />

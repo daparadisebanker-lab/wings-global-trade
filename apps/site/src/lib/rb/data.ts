@@ -215,6 +215,125 @@ export async function getRbLiveBrands(): Promise<RbLiveBrand[]> {
   return (data as unknown as RbPublicBrandRow[]).map(mapLiveBrand)
 }
 
+// ── Active (promoted) container — the public marketing surface (tower_33) ─────
+// Reads public.rb_active_containers: one row per PROMOTED, still-open container
+// of a LIVE brand, with product + live slot state + the rep-authored promo copy.
+// Dev fallback (no Supabase): synthesize Áladín's flagship container from the
+// fixtures so the page renders.
+export interface RbPromoCopy {
+  headline?: string
+  priceNote?: string
+  routeLabel?: string
+  unitLabel?: string
+  specs?: { label: string; value: string }[]
+}
+
+export interface RbActiveContainer {
+  id: string
+  code: string
+  brandSlug: string
+  brandName: string
+  productName: string
+  unitNamePlural: string
+  route: { origin?: string; destination?: string }
+  closesAt: string | null
+  containerKind: string
+  slots: { total: number; taken: number; available: number }
+  productFacts: {
+    packetsPerPackage?: number
+    unitsPerPackage?: number
+    unitNamePlural?: string
+    packageKg?: number
+    packageCbm?: number
+    gtin?: string | null
+    packagesPerSlot?: number
+  }
+  copy: RbPromoCopy
+}
+
+interface ActiveContainerRow {
+  id: string
+  code: string
+  brand_slug: string
+  brand_name: string
+  route: { origin?: string; destination?: string } | null
+  closes_at: string | null
+  container_kind: string
+  total_slots: number
+  taken_slots: number
+  available_slots: number
+  product_name: string
+  unit_name_plural: string
+  product_facts: Record<string, unknown> | null
+  promo_copy: RbPromoCopy | null
+}
+
+function mapActiveContainer(r: ActiveContainerRow): RbActiveContainer {
+  const f = (r.product_facts ?? {}) as Record<string, unknown>
+  const num = (v: unknown) => (v == null ? undefined : Number(v))
+  return {
+    id: r.id,
+    code: r.code,
+    brandSlug: r.brand_slug,
+    brandName: r.brand_name,
+    productName: r.product_name,
+    unitNamePlural: r.unit_name_plural,
+    route: { origin: r.route?.origin ?? '—', destination: r.route?.destination ?? 'Callao' },
+    closesAt: r.closes_at,
+    containerKind: r.container_kind,
+    slots: { total: r.total_slots, taken: r.taken_slots, available: r.available_slots },
+    productFacts: {
+      packetsPerPackage: num(f.packetsPerPackage),
+      unitsPerPackage: num(f.unitsPerPackage),
+      unitNamePlural: (f.unitNamePlural as string) ?? r.unit_name_plural,
+      packageKg: num(f.packageKg),
+      packageCbm: num(f.packageCbm),
+      gtin: (f.gtin as string) ?? null,
+      packagesPerSlot: num(f.packagesPerSlot),
+    },
+    copy: (r.promo_copy ?? {}) as RbPromoCopy,
+  }
+}
+
+function aladinActiveFixture(code: string): RbActiveContainer {
+  const c = ALADIN_CONTAINERS[0]
+  const t = ALADIN_TEMPLATE_40HC
+  const taken = c.slots.committed + c.slots.reserved
+  return {
+    id: c.id,
+    code: code || 'RB01-40HC-001',
+    brandSlug: 'aladin',
+    brandName: 'Áladín',
+    productName: 'Papel higiénico de bambú',
+    unitNamePlural: t.unitNamePlural,
+    route: c.route,
+    closesAt: c.closesAt,
+    containerKind: t.kind,
+    slots: { total: c.slots.total, taken, available: Math.max(0, c.slots.total - taken) },
+    productFacts: {
+      packetsPerPackage: t.packetsPerPackage,
+      unitsPerPackage: t.unitsPerPackage,
+      unitNamePlural: t.unitNamePlural,
+      packageKg: t.packageKg,
+      packagesPerSlot: t.packagesPerSlot,
+    },
+    copy: {},
+  }
+}
+
+export async function getActiveContainer(brandSlug: string, code: string): Promise<RbActiveContainer | null> {
+  const supabase = createServiceClient()
+  if (!supabase) return brandSlug === 'aladin' ? aladinActiveFixture(code) : null
+  const { data, error } = await supabase
+    .from('rb_active_containers')
+    .select('*')
+    .eq('brand_slug', brandSlug)
+    .eq('code', code)
+    .maybeSingle()
+  if (error) throw new Error(`rb_active_containers read failed: ${error.message}`)
+  return data ? mapActiveContainer(data as ActiveContainerRow) : null
+}
+
 export async function getRbLiveBrandBySlug(slug: string): Promise<RbLiveBrand | null> {
   const supabase = createServiceClient()
   if (!supabase) return null

@@ -123,8 +123,10 @@ export function buildPromoCardSvg(p: ContainerPromo): string {
   <text x="${pad}" y="240" font-family="Arial, sans-serif" font-size="64" font-weight="800" fill="${CARD.ink}">Contenedor de</text>
   <text x="${pad}" y="315" font-family="Arial, sans-serif" font-size="64" font-weight="800" fill="${CARD.ink}">${esc(p.productName)}</text>
 
-  <!-- slot count -->
+  <!-- slot count + route (route right-aligned on the same line so it never
+       collides with the listing URL at the foot) -->
   <text x="${pad}" y="410" font-family="Arial, sans-serif" font-size="40" font-weight="700" fill="${CARD.gold}">${p.slotsAvailable} de ${p.slotsTotal} ${esc(unit(p))} disponibles</text>
+  ${p.routeLabel ? `<text x="${S - pad}" y="410" text-anchor="end" font-family="Arial, sans-serif" font-size="26" fill="${CARD.sub}">${esc(p.routeLabel)}</text>` : ''}
 
   <!-- slot grid -->
   ${grid}
@@ -134,7 +136,6 @@ export function buildPromoCardSvg(p: ContainerPromo): string {
   ${specs ? `<text x="${pad}" y="${S - 150}" font-family="Arial, sans-serif" font-size="24" fill="${CARD.sub}">${esc(specs)}</text>` : ''}
   <rect x="${pad}" y="${S - 118}" width="${w}" height="2" fill="${CARD.muted}"/>
   <text x="${pad}" y="${S - 72}" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="${CARD.ink}">${esc(p.listingUrl)}</text>
-  ${p.routeLabel ? `<text x="${S - pad}" y="${S - 72}" text-anchor="end" font-family="Arial, sans-serif" font-size="24" fill="${CARD.sub}">${esc(p.routeLabel)}</text>` : ''}
   <desc>taken:${taken} available:${p.slotsAvailable}</desc>
 </svg>`
 }
