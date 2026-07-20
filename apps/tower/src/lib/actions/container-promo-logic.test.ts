@@ -6,6 +6,7 @@ import {
   containerListingUrl,
   defaultSpecs,
   toContainerPromo,
+  routeLabelOf,
 } from './container-promo-logic'
 
 const NOW = new Date('2026-07-20T12:00:00Z')
@@ -83,35 +84,41 @@ describe('toContainerPromo', () => {
     slotsTotal: 10,
     slotsAvailable: 7,
     route: { origin: 'Qingdao', destination: 'Callao' },
+    phase: 'EN_TRANSITO' as const,
     facts: { packagesPerSlot: 94, unitsPerPackage: 60, unitNamePlural: 'rollos' },
     copy: {},
     siteBase: 'https://wingsglobaltrade.com',
   }
-  it('uses derived defaults when the rep authored no copy', () => {
+  it('uses derived defaults when the rep authored no copy; route + phase from spec', () => {
     const p = toContainerPromo(base)
     expect(p.productName).toBe('Papel higiénico de bambú')
     expect(p.unitLabel).toBe('cupos')
     expect(p.routeLabel).toBe('Qingdao → Callao')
+    expect(p.phase).toBe('EN_TRANSITO')
     expect(p.listingUrl).toBe('https://wingsglobaltrade.com/marcas/aladin/contenedor/RB01-40HC-001')
     expect(p.specs && p.specs.length).toBeGreaterThan(0)
     expect(p.priceNote).toBeUndefined()
   })
-  it('lets rep copy override headline, price, route, unit and specs', () => {
+  it('lets rep copy override headline, price, unit and specs — but never the route', () => {
     const p = toContainerPromo({
       ...base,
       copy: {
         headline: 'Papel de bambú premium',
         priceNote: 'precio de campaña julio',
-        routeLabel: 'China directo',
         unitLabel: 'slots',
         specs: [{ label: 'Marca', value: 'Áladín' }],
       },
     })
     expect(p.productName).toBe('Papel de bambú premium')
     expect(p.priceNote).toBe('precio de campaña julio')
-    expect(p.routeLabel).toBe('China directo')
+    expect(p.routeLabel).toBe('Qingdao → Callao') // still from the container spec
     expect(p.unitLabel).toBe('slots')
     expect(p.specs).toEqual([{ label: 'Marca', value: 'Áladín' }])
+  })
+  it('routeLabelOf builds origin → destination and is undefined when empty', () => {
+    expect(routeLabelOf({ origin: 'Qingdao', destination: 'Callao' })).toBe('Qingdao → Callao')
+    expect(routeLabelOf({})).toBeUndefined()
+    expect(routeLabelOf(null)).toBeUndefined()
   })
 })
 

@@ -16,10 +16,12 @@ import {
   computeSlotBreakdown,
   toContainerPromo,
   defaultSpecs,
+  routeLabelOf,
+  SHIPPING_PHASES,
   type PromoCopy,
   type ProductFacts,
 } from './container-promo-logic'
-import type { ContainerPromo, ContainerPromoSpec } from '@wings/rb-core'
+import type { ContainerPromo, ContainerPromoSpec, ShippingPhase } from '@wings/rb-core'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { z } from 'zod'
 
@@ -43,6 +45,7 @@ interface ContainerJoinRow {
   status: string
   route: { origin?: string; destination?: string } | null
   closes_at: string | null
+  shipping_phase: ShippingPhase
   promo_active: boolean
   promo_copy: PromoCopy | null
   promo_activated_at: string | null
@@ -52,7 +55,7 @@ interface ContainerJoinRow {
 }
 
 const CONTAINER_SELECT = `
-  id, code, status, route, closes_at, promo_active, promo_copy, promo_activated_at, represented_brand_id,
+  id, code, status, route, closes_at, shipping_phase, promo_active, promo_copy, promo_activated_at, represented_brand_id,
   template:rb_container_templates!template_id ( ref, kind, total_slots, packages_per_slot, composition ),
   brand:represented_brands!represented_brand_id ( slug, name, status, identity )
 `
@@ -69,6 +72,9 @@ export interface PromotableContainerRow {
   promoActive: boolean
   promoActivatedAt: string | null
   closesAt: string | null
+  /** Shipping phase + the route from the container spec. */
+  phase: ShippingPhase
+  routeLabel: string | null
 }
 
 export interface ContainerPromoDetail extends PromotableContainerRow {
@@ -164,6 +170,8 @@ export async function listPromotableContainers(): Promise<ActionResult<Promotabl
         promoActive: row.promo_active,
         promoActivatedAt: row.promo_activated_at,
         closesAt: row.closes_at,
+        phase: row.shipping_phase,
+        routeLabel: routeLabelOf(row.route) ?? null,
       }
     }),
   )
@@ -192,6 +200,7 @@ async function loadDetail(
     slotsCommitted: breakdown.committed,
     slotsReserved: breakdown.reserved,
     route: row.route,
+    phase: row.shipping_phase,
     facts: pf.facts,
     copy,
     siteBase,
@@ -209,6 +218,8 @@ async function loadDetail(
     promoActive: row.promo_active,
     promoActivatedAt: row.promo_activated_at,
     closesAt: row.closes_at,
+    phase: row.shipping_phase,
+    routeLabel: routeLabelOf(row.route) ?? null,
     copy,
     route: row.route,
     promo,
@@ -273,6 +284,21 @@ export async function setContainerPromoActive(containerId: string, active: boole
     : { promo_active: false }
   const { error } = await auth.supabase.from('rb_containers').update(patch).eq('id', idParsed.data)
   if (error) return fail('FORBIDDEN_LANE', 'No se pudo cambiar la promoción / Could not change promotion')
+  const detail = await loadDetail(auth.supabase, idParsed.data, process.env.NEXT_PUBLIC_SITE_URL)
+  if (!detail) return fail('FORBIDDEN_LANE', 'Contenedor no encontrado / Container not found')
+  return ok(detail)
+}
+
+/** Advance the container's shipping phase — en origen → en tránsito → arribado.
+ *  The route (ports) is not touched; it always comes from the container spec. */
+export async function setContainerShippingPhase(containerId: string, phase: ShippingPhase): Promise<ActionResult<ContainerPromoDetail>> {
+  const idParsed = uuidSchema.safeParse(containerId)
+  if (!idParsed.success) return fail('VALIDATION', 'ID inválido / Invalid id')
+  if (!SHIPPING_PHASES.includes(phase)) return fail('VALIDATION', 'Fase inválida / Invalid phase')
+  const auth = await requireTower()
+  if (!auth.ok) return auth.error
+  const { error } = await auth.supabase.from('rb_containers').update({ shipping_phase: phase }).eq('id', idParsed.data)
+  if (error) return fail('FORBIDDEN_LANE', 'No se pudo cambiar la fase / Could not change phase')
   const detail = await loadDetail(auth.supabase, idParsed.data, process.env.NEXT_PUBLIC_SITE_URL)
   if (!detail) return fail('FORBIDDEN_LANE', 'Contenedor no encontrado / Container not found')
   return ok(detail)

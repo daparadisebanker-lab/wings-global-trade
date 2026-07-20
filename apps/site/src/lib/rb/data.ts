@@ -238,6 +238,8 @@ export interface RbActiveContainer {
   route: { origin?: string; destination?: string }
   closesAt: string | null
   containerKind: string
+  /** Shipping phase from the container spec. */
+  shippingPhase: 'EN_ORIGEN' | 'EN_TRANSITO' | 'ARRIBADO'
   slots: { total: number; committed: number; reserved: number; taken: number; available: number }
   productFacts: {
     packetsPerPackage?: number
@@ -259,6 +261,7 @@ interface ActiveContainerRow {
   route: { origin?: string; destination?: string } | null
   closes_at: string | null
   container_kind: string
+  shipping_phase: 'EN_ORIGEN' | 'EN_TRANSITO' | 'ARRIBADO'
   total_slots: number
   taken_slots: number
   available_slots: number
@@ -283,6 +286,7 @@ function mapActiveContainer(r: ActiveContainerRow): RbActiveContainer {
     route: { origin: r.route?.origin ?? '—', destination: r.route?.destination ?? 'Callao' },
     closesAt: r.closes_at,
     containerKind: r.container_kind,
+    shippingPhase: r.shipping_phase ?? 'EN_ORIGEN',
     slots: {
       total: r.total_slots,
       committed: r.committed_slots,
@@ -317,6 +321,7 @@ function aladinActiveFixture(code: string): RbActiveContainer {
     route: c.route,
     closesAt: c.closesAt,
     containerKind: t.kind,
+    shippingPhase: 'EN_TRANSITO',
     slots: {
       total: c.slots.total,
       committed: c.slots.committed,

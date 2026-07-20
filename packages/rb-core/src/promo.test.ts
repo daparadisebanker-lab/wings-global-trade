@@ -15,15 +15,17 @@ const promo: ContainerPromo = {
   ],
   listingUrl: 'https://wingsglobaltrade.com/marcas/aladin/contenedor/RB01-40HC-001',
   routeLabel: 'China → Callao',
+  phase: 'EN_TRANSITO',
 }
 
 describe('buildPromoCopy', () => {
-  it('whatsapp copy has the slots, wholesale pitch, specs and the listing URL, no exclamation', () => {
+  it('whatsapp copy has the slots, wholesale pitch, specs, phase+route and the listing URL, no exclamation', () => {
     const c = buildPromoCopy(promo, 'whatsapp')
     expect(c).toContain('7 de 20 cupos')
     expect(c).toContain('al por mayor')
     expect(c).toContain('precio mayorista de campaña')
     expect(c).toContain('Hojas: doble hoja')
+    expect(c).toContain('En tránsito · China → Callao') // phase + route from the spec
     expect(c).toContain(promo.listingUrl)
     expect(c).not.toContain('!')
   })
@@ -48,7 +50,13 @@ describe('buildPromoCardSvg', () => {
     expect(svg).toContain('#004389') // the inlined Wings imagotipo mark
     expect(svg).toContain('Papel higiénico Áladín')
     expect(svg).toContain('7 de 20 cupos disponibles')
+    expect(svg).toContain('EN TRÁNSITO') // shipment status badge
+    expect(svg).toContain('China → Callao') // origin → destination from the spec
     expect(svg).toContain(promo.listingUrl)
+  })
+  it('shows the arrived state when the phase is ARRIBADO', () => {
+    const svg = buildPromoCardSvg({ ...promo, phase: 'ARRIBADO' })
+    expect(svg).toContain('ARRIBADO')
   })
   it('draws the container as slotsTotal numbered bays with three states + legend', () => {
     const svg = buildPromoCardSvg(promo)

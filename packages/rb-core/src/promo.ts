@@ -14,6 +14,15 @@ export interface ContainerPromoSpec {
   value: string
 }
 
+/** Where the container physically is — driven by the container spec, not copy. */
+export type ShippingPhase = 'EN_ORIGEN' | 'EN_TRANSITO' | 'ARRIBADO'
+
+export const SHIPPING_PHASE_LABELS: Record<ShippingPhase, string> = {
+  EN_ORIGEN: 'En origen',
+  EN_TRANSITO: 'En tránsito',
+  ARRIBADO: 'Arribado',
+}
+
 /** The normalized input any container type maps into (RB, shared, lane…). */
 export interface ContainerPromo {
   productName: string // "Chasis de bus ISUZU" / "Papel higiénico Áladín"
@@ -30,7 +39,8 @@ export interface ContainerPromo {
   priceNote?: string // "precio especial mayorista" / a specific note
   specs?: ContainerPromoSpec[] // container's product specs, exhibited
   listingUrl: string // https://wingsglobaltrade.com/…
-  routeLabel?: string // "China → Callao"
+  routeLabel?: string // "Qingdao → Callao" — derived from the container route
+  phase?: ShippingPhase // where the container is (en origen / tránsito / arribado)
   /** Container-fill colour (hex) — the brand accent so each card carries its
    *  own signal. Defaults to Wings gold. Ground + wordmark stay Wings. */
   accent?: string
@@ -47,6 +57,13 @@ function unit(p: ContainerPromo): string {
   return p.unitLabel ?? 'cupos'
 }
 
+/** "En tránsito · Qingdao → Callao" — phase + route, from the container spec. */
+function statusLine(p: ContainerPromo): string {
+  const phase = p.phase ? SHIPPING_PHASE_LABELS[p.phase] : ''
+  if (phase && p.routeLabel) return `${phase} · ${p.routeLabel}`
+  return phase || p.routeLabel || ''
+}
+
 /**
  * Shareable copy for the active container. `whatsapp` is the multi-line message a
  * rep sends in their WhatsApp workflow; `ad` is the one-line headline for an ad.
@@ -55,10 +72,11 @@ function unit(p: ContainerPromo): string {
 export function buildPromoCopy(p: ContainerPromo, variant: PromoVariant = 'whatsapp'): string {
   const specs = specsSummary(p)
   const price = p.priceNote ? ` a ${p.priceNote}` : ' a precio especial'
+  const status = statusLine(p)
   if (variant === 'ad') {
     return [
       `${p.productName} al por mayor — ${p.slotsAvailable} ${unit(p)} disponibles en contenedor compartido`,
-      p.routeLabel ? ` · ${p.routeLabel}` : '',
+      status ? ` · ${status}` : '',
       ` · ${p.listingUrl}`,
     ].join('')
   }
@@ -67,7 +85,7 @@ export function buildPromoCopy(p: ContainerPromo, variant: PromoVariant = 'whats
     `Contenedor de ${p.productName} disponible: ${p.slotsAvailable} de ${p.slotsTotal} ${unit(p)}.`,
     `Una oportunidad de comprar ${p.productName} al por mayor${price}.`,
     specs ? `Incluye ${specs}.` : '',
-    p.routeLabel ? `Ruta ${p.routeLabel}.` : '',
+    status ? `${status}.` : '',
     `Reserva tu cupo: ${p.listingUrl}`,
   ]
   return lines.filter(Boolean).join('\n')
@@ -144,6 +162,32 @@ function isoContainer(p: ContainerPromo, x0: number, yTop: number, frontW: numbe
   return slices + cap
 }
 
+/**
+ * Shipment status row: a filled phase badge (En origen / En tránsito / Arribado)
+ * followed by the origin → destination route — both from the container spec, so
+ * a card always states where the container is and where it is going.
+ */
+function shipmentStatus(p: ContainerPromo, x: number, y: number): string {
+  const phase = p.phase ? SHIPPING_PHASE_LABELS[p.phase] : ''
+  const route = p.routeLabel ?? ''
+  if (!phase && !route) return ''
+  let out = ''
+  let cx = x
+  if (phase) {
+    const bw = phase.length * 15 + 32
+    // Arrived reads as a completed state (navy); in-transit/origin use the accent.
+    const badge = p.phase === 'ARRIBADO' ? CARD.ink : (p.accent && /^#[0-9a-fA-F]{6}$/.test(p.accent) ? p.accent : CARD.gold)
+    out +=
+      `<rect x="${cx}" y="${y - 30}" width="${bw}" height="40" fill="${badge}"/>` +
+      `<text x="${cx + bw / 2}" y="${y - 2}" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="1" fill="#ffffff">${esc(phase.toUpperCase())}</text>`
+    cx += bw + 20
+  }
+  if (route) {
+    out += `<text x="${cx}" y="${y - 4}" font-family="Arial, sans-serif" font-size="30" font-weight="700" fill="${CARD.ink}">${esc(route)}</text>`
+  }
+  return out
+}
+
 /** Legend row: vendido (solid) · reservado (hatch) · disponible (outline). */
 function legend(p: ContainerPromo, x: number, y: number, hatchId: string): string {
   const accent = p.accent && /^#[0-9a-fA-F]{6}$/.test(p.accent) ? p.accent : CARD.gold
@@ -202,9 +246,11 @@ export function buildPromoCardSvg(p: ContainerPromo): string {
   <text x="${pad}" y="240" font-family="Arial, sans-serif" font-size="64" font-weight="800" fill="${CARD.ink}">Contenedor de</text>
   <text x="${pad}" y="315" font-family="Arial, sans-serif" font-size="64" font-weight="800" fill="${CARD.ink}">${esc(p.productName)}</text>
 
-  <!-- slot count + route (route right-aligned so it never collides with the URL) -->
-  <text x="${pad}" y="410" font-family="Arial, sans-serif" font-size="40" font-weight="700" fill="${accent}">${p.slotsAvailable} de ${p.slotsTotal} ${esc(unit(p))} disponibles</text>
-  ${p.routeLabel ? `<text x="${S - pad}" y="410" text-anchor="end" font-family="Arial, sans-serif" font-size="26" fill="${CARD.sub}">${esc(p.routeLabel)}</text>` : ''}
+  <!-- slot count -->
+  <text x="${pad}" y="400" font-family="Arial, sans-serif" font-size="40" font-weight="700" fill="${accent}">${p.slotsAvailable} de ${p.slotsTotal} ${esc(unit(p))} disponibles</text>
+
+  <!-- shipment status: phase badge + origin → destination (from the spec) -->
+  ${shipmentStatus(p, pad, 462)}
 
   <!-- container drawing -->
   ${container}

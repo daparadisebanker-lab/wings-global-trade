@@ -5,14 +5,18 @@
 // rule as tower.rb_slots_taken — the two must never drift), and the mapper that
 // turns a container row + the rep's copy into @wings/rb-core's ContainerPromo.
 import { z } from 'zod'
-import type { ContainerPromo, ContainerPromoSpec } from '@wings/rb-core'
+import type { ContainerPromo, ContainerPromoSpec, ShippingPhase } from '@wings/rb-core'
+
+export const SHIPPING_PHASES: ShippingPhase[] = ['EN_ORIGEN', 'EN_TRANSITO', 'ARRIBADO']
 
 /** The rep-authored overrides stored in rb_containers.promo_copy. Every field is
  *  optional — an empty object means "use the derived defaults". */
+// Note: the route (origin → destination) and shipping phase are NOT copy — they
+// come from the container spec (rb_containers.route / shipping_phase). The rep
+// authors the marketing text here, but never re-types the ports.
 export const promoCopySchema = z.object({
   headline: z.string().trim().max(80).optional(),
   priceNote: z.string().trim().max(80).optional(),
-  routeLabel: z.string().trim().max(60).optional(),
   unitLabel: z.string().trim().max(24).optional(),
   specs: z
     .array(z.object({ label: z.string().trim().min(1).max(40), value: z.string().trim().min(1).max(60) }))
@@ -93,6 +97,8 @@ export interface PromoContainerInput {
   slotsCommitted?: number
   slotsReserved?: number
   route: { origin?: string; destination?: string } | null
+  /** Shipping phase from the container spec (rb_containers.shipping_phase). */
+  phase?: ShippingPhase
   facts: ProductFacts
   copy: PromoCopy
   siteBase?: string
@@ -100,16 +106,19 @@ export interface PromoContainerInput {
   accent?: string
 }
 
+/** Origin → destination label, straight from the container route. */
+export function routeLabelOf(route: { origin?: string; destination?: string } | null): string | undefined {
+  if (!route) return undefined
+  if (!route.origin && !route.destination) return undefined
+  return `${route.origin ?? '—'} → ${route.destination ?? 'Callao'}`
+}
+
 const HEX_RE = /^#[0-9a-fA-F]{6}$/
 
-/** Build the rb-core ContainerPromo. Rep copy wins; derived defaults fill gaps. */
+/** Build the rb-core ContainerPromo. Rep copy wins on text; route + phase come
+ *  from the container spec (never copy). */
 export function toContainerPromo(input: PromoContainerInput): ContainerPromo {
-  const { copy, route } = input
-  const routeLabel =
-    copy.routeLabel ??
-    (route?.origin || route?.destination
-      ? `${route?.origin ?? '—'} → ${route?.destination ?? 'Callao'}`
-      : undefined)
+  const { copy } = input
   const specs = copy.specs && copy.specs.length ? copy.specs : defaultSpecs(input.facts)
   return {
     productName: copy.headline?.trim() || input.productName,
@@ -123,7 +132,8 @@ export function toContainerPromo(input: PromoContainerInput): ContainerPromo {
     priceNote: copy.priceNote?.trim() || undefined,
     specs,
     listingUrl: containerListingUrl(input.brandSlug, input.code, input.siteBase),
-    routeLabel,
+    routeLabel: routeLabelOf(input.route),
+    phase: input.phase,
     accent: input.accent && HEX_RE.test(input.accent) ? input.accent : undefined,
   }
 }

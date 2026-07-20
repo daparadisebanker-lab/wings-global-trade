@@ -21,8 +21,21 @@ interface PageProps {
   params: Promise<{ brand: string; code: string }>
 }
 
+const PHASE_LABELS: Record<RbActiveContainer['shippingPhase'], string> = {
+  EN_ORIGEN: 'En origen',
+  EN_TRANSITO: 'En tránsito',
+  ARRIBADO: 'Arribado',
+}
+
 function routeLabel(c: RbActiveContainer): string {
-  return c.copy.routeLabel ?? `${c.route.origin ?? '—'} → ${c.route.destination ?? 'Callao'}`
+  return `${c.route.origin ?? '—'} → ${c.route.destination ?? 'Callao'}`
+}
+
+/** Human status straight from the container spec: phase + where it is/goes. */
+function statusLabel(c: RbActiveContainer): string {
+  const phase = PHASE_LABELS[c.shippingPhase]
+  if (c.shippingPhase === 'ARRIBADO') return `${phase} a ${c.route.destination ?? 'Callao'}`
+  return `${phase} · ${routeLabel(c)}`
 }
 
 function specRows(c: RbActiveContainer): { label: string; value: string }[] {
@@ -47,7 +60,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const headline = c.copy.headline ?? c.productName
   return {
     title: `Contenedor de ${headline} — ${c.slots.available} cupos disponibles`,
-    description: `Contenedor de ${headline} en ruta ${routeLabel(c)}: ${c.slots.available} de ${c.slots.total} cupos disponibles. Compra al por mayor${
+    description: `Contenedor de ${headline}, ${statusLabel(c).toLowerCase()}: ${c.slots.available} de ${c.slots.total} cupos disponibles. Compra al por mayor${
       c.copy.priceNote ? ` ${c.copy.priceNote}` : ' a precio especial'
     }. Reserva documentada, sin pago en línea.`,
   }
@@ -81,8 +94,15 @@ export default async function ActiveContainerPage({ params }: PageProps) {
           {brand.code} · {c.code} · Contenedor activo
         </p>
         <h1 className="mt-5 font-display text-display-md text-neutral-900">Contenedor de {headline}</h1>
+        {/* Shipment status — phase + route, straight from the container spec */}
+        <p className="mt-4 inline-flex items-center gap-2">
+          <span className="inline-flex items-center bg-[var(--rb-accent-ink)] px-2.5 py-1 font-mono text-[11px] uppercase tracking-widest-2 text-white">
+            {PHASE_LABELS[c.shippingPhase]}
+          </span>
+          <span className="font-mono text-body-sm tabular-nums text-neutral-700">{routeLabel(c)}</span>
+        </p>
         <p className="mt-4 text-body-md text-neutral-600">
-          {c.slots.available} de {c.slots.total} {unit} disponibles en ruta {routeLabel(c)}. Compra al por mayor
+          {c.slots.available} de {c.slots.total} {unit} disponibles. Compra al por mayor
           {c.copy.priceNote ? ` ${c.copy.priceNote}` : ' a precio especial'}. La reserva es documentada, sin pago en
           línea, y un asesor confirma condiciones dentro de las 72 horas.
         </p>

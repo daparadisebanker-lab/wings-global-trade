@@ -20,7 +20,13 @@ alter table rb_containers
   add column if not exists promo_active       boolean not null default false,
   add column if not exists promo_copy          jsonb   not null default '{}',
   add column if not exists promo_activated_at  timestamptz,
-  add column if not exists promo_activated_by  uuid references profiles(id);
+  add column if not exists promo_activated_by  uuid references profiles(id),
+  -- Shipping phase of the container itself (origin/destination live in `route`).
+  -- The promotion states where the container is: loading at origin, in transit,
+  -- or arrived at destination. Route + phase come from the container spec — the
+  -- rep advances the phase, never re-types the ports.
+  add column if not exists shipping_phase      text not null default 'EN_ORIGEN'
+    check (shipping_phase in ('EN_ORIGEN','EN_TRANSITO','ARRIBADO'));
 
 -- ── Public read contract — the active-container marketing surface ───────────
 -- One row per PROMOTED, still-open container of a LIVE brand. Carries everything
@@ -38,6 +44,7 @@ select
   c.route,
   c.closes_at,
   c.status,
+  c.shipping_phase,
   c.promo_copy,
   c.promo_activated_at,
   t.ref                                              as template_ref,

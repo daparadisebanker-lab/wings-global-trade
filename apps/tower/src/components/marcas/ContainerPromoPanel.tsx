@@ -8,12 +8,21 @@
 // ads stay identical. Activation + copy persist through RLS-gated server actions
 // (setContainerPromoActive / saveContainerPromoCopy); the DB is the gate.
 import { useMemo, useRef, useState, useTransition } from 'react'
-import { buildPromoCopy, buildPromoCardSvg, type ContainerPromo, type PromoVariant } from '@wings/rb-core'
+import {
+  buildPromoCopy,
+  buildPromoCardSvg,
+  SHIPPING_PHASE_LABELS,
+  type ContainerPromo,
+  type PromoVariant,
+  type ShippingPhase,
+} from '@wings/rb-core'
 import {
   saveContainerPromoCopy,
   setContainerPromoActive,
+  setContainerShippingPhase,
   type ContainerPromoDetail,
 } from '@/lib/actions/container-promo'
+import { SHIPPING_PHASES } from '@/lib/actions/container-promo-logic'
 import type { PromoCopy } from '@/lib/actions/container-promo-logic'
 
 const LABEL = 'font-mono text-label uppercase tracking-[0.08em] text-ink-secondary'
@@ -30,13 +39,13 @@ export function ContainerPromoPanel({ initial, onChanged }: { initial: Container
   const [variant, setVariant] = useState<PromoVariant>('whatsapp')
   const [headline, setHeadline] = useState(initial.copy.headline ?? '')
   const [priceNote, setPriceNote] = useState(initial.copy.priceNote ?? '')
-  const [routeLabel, setRouteLabel] = useState(initial.copy.routeLabel ?? '')
   const [unitLabel, setUnitLabel] = useState(initial.copy.unitLabel ?? '')
   const [specs, setSpecs] = useState<SpecRow[]>(initial.copy.specs ?? [])
   const [banner, setBanner] = useState<{ tone: 'positive' | 'negative'; text: string } | null>(null)
   const [copied, setCopied] = useState(false)
   const [isSaving, startSave] = useTransition()
   const [isToggling, startToggle] = useTransition()
+  const [isPhasing, startPhase] = useTransition()
   const previewRef = useRef<HTMLDivElement>(null)
 
   // The current copy, assembled from the edited fields (empty → dropped).
@@ -45,11 +54,10 @@ export function ContainerPromoPanel({ initial, onChanged }: { initial: Container
     return {
       ...(headline.trim() ? { headline: headline.trim() } : {}),
       ...(priceNote.trim() ? { priceNote: priceNote.trim() } : {}),
-      ...(routeLabel.trim() ? { routeLabel: routeLabel.trim() } : {}),
       ...(unitLabel.trim() ? { unitLabel: unitLabel.trim() } : {}),
       ...(cleaned.length ? { specs: cleaned } : {}),
     }
-  }, [headline, priceNote, routeLabel, unitLabel, specs])
+  }, [headline, priceNote, unitLabel, specs])
 
   // Live ContainerPromo — the server baseline (detail.promo) overlaid with edits.
   // Falls back to the packing-derived default specs when the rep clears theirs.
@@ -67,7 +75,9 @@ export function ContainerPromoPanel({ initial, onChanged }: { initial: Container
       priceNote: copy.priceNote,
       specs: cleaned.length ? cleaned : detail.defaultSpecs,
       listingUrl: detail.promo.listingUrl,
-      routeLabel: copy.routeLabel || detail.promo.routeLabel,
+      // Route + phase are spec-driven — straight from the container record.
+      routeLabel: detail.routeLabel ?? detail.promo.routeLabel,
+      phase: detail.phase,
       accent: detail.promo.accent,
     }
   }, [copy, detail])
@@ -93,6 +103,20 @@ export function ContainerPromoPanel({ initial, onChanged }: { initial: Container
     setBanner(null)
     startToggle(async () => {
       const res = await setContainerPromoActive(detail.id, !detail.promoActive)
+      if (res.error) {
+        setBanner({ tone: 'negative', text: res.error.message })
+        return
+      }
+      setDetail(res.data)
+      onChanged?.()
+    })
+  }
+
+  function changePhase(phase: ShippingPhase) {
+    if (phase === detail.phase) return
+    setBanner(null)
+    startPhase(async () => {
+      const res = await setContainerShippingPhase(detail.id, phase)
       if (res.error) {
         setBanner({ tone: 'negative', text: res.error.message })
         return
@@ -189,10 +213,35 @@ export function ContainerPromoPanel({ initial, onChanged }: { initial: Container
               <input value={unitLabel} onChange={(e) => setUnitLabel(e.target.value)} placeholder="cupos" className={INPUT} />
             </label>
           </div>
-          <label className="flex flex-col gap-1">
-            <span className={LABEL}>Ruta</span>
-            <input value={routeLabel} onChange={(e) => setRouteLabel(e.target.value)} placeholder={detail.promo.routeLabel ?? 'Origen → Callao'} className={INPUT} />
-          </label>
+          {/* Route + phase — from the container spec, not free text. Origin and
+              destination are read-only; the rep advances the shipping phase. */}
+          <div className="flex flex-col gap-2 rounded-card border border-line bg-surface-0 p-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className={LABEL}>Ruta del contenedor (spec)</span>
+              <span className="font-mono text-t0 text-ink-primary">
+                {detail.route?.origin ?? '—'} → {detail.route?.destination ?? 'Callao'}
+              </span>
+            </div>
+            <div className="flex flex-col gap-1">
+              <span className={LABEL}>Estado del envío</span>
+              <div className="flex flex-wrap overflow-hidden rounded-card border border-line">
+                {SHIPPING_PHASES.map((ph) => (
+                  <button
+                    key={ph}
+                    type="button"
+                    onClick={() => changePhase(ph)}
+                    disabled={isPhasing}
+                    aria-pressed={detail.phase === ph}
+                    className={`px-3 py-1.5 font-mono text-label uppercase tracking-[0.08em] disabled:opacity-40 ${
+                      detail.phase === ph ? 'bg-accent text-surface-0' : 'text-ink-secondary hover:bg-surface-1'
+                    }`}
+                  >
+                    {SHIPPING_PHASE_LABELS[ph]}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
 
           {/* Specs editor */}
           <div className="flex flex-col gap-2">
