@@ -25,12 +25,12 @@ interface MegaMenuProps {
 // "Ver todo". Every link targets a real category slug — never a 404.
 // --------------------------------------------------------------------------
 
-// Cap columns so the single row stays legible on desktop; any overflow is
-// reachable via the "Ver todo el catálogo" gateway row above.
-const MAX_CATEGORY_COLUMNS = 6
+// The category grid wraps (auto-fit), so EVERY live category shows — no cap
+// that could silently drop a real category (prod has 9, incl. Autos / UTV).
+const CATEGORY_COLUMN_MIN = '150px'
 
 // --------------------------------------------------------------------------
-// Quick-access column — standalone links, all verified routes
+// Quick-access row — standalone links, all verified routes
 // --------------------------------------------------------------------------
 
 interface QuickItem {
@@ -70,9 +70,6 @@ const columnItemVariants = {
 // --------------------------------------------------------------------------
 
 export function MegaMenu({ categories, subcategoriesByCategory, open }: MegaMenuProps) {
-  const shownCategories = categories.slice(0, MAX_CATEGORY_COLUMNS)
-  const columnCount = shownCategories.length + 1 // + Acceso rápido
-
   return (
     <AnimatePresence>
       {open && (
@@ -96,15 +93,18 @@ export function MegaMenu({ categories, subcategoriesByCategory, open }: MegaMenu
             </Link>
           </div>
 
+          {/* Category grid — wraps so every live category is shown */}
           <div
-            className="mx-auto max-w-7xl px-10 pb-10 pt-6"
-            style={{ display: 'grid', gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))` }}
+            className="mx-auto max-w-7xl gap-x-8 gap-y-8 px-10 pt-6"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: `repeat(auto-fit, minmax(${CATEGORY_COLUMN_MIN}, 1fr))`,
+            }}
           >
-            {/* ---- Category columns (derived from live categories) ---- */}
-            {shownCategories.map((cat) => {
+            {categories.map((cat) => {
               const subs = subcategoriesByCategory[cat.slug] ?? []
               return (
-                <div key={cat.id} className="pr-8">
+                <div key={cat.id}>
                   {/* Column heading — category icon + name */}
                   <p className="mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.15em] text-gold/40">
                     <CategoryIcon iconKey={cat.icon_key} className="h-3.5 w-3.5 shrink-0 text-gold/50" />
@@ -142,21 +142,17 @@ export function MegaMenu({ categories, subcategoriesByCategory, open }: MegaMenu
                 </div>
               )
             })}
+          </div>
 
-            {/* ---- Acceso rápido column ---- */}
-            <div className="border-l border-warm-white/[0.06] pl-8">
+          {/* ---- Acceso rápido — full-width row below the category grid ---- */}
+          <div className="mx-auto max-w-7xl px-10 pb-10 pt-8">
+            <div className="border-t border-warm-white/[0.06] pt-6">
               <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.15em] text-gold/40">
                 Acceso rápido
               </p>
-
-              <motion.ul
-                className="flex flex-col gap-3"
-                variants={columnContainerVariants}
-                initial="closed"
-                animate={open ? 'open' : 'closed'}
-              >
+              <ul className="flex flex-wrap gap-x-8 gap-y-3">
                 {QUICK_ITEMS.map((item) => (
-                  <motion.li key={item.href} variants={columnItemVariants}>
+                  <li key={item.href}>
                     <Link
                       href={item.href}
                       className={
@@ -168,9 +164,9 @@ export function MegaMenu({ categories, subcategoriesByCategory, open }: MegaMenu
                       {item.prefix && <span className="mr-1.5 text-gold/70">{item.prefix}</span>}
                       {item.label}
                     </Link>
-                  </motion.li>
+                  </li>
                 ))}
-              </motion.ul>
+              </ul>
             </div>
           </div>
         </motion.div>

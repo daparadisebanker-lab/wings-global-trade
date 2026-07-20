@@ -327,8 +327,10 @@ export function CompareBar() {
 
   return (
     <>
-      {/* Mobile FAB — hidden on desktop; lifted above the MobileTabBar */}
-      <div className="fixed bottom-[calc(4rem+1rem)] right-6 z-40 lg:hidden">
+      {/* Mobile FAB — hidden on desktop. Stacks ABOVE the Filter FAB, which is
+          the anchor of the bottom-right ladder over the MobileTabBar (64px):
+          tab bar (0–64) · filter (80–128) · compare (140–188). */}
+      <div className="fixed bottom-[calc(4rem+1rem+3.75rem)] right-6 z-40 lg:hidden">
         {/* Pulse ring — expands + fades each time an item is added */}
         <AnimatePresence>
           {pulseVersion > 0 && (
