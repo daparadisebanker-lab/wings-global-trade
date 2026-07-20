@@ -5,8 +5,8 @@
 // palette is the blueprint one: warm-white lines, gold accents.
 // Rendering cap: at most ~120 unit boxes are drawn (the count is the
 // number that matters; the drawing shows the pattern honestly).
-import { isoBox, isoCanvas } from '@/lib/rb/iso'
-import type { ContainerKindSpec, FitResult } from '@/lib/cubicaje/fit'
+import { isoBox, isoCanvas } from './iso'
+import type { ContainerKindSpec, FitResult } from './containerSpecs'
 
 const INK = 'rgba(248,246,240,0.85)' // warm-white lines on navy
 const INK_SOFT = 'rgba(248,246,240,0.35)'

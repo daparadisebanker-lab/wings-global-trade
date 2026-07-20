@@ -14,8 +14,8 @@ import {
   type ContainerKindSpec,
   type UnitDims,
 } from '@/lib/cubicaje/fit'
-import { ContainerFitDiagram } from '@/components/features/cubicaje/ContainerFitDiagram'
-import { TechDraw } from '@/components/features/shared/TechDraw'
+import { ContainerFitDiagram } from '@wings/trade-ui'
+import { TechDraw } from '@wings/trade-ui'
 
 interface Props {
   initialDims?: UnitDims | null

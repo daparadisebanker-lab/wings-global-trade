@@ -10,14 +10,18 @@
     "./tokens/skeleton.css": "./tokens/skeleton.css"
   },
   "peerDependencies": {
+    "@gsap/react": "^2",
     "framer-motion": "^11",
+    "gsap": "^3",
     "react": "^19",
     "react-dom": "^19"
   },
   "devDependencies": {
+    "@gsap/react": "^2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "framer-motion": "^11",
+    "gsap": "^3",
     "react": "^19",
     "react-dom": "^19",
     "typescript": "^5"

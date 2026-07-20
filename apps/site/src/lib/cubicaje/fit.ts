@@ -3,6 +3,15 @@
 // orientation packing of a unit inside ISO container interiors. Pure,
 // display-only estimation — always labeled «estimación», never a stuffing
 // plan (Áladín doctrine: no invented precision).
+//
+// RB Console Wave 0: the shared geometry (`ContainerKindSpec`, `FitResult`,
+// `CONTAINER_KINDS`) moved to @wings/trade-ui so the diagram organs there can
+// consume it. This module re-exports them so existing app callers are unchanged,
+// and keeps the app-only fit computation (`fitInContainer`, `dimsFromSpecs`).
+import { CONTAINER_KINDS, type ContainerKindSpec, type FitResult } from '@wings/trade-ui'
+
+export { CONTAINER_KINDS }
+export type { ContainerKindSpec, FitResult }
 
 export interface UnitDims {
   /** mm */
@@ -13,41 +22,11 @@ export interface UnitDims {
   kg: number
 }
 
-export interface ContainerKindSpec {
-  kind: '20GP' | '40GP' | '40HC'
-  label: string
-  /** interior mm */
-  l: number
-  w: number
-  h: number
-  /** kg */
-  payload: number
-  cbm: number
-}
-
-export const CONTAINER_KINDS: ContainerKindSpec[] = [
-  { kind: '20GP', label: "20' Standard", l: 5898, w: 2352, h: 2393, payload: 28200, cbm: 33.2 },
-  { kind: '40GP', label: "40' Standard", l: 12032, w: 2352, h: 2393, payload: 28200, cbm: 67.7 },
-  { kind: '40HC', label: "40' High Cube", l: 12032, w: 2352, h: 2698, payload: 28500, cbm: 76.4 },
-]
-
 export interface FitOptions {
   /** May the unit be rotated on the floor plane (swap length/width)? */
   rotatable: boolean
   /** May units stack on top of each other? (machinery: usually no) */
   stackable: boolean
-}
-
-export interface FitResult {
-  count: number
-  /** chosen orientation in mm along container L / W / H */
-  unit: { l: number; w: number; h: number }
-  grid: { alongL: number; alongW: number; layers: number }
-  volumeUtilization: number
-  totalKg: number
-  weightBound: boolean
-  /** if weight-limited, the volumetric count before the payload cap */
-  volumetricCount: number
 }
 
 /** All axis-aligned orientations permitted by the options. */

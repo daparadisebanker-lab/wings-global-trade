@@ -2,8 +2,8 @@
 // Exploded view of the caja máster: the packing layers lift out of the box
 // along the explode axis, with dashed leader guides — assembly-drawing
 // convention, generated from the same packing data as PackingDiagram.
-import { isoBox, isoCanvas, isoPoint, isoPt } from '@/lib/rb/iso'
-import type { PackingSpec } from '@/components/features/brands/PackingDiagram'
+import { isoBox, isoCanvas, isoPoint, isoPt } from './iso'
+import type { PackingSpec } from './PackingDiagram'
 
 interface Props {
   spec: PackingSpec

@@ -4,7 +4,7 @@
 // are true to the codification; the per-camada arrangement is the packing
 // figure (5/camada for higiénico per ops, 8/camada for facial per the SPSA
 // CD data), not a certified stuffing plan.
-import { isoBox, isoCanvas } from '@/lib/rb/iso'
+import { isoBox, isoCanvas } from './iso'
 
 export interface PalletSpec {
   /** Boxes per camada as an x×z grid; `skip` leaves the last n grid cells

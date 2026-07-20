@@ -39,8 +39,8 @@ export interface RbPublicBrand {
 }
 
 import type { SpecIconId } from '@/components/features/brands/SpecIcons'
-import type { PackingSpec } from '@/components/features/brands/PackingDiagram'
-import type { PalletSpec } from '@/components/features/brands/PalletDiagram'
+import type { PackingSpec } from '@wings/trade-ui'
+import type { PalletSpec } from '@wings/trade-ui'
 
 export interface RbProduct {
   slug: string

@@ -6,11 +6,11 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getBrand, ALADIN_PRODUCTS } from '@/lib/rb/fixtures'
-import { PackingDiagram } from '@/components/features/brands/PackingDiagram'
-import { ExplodedDiagram } from '@/components/features/brands/ExplodedDiagram'
-import { PalletDiagram } from '@/components/features/brands/PalletDiagram'
+import { PackingDiagram } from '@wings/trade-ui'
+import { ExplodedDiagram } from '@wings/trade-ui'
+import { PalletDiagram } from '@wings/trade-ui'
 import { SpecIcon } from '@/components/features/brands/SpecIcons'
-import { TechDraw } from '@/components/features/shared/TechDraw'
+import { TechDraw } from '@wings/trade-ui'
 
 interface PageProps {
   params: Promise<{ brand: string }>

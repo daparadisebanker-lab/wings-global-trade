@@ -14,8 +14,8 @@ import type { RbContainerTemplate, RbPublicBrand, RbPublicContainer } from '@/li
 import { fmt } from '@/lib/rb/packing'
 import { PackingCascade } from '@/components/features/brands/PackingCascade'
 import { SlotGrid } from '@/components/features/brands/SlotGrid'
-import { ContainerSliceDiagram } from '@/components/features/shared/ContainerSliceDiagram'
-import { TechDraw } from '@/components/features/shared/TechDraw'
+import { ContainerSliceDiagram } from '@wings/trade-ui'
+import { TechDraw } from '@wings/trade-ui'
 
 type Allocation = 'shared' | 'dedicated'
 type Mode = 'slots' | 'quantity'
