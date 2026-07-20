@@ -29,6 +29,15 @@ Structural laws carried throughout (no chapter deviates):
 - **TOWER writes, site reads.** The site touches only `public.rb_public_*` + `public.rb_reserve` (service-role). This program adds two new views and widens one; the sole site write-back stays `rb_reserve`.
 - **Reuse first, fork never.** All console UI re-mounts shipped organs (`ProductEditor`, `SpecForm`, `PublishBar`, `MediaManager`, `BrandManager` pattern, `FillMeter`, the diagram family, `QuotationDocument`, the cost-export XLSX doctrine) through props.
 
+### 1-bis · Rep enrollment + access model (ratified 2026-07-20)
+
+How a rep gets in, and what they can reach — a deliberate widening of the strict-tenant assumption, recorded so it doesn't drift:
+
+- **Enrollment.** TOWER identity is Supabase Auth (magic-link + Google OAuth). A group admin runs `inviteUser(email)` → the invitee signs in → a `profiles` row is created. Grants are then assigned via two composing systems: `lane_memberships` (Wings staff, per WGT lane — the UserManager grid) and `rb_memberships` (reps, per represented brand — the `RepMembershipMatrix`). A **pure rep** holds only `rb_memberships`.
+- **Write-isolated, read-broad.** A rep is **write-scoped to their own brand** (`has_rb_role` RLS — they only see/edit their brand's rows) **but read-broad across the published catalog**: any authenticated staff/rep may read `status='PUBLISHED'` products across every lane (`products_read_published`, `tower_31`), so a rep can check catalog listings in other categories. DRAFT + all writes stay lane-scoped — the broad read grants no edit.
+- **Module visibility knows rb-membership.** `visibleModules(roles, isGroupAdmin, hasRbMembership)` — a pure rep (no lane role) still sees `marcas` (their brand) + `catalog` (browse) + `signals`. Without this a rep would sign in to an empty shell. `marcas` is otherwise group-admin-only. Presentation-only; RLS is the gate.
+- **Open (browser-pass) follow-up:** the TOWER catalog *page* is built around lane-scoped editing; giving a pure rep (no editable lane) a clean cross-category browse view over the now-readable published rows is a UI refinement to land during verification.
+
 ---
 
 ## 2 · Merge rulings (the resolved gaps — binding)

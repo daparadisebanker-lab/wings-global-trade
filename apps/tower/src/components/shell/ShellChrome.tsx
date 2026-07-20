@@ -21,11 +21,13 @@ export function ShellChrome({
   memberships,
   userEmail,
   isGroupAdmin = false,
+  hasRbMembership = false,
   children,
 }: {
   memberships: LaneMembership[]
   userEmail: string | null
   isGroupAdmin?: boolean
+  hasRbMembership?: boolean
   children: ReactNode
 }) {
   const [activeLaneId, setActiveLaneId] = useState<string | null>(
@@ -45,7 +47,10 @@ export function ShellChrome({
   }, [])
 
   const roles = useMemo(() => memberships.map((m) => m.role) as Role[], [memberships])
-  const visible = useMemo(() => visibleModules(roles, isGroupAdmin), [roles, isGroupAdmin])
+  const visible = useMemo(
+    () => visibleModules(roles, isGroupAdmin, hasRbMembership),
+    [roles, isGroupAdmin, hasRbMembership],
+  )
 
   const activeLane = memberships.find((m) => m.laneId === activeLaneId) ?? null
   const rootStyle = activeLane?.accent

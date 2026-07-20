@@ -15,28 +15,35 @@ export type Role = 'LANE_DIRECTOR' | 'CATALOG_EDITOR' | 'TRADE_OPS' | 'SALES' | 
 
 const ALL_MODULES: ModuleId[] = ['catalog', 'pipeline', 'containers', 'costing', 'marcas', 'signals', 'intelligence', 'admin']
 
-// 'marcas' (Represented-Brands console) visibility is driven by rb_memberships at
-// the DB/RLS layer, not lane roles — the module is shown to lane staff who also
-// hold a brand membership; group admins always see it (visibleModules). Shown to
-// LANE_DIRECTOR here so brand-managing staff reach it; RLS returns only their brands.
 const ROLE_MODULES: Record<Role, ModuleId[]> = {
-  LANE_DIRECTOR: ['catalog', 'pipeline', 'containers', 'costing', 'marcas', 'signals', 'intelligence'],
+  LANE_DIRECTOR: ['catalog', 'pipeline', 'containers', 'costing', 'signals', 'intelligence'],
   CATALOG_EDITOR: ['catalog', 'signals'],
   TRADE_OPS: ['containers', 'costing', 'catalog', 'signals'],
   SALES: ['pipeline', 'signals'],
   VIEWER: ['signals'],
 }
 
+// A represented-brand rep's modules — driven by rb_memberships, NOT lane roles
+// (a pure rep has no lane role). They manage their brand (marcas), browse the
+// org-wide published catalog (catalog — read-broad, edit stays brand-scoped via
+// RLS + capabilities), and see signals. marcas is otherwise group-admin-only.
+const RB_REP_MODULES: ModuleId[] = ['marcas', 'catalog', 'signals']
+
 /**
  * Union of modules visible across a user's lane roles. Group admins see every
  * module (including `admin`). A user with no roles and no admin flag sees
  * nothing — which is correct: RLS would return no rows anyway.
  */
-export function visibleModules(roles: Role[], isGroupAdmin = false): Set<ModuleId> {
+export function visibleModules(
+  roles: Role[],
+  isGroupAdmin = false,
+  hasRbMembership = false,
+): Set<ModuleId> {
   if (isGroupAdmin) return new Set<ModuleId>(ALL_MODULES)
   const out = new Set<ModuleId>()
   for (const role of roles) {
     for (const m of ROLE_MODULES[role] ?? []) out.add(m)
   }
+  if (hasRbMembership) for (const m of RB_REP_MODULES) out.add(m)
   return out
 }

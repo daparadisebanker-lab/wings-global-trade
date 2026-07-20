@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { ShellChrome } from '@/components/shell/ShellChrome'
-import { getLaneMemberships, getIsGroupAdmin } from '@/lib/lanes/memberships'
+import { getLaneMemberships, getIsGroupAdmin, getHasRbMembership } from '@/lib/lanes/memberships'
 import { createServerSupabase } from '@/lib/supabase/server'
 
 /**
@@ -11,7 +11,11 @@ import { createServerSupabase } from '@/lib/supabase/server'
  * unauthenticated requests to /login before this runs.
  */
 export default async function ShellLayout({ children }: { children: ReactNode }) {
-  const [memberships, isGroupAdmin] = await Promise.all([getLaneMemberships(), getIsGroupAdmin()])
+  const [memberships, isGroupAdmin, hasRbMembership] = await Promise.all([
+    getLaneMemberships(),
+    getIsGroupAdmin(),
+    getHasRbMembership(),
+  ])
 
   let userEmail: string | null = null
   const supabase = await createServerSupabase()
@@ -23,7 +27,12 @@ export default async function ShellLayout({ children }: { children: ReactNode })
   }
 
   return (
-    <ShellChrome memberships={memberships} userEmail={userEmail} isGroupAdmin={isGroupAdmin}>
+    <ShellChrome
+      memberships={memberships}
+      userEmail={userEmail}
+      isGroupAdmin={isGroupAdmin}
+      hasRbMembership={hasRbMembership}
+    >
       {children}
     </ShellChrome>
   )

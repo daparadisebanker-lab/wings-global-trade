@@ -79,3 +79,25 @@ export async function getIsGroupAdmin(): Promise<boolean> {
     return false
   }
 }
+
+/**
+ * Whether the user holds ANY represented-brand membership (rb_memberships). A
+ * "pure rep" has no lane role, so without this signal `visibleModules` would hide
+ * every module and they'd sign in to an empty shell. Drives the `marcas` +
+ * `catalog` (browse) + `signals` visibility for reps. RLS-scoped; degrades to
+ * false. (Reads bare `rb_memberships`, matching this file's lane query.)
+ */
+export async function getHasRbMembership(): Promise<boolean> {
+  const supabase = await createServerSupabase()
+  if (!supabase) return false
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) return false
+    const { data } = await supabase.from('rb_memberships').select('role').limit(1)
+    return Boolean(data && data.length > 0)
+  } catch {
+    return false
+  }
+}
