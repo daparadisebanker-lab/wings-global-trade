@@ -1,5 +1,5 @@
 import { EmptyState } from '@/components/ui/EmptyState'
-import { RepresentedBrandManager } from '@/components/marcas'
+import { RepresentedBrandManager, RepMembershipMatrix } from '@/components/marcas'
 import { listRepresentedBrands } from '@/lib/actions/represented-brands'
 
 // Marcas Representadas (RB Console Wave 1, Ch 01) — the TOWER write-side over the
@@ -28,6 +28,7 @@ export default async function MarcasPage() {
         <h1 className="font-ui text-t2 text-ink-primary">Marcas representadas (RB)</h1>
       </header>
       <RepresentedBrandManager initialBrands={result.data} />
+      <RepMembershipMatrix />
     </div>
   )
 }

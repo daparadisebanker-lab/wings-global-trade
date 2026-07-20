@@ -185,6 +185,22 @@ export async function setRepresentedBrandMemberships(
   return ok({ added: toAdd.length, removed: toRemove.length })
 }
 
+/** A user's current RB memberships (group-admin) — feeds the membership matrix. */
+export async function listUserRbMemberships(
+  userId: string,
+): Promise<ActionResult<{ brandId: string; role: RbRole }[]>> {
+  const parsed = uuidSchema.safeParse(userId)
+  if (!parsed.success) return fail('VALIDATION', 'ID inválido / Invalid id')
+  const auth = await requireGroupAdmin()
+  if (!auth.ok) return auth.error
+  const { data, error } = await auth.service
+    .from('rb_memberships')
+    .select('represented_brand_id,role')
+    .eq('user_id', parsed.data)
+  if (error) return fail('VALIDATION', 'No se pudieron leer las asignaciones / Could not read memberships')
+  return ok(((data ?? []) as { represented_brand_id: string; role: RbRole }[]).map((m) => ({ brandId: m.represented_brand_id, role: m.role })))
+}
+
 // ── Brand-scoped reads/writes (requireUser + RLS) ────────────────────────────
 
 /** The tenancy read: a rep sees only their brands; a group admin sees all. */

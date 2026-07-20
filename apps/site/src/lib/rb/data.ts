@@ -162,3 +162,66 @@ export async function reserveRbSlots(params: {
   }
   return { ok: true, allocationId: data as string }
 }
+
+// ── Brand identity loader (RB Console Wave 1b — the declared-but-unwired view) ──
+// Reads the widened public.rb_public_brands (tower_25): the --rb-* token contract
+// + logo + public-safe mandate for LIVE console brands. Additive — Áladín's rich
+// fixture shelf is unchanged; this exposes the identity a console-created brand
+// carries. (Next seam step: the brand layout injects these --rb-* tokens with a
+// fixture fallback — a rendering-strategy change to verify against a LIVE brand.)
+export interface RbLiveBrand {
+  code: string
+  slug: string
+  name: string
+  categories: string[]
+  tokens: Record<string, string>
+  logo: { isologo?: string; positivo?: string; isotipo?: string; sello?: string }
+  territory: string | null
+  mandateScope: string[]
+}
+
+interface RbPublicBrandRow {
+  code: string
+  slug: string
+  name: string
+  categories: string[] | null
+  identity: { tokens?: Record<string, string>; logo?: Record<string, string> } | null
+  mandate_public: { territory?: string; scope?: string[] } | null
+}
+
+function mapLiveBrand(r: RbPublicBrandRow): RbLiveBrand {
+  return {
+    code: r.code,
+    slug: r.slug,
+    name: r.name,
+    categories: r.categories ?? [],
+    tokens: r.identity?.tokens ?? {},
+    logo: r.identity?.logo ?? {},
+    territory: r.mandate_public?.territory ?? null,
+    mandateScope: Array.isArray(r.mandate_public?.scope) ? (r.mandate_public!.scope as string[]) : [],
+  }
+}
+
+/** All LIVE console brands (the view filters status='LIVE'). Empty when
+ *  Supabase is unconfigured or no console brand is live yet — callers keep their
+ *  fixture path. */
+export async function getRbLiveBrands(): Promise<RbLiveBrand[]> {
+  const supabase = createServiceClient()
+  if (!supabase) return []
+  const { data, error } = await supabase
+    .from('rb_public_brands')
+    .select('code,slug,name,categories,identity,mandate_public')
+  if (error || !data) return []
+  return (data as unknown as RbPublicBrandRow[]).map(mapLiveBrand)
+}
+
+export async function getRbLiveBrandBySlug(slug: string): Promise<RbLiveBrand | null> {
+  const supabase = createServiceClient()
+  if (!supabase) return null
+  const { data } = await supabase
+    .from('rb_public_brands')
+    .select('code,slug,name,categories,identity,mandate_public')
+    .eq('slug', slug)
+    .maybeSingle()
+  return data ? mapLiveBrand(data as unknown as RbPublicBrandRow) : null
+}
