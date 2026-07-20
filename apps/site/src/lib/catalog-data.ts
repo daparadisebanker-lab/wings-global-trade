@@ -58,6 +58,27 @@ export async function getSubcategories(categorySlug: string): Promise<Subcategor
   return (data ?? []) as Subcategory[]
 }
 
+/**
+ * Fetch every subcategory across all categories in one query. Used by the
+ * mega-menu to derive its columns from live data (no hardcoded links).
+ * Returns [] when Supabase is not configured or the table is absent.
+ */
+export async function getAllSubcategories(): Promise<Subcategory[]> {
+  const supabase = createServiceClient()
+  if (!supabase) return []
+
+  const { data, error } = await supabase
+    .from('subcategories')
+    .select('*')
+    .order('sort_order', { ascending: true })
+
+  if (error) {
+    console.warn('[catalog-data] getAllSubcategories', error.message)
+    return []
+  }
+  return (data ?? []) as Subcategory[]
+}
+
 export interface ProductQuery {
   category?: string
   q?: string

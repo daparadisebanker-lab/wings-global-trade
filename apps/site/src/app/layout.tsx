@@ -2,7 +2,7 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
-import { getCategories } from '@/lib/catalog-data'
+import { getCategories, getAllSubcategories } from '@/lib/catalog-data'
 import { SiteNav } from '@/components/features/navigation/SiteNav'
 import { MobileTabBar } from '@/components/features/navigation/MobileTabBar'
 import { Footer } from '@/components/features/navigation/Footer'
@@ -63,7 +63,16 @@ export const metadata: Metadata = {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const categories = await getCategories()
+  const [categories, subcategories] = await Promise.all([getCategories(), getAllSubcategories()])
+
+  // Group live subcategories by their category slug for the mega-menu columns.
+  const idToSlug = new Map(categories.map((c) => [c.id, c.slug]))
+  const subcategoriesByCategory: Record<string, { slug: string; name_es: string }[]> = {}
+  for (const s of subcategories) {
+    const slug = idToSlug.get(s.category_id)
+    if (!slug) continue
+    ;(subcategoriesByCategory[slug] ??= []).push({ slug: s.slug, name_es: s.name_es })
+  }
 
   return (
     <html lang="es">
@@ -78,7 +87,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <SmoothScroll>
           <ToastProvider>
             <ComparisonProvider>
-              <SiteNav categories={categories} />
+              <SiteNav categories={categories} subcategoriesByCategory={subcategoriesByCategory} />
               <main className="min-h-screen overflow-x-clip"><PageTransition>{children}</PageTransition></main>
               <Footer categories={categories} />
               <CompareBar />

@@ -14,6 +14,7 @@ import { SearchBar } from '@/components/features/homepage/SearchBar'
 
 interface SiteNavProps {
   categories: Category[]
+  subcategoriesByCategory: Record<string, { slug: string; name_es: string }[]>
 }
 
 const LINKS = [
@@ -24,7 +25,7 @@ const LINKS = [
   { href: '/nosotros',   label: 'Nosotros' },
 ]
 
-export function SiteNav({ categories }: SiteNavProps) {
+export function SiteNav({ categories, subcategoriesByCategory }: SiteNavProps) {
   const [scrolled, setScrolled] = useState(false)
   const [hidden, setHidden] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -272,7 +273,11 @@ export function SiteNav({ categories }: SiteNavProps) {
 
         {/* Mega-menu panel — sits inside <header> so mouse enter/leave is unified */}
         <div id="catalogo-mega-menu" className="relative z-10 hidden lg:block">
-          <MegaMenu categories={categories} open={menuHovered} />
+          <MegaMenu
+            categories={categories}
+            subcategoriesByCategory={subcategoriesByCategory}
+            open={menuHovered}
+          />
         </div>
 
         {/* Search panel — desktop overlay, reuses SearchBar so submit routes through detectSearchIntent */}

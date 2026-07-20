@@ -4,88 +4,33 @@
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Category } from '@/types/database'
+import { CategoryIcon } from '@/components/features/homepage/CategoryIcon'
 
 interface MegaMenuProps {
   categories: Category[]
+  /** Live subcategories grouped by category slug (from the DB, via layout). */
+  subcategoriesByCategory: Record<string, { slug: string; name_es: string }[]>
   open: boolean
 }
 
 // --------------------------------------------------------------------------
-// Static subcategory data — not DB-driven for performance.
-// Slugs must match the ?sub= query param convention in catalog pages.
+// The category columns are DERIVED FROM THE LIVE CATEGORY LIST (roadmap #2).
+// The previous version hardcoded five columns — including an "Automóviles"
+// column whose links 404'd (no such category) and a "Buses" column whose slug
+// could drift from the DB's `buses-y-transporte`. Deriving from `categories`
+// makes a non-existent category structurally impossible and guarantees every
+// live category (incl. Motocicletas / Repuestos) appears. Subcategory links
+// come from the LIVE subcategories table (grouped by category slug in
+// layout.tsx); a category with no subcategories simply shows its heading +
+// "Ver todo". Every link targets a real category slug — never a 404.
 // --------------------------------------------------------------------------
 
-interface SubItem {
-  label: string
-  sub?: string    // ?sub= query param — used with the column's categorySlug
-  href?: string   // absolute override — used when item belongs to a different category
-}
-
-interface MegaColumn {
-  categorySlug: string
-  heading: string
-  items: SubItem[]
-}
-
-const COLUMNS: MegaColumn[] = [
-  {
-    categorySlug: 'maquinaria-agricola',
-    heading: 'Maquinaria Agrícola',
-    items: [
-      { label: 'Tractores', sub: 'tractores' },
-      { label: 'Cosechadoras', sub: 'cosechadoras' },
-      { label: 'Equipo de Labranza', sub: 'labranza' },
-      { label: 'Siembra y Trasplante', sub: 'siembra' },
-      { label: 'Protec. de Cultivos', sub: 'proteccion-cultivos' },
-      { label: 'Poscosecha', sub: 'poscosecha' },
-    ],
-  },
-  {
-    categorySlug: 'camiones',
-    heading: 'Camiones',
-    items: [
-      { label: 'Volteos y Dumpers', sub: 'volteos' },
-      { label: 'Camiones de Carga', sub: 'camiones-carga' },
-      { label: 'Camiones Cisterna', sub: 'camiones-cisterna' },
-      { label: 'Camiones Especiales', sub: 'camiones-especiales' },
-      { label: 'Tractocamiones', sub: 'tractocamiones' },
-    ],
-  },
-  {
-    categorySlug: 'buses',
-    heading: 'Buses ASIASTAR',
-    items: [
-      { label: 'Buses Diésel', href: '/catalogo/buses?fuel=diesel' },
-      { label: 'Buses Eléctricos', href: '/catalogo/buses?fuel=electrico' },
-      { label: 'Hidrógeno', href: '/catalogo/buses?fuel=hidrogeno' },
-      { label: 'Chasis', href: '/catalogo/buses?fuel=chasis' },
-    ],
-  },
-  {
-    categorySlug: 'equipo-industrial',
-    heading: 'Industrial',
-    items: [
-      { label: 'Montacargas', sub: 'montacargas' },
-      { label: 'Compactadores', sub: 'compactadores' },
-      { label: 'Generadores', sub: 'generadores' },
-      { label: 'Motores JDM', href: '/repuestos' },
-    ],
-  },
-  {
-    categorySlug: 'automoviles',
-    heading: 'Automóviles',
-    items: [
-      { label: 'Changan', href: '/catalogo/automoviles?brand=Changan' },
-      { label: 'Toyota', href: '/catalogo/automoviles?brand=Toyota' },
-      { label: 'Hyundai', href: '/catalogo/automoviles?brand=Hyundai' },
-      { label: 'Jetour', href: '/catalogo/automoviles?brand=Jetour' },
-      { label: 'Híbridos', href: '/catalogo/automoviles?fuel=hibrido' },
-    ],
-  },
-]
+// Cap columns so the single row stays legible on desktop; any overflow is
+// reachable via the "Ver todo el catálogo" gateway row above.
+const MAX_CATEGORY_COLUMNS = 6
 
 // --------------------------------------------------------------------------
-// Quick-access column — no category slug, standalone links
+// Quick-access column — standalone links, all verified routes
 // --------------------------------------------------------------------------
 
 interface QuickItem {
@@ -96,41 +41,14 @@ interface QuickItem {
 }
 
 const QUICK_ITEMS: QuickItem[] = [
-  {
-    label: 'Solicitar cotización',
-    href: '/cotizar',
-    highlight: true,
-    prefix: '→',
-  },
-  {
-    label: 'Importación personalizada',
-    href: '/mister',
-    highlight: true,
-    prefix: '★',
-  },
-  {
-    label: 'Cómo importar',
-    href: '/proceso',
-    prefix: '→',
-  },
-  {
-    label: 'Contacto técnico',
-    href: '/contacto',
-    prefix: '→',
-  },
+  { label: 'Solicitar cotización', href: '/cotizar', highlight: true, prefix: '→' },
+  { label: 'Importación personalizada', href: '/mister', highlight: true, prefix: '★' },
+  { label: 'Cómo importar', href: '/proceso', prefix: '→' },
+  { label: 'Contacto técnico', href: '/contacto', prefix: '→' },
 ]
 
 // --------------------------------------------------------------------------
-// Helper: build href for a catalog item
-// --------------------------------------------------------------------------
-function buildHref(categorySlug: string, item: SubItem): string {
-  if (item.href) return item.href
-  const base = `/catalogo/${categorySlug}`
-  return item.sub ? `${base}?sub=${item.sub}` : base
-}
-
-// --------------------------------------------------------------------------
-// Stagger variants — Fix #08
+// Stagger variants
 // --------------------------------------------------------------------------
 
 const columnContainerVariants = {
@@ -151,9 +69,9 @@ const columnItemVariants = {
 // Component
 // --------------------------------------------------------------------------
 
-export function MegaMenu({ categories: _categories, open }: MegaMenuProps) {
-  // _categories is accepted for prop-flow consistency (layout → SiteNav → MegaMenu)
-  // but subcategory links are hardcoded above for performance.
+export function MegaMenu({ categories, subcategoriesByCategory, open }: MegaMenuProps) {
+  const shownCategories = categories.slice(0, MAX_CATEGORY_COLUMNS)
+  const columnCount = shownCategories.length + 1 // + Acceso rápido
 
   return (
     <AnimatePresence>
@@ -167,8 +85,7 @@ export function MegaMenu({ categories: _categories, open }: MegaMenuProps) {
           role="region"
           aria-label="Menú de catálogo"
         >
-          {/* Gateway link — both hover and click on "Catálogo" now resolve to
-              the same canonical landing page */}
+          {/* Gateway link — hover and click on "Catálogo" resolve here */}
           <div className="mx-auto max-w-7xl px-10 pt-7">
             <Link
               href="/catalogo"
@@ -179,46 +96,52 @@ export function MegaMenu({ categories: _categories, open }: MegaMenuProps) {
             </Link>
           </div>
 
-          <div className="mx-auto grid max-w-7xl grid-cols-6 gap-0 px-10 pb-10 pt-6">
-            {/* ---- Category columns ---- */}
-            {COLUMNS.map((col) => (
-              <div key={col.categorySlug} className="pr-8">
-                {/* Column heading */}
-                <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.15em] text-gold/40">
-                  {col.heading}
-                </p>
+          <div
+            className="mx-auto max-w-7xl px-10 pb-10 pt-6"
+            style={{ display: 'grid', gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))` }}
+          >
+            {/* ---- Category columns (derived from live categories) ---- */}
+            {shownCategories.map((cat) => {
+              const subs = subcategoriesByCategory[cat.slug] ?? []
+              return (
+                <div key={cat.id} className="pr-8">
+                  {/* Column heading — category icon + name */}
+                  <p className="mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.15em] text-gold/40">
+                    <CategoryIcon iconKey={cat.icon_key} className="h-3.5 w-3.5 shrink-0 text-gold/50" />
+                    <span className="truncate">{cat.name_es}</span>
+                  </p>
 
-                {/* Subcategory items — staggered entrance (Fix #08) */}
-                <motion.ul
-                  className="flex flex-col gap-2"
-                  variants={columnContainerVariants}
-                  initial="closed"
-                  animate={open ? 'open' : 'closed'}
-                >
-                  {col.items.map((item) => (
-                    <motion.li
-                      key={item.sub ?? item.href ?? item.label}
-                      variants={columnItemVariants}
+                  {/* Subcategory items — staggered entrance */}
+                  {subs.length > 0 && (
+                    <motion.ul
+                      className="flex flex-col gap-2"
+                      variants={columnContainerVariants}
+                      initial="closed"
+                      animate={open ? 'open' : 'closed'}
                     >
-                      <Link
-                        href={buildHref(col.categorySlug, item)}
-                        className="block font-mono text-[11px] text-warm-white/70 transition-colors duration-150 hover:text-gold"
-                      >
-                        {item.label}
-                      </Link>
-                    </motion.li>
-                  ))}
-                </motion.ul>
+                      {subs.map((item) => (
+                        <motion.li key={item.slug} variants={columnItemVariants}>
+                          <Link
+                            href={`/catalogo/${cat.slug}?sub=${item.slug}`}
+                            className="block font-mono text-[11px] text-warm-white/70 transition-colors duration-150 hover:text-gold"
+                          >
+                            {item.name_es}
+                          </Link>
+                        </motion.li>
+                      ))}
+                    </motion.ul>
+                  )}
 
-                {/* Ver todo link */}
-                <Link
-                  href={`/catalogo/${col.categorySlug}`}
-                  className="mt-5 block font-mono text-[11px] text-gold/70 transition-colors duration-150 hover:text-gold"
-                >
-                  Ver todo →
-                </Link>
-              </div>
-            ))}
+                  {/* Ver todo link */}
+                  <Link
+                    href={`/catalogo/${cat.slug}`}
+                    className="mt-5 block font-mono text-[11px] text-gold/70 transition-colors duration-150 hover:text-gold"
+                  >
+                    Ver todo →
+                  </Link>
+                </div>
+              )
+            })}
 
             {/* ---- Acceso rápido column ---- */}
             <div className="border-l border-warm-white/[0.06] pl-8">
@@ -242,9 +165,7 @@ export function MegaMenu({ categories: _categories, open }: MegaMenuProps) {
                           : 'block font-mono text-[11px] text-warm-white/70 transition-colors duration-150 hover:text-gold'
                       }
                     >
-                      {item.prefix && (
-                        <span className="mr-1.5 text-gold/70">{item.prefix}</span>
-                      )}
+                      {item.prefix && <span className="mr-1.5 text-gold/70">{item.prefix}</span>}
                       {item.label}
                     </Link>
                   </motion.li>
