@@ -21,6 +21,7 @@ import {
   type RfqLineRow,
 } from '@/lib/actions/pipeline'
 import { issueQuotation } from '@/lib/actions/quotation'
+import { QuotationDetailsEditor } from '@/components/pipeline/quotation-document'
 
 interface DraftQuoteLine {
   key: string
@@ -78,6 +79,7 @@ export function QuoteComposer({
   const units = getUnits(archetype)
   const [drafts, setDrafts] = useState<DraftQuoteLine[]>(() => draftsFromRfqLines(rfqLines, units[0]?.id ?? ''))
   const [validUntil, setValidUntil] = useState('')
+  const [editingDoc, setEditingDoc] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
@@ -313,15 +315,26 @@ export function QuoteComposer({
               {i === 0 ? (
                 <div className="flex items-center gap-2">
                   {capabilities.canSendQuote ? (
-                    <button
-                      type="button"
-                      onClick={() => handleDocument(q.id)}
-                      disabled={isPending}
-                      title="Emitir y ver la cotización oficial / Issue and view the official quotation"
-                      className="rounded-card border border-line px-3 py-1.5 font-mono text-label uppercase tracking-[0.1em] text-ink-primary hover:border-lane-accent disabled:opacity-40"
-                    >
-                      Documento oficial ↗
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setEditingDoc((v) => !v)}
+                        aria-expanded={editingDoc}
+                        title="Editar RUC, impuesto, condiciones y observaciones / Edit RUC, tax, terms and observations"
+                        className="rounded-card border border-line px-3 py-1.5 font-mono text-label uppercase tracking-[0.1em] text-ink-secondary hover:border-lane-accent"
+                      >
+                        {editingDoc ? 'Cerrar detalles' : 'Editar documento'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDocument(q.id)}
+                        disabled={isPending}
+                        title="Emitir y ver la cotización oficial / Issue and view the official quotation"
+                        className="rounded-card border border-line px-3 py-1.5 font-mono text-label uppercase tracking-[0.1em] text-ink-primary hover:border-lane-accent disabled:opacity-40"
+                      >
+                        Documento oficial ↗
+                      </button>
+                    </>
                   ) : null}
 
                   {capabilities.canSendQuote && q.status === 'DRAFT' ? (
@@ -398,6 +411,8 @@ export function QuoteComposer({
                 </li>
               ))}
             </ul>
+
+            {i === 0 && editingDoc ? <QuotationDetailsEditor quoteId={q.id} /> : null}
           </div>
         ))}
       </div>
