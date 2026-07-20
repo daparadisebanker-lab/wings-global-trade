@@ -97,14 +97,58 @@ export function buildPromoCopy(p: ContainerPromo, variant: PromoVariant = 'whats
 
 // ── Share card (SVG string) ──────────────────────────────────────────────────
 
+// ── Colour math (so the palette is derived, never invented) ──────────────────
+function hxToRgb(h: string): [number, number, number] {
+  const s = h.replace('#', '')
+  return [0, 2, 4].map((i) => parseInt(s.slice(i, i + 2), 16)) as [number, number, number]
+}
+function rgbToHex(rgb: number[]): string {
+  return '#' + rgb.map((v) => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, '0')).join('')
+}
+/** Flatten `fg` at alpha `a` over opaque `bg` — a provably in-family tint. */
+function mix(fg: string, bg: string, a: number): string {
+  const F = hxToRgb(fg)
+  const B = hxToRgb(bg)
+  return rgbToHex(F.map((v, i) => B[i] * (1 - a) + v * a))
+}
+function _lin(c: number): number {
+  const x = c / 255
+  return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4
+}
+function luminance(h: string): number {
+  const [r, g, b] = hxToRgb(h)
+  return 0.2126 * _lin(r) + 0.7152 * _lin(g) + 0.0722 * _lin(b)
+}
+/** WCAG contrast ratio between two solid hex colours. */
+function contrast(a: string, b: string): number {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x)
+  return (hi + 0.05) / (lo + 0.05)
+}
+
+// The three brand constants — a mirror of packages/liveries/wings/livery.css
+// (--livery-warm-white / --livery-navy / --livery-gold). resvg can't read CSS
+// custom properties, so these are the single source the card derives from; keep
+// them in sync with the livery. Every other card colour is DERIVED from these.
+const BRAND = { warmWhite: '#F8F6F0', navy: '#001E50', gold: '#C4933F' }
+
 const CARD = {
   size: 1080,
-  bg: '#F8F6F0', // Wings warm-white / off-white
-  ink: '#001E50', // Wings navy — edges, labels, wordmark
-  gold: '#C4933F', // Wings gold — default container fill
-  muted: '#D8D3C6', // dividers
-  sub: '#5A6472',
-  tint: '#ECE6DA', // top-face tint for open bays
+  bg: BRAND.warmWhite,
+  ink: BRAND.navy, // edges, labels, headline
+  gold: BRAND.gold, // default container fill
+  sub: mix(BRAND.navy, BRAND.warmWhite, 0.55), // secondary text = site's muted rgba(0,30,80,.55), flattened
+  line: mix(BRAND.navy, BRAND.warmWhite, 0.2), // hairline divider — a faint navy tint
+  tint: mix(BRAND.gold, BRAND.warmWhite, 0.08), // open-bay top face — faint warm paper
+}
+
+/** Accent is safe as text only if it clears 4.5:1 on the ground (livery Phase-2
+ *  law); otherwise fall back to navy ink. */
+function accentText(accent: string): string {
+  return contrast(accent, CARD.bg) >= 4.5 ? accent : CARD.ink
+}
+/** Highest-contrast label colour for text sitting ON a filled shape. */
+function onFill(fill: string): string {
+  return contrast('#ffffff', fill) >= contrast(CARD.ink, fill) ? '#ffffff' : CARD.ink
 }
 
 // Wings brand type system (apps/site/public/fonts, self-hosted): NissanOpti =
@@ -167,7 +211,7 @@ function isoContainer(p: ContainerPromo, x0: number, yTop: number, frontW: numbe
     slices +=
       `<rect data-slot="${s}" x="${sx.toFixed(1)}" y="${yTop}" width="${sliceW.toFixed(1)}" height="${H}" fill="${frontFill(s)}" stroke="${CARD.ink}" stroke-width="1.2"/>` +
       `<polygon points="${sx.toFixed(1)},${yTop} ${(sx + DX).toFixed(1)},${yTop - DY} ${(sx + sliceW + DX).toFixed(1)},${yTop - DY} ${(sx + sliceW).toFixed(1)},${yTop}" fill="${topFill(s)}" stroke="${CARD.ink}" stroke-width="0.9" opacity="0.95"/>` +
-      `<text x="${(sx + sliceW / 2).toFixed(1)}" y="${yBot - 16}" text-anchor="middle" font-family="${FONT_LABEL}" font-size="28" font-weight="600" fill="${s === 'committed' ? '#ffffff' : CARD.ink}">${i + 1}</text>`
+      `<text x="${(sx + sliceW / 2).toFixed(1)}" y="${yBot - 16}" text-anchor="middle" font-family="${FONT_LABEL}" font-size="28" font-weight="600" fill="${s === 'committed' ? onFill(accent) : CARD.ink}">${i + 1}</text>`
   }
   // Right end cap (receding face) so it reads as a solid box.
   const cap = `<polygon points="${(x0 + frontW).toFixed(1)},${yTop} ${(x0 + frontW + DX).toFixed(1)},${yTop - DY} ${(x0 + frontW + DX).toFixed(1)},${(yTop - DY + H).toFixed(1)} ${(x0 + frontW).toFixed(1)},${yBot}" fill="${CARD.tint}" stroke="${CARD.ink}" stroke-width="1.2"/>`
@@ -191,7 +235,7 @@ function shipmentStatus(p: ContainerPromo, x: number, y: number): string {
     const badge = p.phase && ARRIVED_PHASES.includes(p.phase) ? CARD.ink : (p.accent && /^#[0-9a-fA-F]{6}$/.test(p.accent) ? p.accent : CARD.gold)
     out +=
       `<rect x="${cx}" y="${y - 30}" width="${bw}" height="40" fill="${badge}"/>` +
-      `<text x="${cx + bw / 2}" y="${y - 2}" text-anchor="middle" font-family="${FONT_LABEL}" font-size="26" font-weight="600" letter-spacing="1" fill="#ffffff">${esc(phase.toUpperCase())}</text>`
+      `<text x="${cx + bw / 2}" y="${y - 2}" text-anchor="middle" font-family="${FONT_LABEL}" font-size="26" font-weight="600" letter-spacing="1" fill="${onFill(badge)}">${esc(phase.toUpperCase())}</text>`
     cx += bw + 20
   }
   if (route) {
@@ -259,7 +303,7 @@ export function buildPromoCardSvg(p: ContainerPromo): string {
   <text x="${pad}" y="313" font-family="${FONT_DISPLAY}" font-size="66" font-weight="400" fill="${CARD.ink}">${esc(p.productName)}</text>
 
   <!-- slot count -->
-  <text x="${pad}" y="402" font-family="${FONT_LABEL}" font-size="46" font-weight="600" fill="${accent}">${p.slotsAvailable} de ${p.slotsTotal} ${esc(unit(p))} disponibles</text>
+  <text x="${pad}" y="402" font-family="${FONT_LABEL}" font-size="46" font-weight="600" fill="${accentText(accent)}">${p.slotsAvailable} de ${p.slotsTotal} ${esc(unit(p))} disponibles</text>
 
   <!-- shipment status: phase badge + origin → destination (from the spec) -->
   ${shipmentStatus(p, pad, 462)}
@@ -273,7 +317,7 @@ export function buildPromoCardSvg(p: ContainerPromo): string {
   <!-- pitch + specs + url -->
   <text x="${pad}" y="${S - 190}" font-family="${FONT_BODY}" font-size="30" font-weight="500" fill="${CARD.ink}">Compra al por mayor${p.priceNote ? ' · ' + esc(p.priceNote) : ' a precio especial'}</text>
   ${specs ? `<text x="${pad}" y="${S - 150}" font-family="${FONT_BODY}" font-size="24" fill="${CARD.sub}">${esc(specs)}</text>` : ''}
-  <rect x="${pad}" y="${S - 118}" width="${w}" height="2" fill="${CARD.muted}"/>
+  <rect x="${pad}" y="${S - 118}" width="${w}" height="2" fill="${CARD.line}"/>
   <text x="${pad}" y="${S - 72}" font-family="${FONT_BODY}" font-size="26" font-weight="700" fill="${CARD.ink}">${esc(p.listingUrl)}</text>
   <desc>taken:${taken} committed:${committed} reserved:${reserved} available:${p.slotsAvailable}</desc>
 </svg>`
