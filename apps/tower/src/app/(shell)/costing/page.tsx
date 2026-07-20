@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { CostCalculator } from '@/components/costing'
 import { listCostCalculations, listCostingLanes } from '@/lib/actions/costing'
@@ -30,7 +31,12 @@ export default async function CostingPage() {
   return (
     <div className="flex h-full flex-col gap-4 overflow-y-auto p-6">
       <header className="flex flex-col gap-1 border-b border-line pb-4">
-        <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">CST · Costeo SUNAT</span>
+        <div className="flex items-center gap-3">
+          <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">CST · Costeo SUNAT</span>
+          <Link href="/costing/bulk" className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary hover:text-lane-accent">
+            Importación masiva →
+          </Link>
+        </div>
         <h1 className="font-ui text-t2 text-ink-primary">Costo de importación (Perú)</h1>
       </header>
       <CostCalculator lanes={lanes} initialHistory={initialHistory} />

@@ -12,6 +12,7 @@ import { createServerSupabase } from '@/lib/supabase/server'
 import { fail, ok, type ActionResult } from './result'
 import { computeImportCost } from '@/lib/costing/engine'
 import { costCalcMoney } from '@/lib/costing/persistence'
+import type { AdValoremRate } from '@/lib/costing/ad-valorem'
 import type { ImportInputs, ImportResult } from '@/lib/costing/types'
 
 const uuidSchema = z.string().uuid()
@@ -82,6 +83,53 @@ export interface CostingLane {
   code: string
   name: string
   archetype: string
+}
+
+/** Config-sourced rate defaults (fractions) + the brand's Ad Valorem table (G5).
+ *  IGV/percepción/insurance come from versioned costing_config (single source of
+ *  truth); the exchange rate stays per-operation. ISC thresholds stay engine-
+ *  internal (parity-locked) — config mirrors them for reference only. */
+export interface CostingReference {
+  igvRate: number
+  percepcionRate: number
+  insuranceRate: number
+  adValoremRates: AdValoremRate[]
+}
+
+export async function getCostingReference(laneId: string): Promise<ActionResult<CostingReference>> {
+  const parsed = uuidSchema.safeParse(laneId)
+  if (!parsed.success) return fail('VALIDATION', 'ID inválido / Invalid id')
+  const auth = await requireUser()
+  if (!auth.ok) return auth.error
+
+  const { data: lane } = await auth.supabase.from('lanes').select('brand_id').eq('id', parsed.data).maybeSingle()
+  const brandId = (lane as { brand_id?: string } | null)?.brand_id
+  if (!brandId) return fail('FORBIDDEN_LANE', 'Lane no encontrado / Lane not found')
+
+  const { data: config } = await auth.supabase
+    .from('costing_config')
+    .select('igv_bps,percepcion_bps,insurance_bps,version')
+    .eq('brand_id', brandId)
+    .order('version', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  const c = config as { igv_bps: number; percepcion_bps: number; insurance_bps: number } | null
+
+  const { data: rates } = await auth.supabase
+    .from('ad_valorem_rates')
+    .select('hs_prefix,bps,label')
+    .eq('brand_id', brandId)
+
+  return ok({
+    igvRate: (c?.igv_bps ?? 1800) / 10_000,
+    percepcionRate: (c?.percepcion_bps ?? 350) / 10_000,
+    insuranceRate: (c?.insurance_bps ?? 150) / 10_000,
+    adValoremRates: ((rates ?? []) as { hs_prefix: string; bps: number; label: string | null }[]).map((r) => ({
+      hsPrefix: r.hs_prefix,
+      bps: r.bps,
+      label: r.label,
+    })),
+  })
 }
 
 // ── Lanes the user may cost for ──────────────────────────────────────────────
@@ -164,6 +212,61 @@ export async function saveCostCalculation(
   if (error || !data) return fail('FORBIDDEN_LANE', 'No se pudo guardar / Could not save')
 
   return ok(mapRow(data as unknown as RawCostRow))
+}
+
+// ── Bulk: cost + persist many rows at once (Wave 6.4) ────────────────────────
+const bulkSchema = z.object({
+  laneId: uuidSchema,
+  label: z.string().trim().max(200).nullish(),
+  rows: z.array(importInputsSchema).min(1).max(500),
+})
+export type SaveBulkInput = z.input<typeof bulkSchema>
+
+export async function saveBulkCostCalculations(
+  input: SaveBulkInput,
+): Promise<ActionResult<CostCalculationRow[]>> {
+  const parsed = bulkSchema.safeParse(input)
+  if (!parsed.success) {
+    return fail('VALIDATION', 'Datos inválidos / Invalid data', parsed.error.flatten().fieldErrors as Record<string, string[]>)
+  }
+  const auth = await requireUser()
+  if (!auth.ok) return auth.error
+  const { supabase } = auth
+
+  const { data: lane, error: laneError } = await supabase
+    .from('lanes')
+    .select('brand_id')
+    .eq('id', parsed.data.laneId)
+    .maybeSingle()
+  if (laneError || !lane) return fail('FORBIDDEN_LANE', 'Lane no encontrado / Lane not found')
+  const brandId = (lane as { brand_id: string }).brand_id
+
+  // Cost every row server-side (authoritative), then one batch insert.
+  const payload = parsed.data.rows.map((inputs) => {
+    const result = computeImportCost(inputs as ImportInputs)
+    const money = costCalcMoney(inputs as ImportInputs, result)
+    return {
+      brand_id: brandId,
+      lane_id: parsed.data.laneId,
+      inputs,
+      result,
+      incoterm: money.incoterm,
+      exchange_rate_milli: money.exchange_rate_milli,
+      landed_minor: money.landed_minor,
+      cash_outlay_minor: money.cash_outlay_minor,
+      sale_price_minor: money.sale_price_minor,
+      margin_minor: money.margin_minor,
+      label: parsed.data.label ?? null,
+    }
+  })
+
+  const { data, error } = await supabase
+    .from('cost_calculations')
+    .insert(payload)
+    .select('id,lane_id,incoterm,landed_minor,cash_outlay_minor,sale_price_minor,margin_minor,label,created_at,result,inputs')
+  if (error || !data) return fail('FORBIDDEN_LANE', 'No se pudo guardar el lote / Could not save the batch')
+
+  return ok((data as unknown as RawCostRow[]).map(mapRow))
 }
 
 interface RawCostRow {

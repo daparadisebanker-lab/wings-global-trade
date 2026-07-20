@@ -6,14 +6,17 @@
 // authoritatively). Standalone calculator mode; attach-to-container is a later
 // wave. Rates are entered as percentages for the operator and converted to the
 // engine's fractions.
-import { useMemo, useState, useTransition } from 'react'
+import { useEffect, useMemo, useState, useTransition } from 'react'
 import { computeImportCost, DEFAULT_INPUTS } from '@/lib/costing/engine'
 import type { ImportInputs } from '@/lib/costing/types'
 import {
+  getCostingReference,
   saveCostCalculation,
   type CostCalculationRow,
   type CostingLane,
+  type CostingReference,
 } from '@/lib/actions/costing'
+import { resolveAdValoremRate } from '@/lib/costing/ad-valorem'
 import { CostWaterfall } from './CostWaterfall'
 
 const LABEL = 'font-mono text-label uppercase tracking-[0.08em] text-ink-secondary'
@@ -83,10 +86,41 @@ export function CostCalculator({
   const [inputs, setInputs] = useState<ImportInputs>(DEFAULT_INPUTS)
   const [laneId, setLaneId] = useState(lanes[0]?.id ?? '')
   const [label, setLabel] = useState('')
+  const [hsCode, setHsCode] = useState('')
+  const [reference, setReference] = useState<CostingReference | null>(null)
   const [history, setHistory] = useState(initialHistory)
   const [error, setError] = useState<string | null>(null)
   const [saved, setSaved] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
+
+  // Config-sourced rate defaults per lane's brand (G5): IGV / percepción /
+  // insurance come from versioned costing_config; the Ad Valorem table is used
+  // to resolve a rate from the HS code. Applied on lane change; the operator can
+  // still override any rate for a one-off.
+  useEffect(() => {
+    if (!laneId) return
+    let active = true
+    getCostingReference(laneId).then((res) => {
+      if (!active || res.error) return
+      setReference(res.data)
+      setInputs((p) => ({
+        ...p,
+        igvRate: res.data.igvRate,
+        percepcionRate: res.data.percepcionRate,
+        insuranceRate: res.data.insuranceRate,
+        adValoremRate: resolveAdValoremRate(res.data.adValoremRates, hsCode),
+      }))
+    })
+    return () => {
+      active = false
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [laneId])
+
+  function applyHsCode(code: string) {
+    setHsCode(code)
+    if (reference) set('adValoremRate', resolveAdValoremRate(reference.adValoremRates, code))
+  }
 
   const preview = useMemo(() => {
     try {
@@ -181,6 +215,7 @@ export function CostCalculator({
           </Group>
 
           <Group title="Tasas (%)">
+            <Text label="HS code → Ad Valorem" value={hsCode} onChange={applyHsCode} />
             <Num label="Ad Valorem" value={inputs.adValoremRate * 100} onChange={(v) => set('adValoremRate', v / 100)} />
             <Num label="IGV" value={inputs.igvRate * 100} onChange={(v) => set('igvRate', v / 100)} />
             <Num label="Percepción" value={inputs.percepcionRate * 100} onChange={(v) => set('percepcionRate', v / 100)} />
