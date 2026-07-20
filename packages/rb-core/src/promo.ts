@@ -293,10 +293,11 @@ export function buildPromoCardSvg(p: ContainerPromo): string {
     </pattern>
   </defs>
   <rect width="${S}" height="${S}" fill="${CARD.bg}"/>
-  <!-- Wings imagotipo (the real mark, inlined) -->
-  ${wingsLogo(pad, pad - 6, 62)}
-  <text x="${S - pad}" y="${pad + 34}" text-anchor="end" font-family="${FONT_LABEL}" font-size="24" font-weight="500" fill="${CARD.sub}">${esc(p.ownerLabel)} · ${esc(p.containerCode)}</text>
-  <line x1="${pad}" y1="${pad + 70}" x2="${S - pad}" y2="${pad + 70}" stroke="${CARD.ink}" stroke-width="2"/>
+  <!-- Wings imagotipo (the real mark, inlined) — recoloured to brand navy for
+       one owned blue on the card -->
+  ${wingsLogo(pad, pad - 10, 78, CARD.ink)}
+  <text x="${S - pad}" y="${pad + 46}" text-anchor="end" font-family="${FONT_LABEL}" font-size="24" font-weight="500" fill="${CARD.sub}">${esc(p.ownerLabel)} · ${esc(p.containerCode)}</text>
+  <line x1="${pad}" y1="${pad + 84}" x2="${S - pad}" y2="${pad + 84}" stroke="${CARD.ink}" stroke-width="2"/>
 
   <!-- headline -->
   <text x="${pad}" y="238" font-family="${FONT_DISPLAY}" font-size="66" font-weight="400" fill="${CARD.ink}">Contenedor de</text>
