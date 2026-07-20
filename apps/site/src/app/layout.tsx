@@ -74,7 +74,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       {/* Bottom padding on mobile reserves space for the fixed MobileTabBar so
           it never covers footer content; cleared at lg where the bar is hidden. */}
-      <body className="font-body antialiased pb-[calc(3.5rem+env(safe-area-inset-bottom))] lg:pb-0">
+      <body className="font-body antialiased pb-[calc(4rem+env(safe-area-inset-bottom))] lg:pb-0">
         <SmoothScroll>
           <ToastProvider>
             <ComparisonProvider>

@@ -328,7 +328,7 @@ export function CompareBar() {
   return (
     <>
       {/* Mobile FAB — hidden on desktop; lifted above the MobileTabBar */}
-      <div className="fixed bottom-[calc(3.5rem+1.5rem)] right-6 z-40 lg:hidden">
+      <div className="fixed bottom-[calc(4rem+1rem)] right-6 z-40 lg:hidden">
         {/* Pulse ring — expands + fades each time an item is added */}
         <AnimatePresence>
           {pulseVersion > 0 && (
