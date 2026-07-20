@@ -5,7 +5,7 @@
 // selecting a category is now a deliberate choice that leads into that
 // category's own branded space (subcategory nav → spec sheets → RFQ / Mister).
 import Link from 'next/link'
-import { getCategories, getProducts } from '@/lib/catalog-data'
+import { getNavCategories, getProducts } from '@/lib/catalog-data'
 import { CategoryIcon } from '@/components/features/homepage/CategoryIcon'
 import { getCategoryIdentity } from '@/lib/category-identity'
 import { ProductGrid } from '@/components/features/catalog/ProductGrid'
@@ -25,7 +25,7 @@ export default async function CatalogIndexPage({
   searchParams: Promise<{ q?: string }>
 }) {
   const { q } = await searchParams
-  const categories = await getCategories()
+  const categories = await getNavCategories()
 
   // ── Search view (unchanged) ───────────────────────────────────────────────
   if (q) {

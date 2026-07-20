@@ -2,7 +2,7 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
-import { getCategories, getAllSubcategories } from '@/lib/catalog-data'
+import { getNavCategories, getAllSubcategories } from '@/lib/catalog-data'
 import { SiteNav } from '@/components/features/navigation/SiteNav'
 import { MobileTabBar } from '@/components/features/navigation/MobileTabBar'
 import { Footer } from '@/components/features/navigation/Footer'
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const [categories, subcategories] = await Promise.all([getCategories(), getAllSubcategories()])
+  const [categories, subcategories] = await Promise.all([getNavCategories(), getAllSubcategories()])
 
   // Group live subcategories by their category slug for the mega-menu columns.
   const idToSlug = new Map(categories.map((c) => [c.id, c.slug]))
