@@ -113,6 +113,14 @@ const IDENTITIES: Record<string, CategoryIdentity> = {
     freeZone: 'ZOFRATACNA',
     texture: 'mesh-grain',
   },
+  utv: {
+    iconKey: 'utv',
+    tagline: 'Vehículos utilitarios todo terreno (UTV / side-by-side) y cuatrimotos para trabajo y off-road.',
+    register: 'Se importa por unidad o por lote; el volumen por unidad define la densidad del contenedor.',
+    markets: 'China',
+    freeZone: 'ZOFRATACNA',
+    texture: 'mesh-grain',
+  },
 }
 
 /** Sensible defaults when a category has no authored identity yet. */
