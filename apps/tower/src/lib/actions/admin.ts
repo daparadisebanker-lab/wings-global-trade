@@ -263,6 +263,31 @@ export async function inviteUser(email: string): Promise<ActionResult<{ userId: 
   return ok({ userId: data.user.id, email: data.user.email ?? parsed.data })
 }
 
+const setAdminSchema = z.object({ userId: z.string().uuid(), isGroupAdmin: z.boolean() })
+
+/**
+ * Promote/demote a user to group admin (profiles.is_group_admin). Group admin is
+ * the "sees + does everything" tier — the whole small team runs as group admins;
+ * the fine-grained lane/brand roles are for external reps + future scale. Written
+ * service-role (the column is revoked from the authenticated path, tower_32); a
+ * group-admin can't demote themselves (lockout guard).
+ */
+export async function setUserGroupAdmin(input: z.input<typeof setAdminSchema>): Promise<ActionResult<{ userId: string; isGroupAdmin: boolean }>> {
+  const gate = await requireGroupAdmin()
+  if (!gate.ok) return gate.error
+  const parsed = setAdminSchema.safeParse(input)
+  if (!parsed.success) return fail('VALIDATION', 'Datos inválidos / Invalid data')
+  if (parsed.data.userId === gate.userId && !parsed.data.isGroupAdmin) {
+    return fail('VALIDATION', 'No puedes quitarte tu propio acceso de admin / You cannot demote yourself')
+  }
+  const { error } = await gate.db
+    .from('profiles')
+    .update({ is_group_admin: parsed.data.isGroupAdmin })
+    .eq('id', parsed.data.userId)
+  if (error) return fail('VALIDATION', 'No se pudo actualizar / Could not update')
+  return ok({ userId: parsed.data.userId, isGroupAdmin: parsed.data.isGroupAdmin })
+}
+
 const membershipKeySchema = z.object({
   laneId: z.string().uuid(),
   role: z.enum(LANE_ROLES as unknown as [DbLaneRole, ...DbLaneRole[]]),

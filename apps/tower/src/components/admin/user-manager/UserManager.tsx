@@ -5,7 +5,7 @@
 // group-admin in the DB (admin.ts requireGroupAdmin). This is presentation.
 import { useMemo, useState, useTransition } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
-import { inviteUser, type LaneAdminRow } from '@/lib/actions/admin'
+import { inviteUser, setUserGroupAdmin, type LaneAdminRow } from '@/lib/actions/admin'
 import { ADMIN_USERS_KEY, useAdminUsersQuery } from './useAdminUsersQuery'
 import { MembershipMatrix } from './MembershipMatrix'
 
@@ -18,6 +18,7 @@ export function UserManager({ lanes }: { lanes: LaneAdminRow[] }) {
   const [email, setEmail] = useState('')
   const [inviteBanner, setInviteBanner] = useState<{ tone: 'positive' | 'negative'; text: string } | null>(null)
   const [isInviting, startInvite] = useTransition()
+  const [isSettingAdmin, startAdmin] = useTransition()
 
   const selectedUser = users.find((u) => u.id === selectedId) ?? null
 
@@ -123,7 +124,37 @@ export function UserManager({ lanes }: { lanes: LaneAdminRow[] }) {
         {/* Matrix */}
         <section className="overflow-y-auto rounded-card border border-line p-4">
           {selectedUser ? (
-            <MembershipMatrix user={selectedUser} lanes={lanes} onSaved={invalidateUsers} />
+            <div className="flex flex-col gap-4">
+              {/* Group-admin tier — the whole small team runs as admins; lane/brand
+                  roles below are for external reps + scale. Presentation only; the
+                  DB (column revoke + service-role writer) is the gate. */}
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-line bg-surface-1 p-3">
+                <div className="flex flex-col">
+                  <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">Acceso total (admin de grupo)</span>
+                  <span className="font-ui text-label text-ink-secondary">
+                    {selectedUser.isGroupAdmin ? 'Ve y opera todo el sistema' : 'Acceso por lane/marca únicamente'}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() =>
+                    startAdmin(async () => {
+                      const res = await setUserGroupAdmin({ userId: selectedUser.id, isGroupAdmin: !selectedUser.isGroupAdmin })
+                      if (!res.error) invalidateUsers()
+                    })
+                  }
+                  disabled={isSettingAdmin}
+                  className={`rounded-card px-3 py-1.5 font-mono text-label uppercase tracking-[0.1em] disabled:opacity-40 ${
+                    selectedUser.isGroupAdmin
+                      ? 'border border-line text-ink-secondary hover:border-negative'
+                      : 'bg-accent text-surface-0'
+                  }`}
+                >
+                  {selectedUser.isGroupAdmin ? 'Quitar admin' : 'Hacer admin de grupo'}
+                </button>
+              </div>
+              <MembershipMatrix user={selectedUser} lanes={lanes} onSaved={invalidateUsers} />
+            </div>
           ) : (
             <div className="flex h-full min-h-[30vh] items-center justify-center">
               <p className="font-ui text-t0 text-ink-secondary">
