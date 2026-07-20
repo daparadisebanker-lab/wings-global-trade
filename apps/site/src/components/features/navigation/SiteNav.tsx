@@ -219,7 +219,7 @@ export function SiteNav({ categories, subcategoriesByCategory }: SiteNavProps) {
                 setMenuHovered(false)
                 setSearchOpen((o) => !o)
               }}
-              className="flex h-8 w-8 items-center justify-center text-warm-white/70 transition-colors duration-200 hover:text-warm-white"
+              className="flex h-8 items-center gap-2 text-warm-white/70 transition-colors duration-200 hover:text-warm-white"
             >
               <svg
                 viewBox="0 0 20 20"
@@ -232,6 +232,7 @@ export function SiteNav({ categories, subcategoriesByCategory }: SiteNavProps) {
                 <circle cx="9" cy="9" r="6" />
                 <path d="M14 14l4 4" strokeLinecap="round" />
               </svg>
+              <span className="font-mono text-[11px] uppercase tracking-nav">Buscar</span>
             </button>
             <Link
               href="/contacto"
