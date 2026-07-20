@@ -11,12 +11,15 @@ import { computeImportCost, DEFAULT_INPUTS } from '@/lib/costing/engine'
 import type { ImportInputs } from '@/lib/costing/types'
 import {
   getCostingReference,
+  listCostingContainers,
   saveCostCalculation,
   type CostCalculationRow,
+  type CostingContainer,
   type CostingLane,
   type CostingReference,
 } from '@/lib/actions/costing'
 import { resolveAdValoremRate } from '@/lib/costing/ad-valorem'
+import { exportCostSheetXlsx } from './export'
 import { CostWaterfall } from './CostWaterfall'
 
 const LABEL = 'font-mono text-label uppercase tracking-[0.08em] text-ink-secondary'
@@ -88,6 +91,8 @@ export function CostCalculator({
   const [label, setLabel] = useState('')
   const [hsCode, setHsCode] = useState('')
   const [reference, setReference] = useState<CostingReference | null>(null)
+  const [containers, setContainers] = useState<CostingContainer[]>([])
+  const [containerId, setContainerId] = useState('')
   const [history, setHistory] = useState(initialHistory)
   const [error, setError] = useState<string | null>(null)
   const [saved, setSaved] = useState<string | null>(null)
@@ -111,11 +116,22 @@ export function CostCalculator({
         adValoremRate: resolveAdValoremRate(res.data.adValoremRates, hsCode),
       }))
     })
+    setContainerId('')
+    listCostingContainers(laneId).then((res) => {
+      if (active && res.data) setContainers(res.data)
+    })
     return () => {
       active = false
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [laneId])
+
+  function reopen(row: CostCalculationRow) {
+    setInputs(row.inputs)
+    setLabel(row.label ?? '')
+    setSaved(null)
+    if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   function applyHsCode(code: string) {
     setHsCode(code)
@@ -142,7 +158,12 @@ export function CostCalculator({
     }
     setError(null)
     startTransition(async () => {
-      const result = await saveCostCalculation({ laneId, label: label.trim() || null, inputs })
+      const result = await saveCostCalculation({
+        laneId,
+        containerId: containerId || null,
+        label: label.trim() || null,
+        inputs,
+      })
       if (result.error) {
         setError(result.error.message)
         return
@@ -263,10 +284,29 @@ export function CostCalculator({
                 ))}
               </select>
             </label>
+            <label className="flex flex-col gap-1">
+              <span className={LABEL}>Contenedor</span>
+              <select value={containerId} onChange={(e) => setContainerId(e.target.value)} className={INPUT}>
+                <option value="">— sin contenedor —</option>
+                {containers.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.code} · {c.status}
+                  </option>
+                ))}
+              </select>
+            </label>
             <label className="flex flex-1 flex-col gap-1">
               <span className={LABEL}>Etiqueta / Label</span>
               <input value={label} onChange={(e) => setLabel(e.target.value)} className={`${INPUT} font-ui`} />
             </label>
+            <button
+              type="button"
+              onClick={() => preview && void exportCostSheetXlsx(inputs, preview, label)}
+              disabled={!preview}
+              className="rounded-card border border-line px-3 py-2 font-mono text-label uppercase tracking-[0.1em] text-ink-primary hover:border-lane-accent disabled:opacity-40"
+            >
+              Exportar XLSX ↓
+            </button>
             <button
               type="button"
               onClick={handleSave}
@@ -295,14 +335,38 @@ export function CostCalculator({
         ) : (
           <ul className="flex flex-col divide-y divide-line rounded-card border border-line">
             {history.map((h) => (
-              <li key={h.id} className="flex flex-wrap items-baseline justify-between gap-3 px-4 py-2">
-                <span className="font-ui text-t0 text-ink-primary">
+              <li key={h.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-2">
+                <button
+                  type="button"
+                  onClick={() => reopen(h)}
+                  title="Reabrir en la calculadora / Re-open in the calculator"
+                  className="text-left font-ui text-t0 text-ink-primary hover:text-lane-accent"
+                >
                   {h.label || h.inputs.productName || h.inputs.brand || 'Cálculo'}
                   <span className="ml-2 font-mono text-label text-ink-secondary">{h.incoterm}</span>
-                </span>
-                <span className="font-mono text-t0 tabular-nums text-ink-secondary" data-numeric>
-                  landed {money(h.landedMinor / 100)} · venta {money(h.salePriceMinor / 100)}
-                </span>
+                </button>
+                <div className="flex items-center gap-3">
+                  <span className="font-mono text-t0 tabular-nums text-ink-secondary" data-numeric>
+                    landed {money(h.landedMinor / 100)} · venta {money(h.salePriceMinor / 100)}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => void exportCostSheetXlsx(h.inputs, h.result, h.label)}
+                    className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:text-lane-accent"
+                    title="Re-exportar XLSX / Re-export XLSX"
+                  >
+                    XLSX ↓
+                  </button>
+                  <a
+                    href={`/cost-sheet/${h.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:text-lane-accent"
+                    title="Hoja imprimible / Printable sheet (PDF)"
+                  >
+                    PDF ↗
+                  </a>
+                </div>
               </li>
             ))}
           </ul>

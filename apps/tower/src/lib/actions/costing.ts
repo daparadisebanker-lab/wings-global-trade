@@ -164,6 +164,29 @@ export async function listCostingLanes(): Promise<ActionResult<CostingLane[]>> {
   return ok((data ?? []) as unknown as CostingLane[])
 }
 
+export interface CostingContainer {
+  id: string
+  code: string
+  status: string
+}
+
+/** Containers in a lane a cost sheet can be attached to (G2 — keyed to containers). */
+export async function listCostingContainers(laneId: string): Promise<ActionResult<CostingContainer[]>> {
+  const parsed = uuidSchema.safeParse(laneId)
+  if (!parsed.success) return fail('VALIDATION', 'ID inválido / Invalid id')
+  const auth = await requireUser()
+  if (!auth.ok) return auth.error
+
+  const { data, error } = await auth.supabase
+    .from('containers')
+    .select('id,code,status')
+    .eq('lane_id', parsed.data)
+    .order('code', { ascending: false })
+    .limit(100)
+  if (error) return fail('FORBIDDEN_LANE', 'No se pudieron leer los contenedores / Could not read containers')
+  return ok((data ?? []) as unknown as CostingContainer[])
+}
+
 // ── Save a computed cost sheet (append-only) ─────────────────────────────────
 export async function saveCostCalculation(
   input: SaveCostCalculationInput,

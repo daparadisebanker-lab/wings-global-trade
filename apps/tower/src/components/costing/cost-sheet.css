@@ -1,0 +1,132 @@
+/* Printable cost sheet — a self-contained LIGHT surface (white, black ink),
+   independent of TOWER's dark shell, consistent with the quotation document.
+   Scoped under .csheet so it never leaks into the app chrome. */
+
+.csheet {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 40px 48px;
+  background: #ffffff;
+  color: #0f1216;
+  font-family: var(--font-ui, system-ui, sans-serif);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.csheet * {
+  box-sizing: border-box;
+}
+.csheet-title {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.csheet-sub {
+  margin-top: 4px;
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  color: #6b7280;
+}
+.csheet-rule {
+  height: 2px;
+  background: #0f1216;
+  margin: 14px 0 22px;
+}
+.csheet-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.csheet-table td {
+  padding: 6px 4px;
+  border-bottom: 1px solid #e5e7eb;
+}
+.csheet-table td.csheet-val {
+  text-align: right;
+  font-family: var(--font-mono, monospace);
+  font-variant-numeric: tabular-nums;
+}
+.csheet-table tr.csheet-section td {
+  border-bottom: none;
+  padding-top: 16px;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #374151;
+}
+.csheet-table tr.csheet-spacer td {
+  border-bottom: none;
+  padding: 2px;
+}
+.csheet-foot {
+  margin-top: 28px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+  color: #6b7280;
+  font-size: 11px;
+}
+
+/* Page frame — forces a light ground over TOWER's dark root body. */
+.csheet-page {
+  min-height: 100vh;
+  background: #52555a;
+  padding: 32px 16px 64px;
+}
+.csheet-page .csheet {
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.35);
+}
+.csheet-toolbar {
+  max-width: 720px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 14px;
+  background: #1b1e22;
+  border: 1px solid #34383e;
+  color: #e8eaed;
+  font-family: var(--font-ui, system-ui, sans-serif);
+}
+.csheet-toolbar-btn {
+  padding: 8px 14px;
+  background: #ffb020;
+  color: #101214;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.csheet-error {
+  max-width: 720px;
+  margin: 80px auto;
+  padding: 40px;
+  background: #fff;
+  text-align: center;
+  font-family: var(--font-ui, system-ui, sans-serif);
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 14mm;
+  }
+  .csheet {
+    max-width: none;
+    padding: 0;
+  }
+  .csheet-page {
+    background: #ffffff;
+    padding: 0;
+  }
+  .csheet-page .csheet {
+    box-shadow: none;
+  }
+  [data-print-hidden] {
+    display: none !important;
+  }
+}
