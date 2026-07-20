@@ -13,15 +13,20 @@ interface MobileMenuProps {
   categories: Category[]
 }
 
+// Hierarchy (UX audit roadmap #4): three PRIMARY destinations get the large
+// editorial treatment; everything else is demoted to a compact SECONDARY row.
 const PRIMARY_NAV = [
-  { href: '/catalogo',   label: 'Catálogo',       num: '01' },
-  { href: '/repuestos',  label: 'Motores',        num: '02' },
-  { href: '/marcas',     label: 'Marcas',          num: '03' },
-  { href: '/cotizar',    label: 'Cotizar',         num: '04' },
-  { href: '/proceso',    label: 'Cómo importar',   num: '05' },
-  { href: '/mister',     label: 'Mister IA',       num: '06' },
-  { href: '/nosotros',   label: 'Nosotros',        num: '07' },
-  { href: '/contacto',   label: 'Contacto',        num: '08' },
+  { href: '/catalogo', label: 'Catálogo',  num: '01' },
+  { href: '/cotizar',  label: 'Cotizar',   num: '02' },
+  { href: '/mister',   label: 'Mister IA', num: '03' },
+]
+
+const SECONDARY_NAV = [
+  { href: '/proceso',   label: 'Cómo importar' },
+  { href: '/repuestos', label: 'Motores' },
+  { href: '/marcas',    label: 'Marcas' },
+  { href: '/nosotros',  label: 'Nosotros' },
+  { href: '/contacto',  label: 'Contacto' },
 ]
 
 // Fix #14 — stagger container drives timing; items use shared variants
@@ -119,6 +124,30 @@ export function MobileMenu({ open, onClose, categories }: MobileMenuProps) {
                 ))}
               </div>
             </motion.div>
+
+            {/* Secondary nav — demoted, compact list */}
+            <motion.nav
+              aria-label="Más enlaces"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1, transition: { duration: 0.4, delay: 0.42 } }}
+              className="mt-10"
+            >
+              <p className="mb-3 font-mono text-[9px] uppercase tracking-[0.18em] text-gold/30">
+                Más
+              </p>
+              <div className="flex flex-col">
+                {SECONDARY_NAV.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={onClose}
+                    className="border-b border-warm-white/[0.06] py-3 font-mono text-[12px] uppercase tracking-[0.10em] text-warm-white/55 transition-colors duration-150 last:border-0 hover:text-gold"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            </motion.nav>
 
             {/* Footer actions */}
             <motion.div

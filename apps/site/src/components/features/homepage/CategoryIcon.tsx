@@ -149,6 +149,15 @@ const paths: Record<string, React.ReactNode> = {
       <circle cx="17" cy="17" r="2" />
     </>
   ),
+  utv: (
+    <>
+      <circle cx="6.5" cy="16.5" r="3" />
+      <circle cx="17.5" cy="16.5" r="3" />
+      <path d="M3 15l2-4h6.5l3.5 4" />
+      <path d="M5 11V6.5h7L14 11" />
+      <path d="M9.5 16.5h5" />
+    </>
+  ),
 }
 
 export function CategoryIcon({ iconKey, className }: IconProps) {
