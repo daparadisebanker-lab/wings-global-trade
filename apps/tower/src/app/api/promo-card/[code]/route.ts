@@ -10,6 +10,7 @@ import { NextResponse } from 'next/server'
 import { Resvg } from '@resvg/resvg-js'
 import { buildPromoCardSvg } from '@wings/rb-core'
 import { getContainerPromoByCode } from '@/lib/actions/container-promo'
+import { promoFontFiles } from '@/lib/promo/fonts'
 
 export const dynamic = 'force-dynamic'
 
@@ -38,7 +39,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ code: s
 
   const png = new Resvg(svg, {
     fitTo: { mode: 'width', value: 1080 },
-    font: { loadSystemFonts: true, defaultFontFamily: 'Arial' },
+    font: { fontFiles: promoFontFiles(), loadSystemFonts: true, defaultFontFamily: 'Flexo' },
   })
     .render()
     .asPng()

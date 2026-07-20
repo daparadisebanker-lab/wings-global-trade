@@ -37,6 +37,45 @@
   font-style: normal;
   font-display: swap;
 }
+@font-face {
+  font-family: 'Flexo';
+  src: url('/fonts/flexo/Flexo-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* NissanOpti (display) + Teko (numerals/labels) — NOT part of TOWER's UI voice;
+   loaded only so the brand share card (@wings/rb-core) previews and downloads
+   with the real Wings type system, same faces the live site ships. */
+@font-face {
+  font-family: 'NissanOpti';
+  src: url('/fonts/NissanOpti.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Teko';
+  src: url('/fonts/Teko-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Teko';
+  src: url('/fonts/Teko-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Teko';
+  src: url('/fonts/Teko-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
   --font-ui: 'Flexo', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;

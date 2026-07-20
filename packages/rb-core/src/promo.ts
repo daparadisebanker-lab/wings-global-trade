@@ -107,6 +107,14 @@ const CARD = {
   tint: '#ECE6DA', // top-face tint for open bays
 }
 
+// Wings brand type system (apps/site/public/fonts, self-hosted): NissanOpti =
+// display, Flexo = body, Teko = labels + numerals. Family names match both the
+// font files' internal names (for resvg) and the @font-face declarations (for
+// the browser preview/canvas). Arial is only the last-ditch fallback.
+const FONT_DISPLAY = "'NissanOpti', Arial, sans-serif"
+const FONT_BODY = "'Flexo', Arial, sans-serif"
+const FONT_LABEL = "'Teko', 'Arial Narrow', Arial, sans-serif"
+
 // Cabinet-projection depth ratios — identical grammar to the ContainerSliceDiagram
 // organ (@wings/trade-ui) so the WhatsApp/ad card matches the on-site drawing.
 const DX = 40
@@ -159,7 +167,7 @@ function isoContainer(p: ContainerPromo, x0: number, yTop: number, frontW: numbe
     slices +=
       `<rect data-slot="${s}" x="${sx.toFixed(1)}" y="${yTop}" width="${sliceW.toFixed(1)}" height="${H}" fill="${frontFill(s)}" stroke="${CARD.ink}" stroke-width="1.2"/>` +
       `<polygon points="${sx.toFixed(1)},${yTop} ${(sx + DX).toFixed(1)},${yTop - DY} ${(sx + sliceW + DX).toFixed(1)},${yTop - DY} ${(sx + sliceW).toFixed(1)},${yTop}" fill="${topFill(s)}" stroke="${CARD.ink}" stroke-width="0.9" opacity="0.95"/>` +
-      `<text x="${(sx + sliceW / 2).toFixed(1)}" y="${yBot - 16}" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="${s === 'committed' ? '#ffffff' : CARD.ink}">${i + 1}</text>`
+      `<text x="${(sx + sliceW / 2).toFixed(1)}" y="${yBot - 16}" text-anchor="middle" font-family="${FONT_LABEL}" font-size="28" font-weight="600" fill="${s === 'committed' ? '#ffffff' : CARD.ink}">${i + 1}</text>`
   }
   // Right end cap (receding face) so it reads as a solid box.
   const cap = `<polygon points="${(x0 + frontW).toFixed(1)},${yTop} ${(x0 + frontW + DX).toFixed(1)},${yTop - DY} ${(x0 + frontW + DX).toFixed(1)},${(yTop - DY + H).toFixed(1)} ${(x0 + frontW).toFixed(1)},${yBot}" fill="${CARD.tint}" stroke="${CARD.ink}" stroke-width="1.2"/>`
@@ -178,16 +186,16 @@ function shipmentStatus(p: ContainerPromo, x: number, y: number): string {
   let out = ''
   let cx = x
   if (phase) {
-    const bw = phase.length * 15 + 32
+    const bw = phase.length * 13 + 30 // Teko is condensed — tighter than Arial
     // Arrived/nationalized read as completed states (navy); origin/transit use accent.
     const badge = p.phase && ARRIVED_PHASES.includes(p.phase) ? CARD.ink : (p.accent && /^#[0-9a-fA-F]{6}$/.test(p.accent) ? p.accent : CARD.gold)
     out +=
       `<rect x="${cx}" y="${y - 30}" width="${bw}" height="40" fill="${badge}"/>` +
-      `<text x="${cx + bw / 2}" y="${y - 2}" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="1" fill="#ffffff">${esc(phase.toUpperCase())}</text>`
+      `<text x="${cx + bw / 2}" y="${y - 2}" text-anchor="middle" font-family="${FONT_LABEL}" font-size="26" font-weight="600" letter-spacing="1" fill="#ffffff">${esc(phase.toUpperCase())}</text>`
     cx += bw + 20
   }
   if (route) {
-    out += `<text x="${cx}" y="${y - 4}" font-family="Arial, sans-serif" font-size="30" font-weight="700" fill="${CARD.ink}">${esc(route)}</text>`
+    out += `<text x="${cx}" y="${y - 4}" font-family="${FONT_LABEL}" font-size="32" font-weight="600" fill="${CARD.ink}">${esc(route)}</text>`
   }
   return out
 }
@@ -206,7 +214,7 @@ function legend(p: ContainerPromo, x: number, y: number, hatchId: string): strin
   for (const it of items) {
     out +=
       `<rect x="${cx}" y="${y - sw + 4}" width="${sw}" height="${sw}" fill="${it.fill}" stroke="${CARD.ink}" stroke-width="1.2"/>` +
-      `<text x="${cx + sw + 12}" y="${y}" font-family="Arial, sans-serif" font-size="24" fill="${CARD.ink}">${it.label}</text>`
+      `<text x="${cx + sw + 12}" y="${y}" font-family="${FONT_BODY}" font-size="24" fill="${CARD.ink}">${it.label}</text>`
     cx += sw + 12 + it.label.length * 13 + 40
   }
   return out
@@ -243,15 +251,15 @@ export function buildPromoCardSvg(p: ContainerPromo): string {
   <rect width="${S}" height="${S}" fill="${CARD.bg}"/>
   <!-- Wings imagotipo (the real mark, inlined) -->
   ${wingsLogo(pad, pad - 6, 62)}
-  <text x="${S - pad}" y="${pad + 34}" text-anchor="end" font-family="Arial, sans-serif" font-size="20" fill="${CARD.sub}">${esc(p.ownerLabel)} · ${esc(p.containerCode)}</text>
+  <text x="${S - pad}" y="${pad + 34}" text-anchor="end" font-family="${FONT_LABEL}" font-size="24" font-weight="500" fill="${CARD.sub}">${esc(p.ownerLabel)} · ${esc(p.containerCode)}</text>
   <line x1="${pad}" y1="${pad + 70}" x2="${S - pad}" y2="${pad + 70}" stroke="${CARD.ink}" stroke-width="2"/>
 
   <!-- headline -->
-  <text x="${pad}" y="240" font-family="Arial, sans-serif" font-size="64" font-weight="800" fill="${CARD.ink}">Contenedor de</text>
-  <text x="${pad}" y="315" font-family="Arial, sans-serif" font-size="64" font-weight="800" fill="${CARD.ink}">${esc(p.productName)}</text>
+  <text x="${pad}" y="238" font-family="${FONT_DISPLAY}" font-size="66" font-weight="400" fill="${CARD.ink}">Contenedor de</text>
+  <text x="${pad}" y="313" font-family="${FONT_DISPLAY}" font-size="66" font-weight="400" fill="${CARD.ink}">${esc(p.productName)}</text>
 
   <!-- slot count -->
-  <text x="${pad}" y="400" font-family="Arial, sans-serif" font-size="40" font-weight="700" fill="${accent}">${p.slotsAvailable} de ${p.slotsTotal} ${esc(unit(p))} disponibles</text>
+  <text x="${pad}" y="402" font-family="${FONT_LABEL}" font-size="46" font-weight="600" fill="${accent}">${p.slotsAvailable} de ${p.slotsTotal} ${esc(unit(p))} disponibles</text>
 
   <!-- shipment status: phase badge + origin → destination (from the spec) -->
   ${shipmentStatus(p, pad, 462)}
@@ -263,10 +271,10 @@ export function buildPromoCardSvg(p: ContainerPromo): string {
   ${legend(p, pad, yTop + H + 62, hatchId)}
 
   <!-- pitch + specs + url -->
-  <text x="${pad}" y="${S - 190}" font-family="Arial, sans-serif" font-size="30" fill="${CARD.ink}">Compra al por mayor${p.priceNote ? ' · ' + esc(p.priceNote) : ' a precio especial'}</text>
-  ${specs ? `<text x="${pad}" y="${S - 150}" font-family="Arial, sans-serif" font-size="24" fill="${CARD.sub}">${esc(specs)}</text>` : ''}
+  <text x="${pad}" y="${S - 190}" font-family="${FONT_BODY}" font-size="30" font-weight="500" fill="${CARD.ink}">Compra al por mayor${p.priceNote ? ' · ' + esc(p.priceNote) : ' a precio especial'}</text>
+  ${specs ? `<text x="${pad}" y="${S - 150}" font-family="${FONT_BODY}" font-size="24" fill="${CARD.sub}">${esc(specs)}</text>` : ''}
   <rect x="${pad}" y="${S - 118}" width="${w}" height="2" fill="${CARD.muted}"/>
-  <text x="${pad}" y="${S - 72}" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="${CARD.ink}">${esc(p.listingUrl)}</text>
+  <text x="${pad}" y="${S - 72}" font-family="${FONT_BODY}" font-size="26" font-weight="700" fill="${CARD.ink}">${esc(p.listingUrl)}</text>
   <desc>taken:${taken} committed:${committed} reserved:${reserved} available:${p.slotsAvailable}</desc>
 </svg>`
 }
