@@ -14,6 +14,7 @@ import {
   type RepresentedBrandRow,
 } from '@/lib/actions/represented-brands'
 import { nextRbStatuses, type RbStatus } from '@/lib/actions/represented-brands-logic'
+import { BrandKitPanel } from './BrandKitPanel'
 
 const LABEL = 'font-mono text-label uppercase tracking-[0.08em] text-ink-secondary'
 const INPUT = 'rounded-card border border-line bg-surface-0 px-2 py-1.5 font-ui text-t0 text-ink-primary outline-none focus-visible:border-lane-accent'
@@ -34,6 +35,7 @@ export function RepresentedBrandManager({ initialBrands }: { initialBrands: Repr
   const [name, setName] = useState('')
   const [categories, setCategories] = useState('')
   const [registryLine, setRegistryLine] = useState<string | null>(null)
+  const [kitFor, setKitFor] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
@@ -120,29 +122,40 @@ export function RepresentedBrandManager({ initialBrands }: { initialBrands: Repr
         ) : (
           <ul className="flex flex-col divide-y divide-line rounded-card border border-line">
             {brands.map((b) => (
-              <li key={b.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-2">
-                <div className="flex items-center gap-3">
-                  <span className="font-mono text-t0 text-ink-primary" data-numeric>{b.code}</span>
-                  <span className="font-ui text-t0 text-ink-primary">{b.name}</span>
-                  <span className="font-mono text-label text-ink-secondary">{b.slug}</span>
-                  <span className={`font-mono text-label uppercase tracking-[0.1em] ${STATUS_STYLE[b.status]}`}>{b.status}</span>
-                  <span className={`font-mono text-label uppercase tracking-[0.08em] ${b.kitComplete ? 'text-positive' : 'text-ink-secondary'}`}>
-                    {b.kitComplete ? 'kit ✓' : 'kit —'}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  {nextRbStatuses(b.status, b.kitComplete).map((s) => (
+              <li key={b.id} className="flex flex-col gap-3 px-4 py-2">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <span className="font-mono text-t0 text-ink-primary" data-numeric>{b.code}</span>
+                    <span className="font-ui text-t0 text-ink-primary">{b.name}</span>
+                    <span className="font-mono text-label text-ink-secondary">{b.slug}</span>
+                    <span className={`font-mono text-label uppercase tracking-[0.1em] ${STATUS_STYLE[b.status]}`}>{b.status}</span>
+                    <span className={`font-mono text-label uppercase tracking-[0.08em] ${b.kitComplete ? 'text-positive' : 'text-ink-secondary'}`}>
+                      {b.kitComplete ? 'kit ✓' : 'kit —'}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
                     <button
-                      key={s}
                       type="button"
-                      onClick={() => handleStatus(b, s)}
-                      disabled={isPending}
-                      className="rounded-card border border-line px-2 py-1 font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:border-lane-accent disabled:opacity-40"
+                      onClick={() => setKitFor((v) => (v === b.id ? null : b.id))}
+                      aria-expanded={kitFor === b.id}
+                      className="rounded-card border border-line px-2 py-1 font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:border-lane-accent"
                     >
-                      → {s}
+                      {kitFor === b.id ? 'Cerrar kit' : 'Kit'}
                     </button>
-                  ))}
+                    {nextRbStatuses(b.status, b.kitComplete).map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => handleStatus(b, s)}
+                        disabled={isPending}
+                        className="rounded-card border border-line px-2 py-1 font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:border-lane-accent disabled:opacity-40"
+                      >
+                        → {s}
+                      </button>
+                    ))}
+                  </div>
                 </div>
+                {kitFor === b.id ? <BrandKitPanel brand={b} /> : null}
               </li>
             ))}
           </ul>
