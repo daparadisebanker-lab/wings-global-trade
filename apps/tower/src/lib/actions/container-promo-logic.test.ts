@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   promoCopySchema,
   computeSlotsTaken,
+  computeSlotBreakdown,
   containerListingUrl,
   defaultSpecs,
   toContainerPromo,
@@ -25,6 +26,22 @@ describe('computeSlotsTaken', () => {
   })
   it('treats a null-expiry RESERVED as counting', () => {
     expect(computeSlotsTaken([{ slots: 2, status: 'RESERVED', expires_at: null }], NOW)).toBe(2)
+  })
+})
+
+describe('computeSlotBreakdown', () => {
+  it('splits committed (vendido) vs reserved (reservado), taken = both', () => {
+    const b = computeSlotBreakdown(
+      [
+        { slots: 3, status: 'CONFIRMED', expires_at: null },
+        { slots: 2, status: 'LOADED', expires_at: null },
+        { slots: 1, status: 'RESERVED', expires_at: '2026-07-21T12:00:00Z' },
+        { slots: 5, status: 'RESERVED', expires_at: '2026-07-19T12:00:00Z' }, // expired
+        { slots: 4, status: 'RELEASED', expires_at: null },
+      ],
+      NOW,
+    )
+    expect(b).toEqual({ committed: 5, reserved: 1, taken: 6 })
   })
 })
 

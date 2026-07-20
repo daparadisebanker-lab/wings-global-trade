@@ -45,6 +45,17 @@ select
   t.total_slots,
   tower.rb_slots_taken(c.id)                          as taken_slots,
   (t.total_slots - tower.rb_slots_taken(c.id))::int  as available_slots,
+  -- committed (vendido) vs reserved (reservado) breakdown for the container
+  -- slice diagram — the same split rb_public_containers exposes.
+  coalesce((
+    select sum(a.slots) from tower.rb_slot_allocations a
+    where a.rb_container_id = c.id and a.status in ('CONFIRMED','LOADED')
+  ), 0)::int                                          as committed_slots,
+  coalesce((
+    select sum(a.slots) from tower.rb_slot_allocations a
+    where a.rb_container_id = c.id and a.status = 'RESERVED'
+      and (a.expires_at is null or a.expires_at > now())
+  ), 0)::int                                          as reserved_slots,
   p.product_slug,
   p.product_name,
   p.unit_name_plural,

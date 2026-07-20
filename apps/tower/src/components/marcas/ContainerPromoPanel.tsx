@@ -61,11 +61,14 @@ export function ContainerPromoPanel({ initial, onChanged }: { initial: Container
       containerCode: detail.code,
       slotsTotal: detail.slotsTotal,
       slotsAvailable: detail.slotsAvailable,
+      slotsCommitted: detail.promo.slotsCommitted,
+      slotsReserved: detail.promo.slotsReserved,
       unitLabel: copy.unitLabel || 'cupos',
       priceNote: copy.priceNote,
       specs: cleaned.length ? cleaned : detail.defaultSpecs,
       listingUrl: detail.promo.listingUrl,
       routeLabel: copy.routeLabel || detail.promo.routeLabel,
+      accent: detail.promo.accent,
     }
   }, [copy, detail])
 

@@ -6,8 +6,10 @@
 // renders the pitch + slot visualization + specs, and sends the reader into the
 // buy-in configurator to reserve. No online payment — the wholesale directive.
 import type { Metadata } from 'next'
+import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { ContainerSliceDiagram } from '@wings/trade-ui'
 import { getBrand } from '@/lib/rb/fixtures'
 import { getActiveContainer, type RbActiveContainer } from '@/lib/rb/data'
 
@@ -61,7 +63,16 @@ export default async function ActiveContainerPage({ params }: PageProps) {
   const headline = c.copy.headline ?? c.productName
   const unit = c.copy.unitLabel ?? 'cupos'
   const specs = specRows(c)
-  const cells = Array.from({ length: c.slots.total }, (_, i) => i < c.slots.taken)
+  const f = c.productFacts
+  const perSlotUnits = f.packagesPerSlot && f.unitsPerPackage ? f.packagesPerSlot * f.unitsPerPackage : undefined
+  // Map the diagram's tokens to the brand's --rb-* set (same as the configurator).
+  const csdTokens = {
+    '--csd-accent': 'var(--rb-accent)',
+    '--csd-accent-ink': 'var(--rb-accent-ink)',
+    '--csd-accent-soft': 'var(--rb-accent-soft)',
+    '--csd-ink': 'var(--rb-ink)',
+    '--csd-tint': 'var(--rb-surface-tint)',
+  } as CSSProperties
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-14 md:px-8 md:py-20">
@@ -78,36 +89,26 @@ export default async function ActiveContainerPage({ params }: PageProps) {
       </header>
 
       <div className="mt-12 grid gap-12 lg:grid-cols-[1.1fr_1fr]">
-        {/* Slot visualization */}
+        {/* Slot visualization — the shared ContainerSliceDiagram organ, themed
+            to the brand's --rb-* set (identical grammar to the configurator). */}
         <section>
-          <div className="flex items-baseline justify-between">
-            <span className="font-mono text-[11px] uppercase tracking-widest-2 text-neutral-500">Ocupación del contenedor</span>
-            <span className="font-mono text-label-lg text-neutral-900">
-              {c.slots.available}/{c.slots.total} {unit}
-            </span>
+          <div style={csdTokens}>
+            <ContainerSliceDiagram
+              kind={c.containerKind}
+              slots={{ total: c.slots.total, committed: c.slots.committed, reserved: c.slots.reserved }}
+              headline={`${c.containerKind} · ${c.slots.total} ${unit} · vendido ■ reservado ▨ disponible □`}
+              caption={
+                perSlotUnits
+                  ? `1 cupo = ${f.packagesPerSlot} cajas = ${perSlotUnits.toLocaleString('es-PE')} ${f.unitNamePlural ?? c.unitNamePlural} — ${c.slots.available} disponibles`
+                  : `${c.slots.available} de ${c.slots.total} ${unit} disponibles`
+              }
+            />
           </div>
-          <div
-            className="mt-4 grid gap-2"
-            style={{ gridTemplateColumns: `repeat(${Math.min(c.slots.total, 10)}, minmax(0, 1fr))` }}
-            role="img"
-            aria-label={`${c.slots.taken} cupos tomados, ${c.slots.available} disponibles de ${c.slots.total}`}
-          >
-            {cells.map((taken, i) => (
-              <span
-                key={i}
-                className={`aspect-square rounded-[2px] ${taken ? 'bg-neutral-200' : 'bg-[var(--rb-accent)]'}`}
-              />
-            ))}
-          </div>
-          <div className="mt-4 flex flex-wrap gap-5 text-body-sm text-neutral-500">
-            <span className="inline-flex items-center gap-2">
-              <span className="inline-block h-3 w-3 rounded-[2px] bg-[var(--rb-accent)]" /> Disponible
-            </span>
-            <span className="inline-flex items-center gap-2">
-              <span className="inline-block h-3 w-3 rounded-[2px] bg-neutral-200" /> Tomado
-            </span>
-            {c.closesAt ? <span>Cierra {new Date(c.closesAt).toLocaleDateString('es-PE')}</span> : null}
-          </div>
+          {c.closesAt ? (
+            <p className="mt-3 font-mono text-[12px] tabular-nums text-neutral-500">
+              Cierra {new Date(c.closesAt).toLocaleDateString('es-PE')}
+            </p>
+          ) : null}
 
           <div className="mt-8 flex flex-wrap gap-3">
             <Link

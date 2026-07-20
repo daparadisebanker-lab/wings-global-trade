@@ -13,6 +13,7 @@ import { fail, ok, type ActionResult } from './result'
 import {
   promoCopySchema,
   computeSlotsTaken,
+  computeSlotBreakdown,
   toContainerPromo,
   defaultSpecs,
   type PromoCopy,
@@ -47,13 +48,13 @@ interface ContainerJoinRow {
   promo_activated_at: string | null
   represented_brand_id: string
   template: { ref: string; kind: string; total_slots: number; packages_per_slot: number; composition: Array<{ profile_slug: string }> } | null
-  brand: { slug: string; name: string; status: string } | null
+  brand: { slug: string; name: string; status: string; identity: { tokens?: Record<string, string> } | null } | null
 }
 
 const CONTAINER_SELECT = `
   id, code, status, route, closes_at, promo_active, promo_copy, promo_activated_at, represented_brand_id,
   template:rb_container_templates!template_id ( ref, kind, total_slots, packages_per_slot, composition ),
-  brand:represented_brands!represented_brand_id ( slug, name, status )
+  brand:represented_brands!represented_brand_id ( slug, name, status, identity )
 `
 
 export interface PromotableContainerRow {
@@ -86,6 +87,15 @@ async function slotsTakenFor(supabase: TowerClient, containerId: string): Promis
     .select('slots,status,expires_at')
     .eq('rb_container_id', containerId)
   return computeSlotsTaken((data ?? []) as never[])
+}
+
+/** Live vendido/reservado/taken breakdown for a container (RLS-scoped). */
+async function slotBreakdownFor(supabase: TowerClient, containerId: string) {
+  const { data } = await supabase
+    .from('rb_slot_allocations')
+    .select('slots,status,expires_at')
+    .eq('rb_container_id', containerId)
+  return computeSlotBreakdown((data ?? []) as never[])
 }
 
 /** Packing profile (product name + exhibited facts) for a container's product. */
@@ -168,9 +178,9 @@ async function loadDetail(
   const { data, error } = await supabase.from('rb_containers').select(CONTAINER_SELECT).eq('id', containerId).maybeSingle()
   if (error || !data) return null
   const row = data as unknown as ContainerJoinRow
-  const [taken, pf] = await Promise.all([slotsTakenFor(supabase, row.id), factsFor(supabase, row)])
+  const [breakdown, pf] = await Promise.all([slotBreakdownFor(supabase, row.id), factsFor(supabase, row)])
   const total = row.template?.total_slots ?? 0
-  const available = Math.max(0, total - taken)
+  const available = Math.max(0, total - breakdown.taken)
   const copy = (row.promo_copy ?? {}) as PromoCopy
   const promo = toContainerPromo({
     code: row.code,
@@ -179,10 +189,13 @@ async function loadDetail(
     productName: pf.productName,
     slotsTotal: total,
     slotsAvailable: available,
+    slotsCommitted: breakdown.committed,
+    slotsReserved: breakdown.reserved,
     route: row.route,
     facts: pf.facts,
     copy,
     siteBase,
+    accent: row.brand?.identity?.tokens?.accent,
   })
   return {
     id: row.id,

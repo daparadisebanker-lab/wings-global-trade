@@ -38,13 +38,23 @@ interface AllocationRow {
 /** Slots taken = CONFIRMED/LOADED + unexpired RESERVED — byte-for-byte the SQL
  *  tower.rb_slots_taken filter (rb_wave1). `now` is injectable for tests. */
 export function computeSlotsTaken(allocations: AllocationRow[], now: Date = new Date()): number {
-  return allocations.reduce((sum, a) => {
-    const counts =
-      a.status === 'CONFIRMED' ||
-      a.status === 'LOADED' ||
-      (a.status === 'RESERVED' && (!a.expires_at || new Date(a.expires_at) > now))
-    return counts ? sum + a.slots : sum
-  }, 0)
+  const { taken } = computeSlotBreakdown(allocations, now)
+  return taken
+}
+
+/** committed (vendido) = CONFIRMED/LOADED · reserved (reservado) = unexpired
+ *  RESERVED · taken = both — the three-state split the container slice draws. */
+export function computeSlotBreakdown(
+  allocations: AllocationRow[],
+  now: Date = new Date(),
+): { committed: number; reserved: number; taken: number } {
+  let committed = 0
+  let reserved = 0
+  for (const a of allocations) {
+    if (a.status === 'CONFIRMED' || a.status === 'LOADED') committed += a.slots
+    else if (a.status === 'RESERVED' && (!a.expires_at || new Date(a.expires_at) > now)) reserved += a.slots
+  }
+  return { committed, reserved, taken: committed + reserved }
 }
 
 export interface ProductFacts {
@@ -80,11 +90,17 @@ export interface PromoContainerInput {
   productName: string
   slotsTotal: number
   slotsAvailable: number
+  slotsCommitted?: number
+  slotsReserved?: number
   route: { origin?: string; destination?: string } | null
   facts: ProductFacts
   copy: PromoCopy
   siteBase?: string
+  /** Brand accent hex (from identity.tokens.accent) → the container fill. */
+  accent?: string
 }
+
+const HEX_RE = /^#[0-9a-fA-F]{6}$/
 
 /** Build the rb-core ContainerPromo. Rep copy wins; derived defaults fill gaps. */
 export function toContainerPromo(input: PromoContainerInput): ContainerPromo {
@@ -101,10 +117,13 @@ export function toContainerPromo(input: PromoContainerInput): ContainerPromo {
     containerCode: input.code,
     slotsTotal: input.slotsTotal,
     slotsAvailable: input.slotsAvailable,
+    slotsCommitted: input.slotsCommitted,
+    slotsReserved: input.slotsReserved,
     unitLabel: copy.unitLabel?.trim() || 'cupos',
     priceNote: copy.priceNote?.trim() || undefined,
     specs,
     listingUrl: containerListingUrl(input.brandSlug, input.code, input.siteBase),
     routeLabel,
+    accent: input.accent && HEX_RE.test(input.accent) ? input.accent : undefined,
   }
 }

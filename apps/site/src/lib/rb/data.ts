@@ -238,7 +238,7 @@ export interface RbActiveContainer {
   route: { origin?: string; destination?: string }
   closesAt: string | null
   containerKind: string
-  slots: { total: number; taken: number; available: number }
+  slots: { total: number; committed: number; reserved: number; taken: number; available: number }
   productFacts: {
     packetsPerPackage?: number
     unitsPerPackage?: number
@@ -262,6 +262,8 @@ interface ActiveContainerRow {
   total_slots: number
   taken_slots: number
   available_slots: number
+  committed_slots: number
+  reserved_slots: number
   product_name: string
   unit_name_plural: string
   product_facts: Record<string, unknown> | null
@@ -281,7 +283,13 @@ function mapActiveContainer(r: ActiveContainerRow): RbActiveContainer {
     route: { origin: r.route?.origin ?? '—', destination: r.route?.destination ?? 'Callao' },
     closesAt: r.closes_at,
     containerKind: r.container_kind,
-    slots: { total: r.total_slots, taken: r.taken_slots, available: r.available_slots },
+    slots: {
+      total: r.total_slots,
+      committed: r.committed_slots,
+      reserved: r.reserved_slots,
+      taken: r.taken_slots,
+      available: r.available_slots,
+    },
     productFacts: {
       packetsPerPackage: num(f.packetsPerPackage),
       unitsPerPackage: num(f.unitsPerPackage),
@@ -309,7 +317,13 @@ function aladinActiveFixture(code: string): RbActiveContainer {
     route: c.route,
     closesAt: c.closesAt,
     containerKind: t.kind,
-    slots: { total: c.slots.total, taken, available: Math.max(0, c.slots.total - taken) },
+    slots: {
+      total: c.slots.total,
+      committed: c.slots.committed,
+      reserved: c.slots.reserved,
+      taken,
+      available: Math.max(0, c.slots.total - taken),
+    },
     productFacts: {
       packetsPerPackage: t.packetsPerPackage,
       unitsPerPackage: t.unitsPerPackage,

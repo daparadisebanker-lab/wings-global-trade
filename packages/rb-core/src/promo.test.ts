@@ -50,14 +50,28 @@ describe('buildPromoCardSvg', () => {
     expect(svg).toContain('7 de 20 cupos disponibles')
     expect(svg).toContain(promo.listingUrl)
   })
-  it('draws exactly slotsTotal cells (7 available gold + 13 taken muted)', () => {
+  it('draws the container as slotsTotal numbered bays with three states + legend', () => {
     const svg = buildPromoCardSvg(promo)
-    const cells = (svg.match(/<rect [^>]*rx="2"/g) ?? []).length
-    expect(cells).toBe(20)
-    // count grid CELLS only (rx="2" fill=…), not reused text/divider fills
-    expect((svg.match(/rx="2" fill="#C4933F"/g) ?? []).length).toBe(7) // available
-    expect((svg.match(/rx="2" fill="#D8D3C6"/g) ?? []).length).toBe(13) // taken
-    expect(svg).toContain('<desc>taken:13 available:7</desc>')
+    const bays = (svg.match(/data-slot="/g) ?? []).length
+    expect(bays).toBe(20)
+    // No committed/reserved given → 13 taken all show vendido, 7 open.
+    expect((svg.match(/data-slot="committed"/g) ?? []).length).toBe(13)
+    expect((svg.match(/data-slot="reserved"/g) ?? []).length).toBe(0)
+    expect((svg.match(/data-slot="open"/g) ?? []).length).toBe(7)
+    expect(svg).toContain('Vendido')
+    expect(svg).toContain('Reservado')
+    expect(svg).toContain('Disponible')
+    expect(svg).toContain('<desc>taken:13 committed:13 reserved:0 available:7</desc>')
+  })
+  it('splits vendido vs reservado when the breakdown is given', () => {
+    const svg = buildPromoCardSvg({ ...promo, slotsCommitted: 8, slotsReserved: 5 })
+    expect((svg.match(/data-slot="committed"/g) ?? []).length).toBe(8)
+    expect((svg.match(/data-slot="reserved"/g) ?? []).length).toBe(5)
+    expect((svg.match(/data-slot="open"/g) ?? []).length).toBe(7)
+  })
+  it('uses the brand accent for the container fill when provided', () => {
+    const svg = buildPromoCardSvg({ ...promo, accent: '#3E6B2F' })
+    expect(svg).toContain('fill="#3E6B2F"')
   })
   it('escapes user text', () => {
     const svg = buildPromoCardSvg({ ...promo, productName: 'A & B <x>' })
