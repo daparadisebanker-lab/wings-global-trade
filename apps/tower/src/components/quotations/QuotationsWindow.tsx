@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { t, type Locale } from '@/lib/i18n'
 import { formatMinor } from '@/lib/money'
 import type { QuotationListItem } from '@/lib/actions/quotations-logic'
+import { IssueButton } from './IssueButton'
 
 // The Quotations window — a standalone list of every quotation the caller can
 // see (draft + issued), each opening its printable proforma. Read-only surface;
@@ -92,12 +93,15 @@ export function QuotationsWindow({ items, locale }: { items: QuotationListItem[]
                     {q.createdAt.slice(0, 10)}
                   </Cell>
                   <Cell className="text-right">
-                    <Link
-                      href={`/proforma/${q.id}/document`}
-                      className="font-mono text-label uppercase tracking-[0.1em] text-accent hover:underline"
-                    >
-                      {t({ es: 'Proforma', en: 'Proforma' }, locale)}
-                    </Link>
+                    <div className="flex items-center justify-end gap-4">
+                      {q.status === 'DRAFT' ? <IssueButton quoteId={q.id} locale={locale} /> : null}
+                      <Link
+                        href={`/proforma/${q.id}/document`}
+                        className="font-mono text-label uppercase tracking-[0.1em] text-accent hover:underline"
+                      >
+                        {t({ es: 'Proforma', en: 'Proforma' }, locale)}
+                      </Link>
+                    </div>
                   </Cell>
                 </tr>
               ))}
