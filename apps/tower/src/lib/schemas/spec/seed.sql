@@ -241,3 +241,25 @@ where not exists (
   select 1 from tower.spec_schemas where archetype = 'ORIGIN' and lane_id is null and version = 1
 )
 on conflict (archetype, lane_id, version) do nothing;
+
+-- ALLOCATION (7th archetype, root §5-bis) — represented brands (RB/xx). R1:
+-- presentation-only spec (geometry lives in rb_diagram_specs). lane_id = null,
+-- no lane override. Kept identical to specFieldsToJsonSchema(ALLOCATION_SPEC_FIELDS).
+insert into tower.spec_schemas (archetype, lane_id, version, json_schema)
+select 'ALLOCATION', null, 1, $allocation_schema$
+{
+  "type": "object",
+  "x-archetype": "ALLOCATION",
+  "x-version": 1,
+  "properties": {
+    "unitLabel": { "type": "string", "x-localized": true, "x-label": { "es": "Etiqueta de unidad", "en": "Unit label" }, "x-order": 0 },
+    "description": { "type": "string", "x-localized": true, "x-label": { "es": "Descripción", "en": "Description" }, "x-order": 1 },
+    "highlights": { "type": "array", "items": { "type": "string" }, "x-label": { "es": "Destacados", "en": "Highlights" }, "x-order": 2 }
+  },
+  "required": ["unitLabel", "description"]
+}
+$allocation_schema$::jsonb
+where not exists (
+  select 1 from tower.spec_schemas where archetype = 'ALLOCATION' and lane_id is null and version = 1
+)
+on conflict (archetype, lane_id, version) do nothing;

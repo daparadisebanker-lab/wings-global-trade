@@ -16,9 +16,9 @@ import {
 const ALL = listArchetypes()
 
 describe('archetype registry', () => {
-  it('exposes exactly the six archetypes', () => {
+  it('exposes exactly the seven archetypes (incl. ALLOCATION, §5-bis)', () => {
     expect([...ALL].sort()).toEqual(
-      ['COMMODITY', 'CREDENTIAL', 'EQUIPMENT', 'ORIGIN', 'PROGRAM', 'PROJECT'].sort(),
+      ['ALLOCATION', 'COMMODITY', 'CREDENTIAL', 'EQUIPMENT', 'ORIGIN', 'PROGRAM', 'PROJECT'].sort(),
     )
   })
 

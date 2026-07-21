@@ -13,6 +13,11 @@ export const ARCHETYPE_CODES = [
   'PROGRAM',
   'CREDENTIAL',
   'ORIGIN',
+  // ALLOCATION — the 7th archetype (root CLAUDE.md §3, §5-bis). Represented
+  // brands (RB/xx) sell container-only: a buyer buys a share of a planned
+  // container (per slot / per quantity-in-container, server-converted to slots).
+  // Ratified in §5-bis, so this is registration, not a new-archetype proposal.
+  'ALLOCATION',
 ] as const
 
 export const archetypeSchema = z.enum(ARCHETYPE_CODES)

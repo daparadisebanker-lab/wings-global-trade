@@ -4,6 +4,7 @@
 // getSpecSchema (./resolve.ts) and seed.sql are both generated from this map.
 import { z } from 'zod'
 import type { Archetype } from '@/lib/archetypes'
+import { ALLOCATION_SPEC_FIELDS } from './allocation'
 import { COMMODITY_SPEC_FIELDS } from './commodity'
 import { CREDENTIAL_SPEC_FIELDS } from './credential'
 import { EQUIPMENT_SPEC_FIELDS } from './equipment'
@@ -24,6 +25,7 @@ export const SPEC_FIELD_DEFAULTS: Record<Archetype, SpecFieldDef[]> = {
   PROGRAM: PROGRAM_SPEC_FIELDS,
   CREDENTIAL: CREDENTIAL_SPEC_FIELDS,
   ORIGIN: ORIGIN_SPEC_FIELDS,
+  ALLOCATION: ALLOCATION_SPEC_FIELDS,
 }
 
 const ARCHETYPE_ENTRIES = Object.entries(SPEC_FIELD_DEFAULTS) as [Archetype, SpecFieldDef[]][]

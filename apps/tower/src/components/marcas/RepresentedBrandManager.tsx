@@ -6,6 +6,7 @@
 // (retire = PAUSED/ENDED, never delete). The kit panel + membership matrix are
 // separate reused-organ surfaces (Wave 1b). Capabilities hide UI only — the DB
 // (column revoke + RLS + validators) is the real gate.
+import Link from 'next/link'
 import { useState, useTransition } from 'react'
 import {
   listRepresentedBrands,
@@ -134,6 +135,12 @@ export function RepresentedBrandManager({ initialBrands }: { initialBrands: Repr
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
+                    <Link
+                      href={`/marcas/${b.slug}/productos`}
+                      className="rounded-card border border-line px-2 py-1 font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:border-lane-accent"
+                    >
+                      Productos →
+                    </Link>
                     <button
                       type="button"
                       onClick={() => setKitFor((v) => (v === b.id ? null : b.id))}

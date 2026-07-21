@@ -178,6 +178,36 @@ const RAW: Record<Archetype, ArchetypeConfig> = {
     },
     specSchema: { defaultSchemaKey: 'origin.default', allowLaneOverride: true },
   },
+
+  // Buyer buys a share of a planned container of a represented brand (root
+  // CLAUDE.md §3 · §5-bis). Brand shelf → brand catalog → container allocation
+  // instrument; quantity↔slot conversion + packing math are server-side only.
+  // RB has no lane, so no lane override on the spec schema (allowLaneOverride:
+  // false) — the ALLOCATION default row (lane_id = null) is the only schema.
+  ALLOCATION: {
+    code: 'ALLOCATION',
+    label: { es: 'Asignación', en: 'Allocation' },
+    buyerBuys: {
+      es: 'Una parte de un contenedor planificado de una marca representada',
+      en: 'A share of a planned container of a represented brand',
+    },
+    iaPattern: 'Brand shelf → brand catalog → container allocation instrument',
+    stages: [
+      { id: 'inquiry', label: { es: 'Consulta', en: 'Inquiry' }, terminal: false },
+      { id: 'reservation', label: { es: 'Reserva', en: 'Reservation' }, terminal: false },
+      { id: 'contract', label: { es: 'Contrato', en: 'Contract' }, terminal: false },
+      { id: 'consolidation', label: { es: 'Consolidación', en: 'Consolidation' }, terminal: false },
+      { id: 'shipment', label: { es: 'Embarque', en: 'Shipment' }, terminal: true },
+    ],
+    unitMath: {
+      units: [
+        { id: 'per_slot', label: { es: 'por slot', en: 'per slot' }, abbr: 'slot', cbmBearing: false },
+        { id: 'per_container', label: { es: 'por contenedor', en: 'per container' }, abbr: 'CTNR', cbmBearing: true },
+      ],
+      defaultUnitId: 'per_slot',
+    },
+    specSchema: { defaultSchemaKey: 'allocation.default', allowLaneOverride: false },
+  },
 }
 
 /**
