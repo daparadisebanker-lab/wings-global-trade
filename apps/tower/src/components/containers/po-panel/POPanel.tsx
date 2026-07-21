@@ -4,7 +4,7 @@
 // tracking itself is `QcTracker` (a sibling component); this panel just lets
 // the operator pick which PO to track by calling `onSelectPo`.
 import { useState, useTransition } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { advancePOStatus, issuePO, listSuppliersForContainer } from '@/lib/actions/containers'
 import { canAdvancePoStatus, parseDecimalToMinor } from '@/lib/actions/containers-logic'
 import { PO_STATUSES, type PoStatus, type PurchaseOrderRow } from '@/lib/actions/containers-types'
@@ -61,6 +61,38 @@ export function POPanel({
   const [unitPrice, setUnitPrice] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
+  const queryClient = useQueryClient()
+  const poKey = ['tower', 'containers', 'purchase-orders', containerId] as const
+
+  // PO status advance is optimistic — the status stamp flips the instant you
+  // click, rolling back only if the server refuses the transition. Scoped per
+  // PO so advancing one row never disables the others' buttons.
+  const advanceMutation = useMutation({
+    mutationFn: async ({ poId, status }: { poId: string; status: PoStatus }) => {
+      const result = await advancePOStatus(poId, status)
+      if (result.error) throw new Error(result.error.message)
+      return result.data
+    },
+    onMutate: async ({ poId, status }) => {
+      setError(null)
+      await queryClient.cancelQueries({ queryKey: poKey })
+      const prev = queryClient.getQueryData<PurchaseOrderRow[]>(poKey)
+      if (prev) {
+        queryClient.setQueryData<PurchaseOrderRow[]>(
+          poKey,
+          prev.map((p) => (p.id === poId ? { ...p, status } : p)),
+        )
+      }
+      return { prev }
+    },
+    onError: (err: Error, _vars, ctx) => {
+      if (ctx?.prev) queryClient.setQueryData(poKey, ctx.prev)
+      setError(err.message)
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: poKey })
+    },
+  })
 
   function submitIssue() {
     setError(null)
@@ -87,17 +119,6 @@ export function POPanel({
       setDescription('')
       setQty('1')
       setUnitPrice('')
-      await query.refetch()
-    })
-  }
-
-  function advance(po: PurchaseOrderRow, status: PoStatus) {
-    startTransition(async () => {
-      const result = await advancePOStatus(po.id, status)
-      if (result.error) {
-        setError(`${result.error.code}: ${result.error.message}`)
-        return
-      }
       await query.refetch()
     })
   }
@@ -206,8 +227,8 @@ export function POPanel({
                   <button
                     key={s}
                     type="button"
-                    onClick={() => advance(po, s)}
-                    disabled={isPending}
+                    onClick={() => advanceMutation.mutate({ poId: po.id, status: s })}
+                    disabled={advanceMutation.isPending && advanceMutation.variables?.poId === po.id}
                     className="rounded-card border border-line px-2 py-1 font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:text-ink-primary disabled:opacity-40"
                   >
                     → {s}

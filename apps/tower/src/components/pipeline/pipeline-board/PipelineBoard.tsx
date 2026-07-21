@@ -4,7 +4,7 @@
 // active lane's archetype stage set — never configurable per-user, never
 // hardcoded here. Cards are RFQs; a lightweight inline form creates a new one.
 import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getStages } from '@/lib/archetypes'
 import type { EditableLane } from '@/lib/actions/catalog'
 import {
@@ -66,8 +66,44 @@ export function PipelineBoard({ lanes, initialLaneId }: { lanes: EditableLane[];
     enabled: Boolean(lane),
   })
 
-  const rfqsQuery = useRfqsQuery({ laneId: laneId ?? '' })
+  const rfqsInput = useMemo(() => ({ laneId: laneId ?? '' }), [laneId])
+  const rfqsKey = useMemo(() => ['tower', 'pipeline', 'rfqs', rfqsInput] as const, [rfqsInput])
+  const rfqsQuery = useRfqsQuery(rfqsInput)
   const capabilities = capsQuery.data
+  const queryClient = useQueryClient()
+
+  type RfqsPage = { rows: RfqRow[]; nextCursor: string | null }
+
+  // Stage moves are optimistic: the card jumps to its new column the instant you
+  // pick it, and rolls back only if the server rejects the transition. A kanban
+  // that waits for a round-trip before moving the card feels broken — this is the
+  // single highest-value optimism on the board.
+  const stageMutation = useMutation({
+    mutationFn: async ({ rfqId, stage }: { rfqId: string; stage: string }) => {
+      const result = await updateStage(rfqId, stage)
+      if (result.error) throw new Error(result.error.message)
+      return result.data
+    },
+    onMutate: async ({ rfqId, stage }) => {
+      setError(null)
+      await queryClient.cancelQueries({ queryKey: rfqsKey })
+      const prev = queryClient.getQueryData<RfqsPage>(rfqsKey)
+      if (prev) {
+        queryClient.setQueryData<RfqsPage>(rfqsKey, {
+          ...prev,
+          rows: prev.rows.map((r) => (r.id === rfqId ? { ...r, stage } : r)),
+        })
+      }
+      return { prev }
+    },
+    onError: (err: Error, _vars, ctx) => {
+      if (ctx?.prev) queryClient.setQueryData(rfqsKey, ctx.prev)
+      setError(err.message)
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: rfqsKey })
+    },
+  })
 
   const columns = useMemo(() => (lane ? getStages(lane.archetype) : []), [lane])
   const rows = rfqsQuery.data?.rows ?? []
@@ -82,18 +118,6 @@ export function PipelineBoard({ lanes, initialLaneId }: { lanes: EditableLane[];
     }
     return map
   }, [columns, rows])
-
-  function handleStageChange(rfqId: string, stage: string) {
-    setError(null)
-    startTransition(async () => {
-      const result = await updateStage(rfqId, stage)
-      if (result.error) {
-        setError(result.error.message)
-        return
-      }
-      await rfqsQuery.refetch()
-    })
-  }
 
   function handleCreate() {
     if (!laneId) return
@@ -236,8 +260,8 @@ export function PipelineBoard({ lanes, initialLaneId }: { lanes: EditableLane[];
                     rfq={rfq}
                     archetype={rfq.laneArchetype}
                     canAdvanceStage={Boolean(capabilities?.canAdvanceStage)}
-                    busy={isPending}
-                    onStageChange={(nextStage) => handleStageChange(rfq.id, nextStage)}
+                    busy={stageMutation.isPending && stageMutation.variables?.rfqId === rfq.id}
+                    onStageChange={(nextStage) => stageMutation.mutate({ rfqId: rfq.id, stage: nextStage })}
                   />
                 ))}
                 {stageRows.length === 0 ? (
