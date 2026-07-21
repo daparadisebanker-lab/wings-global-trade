@@ -36,6 +36,14 @@ const Pipeline: FC<IconProps> = (p) => (
   </SVG>
 )
 
+const Quotations: FC<IconProps> = (p) => (
+  <SVG {...p}>
+    <path d="M5 3h6l4 4v10H5V3z" />
+    <path d="M11 3v4h4" />
+    <path d="M7.5 11h5M7.5 13.5h5" />
+  </SVG>
+)
+
 const Containers: FC<IconProps> = (p) => (
   <SVG {...p}>
     <rect x="3" y="6" width="14" height="9" />
@@ -81,6 +89,7 @@ const Admin: FC<IconProps> = (p) => (
 export const NAV_ICONS: Record<NavIconId, FC<IconProps>> = {
   catalog: Catalog,
   pipeline: Pipeline,
+  quotations: Quotations,
   containers: Containers,
   costing: Costing,
   marcas: Marcas,

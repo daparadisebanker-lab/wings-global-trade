@@ -7,6 +7,7 @@ import type { Localized } from './i18n'
 export type ModuleId =
   | 'catalog'
   | 'pipeline'
+  | 'quotations'
   | 'containers'
   | 'costing'
   | 'marcas'
@@ -42,6 +43,7 @@ export interface NavModule {
 export const MODULES: NavModule[] = [
   { id: 'catalog', href: '/catalog', label: { es: 'Catálogo', en: 'Catalog' }, tag: 'CAT', group: 'operate', icon: 'catalog' },
   { id: 'pipeline', href: '/pipeline', label: { es: 'Pipeline', en: 'Pipeline' }, tag: 'PIP', group: 'operate', icon: 'pipeline' },
+  { id: 'quotations', href: '/quotations', label: { es: 'Cotizaciones', en: 'Quotations' }, tag: 'COT', group: 'operate', icon: 'quotations' },
   { id: 'containers', href: '/containers', label: { es: 'Contenedores', en: 'Containers' }, tag: 'CTN', group: 'operate', icon: 'containers' },
   { id: 'costing', href: '/costing', label: { es: 'Costeo', en: 'Costing' }, tag: 'CST', group: 'operate', icon: 'costing' },
   { id: 'marcas', href: '/marcas', label: { es: 'Marcas', en: 'Brands' }, tag: 'MRC', group: 'intel', icon: 'marcas' },
