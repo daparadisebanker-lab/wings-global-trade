@@ -4,50 +4,81 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@wings/trade-ui'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
-import { MODULES, type ModuleId } from '@/lib/nav'
+import { MODULES, NAV_GROUPS, type ModuleId } from '@/lib/nav'
+import { NAV_ICONS } from './nav-icons'
 
 /**
- * The six-module rail (COMPONENT_TREE). Renders only modules the memberships can
- * see — PRESENTATION only (lib/rbac). RLS is the real gate; a hidden module's
- * route still exists.
+ * The module rail (COMPONENT_TREE). Modules render in three labelled IA groups
+ * (Operación · Marca e inteligencia · Sistema), each item icon-led with a full
+ * label + demoted mono tag. Only modules the memberships can see are shown —
+ * PRESENTATION only (lib/rbac); RLS is the real gate. A group with no visible
+ * child is omitted. `collapsed` renders icon-only (desktop rail toggle);
+ * `onNavigate` lets the mobile drawer close on selection.
  */
 export function NavRail({
   visible,
   locale = DEFAULT_LOCALE,
+  collapsed = false,
+  onNavigate,
 }: {
   visible: Set<ModuleId>
   locale?: Locale
+  collapsed?: boolean
+  onNavigate?: () => void
 }) {
   const pathname = usePathname()
 
   return (
-    <nav aria-label="Módulos" className="flex flex-col gap-1 p-2">
-      {MODULES.filter((m) => visible.has(m.id)).map((m) => {
-        const active = pathname.startsWith(m.href)
+    <nav aria-label={t({ es: 'Módulos', en: 'Modules' }, locale)} className="flex flex-col gap-5 p-3">
+      {NAV_GROUPS.map((group) => {
+        const items = MODULES.filter((m) => m.group === group.id && visible.has(m.id))
+        if (items.length === 0) return null
         return (
-          <Link
-            key={m.id}
-            href={m.href}
-            aria-current={active ? 'page' : undefined}
-            className={cn(
-              'group flex items-center gap-3 rounded-card border-l-2 border-transparent px-3 py-2 text-t0 transition-colors',
-              'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lane-accent',
-              active
-                ? 'border-gold bg-surface-0 text-ink-primary'
-                : 'text-ink-secondary hover:bg-surface-0 hover:text-ink-primary',
+          <div key={group.id} className="flex flex-col gap-1">
+            {collapsed ? (
+              <span aria-hidden className="mx-2 mb-1 h-px bg-line" />
+            ) : (
+              <span className="px-2 pb-1 font-mono text-label uppercase tracking-[0.18em] text-ink-secondary">
+                {t(group.label, locale)}
+              </span>
             )}
-          >
-            <span
-              aria-hidden
-              className={cn(
-                'font-mono text-label tracking-[0.1em]',
-                active ? 'text-gold' : 'text-ink-secondary',
-              )}
-            >
-              {m.tag}
-            </span>
-            <span className="font-ui">{t(m.label, locale)}</span>
-          </Link>
+            {items.map((m) => {
+              const active = pathname.startsWith(m.href)
+              const Icon = NAV_ICONS[m.icon]
+              return (
+                <Link
+                  key={m.id}
+                  href={m.href}
+                  onClick={onNavigate}
+                  aria-current={active ? 'page' : undefined}
+                  title={collapsed ? t(m.label, locale) : undefined}
+                  className={cn(
+                    'group flex items-center gap-3 rounded-card border-l-2 border-transparent px-3 py-3 text-t0 transition-colors',
+                    'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lane-accent',
+                    collapsed && 'justify-center px-0',
+                    active
+                      ? 'border-gold bg-surface-0 text-ink-primary'
+                      : 'text-ink-secondary hover:bg-surface-0 hover:text-ink-primary',
+                  )}
+                >
+                  <Icon
+                    className={cn(
+                      'shrink-0',
+                      active ? 'text-gold' : 'text-ink-secondary group-hover:text-ink-primary',
+                    )}
+                  />
+                  {!collapsed ? (
+                    <>
+                      <span className="font-ui">{t(m.label, locale)}</span>
+                      <span className="ml-auto font-mono text-label tracking-[0.1em] text-ink-secondary">
+                        {m.tag}
+                      </span>
+                    </>
+                  ) : null}
+                </Link>
+              )
+            })}
+          </div>
         )
       })}
     </nav>
