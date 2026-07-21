@@ -1,4 +1,4 @@
--- tower_40 · ALLOCATION spec v2 — the `specRows` object-array fiche field.
+-- tower_44 · ALLOCATION spec v2 — the `specRows` object-array fiche field.
 --
 -- Shared-system (SpecForm) framework amendment: the once-frozen SpecFieldDef
 -- builders gained a `specRows` object-array kind ({label, value, icon?} rows).

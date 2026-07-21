@@ -30,7 +30,7 @@ export { computeQuotationTotals } from './document'
 
 // ── Fiche spec rows (ALLOCATION specs.specRows) ──────────────────────────────
 // A brand-authored {label, value, icon?} presentation row from the ALLOCATION
-// spec (spec_schemas v2 · migration tower_40). Exhibited on the tech sheet as a
+// spec (spec_schemas v2 · migration tower_44). Exhibited on the tech sheet as a
 // tabular-mono {label · value} table; `icon` is a bounded token (SPEC_ROW_ICONS),
 // mapped to a glyph at render — never a raw asset path.
 export interface RbSpecRow {
@@ -109,7 +109,7 @@ export interface RbContainerQuoteDocument {
   techSheet: TechSheetSection[]
   /** Brand-authored fiche rows from the ALLOCATION spec (specs.specRows). Empty when none. */
   specRows: RbSpecRow[]
-  /** Package/packing drawing geometry (rb_diagram_specs, tower_41) mapped to the
+  /** Package/packing drawing geometry (rb_diagram_specs, tower_45) mapped to the
    *  shared PackingDiagram organ's spec. null when the product has no authored
    *  geometry — the tech sheet then stays spec-led (no drawing). */
   diagram: RbPackingDiagramSpec | null

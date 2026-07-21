@@ -26,7 +26,7 @@ export const SPEC_SCHEMA_VERSION = 1
 /**
  * Per-archetype spec-schema version. Bumping one archetype (adding a field def)
  * means a NEW versioned row for THAT archetype only — the other six are unmoved.
- * ALLOCATION → v2 adds the `specRows` object-array field (migration tower_40);
+ * ALLOCATION → v2 adds the `specRows` object-array field (migration tower_44);
  * getSpecSchema resolves the highest published version.
  */
 export const SPEC_SCHEMA_VERSIONS: Record<Archetype, number> = {

@@ -79,7 +79,7 @@ const SELECT_COLS =
 
 /** Live container statuses — a container in one of these still depends on its
  * composed products staying published (R14). Terminal/not-live = CLOSED, SHIPPED,
- * CANCELLED. Mirrors rb_reserve()'s live-set and the tower_42 retire guard. */
+ * CANCELLED. Mirrors rb_reserve()'s live-set and the tower_46 retire guard. */
 const RB_LIVE_CONTAINER_STATUSES = ['OPEN', 'FILLING'] as const
 
 interface RawRbProductRow {
@@ -461,7 +461,7 @@ export async function publishRbProduct(id: string): Promise<ActionResult<{ produ
  * The R14 cross-guard refuses the retire while the product is composed into a
  * LIVE container: its slug appears as a profile_slug in a same-brand container
  * template whose container is still OPEN/FILLING. The authoritative enforcement
- * is the tower_42 rb_products_retire_guard trigger; the pre-check below is defence
+ * is the tower_46 rb_products_retire_guard trigger; the pre-check below is defence
  * in depth so the user sees a clean message instead of a raw trigger error. */
 export async function retireRbProduct(id: string): Promise<ActionResult<RbProductRow>> {
   const gate = await requireUser()
@@ -480,7 +480,7 @@ export async function retireRbProduct(id: string): Promise<ActionResult<RbProduc
     return fail('VALIDATION', 'Solo un producto publicado puede retirarse / Only a published product can be retired')
   }
 
-  // R14 cross-guard (friendly pre-check; the tower_42 trigger is the real boundary).
+  // R14 cross-guard (friendly pre-check; the tower_46 trigger is the real boundary).
   // A product enters a container through its packing profile: the template
   // composition carries {profile_slug} = product.slug. Refuse the retire while any
   // same-brand container built on such a template is still LIVE (OPEN/FILLING).

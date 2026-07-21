@@ -144,7 +144,7 @@ interface ProductRow {
 
 /**
  * Extract the ALLOCATION fiche rows from a product's `specs` jsonb (specs.specRows,
- * spec_schemas v2 · tower_40). Defensive: display-only, never trusts shape — a
+ * spec_schemas v2 · tower_44). Defensive: display-only, never trusts shape — a
  * malformed row is dropped, an empty label+value is skipped. Presentation only;
  * no slot/packing math lives here (§5-bis.4).
  */
@@ -165,7 +165,7 @@ function specRowsFrom(specs: unknown): RbSpecRow[] {
   return rows
 }
 
-// Bounded diagram geometry (rb_diagram_specs, tower_41 — read only).
+// Bounded diagram geometry (rb_diagram_specs, tower_45 — read only).
 interface DiagramRow {
   package_length_mm: number
   package_width_mm: number
@@ -226,7 +226,7 @@ async function productFor(supabase: TowerClient, brandId: string, slug: string):
 }
 
 /** Bounded diagram geometry for the product, mapped to the shared PackingDiagram
- *  spec (rb_diagram_specs, tower_41 · R1). RLS-scoped read; null when the product
+ *  spec (rb_diagram_specs, tower_45 · R1). RLS-scoped read; null when the product
  *  has no authored geometry — the tech sheet then stays spec-led. */
 async function diagramFor(supabase: TowerClient, rbProductId: string, title: string): Promise<RbPackingDiagramSpec | null> {
   const { data } = await supabase
@@ -338,7 +338,7 @@ export async function getRbContainerQuoteByCode(
   const productEs = localized(product?.name, 'es') ?? packing.product_name
   const productEn = localized(product?.name, 'en') ?? packing.product_name
 
-  // Diagram geometry (rb_diagram_specs, tower_41 · R1) — read only when the
+  // Diagram geometry (rb_diagram_specs, tower_45 · R1) — read only when the
   // product row resolved; the tech sheet draws the master package when present.
   const diagram = product?.id ? await diagramFor(auth.supabase, product.id, productEs) : null
 

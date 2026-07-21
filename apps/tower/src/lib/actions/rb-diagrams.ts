@@ -2,12 +2,12 @@
 
 // src/lib/actions/rb-diagrams.ts
 // RB diagram-geometry mutations (RB Console Wave 4, Ch 04 · SPEC R1/R2). The
-// write-side for tower.rb_diagram_specs (tower_41) — the BOUNDED parametric
+// write-side for tower.rb_diagram_specs (tower_45) — the BOUNDED parametric
 // geometry a product's technical package drawing is derived from. Root §5-bis /
 // R1: geometry lives OUTSIDE the spec value; this is its ONE home.
 //
 // TOWER mutation law: auth (requireUser) → Zod parse → RLS-scoped query. RLS
-// (has_rb_role, join-through-parent to rb_products — tower_41 §41.3) is the ONLY
+// (has_rb_role, join-through-parent to rb_products — tower_45 §45.3) is the ONLY
 // permission boundary; this file never gates with `if (role === …)`. Numbers are
 // brand assets (Directive 5): integer mm + integer counts, no money, no float.
 import { z } from 'zod'
@@ -73,7 +73,7 @@ function mapRow(row: RawRbDiagramSpecRow): RbDiagramSpecRow {
   }
 }
 
-// ── Zod input — the bounded geometry (mirrors the tower_41 CHECK) ─────────────
+// ── Zod input — the bounded geometry (mirrors the tower_45 CHECK) ─────────────
 const dimSchema = z.number().int().positive().max(100_000) // mm, generous ceiling
 const countSchema = z.number().int().positive().max(100_000)
 const cellSchema = z.number().int().positive().max(999)
@@ -123,7 +123,7 @@ export async function getRbDiagramSpec(rbProductId: string): Promise<ActionResul
 
 /** Create or update a product's diagram geometry. RLS (rb_diagram_specs_ins/upd,
  *  has_rb_role BRAND_MANAGER/BRAND_OPS join-through-parent) confines the write to a
- *  brand the caller manages/ops; the audit trigger (tower_41) logs it. One spec per
+ *  brand the caller manages/ops; the audit trigger (tower_45) logs it. One spec per
  *  product (unique rb_product_id) — upsert conflict-targets it. */
 export async function upsertRbDiagramSpec(
   rbProductId: string,

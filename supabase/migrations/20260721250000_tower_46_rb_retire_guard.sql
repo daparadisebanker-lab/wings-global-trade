@@ -1,4 +1,4 @@
--- tower_42 · RB "retire" cross-guard (R14) — block retiring an rb_product that is
+-- tower_46 · RB "retire" cross-guard (R14) — block retiring an rb_product that is
 -- composed into a LIVE container (root CLAUDE.md §5-bis; the R14 guard the base
 -- retire transition in rb-catalog.ts#retireRbProduct deferred to Wave 3).
 --

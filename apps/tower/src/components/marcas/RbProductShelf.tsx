@@ -300,7 +300,7 @@ export function RbProductShelf({
             </section>
 
             {/* Diagram geometry — the BOUNDED numeric model (rb_diagram_specs,
-                tower_41 / R1) the technical package drawing on the fiche + tech
+                tower_45 / R1) the technical package drawing on the fiche + tech
                 sheet is derived from. Its own append-only table + RLS, so it stays
                 editable once the product row is locked; only needs a saved product. */}
             <section className="flex flex-col gap-2 border-t border-line pt-5">

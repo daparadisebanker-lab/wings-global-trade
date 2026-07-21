@@ -32,7 +32,7 @@ export interface RbTechSheetProps {
   sections: TechSheetSection[]
   /** Brand-authored fiche rows from the ALLOCATION spec (specs.specRows). */
   specRows?: RbSpecRow[]
-  /** Bounded package/packing geometry (rb_diagram_specs, tower_41) mapped to the
+  /** Bounded package/packing geometry (rb_diagram_specs, tower_45) mapped to the
    *  shared PackingDiagram organ. When absent the sheet stays spec-led (no drawing). */
   diagram?: RbPackingDiagramSpec | null
 }

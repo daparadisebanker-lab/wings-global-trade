@@ -1,4 +1,4 @@
--- tower_41 · RB Console Wave 4 — parametric diagram geometry store.
+-- tower_45 · RB Console Wave 4 — parametric diagram geometry store.
 -- (represented-brands-console SPEC §4 / Ch 04 "DIAGRAM-MODELS", rebased per the
 -- program ledger onto the shipped tower_25 has_rb_role regime — SPEC R1/R2.)
 --

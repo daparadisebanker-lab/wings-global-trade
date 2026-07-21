@@ -7,14 +7,14 @@
 // hs_code lives on the rb_products column; gtin on rb_packing_profiles. Each of
 // those has one home — none are duplicated here (Prime Directive 5).
 //
-// The `specRows` field (added in the shared SpecForm amendment, tower_40) is the
+// The `specRows` field (added in the shared SpecForm amendment, tower_44) is the
 // human-facing fiche table of {label, value, icon?} rows — an object-array the
 // once-frozen SpecFieldDef builders could not express (array items were
 // string|number only). It carries ONLY fiche PRESENTATION (R1): geometry still
 // lives in rb_diagram_specs, hs_code on the rb_products column, gtin on
 // rb_packing_profiles — none duplicated here. Bumping this field list bumped the
 // ALLOCATION default to v2 (registry.SPEC_SCHEMA_VERSIONS); the versioned DB row
-// is seeded by migration tower_40 (never an edit-in-place — ADR-3/ADR-6).
+// is seeded by migration tower_44 (never an edit-in-place — ADR-3/ADR-6).
 import { arrayField, localizedStringField, specRowsField } from './fields'
 import type { SpecFieldDef } from './fields'
 

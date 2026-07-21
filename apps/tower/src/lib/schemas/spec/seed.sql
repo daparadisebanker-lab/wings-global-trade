@@ -246,7 +246,7 @@ on conflict (archetype, lane_id, version) do nothing;
 -- presentation-only spec (geometry lives in rb_diagram_specs). lane_id = null,
 -- no lane override. Kept identical to specFieldsToJsonSchema(ALLOCATION_SPEC_FIELDS).
 -- v2 adds the `specRows` object-array fiche field (SpecForm framework amendment);
--- the incremental v2 seed for already-migrated DBs is migration tower_40. The v1
+-- the incremental v2 seed for already-migrated DBs is migration tower_44. The v1
 -- block below is retained (append-only history — resolveSpecSchema picks highest).
 insert into tower.spec_schemas (archetype, lane_id, version, json_schema)
 select 'ALLOCATION', null, 1, $allocation_schema_v1$
