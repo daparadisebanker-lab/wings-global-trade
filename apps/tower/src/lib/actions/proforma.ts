@@ -13,8 +13,9 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { fail, ok, type ActionResult } from './result'
 import type { QuoteLineComputed } from './pipeline-logic'
+import { getMyRepProfile, getRepProfile, getRepSignatureUrl } from './rep-profile'
 import { WINGS_ISSUER } from '@/lib/quotation/company'
-import { itemNo } from '@/lib/quotation/document'
+import { buildIssuedByRep, itemNo, type IssuedByRep } from '@/lib/quotation/document'
 import {
   computeProformaTotals,
   DEFAULT_PROFORMA_OBSERVATIONS,
@@ -59,6 +60,8 @@ interface RawQuoteRow {
   bill_to: RawBillTo | null
   terms: RawTerms | null
   observations: string[] | null
+  /** The rep who owns the quote — the "Atendido por" issuer (auth user id). */
+  created_by: string | null
 }
 
 interface RawBillTo {
@@ -78,7 +81,7 @@ interface RawTerms extends Partial<ProformaTerms> {
 }
 
 const QUOTE_COLS =
-  'id,rfq_id,status,currency,lines,tax_label,tax_bps,quote_no,issued_on,valid_until,bill_to,terms,observations'
+  'id,rfq_id,status,currency,lines,tax_label,tax_bps,quote_no,issued_on,valid_until,bill_to,terms,observations,created_by'
 
 function isEmptyBillTo(b: RawBillTo | null | undefined): boolean {
   if (!b) return true
@@ -125,7 +128,23 @@ function toImporter(b: RawBillTo): TradeParty {
   }
 }
 
-function toDocument(row: RawQuoteRow, importerRaw: RawBillTo): ProformaDocument {
+/**
+ * Resolve the issuing rep ("Atendido por") from the quote's `created_by`, through
+ * the tower_39 contract — own doc → getMyRepProfile, admin viewing another rep's
+ * doc → getRepProfile (both RLS-gated), signed signature via getRepSignatureUrl.
+ * Degrades to null (company block) on any miss. Mirrors quotation.ts#resolveIssuedBy.
+ */
+async function resolveIssuedBy(currentUserId: string, createdBy: string | null): Promise<IssuedByRep | null> {
+  if (!createdBy) return null
+  const profileRes = createdBy === currentUserId ? await getMyRepProfile() : await getRepProfile(createdBy)
+  const profile = profileRes.error ? null : profileRes.data
+  if (!profile) return null
+  const sigRes = await getRepSignatureUrl(createdBy)
+  const signatureUrl = sigRes.error ? null : sigRes.data
+  return buildIssuedByRep(profile, signatureUrl)
+}
+
+function toDocument(row: RawQuoteRow, importerRaw: RawBillTo, issuedBy: IssuedByRep | null): ProformaDocument {
   const currency = row.currency || 'USD'
   const lines: QuoteLineComputed[] = Array.isArray(row.lines) ? row.lines : []
 
@@ -169,6 +188,7 @@ function toDocument(row: RawQuoteRow, importerRaw: RawBillTo): ProformaDocument 
     banking: DEFAULT_BANKING as BankingDetails,
     observations,
     issuer: WINGS_ISSUER,
+    issuedBy,
   }
 }
 
@@ -190,5 +210,6 @@ export async function getProformaDocument(quoteId: string): Promise<ActionResult
     importerRaw = await deriveImporter(auth.supabase, accountId)
   }
 
-  return ok(toDocument(row, importerRaw))
+  const issuedBy = await resolveIssuedBy(auth.user.id, row.created_by)
+  return ok(toDocument(row, importerRaw, issuedBy))
 }

@@ -91,6 +91,31 @@ export async function getMyRepProfile(): Promise<ActionResult<RepProfile | null>
 }
 
 /**
+ * A specific rep's profile by user id — for a group admin rendering another rep's
+ * quotation/proforma document (the common self case uses getMyRepProfile). RLS is
+ * the gate, mirroring getRepSignatureUrl: the rep_profiles policy
+ * (`user_id = auth.uid() OR is_group_admin()`) returns the row only when the
+ * caller is that rep or a group admin — otherwise the scoped read yields nothing
+ * and this returns null. Reader only; never mutates.
+ */
+export async function getRepProfile(userId: string): Promise<ActionResult<RepProfile | null>> {
+  const gate = await requireUser()
+  if (!gate.ok) return gate.error
+  const { supabase } = gate
+
+  const idParsed = uuidSchema.safeParse(userId)
+  if (!idParsed.success) return fail('VALIDATION', 'ID inválido / Invalid id')
+
+  const { data, error } = await supabase
+    .from('rep_profiles')
+    .select(ROW_COLUMNS)
+    .eq('user_id', idParsed.data)
+    .maybeSingle()
+  if (error) return fail('VALIDATION', 'No se pudo leer el perfil / Could not read the profile')
+  return ok(data ? mapRow(data as RepProfileRow) : null)
+}
+
+/**
  * Upsert the caller's own rep profile from the editable fields. Undefined fields
  * are left untouched; explicit null clears a field. `onboarded_at` is stamped once
  * — the first time the merged row is "complete" (display_name + title +

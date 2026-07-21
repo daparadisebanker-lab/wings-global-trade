@@ -16,8 +16,10 @@ import { createServerSupabase } from '@/lib/supabase/server'
 import { addMinor } from '@/lib/money'
 import { fail, ok, type ActionResult } from './result'
 import type { QuoteLineComputed } from './pipeline-logic'
+import { getMyRepProfile, getRepProfile, getRepSignatureUrl } from './rep-profile'
 import { WINGS_ISSUER } from '@/lib/quotation/company'
 import {
+  buildIssuedByRep,
   DEFAULT_OBSERVATIONS,
   DEFAULT_TAX_BPS,
   DEFAULT_TAX_LABEL,
@@ -25,6 +27,7 @@ import {
   withDefaultTerms,
   type BillTo,
   type CommercialTerms,
+  type IssuedByRep,
   type QuotationDocument,
   type QuotationLine,
 } from '@/lib/quotation/document'
@@ -62,10 +65,12 @@ interface RawQuoteDocRow {
   bill_to: Partial<BillTo> | null
   terms: Partial<CommercialTerms> | null
   observations: string[] | null
+  /** The rep who owns the quote — the "Atendido por" issuer (auth user id). */
+  created_by: string | null
 }
 
 const QUOTE_DOC_COLS =
-  'id,rfq_id,status,currency,lines,total_minor,subtotal_minor,tax_label,tax_bps,tax_minor,quote_no,issued_on,valid_until,bill_to,terms,observations'
+  'id,rfq_id,status,currency,lines,total_minor,subtotal_minor,tax_label,tax_bps,tax_minor,quote_no,issued_on,valid_until,bill_to,terms,observations,created_by'
 
 function num(v: number | string | null | undefined): number {
   if (v === null || v === undefined) return 0
@@ -119,8 +124,29 @@ function daysBetween(fromIso: string | null, toIso: string | null): number | nul
   return Math.round((to - from) / 86_400_000)
 }
 
+/**
+ * Resolve the issuing rep ("Atendido por") for a quote from its `created_by`
+ * user id, through the tower_39 rep-identity contract. Own doc (common case) →
+ * getMyRepProfile; a group admin viewing another rep's doc → getRepProfile
+ * (both RLS-gated). The signed signature url is minted by getRepSignatureUrl.
+ * Any failure degrades to null (the document falls back to the company block).
+ */
+async function resolveIssuedBy(currentUserId: string, createdBy: string | null): Promise<IssuedByRep | null> {
+  if (!createdBy) return null
+  const profileRes = createdBy === currentUserId ? await getMyRepProfile() : await getRepProfile(createdBy)
+  const profile = profileRes.error ? null : profileRes.data
+  if (!profile) return null
+  const sigRes = await getRepSignatureUrl(createdBy)
+  const signatureUrl = sigRes.error ? null : sigRes.data
+  return buildIssuedByRep(profile, signatureUrl)
+}
+
 /** Assemble the render-ready document from a persisted quote row. */
-function toDocument(row: RawQuoteDocRow, accountBillTo: BillTo | null): QuotationDocument {
+function toDocument(
+  row: RawQuoteDocRow,
+  accountBillTo: BillTo | null,
+  issuedBy: IssuedByRep | null,
+): QuotationDocument {
   const currency = row.currency || 'USD'
   const lines: QuoteLineComputed[] = Array.isArray(row.lines) ? row.lines : []
 
@@ -160,6 +186,7 @@ function toDocument(row: RawQuoteDocRow, accountBillTo: BillTo | null): Quotatio
     terms: withDefaultTerms(row.terms),
     observations,
     issuer: WINGS_ISSUER,
+    issuedBy,
   }
 }
 
@@ -189,7 +216,8 @@ export async function getQuotationDocument(quoteId: string): Promise<ActionResul
   const accountBillTo = isEmptyBillTo(loaded.row.bill_to)
     ? await deriveBillTo(auth.supabase, loaded.accountId)
     : null
-  return ok(toDocument(loaded.row, accountBillTo))
+  const issuedBy = await resolveIssuedBy(auth.user.id, loaded.row.created_by)
+  return ok(toDocument(loaded.row, accountBillTo, issuedBy))
 }
 
 // ── Issue (mint number + freeze the split) ───────────────────────────────────

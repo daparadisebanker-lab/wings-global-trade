@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  buildIssuedByRep,
   computeQuotationTotals,
   formatAmount,
   formatQuoteNo,
@@ -65,5 +66,30 @@ describe('withDefaultTerms', () => {
   it('treats blank strings as empty', () => {
     const merged = withDefaultTerms({ warranty: '   ' })
     expect(merged.warranty).toBe(DEFAULT_TERMS.warranty)
+  })
+})
+
+describe('buildIssuedByRep', () => {
+  it('builds the block from a named rep with a signature', () => {
+    const block = buildIssuedByRep(
+      { displayName: 'María Torres', title: 'Ejecutiva Comercial' },
+      'https://signed.example/sig.png',
+    )
+    expect(block).toEqual({
+      displayName: 'María Torres',
+      title: 'Ejecutiva Comercial',
+      signatureUrl: 'https://signed.example/sig.png',
+    })
+  })
+
+  it('degrades to name + title when there is no signature', () => {
+    const block = buildIssuedByRep({ displayName: 'María Torres', title: null }, null)
+    expect(block).toEqual({ displayName: 'María Torres', title: null, signatureUrl: null })
+  })
+
+  it('returns null when there is no usable name (→ company block)', () => {
+    expect(buildIssuedByRep(null, 'https://signed.example/sig.png')).toBeNull()
+    expect(buildIssuedByRep({ displayName: null, title: 'Ejecutiva' }, null)).toBeNull()
+    expect(buildIssuedByRep({ displayName: '   ', title: 'Ejecutiva' }, null)).toBeNull()
   })
 })

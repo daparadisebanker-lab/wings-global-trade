@@ -170,6 +170,20 @@ export function QuotationDocument({ doc }: { doc: QuotationDocument }) {
         <div className="qdoc-close-signoff">{issuer.name}</div>
       </div>
 
+      {/* Issuing rep — "Atendido por / Issued by". Signature is a signed READ url
+          rendered through <img> (never inline SVG); degrades to name + title. */}
+      {doc.issuedBy ? (
+        <div className="qdoc-issuedby">
+          <div className="qdoc-issuedby-label">Atendido por · Issued by</div>
+          {doc.issuedBy.signatureUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img className="qdoc-signature" src={doc.issuedBy.signatureUrl} alt="Firma" />
+          ) : null}
+          <div className="qdoc-issuedby-name">{doc.issuedBy.displayName}</div>
+          {doc.issuedBy.title ? <div className="qdoc-issuedby-title">{doc.issuedBy.title}</div> : null}
+        </div>
+      ) : null}
+
       {/* Footer */}
       <footer className="qdoc-footer">
         <div>
