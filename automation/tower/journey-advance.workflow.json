@@ -1,0 +1,76 @@
+{
+  "name": "TOWER · Import Journey Auto-Advance",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "schedule-hourly",
+      "name": "Every hour",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build the exact raw body and its HMAC-SHA256 signature. The TOWER hook\n// verifies X-Wings-Signature over the RAW body (same contract as the whatsapp\n// and revalidate hooks), so we must sign the literal bytes we send — never a\n// re-serialized object. An empty JSON object means \"scan all open journeys\";\n// set JOURNEY_ADVANCE_LIMIT to cap the batch, or JOURNEY_ADVANCE_JOURNEY_ID to\n// target one journey.\nconst crypto = require('crypto');\nconst secret = $env.JOURNEY_ADVANCE_SECRET;\nif (!secret) {\n  throw new Error('JOURNEY_ADVANCE_SECRET env var is not set on the n8n instance.');\n}\n\nconst payload = {};\nif ($env.JOURNEY_ADVANCE_JOURNEY_ID) payload.journeyId = $env.JOURNEY_ADVANCE_JOURNEY_ID;\nif ($env.JOURNEY_ADVANCE_LIMIT) payload.limit = Number($env.JOURNEY_ADVANCE_LIMIT);\n\nconst rawBody = JSON.stringify(payload);\nconst sig = 'sha256=' + crypto.createHmac('sha256', secret).update(rawBody, 'utf8').digest('hex');\n\nreturn [{ json: { rawBody, signature: sig } }];"
+      },
+      "id": "sign-body",
+      "name": "Sign body",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.TOWER_BASE_URL}}/api/hooks/journey-advance",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Wings-Signature",
+              "value": "={{ $json.signature }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.rawBody }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "call-advance",
+      "name": "POST /api/hooks/journey-advance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [720, 300]
+    }
+  ],
+  "connections": {
+    "Every hour": {
+      "main": [[{ "node": "Sign body", "type": "main", "index": 0 }]]
+    },
+    "Sign body": {
+      "main": [[{ "node": "POST /api/hooks/journey-advance", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": {},
+  "meta": {
+    "description": "Scheduled deterministic advancer: reconciles each open import journey's cached phase against its live quote/order/container state via POST /api/hooks/journey-advance. Rules-based, no AI. Signs the raw body with JOURNEY_ADVANCE_SECRET. Ships inactive."
+  }
+}

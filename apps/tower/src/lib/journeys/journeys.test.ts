@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { derivePhase, reachedPhases, phaseSetFor, PHASE_SETS } from './phases'
+import { derivePhase, reachedPhases, phaseSetFor, PHASE_SETS, planAdvancement } from './phases'
 import { signCommitment, verifyCommitment, type CommitmentPayload } from './signature'
 
 describe('derivePhase', () => {
@@ -37,6 +37,42 @@ describe('derivePhase', () => {
   })
   it('reachedPhases always includes the base phase', () => {
     expect(reachedPhases({ quoteStatus: 'DRAFT' }).has('COTIZACION_RECIBIDA')).toBe(true)
+  })
+})
+
+describe('planAdvancement (deterministic auto-advance decision)', () => {
+  it('advances forward when live state outranks the cached phase', () => {
+    // cache is COTIZACION_RECIBIDA but the container is already in transit
+    const plan = planAdvancement('COTIZACION_RECIBIDA', { quoteStatus: 'ACCEPTED', containerStatus: 'IN_TRANSIT' })
+    expect(plan).toEqual({ advance: true, fromPhase: 'COTIZACION_RECIBIDA', toPhase: 'EN_TRANSITO' })
+  })
+
+  it('is a no-op when the cache already equals the derived phase (idempotent)', () => {
+    const plan = planAdvancement('EN_TRANSITO', { quoteStatus: 'ACCEPTED', containerStatus: 'IN_TRANSIT' })
+    expect(plan.advance).toBe(false)
+    expect(plan.toPhase).toBe('EN_TRANSITO')
+  })
+
+  it('never rewinds — a cache ahead of live state stays put', () => {
+    // cache says NACIONALIZADO; live state only proves ACEPTADA → hold, do not rewind
+    const plan = planAdvancement('NACIONALIZADO', { quoteStatus: 'ACCEPTED' })
+    expect(plan.advance).toBe(false)
+    expect(plan.toPhase).toBe('NACIONALIZADO')
+  })
+
+  it('jumps straight to the furthest reached phase (multi-step)', () => {
+    const plan = planAdvancement('ACEPTADA', { quoteStatus: 'ACCEPTED', containerStatus: 'CLEARED' })
+    expect(plan).toEqual({ advance: true, fromPhase: 'ACEPTADA', toPhase: 'NACIONALIZADO' })
+  })
+
+  it('honors the archetype phase set — a container hito cannot advance CREDENTIAL', () => {
+    const plan = planAdvancement('ACEPTADA', { quoteStatus: 'ACCEPTED', containerStatus: 'IN_TRANSIT' }, 'CREDENTIAL')
+    expect(plan.advance).toBe(false)
+  })
+
+  it('advances to the terminal phase on delivery', () => {
+    const plan = planAdvancement('NACIONALIZADO', { quoteStatus: 'ACCEPTED', orderStatus: 'DELIVERED' })
+    expect(plan).toEqual({ advance: true, fromPhase: 'NACIONALIZADO', toPhase: 'ENTREGADO' })
   })
 })
 

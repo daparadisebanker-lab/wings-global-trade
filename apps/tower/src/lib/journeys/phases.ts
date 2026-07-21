@@ -111,3 +111,42 @@ export function derivePhase(state: JourneyState, phaseSetKey = 'STANDARD_IMPORT'
 export function isPhaseCode(v: string): v is PhaseCode {
   return (PHASE_CODES as readonly string[]).includes(v)
 }
+
+/** Progress rank of a phase in the canonical order (-1 if unknown). */
+export function phaseRank(phase: string): number {
+  return PHASE_ORDER.indexOf(phase as PhaseCode)
+}
+
+export interface Advancement {
+  /** True only when the derived phase is strictly FORWARD of the current cache. */
+  advance: boolean
+  fromPhase: PhaseCode
+  toPhase: PhaseCode
+}
+
+/**
+ * DETERMINISTIC automated advancement (the n8n watcher's decision function).
+ *
+ * The client-facing `current_phase` is a cache. A human keeps it fresh by
+ * recording milestones; but the underlying system-of-record states (quote /
+ * order / container) also move through OTHER TOWER flows, and nothing reconciles
+ * the cache until a human next opens the journey. This function is that
+ * reconciliation, expressed as a pure rule:
+ *
+ *   1. Recompute the phase the SAME way the human path does — `derivePhase`
+ *      (states + recorded hitos), bounded to the archetype's phase set. This is
+ *      the guarded transition; the caller can never inject an arbitrary phase.
+ *   2. Advance ONLY forward (monotonic): act iff the derived phase outranks the
+ *      cached one. Never rewind, never skip the phase set, never pass the derived
+ *      furthest-reached phase. If nothing moved, `advance` is false (idempotent —
+ *      re-running the watcher on a settled journey is a no-op).
+ */
+export function planAdvancement(
+  currentPhase: PhaseCode,
+  state: JourneyState,
+  phaseSetKey = 'STANDARD_IMPORT',
+): Advancement {
+  const derived = derivePhase(state, phaseSetKey)
+  const advance = phaseRank(derived) > phaseRank(currentPhase)
+  return { advance, fromPhase: currentPhase, toPhase: advance ? derived : currentPhase }
+}
