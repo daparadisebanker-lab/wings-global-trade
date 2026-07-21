@@ -152,3 +152,63 @@ describe('SpecView — read-only render', () => {
     expect(en).toContain('Arabica coffee')
   })
 })
+
+describe('SpecForm — spec_rows object-array field (ALLOCATION)', () => {
+  it('renders existing {label,value,icon} rows plus the add-row control', () => {
+    const schema = getSpecSchema('ALLOCATION')
+    expect(schema.properties.specRows?.['x-spec-rows']).toBe(true)
+
+    const markup = renderToStaticMarkup(
+      createElement(SpecForm, {
+        schema,
+        value: {
+          unitLabel: { es: 'Cupo', en: 'Slot' },
+          description: { es: 'Contenedor', en: 'Container' },
+          specRows: [{ label: 'Origen', value: 'China', icon: 'box' }],
+        },
+        onChange: () => {},
+        locale: 'es',
+      }),
+    )
+
+    expect(markup).toContain('data-archetype="ALLOCATION"')
+    expect(markup).toContain('data-spec-rows')
+    // Row label + value render back into their inputs.
+    expect(markup).toContain('value="Origen"')
+    expect(markup).toContain('value="China"')
+    // The bounded icon set renders as a <select> with the chosen token.
+    expect(markup).toContain('<select')
+    expect(markup).toContain('box')
+    // Add-row control (ES copy).
+    expect(markup).toContain('Añadir fila')
+  })
+
+  it('the six pre-amendment archetypes render without any spec_rows markup (swap-test discipline)', () => {
+    for (const archetype of ['EQUIPMENT', 'PROJECT', 'COMMODITY', 'PROGRAM', 'CREDENTIAL', 'ORIGIN'] as const) {
+      const markup = renderToStaticMarkup(
+        createElement(SpecForm, { schema: getSpecSchema(archetype), value: {}, onChange: () => {}, locale: 'es' }),
+      )
+      expect(markup).toContain(`data-archetype="${archetype}"`)
+      expect(markup).not.toContain('data-spec-rows')
+    }
+  })
+
+  it('SpecView exhibits spec_rows as a label · value list', () => {
+    const schema = getSpecSchema('ALLOCATION')
+    const markup = renderToStaticMarkup(
+      createElement(SpecView, {
+        schema,
+        value: {
+          unitLabel: { es: 'Cupo', en: 'Slot' },
+          specRows: [
+            { label: 'Origen', value: 'China' },
+            { label: 'Peso', value: '9,7 kg', icon: 'weight' },
+          ],
+        },
+        locale: 'es',
+      }),
+    )
+    expect(markup).toContain('Origen: China')
+    expect(markup).toContain('Peso: 9,7 kg')
+  })
+})

@@ -28,6 +28,17 @@ import {
 export type { BillTo, CommercialTerms, QuotationTotals } from './document'
 export { computeQuotationTotals } from './document'
 
+// ── Fiche spec rows (ALLOCATION specs.specRows) ──────────────────────────────
+// A brand-authored {label, value, icon?} presentation row from the ALLOCATION
+// spec (spec_schemas v2 · migration tower_40). Exhibited on the tech sheet as a
+// tabular-mono {label · value} table; `icon` is a bounded token (SPEC_ROW_ICONS),
+// mapped to a glyph at render — never a raw asset path.
+export interface RbSpecRow {
+  label: string
+  value: string
+  icon?: string
+}
+
 // ── A rendered allocation line (the negotiated slots) ────────────────────────
 // One line = one product's slot allocation in the container. `slots` is the unit
 // the buyer negotiates; `pricePerSlotMinor` is per-slot money. Both null-price
@@ -96,6 +107,8 @@ export interface RbContainerQuoteDocument {
   /** null when the quote is un-priced (no money to total). */
   totals: QuotationTotals | null
   techSheet: TechSheetSection[]
+  /** Brand-authored fiche rows from the ALLOCATION spec (specs.specRows). Empty when none. */
+  specRows: RbSpecRow[]
   terms: CommercialTerms
   observations: string[]
   issuer: CompanyInfo

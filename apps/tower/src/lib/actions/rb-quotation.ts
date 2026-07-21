@@ -36,6 +36,7 @@ import {
   type RbContainerQuoteDocument,
   type RbPackingExhibit,
   type RbSlotLine,
+  type RbSpecRow,
 } from '@/lib/quotation/rb-container'
 import {
   buildTechSheetSections,
@@ -135,6 +136,30 @@ interface ProductRow {
   hs_code: string | null
   moq: number | string | null
   cbm_per_unit: number | string | null
+  specs: unknown
+}
+
+/**
+ * Extract the ALLOCATION fiche rows from a product's `specs` jsonb (specs.specRows,
+ * spec_schemas v2 · tower_40). Defensive: display-only, never trusts shape — a
+ * malformed row is dropped, an empty label+value is skipped. Presentation only;
+ * no slot/packing math lives here (§5-bis.4).
+ */
+function specRowsFrom(specs: unknown): RbSpecRow[] {
+  if (typeof specs !== 'object' || specs === null) return []
+  const raw = (specs as Record<string, unknown>).specRows
+  if (!Array.isArray(raw)) return []
+  const rows: RbSpecRow[] = []
+  for (const item of raw) {
+    if (typeof item !== 'object' || item === null) continue
+    const rec = item as Record<string, unknown>
+    const label = typeof rec.label === 'string' ? rec.label : ''
+    const value = typeof rec.value === 'string' ? rec.value : ''
+    if (label === '' && value === '') continue
+    const icon = typeof rec.icon === 'string' ? rec.icon : undefined
+    rows.push(icon ? { label, value, icon } : { label, value })
+  }
+  return rows
 }
 
 function numOrNull(v: number | string | null | undefined): number | null {
@@ -175,7 +200,7 @@ async function packingFor(supabase: TowerClient, slug: string): Promise<PackingR
 async function productFor(supabase: TowerClient, brandId: string, slug: string): Promise<ProductRow | null> {
   const { data } = await supabase
     .from('rb_products')
-    .select('name,hs_code,moq,cbm_per_unit')
+    .select('name,hs_code,moq,cbm_per_unit,specs')
     .eq('represented_brand_id', brandId)
     .eq('slug', slug)
     .maybeSingle()
@@ -335,6 +360,7 @@ export async function getRbContainerQuoteByCode(
     packing: packingExhibit,
     totals,
     techSheet: buildTechSheetSections(facts),
+    specRows: specRowsFrom(product?.specs),
     terms: withDefaultTerms(DEFAULT_RB_TERMS),
     observations: DEFAULT_RB_OBSERVATIONS,
     issuer: WINGS_ISSUER,

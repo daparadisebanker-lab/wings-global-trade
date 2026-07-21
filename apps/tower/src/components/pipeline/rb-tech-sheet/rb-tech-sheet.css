@@ -106,6 +106,21 @@
   text-align: right;
 }
 
+/* Brand-authored {label · value} fiche rows (ALLOCATION specs.specRows) — a
+   full-width exhibit below the two-up grid. Same table grammar as the sections:
+   radius 0, no shadows, local --rt-* props only, numbers tabular-mono. */
+.rts-spec {
+  margin-top: 24px;
+  break-inside: avoid;
+}
+.rts-spec-icon {
+  display: inline-block;
+  width: 16px;
+  margin-right: 8px;
+  color: var(--rt-muted);
+  font-family: var(--font-mono, monospace);
+}
+
 @media (max-width: 640px) {
   .rts-grid {
     grid-template-columns: 1fr;

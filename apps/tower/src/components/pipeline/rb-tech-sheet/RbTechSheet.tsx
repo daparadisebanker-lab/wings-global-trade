@@ -7,7 +7,20 @@
 // scoped in rb-tech-sheet.css — a self-contained light print surface, the same
 // approach as the Cotización / Ficha documents.
 import type { TechSheetSection } from '@wings/rb-core'
+import type { RbSpecRow } from '@/lib/quotation/rb-container'
 import './rb-tech-sheet.css'
+
+// Bounded token → glyph. Icons come from the ALLOCATION spec's SPEC_ROW_ICONS
+// set; an unknown/absent token simply renders no glyph (never a raw asset path).
+const SPEC_ROW_ICON_GLYPH: Record<string, string> = {
+  box: '▤',
+  pallet: '▥',
+  cbm: '◈',
+  weight: '▚',
+  clock: '◷',
+  doc: '▦',
+  tag: '◆',
+}
 
 export interface RbTechSheetProps {
   /** Container/product identity for the sheet header. */
@@ -16,9 +29,18 @@ export interface RbTechSheetProps {
   containerCode: string
   reference?: string | null
   sections: TechSheetSection[]
+  /** Brand-authored fiche rows from the ALLOCATION spec (specs.specRows). */
+  specRows?: RbSpecRow[]
 }
 
-export function RbTechSheet({ productName, brandName, containerCode, reference, sections }: RbTechSheetProps) {
+export function RbTechSheet({
+  productName,
+  brandName,
+  containerCode,
+  reference,
+  sections,
+  specRows = [],
+}: RbTechSheetProps) {
   return (
     <section className="rts">
       <div className="rts-head">
@@ -53,6 +75,34 @@ export function RbTechSheet({ productName, brandName, containerCode, reference, 
           </div>
         ))}
       </div>
+
+      {specRows.length > 0 ? (
+        <div className="rts-spec">
+          <div className="rts-section-bar">
+            Especificaciones<span className="rts-section-en"> · Specifications</span>
+          </div>
+          <table className="rts-table">
+            <tbody>
+              {specRows.map((row, index) => {
+                const glyph = row.icon ? SPEC_ROW_ICON_GLYPH[row.icon] : undefined
+                return (
+                  <tr key={`${row.label}-${index}`}>
+                    <th scope="row">
+                      {glyph ? (
+                        <span className="rts-spec-icon" aria-hidden>
+                          {glyph}
+                        </span>
+                      ) : null}
+                      {row.label}
+                    </th>
+                    <td className="rts-value">{row.value}</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      ) : null}
     </section>
   )
 }

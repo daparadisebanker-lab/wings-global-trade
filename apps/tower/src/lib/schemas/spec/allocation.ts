@@ -7,18 +7,20 @@
 // hs_code lives on the rb_products column; gtin on rb_packing_profiles. Each of
 // those has one home — none are duplicated here (Prime Directive 5).
 //
-// Deferred (documented, not built here): `spec_rows` — the human-facing fiche
-// table of {label, value, icon} rows. It is an array-of-objects, which the
-// frozen SpecFieldDef builders (fields.ts) cannot express (array items are
-// string|number only). Adding an object-array field kind is a change to the
-// shared, schema-driven SpecForm system — a framework amendment, not a Wave-2
-// build task. Until then the renderable presentation fields below cover the
-// fiche's unitLabel / description / highlights; spec_rows is a later refinement.
-import { arrayField, localizedStringField } from './fields'
+// The `specRows` field (added in the shared SpecForm amendment, tower_40) is the
+// human-facing fiche table of {label, value, icon?} rows — an object-array the
+// once-frozen SpecFieldDef builders could not express (array items were
+// string|number only). It carries ONLY fiche PRESENTATION (R1): geometry still
+// lives in rb_diagram_specs, hs_code on the rb_products column, gtin on
+// rb_packing_profiles — none duplicated here. Bumping this field list bumped the
+// ALLOCATION default to v2 (registry.SPEC_SCHEMA_VERSIONS); the versioned DB row
+// is seeded by migration tower_40 (never an edit-in-place — ADR-3/ADR-6).
+import { arrayField, localizedStringField, specRowsField } from './fields'
 import type { SpecFieldDef } from './fields'
 
 export const ALLOCATION_SPEC_FIELDS: SpecFieldDef[] = [
   localizedStringField('unitLabel', { es: 'Etiqueta de unidad', en: 'Unit label' }, { required: true }),
   localizedStringField('description', { es: 'Descripción', en: 'Description' }, { required: true }),
   arrayField('highlights', { es: 'Destacados', en: 'Highlights' }, { type: 'string' }),
+  specRowsField('specRows', { es: 'Ficha de especificaciones', en: 'Specification rows' }),
 ]

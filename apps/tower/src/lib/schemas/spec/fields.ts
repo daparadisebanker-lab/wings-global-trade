@@ -18,6 +18,16 @@ export type SpecFieldKind =
   | 'boolean'
   | 'enum'
   | 'array'
+  | 'specRows'
+
+/**
+ * The tokenized icon set a `specRows` object-array row may carry. Small, closed,
+ * append-only — the row's optional glyph is chosen from THIS list only, so the
+ * wire schema publishes a bounded `enum` and the renderer keeps a fixed glyph
+ * map (never a raw asset path; Prime Directive 3). Keep it design-token simple.
+ */
+export const SPEC_ROW_ICONS = ['box', 'pallet', 'cbm', 'weight', 'clock', 'doc', 'tag'] as const
+export type SpecRowIcon = (typeof SPEC_ROW_ICONS)[number]
 
 interface BaseFieldDef {
   /** JSON property key — stored verbatim in `products.specs`. */
@@ -62,6 +72,17 @@ export interface ArrayFieldDef extends BaseFieldDef {
   items: { type: 'string' | 'number'; options?: EnumOption[] }
 }
 
+/**
+ * An object-array field whose items are `{ label, value, icon? }` rows — the
+ * fiche/spec-row table the frozen scalar `ArrayFieldDef` could not express
+ * (root allocation.ts note). Additive: existing kinds are untouched. `label` and
+ * `value` are free author text (a single string each — the row is brand-authored
+ * presentation, not a localized pair); `icon` is optional, from `SPEC_ROW_ICONS`.
+ */
+export interface SpecRowsFieldDef extends BaseFieldDef {
+  kind: 'specRows'
+}
+
 export type SpecFieldDef =
   | StringFieldDef
   | LocalizedStringFieldDef
@@ -69,6 +90,7 @@ export type SpecFieldDef =
   | BooleanFieldDef
   | EnumFieldDef
   | ArrayFieldDef
+  | SpecRowsFieldDef
 
 // ── Builders (archetype files compose these) ──────────────────────────────
 
@@ -128,4 +150,12 @@ export function arrayField(
   opts: Partial<Omit<ArrayFieldDef, 'key' | 'kind' | 'label' | 'items'>> = {},
 ): ArrayFieldDef {
   return { key, kind: 'array', label, items, ...opts }
+}
+
+export function specRowsField(
+  key: string,
+  label: Localized,
+  opts: Partial<Omit<SpecRowsFieldDef, 'key' | 'kind' | 'label'>> = {},
+): SpecRowsFieldDef {
+  return { key, kind: 'specRows', label, ...opts }
 }

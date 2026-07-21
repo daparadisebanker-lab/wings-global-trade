@@ -5,6 +5,7 @@ export * from './types'
 export * from './fields'
 export {
   SPEC_SCHEMA_VERSION,
+  SPEC_SCHEMA_VERSIONS,
   SPEC_FIELD_DEFAULTS,
   SPEC_JSON_SCHEMA_DEFAULTS,
   SPEC_ZOD_DEFAULTS,

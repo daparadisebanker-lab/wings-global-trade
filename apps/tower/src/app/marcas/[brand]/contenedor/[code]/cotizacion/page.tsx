@@ -99,6 +99,7 @@ export default async function RbContainerQuotePage({
           containerCode={doc.containerCode}
           reference={doc.quoteRef}
           sections={doc.techSheet}
+          specRows={doc.specRows}
         />
       </div>
     </div>

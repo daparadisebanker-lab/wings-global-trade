@@ -10,11 +10,34 @@ import type { Localized } from '@/lib/i18n'
 
 export type JsonSchemaFieldType = 'string' | 'number' | 'integer' | 'boolean' | 'array'
 
-/** Items schema for an `array` property — SpecForm supports string/number items only. */
+/** Items schema for a scalar `array` property — SpecForm supports string/number items. */
 export interface JsonSchemaArrayItems {
   type: 'string' | 'number'
   enum?: string[]
   'x-enum-labels'?: Record<string, Localized>
+}
+
+/**
+ * Items schema for a `specRows` object-array property — `{ label, value, icon? }`
+ * rows. Additive to the wire format: a valid JSON-Schema array-of-objects. The
+ * `x-spec-rows` marker on the property is the renderer's discriminator (a scalar
+ * array never carries it), so existing scalar-array handling is untouched.
+ */
+export interface JsonSchemaObjectItems {
+  type: 'object'
+  properties: {
+    label: { type: 'string' }
+    value: { type: 'string' }
+    icon?: { type: 'string'; enum: string[] }
+  }
+  required: string[]
+}
+
+/** Narrows a property's `items` to the scalar shape (false for `specRows` object items). */
+export function isScalarArrayItems(
+  items: JsonSchemaArrayItems | JsonSchemaObjectItems | undefined,
+): items is JsonSchemaArrayItems {
+  return items !== undefined && items.type !== 'object'
 }
 
 /** One property in the spec object schema. */
@@ -35,12 +58,18 @@ export interface JsonSchemaProperty {
   'x-localized'?: boolean
   /** True → multi-line text (textarea) instead of a single-line input. */
   'x-multiline'?: boolean
+  /**
+   * True when this `array` property is an object-array of `{ label, value, icon? }`
+   * rows (the `specRows` kind). SpecForm/SpecView branch on this before the scalar
+   * array path; when absent, `items` is always the scalar shape (back-compat).
+   */
+  'x-spec-rows'?: boolean
   enum?: string[]
   /** Bilingual label per enum value — required whenever `enum` is set. */
   'x-enum-labels'?: Record<string, Localized>
   minimum?: number
   maximum?: number
-  items?: JsonSchemaArrayItems
+  items?: JsonSchemaArrayItems | JsonSchemaObjectItems
   default?: unknown
 }
 
