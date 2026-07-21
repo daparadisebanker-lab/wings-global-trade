@@ -12,7 +12,6 @@ import { createServerSupabase } from '@/lib/supabase/server'
 import { fail, ok, type ActionResult } from './result'
 import { WINGS_ISSUER } from '@/lib/quotation/company'
 import {
-  formatFichaNo,
   type FichaDimensions,
   type FichaDocument,
   type FichaHighlight,
@@ -43,9 +42,11 @@ interface RawProductRow {
   hs_code: string | null
   moq: number | string | null
   cbm_per_unit: number | string | null
+  /** Minted spec-sheet reference (FT-WGT-YYYY-NNNN); null until first assembled. */
+  ficha_no: string | null
 }
 
-const PRODUCT_COLS = 'id,slug,status,category_path,name,specs,hs_code,moq,cbm_per_unit'
+const PRODUCT_COLS = 'id,slug,status,category_path,name,specs,hs_code,moq,cbm_per_unit,ficha_no'
 
 function num(v: number | string | null | undefined): number | null {
   if (v === null || v === undefined || v === '') return null
@@ -120,20 +121,7 @@ function extractPacking(specs: unknown): { unitsPerCarton: number | null; carton
   }
 }
 
-/**
- * Stable 4-digit sequence for the spec-sheet reference, derived from the product
- * id (no counter table / migration — a ficha reference is a catalog pointer, not
- * a minted legal number like a quote). Deterministic: same product → same code.
- */
-function fichaSeqFromId(id: string): number {
-  let hash = 0
-  for (let i = 0; i < id.length; i++) {
-    hash = (hash * 31 + id.charCodeAt(i)) % 10000
-  }
-  return hash === 0 ? 1 : hash
-}
-
-function toDocument(row: RawProductRow): FichaDocument {
+function toDocument(row: RawProductRow, fichaNo: string | null): FichaDocument {
   const packing = extractPacking(row.specs)
   const logistics: FichaLogistics = {
     hsCode: row.hs_code,
@@ -149,7 +137,7 @@ function toDocument(row: RawProductRow): FichaDocument {
 
   return {
     productId: row.id,
-    fichaNo: formatFichaNo(new Date().getFullYear(), fichaSeqFromId(row.id)),
+    fichaNo,
     nameEs: localized(row.name, 'es') ?? row.slug,
     nameEn: localized(row.name, 'en'),
     category,
@@ -171,6 +159,24 @@ export async function getFichaDocument(productId: string): Promise<ActionResult<
 
   const { data, error } = await auth.supabase.from('products').select(PRODUCT_COLS).eq('id', parsed.data).maybeSingle()
   if (error || !data) return fail('FORBIDDEN_LANE', 'Producto no encontrado / Product not found')
+  const row = data as unknown as RawProductRow
 
-  return ok(toDocument(data as unknown as RawProductRow))
+  // Mint the spec-sheet reference once, atomically, via the SECURITY DEFINER
+  // counter fn (tower.mint_ficha_no, tower_38) — mirroring how a quote number is
+  // minted (mint_quote_no). The function persists FT-WGT-YYYY-NNNN onto the
+  // product and is idempotent (a ficha number is stable for the product's life),
+  // so the number never changes across renders and is never re-minted. Persisting
+  // lives in the definer function, not here, because a VIEWER/SALES reader cannot
+  // write tower.products under RLS (products_upd, tower_08).
+  let fichaNo = row.ficha_no
+  if (!fichaNo) {
+    const { data: minted, error: mintError } = await auth.supabase.rpc('mint_ficha_no', {
+      p_product_id: parsed.data,
+      p_year: new Date().getFullYear(),
+    })
+    if (mintError) return fail('VALIDATION', 'No se pudo emitir la ficha / Could not mint ficha number')
+    fichaNo = (minted as string | null) ?? null
+  }
+
+  return ok(toDocument(row, fichaNo))
 }
