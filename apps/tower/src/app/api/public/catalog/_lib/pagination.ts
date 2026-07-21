@@ -8,11 +8,22 @@ export interface CatalogCursor {
   id: string
 }
 
+// The cursor is attacker-controllable (base64url in `?cursor=`) and its fields
+// are interpolated into a PostgREST `.or()` keyset filter in data.ts. Validate
+// the exact shapes here so a tampered value can never smuggle `,`/`(`/`)` into
+// that filter string: `id` is a products UUID, `updatedAt` is a Postgres
+// timestamptz render. Anything else fails the check and the cursor degrades to
+// "start from the top" — the same contract a malformed cursor already had.
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+const TIMESTAMP_RE = /^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(\.\d+)?([+-]\d{2}:?\d{2}|Z)?$/
+
 export function encodeCursor(cursor: CatalogCursor): string {
   return Buffer.from(JSON.stringify(cursor), 'utf8').toString('base64url')
 }
 
-/** Never throws — a malformed/tampered cursor degrades to "start from the top". */
+/** Never throws — a malformed/tampered/ill-shaped cursor degrades to "start
+ *  from the top". Enforces UUID `id` + timestamptz `updatedAt` so the values are
+ *  safe to interpolate into the keyset `.or()` filter (no filter injection). */
 export function decodeCursor(raw: string | null | undefined): CatalogCursor | null {
   if (!raw) return null
   try {
@@ -24,6 +35,7 @@ export function decodeCursor(raw: string | null | undefined): CatalogCursor | nu
       typeof (parsed as Record<string, unknown>).id === 'string'
     ) {
       const { updatedAt, id } = parsed as { updatedAt: string; id: string }
+      if (!UUID_RE.test(id) || !TIMESTAMP_RE.test(updatedAt)) return null
       return { updatedAt, id }
     }
     return null

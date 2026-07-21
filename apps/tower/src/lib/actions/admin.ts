@@ -246,9 +246,11 @@ export async function inviteUser(email: string): Promise<ActionResult<{ userId: 
 
   const { data, error } = await service.auth.admin.inviteUserByEmail(parsed.data)
   if (error || !data?.user) {
-    // Most common: the address is already a user.
+    // Most common: the address is already a user. Log the raw provider error
+    // server-side; never surface it to the client (no raw errors rendered).
+    if (error) console.error('[inviteUser] invite failed', error)
     return fail('VALIDATION', 'No se pudo invitar (¿ya existe?) / Could not invite (already a user?)', {
-      email: [error?.message ?? 'invite_failed'],
+      email: ['invite_failed'],
     })
   }
 
