@@ -77,6 +77,11 @@ export interface RbProductVersionRow {
 const SELECT_COLS =
   'id,represented_brand_id,slug,status,category_path,name,specs,spec_schema_id,hs_code,moq,cbm_per_unit,created_by,updated_at'
 
+/** Live container statuses — a container in one of these still depends on its
+ * composed products staying published (R14). Terminal/not-live = CLOSED, SHIPPED,
+ * CANCELLED. Mirrors rb_reserve()'s live-set and the tower_42 retire guard. */
+const RB_LIVE_CONTAINER_STATUSES = ['OPEN', 'FILLING'] as const
+
 interface RawRbProductRow {
   id: string
   represented_brand_id: string
@@ -453,9 +458,11 @@ export async function publishRbProduct(id: string): Promise<ActionResult<{ produ
 }
 
 /** Remove a product = PUBLISHED → RETIRED (append-only; never a hard delete).
- * The R14 cross-guard (refuse while the profile appears in a live template/
- * container composition) lands with the container lifecycle in Wave 3; the base
- * retire transition is here. */
+ * The R14 cross-guard refuses the retire while the product is composed into a
+ * LIVE container: its slug appears as a profile_slug in a same-brand container
+ * template whose container is still OPEN/FILLING. The authoritative enforcement
+ * is the tower_42 rb_products_retire_guard trigger; the pre-check below is defence
+ * in depth so the user sees a clean message instead of a raw trigger error. */
 export async function retireRbProduct(id: string): Promise<ActionResult<RbProductRow>> {
   const gate = await requireUser()
   if (!gate.ok) return gate.error
@@ -464,13 +471,41 @@ export async function retireRbProduct(id: string): Promise<ActionResult<RbProduc
 
   const { data: current, error: currentError } = await gate.supabase
     .from('rb_products')
-    .select('status')
+    .select('status,slug,represented_brand_id')
     .eq('id', idParsed.data)
     .maybeSingle()
   if (currentError) return fail('VALIDATION', 'No se pudo leer el producto / Could not read product')
   if (!current) return fail('FORBIDDEN_LANE', 'Producto no encontrado o sin acceso / Product not found or no access')
   if (!statusCanRetire((current as { status: string }).status as ProductStatus)) {
     return fail('VALIDATION', 'Solo un producto publicado puede retirarse / Only a published product can be retired')
+  }
+
+  // R14 cross-guard (friendly pre-check; the tower_42 trigger is the real boundary).
+  // A product enters a container through its packing profile: the template
+  // composition carries {profile_slug} = product.slug. Refuse the retire while any
+  // same-brand container built on such a template is still LIVE (OPEN/FILLING).
+  const { slug, represented_brand_id: brandId } = current as { slug: string; represented_brand_id: string }
+  const { data: liveTemplates, error: templatesError } = await gate.supabase
+    .from('rb_container_templates')
+    .select('id')
+    .eq('represented_brand_id', brandId)
+    .contains('composition', [{ profile_slug: slug }])
+  if (templatesError) return fail('VALIDATION', 'No se pudo verificar contenedores / Could not verify containers')
+  const templateIds = ((liveTemplates ?? []) as { id: string }[]).map((t) => t.id)
+  if (templateIds.length > 0) {
+    const { data: liveContainers, error: containersError } = await gate.supabase
+      .from('rb_containers')
+      .select('code')
+      .in('template_id', templateIds)
+      .in('status', [...RB_LIVE_CONTAINER_STATUSES])
+      .limit(1)
+    if (containersError) return fail('VALIDATION', 'No se pudo verificar contenedores / Could not verify containers')
+    if (liveContainers && liveContainers.length > 0) {
+      return fail(
+        'VALIDATION',
+        'No se puede retirar: el producto está comprometido en un contenedor activo. Ciérralo, embárcalo o cancélalo primero. / Cannot retire: the product is committed in a live container. Close, ship or cancel it first.',
+      )
+    }
   }
 
   const { data, error } = await gate.supabase
