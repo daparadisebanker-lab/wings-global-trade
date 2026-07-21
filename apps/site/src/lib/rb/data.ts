@@ -255,6 +255,9 @@ export interface RbActiveContainer {
     packagesPerSlot?: number
   }
   copy: RbPromoCopy
+  /** Brand accent (hex) — the container-fill colour for the share card. Absent
+   *  when the brand's identity carries no accent; rb-core falls back to gold. */
+  accent?: string
 }
 
 interface ActiveContainerRow {
@@ -275,6 +278,7 @@ interface ActiveContainerRow {
   unit_name_plural: string
   product_facts: Record<string, unknown> | null
   promo_copy: RbPromoCopy | null
+  accent: string | null
 }
 
 function mapActiveContainer(r: ActiveContainerRow): RbActiveContainer {
@@ -308,6 +312,7 @@ function mapActiveContainer(r: ActiveContainerRow): RbActiveContainer {
       packagesPerSlot: num(f.packagesPerSlot),
     },
     copy: (r.promo_copy ?? {}) as RbPromoCopy,
+    accent: r.accent ?? undefined,
   }
 }
 
@@ -341,6 +346,9 @@ function aladinActiveFixture(code: string): RbActiveContainer {
       packagesPerSlot: t.packagesPerSlot,
     },
     copy: {},
+    // Áladín's principal green (--rb-accent), so the dev fallback card carries
+    // the brand accent exactly as the LIVE read path now does.
+    accent: '#5e8a16',
   }
 }
 

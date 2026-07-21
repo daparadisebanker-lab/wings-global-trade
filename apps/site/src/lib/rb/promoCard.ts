@@ -56,7 +56,8 @@ export function activeContainerToPromo(c: RbActiveContainer): ContainerPromo {
     listingUrl: `${siteBase()}/marcas/${c.brandSlug}/contenedor/${c.code}`,
     routeLabel: routeLabelOf(c.route),
     phase: c.shippingPhase,
-    // The public view omits the brand accent; rb-core defaults the container
-    // fill to Wings gold on the Wings ground.
+    // Brand accent (from public.rb_active_containers → identity.tokens.accent).
+    // rb-core validates the hex; an absent/invalid value falls back to Wings gold.
+    accent: c.accent,
   }
 }
