@@ -4,4 +4,5 @@
 export * from './packing'
 export * from './promo'
 export * from './tech-sheet'
+export * from './diagram'
 export * from './wings-logo'

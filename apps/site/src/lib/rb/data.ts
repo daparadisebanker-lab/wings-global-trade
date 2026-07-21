@@ -18,6 +18,7 @@ import {
 } from '@/lib/rb/fixtures'
 import type { SpecIconId } from '@/components/features/brands/SpecIcons'
 import type { PackingSpec, PalletSpec } from '@wings/trade-ui'
+import { packingSpecFromGeometry, type RbDiagramGeometry } from '@wings/rb-core'
 
 const KIND_LABELS: Record<string, string> = {
   '20GP': "20' Standard · 33 m³",
@@ -399,14 +400,17 @@ export interface RbShelfProduct {
   descriptionEs: string
   highlights: string[]
   specs: RbShelfSpecRow[]
-  /** Full technical drawings — only fixture-sourced products carry them; live
-   *  rows render spec-led until rb_diagram_specs ships. */
+  /** Full technical drawings — only fixture-sourced products carry the exploded +
+   *  pallet pair. */
   diagrams: {
     packing: PackingSpec
     explodeAxis: 'y' | 'z'
     explodeCaption: string
     pallet: PalletSpec
   } | null
+  /** The master-package drawing (rb_diagram_specs, tower_41 · Wave 4) — present on
+   *  a live row when its geometry is authored; null keeps the fiche spec-led. */
+  packingDiagram: PackingSpec | null
 }
 
 interface RbPublicProductRow {
@@ -448,10 +452,13 @@ function fixtureToShelf(p: RbProduct): RbShelfProduct {
     highlights: p.highlights,
     specs: p.specs,
     diagrams: { packing: p.packing, explodeAxis: p.explodeAxis, explodeCaption: p.explodeCaption, pallet: p.pallet },
+    // Fixtures carry their primary drawing on `diagrams.packing`; the page falls
+    // back to it, so the live-only geometry field stays null here.
+    packingDiagram: null,
   }
 }
 
-function liveToShelf(row: RbPublicProductRow): RbShelfProduct {
+function liveToShelf(row: RbPublicProductRow, diagram: PackingSpec | null): RbShelfProduct {
   const specs = row.specs ?? {}
   const unitLabel = loc(specs.unitLabel)
   const highlights = Array.isArray(specs.highlights)
@@ -478,11 +485,65 @@ function liveToShelf(row: RbPublicProductRow): RbShelfProduct {
     highlights,
     specs: rows,
     diagrams: null,
+    packingDiagram: diagram,
   }
 }
 
+// ── Diagram geometry for the live shelf (rb_diagram_specs → rb_public_diagrams,
+// tower_41 · Wave 4) ──────────────────────────────────────────────────────────
+// PUBLISHED-product / LIVE-brand geometry, keyed by product_slug. Service-role
+// read; a read failure or missing view fails soft to an empty map so the fiche
+// stays spec-led (never throws on the shelf). The organ spec is built here (title
+// = product name) via the shared @wings/rb-core mapper — single-source render.
+interface RbPublicDiagramRow {
+  product_slug: string
+  package_length_mm: number
+  package_width_mm: number
+  package_height_mm: number
+  units_per_package: number
+  packages_per_slot: number
+  cells_across: number
+  cells_high: number
+  cells_deep: number
+  detail: string
+  caption: string | null
+}
+
+function toGeometry(r: RbPublicDiagramRow): RbDiagramGeometry {
+  return {
+    packageLengthMm: r.package_length_mm,
+    packageWidthMm: r.package_width_mm,
+    packageHeightMm: r.package_height_mm,
+    unitsPerPackage: r.units_per_package,
+    packagesPerSlot: r.packages_per_slot,
+    cellsAcross: r.cells_across,
+    cellsHigh: r.cells_high,
+    cellsDeep: r.cells_deep,
+    detail: r.detail === 'rolls' ? 'rolls' : 'slabs',
+    caption: r.caption,
+  }
+}
+
+async function getRbDiagramGeometry(
+  supabase: ReturnType<typeof createServiceClient>,
+  brandSlug: string,
+): Promise<Map<string, RbDiagramGeometry>> {
+  const out = new Map<string, RbDiagramGeometry>()
+  if (!supabase) return out
+  const { data, error } = await supabase
+    .from('rb_public_diagrams')
+    .select(
+      'product_slug,package_length_mm,package_width_mm,package_height_mm,units_per_package,packages_per_slot,cells_across,cells_high,cells_deep,detail,caption',
+    )
+    .eq('brand_slug', brandSlug)
+  if (error || !data) return out
+  for (const r of data as unknown as RbPublicDiagramRow[]) out.set(r.product_slug, toGeometry(r))
+  return out
+}
+
 /** LIVE brand products (PUBLISHED × LIVE) for the public shelf, with a graceful
- *  fixture fallback so Áladín renders before any console-authored row goes live. */
+ *  fixture fallback so Áladín renders before any console-authored row goes live.
+ *  Live rows carry their master-package drawing when its geometry is authored. */
 export async function getRbProductsForBrand(brandSlug: string): Promise<RbShelfProduct[]> {
   const fallback = (): RbShelfProduct[] => (brandSlug === 'aladin' ? ALADIN_PRODUCTS.map(fixtureToShelf) : [])
   const supabase = createServiceClient()
@@ -495,5 +556,10 @@ export async function getRbProductsForBrand(brandSlug: string): Promise<RbShelfP
   if (error) throw new Error(`rb_public_products read failed: ${error.message}`)
   const rows = (data ?? []) as unknown as RbPublicProductRow[]
   if (rows.length === 0) return fallback()
-  return rows.map(liveToShelf)
+  const geometry = await getRbDiagramGeometry(supabase, brandSlug)
+  return rows.map((row) => {
+    const g = geometry.get(row.slug)
+    const name = loc(row.name) || row.slug
+    return liveToShelf(row, g ? packingSpecFromGeometry(g, name) : null)
+  })
 }

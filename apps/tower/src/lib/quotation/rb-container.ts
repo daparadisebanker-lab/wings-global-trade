@@ -14,7 +14,7 @@
 // only (Prime Directive 2): never a cart, never a retail unit price — the unit is
 // a slot. The tech-sheet sections are built in @wings/rb-core (buildTechSheetSections).
 import { lineTotalMinor } from '@/lib/money'
-import type { TechSheetSection } from '@wings/rb-core'
+import type { TechSheetSection, RbPackingDiagramSpec } from '@wings/rb-core'
 import type { CompanyInfo } from './company'
 import {
   computeQuotationTotals,
@@ -109,6 +109,10 @@ export interface RbContainerQuoteDocument {
   techSheet: TechSheetSection[]
   /** Brand-authored fiche rows from the ALLOCATION spec (specs.specRows). Empty when none. */
   specRows: RbSpecRow[]
+  /** Package/packing drawing geometry (rb_diagram_specs, tower_41) mapped to the
+   *  shared PackingDiagram organ's spec. null when the product has no authored
+   *  geometry — the tech sheet then stays spec-led (no drawing). */
+  diagram: RbPackingDiagramSpec | null
   terms: CommercialTerms
   observations: string[]
   issuer: CompanyInfo

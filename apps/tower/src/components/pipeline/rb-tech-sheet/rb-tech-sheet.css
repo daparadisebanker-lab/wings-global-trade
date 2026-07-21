@@ -12,6 +12,15 @@
   --rt-bar: #ececec;
   --rt-tint: #f7f8f9;
 
+  /* Neutral document palette for the shared PackingDiagram organ — the same
+     --rb-* token contract the public fiche resolves, so the master-package
+     drawing renders faithfully on this light sheet (the organ consumes tokens
+     only; here they resolve to the sheet's neutral values). */
+  --rb-ink: #0f1216;
+  --rb-surface-tint: #f7f8f9;
+  --rb-accent-soft: #eef1f4;
+  --rb-accent-ink: #4b5563;
+
   box-sizing: border-box;
   color: var(--rt-ink);
   font-family: var(--font-ui, system-ui, sans-serif);
@@ -119,6 +128,20 @@
   margin-right: 8px;
   color: var(--rt-muted);
   font-family: var(--font-mono, monospace);
+}
+/* Master-package technical drawing — a full-width exhibit below the section grid.
+   Radius ≤ 2px, no shadows; the SVG scales to its column. */
+.rts-diagram {
+  margin-top: 24px;
+  break-inside: avoid;
+}
+.rts-diagram-body {
+  margin-top: 10px;
+  max-width: 430px;
+}
+.rts-diagram-body svg {
+  width: 100%;
+  height: auto;
 }
 
 @media (max-width: 640px) {

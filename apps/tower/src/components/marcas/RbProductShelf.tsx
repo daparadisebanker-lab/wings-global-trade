@@ -28,6 +28,7 @@ import { NameFields } from '@/components/catalog/product-editor/NameFields'
 import { CategoryPathEditor } from '@/components/catalog/product-editor/CategoryPathEditor'
 import { RbMediaManager } from './RbMediaManager'
 import { RbPackingProfileForm } from './RbPackingProfileForm'
+import { RbDiagramGeometryForm } from './RbDiagramGeometryForm'
 
 const LABEL = 'font-mono text-label uppercase tracking-[0.1em] text-ink-secondary'
 const INPUT =
@@ -294,6 +295,31 @@ export function RbProductShelf({
                 <p className="font-ui text-t0 text-ink-secondary">
                   Guarda el producto como borrador para definir su perfil de empaque. / Save the product as a draft to
                   define its packing profile.
+                </p>
+              )}
+            </section>
+
+            {/* Diagram geometry — the BOUNDED numeric model (rb_diagram_specs,
+                tower_41 / R1) the technical package drawing on the fiche + tech
+                sheet is derived from. Its own append-only table + RLS, so it stays
+                editable once the product row is locked; only needs a saved product. */}
+            <section className="flex flex-col gap-2 border-t border-line pt-5">
+              <h3 className={LABEL}>Geometría del dibujo / Diagram geometry</h3>
+              <p className="font-ui text-t0 text-ink-secondary">
+                Dimensiones y conteos que dibujan el empaque máster en la ficha técnica y la ficha pública. / Dimensions
+                and counts that draw the master package on the tech sheet and the public fiche.
+              </p>
+              {current ? (
+                <RbDiagramGeometryForm
+                  key={current.id}
+                  rbProductId={current.id}
+                  productName={current.name.es || current.name.en || current.slug}
+                  disabled={!capabilities.canEdit}
+                />
+              ) : (
+                <p className="font-ui text-t0 text-ink-secondary">
+                  Guarda el producto como borrador para definir su geometría. / Save the product as a draft to define its
+                  diagram geometry.
                 </p>
               )}
             </section>

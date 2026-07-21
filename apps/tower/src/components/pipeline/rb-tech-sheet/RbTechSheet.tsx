@@ -6,8 +6,9 @@
 // sections arrive fully built). Bilingual: ES primary, EN secondary. Styling
 // scoped in rb-tech-sheet.css — a self-contained light print surface, the same
 // approach as the Cotización / Ficha documents.
-import type { TechSheetSection } from '@wings/rb-core'
+import type { TechSheetSection, RbPackingDiagramSpec } from '@wings/rb-core'
 import type { RbSpecRow } from '@/lib/quotation/rb-container'
+import { PackingDiagram } from '@wings/trade-ui'
 import './rb-tech-sheet.css'
 
 // Bounded token → glyph. Icons come from the ALLOCATION spec's SPEC_ROW_ICONS
@@ -31,6 +32,9 @@ export interface RbTechSheetProps {
   sections: TechSheetSection[]
   /** Brand-authored fiche rows from the ALLOCATION spec (specs.specRows). */
   specRows?: RbSpecRow[]
+  /** Bounded package/packing geometry (rb_diagram_specs, tower_41) mapped to the
+   *  shared PackingDiagram organ. When absent the sheet stays spec-led (no drawing). */
+  diagram?: RbPackingDiagramSpec | null
 }
 
 export function RbTechSheet({
@@ -40,6 +44,7 @@ export function RbTechSheet({
   reference,
   sections,
   specRows = [],
+  diagram,
 }: RbTechSheetProps) {
   return (
     <section className="rts">
@@ -101,6 +106,16 @@ export function RbTechSheet({
               })}
             </tbody>
           </table>
+        </div>
+      ) : null}
+      {diagram ? (
+        <div className="rts-diagram">
+          <div className="rts-section-bar">
+            Empaque máster<span className="rts-section-en"> · Master package · dibujo técnico</span>
+          </div>
+          <div className="rts-diagram-body">
+            <PackingDiagram spec={diagram} />
+          </div>
         </div>
       ) : null}
     </section>
