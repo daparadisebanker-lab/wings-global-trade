@@ -124,6 +124,31 @@ change, deferred deliberately.
 
 Beyond the three tracks above, these were always queued (not regressions):
 
+- **NEW (2026-07-21, Muaaz) · Doc generators — Ficha técnica + Proforma.** Add two
+  document templates to the TOWER doc generators, extending the shipped quotation
+  generator (`apps/tower/src/lib/quotation/document.ts`, tower_22) and reusing its
+  company/RUC/tax/terms layer:
+  - **Ficha técnica** — technical spec sheet (per product / represented-brand
+    container); numbers exhibited as brand assets (CBM/MOQ/HS/packing, tabular mono).
+  - **Proforma** — proforma invoice; money in integer minor units + currency code,
+    es-PE formatting, wholesale (never a cart).
+  Reference layouts to match are saved at `programs/tower/doc-templates/`
+  (`ficha_tecnica.pdf`, `proforma.pdf`, + README). Bilingual ES/EN,
+  `@react-pdf/renderer` server routes, Wings brand.
+- **NEW (2026-07-21, Muaaz) · Container-listing promotion — two-audience share.**
+  On a container listing that's ready to promote (the shipped Track ③
+  `container-promo` feature), expose the **already-defined ad script** via two
+  buttons, reusing the same copy-generation logic — they differ only in audience +
+  the appended end-text:
+  - **Compartir con equipo de marketing** (share with marketing team) — runs the
+    defined ad-script logic → the marketing-facing brief/output (internal handoff
+    for ad production).
+  - **Compartir con leads y clientes** (share with leads & clients) — same logic,
+    but generates a **specific closing/end-text tailored for leads & clients**
+    (client-facing CTA/close), appended to the shared copy.
+  Wire into the existing promotion surface (`container-promo`, `buildPromoCardSvg`,
+  the promo copy in `@wings/rb-core`); WhatsApp/share deep-links per audience.
+
 - ~~**RB allocation status machine**~~ — **SHIPPED** (`tower_36`): the
   `RESERVED → CONFIRMED → LOADED → RELEASED` transitions now have an RLS UPDATE
   policy (brand resolved through `rb_containers`, `BRAND_MANAGER`/`BRAND_OPS`
