@@ -133,6 +133,23 @@ export function isCompleteForPublish(product: Pick<ProductEditableFields, 'name'
   )
 }
 
+/** Derive the distinct, sorted top-level category segments from a set of
+ *  product `category_path`s — the facet values for the read-only cross-category
+ *  browse (the "pure rep" persona: RB read across the published catalog, no
+ *  editable lane). Top-level = `path[0]`, the taxonomy root a rep browses by.
+ *  Category is used (not lane) because a pure rep has no `lane_memberships` row,
+ *  so RLS (`lanes_read`) hides `tower.lanes` from them entirely — the honest
+ *  cross-category dimension lives on the product itself. Pure so it's unit-
+ *  tested without a DB. */
+export function deriveTopCategories(paths: (string[] | null | undefined)[]): string[] {
+  const set = new Set<string>()
+  for (const path of paths) {
+    const top = path?.[0]?.trim()
+    if (top) set.add(top)
+  }
+  return [...set].sort((a, b) => a.localeCompare(b))
+}
+
 // ── Cursor pagination (API_MAP: "all list endpoints cursor-paginated") ──────
 
 export interface ProductListCursor {

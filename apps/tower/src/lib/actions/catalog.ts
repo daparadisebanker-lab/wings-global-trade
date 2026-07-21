@@ -21,6 +21,7 @@ import {
   canSubmitForReview as statusCanSubmitForReview,
   computeCapabilities,
   decodeCursor,
+  deriveTopCategories,
   encodeCursor,
   isCompleteForPublish,
   nextVersionNumber,
@@ -210,9 +211,21 @@ const listProductsInputSchema = z.object({
   limit: z.number().int().min(1).max(200).default(50),
 })
 
+// Read-only cross-category browse (the "pure rep" persona — RB read across the
+// published catalog, no editable lane). Never carries a status: the browse is
+// PUBLISHED-only by construction, and RLS (`products_read_published`, tower_31)
+// is what actually scopes the rows regardless of what this UI requests.
+const browseProductsInputSchema = z.object({
+  category: z.string().trim().min(1).max(120).optional(),
+  search: z.string().trim().min(1).max(120).optional(),
+  cursor: z.string().nullish(),
+  limit: z.number().int().min(1).max(200).default(50),
+})
+
 export type ProductInput = z.input<typeof productInputSchema>
 export type ProductPatch = z.input<typeof productPatchSchema>
 export type ListProductsInput = z.input<typeof listProductsInputSchema>
+export type BrowseProductsInput = z.input<typeof browseProductsInputSchema>
 
 // ── Auth helper ──────────────────────────────────────────────────────────────
 
@@ -357,6 +370,85 @@ export async function listEditableLanes(): Promise<ActionResult<EditableLane[]>>
     byLaneId.set(lane.laneId, lane)
   }
   return ok([...byLaneId.values()])
+}
+
+// ── Read-only cross-category browse (pure-rep persona) ───────────────────────
+
+// Facet cap: derive the category dropdown from the most-recent slice of the
+// published catalog rather than a full scan. Bounded read of a single array
+// column keeps this within the p95 <400ms budget; the browse list itself stays
+// cursor-paginated below. Reads climb as the catalog grows — revisit with a
+// dedicated distinct-category rollup/RPC (needs a migration) past this cap.
+const BROWSE_CATEGORY_SCAN_LIMIT = 500
+
+/**
+ * Distinct, sorted top-level categories across the PUBLISHED catalog the caller
+ * may read (RLS-scoped). Populates the browse category filter. Read-only.
+ */
+export async function listBrowseCategories(): Promise<ActionResult<string[]>> {
+  const gate = await requireUser()
+  if (!gate.ok) return gate.error
+  const { supabase } = gate
+
+  const { data, error } = await supabase
+    .from('products')
+    .select('category_path')
+    .eq('status', 'PUBLISHED')
+    .order('updated_at', { ascending: false })
+    .limit(BROWSE_CATEGORY_SCAN_LIMIT)
+
+  if (error) return fail('VALIDATION', 'No se pudieron listar las categorías / Could not list categories')
+
+  const paths = ((data ?? []) as { category_path: string[] | null }[]).map((r) => r.category_path)
+  return ok(deriveTopCategories(paths))
+}
+
+/**
+ * Cursor-paginated read of the PUBLISHED catalog across every category, for the
+ * read-only browse. Same shape/mapping as `listProducts`, but status is pinned
+ * to PUBLISHED and a top-level category filter replaces the lane filter (a pure
+ * rep can't read `tower.lanes`). No mutation and no capability check here — RLS
+ * (`products_read_published`) is the boundary; the UI merely hides edit chrome.
+ */
+export async function listBrowseProducts(input: BrowseProductsInput): Promise<ActionResult<ProductListPage>> {
+  const gate = await requireUser()
+  if (!gate.ok) return gate.error
+  const { supabase } = gate
+
+  const parsed = browseProductsInputSchema.safeParse(input)
+  if (!parsed.success) {
+    return fail('VALIDATION', 'Filtros inválidos / Invalid filters', parsed.error.flatten().fieldErrors)
+  }
+  const { category, search, limit } = parsed.data
+  const cursor = decodeCursor(parsed.data.cursor)
+
+  let query = supabase
+    .from('products')
+    .select(SELECT_COLS)
+    .eq('status', 'PUBLISHED')
+    .order('updated_at', { ascending: false })
+    .order('id', { ascending: false })
+    .limit(limit + 1)
+
+  if (category) query = query.contains('category_path', [category])
+  if (search) {
+    const term = sanitizeSearchTerm(search)
+    if (term) query = query.or(`name->>es.ilike.%${term}%,name->>en.ilike.%${term}%`)
+  }
+  if (cursor) {
+    query = query.or(`updated_at.lt.${cursor.updatedAt},and(updated_at.eq.${cursor.updatedAt},id.lt.${cursor.id})`)
+  }
+
+  const { data, error } = await query
+  if (error) return fail('VALIDATION', 'No se pudo listar el catálogo / Could not list catalog')
+
+  const rows = ((data ?? []) as unknown as RawProductRow[]).map(mapProductRow)
+  const hasMore = rows.length > limit
+  const page = hasMore ? rows.slice(0, limit) : rows
+  const last = page[page.length - 1]
+  const nextCursor = hasMore && last ? encodeCursor({ updatedAt: last.updatedAt, id: last.id }) : null
+
+  return ok({ rows: page, nextCursor })
 }
 
 // ── Mutations ────────────────────────────────────────────────────────────────
