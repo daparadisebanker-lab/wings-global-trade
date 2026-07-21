@@ -202,9 +202,49 @@
 }
 .fit-top {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 8px 0 10px;
+}
+.fit-headline {
+  display: flex;
   align-items: baseline;
   gap: 10px;
-  margin: 8px 0 10px;
+}
+/* the "see the load" isometric — a small, quiet spatial read beside the count */
+.fit-figure {
+  flex: none;
+  width: 118px;
+  max-width: 42%;
+}
+.fit-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+/* one settle on mount: the load rises into the clipped container silhouette */
+.fit-fill {
+  transform: translateY(var(--fit-rise, 0));
+  animation: fit-load 720ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes fit-load {
+  from {
+    transform: translateY(var(--fit-rise, 0));
+    opacity: 0.4;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fit-fill {
+    transform: none;
+    animation: none;
+    opacity: 1;
+  }
 }
 .fit-num {
   font-family: var(--font-mono);

@@ -1,5 +1,6 @@
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import type { ContainerFitResult } from '@/lib/copilot/container-fit'
+import { FitScene } from './FitScene'
 
 /**
  * The container-fit "artifact" Mister renders inside its bubble — a computed
@@ -25,12 +26,17 @@ export function FitArtifact({
       </div>
 
       <div className="fit-top">
-        <span className="fit-num">{fit.units}</span>
-        <span className="fit-unit">
-          {t({ es: 'unidades', en: 'units' }, locale)}
-          <br />
-          {limited}
-        </span>
+        <div className="fit-headline">
+          <span className="fit-num">{fit.units}</span>
+          <span className="fit-unit">
+            {t({ es: 'unidades', en: 'units' }, locale)}
+            <br />
+            {limited}
+          </span>
+        </div>
+        <div className="fit-figure">
+          <FitScene pct={fit.cbmUsedPct} label={fit.containerLabel} />
+        </div>
       </div>
 
       <div className="fit-bar" aria-hidden="true">

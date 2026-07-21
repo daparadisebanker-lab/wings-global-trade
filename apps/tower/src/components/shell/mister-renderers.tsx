@@ -1,7 +1,10 @@
 import type { ReactNode } from 'react'
 import type { Locale } from '@/lib/i18n'
 import type { ContainerFitResult } from '@/lib/copilot/container-fit'
+import type { ReverseQuoteData } from '@/lib/copilot/capabilities/reverse-quote'
 import { FitArtifact } from './FitArtifact'
+import { CostArtifact } from './CostArtifact'
+import { ReverseQuoteArtifact } from './ReverseQuoteArtifact'
 
 /**
  * Maps a CopilotResult.renderer key → the component that draws it. The built-in
@@ -14,4 +17,6 @@ import { FitArtifact } from './FitArtifact'
  */
 export const MISTER_RENDERERS: Record<string, (data: unknown, locale: Locale) => ReactNode> = {
   fit: (data, locale) => <FitArtifact fit={data as ContainerFitResult} locale={locale} />,
+  'landed-cost': (data, locale) => <CostArtifact result={data} locale={locale} />,
+  'reverse-quote': (data, locale) => <ReverseQuoteArtifact result={data as ReverseQuoteData} locale={locale} />,
 }
