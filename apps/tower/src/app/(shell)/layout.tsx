@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { ShellChrome } from '@/components/shell/ShellChrome'
 import { getLaneMemberships, getIsGroupAdmin, getHasRbMembership } from '@/lib/lanes/memberships'
 import { createServerSupabase } from '@/lib/supabase/server'
+import { getMyRepProfile } from '@/lib/actions/rep-profile'
 
 /**
  * Server layout for every (shell) route. Fetches the current user + their lane
@@ -11,11 +12,17 @@ import { createServerSupabase } from '@/lib/supabase/server'
  * unauthenticated requests to /login before this runs.
  */
 export default async function ShellLayout({ children }: { children: ReactNode }) {
-  const [memberships, isGroupAdmin, hasRbMembership] = await Promise.all([
+  const [memberships, isGroupAdmin, hasRbMembership, repProfile] = await Promise.all([
     getLaneMemberships(),
     getIsGroupAdmin(),
     getHasRbMembership(),
+    getMyRepProfile(),
   ])
+
+  // A rep must onboard when they have a rep_profiles row (enrollment seeded it)
+  // that is not yet complete (onboarded_at null). Users who were never enrolled
+  // as reps have no row → no banner. Gentle prompt only, never a hard block.
+  const needsOnboarding = !repProfile.error && repProfile.data != null && repProfile.data.onboardedAt == null
 
   let userEmail: string | null = null
   const supabase = await createServerSupabase()
@@ -32,6 +39,7 @@ export default async function ShellLayout({ children }: { children: ReactNode })
       userEmail={userEmail}
       isGroupAdmin={isGroupAdmin}
       hasRbMembership={hasRbMembership}
+      needsOnboarding={needsOnboarding}
     >
       {children}
     </ShellChrome>

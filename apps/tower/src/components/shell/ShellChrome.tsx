@@ -7,6 +7,7 @@ import { cn } from '@wings/trade-ui'
 import { CommandPalette } from './CommandPalette'
 import { LaneSwitcher } from './LaneSwitcher'
 import { NavRail } from './NavRail'
+import { OnboardingBanner } from './OnboardingBanner'
 import { TopBar } from './TopBar'
 import type { LaneMembership } from '@/lib/lanes/memberships'
 import { visibleModules, type Role } from '@/lib/rbac'
@@ -54,12 +55,14 @@ export function ShellChrome({
   userEmail,
   isGroupAdmin = false,
   hasRbMembership = false,
+  needsOnboarding = false,
   children,
 }: {
   memberships: LaneMembership[]
   userEmail: string | null
   isGroupAdmin?: boolean
   hasRbMembership?: boolean
+  needsOnboarding?: boolean
   children: ReactNode
 }) {
   const [activeLaneId, setActiveLaneId] = useState<string | null>(memberships[0]?.laneId ?? null)
@@ -157,6 +160,7 @@ export function ShellChrome({
             onOpenMenu={() => setDrawerOpen(true)}
           />
           <Breadcrumb locale={DEFAULT_LOCALE} />
+          {needsOnboarding ? <OnboardingBanner /> : null}
           {/* overflow-x-clip: a mobile safety net — no page-wide horizontal
               scroll, while inner overflow-x-auto tables keep their own scroll. */}
           <main data-lane={activeLane?.laneSlug} className="min-w-0 flex-1 overflow-x-clip">

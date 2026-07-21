@@ -20,8 +20,14 @@ const ADMIN_DESTINATIONS: { href: string; label: Localized; tag: string }[] = [
 /** Admin ⌘K run-actions — each opens the surface where the action is completed. */
 const ADMIN_ACTIONS: { href: string; label: Localized }[] = [
   { href: '/admin/users', label: { es: 'Invitar usuario…', en: 'Invite user…' } },
+  { href: '/admin/users', label: { es: 'Invitar rep…', en: 'Invite rep…' } },
   { href: '/admin/lanes', label: { es: 'Registrar lane…', en: 'Register lane…' } },
   { href: '/admin/brands', label: { es: 'Nueva marca…', en: 'New brand…' } },
+]
+
+/** Everyone-facing ⌘K destinations (not admin-gated). */
+const SELF_DESTINATIONS: { href: string; label: Localized; tag: string }[] = [
+  { href: '/perfil', label: { es: 'Mi perfil', en: 'My profile' }, tag: 'PRF' },
 ]
 
 /**
@@ -82,6 +88,19 @@ export function CommandPalette({
                 {m.tag}
               </span>
               {t(m.label, locale)}
+            </Command.Item>
+          ))}
+          {SELF_DESTINATIONS.map((d) => (
+            <Command.Item
+              key={d.href}
+              value={`${t(d.label, locale)} ${d.tag} perfil profile`}
+              onSelect={() => go(d.href)}
+              className="flex cursor-pointer items-center gap-3 rounded-card px-3 py-2 font-ui text-t0 text-ink-primary aria-selected:bg-surface-0"
+            >
+              <span aria-hidden className="font-mono text-label tracking-[0.1em] text-lane-accent">
+                {d.tag}
+              </span>
+              {t(d.label, locale)}
             </Command.Item>
           ))}
         </Command.Group>
