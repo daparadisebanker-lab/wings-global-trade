@@ -315,7 +315,15 @@ export async function setContainerShippingPhase(containerId: string, phase: Ship
   const auth = await requireTower()
   if (!auth.ok) return auth.error
   const { error } = await auth.supabase.from('rb_containers').update({ shipping_phase: phase }).eq('id', idParsed.data)
-  if (error) return fail('FORBIDDEN_LANE', 'No se pudo cambiar la fase / Could not change phase')
+  if (error) {
+    // DB backstop (migration tower_39 rb_containers_phase_guard) enforces
+    // forward-only phase progression — stricter than the membership check above,
+    // which is why an illegal (backward / no-op) phase move surfaces here.
+    if ((error.message ?? '').includes('STATUS_TRANSITION_INVALID')) {
+      return fail('STAGE_INVALID', 'Transición de fase inválida / Invalid phase transition')
+    }
+    return fail('FORBIDDEN_LANE', 'No se pudo cambiar la fase / Could not change phase')
+  }
   const detail = await loadDetail(auth.supabase, idParsed.data, process.env.NEXT_PUBLIC_SITE_URL)
   if (!detail) return fail('FORBIDDEN_LANE', 'Contenedor no encontrado / Container not found')
   return ok(detail)

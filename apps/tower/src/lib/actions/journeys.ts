@@ -28,9 +28,30 @@ async function requireUser() {
 
 type TowerClient = ReturnType<SupabaseClient['schema']>
 
+// Strip UTF-8 BOM (U+FEFF) that PowerShell pipe encoding can inject into env
+// vars — mirrors lib/supabase/server.ts and lib/ingest/hmac.ts.
+function clean(s: string | undefined): string | undefined {
+  if (!s) return s
+  return s.charCodeAt(0) === 0xfeff ? s.slice(1) : s
+}
+
+// Dev-only fallback so local / preview / test flows function without the secret
+// configured. Explicitly NEVER used in production (see signingSecret).
+const DEV_INSECURE_SIGNING_SECRET = 'dev-insecure-journey-secret'
+
 function signingSecret(): string {
-  // Prod sets JOURNEY_SIGNING_SECRET; dev falls back so the flow still functions.
-  return process.env.JOURNEY_SIGNING_SECRET || 'dev-insecure-journey-secret'
+  const secret = clean(process.env.JOURNEY_SIGNING_SECRET)
+  if (secret) return secret
+  // Fail closed in production: signing / verifying a rep's legal CIF commitment
+  // under a publicly-known key would make every signature forgeable and
+  // `signatureValid` meaningless. Refuse to operate rather than downgrade.
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'JOURNEY_SIGNING_SECRET is not set in production. Refusing to sign or verify rep CIF commitments with a public dev key.',
+    )
+  }
+  // Outside production only: keep local flows working.
+  return DEV_INSECURE_SIGNING_SECRET
 }
 
 export interface JourneyMilestone {
