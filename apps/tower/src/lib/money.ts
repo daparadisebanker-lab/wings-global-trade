@@ -44,7 +44,35 @@ export function applyBps(minor: number, bps: number): number {
   return Math.round((minor * bps) / 10_000)
 }
 
-/** Display only. Never feed the returned string back into arithmetic. */
+/**
+ * Display only. Never feed the returned string back into arithmetic.
+ * Uses the GAAP/IFRS accounting sign convention — negatives render in
+ * parentheses, e.g. `($1,234.56)` / `(S/ 1,234.56)`, not with a minus sign
+ * (`currencySign: 'accounting'`). Positives are unchanged.
+ */
 export function formatMinor(minor: number, currency: string, locale = 'es-PE'): string {
-  return new Intl.NumberFormat(locale, { style: 'currency', currency }).format(minor / 100)
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency,
+    currencySign: 'accounting',
+  }).format(minor / 100)
+}
+
+/**
+ * Accounting display of a bare number (no currency symbol) — the convention for
+ * cost-cascade / margin tables where the currency is stated once in the header.
+ * Negatives use accounting parentheses: `1,234.56` → `(1,234.56)`. `Intl`'s
+ * `currencySign: 'accounting'` only applies to the currency style, so the
+ * parenthesising is done here explicitly and centrally (the ONE place that owns
+ * this convention for symbol-less financial figures).
+ *
+ * Input is major units already (the SUNAT engine emits 2dp-rounded numbers);
+ * this is a render helper, never part of a calculation.
+ */
+export function formatAccounting(value: number, locale = 'es-PE', fractionDigits = 2): string {
+  const abs = Math.abs(value).toLocaleString(locale, {
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
+  })
+  return value < 0 ? `(${abs})` : abs
 }
