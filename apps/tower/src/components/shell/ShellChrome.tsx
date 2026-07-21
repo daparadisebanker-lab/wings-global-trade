@@ -61,12 +61,16 @@ export function ShellChrome({
     <div style={rootStyle} className="min-h-screen bg-surface-0 text-ink-primary">
       <div className="grid grid-cols-[minmax(220px,260px)_1fr]">
         <aside className="sticky top-0 h-screen overflow-y-auto border-r border-line bg-surface-1">
-          <div className="border-b border-line p-4">
-            <span className="font-mono text-t1 tracking-[0.22em] text-ink-primary">
-              ADMIN PORTAL
-            </span>
-            <span className="mt-1 block font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
-              Wings Global Trade
+          <div className="flex flex-col gap-2.5 border-b border-line p-4">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/brand/wings-imagotipo.svg"
+              alt="Wings Global Trade"
+              className="h-8 w-auto"
+            />
+            <span className="flex items-center gap-2 font-mono text-label uppercase tracking-[0.18em] text-ink-secondary">
+              <span aria-hidden className="inline-block h-1.5 w-1.5 bg-gold" />
+              Admin Portal
             </span>
           </div>
           <LaneSwitcher

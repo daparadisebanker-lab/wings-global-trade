@@ -11,17 +11,21 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Surfaces — graphite room. Never change with the active lane.
+        // Surfaces — warm-white ground. Never change with the active lane.
         'surface-0': 'var(--surface-0)',
         'surface-1': 'var(--surface-1)',
-        // Ink
+        'surface-2': 'var(--surface-2)',
+        // Ink — Wings navy
         'ink-primary': 'var(--ink-primary)',
         'ink-secondary': 'var(--ink-secondary)',
         // Instrument rules (panels are separated by lines, not shadows)
         line: 'var(--line)',
-        // Signal palette — amber + green carry everything, alarm red is spent
-        // only on true failures (DESIGN_SYSTEM refusals).
+        // Primary = navy (text + fills); accent-ink is what sits ON a navy fill.
         accent: 'var(--accent)',
+        'accent-ink': 'var(--accent-ink)',
+        // Gold — the Wings jewel: logo, active lane, emphasis. gold-ink sits ON gold.
+        gold: 'var(--gold)',
+        'gold-ink': 'var(--gold-ink)',
         positive: 'var(--positive)',
         negative: 'var(--negative)',
         stamp: 'var(--stamp)',
@@ -29,7 +33,9 @@ const config: Config = {
         'lane-accent': 'var(--lane-accent)',
       },
       fontFamily: {
-        // Shared UI grotesque for labels/nav; tabular mono is the dominant voice.
+        // Display = NissanOpti (brand headers); UI = Flexo (body); mono = Teko
+        // (the Wings label + numeral voice, tabular figures).
+        display: ['var(--font-display)', 'Georgia', 'serif'],
         ui: ['var(--font-ui)', 'system-ui', 'sans-serif'],
         mono: ['var(--font-mono)', 'ui-monospace', 'monospace'],
       },

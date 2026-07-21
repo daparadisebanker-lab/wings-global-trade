@@ -78,33 +78,57 @@
 }
 
 :root {
+  /* The Wings three-font system (self-hosted above; same faces as the live site).
+     Display = NissanOpti (brand headers, the wordmark). Body/UI = Flexo. Data +
+     labels + numerals = Teko — the Wings label voice, tabular figures below. */
+  --font-display: 'NissanOpti', 'Times New Roman', Georgia, serif;
   --font-ui: 'Flexo', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: ui-monospace, 'JetBrains Mono', 'SF Mono', 'Roboto Mono', Menlo, monospace;
-  /* Mono micro-label — the uppercase stamped chips/tags sit one step below the
-     14px type floor (DESIGN_SYSTEM status language). Tokenized so components
-     never inline a raw px size. */
-  --type-label: 11px;
+  --font-mono: 'Teko', 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  /* Mono micro-label — the uppercase stamped chips/tags. Nudged up one step for
+     a decision-dense surface. Tokenized so components never inline a raw px. */
+  --type-label: 12px;
 }
 
 /* ============================================================
-   The Control-Room Livery — the seventh identity (internal, never public).
-   Painted for vigilance: the room where every lane is watched at 03:00.
+   The Wings Livery — TOWER on the house brand (internal, never public).
+   Warm-white editorial ground · navy as the primary (ink, structure, actions)
+   · gold as the jewel (the stamp, the active lane, key figures). The same
+   Navy #001E50 / Gold #C4933F / Warm-white #F8F6F0 world the live site inhabits,
+   tuned lighter + larger for fast, low-error decisions on data-dense screens.
+   Palette logic: on a light ground gold fails as body/action colour (too low
+   contrast), so NAVY carries every text + fill (all `accent` usages stay
+   legible untouched) and GOLD is spent deliberately where it earns attention.
    ============================================================ */
 [data-app='tower'] {
-  --surface-0: #101214; /* graphite — the room */
-  --surface-1: #16191c; /* raised panel */
-  --ink-primary: #e8eaed;
-  --ink-secondary: #9aa0a6;
-  --line: #26292d;
-  --accent: #ffb020; /* signal amber — attention, pending, in-motion */
-  --positive: #37b26c; /* radar green — cleared, passed, filled */
-  --negative: #e5484d; /* alarm — failed QC, over-capacity, expired */
-  --stamp: #e8eaed;
-  --texture: none; /* the control room is textureless; data is the texture */
+  --surface-0: #f8f6f0; /* warm-white — the Wings ground */
+  --surface-1: #ffffff; /* raised panel — crisp white lifts off the warm ground */
+  --surface-2: #fcfaf4; /* deep-tint fill (table zebra, inset wells) */
+  --ink-primary: #001e50; /* Wings navy — text + structure */
+  --ink-secondary: #5b6578; /* navy-muted, ≥4.5:1 on the warm ground */
+  --line: #e6dfce; /* warm hairline — panels separated by rules, not shadows */
+  --accent: #001e50; /* PRIMARY = navy: legible as text AND as a fill under warm-white ink */
+  --accent-ink: #f8f6f0; /* text/icon on an --accent (navy) fill */
+  --gold: #c4933f; /* the Wings jewel — logo, active lane, emphasis, hover */
+  --gold-ink: #001e50; /* navy text on a gold fill (≥4.5:1) */
+  --positive: #2e7d4f; /* cleared / passed / filled — legible on light */
+  --negative: #b4232a; /* failed QC / over-capacity / expired — alarm on light */
+  --stamp: #001e50; /* the LaneStamp reads navy on the warm ground */
+  --texture: none;
+
+  /* Decision-grade type — deliberately one step above the frozen family scale
+     (skeleton.css, untouched). A data-dense ops surface reads faster and
+     mis-reads less with a larger floor; components still bind var(--type-*). */
+  --type-0: 15px;
+  --type-1: 19px;
+  --type-2: 24px;
+  --type-3: 30px;
+  --type-4: 38px;
+  --type-5: 48px;
 
   /* Active-lane accent — set by LaneSwitcher on lane selection. Defaults to
-     signal amber until a lane is chosen. Tints stamps / chart series / status
-     chips ONLY — surfaces never change with the lane. */
+     navy (keeps the focus ring strong); the lane's own colour takes over on
+     selection. Tints stamps / chart series / status chips — surfaces never
+     change with the lane. */
   --lane-accent: var(--accent);
 
   background-color: var(--surface-0);

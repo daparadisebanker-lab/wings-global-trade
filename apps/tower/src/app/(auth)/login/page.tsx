@@ -86,10 +86,15 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-surface-0 px-6">
       <div className="w-full max-w-sm rounded-card border border-line bg-surface-1 p-8">
-        <span className="font-mono text-t1 tracking-[0.22em] text-ink-primary">ADMIN PORTAL</span>
-        <p className="mt-2 font-ui text-t0 text-ink-secondary">
-          Wings Global Trade · Acceso interno / Internal access
-        </p>
+        <div className="flex flex-col items-start gap-3">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/wings-imagotipo.svg" alt="Wings Global Trade" className="h-9 w-auto" />
+          <h1 className="font-display text-t3 leading-none text-ink-primary">Admin Portal</h1>
+          <p className="flex items-center gap-2 font-mono text-label uppercase tracking-[0.16em] text-ink-secondary">
+            <span aria-hidden className="inline-block h-1.5 w-1.5 bg-gold" />
+            Wings Global Trade · Acceso interno / Internal access
+          </p>
+        </div>
 
         {!configured ? (
           <p className="mt-6 font-ui text-t0 text-ink-secondary">
