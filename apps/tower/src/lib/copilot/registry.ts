@@ -10,9 +10,11 @@ import type { Capability } from './types'
 import { containerFitCapability } from './capabilities/container-fit'
 import { landedCostCapability } from './capabilities/landed-cost'
 import { reverseQuoteCapability } from './capabilities/reverse-quote'
+import { supplierScreenshotCapability } from './capabilities/supplier-screenshot'
 
 export const CAPABILITIES: Capability[] = [
   containerFitCapability,
   landedCostCapability,
   reverseQuoteCapability,
+  supplierScreenshotCapability,
 ]

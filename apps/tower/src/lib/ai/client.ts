@@ -10,12 +10,22 @@
 import Anthropic from '@anthropic-ai/sdk'
 import type { IntelligenceModel } from './types'
 
+/** A base64 image attached to a completion — the supplier-screenshot vision path. */
+export interface ImageInput {
+  /** e.g. 'image/png', 'image/jpeg', 'image/webp', 'image/gif'. */
+  mediaType: string
+  /** Raw base64 (no data: URI prefix). */
+  dataBase64: string
+}
+
 export interface CompletionRequest {
   model: IntelligenceModel
   system: string
   /** The single user turn — Intelligence calls are one-shot classify/extract, not chat. */
   user: string
   maxTokens: number
+  /** Optional image for a vision turn (supplier screenshots). Ignored by `stream`. */
+  image?: ImageInput
 }
 
 /**
@@ -33,11 +43,26 @@ class AnthropicIntelligenceClient implements IntelligenceClient {
   constructor(private readonly sdk: Anthropic) {}
 
   async complete(req: CompletionRequest): Promise<string> {
+    // A vision turn sends an image block before the text; a text turn keeps the
+    // plain-string content the rest of Intelligence relies on.
+    const content = req.image
+      ? ([
+          {
+            type: 'image' as const,
+            source: {
+              type: 'base64' as const,
+              media_type: req.image.mediaType as 'image/png' | 'image/jpeg' | 'image/webp' | 'image/gif',
+              data: req.image.dataBase64,
+            },
+          },
+          { type: 'text' as const, text: req.user },
+        ])
+      : req.user
     const res = await this.sdk.messages.create({
       model: req.model,
       max_tokens: req.maxTokens,
       system: req.system,
-      messages: [{ role: 'user', content: req.user }],
+      messages: [{ role: 'user', content }],
     })
     let text = ''
     for (const block of res.content) {

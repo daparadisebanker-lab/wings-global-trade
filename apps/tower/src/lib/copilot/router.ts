@@ -7,7 +7,7 @@ import { INTELLIGENCE_MODELS } from '@/lib/ai/types'
 import { extractJsonObject } from '@/lib/ai/parse'
 import type { IntelligenceClient } from '@/lib/ai/client'
 import { CAPABILITIES } from './registry'
-import { textResult, type CopilotResult } from './types'
+import { textResult, type Attachment, type CopilotResult } from './types'
 
 function routerSystem(): string {
   const list = CAPABILITIES.map(
@@ -25,8 +25,22 @@ Responde SOLO con JSON, sin texto alrededor: {"capability": "<id>" | "none"}`
 /**
  * Route a message to a capability and run it. Throws only on a transport error;
  * an off-topic message returns a helpful menu of what Mister can do.
+ *
+ * An image attachment short-circuits the text classifier: an image is an
+ * unambiguous signal for the (single) image-accepting capability, so we route
+ * straight there and skip the classify call.
  */
-export async function routeAndRun(client: IntelligenceClient, text: string): Promise<CopilotResult> {
+export async function routeAndRun(
+  client: IntelligenceClient,
+  text: string,
+  attachment?: Attachment,
+): Promise<CopilotResult> {
+  if (attachment) {
+    const visionCap = CAPABILITIES.find((c) => c.acceptsImage)
+    if (visionCap) return visionCap.run(client, text, attachment)
+    // No image capability registered — fall through to text routing on the caption.
+  }
+
   const raw = await client.complete({
     model: INTELLIGENCE_MODELS.classify,
     system: routerSystem(),

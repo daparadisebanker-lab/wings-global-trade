@@ -11,7 +11,10 @@
 // directly; a capability that mutates state must go through a server action that
 // writes an ai_draft (CLAUDE.md Directive 7 — propose, then dispose).
 
-import type { IntelligenceClient } from '@/lib/ai/client'
+import type { IntelligenceClient, ImageInput } from '@/lib/ai/client'
+
+/** An attachment the operator sends with a message — currently a pasted/added image. */
+export type Attachment = ImageInput
 
 /** The result a capability returns; the dock renders it via `renderer`. */
 export interface CopilotResult {
@@ -31,11 +34,14 @@ export interface Capability {
   id: string
   /** Routing hints for the classifier — a one-line ES description + example phrasings. */
   router: { description: string; examples: string[] }
+  /** True if this capability consumes an image attachment (vision). Router uses it. */
+  acceptsImage?: boolean
   /**
    * Parse the message and produce a result. Throws only on a transport error
-   * from the client; an unparseable message should return a `text` result.
+   * from the client; an unparseable message should return a `text` result. The
+   * optional attachment is present only for image-accepting capabilities.
    */
-  run(client: IntelligenceClient, text: string): Promise<CopilotResult>
+  run(client: IntelligenceClient, text: string, attachment?: Attachment): Promise<CopilotResult>
 }
 
 /** A plain-text result — the graceful fallback every capability can return. */

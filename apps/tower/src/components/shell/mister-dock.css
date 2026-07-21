@@ -328,6 +328,62 @@
   }
 }
 
+/* a screenshot the operator sent, shown inside their bubble */
+.mister-shot {
+  display: block;
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  border: 1px solid rgba(216, 169, 75, 0.35);
+}
+
+/* staged-attachment chip — sits just above the input while a shot is pending */
+.mister-attach {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px 6px 6px;
+  border-radius: 12px;
+  background: rgba(158, 182, 210, 0.16);
+  border: 1px solid rgba(168, 192, 220, 0.24);
+}
+.mister-attach .thumb {
+  width: 38px;
+  height: 38px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex: none;
+}
+.mister-attach .meta {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #a8c0dc;
+}
+.mister-attach .drop {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  border-radius: 50%;
+  border: none;
+  background: rgba(180, 196, 216, 0.22);
+  color: #f4f7fb;
+  font-size: 12px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.mister-attach .drop:hover {
+  background: rgba(180, 196, 216, 0.34);
+}
+.mister-attach .drop:focus-visible {
+  outline: 2px solid #e0b866;
+  outline-offset: 2px;
+}
+
 /* input */
 .mister-input {
   display: flex;
@@ -338,10 +394,22 @@
   background: rgba(230, 238, 247, 0.94);
 }
 .mister-input .clip {
+  border: none;
+  background: transparent;
   color: #3a5578;
   font-size: 17px;
-  padding-bottom: 3px;
+  padding: 0 0 3px;
+  cursor: pointer;
   user-select: none;
+  line-height: 1;
+}
+.mister-input .clip:hover {
+  color: #001e50;
+}
+.mister-input .clip:focus-visible {
+  outline: 2px solid #001e50;
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 .mister-input textarea {
   flex: 1;

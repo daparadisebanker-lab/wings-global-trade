@@ -5,6 +5,7 @@ import type { ReverseQuoteData } from '@/lib/copilot/capabilities/reverse-quote'
 import { FitArtifact } from './FitArtifact'
 import { CostArtifact } from './CostArtifact'
 import { ReverseQuoteArtifact } from './ReverseQuoteArtifact'
+import { SupplierExtractArtifact } from './SupplierExtractArtifact'
 
 /**
  * Maps a CopilotResult.renderer key → the component that draws it. The built-in
@@ -19,4 +20,5 @@ export const MISTER_RENDERERS: Record<string, (data: unknown, locale: Locale) =>
   fit: (data, locale) => <FitArtifact fit={data as ContainerFitResult} locale={locale} />,
   'landed-cost': (data, locale) => <CostArtifact result={data} locale={locale} />,
   'reverse-quote': (data, locale) => <ReverseQuoteArtifact result={data as ReverseQuoteData} locale={locale} />,
+  'supplier-extract': (data, locale) => <SupplierExtractArtifact result={data} locale={locale} />,
 }
