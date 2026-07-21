@@ -55,3 +55,67 @@ export function computeRbProductCapabilities(
     canRollback: isManager,
   }
 }
+
+// ── Packing-profile row mapping (RB Console Wave 2 tail) ──────────────────────
+// tower.rb_packing_profiles is the single-source home of a product's ALLOCATION
+// math (units/packets per package, package CBM/KG) + its GTIN — the numbers the
+// container templates and the public fiche derive from. numeric(…) columns arrive
+// from PostgREST as strings; this pure mapper coerces them once so both the action
+// and its callers see typed numbers, and it is unit-tested here (no Supabase touch).
+
+/** A product's packing/logistics profile — one row of tower.rb_packing_profiles. */
+export interface RbPackingProfileRow {
+  id: string
+  representedBrandId: string
+  productSlug: string
+  productName: string
+  gtin: string | null
+  packageKind: string
+  packetsPerPackage: number
+  unitsPerPackage: number
+  unitNamePlural: string
+  packageCbm: number
+  packageKg: number
+  stackable: boolean
+  notes: string | null
+}
+
+export interface RawRbPackingProfileRow {
+  id: string
+  represented_brand_id: string
+  product_slug: string
+  product_name: string
+  gtin: string | null
+  package_kind: string | null
+  packets_per_package: number | string | null
+  units_per_package: number | string | null
+  unit_name_plural: string | null
+  package_cbm: number | string | null
+  package_kg: number | string | null
+  stackable: boolean | null
+  notes: string | null
+}
+
+function num(v: number | string | null | undefined): number {
+  if (v === null || v === undefined) return 0
+  const n = typeof v === 'string' ? Number(v) : v
+  return Number.isFinite(n) ? n : 0
+}
+
+export function mapRbPackingProfileRow(row: RawRbPackingProfileRow): RbPackingProfileRow {
+  return {
+    id: row.id,
+    representedBrandId: row.represented_brand_id,
+    productSlug: row.product_slug,
+    productName: row.product_name,
+    gtin: row.gtin ?? null,
+    packageKind: row.package_kind ?? 'box',
+    packetsPerPackage: num(row.packets_per_package),
+    unitsPerPackage: num(row.units_per_package),
+    unitNamePlural: row.unit_name_plural ?? 'unidades',
+    packageCbm: num(row.package_cbm),
+    packageKg: num(row.package_kg),
+    stackable: row.stackable ?? true,
+    notes: row.notes ?? null,
+  }
+}

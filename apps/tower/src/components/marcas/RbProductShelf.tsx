@@ -26,6 +26,8 @@ import { PublishBar, type RevalidateState } from '@/components/catalog/publish-b
 import { StatusStamp } from '@/components/catalog/product-table/StatusStamp'
 import { NameFields } from '@/components/catalog/product-editor/NameFields'
 import { CategoryPathEditor } from '@/components/catalog/product-editor/CategoryPathEditor'
+import { RbMediaManager } from './RbMediaManager'
+import { RbPackingProfileForm } from './RbPackingProfileForm'
 
 const LABEL = 'font-mono text-label uppercase tracking-[0.1em] text-ink-secondary'
 const INPUT =
@@ -257,6 +259,43 @@ export function RbProductShelf({
             <section className="flex flex-col gap-2">
               <h3 className={LABEL}>Especificación / Spec (ALLOCATION)</h3>
               <SpecForm schema={specSchema} value={form.specs} onChange={(specs) => setForm((f) => ({ ...f, specs }))} locale="es" disabled={editingDisabled} />
+            </section>
+
+            {/* Media + packing profile — the Wave-2 tails. Both are separate,
+                append-only tables (rb_product_media / rb_packing_profiles) with
+                their own RLS, so they stay editable even once the product row is
+                locked; they only require a saved product (id + slug). */}
+            <section className="flex flex-col gap-2 border-t border-line pt-5">
+              <h3 className={LABEL}>Imágenes / Images</h3>
+              {current ? (
+                <RbMediaManager key={current.id} productId={current.id} initialMedia={[]} disabled={!capabilities.canEdit} />
+              ) : (
+                <p className="font-ui text-t0 text-ink-secondary">
+                  Guarda el producto como borrador antes de subir imágenes. / Save the product as a draft before uploading images.
+                </p>
+              )}
+            </section>
+
+            <section className="flex flex-col gap-2 border-t border-line pt-5">
+              <h3 className={LABEL}>Perfil de empaque / Packing profile</h3>
+              <p className="font-ui text-t0 text-ink-secondary">
+                Números que alimentan la matemática de cupos (ALLOCATION) y la ficha pública. / Numbers that drive the
+                ALLOCATION slot math and the public fiche.
+              </p>
+              {current ? (
+                <RbPackingProfileForm
+                  key={current.id}
+                  brandId={brandId}
+                  productSlug={current.slug}
+                  productName={current.name.es || current.name.en || current.slug}
+                  disabled={!capabilities.canEdit}
+                />
+              ) : (
+                <p className="font-ui text-t0 text-ink-secondary">
+                  Guarda el producto como borrador para definir su perfil de empaque. / Save the product as a draft to
+                  define its packing profile.
+                </p>
+              )}
             </section>
 
             {error ? (

@@ -10,10 +10,14 @@
 import { createServiceClient } from '@/lib/supabase/server'
 import {
   ALADIN_CONTAINERS,
+  ALADIN_PRODUCTS,
   ALADIN_TEMPLATE_40HC,
   type RbContainerTemplate,
+  type RbProduct,
   type RbPublicContainer,
 } from '@/lib/rb/fixtures'
+import type { SpecIconId } from '@/components/features/brands/SpecIcons'
+import type { PackingSpec, PalletSpec } from '@wings/trade-ui'
 
 const KIND_LABELS: Record<string, string> = {
   '20GP': "20' Standard · 33 m³",
@@ -362,4 +366,126 @@ export async function getRbLiveBrandBySlug(slug: string): Promise<RbLiveBrand | 
     .eq('slug', slug)
     .maybeSingle()
   return data ? mapLiveBrand(data as unknown as RbPublicBrandRow) : null
+}
+
+// ── Brand product shelf — LIVE read model (RB Console Wave 2 tail) ─────────────
+// The site's product fiche reads public.rb_public_products (tower_26): PUBLISHED
+// products of LIVE brands, joined to their GTIN from rb_packing_profiles. The view
+// carries fiche PRESENTATION only (spec.unitLabel/description/highlights) + the
+// column-home numbers (hs_code, moq, cbm_per_unit, gtin) — diagram geometry is not
+// modelled until rb_diagram_specs (Wave 4), so live rows render spec-led while
+// fixtures keep their rich technical drawings. Read model only (Directive 5): the
+// site never writes. Graceful fallback: no Supabase, a read error, or zero live
+// rows → the SPEC §6 fixtures, so Áladín keeps rendering.
+
+export interface RbShelfSpecRow {
+  label: string
+  value: string
+  icon: SpecIconId
+}
+
+export interface RbShelfProduct {
+  slug: string
+  name: string
+  unitLabel: string
+  descriptionEs: string
+  highlights: string[]
+  specs: RbShelfSpecRow[]
+  /** Full technical drawings — only fixture-sourced products carry them; live
+   *  rows render spec-led until rb_diagram_specs ships. */
+  diagrams: {
+    packing: PackingSpec
+    explodeAxis: 'y' | 'z'
+    explodeCaption: string
+    pallet: PalletSpec
+  } | null
+}
+
+interface RbPublicProductRow {
+  id: string
+  slug: string
+  name: { es?: string; en?: string } | null
+  category_path: string[] | null
+  specs: { unitLabel?: unknown; description?: unknown; highlights?: unknown } | null
+  hs_code: string | null
+  moq: number | string | null
+  cbm_per_unit: number | string | null
+  brand_slug: string
+  gtin: string | null
+}
+
+/** Pick a display string from a localised value ({es,en}) or a plain string. */
+function loc(v: unknown): string {
+  if (v == null) return ''
+  if (typeof v === 'string') return v
+  if (typeof v === 'object') {
+    const o = v as { es?: string; en?: string }
+    return o.es || o.en || ''
+  }
+  return ''
+}
+
+function numOrNull(v: number | string | null): number | null {
+  if (v == null) return null
+  const n = typeof v === 'string' ? Number(v) : v
+  return Number.isFinite(n) ? n : null
+}
+
+function fixtureToShelf(p: RbProduct): RbShelfProduct {
+  return {
+    slug: p.slug,
+    name: p.name,
+    unitLabel: p.unitLabel,
+    descriptionEs: p.descriptionEs,
+    highlights: p.highlights,
+    specs: p.specs,
+    diagrams: { packing: p.packing, explodeAxis: p.explodeAxis, explodeCaption: p.explodeCaption, pallet: p.pallet },
+  }
+}
+
+function liveToShelf(row: RbPublicProductRow): RbShelfProduct {
+  const specs = row.specs ?? {}
+  const unitLabel = loc(specs.unitLabel)
+  const highlights = Array.isArray(specs.highlights)
+    ? (specs.highlights as unknown[]).filter((h): h is string => typeof h === 'string')
+    : []
+
+  const rows: RbShelfSpecRow[] = []
+  if (unitLabel) rows.push({ label: 'Presentación', value: unitLabel, icon: 'package' })
+  const category = (row.category_path ?? []).join(' · ')
+  if (category) rows.push({ label: 'Categoría', value: category, icon: 'box' })
+  if (row.gtin) rows.push({ label: 'GTIN', value: row.gtin, icon: 'barcode' })
+  if (row.hs_code) rows.push({ label: 'HS Code', value: row.hs_code, icon: 'seal' })
+  const moq = numOrNull(row.moq)
+  if (moq != null) rows.push({ label: 'MOQ', value: String(moq), icon: 'box' })
+  const cbm = numOrNull(row.cbm_per_unit)
+  if (cbm != null) rows.push({ label: 'CBM / unidad', value: `${cbm} m³`, icon: 'ruler' })
+  rows.push({ label: 'Origen', value: 'Importado', icon: 'ship' })
+
+  return {
+    slug: row.slug,
+    name: loc(row.name) || row.slug,
+    unitLabel,
+    descriptionEs: loc(specs.description),
+    highlights,
+    specs: rows,
+    diagrams: null,
+  }
+}
+
+/** LIVE brand products (PUBLISHED × LIVE) for the public shelf, with a graceful
+ *  fixture fallback so Áladín renders before any console-authored row goes live. */
+export async function getRbProductsForBrand(brandSlug: string): Promise<RbShelfProduct[]> {
+  const fallback = (): RbShelfProduct[] => (brandSlug === 'aladin' ? ALADIN_PRODUCTS.map(fixtureToShelf) : [])
+  const supabase = createServiceClient()
+  if (!supabase) return fallback()
+  const { data, error } = await supabase
+    .from('rb_public_products')
+    .select('id,slug,name,category_path,specs,hs_code,moq,cbm_per_unit,brand_slug,gtin')
+    .eq('brand_slug', brandSlug)
+    .order('slug', { ascending: true })
+  if (error) throw new Error(`rb_public_products read failed: ${error.message}`)
+  const rows = (data ?? []) as unknown as RbPublicProductRow[]
+  if (rows.length === 0) return fallback()
+  return rows.map(liveToShelf)
 }

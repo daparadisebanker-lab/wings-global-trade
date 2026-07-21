@@ -5,7 +5,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { getBrand, ALADIN_PRODUCTS } from '@/lib/rb/fixtures'
+import { getBrand } from '@/lib/rb/fixtures'
+import { getRbProductsForBrand } from '@/lib/rb/data'
 import { PackingDiagram } from '@wings/trade-ui'
 import { ExplodedDiagram } from '@wings/trade-ui'
 import { PalletDiagram } from '@wings/trade-ui'
@@ -30,9 +31,10 @@ export default async function BrandProductsPage({ params }: PageProps) {
   const { brand: slug } = await params
   const brand = getBrand(slug)
   if (!brand) notFound()
-  // Fixture phase: one catalog (RB/01). TOWER integration swaps this for
-  // tower.products filtered by represented_brand_id (SPEC §5.1).
-  const products = ALADIN_PRODUCTS
+  // LIVE read model: PUBLISHED rb_products of a LIVE brand (public.rb_public_products,
+  // tower_26), with a graceful fallback to the SPEC §6 fixtures when no live row
+  // exists yet. Live rows render spec-led; fixtures keep their technical drawings.
+  const products = await getRbProductsForBrand(slug)
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-14 md:px-8 md:py-20">
@@ -74,19 +76,22 @@ export default async function BrandProductsPage({ params }: PageProps) {
             </div>
 
             {/* Technical body — row 1: vista técnica beside the spec sheet;
-                row 2: explosionada + pallet as a side-by-side pair (no dead
-                column space on desktop) */}
+                row 2: explosionada + pallet as a side-by-side pair. Live rows
+                carry no diagram geometry yet (rb_diagram_specs, Wave 4), so the
+                drawings render only when present; otherwise the fiche is spec-led. */}
             <div className="space-y-8 p-4 md:space-y-10 md:p-9">
               <div
-                className={`grid gap-8 md:gap-10 lg:grid-cols-[minmax(320px,460px)_1fr] ${
-                  idx % 2 === 1 ? 'lg:[direction:rtl]' : ''
+                className={`grid gap-8 md:gap-10 ${product.diagrams ? 'lg:grid-cols-[minmax(320px,460px)_1fr]' : ''} ${
+                  product.diagrams && idx % 2 === 1 ? 'lg:[direction:rtl]' : ''
                 }`}
               >
-                <div className="lg:[direction:ltr]">
-                  <TechDraw>
-                    <PackingDiagram spec={product.packing} />
-                  </TechDraw>
-                </div>
+                {product.diagrams ? (
+                  <div className="lg:[direction:ltr]">
+                    <TechDraw>
+                      <PackingDiagram spec={product.diagrams.packing} />
+                    </TechDraw>
+                  </div>
+                ) : null}
 
                 <dl className="divide-y divide-neutral-100 lg:[direction:ltr]">
                   {product.specs.map((row) => (
@@ -108,18 +113,20 @@ export default async function BrandProductsPage({ params }: PageProps) {
                 </dl>
               </div>
 
-              <div className="grid gap-8 md:gap-10 lg:grid-cols-2">
-                <TechDraw>
-                  <ExplodedDiagram
-                    spec={product.packing}
-                    axis={product.explodeAxis}
-                    caption={product.explodeCaption}
-                  />
-                </TechDraw>
-                <TechDraw>
-                  <PalletDiagram spec={product.pallet} />
-                </TechDraw>
-              </div>
+              {product.diagrams ? (
+                <div className="grid gap-8 md:gap-10 lg:grid-cols-2">
+                  <TechDraw>
+                    <ExplodedDiagram
+                      spec={product.diagrams.packing}
+                      axis={product.diagrams.explodeAxis}
+                      caption={product.diagrams.explodeCaption}
+                    />
+                  </TechDraw>
+                  <TechDraw>
+                    <PalletDiagram spec={product.diagrams.pallet} />
+                  </TechDraw>
+                </div>
+              ) : null}
             </div>
 
             <div className="px-7 pb-7 md:px-9 md:pb-9">

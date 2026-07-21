@@ -15,10 +15,12 @@
 // (ALLOCATION) differ from the lane catalog.
 import { z } from 'zod'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { createServerSupabase } from '@/lib/supabase/server'
+import { createServerSupabase, createServiceClient } from '@/lib/supabase/server'
 import { fail, ok, type ActionResult } from './result'
 import { localizedSchema, type Localized } from '@/lib/archetypes'
 import { SPEC_ZOD_DEFAULTS } from '@/lib/schemas/spec'
+import { RB_ASSET_BUCKET, buildRbAssetStoragePath } from './represented-brands-logic'
+import { MEDIA_KINDS, type MediaKind } from './media-types'
 import {
   buildVersionSnapshot,
   applyRollbackSnapshot,
@@ -33,7 +35,12 @@ import {
   type ProductSnapshot,
   type ProductStatus,
 } from './catalog-logic'
-import { computeRbProductCapabilities } from './rb-catalog-logic'
+import {
+  computeRbProductCapabilities,
+  mapRbPackingProfileRow,
+  type RawRbPackingProfileRow,
+  type RbPackingProfileRow,
+} from './rb-catalog-logic'
 import { RB_ROLES, type RbRole } from './represented-brands-logic'
 
 const uuidSchema = z.string().uuid()
@@ -539,4 +546,278 @@ export async function rollbackRbProduct(id: string, version: number): Promise<Ac
   if (insertError) return fail('VALIDATION', 'No se pudo registrar la versión revertida / Could not record the rolled-back version')
 
   return ok({ product: updatedProduct, version: nextVersion })
+}
+
+// ── Product media (Wave 2 tail) ──────────────────────────────────────────────
+// Attaches product images to an rb_product via tower.rb_product_media (tower_26).
+// Reuses the shipped RB signed-upload pipeline (represented-brands-media.ts): the
+// private `brand-kits` bucket + buildRbAssetStoragePath + the service-role signer
+// — no new bucket or broker is invented. The upload-URL mint uses the service role
+// (the bucket has no authenticated storage policy), so it is authorized in-action
+// (editor gate below); the DB write itself rides the caller's RLS client, where
+// rb_product_media_ins (has_rb_role BRAND_MANAGER/BRAND_OPS, join-through-parent)
+// is the real boundary. No remove: tower_26 ships NO delete policy on the table
+// (append-only law — retire, never delete).
+
+export interface RbProductMediaRow {
+  id: string
+  rbProductId: string
+  storagePath: string
+  kind: MediaKind
+  sort: number
+  meta: Record<string, unknown>
+}
+
+interface RawRbProductMediaRow {
+  id: string
+  rb_product_id: string
+  storage_path: string
+  kind: string
+  sort: number
+  meta: Record<string, unknown> | null
+}
+
+function mapMediaRow(row: RawRbProductMediaRow): RbProductMediaRow {
+  return {
+    id: row.id,
+    rbProductId: row.rb_product_id,
+    storagePath: row.storage_path,
+    kind: row.kind as MediaKind,
+    sort: row.sort,
+    meta: row.meta ?? {},
+  }
+}
+
+export interface RbMediaUploadTicket {
+  path: string
+  token: string
+  signedUrl: string
+  bucket: string
+}
+
+interface RbProductEditorCtx {
+  productId: string
+  productSlug: string
+  brandId: string
+  brandSlug: string
+}
+
+/** Resolve a product to its brand slug + confirm the caller is a brand editor.
+ * The product read runs under the caller's RLS client (returns a row only if they
+ * hold some RB role on the brand); the editor check (group admin OR BRAND_MANAGER/
+ * BRAND_OPS membership) then gates the service-role signed-URL mint — the same
+ * authorize-in-action posture as represented-brands-media.ts#requireBrandManager,
+ * widened to include BRAND_OPS (the product write role). */
+async function resolveRbProductEditorCtx(
+  gate: { supabase: TowerClient; user: { id: string } },
+  productId: string,
+): Promise<ActionResult<RbProductEditorCtx>> {
+  const { data, error } = await gate.supabase
+    .from('rb_products')
+    .select('id, slug, represented_brand_id, brand:represented_brands!represented_brand_id ( slug )')
+    .eq('id', productId)
+    .maybeSingle()
+  if (error) return fail('VALIDATION', 'No se pudo leer el producto / Could not read product')
+  if (!data) return fail('FORBIDDEN_LANE', 'Producto no encontrado o sin acceso / Product not found or no access')
+  const row = data as unknown as {
+    id: string
+    slug: string
+    represented_brand_id: string
+    brand: { slug: string } | { slug: string }[] | null
+  }
+  const brand = Array.isArray(row.brand) ? row.brand[0] : row.brand
+
+  const [{ data: profile }, { data: memberships }] = await Promise.all([
+    gate.supabase.from('profiles').select('is_group_admin').eq('id', gate.user.id).maybeSingle(),
+    gate.supabase.from('rb_memberships').select('role').eq('user_id', gate.user.id).eq('represented_brand_id', row.represented_brand_id),
+  ])
+  const isGroupAdmin = Boolean((profile as { is_group_admin?: boolean } | null)?.is_group_admin)
+  const roles = ((memberships ?? []) as { role: string }[]).map((m) => m.role)
+  const isEditor = isGroupAdmin || roles.includes('BRAND_MANAGER') || roles.includes('BRAND_OPS')
+  if (!isEditor) return fail('FORBIDDEN_LANE', 'Solo gestor u operación de la marca / Brand manager or ops only')
+
+  return ok({ productId: row.id, productSlug: row.slug, brandId: row.represented_brand_id, brandSlug: brand?.slug ?? 'brand' })
+}
+
+const rbMediaUploadInputSchema = z.object({
+  kind: z.enum(MEDIA_KINDS),
+  fileName: z.string().trim().min(1).max(200),
+})
+
+/** Issue a signed upload URL for one product image. The caller PUTs the file to
+ * `signedUrl`, then calls attachRbMedia with the returned `path`. Bytes land in
+ * the private brand-kits bucket under rb/{brandSlug}/product-{slug}/… */
+export async function createRbProductMediaUploadUrl(
+  productId: string,
+  input: z.input<typeof rbMediaUploadInputSchema>,
+): Promise<ActionResult<RbMediaUploadTicket>> {
+  const gate = await requireUser()
+  if (!gate.ok) return gate.error
+  const idParsed = uuidSchema.safeParse(productId)
+  if (!idParsed.success) return fail('VALIDATION', 'ID de producto inválido / Invalid product id')
+  const parsed = rbMediaUploadInputSchema.safeParse(input)
+  if (!parsed.success) return fail('VALIDATION', 'Datos inválidos / Invalid data', parsed.error.flatten().fieldErrors)
+
+  const ctx = await resolveRbProductEditorCtx(gate, idParsed.data)
+  if (ctx.error) return ctx
+
+  const service = createServiceClient()
+  if (!service) return fail('UNAUTHORIZED', 'Servicio no configurado / Service not configured')
+
+  const path = buildRbAssetStoragePath({
+    brandSlug: ctx.data.brandSlug,
+    slot: `product-${ctx.data.productSlug}`,
+    fileName: parsed.data.fileName,
+  })
+  const { data, error } = await service.storage.from(RB_ASSET_BUCKET).createSignedUploadUrl(path)
+  if (error || !data) return fail('VALIDATION', 'No se pudo generar la URL de carga / Could not create the upload URL')
+  return ok({ path: data.path, token: data.token, signedUrl: data.signedUrl, bucket: RB_ASSET_BUCKET })
+}
+
+const attachRbMediaInputSchema = z.object({
+  storagePath: z.string().min(1).max(400),
+  kind: z.enum(MEDIA_KINDS),
+  sort: z.number().int().min(0).default(0),
+  meta: z.record(z.unknown()).default({}),
+})
+
+/** Record already-uploaded product images against an rb_product. RLS
+ * (rb_product_media_ins, has_rb_role BRAND_MANAGER/BRAND_OPS) is the gate; the
+ * audit trigger (tower_26) logs each insert. */
+export async function attachRbMedia(
+  productId: string,
+  uploads: z.input<typeof attachRbMediaInputSchema>[],
+): Promise<ActionResult<RbProductMediaRow[]>> {
+  const gate = await requireUser()
+  if (!gate.ok) return gate.error
+  const idParsed = uuidSchema.safeParse(productId)
+  if (!idParsed.success) return fail('VALIDATION', 'ID de producto inválido / Invalid product id')
+
+  const parsed = z.array(attachRbMediaInputSchema).min(1).max(50).safeParse(uploads)
+  if (!parsed.success) return fail('VALIDATION', 'Datos inválidos / Invalid data', { uploads: parsed.error.issues.map((i) => i.message) })
+
+  const { data, error } = await gate.supabase
+    .from('rb_product_media')
+    .insert(
+      parsed.data.map((u) => ({
+        rb_product_id: idParsed.data,
+        storage_path: u.storagePath,
+        kind: u.kind,
+        sort: u.sort,
+        meta: u.meta,
+      })),
+    )
+    .select('id,rb_product_id,storage_path,kind,sort,meta')
+  if (error) return fail('FORBIDDEN_LANE', 'No se pudo adjuntar el material / Could not attach media')
+  return ok(((data ?? []) as unknown as RawRbProductMediaRow[]).map(mapMediaRow))
+}
+
+/** List a product's media (RLS read: any RB role on the brand). */
+export async function listRbMedia(productId: string): Promise<ActionResult<RbProductMediaRow[]>> {
+  const gate = await requireUser()
+  if (!gate.ok) return gate.error
+  const idParsed = uuidSchema.safeParse(productId)
+  if (!idParsed.success) return fail('VALIDATION', 'ID de producto inválido / Invalid product id')
+
+  const { data, error } = await gate.supabase
+    .from('rb_product_media')
+    .select('id,rb_product_id,storage_path,kind,sort,meta')
+    .eq('rb_product_id', idParsed.data)
+    .order('sort', { ascending: true })
+  if (error) return fail('VALIDATION', 'No se pudo listar el material / Could not list media')
+  return ok(((data ?? []) as unknown as RawRbProductMediaRow[]).map(mapMediaRow))
+}
+
+// ── Packing profile (Wave 2 tail) ────────────────────────────────────────────
+// tower.rb_packing_profiles (rb_wave1) is what a product's ALLOCATION math reads:
+// packets/units per package, package CBM/KG, GTIN. The public fiche joins it to
+// rb_products by (represented_brand_id, product_slug = slug); the container
+// templates derive their slot capacity from it. This upsert is the write-side.
+// Mutation law: auth → Zod → RLS (rb_profiles_ins/upd, BRAND_MANAGER/BRAND_OPS).
+// product_slug is globally UNIQUE, so the upsert conflict-targets it — an attempt
+// to steal another brand's slug fails the RLS check (isolation holds). Physical
+// quantities (CBM/KG) are not money, so no integer-minor-unit rule applies.
+
+const packingProfileInputSchema = z.object({
+  productSlug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'kebab-case'),
+  productName: z.string().trim().min(1).max(200),
+  gtin: z.string().trim().min(1).max(64).nullable().optional(),
+  packageKind: z.string().trim().min(1).max(40).default('box'),
+  packetsPerPackage: z.number().int().min(1).default(1),
+  unitsPerPackage: z.number().int().min(1),
+  unitNamePlural: z.string().trim().min(1).max(60).default('unidades'),
+  packageCbm: z.number().positive(),
+  packageKg: z.number().positive(),
+  stackable: z.boolean().default(true),
+  notes: z.string().trim().max(500).nullable().optional(),
+})
+
+export type RbPackingProfileInput = z.input<typeof packingProfileInputSchema>
+export type { RbPackingProfileRow }
+
+const PACKING_SELECT =
+  'id,represented_brand_id,product_slug,product_name,gtin,package_kind,packets_per_package,units_per_package,unit_name_plural,package_cbm,package_kg,stackable,notes'
+
+/** Read a product's packing profile (by brand + product slug) for editor prefill.
+ * RLS read (any RB role); returns null when none has been authored yet. */
+export async function getRbPackingProfile(brandId: string, productSlug: string): Promise<ActionResult<RbPackingProfileRow | null>> {
+  const gate = await requireUser()
+  if (!gate.ok) return gate.error
+  const brandParsed = uuidSchema.safeParse(brandId)
+  if (!brandParsed.success) return fail('VALIDATION', 'Marca inválida / Invalid brand')
+  const slugParsed = z.string().min(1).safeParse(productSlug)
+  if (!slugParsed.success) return fail('VALIDATION', 'Slug inválido / Invalid slug')
+
+  const { data, error } = await gate.supabase
+    .from('rb_packing_profiles')
+    .select(PACKING_SELECT)
+    .eq('represented_brand_id', brandParsed.data)
+    .eq('product_slug', slugParsed.data)
+    .maybeSingle()
+  if (error) return fail('VALIDATION', 'No se pudo leer el perfil de empaque / Could not read packing profile')
+  return ok(data ? mapRbPackingProfileRow(data as unknown as RawRbPackingProfileRow) : null)
+}
+
+/** Create or update the packing profile a product's ALLOCATION math depends on.
+ * RLS (rb_profiles_ins/upd) confines the write to a brand the caller manages/ops. */
+export async function upsertRbPackingProfile(
+  brandId: string,
+  input: RbPackingProfileInput,
+): Promise<ActionResult<RbPackingProfileRow>> {
+  const gate = await requireUser()
+  if (!gate.ok) return gate.error
+  const brandParsed = uuidSchema.safeParse(brandId)
+  if (!brandParsed.success) return fail('VALIDATION', 'Marca inválida / Invalid brand')
+  const parsed = packingProfileInputSchema.safeParse(input)
+  if (!parsed.success) return fail('VALIDATION', 'Datos inválidos / Invalid data', parsed.error.flatten().fieldErrors)
+
+  const payload = {
+    represented_brand_id: brandParsed.data,
+    product_slug: parsed.data.productSlug,
+    product_name: parsed.data.productName,
+    gtin: parsed.data.gtin ?? null,
+    package_kind: parsed.data.packageKind,
+    packets_per_package: parsed.data.packetsPerPackage,
+    units_per_package: parsed.data.unitsPerPackage,
+    unit_name_plural: parsed.data.unitNamePlural,
+    package_cbm: parsed.data.packageCbm,
+    package_kg: parsed.data.packageKg,
+    stackable: parsed.data.stackable,
+    notes: parsed.data.notes ?? null,
+  }
+
+  const { data, error } = await gate.supabase
+    .from('rb_packing_profiles')
+    .upsert(payload, { onConflict: 'product_slug' })
+    .select(PACKING_SELECT)
+    .single()
+  if (error) {
+    if (error.code === '23505') {
+      return fail('VALIDATION', 'Ese slug de producto ya pertenece a otra marca / That product slug already belongs to another brand', {
+        productSlug: ['duplicate'],
+      })
+    }
+    return fail('FORBIDDEN_LANE', 'No se pudo guardar el perfil de empaque / Could not save packing profile')
+  }
+  return ok(mapRbPackingProfileRow(data as unknown as RawRbPackingProfileRow))
 }
