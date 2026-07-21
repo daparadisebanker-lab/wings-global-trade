@@ -55,7 +55,7 @@ export function CommandPalette({
       onOpenChange={onOpenChange}
       label={t({ es: 'Comandos', en: 'Commands' }, locale)}
       overlayClassName="fixed inset-0 z-40 bg-black/60"
-      contentClassName="fixed left-1/2 top-[20%] z-50 w-[92vw] max-w-xl -translate-x-1/2 rounded-card border border-line bg-surface-1 shadow-none"
+      contentClassName="tower-fade fixed left-1/2 top-[20%] z-50 w-[92vw] max-w-xl -translate-x-1/2 rounded-card border border-line bg-surface-1 shadow-none"
     >
       <Command.Input
         autoFocus

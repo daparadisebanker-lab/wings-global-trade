@@ -11,7 +11,7 @@ export function ContainerCard({ container }: { container: ContainerRow }) {
   return (
     <Link
       href={`/containers/${container.id}`}
-      className="flex flex-col gap-3 rounded-card border border-line bg-surface-1 p-4 hover:border-lane-accent"
+      className="flex flex-col gap-3 rounded-card border border-line bg-surface-1 p-4 transition-[border-color,transform] duration-150 hover:border-lane-accent motion-safe:hover:-translate-y-px"
     >
       <div className="flex items-center justify-between gap-2">
         <span className="font-mono text-t0 text-ink-primary" data-numeric>

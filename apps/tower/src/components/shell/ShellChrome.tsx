@@ -7,6 +7,7 @@ import { cn } from '@wings/trade-ui'
 import { CommandPalette } from './CommandPalette'
 import { LaneSwitcher } from './LaneSwitcher'
 import { NavRail } from './NavRail'
+import { RouteProgress } from './RouteProgress'
 import { TopBar } from './TopBar'
 import type { LaneMembership } from '@/lib/lanes/memberships'
 import { visibleModules, type Role } from '@/lib/rbac'
@@ -92,6 +93,7 @@ export function ShellChrome({
 
   return (
     <div style={rootStyle} className="min-h-screen bg-surface-0 text-ink-primary">
+      <RouteProgress />
       <div className="flex min-h-screen">
         {/* Mobile drawer backdrop */}
         {drawerOpen ? (

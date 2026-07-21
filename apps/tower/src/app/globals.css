@@ -169,6 +169,62 @@
   }
 }
 
+/* The global activity rail (RouteProgress). An instrument indicator, not a
+   shimmer — it eases as it advances and fades as the room settles. */
+.tower-progress-bar {
+  transition: width 200ms var(--ease-settle), opacity 240ms linear;
+}
+
+/* Reveal — inline forms, panels and the command palette settle in on the
+   --ease-settle curve (DESIGN_SYSTEM: 150–200ms). A door opening, not a page
+   flip. Reduced motion keeps the fade, drops the travel. */
+@keyframes tower-settle {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.tower-settle {
+  animation: tower-settle 180ms var(--ease-settle) both;
+}
+
+/* Opacity-only reveal for elements that already own a transform (e.g. the
+   command palette's translate-x centering) — animating transform there would
+   fight the centering. */
+@keyframes tower-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.tower-fade {
+  animation: tower-fade 160ms var(--ease-settle) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tower-progress-bar {
+    transition: opacity 160ms linear;
+  }
+  @keyframes tower-settle {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  .tower-settle {
+    animation-duration: 120ms;
+    animation-timing-function: linear;
+  }
+}
+
 /* Keyboard focus is always visible — every board/table is keyboard reachable. */
 [data-app='tower'] :focus-visible {
   outline: 2px solid var(--lane-accent);

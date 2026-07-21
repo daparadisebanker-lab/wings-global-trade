@@ -3,7 +3,7 @@
 // Pipeline (CRM) board (COMPONENT_TREE §2 <PipelineBoard>): columns are the
 // active lane's archetype stage set — never configurable per-user, never
 // hardcoded here. Cards are RFQs; a lightweight inline form creates a new one.
-import { useMemo, useState, useTransition } from 'react'
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getStages } from '@/lib/archetypes'
 import type { EditableLane } from '@/lib/actions/catalog'
@@ -29,6 +29,18 @@ export function PipelineBoard({ lanes, initialLaneId }: { lanes: EditableLane[];
   const [newCurrency, setNewCurrency] = useState('USD')
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
+  const newFormFieldRef = useRef<HTMLSelectElement>(null)
+
+  // The new-RFQ form opens like a drawer: focus lands in it, Escape closes it.
+  useEffect(() => {
+    if (!showNewForm) return
+    newFormFieldRef.current?.focus()
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowNewForm(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [showNewForm])
 
   const lane = lanes.find((l) => l.laneId === laneId)
 
@@ -138,10 +150,15 @@ export function PipelineBoard({ lanes, initialLaneId }: { lanes: EditableLane[];
       </div>
 
       {showNewForm ? (
-        <div className="flex flex-wrap items-end gap-3 rounded-card border border-line bg-surface-1 p-4">
+        <div
+          role="group"
+          aria-label="Nuevo RFQ / New RFQ"
+          className="tower-settle flex flex-wrap items-end gap-3 rounded-card border border-line bg-surface-1 p-4"
+        >
           <label className="flex flex-col gap-1">
             <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">Cuenta / Account</span>
             <select
+              ref={newFormFieldRef}
               value={newAccountId}
               onChange={(e) => setNewAccountId(e.target.value)}
               className="w-56 rounded-card border border-line bg-surface-0 px-3 py-2 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent"
