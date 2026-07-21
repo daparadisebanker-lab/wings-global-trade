@@ -1,0 +1,120 @@
+/* RB technical spec-sheet — a self-contained LIGHT surface (client-facing
+   artifact), deliberately independent of TOWER's dark control-room livery, the
+   same approach as the Cotización / Ficha documents. Scoped under .rts so it
+   never leaks into the shell. Numbers are tabular mono — exhibited as brand
+   assets (CLAUDE.md Directive 5). Local --rt-* props only; radius ≤ 2px, no
+   shadows on the sheet itself. */
+
+.rts {
+  --rt-ink: #0f1216;
+  --rt-muted: #6b7280;
+  --rt-line: #d1d5db;
+  --rt-bar: #ececec;
+  --rt-tint: #f7f8f9;
+
+  box-sizing: border-box;
+  color: var(--rt-ink);
+  font-family: var(--font-ui, system-ui, sans-serif);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.rts *,
+.rts *::before,
+.rts *::after {
+  box-sizing: border-box;
+}
+
+.rts-head {
+  margin-bottom: 20px;
+}
+.rts-kicker {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rt-muted);
+  margin-bottom: 6px;
+}
+.rts-title {
+  margin: 0;
+  font-size: 27px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+}
+.rts-meta {
+  margin: 6px 0 0;
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--rt-muted);
+}
+.rts-ref {
+  color: var(--rt-muted);
+}
+
+/* Two-up section grid (collapses to one column when narrow / printing tight). */
+.rts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px 32px;
+}
+.rts-section {
+  break-inside: avoid;
+}
+
+.rts-section-bar {
+  background: var(--rt-bar);
+  padding: 8px 12px;
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.rts-section-en {
+  font-weight: 400;
+  color: var(--rt-muted);
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+.rts-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.rts-table th,
+.rts-table td {
+  border-bottom: 1px solid var(--rt-line);
+  padding: 7px 4px;
+  text-align: left;
+  vertical-align: top;
+  font-size: 12px;
+}
+.rts-table th {
+  font-weight: 400;
+  color: var(--rt-muted);
+  width: 58%;
+}
+.rts-row-en {
+  color: var(--rt-muted);
+}
+.rts-value {
+  font-family: var(--font-mono, monospace);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  text-align: right;
+}
+
+@media (max-width: 640px) {
+  .rts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media print {
+  .rts {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

@@ -1,0 +1,92 @@
+/* Page frame for the RB container quote + technical annex. Forces a light ground
+   over TOWER's dark root <body>, centers the A4 sheet, and prints clean (toolbar
+   hidden). Mirrors the Ficha / Cotización document-page frame. */
+
+.rbqdoc-page {
+  min-height: 100vh;
+  background: #52555a; /* neutral desk behind the white sheet */
+  padding: 32px 16px 64px;
+  color: #0f1216;
+}
+
+.rbqdoc-page .rbq,
+.rbqdoc-page .rbqdoc-annex {
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.35);
+}
+
+/* Technical annex sits below the quote on the same desk, as a second white sheet. */
+.rbqdoc-annex {
+  width: 100%;
+  max-width: 820px;
+  margin: 24px auto 0;
+  padding: 40px 56px;
+  background: #ffffff;
+}
+
+/* Print / save-PDF toolbar */
+.rbqdoc-toolbar {
+  max-width: 820px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 14px;
+  background: #1b1e22;
+  border: 1px solid #34383e;
+  color: #e8eaed;
+  font-family: var(--font-ui, system-ui, sans-serif);
+}
+.rbqdoc-toolbar-label {
+  font-family: var(--font-mono, monospace);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+.rbqdoc-toolbar-btn {
+  padding: 8px 14px;
+  background: #ffb020;
+  color: #101214;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.rbqdoc-toolbar-btn:hover {
+  background: #ffc04d;
+}
+
+.rbqdoc-error {
+  max-width: 820px;
+  margin: 80px auto;
+  padding: 40px;
+  background: #ffffff;
+  text-align: center;
+  font-family: var(--font-ui, system-ui, sans-serif);
+}
+.rbqdoc-error-sub {
+  margin-top: 8px;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+@media print {
+  .rbqdoc-page {
+    background: #ffffff;
+    padding: 0;
+  }
+  .rbqdoc-page .rbq,
+  .rbqdoc-page .rbqdoc-annex {
+    box-shadow: none;
+  }
+  .rbqdoc-annex {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    break-before: page;
+  }
+  [data-print-hidden] {
+    display: none !important;
+  }
+}
