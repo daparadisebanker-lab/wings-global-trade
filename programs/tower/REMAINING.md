@@ -26,6 +26,15 @@ branch `claude/wings-quotation-intelligence-cqpfjn`. Everything built this cycle
 is committed as migration files + code — **none of it is live until deployed**
 (migrations apply at deploy; prod is never touched from the branch).
 
+> **Progress update (2026-07-21, branch `claude/start-j44jj2`, based on the
+> quotation branch).** Track **②** (media signed-upload pipeline + brand-kit
+> asset slots + saved-asset thumbnails) and Track **③** (public share OG image +
+> activation analytics) are **SHIPPED**, plus two backlog items — the **RB
+> allocation status machine** (`tower_36`) and the **Wave 4 site brand-token
+> injection**. All committed; verified by typecheck + 324 tests + `next build`
+> on both apps. Still **not deployed** — Track ① now covers `tower_22 → tower_36`.
+> Live/browser verification of every one of these is still pending the deploy.
+
 The three recommended next-step tracks, in priority order.
 
 ---
@@ -35,9 +44,11 @@ The three recommended next-step tracks, in priority order.
 Nothing we built is live until this is done. A browser pass will also surface
 anything real before we build further.
 
-- Apply migrations **`tower_22 → tower_34`** to the prod Supabase project
-  (`pyznlglvwihosemqkhtq`). `tower_34` provisions the media storage buckets
-  (Track ②).
+- Apply migrations **`tower_22 → tower_36`** to the prod Supabase project
+  (`pyznlglvwihosemqkhtq`). New this cycle: `tower_34` provisions the media
+  storage buckets (Track ②) and `tower_36` adds the RB allocation status machine
+  (guard trigger + expiry-release job + `pg_cron` hourly). There is no
+  `tower_35` (the promo activation event needed no schema change).
 - Set env: **`JOURNEY_SIGNING_SECRET`** (import-journey HMAC) and
   **`NEXT_PUBLIC_SITE_URL`** (promo listing URLs).
 - Bootstrap the **first group admin by email** (one-time SQL noted in `tower_32`);
@@ -72,14 +83,15 @@ Done this cycle:
 - **Catalog product images** — already implemented (`media.ts` / `MediaManager`);
   now actually functional because the bucket exists.
 
+- **Saved-asset thumbnails** — `BrandKitPanel` now previews already-saved kit
+  assets too: each seeded image slot fetches a short-lived signed URL via
+  `createRbAssetDownloadUrl` (brand-prefix guarded) and renders a thumbnail;
+  PDFs show a chip; fresh uploads still preview from the local `File`.
+
 Still open (deliberately):
 
 - **Variant generation** (resized/optimized derivatives) stays n8n's job per
   ARCHITECTURE — `MediaManager`/`BrandKitPanel` upload the original only.
-- **Saved-asset previews** — `createRbAssetDownloadUrl` exists (short-lived
-  signed URL, brand-prefix guarded); the panel currently previews only
-  freshly-uploaded files (via `URL.createObjectURL`). Wiring thumbnails for
-  already-saved assets is a small follow-up.
 
 **Note:** `tower_34` must be applied at the next deploy (folds into Track ①), and
 `SUPABASE_SERVICE_ROLE_KEY` must be set (already required elsewhere) for uploads
@@ -87,15 +99,24 @@ to work.
 
 ---
 
-## ③ Round out the promotion feature  ·  *finish what we're in*
+## ③ Round out the promotion feature  ·  *SHIPPED*
 
-- **Public active-container OG image** — so the WhatsApp/share link unfurls with
-  the brand share card (reuse `buildPromoCardSvg` → resvg).
-- **Promotion analytics / n8n** — emit an event on container activation (lane
-  dimension into the wings Supabase project); today activation is untracked.
+- **Public share OG image** — DONE. `opengraph-image.tsx` on the public promoted-
+  container page (`/marcas/[brand]/contenedor/[code]`) rasterises
+  `buildPromoCardSvg` → resvg → 1080×1080 PNG, sourced only from the shipped
+  `public.rb_active_containers` view (promo_active + OPEN/FILLING + LIVE brand);
+  no promoted container → 404, so nothing private unfurls. `apps/site/next.config`
+  gained `serverExternalPackages: ['@resvg/resvg-js']` + font tracing for the route.
+- **Activation analytics** — DONE. `setContainerPromoActive` now emits a
+  `container_promoted` event into `tower.events` (dimensions: `brand_slug` +
+  `lane_slug='representation'`, meta `{code, phase, archetype:'ALLOCATION'}`, NO
+  PII) via a new `emitServerEvent` helper. No migration needed — `tower.events.event`
+  is free-text.
 
-**Why third:** self-contained polish on the feature just shipped; valuable but
-not blocking.
+Still open (optional): the brand **accent** is absent from the public
+`rb_active_containers` contract, so the OG card uses rb-core's Wings-gold default
+rather than the brand accent — surfacing the accent would need a view/migration
+change, deferred deliberately.
 
 ---
 
@@ -103,17 +124,25 @@ not blocking.
 
 Beyond the three tracks above, these were always queued (not regressions):
 
-- **RB allocation status machine** — reserve exists (`public.rb_reserve`); the
-  `RESERVED → CONFIRMED → LOADED → RELEASED` transitions + RLS UPDATE policy are
-  deferred to RB Console Wave 3, and there's no job to flip expired reservations
-  to `RELEASED` for the ledger.
+- ~~**RB allocation status machine**~~ — **SHIPPED** (`tower_36`): the
+  `RESERVED → CONFIRMED → LOADED → RELEASED` transitions now have an RLS UPDATE
+  policy (brand resolved through `rb_containers`, `BRAND_MANAGER`/`BRAND_OPS`
+  only), a `status`-only column grant, a `rb_alloc_status_guard` BEFORE-UPDATE
+  trigger enforcing legal jumps, an idempotent `rb_release_expired_allocations()`
+  job (hourly `pg_cron`) + `public.` wrapper, and the `advanceRbAllocationStatus`
+  server action. Pure `canTransitionAllocationStatus` + tests mirror the DB guard.
 - **RB product management per brand** — add/remove products + specs per brand and
   the `/marcas/[brand]/productos` editor (Wave 2, `tower_26`) — SQL-seed-only today.
 - **Brand PDF quote + technical spreadsheet** ("regardless of category") — the
   `tower_22` quotation engine isn't adapted to represented-brand containers yet
   (Wave 5 · `techSheetSections` in `@wings/rb-core`).
-- **Site brand-layout `--rb-*` token injection** — `getRbLiveBrandBySlug` exists;
-  the brand layout still runs on Áladín fixtures (Wave 4).
+- ~~**Site brand-layout `--rb-*` token injection**~~ — **SHIPPED** (Wave 4): the
+  `(brands)` layout now injects a live brand's `--rb-*` tokens via
+  `getRbLiveBrandBySlug` + `rbTokenStyle` (`apps/site/src/lib/rb/tokens.ts`),
+  applied as inline style on `[data-brand]`, falling back to the Áladín fixture
+  CSS when no live brand/tokens exist. Content (story/hero/products) still comes
+  from fixtures — this is the token surface only; live-DB path unverified until
+  deploy.
 - **Rep cross-category catalog browse UX** — read policy (`tower_31`) is live; a
   dedicated browse view for a pure rep with no editable lane is unbuilt.
 - **Import-journey milestone automation** — ops bar + client tracker exist;
