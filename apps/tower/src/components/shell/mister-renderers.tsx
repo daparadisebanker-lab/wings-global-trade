@@ -7,6 +7,7 @@ import { CostArtifact } from './CostArtifact'
 import { ReverseQuoteArtifact } from './ReverseQuoteArtifact'
 import { SupplierExtractArtifact } from './SupplierExtractArtifact'
 import { ProposalArtifact } from './ProposalArtifact'
+import { QuoteProposalArtifact } from './QuoteProposalArtifact'
 
 /**
  * Maps a CopilotResult.renderer key → the component that draws it. The built-in
@@ -23,4 +24,5 @@ export const MISTER_RENDERERS: Record<string, (data: unknown, locale: Locale) =>
   'reverse-quote': (data, locale) => <ReverseQuoteArtifact result={data as ReverseQuoteData} locale={locale} />,
   'supplier-extract': (data, locale) => <SupplierExtractArtifact result={data} locale={locale} />,
   proposal: (data, locale) => <ProposalArtifact result={data} locale={locale} />,
+  'quote-proposal': (data, locale) => <QuoteProposalArtifact result={data} locale={locale} />,
 }

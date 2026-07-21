@@ -12,6 +12,7 @@ import { landedCostCapability } from './capabilities/landed-cost'
 import { reverseQuoteCapability } from './capabilities/reverse-quote'
 import { supplierScreenshotCapability } from './capabilities/supplier-screenshot'
 import { proposalDraftCapability } from './capabilities/proposal-draft'
+import { quoteBuildCapability } from './capabilities/quote-build'
 
 export const CAPABILITIES: Capability[] = [
   containerFitCapability,
@@ -19,4 +20,5 @@ export const CAPABILITIES: Capability[] = [
   reverseQuoteCapability,
   supplierScreenshotCapability,
   proposalDraftCapability,
+  quoteBuildCapability,
 ]
