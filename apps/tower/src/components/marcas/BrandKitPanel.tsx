@@ -7,7 +7,7 @@
 // validators pass). Asset slots (logos, photography, mandate/usage docs) upload
 // through the reused signed-upload pipeline into the private `brand-kits` bucket
 // at rb/{slug}/{slot}/… — the kit JSON stores only the returned storage path.
-import { useMemo, useRef, useState, useTransition } from 'react'
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
 import {
   contrastRatio,
   hueSeparation,
@@ -20,7 +20,7 @@ import {
   type RbLogoSlot,
 } from '@/lib/actions/represented-brands-logic'
 import { saveBrandKit } from '@/lib/actions/represented-brands'
-import { createRbAssetUploadUrl } from '@/lib/actions/represented-brands-media'
+import { createRbAssetDownloadUrl, createRbAssetUploadUrl } from '@/lib/actions/represented-brands-media'
 import type { RepresentedBrandRow } from '@/lib/actions/represented-brands'
 
 const LABEL = 'font-mono text-label uppercase tracking-[0.08em] text-ink-secondary'
@@ -71,8 +71,50 @@ function AssetSlot({
 }) {
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState<string | null>(null)
-  const [preview, setPreview] = useState<string | null>(null)
+  // Local object-URL preview for a file uploaded THIS session, tagged with the
+  // storage path it maps to so we know it belongs to the current `value`.
+  const [preview, setPreview] = useState<{ path: string; url: string } | null>(null)
+  // Signed download URL fetched for an already-saved image asset (a `value` with
+  // no in-session upload). PDFs never fetch — they show a chip.
+  const [remoteUrl, setRemoteUrl] = useState<string | null>(null)
+  const [remoteState, setRemoteState] = useState<'idle' | 'loading' | 'error'>('idle')
   const ref = useRef<HTMLInputElement>(null)
+
+  const isImage = accept.startsWith('image/')
+  const hasLocalPreview = preview !== null && preview.path === value
+
+  // Seeded slots (a prior save) carry a path but no session upload: fetch a
+  // short-lived signed URL and render it as a thumbnail. Keyed on the path, so it
+  // never refetches while the value holds; skips empty slots, PDFs, and freshly
+  // uploaded files (those preview from the local File).
+  useEffect(() => {
+    if (!value || !isImage || hasLocalPreview) {
+      setRemoteUrl(null)
+      setRemoteState('idle')
+      return
+    }
+    let cancelled = false
+    setRemoteUrl(null)
+    setRemoteState('loading')
+    createRbAssetDownloadUrl(brandId, { path: value })
+      .then((res) => {
+        if (cancelled) return
+        if (res.error) {
+          setRemoteState('error')
+          return
+        }
+        setRemoteUrl(res.data.signedUrl)
+        setRemoteState('idle')
+      })
+      .catch((e) => {
+        if (cancelled) return
+        console.error('[rb-asset:preview]', e)
+        setRemoteState('error')
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [brandId, value, isImage, hasLocalPreview])
 
   async function handle(files: FileList | null) {
     const file = files?.[0]
@@ -90,7 +132,11 @@ function AssetSlot({
         setErr('No se pudo subir / Upload failed')
         return
       }
-      setPreview(file.type.startsWith('image/') ? URL.createObjectURL(file) : null)
+      setPreview(
+        file.type.startsWith('image/')
+          ? { path: ticket.data.path, url: URL.createObjectURL(file) }
+          : null,
+      )
       onUploaded(ticket.data.path)
     } catch (e) {
       console.error('[rb-asset:upload]', e)
@@ -102,6 +148,7 @@ function AssetSlot({
   }
 
   const fileName = value ? value.split('/').pop() : null
+  const thumbSrc = hasLocalPreview ? preview!.url : isImage ? remoteUrl : null
 
   return (
     <div className="flex flex-col gap-1 rounded-card border border-line bg-surface-0 p-2">
@@ -109,9 +156,37 @@ function AssetSlot({
         <span className={LABEL}>{label}</span>
         {value ? <span className="font-mono text-label text-positive">✓</span> : null}
       </div>
-      {preview ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={preview} alt="" className="h-16 w-full rounded-none border border-line object-contain" />
+      {value ? (
+        thumbSrc ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={thumbSrc}
+            alt={`Vista previa / Preview · ${label}`}
+            className="h-16 w-full rounded-none border border-line object-contain"
+            onError={() => {
+              setRemoteUrl(null)
+              setRemoteState('error')
+            }}
+          />
+        ) : isImage ? (
+          <span
+            className="flex h-16 w-full items-center justify-center rounded-none border border-line font-mono text-label text-ink-secondary"
+            role={remoteState === 'loading' ? 'status' : undefined}
+          >
+            {remoteState === 'loading'
+              ? 'Cargando… / Loading…'
+              : remoteState === 'error'
+                ? 'Sin vista previa / No preview'
+                : ''}
+          </span>
+        ) : (
+          <span
+            aria-hidden
+            className="flex h-16 w-full items-center justify-center rounded-none border border-line font-mono text-label uppercase tracking-[0.08em] text-ink-secondary"
+          >
+            PDF
+          </span>
+        )
       ) : null}
       {fileName ? (
         <span className="truncate font-ui text-t0 text-ink-primary" title={value}>
