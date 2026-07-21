@@ -91,7 +91,7 @@ export default function LoginPage() {
       <div
         aria-hidden
         className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('/brand/login-hero.jpg')" }}
+        style={{ backgroundImage: "url('/brand/login-hero.png')" }}
       />
       <div aria-hidden className="absolute inset-0" style={{ backgroundColor: 'var(--scrim)' }} />
       <div className="relative w-full max-w-sm rounded-card border border-line bg-surface-1 p-8">
