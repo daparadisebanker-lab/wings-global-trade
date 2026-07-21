@@ -9,6 +9,7 @@
 // role branching here. Reads run under the caller's RLS client, so a rep only
 // ever sees their own brands' containers (group admins see all).
 import { createServerSupabase } from '@/lib/supabase/server'
+import { emitServerEvent } from '@/lib/ingest/emit'
 import { fail, ok, type ActionResult } from './result'
 import {
   promoCopySchema,
@@ -272,6 +273,11 @@ export async function saveContainerPromoCopy(containerId: string, copy: unknown)
   return ok(detail)
 }
 
+// Analytics lane for represented-brand promotion events. RB brands are not a
+// WGT lane; §5-bis surfaces them on WGT/05 Representation, so that is the lane
+// dimension a promotion signal rolls up under.
+const RB_PROMO_LANE = 'representation'
+
 /** Activate/deactivate marketing for a container (RLS: BRAND_MANAGER/BRAND_OPS).
  *  Stamps who/when on activation for the audit trail. */
 export async function setContainerPromoActive(containerId: string, active: boolean): Promise<ActionResult<ContainerPromoDetail>> {
@@ -286,6 +292,17 @@ export async function setContainerPromoActive(containerId: string, active: boole
   if (error) return fail('FORBIDDEN_LANE', 'No se pudo cambiar la promoción / Could not change promotion')
   const detail = await loadDetail(auth.supabase, idParsed.data, process.env.NEXT_PUBLIC_SITE_URL)
   if (!detail) return fail('FORBIDDEN_LANE', 'Contenedor no encontrado / Container not found')
+  // Emit the activation signal (lane dimension) into tower.events. Fire-and-
+  // forget: analytics never gates the mutation. NO PII (Directive 6) — only the
+  // brand, lane, container code + shipping phase travel with the event.
+  if (active && detail.brandSlug) {
+    await emitServerEvent({
+      brand: detail.brandSlug,
+      lane: RB_PROMO_LANE,
+      event: 'container_promoted',
+      meta: { code: detail.code, phase: detail.phase, archetype: 'ALLOCATION' },
+    })
+  }
   return ok(detail)
 }
 
