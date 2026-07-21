@@ -126,6 +126,15 @@ export function ContainerPromoPanel({ initial, onChanged }: { initial: Container
     })
   }
 
+  // Two-audience share: the same ad-script body, an audience-specific end-text,
+  // opened as a WhatsApp share deep-link. Marketing = internal ad-production
+  // handoff; clients = client-facing wholesale CTA (buildPromoCopy owns the copy).
+  function shareToAudience(audience: 'marketing' | 'clients') {
+    const text = buildPromoCopy(promo, audience)
+    const url = `https://wa.me/?text=${encodeURIComponent(text)}`
+    window.open(url, '_blank', 'noopener,noreferrer')
+  }
+
   async function copyToClipboard() {
     try {
       await navigator.clipboard.writeText(copyText)
@@ -327,6 +336,26 @@ export function ContainerPromoPanel({ initial, onChanged }: { initial: Container
             <pre className="whitespace-pre-wrap rounded-card border border-line bg-surface-0 p-3 font-ui text-t0 text-ink-primary">
               {copyText}
             </pre>
+            {/* Two-audience share: same ad-script body, audience-specific end-text. */}
+            <div className="flex flex-col gap-2">
+              <span className={LABEL}>Compartir el guion por audiencia</span>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => shareToAudience('marketing')}
+                  className="rounded-card border border-line px-3 py-1.5 font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:border-lane-accent"
+                >
+                  Compartir con equipo de marketing
+                </button>
+                <button
+                  type="button"
+                  onClick={() => shareToAudience('clients')}
+                  className="rounded-card bg-accent px-3 py-1.5 font-mono text-label uppercase tracking-[0.08em] text-surface-0"
+                >
+                  Compartir con leads y clientes
+                </button>
+              </div>
+            </div>
           </div>
 
           {/* Card preview + downloads */}

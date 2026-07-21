@@ -40,6 +40,50 @@ describe('buildPromoCopy', () => {
     expect(c).toContain('a precio especial')
     expect(c).toContain('cupos')
   })
+
+  // Two-audience share: marketing (internal ad-production handoff) and clients
+  // (client-facing wholesale CTA) reuse the ad-script body and append an end-text.
+  describe('two-audience share', () => {
+    it('marketing and clients share the identical ad-script body, differ only in the end-text', () => {
+      const ad = buildPromoCopy(promo, 'ad')
+      const marketing = buildPromoCopy(promo, 'marketing')
+      const clients = buildPromoCopy(promo, 'clients')
+      // Each audience copy begins with the exact ad-script body (the shared logic).
+      expect(marketing.startsWith(ad)).toBe(true)
+      expect(clients.startsWith(ad)).toBe(true)
+      // The shared body is identical between the two audiences.
+      const marketingBody = marketing.split('\n')[0]
+      const clientsBody = clients.split('\n')[0]
+      expect(marketingBody).toBe(clientsBody)
+      expect(marketingBody).toBe(ad)
+      // Only the appended end-text differs.
+      const marketingEnd = marketing.slice(ad.length).trim()
+      const clientsEnd = clients.slice(ad.length).trim()
+      expect(marketingEnd).not.toBe(clientsEnd)
+      expect(marketingEnd.length).toBeGreaterThan(0)
+      expect(clientsEnd.length).toBeGreaterThan(0)
+    })
+    it('marketing appends the internal handoff close; clients the wholesale CTA — no exclamation', () => {
+      const marketing = buildPromoCopy(promo, 'marketing')
+      const clients = buildPromoCopy(promo, 'clients')
+      expect(marketing).toContain('equipo de marketing')
+      expect(clients).toContain('Reserva tu cupo')
+      expect(clients).toContain('al por mayor')
+      expect(marketing).not.toContain('!')
+      expect(clients).not.toContain('!')
+    })
+    it('keeps whatsapp and ad backward-compatible (unchanged output)', () => {
+      // ad stays a one-liner with no appended end-text.
+      const ad = buildPromoCopy(promo, 'ad')
+      expect(ad.split('\n')).toHaveLength(1)
+      expect(ad).toContain('7 cupos disponibles')
+      expect(ad).not.toContain('equipo de marketing')
+      // whatsapp is still the multi-line message.
+      const wa = buildPromoCopy(promo, 'whatsapp')
+      expect(wa).toContain('7 de 20 cupos')
+      expect(wa).not.toContain('equipo de marketing')
+    })
+  })
 })
 
 describe('buildPromoCardSvg', () => {

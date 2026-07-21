@@ -50,7 +50,23 @@ export interface ContainerPromo {
   accent?: string
 }
 
-export type PromoVariant = 'whatsapp' | 'ad'
+// 'whatsapp' and 'ad' are the original share variants (unchanged, backward-
+// compatible). 'marketing' and 'clients' are the two-audience share (REMAINING.md
+// · root CLAUDE.md §5-bis): both reuse the SAME ad-script body and append an
+// audience-specific end-text — 'marketing' an internal handoff line for ad
+// production, 'clients' a client-facing wholesale CTA/close.
+export type PromoVariant = 'whatsapp' | 'ad' | 'marketing' | 'clients'
+
+/** The audiences that share the ad-script body and append a closing end-text. */
+export type PromoAudience = 'marketing' | 'clients'
+
+/** Audience-specific closing text appended to the shared ad-script body. The body
+ *  is identical across audiences; only this end-text differs. Copy law: Spanish,
+ *  no exclamation marks, technical and direct, wholesale only. */
+export const PROMO_END_TEXT: Record<PromoAudience, string> = {
+  marketing: 'Uso interno · equipo de marketing: adaptar a pieza de anuncio y coordinar la difusión.',
+  clients: 'Reserva tu cupo antes del cierre de carga y coordina tu asignación al por mayor.',
+}
 
 function specsSummary(p: ContainerPromo, max = 3): string {
   const s = (p.specs ?? []).slice(0, max)
@@ -69,22 +85,37 @@ function statusLine(p: ContainerPromo): string {
 }
 
 /**
+ * The one-line ad-script body — product · available slots · phase+route · listing
+ * URL. Shared verbatim by the `ad`, `marketing` and `clients` variants so the two
+ * audiences differ only by the appended end-text, never the body.
+ */
+function adScriptBody(p: ContainerPromo): string {
+  const status = statusLine(p)
+  return [
+    `${p.productName} al por mayor — ${p.slotsAvailable} ${unit(p)} disponibles en contenedor compartido`,
+    status ? ` · ${status}` : '',
+    ` · ${p.listingUrl}`,
+  ].join('')
+}
+
+/**
  * Shareable copy for the active container. `whatsapp` is the multi-line message a
  * rep sends in their WhatsApp workflow; `ad` is the one-line headline for an ad.
- * The listing URL is always included so the reader can reserve on the site.
+ * `marketing` and `clients` reuse that same ad-script body and append an audience-
+ * specific end-text (internal handoff vs. client-facing wholesale CTA). The
+ * listing URL is always included so the reader can reserve on the site.
  */
 export function buildPromoCopy(p: ContainerPromo, variant: PromoVariant = 'whatsapp'): string {
+  // The ad script and the two audience shares reuse one body; audiences append a
+  // closing end-text (the two-audience share).
+  if (variant === 'ad') return adScriptBody(p)
+  if (variant === 'marketing' || variant === 'clients') {
+    return `${adScriptBody(p)}\n${PROMO_END_TEXT[variant]}`
+  }
+  // whatsapp
   const specs = specsSummary(p)
   const price = p.priceNote ? ` a ${p.priceNote}` : ' a precio especial'
   const status = statusLine(p)
-  if (variant === 'ad') {
-    return [
-      `${p.productName} al por mayor — ${p.slotsAvailable} ${unit(p)} disponibles en contenedor compartido`,
-      status ? ` · ${status}` : '',
-      ` · ${p.listingUrl}`,
-    ].join('')
-  }
-  // whatsapp
   const lines = [
     `Contenedor de ${p.productName} disponible: ${p.slotsAvailable} de ${p.slotsTotal} ${unit(p)}.`,
     `Una oportunidad de comprar ${p.productName} al por mayor${price}.`,
