@@ -4,10 +4,12 @@
 // tracking itself is `QcTracker` (a sibling component); this panel just lets
 // the operator pick which PO to track by calling `onSelectPo`.
 import { useState, useTransition } from 'react'
-import { advancePOStatus, issuePO } from '@/lib/actions/containers'
+import { useQuery } from '@tanstack/react-query'
+import { advancePOStatus, issuePO, listSuppliersForContainer } from '@/lib/actions/containers'
 import { canAdvancePoStatus, parseDecimalToMinor } from '@/lib/actions/containers-logic'
 import { PO_STATUSES, type PoStatus, type PurchaseOrderRow } from '@/lib/actions/containers-types'
 import { formatMinor } from '@/lib/money'
+import { EntityCombobox, type EntityOption } from '@/components/ui/EntityCombobox'
 import { usePurchaseOrdersQuery } from './usePurchaseOrdersQuery'
 
 const STATUS_STYLE: Record<PoStatus, string> = {
@@ -38,6 +40,21 @@ export function POPanel({
   onSelectPo: (poId: string) => void
 }) {
   const query = usePurchaseOrdersQuery(containerId)
+  const suppliersQuery = useQuery({
+    queryKey: ['tower', 'containers', 'suppliers', containerId],
+    queryFn: async () => {
+      const result = await listSuppliersForContainer(containerId)
+      if (result.error) throw new Error(result.error.message)
+      return result.data
+    },
+    enabled: canWrite,
+  })
+  const supplierOptions: EntityOption[] = (suppliersQuery.data ?? []).map((s) => ({
+    id: s.id,
+    label: s.name,
+    hint: s.country,
+    badge: s.verified ? '✓' : null,
+  }))
   const [supplierId, setSupplierId] = useState('')
   const [description, setDescription] = useState('')
   const [qty, setQty] = useState('1')
@@ -95,12 +112,17 @@ export function POPanel({
         <div className="flex flex-wrap items-end gap-3 rounded-card border border-line bg-surface-1 p-3">
           <label className="flex flex-col gap-1">
             <span className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary">
-              Proveedor (ID) / Supplier (ID)
+              Proveedor / Supplier
             </span>
-            <input
-              value={supplierId}
-              onChange={(e) => setSupplierId(e.target.value)}
-              className="w-56 rounded-card border border-line bg-surface-0 px-3 py-1.5 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent"
+            <EntityCombobox
+              className="w-56"
+              options={supplierOptions}
+              value={supplierId || null}
+              onChange={(id) => setSupplierId(id ?? '')}
+              loading={suppliersQuery.isLoading}
+              placeholder="Buscar proveedor… / Search supplier…"
+              ariaLabel="Proveedor / Supplier"
+              emptyText="Sin proveedores para esta marca / No suppliers for this brand"
             />
           </label>
           <label className="flex flex-col gap-1">
