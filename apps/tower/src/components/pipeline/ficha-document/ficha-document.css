@@ -1,0 +1,264 @@
+/* "Ficha técnica" document — a self-contained LIGHT surface printed on white,
+   deliberately independent of TOWER's dark control-room livery (a client-facing
+   artifact, matching the Cotización document's approach). Scoped under .fdoc so
+   it never leaks into the shell. Sized for A4 portrait; grey bars forced to
+   print via print-color-adjust. Numbers are tabular mono — exhibited as brand
+   assets (CLAUDE.md Directive 5). */
+
+.fdoc {
+  --fd-ink: #0f1216;
+  --fd-muted: #6b7280;
+  --fd-line: #d1d5db;
+  --fd-bar: #ececec;
+  --fd-tint: #f7f8f9;
+
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 48px 56px 40px;
+  background: #ffffff;
+  color: var(--fd-ink);
+  font-family: var(--font-ui, system-ui, sans-serif);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.fdoc *,
+.fdoc *::before,
+.fdoc *::after {
+  box-sizing: border-box;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────── */
+.fdoc-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+.fdoc-kicker {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fd-muted);
+  margin-bottom: 6px;
+}
+.fdoc-title {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+.fdoc-subtitle {
+  margin: 4px 0 0;
+  font-size: 15px;
+  color: var(--fd-muted);
+}
+.fdoc-number {
+  margin-top: 12px;
+  font-family: var(--font-mono, monospace);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: var(--fd-ink);
+}
+.fdoc-number[data-draft='true'] {
+  color: var(--fd-muted);
+}
+.fdoc-category {
+  color: var(--fd-muted);
+}
+.fdoc-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.fdoc-logo {
+  height: 52px;
+  width: auto;
+  filter: brightness(0);
+}
+.fdoc-tagline {
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: var(--fd-muted);
+  text-transform: uppercase;
+}
+
+.fdoc-rule {
+  position: relative;
+  height: 3px;
+  margin: 14px 0 26px;
+  background: var(--fd-line);
+}
+.fdoc-rule::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 168px;
+  background: var(--fd-ink);
+}
+
+/* ── Section bars ───────────────────────────────────────────────────────── */
+.fdoc-section-bar {
+  background: var(--fd-bar);
+  padding: 8px 12px;
+  margin: 0 0 12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.fdoc-section-en {
+  font-weight: 400;
+  color: var(--fd-muted);
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+/* ── Specs + destacados grid ────────────────────────────────────────────── */
+.fdoc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-bottom: 28px;
+}
+.fdoc-spec-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.fdoc-spec-table th,
+.fdoc-spec-table td {
+  border-bottom: 1px solid var(--fd-line);
+  padding: 7px 4px;
+  text-align: left;
+  vertical-align: top;
+  font-size: 12px;
+}
+.fdoc-spec-table th {
+  font-weight: 400;
+  color: var(--fd-muted);
+  width: 46%;
+}
+.fdoc-spec-value {
+  font-family: var(--font-mono, monospace);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.fdoc-highlights {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fdoc-highlights li {
+  position: relative;
+  padding-left: 16px;
+  margin-bottom: 12px;
+  font-size: 12px;
+}
+.fdoc-highlights li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: var(--fd-ink);
+}
+.fdoc-highlight-title {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.fdoc-empty {
+  color: var(--fd-muted);
+  font-size: 12px;
+}
+
+/* ── Exhibited logistics numbers ────────────────────────────────────────── */
+.fdoc-exhibit-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 28px;
+}
+.fdoc-exhibit-table th {
+  text-align: left;
+  font-weight: 400;
+  color: var(--fd-muted);
+  padding: 10px 12px;
+  border: 1px solid var(--fd-line);
+  background: var(--fd-tint);
+  font-size: 12px;
+  width: 55%;
+}
+.fdoc-exhibit-en {
+  color: var(--fd-muted);
+}
+.fdoc-exhibit-value {
+  border: 1px solid var(--fd-line);
+  padding: 10px 12px;
+  font-family: var(--font-mono, monospace);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 15px;
+  text-align: right;
+}
+
+/* ── Dimensions strip ───────────────────────────────────────────────────── */
+.fdoc-dims {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.fdoc-dim {
+  border: 1px solid var(--fd-line);
+  padding: 16px 12px;
+  text-align: center;
+}
+.fdoc-dim-value {
+  display: block;
+  font-family: var(--font-mono, monospace);
+  font-variant-numeric: tabular-nums;
+  font-size: 22px;
+  font-weight: 700;
+}
+.fdoc-dim-label {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--fd-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ── Footer ─────────────────────────────────────────────────────────────── */
+.fdoc-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 40px;
+  padding-top: 14px;
+  border-top: 1px solid var(--fd-line);
+  color: var(--fd-muted);
+  font-size: 12px;
+}
+.fdoc-footer .fdoc-foot-right {
+  text-align: right;
+}
+
+/* ── Print ──────────────────────────────────────────────────────────────── */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm;
+  }
+  .fdoc {
+    max-width: none;
+    padding: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

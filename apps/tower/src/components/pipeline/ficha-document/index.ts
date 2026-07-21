@@ -1,0 +1,1 @@
+export { FichaTecnicaDocument } from './FichaTecnicaDocument'
