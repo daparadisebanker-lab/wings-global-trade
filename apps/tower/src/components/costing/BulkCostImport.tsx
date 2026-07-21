@@ -317,7 +317,9 @@ export function BulkCostImport({ lanes }: { lanes: CostingLane[] }) {
           <textarea
             rows={3}
             placeholder="productName,brand,model,fuelType,engineCC,year,hsCode,fob"
-            onChange={(e) => handlePaste(e.target.value)}
+            // Parse on blur, not per keystroke — an onChange re-parse would
+            // destructively replace every row on each character typed.
+            onBlur={(e) => handlePaste(e.target.value)}
             className={`mt-2 w-full ${INPUT} font-ui`}
           />
         </details>

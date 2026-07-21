@@ -18,6 +18,7 @@ const CALLBACK_ERRORS: Record<string, string> = {
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
+  const [googlePending, setGooglePending] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
 
   // Surface a failure reported by /auth/callback (?error=). Read on mount, not
@@ -66,6 +67,7 @@ export default function LoginPage() {
   async function signInWithGoogle() {
     if (!configured) return
     setMessage(null)
+    setGooglePending(true)
     try {
       const supabase = createClient()
       const { error } = await supabase.auth.signInWithOAuth({
@@ -75,11 +77,15 @@ export default function LoginPage() {
       if (error) {
         setStatus('error')
         setMessage('No se pudo iniciar con Google / Google sign-in failed')
+        setGooglePending(false)
       }
+      // On success the browser redirects to Google; leave the button in its
+      // pending state until navigation so it never looks inert.
     } catch (err) {
       console.error('[login:google]', err)
       setStatus('error')
       setMessage('Error inesperado / Unexpected error')
+      setGooglePending(false)
     }
   }
 
@@ -119,7 +125,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="tu@wingsglobaltrade.com"
-                className="rounded-card border border-line bg-surface-0 px-3 py-2 font-ui text-t0 text-ink-primary outline-none placeholder:text-ink-secondary"
+                className="rounded-card border border-line bg-surface-0 px-3 py-2 font-ui text-t0 text-ink-primary outline-none focus-visible:border-lane-accent placeholder:text-ink-secondary"
               />
               <button
                 type="submit"
@@ -135,9 +141,13 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={signInWithGoogle}
-              className="mt-3 w-full rounded-card border border-line px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-ink-secondary hover:text-ink-primary"
+              disabled={googlePending}
+              aria-busy={googlePending}
+              className="mt-3 w-full rounded-card border border-line px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-ink-secondary hover:text-ink-primary disabled:opacity-50"
             >
-              Continuar con Google / Continue with Google
+              {googlePending
+                ? 'Conectando… / Connecting…'
+                : 'Continuar con Google / Continue with Google'}
             </button>
 
             {message ? (

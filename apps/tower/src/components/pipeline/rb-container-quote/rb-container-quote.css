@@ -190,6 +190,9 @@
 .rbq-table thead .rbq-col-desc {
   text-align: left;
 }
+.rbq-table tbody tr {
+  break-inside: avoid;
+}
 .rbq-table tbody td {
   padding: 10px;
   border-bottom: 1px solid var(--rq-line);

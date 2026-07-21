@@ -16,20 +16,10 @@ import {
 } from '@/lib/actions/represented-brands'
 import { nextRbStatuses, type RbStatus } from '@/lib/actions/represented-brands-logic'
 import { BrandKitPanel } from './BrandKitPanel'
+import { RbStatusChip } from './RbStatusChip'
 
 const LABEL = 'font-mono text-label uppercase tracking-[0.08em] text-ink-secondary'
 const INPUT = 'rounded-card border border-line bg-surface-0 px-2 py-1.5 font-ui text-t0 text-ink-primary outline-none focus-visible:border-lane-accent'
-
-const STATUS_STYLE: Record<RbStatus, string> = {
-  PROSPECT: 'text-ink-secondary',
-  NEGOTIATION: 'text-ink-secondary',
-  SIGNED: 'text-ink-secondary',
-  ONBOARDING: 'text-accent',
-  BRAND_REVIEW: 'text-accent',
-  LIVE: 'text-positive',
-  PAUSED: 'text-ink-secondary',
-  ENDED: 'text-negative line-through',
-}
 
 export function RepresentedBrandManager({ initialBrands }: { initialBrands: RepresentedBrandRow[] }) {
   const [brands, setBrands] = useState(initialBrands)
@@ -129,7 +119,7 @@ export function RepresentedBrandManager({ initialBrands }: { initialBrands: Repr
                     <span className="font-mono text-t0 text-ink-primary" data-numeric>{b.code}</span>
                     <span className="font-ui text-t0 text-ink-primary">{b.name}</span>
                     <span className="font-mono text-label text-ink-secondary">{b.slug}</span>
-                    <span className={`font-mono text-label uppercase tracking-[0.1em] ${STATUS_STYLE[b.status]}`}>{b.status}</span>
+                    <RbStatusChip status={b.status} />
                     <span className={`font-mono text-label uppercase tracking-[0.08em] ${b.kitComplete ? 'text-positive' : 'text-ink-secondary'}`}>
                       {b.kitComplete ? 'kit ✓' : 'kit —'}
                     </span>

@@ -20,51 +20,79 @@ function Row({
   emphasis,
   negative,
   sub,
+  bar,
 }: {
   label: string
   value: string
   emphasis?: boolean
   negative?: boolean
   sub?: string
+  /** 0–1 magnitude of this line against its section max; draws a proportion rule. */
+  bar?: number
 }) {
   return (
     <div
-      className={`flex items-baseline justify-between gap-4 py-1.5 ${
+      className={`flex flex-col gap-1 py-1.5 ${
         emphasis ? 'border-t border-line font-semibold text-ink-primary' : 'text-ink-secondary'
       }`}
     >
-      <span className="font-ui text-t0">
-        {label}
-        {sub ? <span className="ml-2 font-mono text-label text-ink-secondary">{sub}</span> : null}
-      </span>
-      <span
-        className={`font-mono text-t0 tabular-nums ${
-          negative ? 'text-negative' : emphasis ? 'text-ink-primary' : 'text-ink-primary'
-        }`}
-        data-numeric
-      >
-        {value}
-      </span>
+      <div className="flex items-baseline justify-between gap-4">
+        <span className="font-ui text-t0">
+          {label}
+          {sub ? <span className="ml-2 font-mono text-label text-ink-secondary">{sub}</span> : null}
+        </span>
+        <span
+          className={`font-mono text-t0 tabular-nums ${negative ? 'text-negative' : 'text-ink-primary'}`}
+          data-numeric
+        >
+          {value}
+        </span>
+      </div>
+      {typeof bar === 'number' ? (
+        <div className="h-[3px] w-full bg-surface-2" aria-hidden>
+          <div
+            className={emphasis ? 'h-full bg-gold' : 'h-full bg-lane-accent'}
+            style={{ width: `${Math.max(0, Math.min(1, bar)) * 100}%` }}
+          />
+        </div>
+      ) : null}
     </div>
   )
 }
 
 export function CostWaterfall({ result, currency = 'USD' }: { result: ImportResult; currency?: string }) {
+  // Section max drives the proportion rules — every cost line reads against the
+  // largest one (normally the landed cost), so the cascade is scannable as
+  // magnitude, not just a column of numbers.
+  const cascadeMax = Math.max(
+    result.insurance,
+    result.cif,
+    result.adValorem,
+    result.isc,
+    result.igvImportacion,
+    result.percepcion,
+    result.gastosVinculados,
+    result.landedCost,
+    result.cashOutlay,
+    1,
+  )
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
       <section className="flex flex-col rounded-card border border-line bg-surface-1 p-4">
         <h3 className="mb-2 font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
           Cascada de costos ({currency})
         </h3>
-        {result.insurance > 0 ? <Row label="Seguro" value={money(result.insurance)} /> : null}
-        <Row label="CIF" value={money(result.cif)} />
-        <Row label="Ad Valorem" value={money(result.adValorem)} />
-        <Row label="ISC" sub={pct(result.iscRate)} value={money(result.isc)} />
-        <Row label="IGV importación" value={money(result.igvImportacion)} />
-        <Row label="Percepción" value={money(result.percepcion)} />
-        <Row label="Gastos vinculados" value={money(result.gastosVinculados)} />
-        <Row label="Costo puesto en almacén (landed)" value={money(result.landedCost)} emphasis />
-        <Row label="Desembolso de caja" value={money(result.cashOutlay)} emphasis />
+        {result.insurance > 0 ? (
+          <Row label="Seguro" value={money(result.insurance)} bar={result.insurance / cascadeMax} />
+        ) : null}
+        <Row label="CIF" value={money(result.cif)} bar={result.cif / cascadeMax} />
+        <Row label="Ad Valorem" value={money(result.adValorem)} bar={result.adValorem / cascadeMax} />
+        <Row label="ISC" sub={pct(result.iscRate)} value={money(result.isc)} bar={result.isc / cascadeMax} />
+        <Row label="IGV importación" value={money(result.igvImportacion)} bar={result.igvImportacion / cascadeMax} />
+        <Row label="Percepción" value={money(result.percepcion)} bar={result.percepcion / cascadeMax} />
+        <Row label="Gastos vinculados" value={money(result.gastosVinculados)} bar={result.gastosVinculados / cascadeMax} />
+        <Row label="Costo puesto en almacén (landed)" value={money(result.landedCost)} emphasis bar={result.landedCost / cascadeMax} />
+        <Row label="Desembolso de caja" value={money(result.cashOutlay)} emphasis bar={result.cashOutlay / cascadeMax} />
       </section>
 
       <section className="flex flex-col rounded-card border border-line bg-surface-1 p-4">

@@ -144,6 +144,9 @@
 .qdoc-table th.qd-col-qty {
   width: 11%;
 }
+.qdoc-table tbody tr {
+  break-inside: avoid;
+}
 .qdoc-table tbody td {
   border: 1px solid var(--qd-line);
   padding: 14px 10px;
