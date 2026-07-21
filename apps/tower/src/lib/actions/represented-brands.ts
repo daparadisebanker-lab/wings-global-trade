@@ -262,12 +262,18 @@ export async function saveBrandKit(
   const auth = await requireUser()
   if (!auth.ok) return auth.error
 
-  // Rep-facing identity write goes through RLS as BRAND_MANAGER.
-  const { error: idError } = await auth.supabase
+  // Rep-facing identity write goes through RLS as BRAND_MANAGER. The .select().single()
+  // is load-bearing: an RLS-filtered-out row returns zero rows (data null, error null),
+  // so requiring a returned row is what proves the caller may manage this brand BEFORE
+  // the RLS-bypassing kit_complete write runs below. Without it the service-role write
+  // could flip another tenant's publish gate on a brandId the caller cannot see.
+  const { data: idRow, error: idError } = await auth.supabase
     .from('represented_brands')
     .update({ identity: parsed.data })
     .eq('id', idParsed.data)
-  if (idError) return fail('FORBIDDEN_LANE', 'No se pudo guardar el kit / Could not save the kit')
+    .select('id')
+    .single()
+  if (idError || !idRow) return fail('FORBIDDEN_LANE', 'No se pudo guardar el kit / Could not save the kit')
 
   const validation = validateKit(parsed.data, existingAccents)
   const service = createServiceClient()

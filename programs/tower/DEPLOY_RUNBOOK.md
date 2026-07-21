@@ -49,6 +49,13 @@ idempotent-safe to (re-)apply.
       → one row, `0 * * * *`.
 - [ ] `select tower.rb_release_expired_allocations();` → returns an int (0 on a
       fresh DB), proving the job function + guard trigger interoperate.
+- [ ] **Audit hash-chain attestation (`tower_42`).** After applying the audit-fix
+      batch (`tower_39–42`), run `select * from tower.verify_audit_chain();` →
+      one row `(ok=t, broken_seq=NULL, 'chain intact')`. This backfills+seals the
+      existing `audit_log` into a tamper-evident chain; re-run any time to attest
+      the trail is unbroken. A non-null `broken_seq` means a row was altered or
+      deleted at/after that sequence. Note `audit_log` is now hard append-only
+      (UPDATE/DELETE raise) — no code path should mutate it.
 
 ## 2 · Environment variables (Vercel)
 

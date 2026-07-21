@@ -8,6 +8,19 @@
 // As-coded quirks replicated (EXCEL_PARITY.md): totalBase=0 sends the whole
 // monto to the first item via the adjuster; ties pick the first maximum;
 // costo_total_total = rounded unit × cantidad (may diverge from component sum).
+//
+// NUMERIC CORE (TOWER Directive 3 — no IEEE float touches money): every money
+// computation runs in `decimal.js`, the same sanctioned arbitrary-precision core
+// as engine.ts — never native `number` arithmetic. The `.toNumber()` conversions
+// are ALL applied to values already rounded to 2dp, so they are exact; the
+// integer-minor conversion for storage happens at the persistence boundary
+// (costing action → `toMinor`), never here.
+//
+// ROUNDING SEMANTICS: the source used `Math.round(x*100)/100`, i.e. round-half
+// toward +∞ (Math.round: 2.5→3, −2.5→−2) — which is decimal.js ROUND_HALF_CEIL,
+// NOT the global ROUND_HALF_UP (away-from-zero) that engine.ts sets. `r2` below
+// pins ROUND_HALF_CEIL explicitly so parity holds at every half-cent boundary.
+import Decimal from 'decimal.js'
 import type {
   ItemProrrateo,
   GastoProrrateo,
@@ -15,6 +28,14 @@ import type {
   ResultadoProrrateo,
   MetodoProrrateo,
 } from './types'
+
+function d(n: number): Decimal {
+  return new Decimal(n)
+}
+/** Round to 2dp, ties toward +∞ — byte-faithful to the source's Math.round(x*100)/100. */
+function r2(x: Decimal): Decimal {
+  return x.toDecimalPlaces(2, Decimal.ROUND_HALF_CEIL)
+}
 
 function getBase(item: ItemProrrateo, metodo: MetodoProrrateo): number {
   switch (metodo) {
@@ -38,12 +59,6 @@ export function calcularProrrateo(
     return { items: [], validacion: {}, tipo_cambio }
   }
 
-  // Per-item accumulated costs in USD
-  const costoUSD: Record<string, number> = {}
-  items.forEach((it) => {
-    costoUSD[it.item_id] = 0
-  })
-
   // Desglose matrix: item_id → gasto_id → detail
   const desglose: Record<string, ResultadoItemProrrateo['desglose']> = {}
   items.forEach((it) => {
@@ -53,67 +68,75 @@ export function calcularProrrateo(
   // Validation
   const validacion: ResultadoProrrateo['validacion'] = {}
 
-  for (const gasto of gastos) {
-    const bases = items.map((it) => getBase(it, gasto.metodo))
-    const totalBase = bases.reduce((a, b) => a + b, 0)
+  // Per-item accumulated cost in USD — kept as Decimal until the final round.
+  const costoUSDdec: Record<string, Decimal> = {}
+  items.forEach((it) => {
+    costoUSDdec[it.item_id] = d(0)
+  })
+  const tc = d(tipo_cambio)
 
-    // Raw prorated amounts
-    const rawAmounts = items.map((it, idx) =>
-      totalBase > 0 ? (bases[idx] / totalBase) * gasto.monto_total : 0,
+  for (const gasto of gastos) {
+    const bases = items.map((it) => d(getBase(it, gasto.metodo)))
+    const totalBase = bases.reduce((a, b) => a.plus(b), d(0))
+    const monto = d(gasto.monto_total)
+    const hasBase = totalBase.gt(0)
+
+    // Raw prorated amounts (exact decimal proportion), then round to 2dp.
+    const rounded = bases.map((base) =>
+      hasBase ? r2(base.dividedBy(totalBase).times(monto)) : d(0),
     )
 
-    // Round to 2 decimals
-    const rounded = rawAmounts.map((v) => Math.round(v * 100) / 100)
-
-    // Rounding adjuster: assign diff to largest item
-    const sumRounded = rounded.reduce((a, b) => a + b, 0)
-    const diff = Math.round((gasto.monto_total - sumRounded) * 100) / 100
-    if (diff !== 0) {
-      const maxIdx = rounded.reduce((best, v, i) => (v > rounded[best] ? i : best), 0)
-      rounded[maxIdx] = Math.round((rounded[maxIdx] + diff) * 100) / 100
+    // Rounding adjuster: assign the residual to the largest item (first max).
+    const sumRounded = rounded.reduce((a, b) => a.plus(b), d(0))
+    const diff = r2(monto.minus(sumRounded))
+    if (!diff.isZero()) {
+      let maxIdx = 0
+      for (let i = 1; i < rounded.length; i++) {
+        if (rounded[i].gt(rounded[maxIdx])) maxIdx = i
+      }
+      rounded[maxIdx] = r2(rounded[maxIdx].plus(diff))
     }
 
-    // Record into matrix
+    // Record into matrix + accumulate per-item USD cost.
     items.forEach((it, idx) => {
-      const proporcion = totalBase > 0 ? bases[idx] / totalBase : 0
-      const montoUSD = gasto.moneda === 'USD' ? rounded[idx] : rounded[idx] / tipo_cambio
+      const proporcion = hasBase ? bases[idx].dividedBy(totalBase) : d(0)
+      const montoUSD = gasto.moneda === 'USD' ? rounded[idx] : rounded[idx].dividedBy(tc)
       desglose[it.item_id][gasto.gasto_id] = {
-        monto: rounded[idx],
+        monto: rounded[idx].toNumber(),
         moneda: gasto.moneda,
         metodo: gasto.metodo,
-        proporcion,
+        proporcion: proporcion.toNumber(),
       }
-      costoUSD[it.item_id] += montoUSD
+      costoUSDdec[it.item_id] = costoUSDdec[it.item_id].plus(montoUSD)
     })
 
-    // Validation check
-    const sumaFinal = rounded.reduce((a, b) => a + b, 0)
+    // Validation check.
+    const sumaFinal = rounded.reduce((a, b) => a.plus(b), d(0))
     validacion[gasto.gasto_id] = {
       monto_original: gasto.monto_total,
       moneda: gasto.moneda,
-      suma_prorrateada: Math.round(sumaFinal * 100) / 100,
-      coincide: Math.abs(sumaFinal - gasto.monto_total) < 0.01,
+      suma_prorrateada: r2(sumaFinal).toNumber(),
+      coincide: sumaFinal.minus(monto).abs().lessThan(0.01),
     }
   }
 
   const resultItems: ResultadoItemProrrateo[] = items.map((it) => {
-    const costoLogisticoTotal = Math.round(costoUSD[it.item_id] * 100) / 100
-    const costoLogisticoUnitario =
-      it.cantidad > 0 ? Math.round((costoLogisticoTotal / it.cantidad) * 100) / 100 : 0
-    const costoCompraUnitario =
-      it.cantidad > 0 ? Math.round((it.valor_total_cif / it.cantidad) * 100) / 100 : 0
-    const costoTotalUnitario =
-      Math.round((costoCompraUnitario + costoLogisticoUnitario) * 100) / 100
-    const costoTotalTotal = Math.round(costoTotalUnitario * it.cantidad * 100) / 100
+    const cantidad = d(it.cantidad)
+    const hasQty = cantidad.gt(0)
+    const costoLogisticoTotal = r2(costoUSDdec[it.item_id])
+    const costoLogisticoUnitario = hasQty ? r2(costoLogisticoTotal.dividedBy(cantidad)) : d(0)
+    const costoCompraUnitario = hasQty ? r2(d(it.valor_total_cif).dividedBy(cantidad)) : d(0)
+    const costoTotalUnitario = r2(costoCompraUnitario.plus(costoLogisticoUnitario))
+    const costoTotalTotal = r2(costoTotalUnitario.times(cantidad))
 
     return {
       item: it,
       desglose: desglose[it.item_id],
-      costo_logistico_total_usd: costoLogisticoTotal,
-      costo_logistico_unitario_usd: costoLogisticoUnitario,
-      costo_compra_unitario_usd: costoCompraUnitario,
-      costo_total_puesto_almacen_unitario_usd: costoTotalUnitario,
-      costo_total_puesto_almacen_total_usd: costoTotalTotal,
+      costo_logistico_total_usd: costoLogisticoTotal.toNumber(),
+      costo_logistico_unitario_usd: costoLogisticoUnitario.toNumber(),
+      costo_compra_unitario_usd: costoCompraUnitario.toNumber(),
+      costo_total_puesto_almacen_unitario_usd: costoTotalUnitario.toNumber(),
+      costo_total_puesto_almacen_total_usd: costoTotalTotal.toNumber(),
     }
   })
 
