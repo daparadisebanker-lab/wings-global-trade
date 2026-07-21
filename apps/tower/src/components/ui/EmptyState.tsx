@@ -22,18 +22,24 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        'flex min-h-[60vh] flex-col items-center justify-center gap-3 px-6 text-center',
+        'flex min-h-[60vh] w-full flex-col items-center justify-center gap-3 px-6 text-center',
         className,
       )}
     >
       {tag ? (
-        <span className="font-mono text-t0 uppercase tracking-[0.15em] text-lane-accent" data-numeric>
+        <span className="max-w-full break-words font-mono text-t0 uppercase tracking-[0.15em] text-lane-accent" data-numeric>
           {tag}
         </span>
       ) : null}
-      <h1 className="font-display text-t3 text-ink-primary">{t(title, locale)}</h1>
+      {/* max-w-full + break-words + a smaller mobile size so the display title
+          wraps inside the viewport instead of forcing a horizontal scroll. */}
+      <h1 className="max-w-full break-words font-display text-t2 text-ink-primary sm:text-t3">
+        {t(title, locale)}
+      </h1>
       {description ? (
-        <p className="max-w-md font-ui text-t1 leading-relaxed text-ink-secondary">
+        // w-full caps the paragraph at the container width on mobile (items-center
+        // would otherwise shrink-to-fit to max-w-md = 448px and overflow 390px).
+        <p className="w-full max-w-md break-words font-ui text-t1 leading-relaxed text-ink-secondary">
           {t(description, locale)}
         </p>
       ) : null}

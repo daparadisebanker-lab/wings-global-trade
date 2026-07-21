@@ -149,7 +149,7 @@ export function ShellChrome({
           </button>
         </aside>
 
-        <div className="flex min-h-screen flex-1 flex-col">
+        <div className="flex min-h-screen min-w-0 flex-1 flex-col">
           <TopBar
             userEmail={userEmail}
             isGroupAdmin={isGroupAdmin}
@@ -157,7 +157,9 @@ export function ShellChrome({
             onOpenMenu={() => setDrawerOpen(true)}
           />
           <Breadcrumb locale={DEFAULT_LOCALE} />
-          <main data-lane={activeLane?.laneSlug} className="flex-1">
+          {/* overflow-x-clip: a mobile safety net — no page-wide horizontal
+              scroll, while inner overflow-x-auto tables keep their own scroll. */}
+          <main data-lane={activeLane?.laneSlug} className="min-w-0 flex-1 overflow-x-clip">
             {children}
           </main>
         </div>
