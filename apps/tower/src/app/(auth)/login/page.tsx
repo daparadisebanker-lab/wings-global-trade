@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react'
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/client'
 
 /**
- * Login — magic link + Google OAuth (ARCHITECTURE Auth). This is an auth handoff
- * to Supabase, not a domain mutation, so it runs the SDK client-side; the session
- * cookie is then refreshed by the middleware. Async errors are handled explicitly
- * and shown as a contained message — never a raw error.
+ * Login — magic link (ARCHITECTURE Auth). This is an auth handoff to Supabase,
+ * not a domain mutation, so it runs the SDK client-side; the session cookie is
+ * then refreshed by the middleware. Async errors are handled explicitly and
+ * shown as a contained message — never a raw error.
  */
 /** Bilingual copy for callback-reported failures (?error= from /auth/callback). */
 const CALLBACK_ERRORS: Record<string, string> = {
@@ -18,7 +18,6 @@ const CALLBACK_ERRORS: Record<string, string> = {
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
-  const [googlePending, setGooglePending] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
 
   // Surface a failure reported by /auth/callback (?error=). Read on mount, not
@@ -61,31 +60,6 @@ export default function LoginPage() {
       console.error('[login:magic-link]', err)
       setStatus('error')
       setMessage('Error inesperado / Unexpected error')
-    }
-  }
-
-  async function signInWithGoogle() {
-    if (!configured) return
-    setMessage(null)
-    setGooglePending(true)
-    try {
-      const supabase = createClient()
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo },
-      })
-      if (error) {
-        setStatus('error')
-        setMessage('No se pudo iniciar con Google / Google sign-in failed')
-        setGooglePending(false)
-      }
-      // On success the browser redirects to Google; leave the button in its
-      // pending state until navigation so it never looks inert.
-    } catch (err) {
-      console.error('[login:google]', err)
-      setStatus('error')
-      setMessage('Error inesperado / Unexpected error')
-      setGooglePending(false)
     }
   }
 
@@ -137,18 +111,6 @@ export default function LoginPage() {
                   : 'Enviar enlace / Send link'}
               </button>
             </form>
-
-            <button
-              type="button"
-              onClick={signInWithGoogle}
-              disabled={googlePending}
-              aria-busy={googlePending}
-              className="mt-3 w-full rounded-card border border-line px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-ink-secondary hover:text-ink-primary disabled:opacity-50"
-            >
-              {googlePending
-                ? 'Conectando… / Connecting…'
-                : 'Continuar con Google / Continue with Google'}
-            </button>
 
             {message ? (
               <p
