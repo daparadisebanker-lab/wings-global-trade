@@ -113,6 +113,17 @@ export function routeLabelOf(route: { origin?: string; destination?: string } | 
   return `${route.origin ?? '—'} → ${route.destination ?? 'Callao'}`
 }
 
+/** WhatsApp share deep-link. When `e164` is a usable number, the link addresses
+ *  the rep's own WhatsApp line (`wa.me/<digits>`, digits = E.164 without the `+`
+ *  and any spacing) so each rep shares from their own number; when it is null or
+ *  empty, it falls back to the generic chooser link (`wa.me/?text=`). `text` is
+ *  always URL-encoded. Pure — no I/O, unit-tested. */
+export function waMeUrl(e164: string | null | undefined, text: string): string {
+  const digits = (e164 ?? '').replace(/\D/g, '')
+  const base = digits ? `https://wa.me/${digits}` : 'https://wa.me/'
+  return `${base}?text=${encodeURIComponent(text)}`
+}
+
 const HEX_RE = /^#[0-9a-fA-F]{6}$/
 
 /** Build the rb-core ContainerPromo. Rep copy wins on text; route + phase come
