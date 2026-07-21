@@ -7,7 +7,7 @@
 // (`product-media`, private) is provisioned by the Conductor — see
 // components/catalog/README.md for the exact spec this code assumes.
 import { z } from 'zod'
-import { createServerSupabase } from '@/lib/supabase/server'
+import { createServerSupabase, createServiceClient } from '@/lib/supabase/server'
 import { fail, ok, type ActionResult } from './result'
 import { buildMediaStoragePath } from './catalog-logic'
 import { MEDIA_BUCKET, MEDIA_KINDS, type MediaKind, type ProductMediaRow } from './media-types'
@@ -85,7 +85,7 @@ export async function createMediaUploadUrl(
 ): Promise<ActionResult<MediaUploadTicket>> {
   const gate = await requireUser()
   if (!gate.ok) return gate.error
-  const { supabase, storage } = gate
+  const { supabase } = gate
 
   const idParsed = uuidSchema.safeParse(productId)
   if (!idParsed.success) return fail('VALIDATION', 'ID de producto inválido / Invalid product id')
@@ -118,7 +118,14 @@ export async function createMediaUploadUrl(
     fileName: parsed.data.fileName,
   })
 
-  const { data, error } = await storage.from(MEDIA_BUCKET).createSignedUploadUrl(path)
+  // Access to the private `product-media` bucket (tower_34) is service-role only;
+  // the caller was already authorized by the RLS-scoped product read above, so
+  // the signed URL is minted with the privileged client — the bucket carries no
+  // authenticated storage policy (see the migration's ACCESS MODEL note).
+  const service = createServiceClient()
+  if (!service) return fail('UNAUTHORIZED', 'Servicio no configurado / Service not configured')
+
+  const { data, error } = await service.storage.from(MEDIA_BUCKET).createSignedUploadUrl(path)
   if (error || !data) {
     return fail('VALIDATION', 'No se pudo generar la URL de carga / Could not create the upload URL')
   }
@@ -219,7 +226,7 @@ export async function reorderMedia(
 export async function removeMedia(mediaId: string): Promise<ActionResult<true>> {
   const gate = await requireUser()
   if (!gate.ok) return gate.error
-  const { supabase, storage } = gate
+  const { supabase } = gate
 
   const idParsed = uuidSchema.safeParse(mediaId)
   if (!idParsed.success) return fail('VALIDATION', 'ID inválido / Invalid id')
@@ -236,11 +243,15 @@ export async function removeMedia(mediaId: string): Promise<ActionResult<true>> 
   if (deleteError) return fail('FORBIDDEN_LANE', 'No se pudo eliminar el material / Could not remove media')
 
   // Best-effort storage cleanup — the DB row is the source of truth; a
-  // dangling storage object is a cheap leak, an orphan row is not. The
-  // storage call never throws (resolves `{ error }`), so a failure here is
-  // deliberately swallowed rather than surfaced as a mutation failure.
+  // dangling storage object is a cheap leak, an orphan row is not. The private
+  // bucket is service-role only (tower_34), so cleanup uses the privileged
+  // client; a failure here is deliberately swallowed rather than surfaced as a
+  // mutation failure.
   try {
-    await storage.from(MEDIA_BUCKET).remove([(row as { storage_path: string }).storage_path])
+    const service = createServiceClient()
+    if (service) {
+      await service.storage.from(MEDIA_BUCKET).remove([(row as { storage_path: string }).storage_path])
+    }
   } catch {
     // no-op: see comment above
   }

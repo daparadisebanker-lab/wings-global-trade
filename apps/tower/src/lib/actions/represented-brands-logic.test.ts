@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  buildRbAssetStoragePath,
   canTransitionRbStatus,
   computeRbCapabilities,
   contrastRatio,
@@ -7,6 +8,7 @@ import {
   nextRbCode,
   rbDiffMemberships,
   rbKitSchema,
+  RB_ASSET_SLOTS,
   tintStrength,
   validateKit,
   type RbKit,
@@ -136,5 +138,25 @@ describe('computeRbCapabilities', () => {
     expect(computeRbCapabilities([], true, false).canPublishBrand).toBe(true)
     expect(computeRbCapabilities(['BRAND_OPS'], false, true).canPublishBrand).toBe(false)
     expect(computeRbCapabilities(['BRAND_OPS'], false, true).canManageContainers).toBe(true)
+  })
+})
+
+describe('buildRbAssetStoragePath', () => {
+  it('roots under rb/{slug}/{slot}/ with a timestamp-prefixed safe name', () => {
+    const path = buildRbAssetStoragePath({ brandSlug: 'aladin', slot: 'isologo', fileName: 'Logo Final.svg' })
+    expect(path).toMatch(/^rb\/aladin\/isologo\/\d+-logo-final\.svg$/)
+  })
+  it('sanitises the slot segment so it can never inject a folder or traverse', () => {
+    const path = buildRbAssetStoragePath({ brandSlug: 'aladin', slot: '../hero/x', fileName: 'a.png' })
+    // slashes and dots in the slot collapse to hyphens → still exactly 4 segments
+    expect(path.split('/')).toHaveLength(4)
+    expect(path).toMatch(/^rb\/aladin\/---hero-x\/\d+-a\.png$/)
+  })
+  it('sanitises the file name the same way the catalog builder does', () => {
+    const path = buildRbAssetStoragePath({ brandSlug: 'aladin', slot: 'hero', fileName: 'Foto #1 (front).JPG' })
+    expect(path).toMatch(/^rb\/aladin\/hero\/\d+-foto--1--front-\.jpg$/)
+  })
+  it('exposes every kit slot the panel uploads into', () => {
+    expect(RB_ASSET_SLOTS).toEqual(['isologo', 'positivo', 'isotipo', 'sello', 'hero', 'about', 'mandate', 'manual'])
   })
 })

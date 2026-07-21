@@ -98,6 +98,41 @@ export const rbKitSchema = z.object({
 })
 export type RbKit = z.infer<typeof rbKitSchema>
 
+// ── RB kit asset storage (the brand-kits bucket) ─────────────────────────────
+// Where the --rb-* kit's uploaded assets live. The kit JSON (identity) stores
+// only the storage PATH each slot resolves to; the bytes sit in this private
+// bucket, reachable solely via a service-role signed URL (see tower_34).
+export const RB_ASSET_BUCKET = 'brand-kits'
+
+// The four logo lockups the kit contract requires (rbKitSchema.logo).
+export const RB_LOGO_SLOTS = ['isologo', 'positivo', 'isotipo', 'sello'] as const
+export type RbLogoSlot = (typeof RB_LOGO_SLOTS)[number]
+
+// Every slot an asset may be uploaded into — the logo lockups plus the
+// photography sets and the two mandate/usage documents. The server action
+// validates the incoming slot against this set so a path segment can never be
+// attacker-chosen.
+export const RB_ASSET_SLOTS = [...RB_LOGO_SLOTS, 'hero', 'about', 'mandate', 'manual'] as const
+export type RbAssetSlot = (typeof RB_ASSET_SLOTS)[number]
+
+/**
+ * Path for one brand-kit asset in the `brand-kits` bucket. Mirrors
+ * catalog-logic.ts#buildMediaStoragePath (same filename sanitiser + timestamp
+ * uniqueness) but keyed by brand slug — the code (RB/01) carries a slash and is
+ * not path-safe, so the slug is the addressable segment. Always three folders
+ * deep: rb/{brandSlug}/{slot}/{ts}-{name}.
+ */
+export function buildRbAssetStoragePath(input: {
+  brandSlug: string
+  slot: string
+  fileName: string
+}): string {
+  const safeSlot = input.slot.replace(/[^a-zA-Z0-9-]/g, '-').toLowerCase()
+  const safeName = input.fileName.replace(/[^a-zA-Z0-9._-]/g, '-').toLowerCase()
+  const stamp = Date.now()
+  return `rb/${input.brandSlug}/${safeSlot}/${stamp}-${safeName}`
+}
+
 // ── Colour math (WCAG contrast + hue separation + tint strength) ─────────────
 function toRgb(h: string): [number, number, number] {
   const n = parseInt(h.slice(1), 16)

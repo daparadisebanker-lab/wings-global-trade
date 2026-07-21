@@ -35,8 +35,9 @@ The three recommended next-step tracks, in priority order.
 Nothing we built is live until this is done. A browser pass will also surface
 anything real before we build further.
 
-- Apply migrations **`tower_22 → tower_33`** to the prod Supabase project
-  (`pyznlglvwihosemqkhtq`).
+- Apply migrations **`tower_22 → tower_34`** to the prod Supabase project
+  (`pyznlglvwihosemqkhtq`). `tower_34` provisions the media storage buckets
+  (Track ②).
 - Set env: **`JOURNEY_SIGNING_SECRET`** (import-journey HMAC) and
   **`NEXT_PUBLIC_SITE_URL`** (promo listing URLs).
 - Bootstrap the **first group admin by email** (one-time SQL noted in `tower_32`);
@@ -48,19 +49,41 @@ anything real before we build further.
 
 ---
 
-## ② MediaManager signed-upload pipeline  ·  *unblocks the most downstream work*
+## ② MediaManager signed-upload pipeline  ·  *SHIPPED (on `claude/start-j44jj2`)*
 
-`components/catalog/media-manager/MediaManager.tsx` is a **stub** — the
-`upload → signed-URL → variant → kind-tagging` pipeline to Supabase Storage is
-not wired.
+Done this cycle:
 
-- Real signed-upload flow to Supabase Storage.
-- Wire brand-kit asset slots (`BrandKitPanel`) to `rb/{code}/…` (finishes RB
-  Console Wave 1b).
-- Wire catalog product images.
+- **Buckets provisioned** — `tower_34` creates the private `product-media` and
+  `brand-kits` buckets (size + mime limits). This was the missing piece: the
+  catalog `media.ts` pipeline was already coded but had no bucket to write to.
+- **Access model** — private buckets, **no `authenticated` storage.objects
+  policy**. Both `createMediaUploadUrl` (catalog) and the new
+  `createRbAssetUploadUrl` (brand kits) authorize the caller against the shipped
+  predicates (RLS product read / `has_rb_role` + `BRAND_MANAGER`) and then mint
+  the signed URL with the **service role**. Mirrors the RB console's
+  authorize-in-action pattern; the boundary lives in tested TS, not an untested
+  object-path RLS predicate. `media.ts` upload + storage-cleanup now go through
+  the service-role client.
+- **Brand-kit asset slots wired** — `BrandKitPanel` uploads logos (×4),
+  photography (hero ×3 / about ×2) and the mandate/usage PDFs to
+  `rb/{slug}/{slot}/…` via `represented-brands-media.ts`
+  (`buildRbAssetStoragePath`, unit-tested). The kit JSON stores the returned
+  storage paths; a completeness meter gates save. **Finishes RB Console Wave 1b.**
+- **Catalog product images** — already implemented (`media.ts` / `MediaManager`);
+  now actually functional because the bucket exists.
 
-**Why second:** it blocks brand kits, product images, and spec visuals — the
-most downstream dependencies. Highest leverage after go-live.
+Still open (deliberately):
+
+- **Variant generation** (resized/optimized derivatives) stays n8n's job per
+  ARCHITECTURE — `MediaManager`/`BrandKitPanel` upload the original only.
+- **Saved-asset previews** — `createRbAssetDownloadUrl` exists (short-lived
+  signed URL, brand-prefix guarded); the panel currently previews only
+  freshly-uploaded files (via `URL.createObjectURL`). Wiring thumbnails for
+  already-saved assets is a small follow-up.
+
+**Note:** `tower_34` must be applied at the next deploy (folds into Track ①), and
+`SUPABASE_SERVICE_ROLE_KEY` must be set (already required elsewhere) for uploads
+to work.
 
 ---
 

@@ -4,7 +4,7 @@ CRUD + publish core for the PIM. Server actions in `lib/actions/catalog.ts`
 (+ pure logic in `lib/actions/catalog-logic.ts`) and `lib/actions/media.ts`;
 routes under `app/(shell)/catalog/**`; components here.
 
-## Storage bucket the Conductor needs to provision
+## Storage bucket (provisioned by `tower_34`)
 
 - **Name:** `product-media`
 - **Public:** No — private, signed URLs only (matches ARCHITECTURE.md: "nothing
@@ -17,12 +17,15 @@ routes under `app/(shell)/catalog/**`; components here.
   e.g. `wings/machinery/6f2e.../hero/1751835200000-cat-320-front.jpg`
 - kind ∈ `HERO | GALLERY | TECHNICAL | CERTIFICATE` (matches
   `tower.product_media.kind` check constraint), lowercased in the path.
-- RLS/policy expectation: same director/editor write boundary as `products`
-  (a `CATALOG_EDITOR`/`LANE_DIRECTOR` of the product's lane may upload;
-  reads scoped the same way `product_media` rows are scoped). This wave
-  assumes storage policies mirroring the `products_update` pattern in
-  DATABASE_SCHEMA.sql — not yet written, since bucket/policy provisioning is
-  explicitly the Conductor's job, not this agent's.
+- **Access model (shipped in `tower_34`):** the bucket is private with **no
+  `authenticated`/`anon` storage.objects policy**. `createMediaUploadUrl`
+  authorizes the caller through the RLS-scoped `products` read (a
+  `CATALOG_EDITOR`/`LANE_DIRECTOR` of the product's lane, exactly the
+  `products_update` boundary) and only then mints the signed URL with the
+  **service-role** client. This mirrors the RB console's "authorize in the
+  action, privileged write via the service role" pattern and keeps the security
+  boundary in tested TS predicates rather than an object-path RLS predicate.
+  Reads are service-role signed URLs at render time.
 - Variant generation (resized/optimized derivatives) is n8n's job per
   ARCHITECTURE ("signed upload → variants via n8n") — not built here.
   `MediaManager` uploads the original only.
