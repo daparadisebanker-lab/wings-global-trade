@@ -1,5 +1,26 @@
 # TOWER — What's Left (next-step tracks)
 
+## How to resume
+
+Working branch: **`claude/wings-quotation-intelligence-cqpfjn`**. Open the next
+session pointed at this branch (the doc + all the work live here; a fresh session
+on `main` won't have them until this branch merges). Paste this to pick up:
+
+> Read `programs/tower/REMAINING.md`. We're continuing TOWER work on branch
+> `claude/wings-quotation-intelligence-cqpfjn`. Everything from the last session
+> (quotation intelligence, costing, RB console, container promotion with the
+> brand-aligned share card) is committed there but **not yet deployed**. Start
+> with **Track ① (deploy + verification pass)**: confirm which of migrations
+> `tower_22 → tower_33` are applied to prod (`pyznlglvwihosemqkhtq`), then walk me
+> through applying the rest, setting `JOURNEY_SIGNING_SECRET` +
+> `NEXT_PUBLIC_SITE_URL`, and bootstrapping the first group admin. Then drive the
+> flows end to end.
+
+To redirect, just name the track: **② MediaManager upload pipeline** or
+**③ finish the promotion feature**.
+
+---
+
 Status snapshot after the container-promotion + quotation-intelligence work on
 branch `claude/wings-quotation-intelligence-cqpfjn`. Everything built this cycle
 is committed as migration files + code — **none of it is live until deployed**
