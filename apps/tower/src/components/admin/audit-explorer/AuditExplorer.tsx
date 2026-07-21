@@ -120,7 +120,7 @@ export function AuditExplorer({ facets, locale = DEFAULT_LOCALE }: { facets: Aud
         <span className="font-mono text-label uppercase tracking-[0.15em] text-lane-accent" data-numeric>
           ADM · Audit
         </span>
-        <h1 className="font-ui text-t3 text-ink-primary">{t({ es: 'Auditoría', en: 'Audit' }, locale)}</h1>
+        <h1 className="font-display text-t3 text-ink-primary">{t({ es: 'Auditoría', en: 'Audit' }, locale)}</h1>
       </header>
 
       {/* Filters — every one applied in SQL. */}

@@ -114,6 +114,9 @@
   --negative: #b4232a; /* failed QC / over-capacity / expired — alarm on light */
   --stamp: #001e50; /* the LaneStamp reads navy on the warm ground */
   --texture: none;
+  /* Navy scrim over the login hero photo — keeps the sign-in card legible on
+     top of the container-yard image (derived from ink, no raw hex). */
+  --scrim: color-mix(in srgb, var(--ink-primary) 72%, transparent);
 
   /* Decision-grade type — deliberately one step above the frozen family scale
      (skeleton.css, untouched). A data-dense ops surface reads faster and

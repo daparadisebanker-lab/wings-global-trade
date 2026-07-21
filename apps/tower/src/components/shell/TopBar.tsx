@@ -21,10 +21,13 @@ export function TopBar({
   return (
     <header className="flex items-center justify-between gap-4 border-b border-line bg-surface-1 px-4 py-3">
       <div className="flex items-center gap-3">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/brand/wings-isotipo.svg" alt="" aria-hidden className="h-6 w-6" />
+        <span aria-hidden className="h-5 w-px bg-line" />
         {isGroupAdmin ? (
           <button
             type="button"
-            className="rounded-card border border-line px-3 py-1.5 font-mono text-label uppercase tracking-[0.1em] text-ink-secondary hover:text-ink-primary"
+            className="rounded-card border border-line px-3 py-1.5 font-mono text-label uppercase tracking-[0.1em] text-ink-secondary transition-colors hover:border-gold hover:text-ink-primary"
           >
             {t({ es: 'Marca: Todas', en: 'Brand: All' }, locale)}
           </button>
@@ -39,7 +42,7 @@ export function TopBar({
         <button
           type="button"
           onClick={onOpenSearch}
-          className="flex items-center gap-2 rounded-card border border-line px-3 py-1.5 font-mono text-label uppercase tracking-[0.1em] text-ink-secondary hover:text-ink-primary"
+          className="flex items-center gap-2 rounded-card border border-line px-3 py-1.5 font-mono text-label uppercase tracking-[0.1em] text-ink-secondary transition-colors hover:border-gold hover:text-ink-primary"
         >
           {t({ es: 'Buscar', en: 'Search' }, locale)}
           <span aria-hidden className="opacity-70">

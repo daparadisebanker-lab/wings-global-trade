@@ -40,7 +40,7 @@ export default async function CostingPage() {
             Prorrateo →
           </Link>
         </div>
-        <h1 className="font-ui text-t2 text-ink-primary">Costo de importación (Perú)</h1>
+        <h1 className="font-display text-t2 text-ink-primary">Costo de importación (Perú)</h1>
       </header>
       <CostCalculator lanes={lanes} initialHistory={initialHistory} />
     </div>

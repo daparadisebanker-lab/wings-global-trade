@@ -45,7 +45,7 @@ export function UserManager({ lanes }: { lanes: LaneAdminRow[] }) {
     <div className="flex h-full flex-col gap-6 p-6">
       <header className="flex flex-col gap-1">
         <span className="font-mono text-label uppercase tracking-[0.15em] text-lane-accent">ADM · Usuarios / Users</span>
-        <h1 className="font-ui text-t3 text-ink-primary">Usuarios y accesos / Users & access</h1>
+        <h1 className="font-display text-t3 text-ink-primary">Usuarios y accesos / Users & access</h1>
       </header>
 
       {/* Invite flow */}

@@ -61,7 +61,7 @@ export function RfqDetail({
       <header className="flex flex-col gap-3 border-b border-line pb-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <h1 className="font-ui text-t2 text-ink-primary">
+            <h1 className="font-display text-t2 text-ink-primary">
               {currentRfq.accountName ?? 'Sin cuenta / No account'}
             </h1>
             <span className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary">

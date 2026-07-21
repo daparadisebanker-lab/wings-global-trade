@@ -67,7 +67,7 @@ export function BrandManager() {
     <div className="flex h-full flex-col gap-6 p-6">
       <header className="flex flex-col gap-1">
         <span className="font-mono text-label uppercase tracking-[0.15em] text-lane-accent">ADM · Marcas / Brands</span>
-        <h1 className="font-ui text-t3 text-ink-primary">Marcas / Tenant brands</h1>
+        <h1 className="font-display text-t3 text-ink-primary">Marcas / Tenant brands</h1>
         <p className="max-w-2xl font-ui text-t0 text-ink-secondary">
           Cada marca es un tenant aislado (Wings, Áladín, …). Se retiran, nunca se eliminan. / Each brand is an
           isolated tenant. Retire, never delete.

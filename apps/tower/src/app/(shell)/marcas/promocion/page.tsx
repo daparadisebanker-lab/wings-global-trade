@@ -27,7 +27,7 @@ export default async function PromocionPage() {
       <header className="flex flex-wrap items-end justify-between gap-3 border-b border-line pb-4">
         <div className="flex flex-col gap-1">
           <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">MRC · Promoción de contenedores</span>
-          <h1 className="font-ui text-t2 text-ink-primary">Promoción de contenedores</h1>
+          <h1 className="font-display text-t2 text-ink-primary">Promoción de contenedores</h1>
         </div>
         <Link
           href="/marcas"

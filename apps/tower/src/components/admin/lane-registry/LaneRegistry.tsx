@@ -42,7 +42,7 @@ export function LaneRegistry({ brands }: { brands: BrandRow[] }) {
     <div className="flex h-full flex-col gap-6 p-6">
       <header className="flex flex-col gap-1">
         <span className="font-mono text-label uppercase tracking-[0.15em] text-lane-accent">ADM · Lanes</span>
-        <h1 className="font-ui text-t3 text-ink-primary">Registro de lanes / Lane registry</h1>
+        <h1 className="font-display text-t3 text-ink-primary">Registro de lanes / Lane registry</h1>
         <p className="max-w-2xl font-ui text-t0 text-ink-secondary">
           Códigos append-only: nunca se reutilizan, reordenan ni eliminan. / Append-only codes: never reused,
           reordered, or deleted.

@@ -30,10 +30,10 @@ export function NavRail({
             href={m.href}
             aria-current={active ? 'page' : undefined}
             className={cn(
-              'group flex items-center gap-3 rounded-card px-3 py-2 text-t0 transition-colors',
+              'group flex items-center gap-3 rounded-card border-l-2 border-transparent px-3 py-2 text-t0 transition-colors',
               'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lane-accent',
               active
-                ? 'bg-surface-0 text-ink-primary'
+                ? 'border-gold bg-surface-0 text-ink-primary'
                 : 'text-ink-secondary hover:bg-surface-0 hover:text-ink-primary',
             )}
           >
@@ -41,7 +41,7 @@ export function NavRail({
               aria-hidden
               className={cn(
                 'font-mono text-label tracking-[0.1em]',
-                active ? 'text-lane-accent' : 'text-ink-secondary',
+                active ? 'text-gold' : 'text-ink-secondary',
               )}
             >
               {m.tag}

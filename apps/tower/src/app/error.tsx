@@ -21,7 +21,7 @@ export default function GlobalError({
   return (
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 px-6 text-center">
       <span className="font-mono text-label uppercase tracking-[0.15em] text-negative">Error</span>
-      <h1 className="font-ui text-t3 text-ink-primary">Algo falló / Something went wrong</h1>
+      <h1 className="font-display text-t3 text-ink-primary">Algo falló / Something went wrong</h1>
       <button
         type="button"
         onClick={reset}

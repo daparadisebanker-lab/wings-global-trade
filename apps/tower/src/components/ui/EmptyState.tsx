@@ -31,7 +31,7 @@ export function EmptyState({
           {tag}
         </span>
       ) : null}
-      <h1 className="font-ui text-t3 text-ink-primary">{t(title, locale)}</h1>
+      <h1 className="font-display text-t3 text-ink-primary">{t(title, locale)}</h1>
       {description ? (
         <p className="max-w-md font-ui text-t1 leading-relaxed text-ink-secondary">
           {t(description, locale)}

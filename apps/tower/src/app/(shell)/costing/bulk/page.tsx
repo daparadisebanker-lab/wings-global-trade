@@ -28,7 +28,7 @@ export default async function BulkCostingPage() {
           </Link>
           <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">CST · Costeo masivo</span>
         </div>
-        <h1 className="font-ui text-t2 text-ink-primary">Importación masiva de costos</h1>
+        <h1 className="font-display text-t2 text-ink-primary">Importación masiva de costos</h1>
       </header>
       <BulkCostImport lanes={lanesResult.data} />
     </div>

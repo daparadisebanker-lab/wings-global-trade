@@ -84,8 +84,17 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-surface-0 px-6">
-      <div className="w-full max-w-sm rounded-card border border-line bg-surface-1 p-8">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-surface-0 px-6">
+      {/* Wings brand hero — container yard at sunset, under a navy scrim so the
+          sign-in card stays fully legible. Degrades to the scrim colour if the
+          image is not present. */}
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: "url('/brand/login-hero.jpg')" }}
+      />
+      <div aria-hidden className="absolute inset-0" style={{ backgroundColor: 'var(--scrim)' }} />
+      <div className="relative w-full max-w-sm rounded-card border border-line bg-surface-1 p-8">
         <div className="flex flex-col items-start gap-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/brand/wings-imagotipo.svg" alt="Wings Global Trade" className="h-9 w-auto" />

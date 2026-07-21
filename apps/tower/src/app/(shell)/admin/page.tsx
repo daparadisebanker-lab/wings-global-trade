@@ -65,7 +65,7 @@ export default function AdminPage() {
     <div className="flex flex-col gap-6 p-6">
       <header className="flex flex-col gap-1">
         <span className="font-mono text-label uppercase tracking-[0.15em] text-lane-accent">ADM · Admin</span>
-        <h1 className="font-ui text-t3 text-ink-primary">Administración / Administration</h1>
+        <h1 className="font-display text-t3 text-ink-primary">Administración / Administration</h1>
       </header>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

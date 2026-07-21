@@ -49,7 +49,7 @@ export default async function SignalsPage({
             <span className="font-mono text-label uppercase tracking-[0.15em] text-lane-accent" data-numeric>
               {TAG}
             </span>
-            <h1 className="font-ui text-t3 text-ink-primary">{t(TITLE, locale)}</h1>
+            <h1 className="font-display text-t3 text-ink-primary">{t(TITLE, locale)}</h1>
           </div>
           {deck.isGroupAdmin ? (
             <Link
