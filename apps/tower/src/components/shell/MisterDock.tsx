@@ -3,10 +3,16 @@
 import { useEffect, useRef, useState } from 'react'
 import { cn } from '@wings/trade-ui'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
+import { askMister } from '@/lib/actions/mister-copilot'
+import type { ContainerFitResult } from '@/lib/copilot/container-fit'
 import { MisterMark } from './MisterMark'
+import { FitArtifact } from './FitArtifact'
 import './mister-dock.css'
 
-type Msg = { who: 'mi' | 'op'; text: string }
+type Msg =
+  | { who: 'op'; text: string }
+  | { who: 'mi'; text: string }
+  | { who: 'mi'; note: string; fit: ContainerFitResult }
 
 /**
  * Mister · Interno — the contained copilot dock (World B).
@@ -27,6 +33,7 @@ export function MisterDock({
 }) {
   const [draft, setDraft] = useState('')
   const [thread, setThread] = useState<Msg[]>([])
+  const [busy, setBusy] = useState(false)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const threadRef = useRef<HTMLDivElement>(null)
 
@@ -47,27 +54,31 @@ export function MisterDock({
   // Keep the latest turn in view.
   useEffect(() => {
     threadRef.current?.scrollTo({ top: threadRef.current.scrollHeight })
-  }, [thread])
+  }, [thread, busy])
 
-  function send() {
+  async function send() {
     const text = draft.trim()
-    if (!text) return
-    setThread((prev) => [
-      ...prev,
-      { who: 'op', text },
-      {
-        who: 'mi',
-        text: t(
-          {
-            es: 'Te leo. Pronto podré resolver esto con las herramientas de TOWER — armar el contenedor, costear, redactar — me estoy conectando.',
-            en: "I hear you. Soon I'll resolve this with TOWER's tools — pack the container, cost it, draft it — I'm coming online.",
-          },
-          locale,
-        ),
-      },
-    ])
+    if (!text || busy) return
+    setThread((prev) => [...prev, { who: 'op', text }])
     setDraft('')
-    inputRef.current?.focus()
+    setBusy(true)
+    try {
+      const result = await askMister(text)
+      const reply: Msg = result.error
+        ? { who: 'mi', text: result.error.message }
+        : result.data.kind === 'fit'
+          ? { who: 'mi', note: result.data.note, fit: result.data.fit }
+          : { who: 'mi', text: result.data.text }
+      setThread((prev) => [...prev, reply])
+    } catch {
+      setThread((prev) => [
+        ...prev,
+        { who: 'mi', text: t({ es: 'No pude procesarlo ahora.', en: 'Could not process that.' }, locale) },
+      ])
+    } finally {
+      setBusy(false)
+      inputRef.current?.focus()
+    }
   }
 
   return (
@@ -120,11 +131,30 @@ export function MisterDock({
             <span className="cap">{t({ es: '¿Qué necesitas?', en: 'What do you need?' }, locale)}</span>
           </div>
 
-          {thread.map((m, i) => (
-            <div key={i} className={cn('mister-row', m.who)}>
-              <div className={cn('mister-bubble', m.who)}>{m.text}</div>
+          {thread.map((m, i) =>
+            'fit' in m ? (
+              <div key={i} className="mister-row mi">
+                <div className="mister-bubble mi">
+                  {m.note ? <p style={{ margin: '0 0 8px' }}>{m.note}</p> : null}
+                  <FitArtifact fit={m.fit} locale={locale} />
+                </div>
+              </div>
+            ) : (
+              <div key={i} className={cn('mister-row', m.who)}>
+                <div className={cn('mister-bubble', m.who)}>{m.text}</div>
+              </div>
+            ),
+          )}
+
+          {busy ? (
+            <div className="mister-row mi" aria-live="polite">
+              <div className="mister-bubble mi mister-thinking">
+                <span className="dot" />
+                <span className="dot" />
+                <span className="dot" />
+              </div>
             </div>
-          ))}
+          ) : null}
         </div>
 
         <div className="mister-input">
@@ -150,7 +180,7 @@ export function MisterDock({
             type="button"
             className="send"
             onClick={send}
-            disabled={!draft.trim()}
+            disabled={!draft.trim() || busy}
             aria-label={t({ es: 'Enviar', en: 'Send' }, locale)}
             tabIndex={open ? 0 : -1}
           >
