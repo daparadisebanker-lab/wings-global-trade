@@ -5,10 +5,13 @@
 // caja margin is rendered in accounting parentheses (it is normally negative
 // during the IGV recovery window — capital inmovilizado, not a loss).
 import type { ImportResult } from '@/lib/costing/types'
+import { formatAccounting } from '@/lib/money'
 
+// Cost-cascade figures render without a currency symbol (currency is in the
+// section header) using the shared accounting formatter — negatives in
+// parentheses. en-US to preserve the reference-workbook grouping.
 function money(n: number): string {
-  const s = Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-  return n < 0 ? `(${s})` : s
+  return formatAccounting(n, 'en-US')
 }
 function pct(x: number): string {
   return `${(x * 100).toFixed(1)}%`

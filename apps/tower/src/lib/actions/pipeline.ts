@@ -543,7 +543,14 @@ export async function updateStage(id: string, stage: string): Promise<ActionResu
     .select(RFQ_SELECT_COLS)
     .single()
 
-  if (error) return fail('FORBIDDEN_LANE', 'No se pudo actualizar la etapa / Could not update the stage')
+  if (error) {
+    // DB backstop (migration tower_39 rfq_stage_guard) — mirrors the isValidStage
+    // archetype-membership check above.
+    if ((error.message ?? '').includes('RFQ_STAGE_INVALID')) {
+      return fail('STAGE_INVALID', `Etapa inválida para el arquetipo ${context.archetype} / Invalid stage for archetype ${context.archetype}`)
+    }
+    return fail('FORBIDDEN_LANE', 'No se pudo actualizar la etapa / Could not update the stage')
+  }
 
   return ok(mapRfqRow(data as unknown as RawRfqRow))
 }
@@ -754,7 +761,13 @@ export async function sendQuote(quoteId: string, validUntil?: string | null): Pr
     .select('id,rfq_id,version,lines,total_minor,currency,status,valid_until,created_by,created_at')
     .single()
 
-  if (error) return fail('FORBIDDEN_LANE', 'No se pudo enviar la cotización / Could not send the quote')
+  if (error) {
+    // DB backstop (migration tower_39 quotes_status_guard) — mirrors canSendQuote.
+    if ((error.message ?? '').includes('STATUS_TRANSITION_INVALID')) {
+      return fail('STAGE_INVALID', 'Transición de estado inválida / Invalid status transition')
+    }
+    return fail('FORBIDDEN_LANE', 'No se pudo enviar la cotización / Could not send the quote')
+  }
 
   return ok(mapQuoteRow(data as unknown as RawQuoteRow))
 }
@@ -798,7 +811,13 @@ export async function markQuoteStatus(
     .select('id,rfq_id,version,lines,total_minor,currency,status,valid_until,created_by,created_at')
     .single()
 
-  if (error) return fail('FORBIDDEN_LANE', 'No se pudo actualizar la cotización / Could not update the quote')
+  if (error) {
+    // DB backstop (migration tower_39 quotes_status_guard) — mirrors canMarkQuoteStatus.
+    if ((error.message ?? '').includes('STATUS_TRANSITION_INVALID')) {
+      return fail('STAGE_INVALID', 'Transición de estado inválida / Invalid status transition')
+    }
+    return fail('FORBIDDEN_LANE', 'No se pudo actualizar la cotización / Could not update the quote')
+  }
 
   return ok(mapQuoteRow(data as unknown as RawQuoteRow))
 }
