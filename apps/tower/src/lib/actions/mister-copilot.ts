@@ -8,10 +8,11 @@
 
 import { createServerSupabase } from '@/lib/supabase/server'
 import { getIntelligenceClient } from '@/lib/ai/client'
-import { runMister, type MisterReply } from '@/lib/copilot/mister'
+import { routeAndRun } from '@/lib/copilot/router'
+import { textResult, type CopilotResult } from '@/lib/copilot/types'
 import { ok, fail, type ActionResult } from './result'
 
-export async function askMister(text: string): Promise<ActionResult<MisterReply>> {
+export async function askMister(text: string): Promise<ActionResult<CopilotResult>> {
   const trimmed = (text ?? '').trim()
   if (!trimmed) return fail('VALIDATION', 'Escribe algo / Type something')
   if (trimmed.length > 2000) return fail('VALIDATION', 'Mensaje demasiado largo / Message too long')
@@ -25,19 +26,17 @@ export async function askMister(text: string): Promise<ActionResult<MisterReply>
 
   const client = getIntelligenceClient()
   if (!client) {
-    return ok({
-      kind: 'text',
-      text: 'Mister aún no está conectado en este entorno. / Mister is not connected in this environment yet.',
-    })
+    return ok(
+      textResult(
+        'Mister aún no está conectado en este entorno. / Mister is not connected in this environment yet.',
+      ),
+    )
   }
 
   try {
-    return ok(await runMister(client, trimmed))
+    return ok(await routeAndRun(client, trimmed))
   } catch (err) {
     console.error('[mister:askMister]', err)
-    return ok({
-      kind: 'text',
-      text: 'No pude procesarlo ahora — intenta de nuevo. / Could not process that — try again.',
-    })
+    return ok(textResult('No pude procesarlo ahora — intenta de nuevo. / Could not process that — try again.'))
   }
 }

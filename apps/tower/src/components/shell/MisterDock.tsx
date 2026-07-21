@@ -4,15 +4,12 @@ import { useEffect, useRef, useState } from 'react'
 import { cn } from '@wings/trade-ui'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import { askMister } from '@/lib/actions/mister-copilot'
-import type { ContainerFitResult } from '@/lib/copilot/container-fit'
+import { textResult, type CopilotResult } from '@/lib/copilot/types'
 import { MisterMark } from './MisterMark'
-import { FitArtifact } from './FitArtifact'
+import { MISTER_RENDERERS } from './mister-renderers'
 import './mister-dock.css'
 
-type Msg =
-  | { who: 'op'; text: string }
-  | { who: 'mi'; text: string }
-  | { who: 'mi'; note: string; fit: ContainerFitResult }
+type Msg = { who: 'op'; text: string } | { who: 'mi'; result: CopilotResult }
 
 /**
  * Mister · Interno — the contained copilot dock (World B).
@@ -64,16 +61,18 @@ export function MisterDock({
     setBusy(true)
     try {
       const result = await askMister(text)
-      const reply: Msg = result.error
-        ? { who: 'mi', text: result.error.message }
-        : result.data.kind === 'fit'
-          ? { who: 'mi', note: result.data.note, fit: result.data.fit }
-          : { who: 'mi', text: result.data.text }
+      const reply: Msg = {
+        who: 'mi',
+        result: result.error ? textResult(result.error.message) : result.data,
+      }
       setThread((prev) => [...prev, reply])
     } catch {
       setThread((prev) => [
         ...prev,
-        { who: 'mi', text: t({ es: 'No pude procesarlo ahora.', en: 'Could not process that.' }, locale) },
+        {
+          who: 'mi',
+          result: textResult(t({ es: 'No pude procesarlo ahora.', en: 'Could not process that.' }, locale)),
+        },
       ])
     } finally {
       setBusy(false)
@@ -131,20 +130,24 @@ export function MisterDock({
             <span className="cap">{t({ es: '¿Qué necesitas?', en: 'What do you need?' }, locale)}</span>
           </div>
 
-          {thread.map((m, i) =>
-            'fit' in m ? (
+          {thread.map((m, i) => {
+            if (m.who === 'op') {
+              return (
+                <div key={i} className="mister-row op">
+                  <div className="mister-bubble op">{m.text}</div>
+                </div>
+              )
+            }
+            const render = MISTER_RENDERERS[m.result.renderer]
+            return (
               <div key={i} className="mister-row mi">
                 <div className="mister-bubble mi">
-                  {m.note ? <p style={{ margin: '0 0 8px' }}>{m.note}</p> : null}
-                  <FitArtifact fit={m.fit} locale={locale} />
+                  {m.result.note ? <p style={{ margin: '0 0 8px' }}>{m.result.note}</p> : null}
+                  {render ? render(m.result.data, locale) : <span>{m.result.text ?? ''}</span>}
                 </div>
               </div>
-            ) : (
-              <div key={i} className={cn('mister-row', m.who)}>
-                <div className={cn('mister-bubble', m.who)}>{m.text}</div>
-              </div>
-            ),
-          )}
+            )
+          })}
 
           {busy ? (
             <div className="mister-row mi" aria-live="polite">
