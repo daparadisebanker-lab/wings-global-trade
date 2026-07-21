@@ -92,7 +92,7 @@ export function ShellChrome({
     : undefined
 
   return (
-    <div style={rootStyle} className="min-h-screen bg-surface-0 text-ink-primary">
+    <div style={rootStyle} className="tower-premium-ground min-h-screen bg-surface-0 text-ink-primary">
       <RouteProgress />
       <div className="flex min-h-screen">
         {/* Mobile drawer backdrop */}
@@ -108,7 +108,7 @@ export function ShellChrome({
 
         <aside
           className={cn(
-            'fixed inset-y-0 left-0 z-40 flex w-64 flex-col overflow-y-auto border-r border-line bg-surface-1 transition-transform duration-200',
+            'tower-rail fixed inset-y-0 left-0 z-40 flex w-64 flex-col overflow-y-auto border-r border-line bg-surface-1 transition-transform duration-200',
             'md:sticky md:top-0 md:z-auto md:h-screen',
             collapsed ? 'md:w-16' : 'md:w-64',
             drawerOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',

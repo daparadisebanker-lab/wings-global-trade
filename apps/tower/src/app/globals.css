@@ -134,10 +134,60 @@
      change with the lane. */
   --lane-accent: var(--accent);
 
+  /* ── Premium ground (Tier-2 amendment, TOWER-scoped) ──────────────────────
+     Depth lives in the ATMOSPHERE — the ground, the chrome and the "moment"
+     tiles carry gradient + light; the DATA layer (tables, rows, status chips,
+     numerals) stays flat, ruled and tabular. Built from existing tokens +
+     white/black tint anchors (never a raw brand hex), so it swaps and reverts
+     cleanly and the frozen skeleton is untouched. This is the one deliberate
+     departure from the ecosystem "no gradients" refusal, and it is confined to
+     this data-app scope — lanes and the public site never inherit it. */
+  --premium-ground: linear-gradient(
+    180deg,
+    var(--surface-1) 0%,
+    var(--surface-0) 44%,
+    color-mix(in srgb, var(--surface-0) 88%, var(--line)) 100%
+  );
+  --premium-chrome: linear-gradient(180deg, var(--surface-1) 0%, var(--surface-2) 100%);
+  --premium-rail-shadow: 6px 0 26px -18px color-mix(in srgb, var(--ink-primary) 24%, transparent);
+  --premium-bar-shadow: 0 8px 22px -16px color-mix(in srgb, var(--ink-primary) 26%, transparent);
+  --premium-panel-shadow: 0 14px 34px -22px color-mix(in srgb, var(--ink-primary) 22%, transparent);
+  --premium-tile: linear-gradient(
+    158deg,
+    color-mix(in srgb, var(--ink-primary) 86%, white) 0%,
+    var(--ink-primary) 52%,
+    color-mix(in srgb, var(--ink-primary) 82%, black) 100%
+  );
+  /* Cards soften one step for the premium register; structural stays 0. */
+  --radius-card: 4px;
+
   background-color: var(--surface-0);
   color: var(--ink-primary);
   font-family: var(--font-ui);
   -webkit-font-smoothing: antialiased;
+}
+
+/* Premium ground/chrome utilities — applied to the SHELL FRAME only (the app
+   background, the rail, the top bar, and moment tiles). The data layer never
+   receives them: gradients in the ground and the moments, flat behind data. */
+[data-app='tower'] .tower-premium-ground {
+  background-image: var(--premium-ground);
+  background-attachment: fixed;
+}
+[data-app='tower'] .tower-rail {
+  background-image: var(--premium-chrome);
+  box-shadow: var(--premium-rail-shadow);
+}
+[data-app='tower'] .tower-bar {
+  background-image: var(--premium-chrome);
+  box-shadow: var(--premium-bar-shadow);
+}
+[data-app='tower'] .tower-panel {
+  background-image: var(--premium-chrome);
+  box-shadow: var(--premium-panel-shadow);
+}
+[data-app='tower'] .tower-tile {
+  background-image: var(--premium-tile);
 }
 
 /* All numerals tabular — CBM, MOQ, currency, codes, timestamps are brand

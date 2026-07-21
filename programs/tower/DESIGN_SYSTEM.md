@@ -46,7 +46,14 @@ Recharts restyled: thin 1px series, no gradients, no area fills above 8% opacity
 
 ## The refusals (TOWER edition)
 
-No dashboards-as-wallpaper (every metric must have an owner and an action), no skeleton shimmer (instrument panels appear laid-out or not at all), no emoji in status language, no soft shadows, no third accent color — amber and green carry everything, alarm red is spent only on true failure states so it never inflates.
+No dashboards-as-wallpaper (every metric must have an owner and an action), no skeleton shimmer (instrument panels appear laid-out or not at all), no emoji in status language, no third accent color — amber and green carry everything, alarm red is spent only on true failure states so it never inflates.
+
+## Premium ground (Tier-2 amendment · 2026-07)
+
+Two reconciliations, both shipped and both TOWER-scoped (`[data-app='tower']` only — lanes and the public site never inherit them):
+
+1. **Livery.** TOWER ships on the light **Wings house identity** (warm-white ground · navy ink · gold jewel), not the dark graphite/amber register sketched at the top of this file. The dark "control-room" remains a retired direction; the tokens of record live in `apps/site/globals.css` under `[data-app='tower']`.
+2. **Premium ground.** The earlier "no soft shadows / no gradients" refusal is amended to a rule, not a ban: **depth lives in the atmosphere, never behind the data.** Gradient + light are permitted on the *ground*, the *chrome* (rail, top bar), and *moment* surfaces (metric tiles, hero/empty states). The *data layer* — tables, rows, status chips, numerals, cost sheets — stays flat, ruled and tabular. Implemented as `--premium-*` tokens + `.tower-*` utilities built from existing tokens (no raw brand hex), so it swaps and reverts cleanly. Cards soften to 2–4px; structural radius stays 0.
 
 ## Accessibility
 

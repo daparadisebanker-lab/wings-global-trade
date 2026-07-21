@@ -23,7 +23,7 @@ export function TopBar({
   locale?: Locale
 }) {
   return (
-    <header className="flex min-w-0 items-center justify-between gap-2 border-b border-line bg-surface-1 px-3 py-3 sm:gap-4 sm:px-4">
+    <header className="tower-bar relative z-10 flex min-w-0 items-center justify-between gap-2 border-b border-line bg-surface-1 px-3 py-3 sm:gap-4 sm:px-4">
       <div className="flex min-w-0 items-center gap-2 sm:gap-3">
         {/* Hamburger — opens the module drawer on mobile only */}
         <button
