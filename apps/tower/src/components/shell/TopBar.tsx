@@ -37,7 +37,7 @@ export function TopBar({
           </svg>
         </button>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/wings-isotipo.svg" alt="" aria-hidden className="hidden h-6 w-6 shrink-0 md:block" />
+        <img src="/brand/wings-isotipo.webp" alt="" aria-hidden className="hidden h-6 w-6 shrink-0 md:block" />
         <span aria-hidden className="hidden h-5 w-px shrink-0 bg-line md:block" />
         {/* Brand switcher — hidden on the smallest screens to keep the bar tight */}
         {isGroupAdmin ? (

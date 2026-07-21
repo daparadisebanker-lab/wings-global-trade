@@ -174,3 +174,22 @@
   outline: 2px solid var(--lane-accent);
   outline-offset: 2px;
 }
+
+/* Login hero — optimised WebP (97 KB) with a JPEG fallback, and a lighter
+   ~36 KB source below 640px. Replaces the 1.9 MB PNG background. */
+.login-hero {
+  background-image: image-set(
+    url('/brand/login-hero.webp') type('image/webp'),
+    url('/brand/login-hero.jpg') type('image/jpeg')
+  );
+  background-size: cover;
+  background-position: center;
+}
+@media (max-width: 640px) {
+  .login-hero {
+    background-image: image-set(
+      url('/brand/login-hero-mobile.webp') type('image/webp'),
+      url('/brand/login-hero.jpg') type('image/jpeg')
+    );
+  }
+}

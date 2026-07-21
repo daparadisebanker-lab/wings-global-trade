@@ -88,11 +88,7 @@ export default function LoginPage() {
       {/* Wings brand hero — container yard at sunset, under a navy scrim so the
           sign-in card stays fully legible. Degrades to the scrim colour if the
           image is not present. */}
-      <div
-        aria-hidden
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('/brand/login-hero.png')" }}
-      />
+      <div aria-hidden className="login-hero absolute inset-0" />
       <div aria-hidden className="absolute inset-0" style={{ backgroundColor: 'var(--scrim)' }} />
       <div className="relative w-full max-w-sm rounded-card border border-line bg-surface-1 p-8">
         <div className="flex flex-col items-start gap-3">

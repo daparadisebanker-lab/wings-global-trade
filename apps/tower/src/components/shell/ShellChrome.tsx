@@ -115,7 +115,7 @@ export function ShellChrome({
           <div className="flex items-center border-b border-line p-4">
             {collapsed ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src="/brand/wings-isotipo.svg" alt="Wings Global Trade" className="mx-auto h-7 w-7" />
+              <img src="/brand/wings-isotipo.webp" alt="Wings Global Trade" className="mx-auto h-7 w-7" />
             ) : (
               <div className="flex flex-col gap-2.5">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
