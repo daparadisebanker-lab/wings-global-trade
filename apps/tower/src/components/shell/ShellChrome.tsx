@@ -6,6 +6,8 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@wings/trade-ui'
 import { CommandPalette } from './CommandPalette'
 import { LaneSwitcher } from './LaneSwitcher'
+import { MisterDock } from './MisterDock'
+import { MisterMark } from './MisterMark'
 import { NavRail } from './NavRail'
 import { RouteProgress } from './RouteProgress'
 import { TopBar } from './TopBar'
@@ -67,12 +69,18 @@ export function ShellChrome({
   const [paletteOpen, setPaletteOpen] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [misterOpen, setMisterOpen] = useState(false)
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault()
         setPaletteOpen((v) => !v)
+      }
+      // ⌘J / Ctrl-J summons Mister — the copilot dock (the palette is ⌘K).
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'j') {
+        e.preventDefault()
+        setMisterOpen((v) => !v)
       }
       if (e.key === 'Escape') setDrawerOpen(false)
     }
@@ -168,6 +176,21 @@ export function ShellChrome({
       </div>
 
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} isGroupAdmin={isGroupAdmin} />
+
+      {/* Mister — the copilot dock (World B) + its floating door. The launcher
+          hides while the dock is open so they never overlap. */}
+      {!misterOpen ? (
+        <button
+          type="button"
+          onClick={() => setMisterOpen(true)}
+          className="mister-launch"
+          aria-label={t({ es: 'Abrir Mister (⌘J)', en: 'Open Mister (⌘J)' }, DEFAULT_LOCALE)}
+          title="Mister · ⌘J"
+        >
+          <MisterMark size={26} />
+        </button>
+      ) : null}
+      <MisterDock open={misterOpen} onClose={() => setMisterOpen(false)} />
     </div>
   )
 }

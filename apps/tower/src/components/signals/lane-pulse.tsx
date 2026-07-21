@@ -26,15 +26,15 @@ export function LanePulse({
           {t({ es: `Últimos ${windowDays} d vs previo`, en: `Last ${windowDays} d vs prev` }, locale)}
         </span>
       </header>
-      <div className="grid grid-cols-2 gap-px border border-line bg-line sm:grid-cols-3 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {metrics.map((m) => {
-          const deltaClass = m.delta > 0 ? 'text-positive' : m.delta < 0 ? 'text-negative' : 'text-ink-secondary'
+          const deltaClass = m.delta > 0 ? 'tile-up' : m.delta < 0 ? 'tile-dn' : 'tile-flat'
           return (
-            <div key={m.key} className="flex flex-col gap-2 bg-surface-1 p-4">
-              <span className="font-mono text-label uppercase tracking-[0.12em] text-ink-secondary">
+            <div key={m.key} className="tower-tile flex flex-col gap-2 rounded-card p-4">
+              <span className="tile-k font-mono text-label uppercase tracking-[0.12em]">
                 {t(m.label, locale)}
               </span>
-              <span className="font-mono text-t4 leading-none text-ink-primary" data-numeric>
+              <span className="tile-v font-mono text-t4 leading-none" data-numeric>
                 {formatInt(m.current, locale)}
               </span>
               <span className={`font-mono text-t0 ${deltaClass}`} data-numeric>

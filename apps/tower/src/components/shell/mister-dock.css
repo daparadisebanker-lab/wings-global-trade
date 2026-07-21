@@ -1,0 +1,260 @@
+/* Mister · Interno — the World-B copilot dock.
+   A contained, more-expressive world than the instrument shell around it
+   (scoped-experience Law 4). Everything here is scoped under .mister-dock so the
+   soft/gradient register can never bleed into TOWER's data surfaces. On close
+   the panel translates fully off-screen and goes inert — zero residue (Law 2). */
+
+.mister-dock {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+}
+
+/* Scrim — only a whisper, and only felt when open; the operator keeps context. */
+.mister-dock .mister-scrim {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, #00112e 46%, transparent);
+  opacity: 0;
+  transition: opacity 280ms ease;
+}
+.mister-dock.is-open {
+  pointer-events: auto;
+}
+.mister-dock.is-open .mister-scrim {
+  opacity: 1;
+}
+@media (min-width: 900px) {
+  /* On desktop the dock sits beside the work — no scrim, keep context visible. */
+  .mister-dock .mister-scrim {
+    display: none;
+  }
+}
+
+.mister-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: min(430px, 100vw);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px 14px 14px;
+  color: #f4f7fb;
+  font-family: var(--font-ui);
+  background:
+    radial-gradient(120% 70% at 50% -12%, rgba(74, 108, 148, 0.4) 0%, transparent 60%),
+    linear-gradient(180deg, #244a74 0%, #001e50 44%, #00112e 100%);
+  border-left: 1px solid rgba(168, 192, 220, 0.2);
+  box-shadow: -30px 0 80px -30px rgba(0, 0, 0, 0.7);
+  transform: translateX(100%);
+  transition: transform 300ms var(--ease-gantry);
+  will-change: transform;
+}
+.mister-dock.is-open .mister-panel {
+  transform: translateX(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .mister-panel {
+    transition: opacity 160ms linear;
+    transform: none;
+    opacity: 0;
+  }
+  .mister-dock.is-open .mister-panel {
+    opacity: 1;
+  }
+}
+
+/* header */
+.mister-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px 2px;
+}
+.mister-id {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.mister-id .mark {
+  color: #f4f7fb;
+}
+.mister-id .name {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #a8c0dc;
+}
+.mister-id .name b {
+  color: #e0b866;
+  font-weight: 600;
+}
+.mister-close {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(180, 196, 216, 0.22);
+  color: #f4f7fb;
+  font-size: 14px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.mister-close:hover {
+  background: rgba(180, 196, 216, 0.34);
+}
+.mister-close:focus-visible {
+  outline: 2px solid #e0b866;
+  outline-offset: 2px;
+}
+
+/* thread */
+.mister-thread {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 6px 4px 2px;
+}
+.mister-greet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 0 10px;
+  text-align: center;
+}
+.mister-greet .mark {
+  color: #f4f7fb;
+}
+.mister-greet .hi {
+  font-size: 15px;
+  line-height: 1.5;
+  color: #dbe6f3;
+  max-width: 30ch;
+}
+.mister-greet .hi b {
+  color: #fff;
+}
+.mister-greet .cap {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #7f97b6;
+}
+
+.mister-row {
+  display: flex;
+}
+.mister-row.op {
+  justify-content: flex-end;
+}
+.mister-bubble {
+  max-width: 86%;
+  padding: 11px 14px;
+  border-radius: 18px;
+  line-height: 1.45;
+  font-size: 14.5px;
+}
+.mister-bubble.mi {
+  background: rgba(158, 182, 210, 0.16);
+  border: 1px solid rgba(168, 192, 220, 0.2);
+  border-bottom-left-radius: 6px;
+  color: #eef4fb;
+}
+.mister-bubble.op {
+  background: rgba(216, 169, 75, 0.16);
+  border: 1px solid rgba(216, 169, 75, 0.3);
+  border-bottom-right-radius: 6px;
+  color: #fff;
+}
+
+/* input */
+.mister-input {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 20px;
+  background: rgba(230, 238, 247, 0.94);
+}
+.mister-input .clip {
+  color: #3a5578;
+  font-size: 17px;
+  padding-bottom: 3px;
+  user-select: none;
+}
+.mister-input textarea {
+  flex: 1;
+  border: none;
+  background: transparent;
+  resize: none;
+  outline: none;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  color: #10233f;
+  max-height: 120px;
+  line-height: 1.4;
+}
+.mister-input textarea::placeholder {
+  color: #5a6b82;
+}
+.mister-input .send {
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border-radius: 50%;
+  border: none;
+  background: #001e50;
+  color: #fff;
+  font-size: 15px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.mister-input .send:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.mister-input .send:focus-visible {
+  outline: 2px solid #e0b866;
+  outline-offset: 2px;
+}
+
+/* floating launcher — the door into World B, present across the shell */
+.mister-launch {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 45;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px solid rgba(224, 184, 102, 0.5);
+  color: #f4f7fb;
+  background:
+    radial-gradient(120% 100% at 50% 0%, rgba(74, 108, 148, 0.6) 0%, transparent 60%),
+    linear-gradient(158deg, #0b2c60 0%, #001e50 55%, #00112e 100%);
+  box-shadow: 0 14px 30px -12px rgba(0, 17, 46, 0.7);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: transform 150ms var(--ease-settle), box-shadow 150ms ease;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .mister-launch:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 36px -12px rgba(0, 17, 46, 0.8);
+  }
+}
+.mister-launch:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}

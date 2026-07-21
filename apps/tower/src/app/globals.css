@@ -161,6 +161,13 @@
   /* Cards soften one step for the premium register; structural stays 0. */
   --radius-card: 4px;
 
+  /* Text that rides ON a --premium-tile (navy→steel): warm-white ink, and
+     lightened positive/negative so deltas stay legible on the dark tile. */
+  --tile-ink: var(--accent-ink);
+  --tile-ink-muted: color-mix(in srgb, var(--accent-ink) 60%, transparent);
+  --tile-positive: color-mix(in srgb, var(--positive) 46%, white);
+  --tile-negative: color-mix(in srgb, var(--negative) 52%, white);
+
   background-color: var(--surface-0);
   color: var(--ink-primary);
   font-family: var(--font-ui);
@@ -188,7 +195,14 @@
 }
 [data-app='tower'] .tower-tile {
   background-image: var(--premium-tile);
+  color: var(--tile-ink);
 }
+/* Text on a tile: label muted, value full, delta lightened per sign. */
+[data-app='tower'] .tower-tile .tile-k { color: var(--tile-ink-muted); }
+[data-app='tower'] .tower-tile .tile-v { color: var(--tile-ink); }
+[data-app='tower'] .tower-tile .tile-up { color: var(--tile-positive); }
+[data-app='tower'] .tower-tile .tile-dn { color: var(--tile-negative); }
+[data-app='tower'] .tower-tile .tile-flat { color: var(--tile-ink-muted); }
 
 /* All numerals tabular — CBM, MOQ, currency, codes, timestamps are brand
    assets and must not shift width. */
