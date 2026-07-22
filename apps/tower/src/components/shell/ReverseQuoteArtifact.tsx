@@ -59,13 +59,14 @@ export function ReverseQuoteArtifact({
         {t({ es: 'Precio de venta', en: 'Sale price' }, locale)} · {kindLabel} {pct(result.targetPct)}
       </div>
 
-      {/* The headline: the sale price that hits the target. */}
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+      {/* The headline: the sale price that hits the target. Fluid so a large
+          number never overflows a narrow phone. */}
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap', minWidth: 0 }}>
         <span style={{ fontFamily: MONO, fontSize: 12, color: MUTED }}>USD</span>
         <span
           style={{
             fontFamily: MONO,
-            fontSize: 34,
+            fontSize: 'clamp(24px, 8.5vw, 34px)',
             lineHeight: 1,
             fontWeight: 600,
             color: GOLD,

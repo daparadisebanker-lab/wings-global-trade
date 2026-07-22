@@ -70,9 +70,12 @@ export function MisterDock({
     }
   }, [open, onClose])
 
-  // Keep the latest turn in view.
+  // Keep the latest turn in view — glide to it, unless reduced-motion is asked.
   useEffect(() => {
-    threadRef.current?.scrollTo({ top: threadRef.current.scrollHeight })
+    const el = threadRef.current
+    if (!el) return
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    el.scrollTo({ top: el.scrollHeight, behavior: reduce ? 'auto' : 'smooth' })
   }, [thread, busy])
 
   // Pull an image out of a paste, if one is there; falls through to normal text paste.
@@ -197,9 +200,10 @@ export function MisterDock({
               )
             }
             const render = MISTER_RENDERERS[m.result.renderer]
+            const hasArt = m.result.renderer in MISTER_RENDERERS
             return (
               <div key={i} className="mister-row mi">
-                <div className="mister-bubble mi">
+                <div className={cn('mister-bubble mi', hasArt && 'has-art')}>
                   {m.result.note ? <p style={{ margin: '0 0 8px' }}>{m.result.note}</p> : null}
                   {render ? render(m.result.data, locale) : <span>{m.result.text ?? ''}</span>}
                 </div>

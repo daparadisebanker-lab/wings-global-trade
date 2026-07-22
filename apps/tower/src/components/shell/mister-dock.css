@@ -478,3 +478,62 @@
   outline: 2px solid var(--gold);
   outline-offset: 2px;
 }
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Motion & soul — mobile-first. On a phone the dock is the whole screen, so the
+   message choreography carries the product's feel. One transform + one opacity,
+   never more; reduced-motion collapses to a crossfade.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* Every turn arrives with presence. Keyed rows mount once, so this plays on
+   ARRIVAL, never on re-render — a chat that re-animates its whole history on
+   each keystroke feels broken. */
+@keyframes mister-msg-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.mister-row {
+  animation: mister-msg-in 360ms var(--ease-settle) both;
+}
+
+/* An artifact IS the card — it breathes full-width instead of nesting inside a
+   chat bubble, reclaiming ~50px on a 390px phone. Text replies keep the bubble. */
+.mister-bubble.mi.has-art {
+  max-width: 100%;
+  width: 100%;
+  padding: 2px;
+  background: transparent;
+  border-color: transparent;
+}
+
+/* Send — a small, satisfying press. */
+.mister-input .send {
+  transition: transform 120ms var(--ease-settle), background 120ms ease;
+}
+.mister-input .send:active:not(:disabled) {
+  transform: scale(0.9);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @keyframes mister-msg-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  .mister-row {
+    animation-duration: 200ms;
+    animation-timing-function: linear;
+  }
+  .mister-input .send:active:not(:disabled) {
+    transform: none;
+  }
+}
