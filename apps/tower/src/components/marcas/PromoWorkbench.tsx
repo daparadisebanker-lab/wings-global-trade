@@ -5,7 +5,8 @@
 // container list with live promo state; right: the ContainerPromoPanel loaded on
 // demand (getContainerPromo). Activation + copy edits round-trip through the
 // server actions; the list refreshes so promo state stays truthful.
-import { useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
+import { usePathname } from 'next/navigation'
 import {
   getContainerPromo,
   listPromotableContainers,
@@ -18,15 +19,19 @@ const LABEL = 'font-mono text-label uppercase tracking-[0.08em] text-ink-seconda
 
 export function PromoWorkbench({
   initialRows,
+  initialSelectedId,
   repWhatsappE164 = null,
   repWhatsappLabel = null,
 }: {
   initialRows: PromotableContainerRow[]
+  /** Deep-link target — a container id from `?c=`, so its promo opens directly. */
+  initialSelectedId?: string
   /** The signed-in rep's own WhatsApp Business line — threaded to the share panel
    *  so each rep's promo deep-links open from their own number (tower_39). */
   repWhatsappE164?: string | null
   repWhatsappLabel?: string | null
 }) {
+  const pathname = usePathname()
   const [rows, setRows] = useState(initialRows)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [detail, setDetail] = useState<ContainerPromoDetail | null>(null)
@@ -42,6 +47,12 @@ export function PromoWorkbench({
   function open(id: string) {
     setSelectedId(id)
     setError(null)
+    // Reflect the open container in the URL so its promo is directly shareable
+    // (?c=<id>). history.replaceState (not the router) → no server re-fetch of
+    // the container list on each selection.
+    if (typeof window !== 'undefined') {
+      window.history.replaceState(null, '', `${pathname}?c=${id}`)
+    }
     startLoad(async () => {
       const res = await getContainerPromo(id)
       if (res.error) {
@@ -52,6 +63,12 @@ export function PromoWorkbench({
       setDetail(res.data)
     })
   }
+
+  // Deep-link: open a container's promo directly from ?c=<id> on first load.
+  useEffect(() => {
+    if (initialSelectedId) open(initialSelectedId)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialSelectedId])
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(260px,340px)_1fr]">

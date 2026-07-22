@@ -811,3 +811,31 @@
 [data-app='tower'] .recharts-tooltip-cursor {
   fill: var(--surface-0);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Cubicaje — the FitScene isometric container fill surfaced on the ERP
+   container detail (shell IA/UI Phase D), OUTSIDE the Mister dock. Scoped under
+   .tower-cubicaje so it never depends on mister-dock.css load order; FitScene's
+   gold-on-steel palette is inline in the SVG and reads on the navy .tower-tile
+   it sits on. Own rise keyframe (no collision with the dock's fit-load).
+   ═══════════════════════════════════════════════════════════════════════════ */
+.tower-cubicaje .fit-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.tower-cubicaje .fit-fill {
+  transform: translateY(var(--fit-rise, 0));
+  animation: cubicaje-rise 900ms var(--ease-settle, ease-out) forwards;
+}
+@keyframes cubicaje-rise {
+  to {
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tower-cubicaje .fit-fill {
+    animation: none;
+    transform: none;
+  }
+}
