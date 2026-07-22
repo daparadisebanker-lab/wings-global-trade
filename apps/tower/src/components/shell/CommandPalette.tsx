@@ -67,14 +67,18 @@ export function CommandPalette({
       onOpenChange={onOpenChange}
       label={t({ es: 'Comandos', en: 'Commands' }, locale)}
       overlayClassName="fixed inset-0 z-40 bg-black/60"
-      contentClassName="tower-fade fixed left-1/2 top-[20%] z-50 w-[92vw] max-w-xl -translate-x-1/2 rounded-card border border-line bg-surface-1 shadow-none"
+      // Mobile: a full-width sheet pinned to the top, where the search input sits
+      // right under the status bar and the list fills the space above the
+      // keyboard — no floating centered dialog stranding a dead gap over the
+      // keyboard. md+: the centered Linear-style dialog.
+      contentClassName="tower-fade fixed inset-x-0 top-0 z-50 w-full border-b border-line bg-surface-1 shadow-none md:inset-x-auto md:left-1/2 md:top-[12%] md:w-[92vw] md:max-w-xl md:-translate-x-1/2 md:rounded-card md:border"
     >
       <Command.Input
         autoFocus
         placeholder={t({ es: 'Buscar módulos y acciones…', en: 'Search modules and actions…' }, locale)}
         className="w-full border-b border-line bg-transparent px-4 py-3 font-ui text-t1 text-ink-primary outline-none placeholder:text-ink-secondary"
       />
-      <Command.List className="max-h-80 overflow-y-auto p-2">
+      <Command.List className="max-h-[70dvh] overflow-y-auto overscroll-contain p-2 md:max-h-80">
         <Command.Empty className="px-3 py-6 text-center font-ui text-t0 text-ink-secondary">
           {t({ es: 'Sin resultados', en: 'No results' }, locale)}
         </Command.Empty>
