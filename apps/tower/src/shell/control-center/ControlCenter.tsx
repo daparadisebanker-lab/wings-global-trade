@@ -46,7 +46,7 @@ export function ControlCenterGrid({
   }
 
   return (
-    <nav aria-label={t({ es: 'Módulos', en: 'Modules' }, locale)} className="grid grid-cols-2 gap-3 p-3">
+    <nav aria-label={t({ es: 'Módulos', en: 'Modules' }, locale)} className="grid grid-cols-1 gap-3 p-3">
       {tools.map((tl) => {
         const Icon = NAV_ICONS[tl.icon]
         const on = active?.id === tl.id
@@ -57,11 +57,14 @@ export function ControlCenterGrid({
             onClick={onNavigate}
             data-active={on}
             aria-current={on ? 'page' : undefined}
-            className="cc-tile"
+            // min-w-0 lets the tile shrink to its grid column instead of forcing
+            // the whole row wider than the drawer; the label then truncates and
+            // the tag stays intact (shrink-0) — no more right-column overflow.
+            className="cc-tile min-w-0"
           >
             <Icon className={cn('shrink-0', on ? 'text-gold' : 'text-ink-secondary')} />
-            <span className="font-ui text-t0">{t(tl.label, locale)}</span>
-            <span aria-hidden className="ml-auto font-mono text-label tracking-[0.1em] text-ink-secondary">
+            <span className="min-w-0 truncate font-ui text-t0">{t(tl.label, locale)}</span>
+            <span aria-hidden className="ml-auto shrink-0 font-mono text-label tracking-[0.1em] text-ink-secondary">
               {tl.tag}
             </span>
           </Link>
