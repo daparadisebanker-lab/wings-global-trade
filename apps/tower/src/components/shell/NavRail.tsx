@@ -33,28 +33,40 @@ export function NavRail({
       {NAV_GROUPS.map((group) => {
         const items = MODULES.filter((m) => m.group === group.id && visible.has(m.id))
         if (items.length === 0) return null
+        const labelId = `nav-group-${group.id}`
         return (
-          <div key={group.id} className="flex flex-col gap-1">
+          <div
+            key={group.id}
+            role="group"
+            aria-label={collapsed ? t(group.label, locale) : undefined}
+            aria-labelledby={collapsed ? undefined : labelId}
+            className="flex flex-col gap-1"
+          >
             {collapsed ? (
               <span aria-hidden className="mx-2 mb-1 h-px bg-line" />
             ) : (
-              <span className="flex items-center gap-2 px-2 pb-1 font-mono text-label uppercase tracking-[0.18em] text-ink-secondary">
+              <span
+                id={labelId}
+                className="flex items-center gap-2 px-2 pb-1 font-mono text-label uppercase tracking-[0.18em] text-ink-secondary"
+              >
                 <span aria-hidden className="inline-block h-1 w-1 bg-gold" />
                 {t(group.label, locale)}
               </span>
             )}
-            {items.map((m) => {
-              const active = pathname.startsWith(m.href)
-              const Icon = NAV_ICONS[m.icon]
-              return (
-                <Link
-                  key={m.id}
-                  href={m.href}
-                  onClick={onNavigate}
-                  aria-current={active ? 'page' : undefined}
-                  data-active={active}
-                  title={collapsed ? t(m.label, locale) : undefined}
-                  className={cn(
+            <ul role="list" className="flex flex-col gap-1">
+              {items.map((m) => {
+                const active = pathname.startsWith(m.href)
+                const Icon = NAV_ICONS[m.icon]
+                return (
+                  <li key={m.id}>
+                    <Link
+                      href={m.href}
+                      onClick={onNavigate}
+                      aria-current={active ? 'page' : undefined}
+                      aria-label={collapsed ? t(m.label, locale) : undefined}
+                      data-active={active}
+                      title={collapsed ? t(m.label, locale) : undefined}
+                      className={cn(
                     'tower-nav-item group flex items-center gap-3 rounded-card border-l-2 border-transparent px-3 py-3 text-t0',
                     'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lane-accent',
                     collapsed && 'justify-center px-0',
@@ -82,9 +94,11 @@ export function NavRail({
                       </span>
                     </>
                   ) : null}
-                </Link>
-              )
-            })}
+                    </Link>
+                  </li>
+                )
+              })}
+            </ul>
           </div>
         )
       })}
