@@ -1,7 +1,10 @@
 import Link from 'next/link'
-import { EmptyState } from '@/components/ui/EmptyState'
 import { LanePulse, FunnelChart, ProductLeaderboard, FillWatch, SourceSplit } from '@/components/signals'
+import { OperationsBand, QuickActions, SignalsFeed } from '@/components/operations'
 import { getSignalDeck } from '@/lib/actions/signals'
+import { getOperationsSnapshot } from '@/lib/actions/operations'
+import { getLaneMemberships, getIsGroupAdmin, getHasRbMembership } from '@/lib/lanes/memberships'
+import { visibleModules, type Role } from '@/lib/rbac'
 import { DEFAULT_LOCALE, t } from '@/lib/i18n'
 
 // Signal Deck (analytics) — Wave 4. Reads ONLY the rollup matview, lane-scoped
@@ -21,25 +24,23 @@ export default async function SignalsPage({
 }) {
   const params = await searchParams
   const days = params.days ? Number(params.days) : undefined
-  const result = await getSignalDeck({ laneSlug: params.lane, days })
   const locale = DEFAULT_LOCALE
 
-  if (!result.ok) {
-    const copy =
-      result.reason === 'NO_LANES'
-        ? {
-            es: 'No tienes lanes asignadas todavía. Pide a un administrador que te asigne una.',
-            en: 'You have no lanes assigned yet. Ask an admin to assign you one.',
-          }
-        : {
-            es: 'No se pudieron cargar las señales. Intenta de nuevo.',
-            en: 'Could not load signals. Please try again.',
-          }
-    return <EmptyState tag={TAG} title={TITLE} description={copy} />
-  }
+  // The Signal Deck is now the post-login home, so it must render for EVERY
+  // identity — never hard-fail when the lane-scoped analytics deck has no lanes.
+  // Fetch the rbac set + the exact operations snapshot alongside the (optional)
+  // analytics deck, all in one wave.
+  const [memberships, isGroupAdmin, hasRbMembership, deckResult, ops] = await Promise.all([
+    getLaneMemberships(),
+    getIsGroupAdmin(),
+    getHasRbMembership(),
+    getSignalDeck({ laneSlug: params.lane, days }),
+    getOperationsSnapshot({ includeRb: true }),
+  ])
+  const visible = visibleModules(memberships.map((m) => m.role) as Role[], isGroupAdmin, hasRbMembership)
 
-  const { deck, lanes } = result
-  const activeLane = deck.laneSlugs.length === 1 ? deck.laneSlugs[0] : null
+  const lanes = deckResult.ok ? deckResult.lanes : []
+  const activeLane = deckResult.ok && deckResult.deck.laneSlugs.length === 1 ? deckResult.deck.laneSlugs[0] : null
 
   return (
     <div className="flex flex-col gap-8 p-6">
@@ -51,7 +52,7 @@ export default async function SignalsPage({
             </span>
             <h1 className="font-display text-t3 text-ink-primary">{t(TITLE, locale)}</h1>
           </div>
-          {deck.isGroupAdmin ? (
+          {isGroupAdmin ? (
             <Link
               href="/signals/group"
               className="font-mono text-label uppercase tracking-[0.12em] text-ink-secondary underline-offset-4 hover:text-lane-accent hover:underline"
@@ -77,18 +78,32 @@ export default async function SignalsPage({
         ) : null}
       </header>
 
-      <LanePulse metrics={deck.pulse} windowDays={deck.windowDays} locale={locale} />
+      {/* Operations cockpit — exact point-in-time state, the home's reason to exist.
+          Renders for every identity; each tile gates on the operator's visible
+          modules and drill-links into its owner. */}
+      <QuickActions visible={visible} isGroupAdmin={isGroupAdmin} locale={locale} />
+      {ops.ok ? <OperationsBand snapshot={ops.snapshot} visible={visible} locale={locale} /> : null}
+      {isGroupAdmin ? <SignalsFeed locale={locale} /> : null}
 
-      <div className="grid gap-8 lg:grid-cols-2">
-        <FunnelChart steps={deck.funnel} locale={locale} />
-        <SourceSplit slices={deck.sourceSplit} locale={locale} />
-      </div>
-
-      <ProductLeaderboard rows={deck.leaderboard} locale={locale} />
-      <FillWatch rows={deck.fillWatch} locale={locale} />
-
-      {/* <WeeklyBrief> (★ Intelligence-written digest) is owned by the
-          Intelligence surface (Wave 4/5) and mounts here once available. */}
+      {/* Analytics (matview funnel) — renders only when the lane-scoped deck loads;
+          an operator with no lanes still gets the operations cockpit above. */}
+      {deckResult.ok ? (
+        <>
+          <LanePulse metrics={deckResult.deck.pulse} windowDays={deckResult.deck.windowDays} locale={locale} />
+          <div className="grid gap-8 lg:grid-cols-2">
+            <FunnelChart steps={deckResult.deck.funnel} locale={locale} />
+            <SourceSplit slices={deckResult.deck.sourceSplit} locale={locale} />
+          </div>
+          <ProductLeaderboard rows={deckResult.deck.leaderboard} locale={locale} />
+          <FillWatch rows={deckResult.deck.fillWatch} locale={locale} />
+        </>
+      ) : (
+        <p className="font-mono text-label uppercase tracking-[0.12em] text-ink-secondary">
+          {deckResult.reason === 'NO_LANES'
+            ? t({ es: 'La analítica aparece cuando tengas una lane asignada.', en: 'Analytics appear once you have a lane assigned.' }, locale)
+            : t({ es: 'No se pudo cargar la analítica.', en: 'Could not load analytics.' }, locale)}
+        </p>
+      )}
     </div>
   )
 }
