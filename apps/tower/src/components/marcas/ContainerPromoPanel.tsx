@@ -180,6 +180,10 @@ export function ContainerPromoPanel({
       canvas.height = 1080
       const ctx = canvas.getContext('2d')
       if (!ctx) return
+      // Deliberate raw hex, NOT a token: the fixed off-white share-card ground.
+      // This exported PNG/JPG is a Wings brand artifact shared to WhatsApp/ads —
+      // it must stay identical across channels and must never follow TOWER's
+      // light/dark theme. Binding it to --surface-0 would theme-couple the asset.
       ctx.fillStyle = '#F8F6F0'
       ctx.fillRect(0, 0, 1080, 1080)
       ctx.drawImage(img, 0, 0, 1080, 1080)
