@@ -84,6 +84,7 @@ function Breadcrumb({ locale }: { locale: Locale }) {
  */
 export function ShellChrome({
   memberships,
+  userName,
   userEmail,
   isGroupAdmin = false,
   hasRbMembership = false,
@@ -91,6 +92,7 @@ export function ShellChrome({
   children,
 }: {
   memberships: LaneMembership[]
+  userName: string | null
   userEmail: string | null
   isGroupAdmin?: boolean
   hasRbMembership?: boolean
@@ -295,7 +297,7 @@ export function ShellChrome({
             <NavSidebar visible={visible} />
           </div>
           <div className="md:hidden">
-            <ControlCenterStatus userEmail={userEmail} />
+            <ControlCenterStatus userName={userName} userEmail={userEmail} active={drawerOpen} />
           </div>
 
           {/* Footer — Mister entry (drawer-only; on desktop the floating launcher
@@ -326,12 +328,13 @@ export function ShellChrome({
 
         <div className="flex min-h-screen min-w-0 flex-1 flex-col">
           <TopBar
+            userName={userName}
             userEmail={userEmail}
             isGroupAdmin={isGroupAdmin}
             onOpenSearch={() => setPaletteOpen(true)}
             onOpenMenu={() => setDrawerOpen(true)}
           />
-          <GreetingBar userEmail={userEmail} />
+          <GreetingBar userName={userName} userEmail={userEmail} />
           <Breadcrumb locale={DEFAULT_LOCALE} />
           {needsOnboarding ? <OnboardingBanner /> : null}
           {/* overflow-x-clip: a mobile safety net — no page-wide horizontal
