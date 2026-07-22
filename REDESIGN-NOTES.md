@@ -10,7 +10,52 @@ rewrite; zero feature regression.
 
 ---
 
-## P8e — Mister artifacts: classify-before-convert (World-B exemption)  ·  status: built, in review
+## P8f — Latent-class fix (silently-broken utilities) + table shells  ·  status: built, in review
+
+Fifth restyle cut, and the sweep's **first visible bug-fix**: three utility classes
+used in markup but **defined nowhere in the theme** — they render as no-ops today, so
+fixing them is a *visible* change (surfaces gain the styling that was silently
+missing). Full latent-class sweep run per Fable's P8f watch-item (c) — these three are
+the complete inventory; all colors (incl. `ink-tertiary`), radii, and other utilities
+verified defined.
+
+**The inventory + per-site assessment:**
+- **`border-hairline` → `border-line-hairline`** (17 sites · ClientsWindow,
+  QuotationsWindow, DocumentsWindow). `hairline` is not a color; `line-hairline` is
+  (both themes, globals.css:428/467). *Visible change:* cards, table shells, and row
+  dividers **gain a hairline border that was rendering as none.** Correct — these are
+  list/table surfaces that should be ruled.
+- **`text-body-sm` → `text-t0`** (11 sites · the 3 Windows + DocumentUploader). No
+  `body-sm` size token; `t0` is the base body. *Visible change:* descriptive
+  paragraphs, empty-state copy, table body text pin to **15px** (were inheriting).
+  (TOWER's scale is decision-grade — one step above the frozen skeleton: `--type-0`
+  = 15px, not the family's 14; globals.css:124-127. F-P8f-1.)
+- **`text-h2` → `font-display text-t3 text-ink-primary`** (3 sites · the 3 Window H1s).
+  No `h2` size token, and rather than mint a third header style, the H1s now match the
+  **dominant module-header convention** (`font-display text-t3`, the 7 admin/catalog
+  sibling headers; post-PT `font-display` = Inter, so alignment is free — F-P8f-2).
+  *Visible change (the biggest):* the window titles ("Clientes", "Cotizaciones",
+  "Documentos") were rendering at inherited/tiny size — now proper module headings,
+  consistent with their nav siblings (wayfinding parity). CatalogBrowse's lone `text-t2`
+  header is queued as a P8g one-liner to close the last outlier.
+
+**Table shells kept FLAT-RULED** (Fable data-layer law, watch-item d): I swapped the
+border class (hairline yes) but did **not** add `rounded-card-lg`/`shadow-elevation` to
+the data tables — they stay `rounded-card` (4px) + hairline, flat. Cards/shadows are
+for content cards, not the data layer.
+
+**Bonus (P8d family completion):** DocumentUploader is a user-triggered reveal form
+(the `!open`→button→panel pattern) that the P8d recon missed — gave it the same
+`rounded-card-lg` + `shadow-elevation-2` + `tower-settle` as OpenContainerForm, so the
+reveal-form family is now consistent.
+
+**QA:** the three Windows in both themes (headings now properly sized, hairlines now
+visible); `line-hairline` resolves in Daylight + Nightwatch; the DocumentUploader
+panel reveals with the settle motion; data tables remain flat-ruled.
+
+---
+
+## P8e — Mister artifacts: classify-before-convert (World-B exemption)  ·  status: SHIPPED to production
 
 Fourth restyle cut. **Classify-first, per Fable's P8e watch-item** — and the answer
 is that the Mister artifact renderers are a **deliberate token-system exemption, not
