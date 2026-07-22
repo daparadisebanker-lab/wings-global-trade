@@ -10,6 +10,81 @@ rewrite; zero feature regression.
 
 ---
 
+## PT — Typography split: Inter (the tool) / Wings faces (the artifacts)  ·  status: built, in review
+
+User ruling (via `/brand-universe`): the **TOWER app** moves to **Inter** (clean,
+macOS-native, self-hostable, owns its numerals); the **generated brand artifacts**
+— ficha técnica · cotización · proforma · container share images — **keep the Wings
+Global Trade current fonts**. Numerals = the grotesque's own tabular figures.
+**Scope: TOWER-only for now** (no CLAUDE.md §2 amendment yet; a later ecosystem
+ratification is the separate, bigger call).
+
+**Grounding (verified, not assumed):** "the Wings current fonts" = **NissanOpti
+(display) + Flexo (body) + Teko (numerals)** — the *intentional* brand system, live
+on `apps/site` and codified in `packages/liveries/wings/livery.css`. Not TOWER drift.
+(The deeper question — is NissanOpti the right *owned* Wings face long-term — is a
+brand-level conversation, explicitly parked.)
+
+**Architecture — a token split, all in `apps/tower/src/app/globals.css`:**
+- Added a self-hosted **Inter** variable `@font-face` (OFL, Fontsource;
+  `public/fonts/inter/inter-variable-latin.woff2`, weight axis 100–900).
+- Repointed the app defaults `--font-display / --font-ui / --font-mono` → **Inter**.
+  App numerals get Inter's tabular figures for free via the pre-existing
+  `[data-app='tower'] .font-mono, [data-numeric] { font-variant-numeric: tabular-nums }`
+  rule — so Directive 5 ("numerals are brand assets, fixed-width") is now *actually*
+  met (Teko was a condensed display face, never a real tabular set).
+- Added a **brand-type override** rule that re-declares the three tokens back to
+  NissanOpti/Flexo/Teko at each artifact root, so its whole subtree resolves the
+  Wings faces regardless of the app default:
+  `.wings-brand-type, .pdoc, .qdoc, .fdoc, .rts, .rbq, .pdoc-page, .qdoc-page, .fdoc-page, .rbqdoc-page`.
+- `tailwind.config.ts` — comment/fallbacks updated (utilities already map to the
+  tokens; no utility change needed).
+
+**Why the artifacts are safe (verified):**
+- The 9 document roots above each re-declare the tokens → Flexo/NissanOpti/Teko.
+- The **container share images** (`ContainerPromoPanel` → `@wings/rb-core`
+  `buildPromoCardSvg`) **hardcode the faces in-SVG** (`'NissanOpti'`, `'Flexo'`,
+  `'Teko'`) and the server raster (`/api/promo-card`) uses `promoFontFiles()` +
+  `defaultFontFamily: 'Flexo'`. Both are immune to the app token change; the only
+  requirement — keep the brand `@font-face` loaded — is met. `packages/rb-core`
+  untouched (and out of scope).
+- **Cost sheet** (`.csheet`/`.csheet-page`) deliberately stays Inter: an internal
+  margin document, never handed to a client — not in the brand-artifact list.
+- TopBar brand mark is the isotipo **image** (`wings-isotipo.webp`), font-agnostic;
+  the "WINGS" text is a `font-mono` micro-label (a system label, not the logotype)
+  → correctly moves to Inter with the rest of the tool.
+
+**Weight discipline:** Inter variable collapses the 8 static app-weight files to one;
+the heavy brand set (NissanOpti/Flexo/Teko) now loads chiefly where a document/share
+card renders. Ramp target 400 / 500 / 600.
+
+**Fable review (APPROVE-WITH-FIXES) — applied before commit:**
+- **F-PT-1** — the app `--font-mono` fallback was `system-ui,…` → if Inter ever
+  failed to load, numeral columns would degrade to *proportional* figures, breaking
+  Directive 5 in exactly the failure mode. Fixed to `'Inter', ui-monospace, 'SF
+  Mono', Menlo, monospace` (aligned digits guaranteed on any fallback; raw-CSS
+  consumers like `mister-dock.css` inherit it too).
+- **F-PT-2** — the `globals.css` "Typographic voice" header comment still described
+  the pre-split world (Flexo as the UI grotesque). Rewritten to describe the split
+  and to mark the NissanOpti/Flexo/Teko `@font-face` set **load-bearing** for the
+  in-page promo-card SVG preview (so no future "unused fonts" prune removes them).
+- **F-PT-3 (info, no code):** the login card's `font-display` h1 ("Admin Portal")
+  was NissanOpti, now Inter — the one brand-forward live text that visibly shifts.
+  Legit under the tool-voice ruling (login is app UI). If the serif is wanted back
+  there, the sanctioned hook already exists: add `wings-brand-type` to the login
+  card. Left as a post-deploy eyeball for the user.
+
+**Deferred / follow-ups:** Inter `<link rel=preload>` (subtle swap from system-ui
+fallback — perf nicety, not required); ecosystem-wide ratification of Inter-for-tools
+if it proves out; the NissanOpti-ownership brand question.
+
+**Post-deploy QA:** app chrome + tables + Mister + palette render Inter; numerals
+stay fixed-width; proforma / cotización / ficha / container-quote documents still
+render in Flexo/NissanOpti/Teko (light, even in dark shell); the container share
+card preview + PNG/JPG download unchanged; cost sheet in Inter.
+
+---
+
 ## P5 — WINGS Control Center (mobile), tap-first  ·  status: reviewed (APPROVE-WITH-FIXES), committing
 
 User chose **tap-first, straight-to-prod** — solid + accessible Control Center now;
