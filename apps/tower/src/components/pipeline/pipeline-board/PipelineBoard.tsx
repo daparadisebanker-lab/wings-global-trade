@@ -179,13 +179,13 @@ export function PipelineBoard({ lanes, initialLaneId }: { lanes: EditableLane[];
           aria-label="Nuevo RFQ / New RFQ"
           className="tower-settle flex flex-wrap items-end gap-3 rounded-card border border-line bg-surface-1 p-4"
         >
-          <label className="flex flex-col gap-1">
+          <label className="flex w-full flex-col gap-1 sm:w-auto">
             <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">Cuenta / Account</span>
             <select
               ref={newFormFieldRef}
               value={newAccountId}
               onChange={(e) => setNewAccountId(e.target.value)}
-              className="w-56 rounded-card border border-line bg-surface-0 px-3 py-2 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent"
+              className="w-full rounded-card border border-line bg-surface-0 px-3 py-2 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent sm:w-56"
             >
               <option value="">Sin cuenta / No account</option>
               {(accountsQuery.data ?? []).map((a) => (
@@ -196,12 +196,12 @@ export function PipelineBoard({ lanes, initialLaneId }: { lanes: EditableLane[];
             </select>
           </label>
 
-          <label className="flex flex-col gap-1">
+          <label className="flex w-full flex-col gap-1 sm:w-auto">
             <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">Fuente / Source</span>
             <select
               value={newSource}
               onChange={(e) => setNewSource(e.target.value as RfqSource)}
-              className="rounded-card border border-line bg-surface-0 px-3 py-2 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent"
+              className="w-full rounded-card border border-line bg-surface-0 px-3 py-2 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent sm:w-auto"
             >
               {SOURCE_OPTIONS.map((s) => (
                 <option key={s} value={s}>
@@ -224,7 +224,7 @@ export function PipelineBoard({ lanes, initialLaneId }: { lanes: EditableLane[];
             type="button"
             onClick={handleCreate}
             disabled={isPending}
-            className="rounded-card bg-positive px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-surface-0 disabled:opacity-40"
+            className="w-full rounded-card bg-positive px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-surface-0 disabled:opacity-40 sm:w-auto"
           >
             Crear / Create
           </button>
@@ -242,11 +242,16 @@ export function PipelineBoard({ lanes, initialLaneId }: { lanes: EditableLane[];
         </p>
       ) : null}
 
-      <div className="flex flex-1 gap-4 overflow-x-auto">
+      {/* Mobile: one focused column with a peek of the next, scroll-snapped
+          (drag-free kanban). Desktop: fixed 288px columns side by side. */}
+      <div className="-mx-6 flex flex-1 snap-x snap-mandatory gap-4 overflow-x-auto px-6 scroll-p-6 md:mx-0 md:px-0">
         {columns.map((stage) => {
           const stageRows = byStage.get(stage.id) ?? []
           return (
-            <div key={stage.id} className="flex w-72 flex-none flex-col gap-3 rounded-card border border-line bg-surface-0 p-3">
+            <div
+              key={stage.id}
+              className="flex w-[86vw] max-w-[20rem] flex-none snap-start flex-col gap-3 rounded-card border border-line bg-surface-0 p-3 md:w-72 md:max-w-none"
+            >
               <div className="flex items-center justify-between border-b border-line pb-2">
                 <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-primary">{stage.label.es}</span>
                 <span className="font-mono text-label text-ink-secondary" data-numeric>

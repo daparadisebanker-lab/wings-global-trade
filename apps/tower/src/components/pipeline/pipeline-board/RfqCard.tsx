@@ -70,7 +70,7 @@ export function RfqCard({
             value={rfq.stage}
             disabled={busy}
             onChange={(e) => onStageChange?.(e.target.value)}
-            className="w-full rounded-card border border-line bg-surface-0 px-2 py-1.5 font-mono text-label uppercase tracking-[0.06em] text-ink-primary outline-none focus-visible:border-lane-accent disabled:opacity-40"
+            className="w-full rounded-card border border-line bg-surface-0 px-2 py-2 font-mono text-label uppercase tracking-[0.06em] text-ink-primary outline-none focus-visible:border-lane-accent disabled:opacity-40"
           >
             {stages.map((s) => (
               <option key={s.id} value={s.id}>
