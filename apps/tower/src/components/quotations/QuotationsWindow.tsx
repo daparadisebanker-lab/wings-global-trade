@@ -1,12 +1,14 @@
 import Link from 'next/link'
+import { cn } from '@wings/trade-ui'
 import { t, type Locale } from '@/lib/i18n'
 import { formatMinor } from '@/lib/money'
 import type { QuotationListItem } from '@/lib/actions/quotations-logic'
 import { IssueButton } from './IssueButton'
 
 // The Quotations window — a standalone list of every quotation the caller can
-// see (draft + issued), each opening its printable proforma. Read-only surface;
-// issuing (the binding mint) and Mister's save-draft land in the next sub-slices.
+// see (draft + issued), each opening its printable proforma. Responsive: a table
+// on desktop, stacked cards on mobile (a 7-column table never scrolls sideways on
+// a phone). Issuing (the binding mint) is the IssueButton client island.
 
 const TAG = 'COT · Cotizaciones'
 const TITLE = { es: 'Cotizaciones', en: 'Quotations' }
@@ -17,6 +19,14 @@ const STATUS_STYLE: Record<string, string> = {
   ACCEPTED: 'text-positive',
   REJECTED: 'text-ink-secondary',
   EXPIRED: 'text-ink-secondary',
+}
+
+function StatusPill({ status }: { status: string }) {
+  return (
+    <span className={cn('shrink-0 font-mono text-label uppercase tracking-[0.1em]', STATUS_STYLE[status] ?? 'text-ink-secondary')}>
+      {status}
+    </span>
+  )
 }
 
 function Cell({ children, className = '' }: { children: React.ReactNode; className?: string }) {
@@ -58,8 +68,48 @@ export function QuotationsWindow({ items, locale }: { items: QuotationListItem[]
           )}
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-card border border-hairline">
-          <table className="w-full border-collapse text-body-sm">
+        <>
+          {/* Mobile: one card per quotation — the total is the headline. */}
+          <ul className="flex flex-col gap-3 md:hidden">
+            {items.map((q) => (
+              <li key={q.id} className="flex flex-col gap-3 rounded-card border border-hairline bg-surface-1 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 flex-col gap-0.5">
+                    <span className="truncate font-mono text-t0 text-ink-primary" data-numeric>
+                      {q.quoteNo ?? t({ es: 'Borrador', en: 'Draft' }, locale)}
+                    </span>
+                    <span className="truncate text-body-sm text-ink-secondary">{q.clientName ?? '—'}</span>
+                  </div>
+                  <StatusPill status={q.status} />
+                </div>
+                <div className="flex items-baseline justify-between gap-3">
+                  <span className="font-mono text-t2 tabular-nums text-ink-primary" data-numeric>
+                    {formatMinor(q.totalMinor, q.currency)}
+                  </span>
+                  <span
+                    className="shrink-0 font-mono text-label uppercase tracking-[0.1em] text-ink-secondary"
+                    data-numeric
+                  >
+                    {q.laneSlug ? `${q.laneSlug} · ` : ''}
+                    {q.createdAt.slice(0, 10)}
+                  </span>
+                </div>
+                <div className="flex items-center gap-6 border-t border-hairline pt-3">
+                  {q.status === 'DRAFT' ? <IssueButton quoteId={q.id} locale={locale} /> : null}
+                  <Link
+                    href={`/proforma/${q.id}/document`}
+                    className="font-mono text-label uppercase tracking-[0.1em] text-accent"
+                  >
+                    {t({ es: 'Proforma', en: 'Proforma' }, locale)}
+                  </Link>
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          {/* Desktop: the full manifest table. */}
+          <div className="hidden overflow-x-auto rounded-card border border-hairline md:block">
+            <table className="w-full border-collapse text-body-sm">
             <thead>
               <tr className="border-b border-hairline text-left font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
                 <Cell>{t({ es: 'Número', en: 'Number' }, locale)}</Cell>
@@ -82,9 +132,7 @@ export function QuotationsWindow({ items, locale }: { items: QuotationListItem[]
                   <Cell>{q.clientName ?? <span className="text-ink-tertiary">—</span>}</Cell>
                   <Cell className="font-mono uppercase text-ink-secondary">{q.laneSlug ?? '—'}</Cell>
                   <Cell>
-                    <span className={`font-mono text-label uppercase tracking-[0.1em] ${STATUS_STYLE[q.status] ?? 'text-ink-secondary'}`}>
-                      {q.status}
-                    </span>
+                    <StatusPill status={q.status} />
                   </Cell>
                   <Cell className="text-right font-mono tabular-nums" data-numeric>
                     {formatMinor(q.totalMinor, q.currency)}
@@ -107,7 +155,8 @@ export function QuotationsWindow({ items, locale }: { items: QuotationListItem[]
               ))}
             </tbody>
           </table>
-        </div>
+          </div>
+        </>
       )}
     </div>
   )

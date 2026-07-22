@@ -52,8 +52,31 @@ export function ClientsWindow({ items, locale }: { items: ClientListItem[]; loca
           )}
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-card border border-hairline">
-          <table className="w-full border-collapse text-body-sm">
+        <>
+          {/* Mobile: one card per client. */}
+          <ul className="flex flex-col gap-3 md:hidden">
+            {items.map((c) => (
+              <li key={c.id} className="flex flex-col gap-2 rounded-card border border-hairline bg-surface-1 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <span className="truncate font-medium text-ink-primary">{c.name}</span>
+                  <span className="shrink-0 font-mono text-label tabular-nums text-ink-secondary" data-numeric>
+                    {c.score}
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-x-4 gap-y-1 font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
+                  <span>{c.brandName ?? '—'}</span>
+                  {c.country || c.region ? (
+                    <span>{[c.country, c.region].filter(Boolean).join(' · ')}</span>
+                  ) : null}
+                  <span data-numeric>{c.createdAt.slice(0, 10)}</span>
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          {/* Desktop: the table. */}
+          <div className="hidden overflow-x-auto rounded-card border border-hairline md:block">
+            <table className="w-full border-collapse text-body-sm">
             <thead>
               <tr className="border-b border-hairline text-left font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
                 <Cell>{t({ es: 'Cliente', en: 'Client' }, locale)}</Cell>
@@ -81,7 +104,8 @@ export function ClientsWindow({ items, locale }: { items: ClientListItem[]; loca
               ))}
             </tbody>
           </table>
-        </div>
+          </div>
+        </>
       )}
     </div>
   )
