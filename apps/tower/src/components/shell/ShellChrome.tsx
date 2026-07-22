@@ -5,6 +5,7 @@ import type { CSSProperties, KeyboardEvent as ReactKeyboardEvent, ReactNode } fr
 import { usePathname } from 'next/navigation'
 import { cn } from '@wings/trade-ui'
 import { CommandPalette } from './CommandPalette'
+import { toggleTheme } from './theme'
 import { LaneSwitcher } from './LaneSwitcher'
 import { MisterDock } from './MisterDock'
 import { MisterMark } from './MisterMark'
@@ -15,6 +16,8 @@ import type { LaneMembership } from '@/lib/lanes/memberships'
 import { visibleModules, type Role } from '@/lib/rbac'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import { useActiveTool } from '@/shell/navigation/useActiveTool'
+import { resolveActiveTool } from '@/shell/navigation/registry'
+import { recordRecent } from '@/shell/navigation/recents'
 import { GreetingBar } from '@/shell/frame/GreetingBar'
 import { Dock } from '@/shell/dock/Dock'
 import { ControlCenterGrid, ControlCenterStatus } from '@/shell/control-center/ControlCenter'
@@ -175,6 +178,26 @@ export function ShellChrome({
     [roles, isGroupAdmin, hasRbMembership],
   )
 
+  // Capture visited record detail routes for the palette's "Recientes" group. A
+  // detail route = an active tool whose path carries a trailing id segment (the
+  // same id test the Breadcrumb uses). Label = module name + short id — terse but
+  // honest; real record-name labels are a follow-up (REDESIGN-NOTES P6).
+  useEffect(() => {
+    const tool = resolveActiveTool(pathname)
+    if (!tool || pathname === tool.href) return
+    const segs = pathname.split('/').filter(Boolean)
+    const last = segs[segs.length - 1] ?? ''
+    const isId = /^[0-9a-f-]{8,}$/i.test(last) || /^\d+$/.test(last)
+    if (!isId) return
+    const shortId = last.length > 8 ? last.slice(0, 8) : last
+    recordRecent({
+      href: pathname,
+      label: `${t(tool.label, DEFAULT_LOCALE)} · ${shortId}`,
+      tag: tool.tag,
+      moduleId: tool.id,
+    })
+  }, [pathname])
+
   const activeLane = memberships.find((m) => m.laneId === activeLaneId) ?? null
   const rootStyle = activeLane?.accent
     ? ({ '--lane-accent': activeLane.accent } as CSSProperties)
@@ -333,7 +356,14 @@ export function ShellChrome({
         </div>
       </div>
 
-      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} isGroupAdmin={isGroupAdmin} visible={visible} />
+      <CommandPalette
+        open={paletteOpen}
+        onOpenChange={setPaletteOpen}
+        isGroupAdmin={isGroupAdmin}
+        visible={visible}
+        onToggleTheme={toggleTheme}
+        onToggleDock={toggleDock}
+      />
 
       {/* Desktop Dock — the primary desktop nav (registry-driven). Desktop-only
           (the component gates hidden md:flex); mobile keeps the drawer. */}

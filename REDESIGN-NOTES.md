@@ -10,7 +10,96 @@ rewrite; zero feature regression.
 
 ---
 
-## PT — Typography split: Inter (the tool) / Wings faces (the artifacts)  ·  status: built, in review
+## P6 — ⌘K record search + recents + live actions  ·  status: built, in review
+
+The palette grows from tools/actions to **records** and **recents**, and the last
+dead affordances go live. Recon by the p6-recon workflow (4 parallel readers +
+synthesis); all files app-local to `apps/tower` (no `packages/*`, so no swap-test).
+
+**Scope decisions (autonomous-loop defaults; Fable to adjudicate):**
+- **Record search = Products only.** The one record type with BOTH an existing
+  free-text endpoint (`listProducts({search})`) AND a detail route (`/catalog/[id]`).
+  Hard rule honored: wired to the existing server action, **no new search infra**.
+- **Containers deferred.** Its only path is a client-filter over ≤200 unscoped rows
+  that would *silently* miss matches past the cap — violates the no-silent-truncation
+  honesty rule. Recents still covers containers, so they stay reachable.
+- **Documents/Clients/Quotations/RFQs/RB-products skipped** — each lacks either a
+  text-search surface or a per-record detail route (or needs lane/brand scope). Never
+  build infra for them here.
+- **⌘1–9 deferred** — Chrome/Firefox reserve it; can't browser-test here, so shipping
+  blind risks a dead affordance (same discipline as the P5 gesture).
+
+**Three debts closed:**
+- **Debt 2 — placeholders live:** `act-publish → /catalog`, `act-new-rfq → /pipeline`
+  (module indexes that host the create flow; parametric routes can't be static hrefs —
+  the ADMIN_ACTIONS precedent). **No disabled affordance remains** in the palette; the
+  now-unused `disabled?` field removed from `PaletteAction` (cleaner than an unhonored flag).
+- **Debt 1 — F-P3-2:** keywords were already interpolated into every item `value` (recon
+  confirmed); the flip removes the last `value={undefined}` case → verified, no change.
+- **Debt 3 — F-P3-3:** `adminOnly` is *consumed* (the everyone-list filter), not inert —
+  documented on both interfaces; kept as defense-in-depth on the `ADMIN_*` lists.
+
+**New surfaces:**
+- **Registros group** — `useRecordSearch(term, visible)`: TanStack `useQuery`
+  (`['palette','products',term]`, palette-specific key), debounced 250ms, `enabled` on
+  `term.length>=2 && visible.has('catalog')`, capped 10, honest `Command.Empty`
+  ("Sin resultados"), no spinner-to-nothing. cmdk caveat handled: record `value` seeds
+  the raw query so cmdk's own filter never drops a server-matched row (no `shouldFilter=false`).
+- **Recientes group** — localStorage (`tower-recents`, bounded 8, deduped by href),
+  captured in ShellChrome on navigation to a detail route (trailing-id test = the
+  Breadcrumb's), read on palette open, rbac-gated on `visible.has(moduleId)`. Label =
+  module name + short id (terse but honest).
+- **Two client actions** — Toggle theme / Collapse dock, calling existing handlers
+  threaded from ShellChrome; rendered only when their handler is present (no dead
+  affordance). Theme flip extracted to `shell/theme.ts` (shared by ThemeToggle + palette
+  so they can't diverge; ThemeToggle's MutationObserver re-syncs the visible toggle).
+
+**Files:** new `shell/theme.ts`, `shell/navigation/recents.ts`, `shell/navigation/useRecordSearch.ts`;
+edited `registry.ts` (placeholders/adminOnly/LOCAL_ACTIONS), `CommandPalette.tsx` (controlled
++ debounced input, Registros/Recientes groups, local actions, shared class consts),
+`ShellChrome.tsx` (recents capture effect + thread the two callbacks), `ThemeToggle.tsx`
+(consume the shared util).
+
+**Fable review (APPROVE-WITH-FIXES) — applied before commit:**
+- **F-P6-1** — the record-search hook returned `isFetching` and the palette ignored it,
+  so during the debounce + RTT window "Sin resultados" could flash before hits arrived
+  ("nothing resolves to results"). Fixed: `recordsPending = query.length>=2 &&
+  canSearchRecords && (term !== query || isFetching)` suppresses `Command.Empty` while a
+  record query is settling and renders a muted "Buscando registros… / Searching records…"
+  line in the Registros slot instead. Empty now only asserts emptiness once settled.
+- **F-P6-2 (log-only)** — deferral ledger completed (below).
+
+**Deferred / follow-ups (the honest ledger):**
+- **`searchDocuments`** (`lib/actions/documents.ts:55`) — a real free-text title search
+  (RLS-scoped, the seam Mister reads through) DOES exist, but Documents has **no
+  `/documents/[id]` detail route** to land on, so it fails the endpoint+route criterion.
+  It is the obvious NEXT record type — light it up the moment a doc detail/preview route
+  exists. (Named here so "Products-only = honest maximum" is fully true, not overstated.)
+- **Containers search** — only when a `search` param is added to `listContainers` (a
+  client-filter over the ≤200 cap would silently truncate — refused). Recents covers it.
+- **Spec §5 `⌘⇧C` copy-link** action — not built this phase; deferred.
+- **⌘1–9** dock jumps — once real-browser-testable (browsers reserve it).
+- **Real record-name recents labels** — per-detail-page reporting or dynamic titles (5 pages);
+  today's `Módulo · shortId` is the honest MVP.
+
+**Known limits (logged, acceptable for the MVP):**
+- **`tower-recents` / `tower-theme` are not user-namespaced** — on a shared workstation
+  operator B sees A's recents (filtered by B's `visible`; labels are only `Módulo · shortId`;
+  RLS guards all actual content). Namespace to `tower-recents:{userId}` if shared machines
+  become real (F-P6-3).
+- **A failed `listProducts` degrades to "Sin resultados"** (`res.data?.rows ?? []` swallows
+  the error) — backend-down reads as no-matches. Defensible for a palette MVP; surface an
+  error state if it proves noisy (F-P6-4).
+
+**Post-deploy QA:** ⌘K → type ≥2 chars → Products appear under Registros, jump opens
+`/catalog/[id]`; empty query shows Recientes (module·id) after visiting a record; "Publicar
+producto…" → /catalog, "Nuevo RFQ…" → /pipeline (no disabled rows anywhere); Toggle theme /
+Collapse dock fire from ⌘K and the visible controls re-sync; a hidden module's records/recents
+never surface (rbac parity); keyboard-only nav across every group.
+
+---
+
+## PT — Typography split: Inter (the tool) / Wings faces (the artifacts)  ·  status: SHIPPED to production
 
 User ruling (via `/brand-universe`): the **TOWER app** moves to **Inter** (clean,
 macOS-native, self-hostable, owns its numerals); the **generated brand artifacts**

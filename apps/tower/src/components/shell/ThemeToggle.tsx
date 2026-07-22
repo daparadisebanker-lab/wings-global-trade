@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react'
 import { cn } from '@wings/trade-ui'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
-
-type Theme = 'light' | 'dark'
+import { applyTheme, currentTheme, type Theme } from './theme'
 
 /**
  * Theme toggle (TOWER-REDESIGN P2b). Reads/writes the `tower-theme` key the P1
@@ -33,7 +32,7 @@ export function ThemeToggle({
 
   useEffect(() => {
     const el = document.documentElement
-    const read = () => setTheme(el.getAttribute('data-theme') === 'dark' ? 'dark' : 'light')
+    const read = () => setTheme(currentTheme())
     read()
     // Stay live with the shared attribute: when the desktop TopBar toggle flips
     // `data-theme`, the (hidden) mobile Control Center instance must not keep stale
@@ -50,12 +49,7 @@ export function ThemeToggle({
 
   const next: Theme = theme === 'dark' ? 'light' : 'dark'
   const apply = () => {
-    document.documentElement.setAttribute('data-theme', next)
-    try {
-      localStorage.setItem('tower-theme', next)
-    } catch {
-      /* private mode — a session-only theme is acceptable */
-    }
+    applyTheme(next)
     setTheme(next)
   }
 
