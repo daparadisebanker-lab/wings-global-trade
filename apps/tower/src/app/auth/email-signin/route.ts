@@ -30,16 +30,21 @@ export const dynamic = 'force-dynamic'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-/** Shared team passcode. Prefer TOWER_ACCESS_PASSCODE in the environment; the
- *  literal fallback keeps the door working before the env var is set. */
-function expectedPasscode(): string {
-  return process.env.TOWER_ACCESS_PASSCODE?.trim() || 'WGT2026'
+/** Shared team passcode — from the environment only (TOWER_ACCESS_PASSCODE). No
+ *  in-repo default: when the var is unset the route fails closed (see the config
+ *  guard in POST and passcodeMatches below), never on a hardcoded secret. */
+function expectedPasscode(): string | null {
+  const v = process.env.TOWER_ACCESS_PASSCODE?.trim()
+  return v ? v : null
 }
 
-/** Constant-time compare so the passcode can't be probed by response timing. */
+/** Constant-time compare so the passcode can't be probed by response timing.
+ *  Returns false when no passcode is configured (fail closed). */
 function passcodeMatches(input: string): boolean {
+  const expected = expectedPasscode()
+  if (!expected) return false
   const a = Buffer.from(input)
-  const b = Buffer.from(expectedPasscode())
+  const b = Buffer.from(expected)
   if (a.length !== b.length) return false
   return timingSafeEqual(a, b)
 }
@@ -64,6 +69,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const passcode = String(form.get('passcode') ?? '')
 
   if (!EMAIL_RE.test(email)) return back(origin, 'email')
+  // Fail closed if the passcode is not configured in the environment (so an
+  // unset TOWER_ACCESS_PASSCODE reads as "not configured", never open access).
+  if (!expectedPasscode()) return back(origin, 'config')
   if (!passcodeMatches(passcode)) return back(origin, 'passcode')
 
   const service = createServiceClient()
