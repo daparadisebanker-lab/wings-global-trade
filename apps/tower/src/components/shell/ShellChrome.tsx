@@ -1,13 +1,16 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
-import type { CSSProperties, ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import type { CSSProperties, KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
 import { cn } from '@wings/trade-ui'
 import { CommandPalette } from './CommandPalette'
 import { LaneSwitcher } from './LaneSwitcher'
+import { MisterDock } from './MisterDock'
+import { MisterMark } from './MisterMark'
 import { NavRail } from './NavRail'
 import { OnboardingBanner } from './OnboardingBanner'
+import { RouteProgress } from './RouteProgress'
 import { TopBar } from './TopBar'
 import type { LaneMembership } from '@/lib/lanes/memberships'
 import { visibleModules, type Role } from '@/lib/rbac'
@@ -69,6 +72,10 @@ export function ShellChrome({
   const [paletteOpen, setPaletteOpen] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [misterOpen, setMisterOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+  const railRef = useRef<HTMLElement>(null)
+  const restoreFocusRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -76,11 +83,61 @@ export function ShellChrome({
         e.preventDefault()
         setPaletteOpen((v) => !v)
       }
+      // ⌘J / Ctrl-J summons Mister — the copilot dock (the palette is ⌘K).
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'j') {
+        e.preventDefault()
+        setMisterOpen((v) => !v)
+      }
       if (e.key === 'Escape') setDrawerOpen(false)
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [])
+
+  // Below md (768px) the rail is a MODAL DRAWER, not a sidebar — it needs the
+  // full dialog contract (inert when closed, focus trapped when open, focus
+  // returned on close). Above md it is a static sidebar and none of this applies.
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)')
+    const update = () => setIsMobile(mq.matches)
+    update()
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [])
+
+  // The off-screen mobile drawer must not be reachable by keyboard / AT.
+  useEffect(() => {
+    if (railRef.current) railRef.current.inert = isMobile && !drawerOpen
+  }, [isMobile, drawerOpen])
+
+  // Move focus into the drawer on open; return it to the opener on close.
+  useEffect(() => {
+    if (!isMobile) return
+    if (drawerOpen) {
+      restoreFocusRef.current = (document.activeElement as HTMLElement) ?? null
+      const id = window.setTimeout(() => {
+        railRef.current?.querySelector<HTMLElement>('a[href],button:not([disabled])')?.focus()
+      }, 0)
+      return () => window.clearTimeout(id)
+    }
+    restoreFocusRef.current?.focus?.()
+  }, [drawerOpen, isMobile])
+
+  // Trap Tab within the open mobile drawer.
+  function onRailKeyDown(e: ReactKeyboardEvent<HTMLElement>) {
+    if (!isMobile || !drawerOpen || e.key !== 'Tab') return
+    const f = railRef.current?.querySelectorAll<HTMLElement>('a[href],button:not([disabled])')
+    if (!f || f.length === 0) return
+    const first = f[0]
+    const last = f[f.length - 1]
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault()
+      last.focus()
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault()
+      first.focus()
+    }
+  }
 
   const roles = useMemo(() => memberships.map((m) => m.role) as Role[], [memberships])
   const visible = useMemo(
@@ -94,7 +151,8 @@ export function ShellChrome({
     : undefined
 
   return (
-    <div style={rootStyle} className="min-h-screen bg-surface-0 text-ink-primary">
+    <div style={rootStyle} className="tower-premium-ground min-h-screen bg-surface-0 text-ink-primary">
+      <RouteProgress />
       <div className="flex min-h-screen">
         {/* Mobile drawer backdrop */}
         {drawerOpen ? (
@@ -108,8 +166,13 @@ export function ShellChrome({
         ) : null}
 
         <aside
+          ref={railRef}
+          onKeyDown={onRailKeyDown}
+          role={isMobile ? 'dialog' : undefined}
+          aria-modal={isMobile && drawerOpen ? true : undefined}
+          aria-label={isMobile ? t({ es: 'Menú de navegación', en: 'Navigation menu' }, DEFAULT_LOCALE) : undefined}
           className={cn(
-            'fixed inset-y-0 left-0 z-40 flex w-64 flex-col overflow-y-auto border-r border-line bg-surface-1 transition-transform duration-200',
+            'tower-rail fixed inset-y-0 left-0 z-40 flex w-64 flex-col overflow-y-auto border-r border-line bg-surface-1 transition-transform duration-200',
             'md:sticky md:top-0 md:z-auto md:h-screen',
             collapsed ? 'md:w-16' : 'md:w-64',
             drawerOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
@@ -137,19 +200,45 @@ export function ShellChrome({
 
           <NavRail visible={visible} collapsed={collapsed} onNavigate={() => setDrawerOpen(false)} />
 
-          <button
-            type="button"
-            onClick={() => setCollapsed((v) => !v)}
-            aria-label={
-              collapsed
-                ? t({ es: 'Expandir menú', en: 'Expand menu' }, DEFAULT_LOCALE)
-                : t({ es: 'Colapsar menú', en: 'Collapse menu' }, DEFAULT_LOCALE)
-            }
-            className="mt-auto hidden items-center gap-2 border-t border-line px-4 py-3 font-mono text-label uppercase tracking-[0.12em] text-ink-secondary transition-colors hover:text-ink-primary md:flex"
-          >
-            <span aria-hidden>{collapsed ? '»' : '«'}</span>
-            {!collapsed ? <span>{t({ es: 'Colapsar', en: 'Collapse' }, DEFAULT_LOCALE)}</span> : null}
-          </button>
+          <div className="mt-auto flex flex-col">
+            {/* Mister — a persistent rail entry (the dock is also ⌘J + the floating
+                door). Its own mark, so it reads as the copilot, not a module. */}
+            <button
+              type="button"
+              onClick={() => {
+                setMisterOpen(true)
+                setDrawerOpen(false)
+              }}
+              aria-label={t({ es: 'Abrir Mister (⌘J)', en: 'Open Mister (⌘J)' }, DEFAULT_LOCALE)}
+              className={cn(
+                'group flex items-center gap-3 border-t border-line px-4 py-3 text-ink-secondary transition-colors hover:text-ink-primary',
+                collapsed && 'justify-center px-0',
+              )}
+            >
+              <MisterMark size={20} className="shrink-0" />
+              {!collapsed ? (
+                <>
+                  <span className="font-mono text-label uppercase tracking-[0.12em]">Mister</span>
+                  <span className="ml-auto font-mono text-label tracking-[0.1em] text-ink-secondary group-hover:text-ink-primary">
+                    ⌘J
+                  </span>
+                </>
+              ) : null}
+            </button>
+            <button
+              type="button"
+              onClick={() => setCollapsed((v) => !v)}
+              aria-label={
+                collapsed
+                  ? t({ es: 'Expandir menú', en: 'Expand menu' }, DEFAULT_LOCALE)
+                  : t({ es: 'Colapsar menú', en: 'Collapse menu' }, DEFAULT_LOCALE)
+              }
+              className="hidden items-center gap-2 border-t border-line px-4 py-3 font-mono text-label uppercase tracking-[0.12em] text-ink-secondary transition-colors hover:text-ink-primary md:flex"
+            >
+              <span aria-hidden>{collapsed ? '»' : '«'}</span>
+              {!collapsed ? <span>{t({ es: 'Colapsar', en: 'Collapse' }, DEFAULT_LOCALE)}</span> : null}
+            </button>
+          </div>
         </aside>
 
         <div className="flex min-h-screen min-w-0 flex-1 flex-col">
@@ -170,6 +259,21 @@ export function ShellChrome({
       </div>
 
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} isGroupAdmin={isGroupAdmin} />
+
+      {/* Mister — the copilot dock (World B) + its floating door. The launcher
+          hides while the dock is open so they never overlap. */}
+      {!misterOpen ? (
+        <button
+          type="button"
+          onClick={() => setMisterOpen(true)}
+          className="mister-launch"
+          aria-label={t({ es: 'Abrir Mister (⌘J)', en: 'Open Mister (⌘J)' }, DEFAULT_LOCALE)}
+          title="Mister · ⌘J"
+        >
+          <MisterMark size={26} />
+        </button>
+      ) : null}
+      <MisterDock open={misterOpen} onClose={() => setMisterOpen(false)} />
     </div>
   )
 }

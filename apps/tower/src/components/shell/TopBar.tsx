@@ -23,14 +23,14 @@ export function TopBar({
   locale?: Locale
 }) {
   return (
-    <header className="flex min-w-0 items-center justify-between gap-2 border-b border-line bg-surface-1 px-3 py-3 sm:gap-4 sm:px-4">
+    <header className="tower-bar relative z-10 flex min-w-0 items-center justify-between gap-2 border-b border-line bg-surface-1 px-3 py-3 sm:gap-4 sm:px-4">
       <div className="flex min-w-0 items-center gap-2 sm:gap-3">
         {/* Hamburger — opens the module drawer on mobile only */}
         <button
           type="button"
           onClick={onOpenMenu}
           aria-label={t({ es: 'Abrir menú', en: 'Open menu' }, locale)}
-          className="-ml-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-card text-ink-secondary hover:text-ink-primary md:hidden"
+          className="-ml-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-card text-ink-secondary hover:text-ink-primary md:hidden"
         >
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" aria-hidden>
             <path d="M3 6h14M3 10h14M3 14h14" />

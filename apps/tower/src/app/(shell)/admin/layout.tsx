@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { getIsGroupAdmin } from '@/lib/lanes/memberships'
-import { AdminQueryProvider } from './AdminQueryProvider'
 
 /**
  * Admin is a group-admin-only module. This server guard hides the whole surface
@@ -26,5 +25,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     )
   }
 
-  return <AdminQueryProvider>{children}</AdminQueryProvider>
+  // The TanStack Query client is provided once at the shell root
+  // (TowerQueryProvider); this layout only enforces the group-admin guard.
+  return <>{children}</>
 }

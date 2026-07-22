@@ -36,6 +36,22 @@ const Pipeline: FC<IconProps> = (p) => (
   </SVG>
 )
 
+const Quotations: FC<IconProps> = (p) => (
+  <SVG {...p}>
+    <path d="M5 3h6l4 4v10H5V3z" />
+    <path d="M11 3v4h4" />
+    <path d="M7.5 11h5M7.5 13.5h5" />
+  </SVG>
+)
+
+const Clients: FC<IconProps> = (p) => (
+  <SVG {...p}>
+    <circle cx="7.5" cy="7" r="2.6" />
+    <path d="M3 16c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4" />
+    <path d="M13.5 6.2a2.4 2.4 0 0 1 0 4.4M14 15.8c.3-2-.6-3.4-2-4.1" />
+  </SVG>
+)
+
 const Containers: FC<IconProps> = (p) => (
   <SVG {...p}>
     <rect x="3" y="6" width="14" height="9" />
@@ -69,6 +85,12 @@ const Intelligence: FC<IconProps> = (p) => (
   </SVG>
 )
 
+const Documents: FC<IconProps> = (p) => (
+  <SVG {...p}>
+    <path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h3l1.5 2h6A1.5 1.5 0 0 1 16.5 8.5v6A1.5 1.5 0 0 1 15 16H4.5A1.5 1.5 0 0 1 3 14.5v-8z" />
+  </SVG>
+)
+
 const Admin: FC<IconProps> = (p) => (
   <SVG {...p}>
     <path d="M3 6h14M3 10h14M3 14h14" />
@@ -81,10 +103,13 @@ const Admin: FC<IconProps> = (p) => (
 export const NAV_ICONS: Record<NavIconId, FC<IconProps>> = {
   catalog: Catalog,
   pipeline: Pipeline,
+  quotations: Quotations,
+  clients: Clients,
   containers: Containers,
   costing: Costing,
   marcas: Marcas,
   signals: Signals,
   intelligence: Intelligence,
+  documents: Documents,
   admin: Admin,
 }

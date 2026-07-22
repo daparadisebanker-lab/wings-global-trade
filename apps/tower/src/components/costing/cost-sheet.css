@@ -1,6 +1,22 @@
 /* Printable cost sheet — a self-contained LIGHT surface (white, black ink),
-   independent of TOWER's dark shell, consistent with the quotation document.
-   Scoped under .csheet so it never leaks into the app chrome. */
+   independent of TOWER's shell, consistent with the quotation document.
+   Scoped under .csheet so it never leaks into the app chrome. Its palette lives
+   in one --cs-* block (parity with the other trade documents) rather than raw
+   hex scattered through the rules. */
+
+:root {
+  --cs-ink: #0f1216;
+  --cs-ink-mid: #374151;
+  --cs-ink-soft: #6b7280;
+  --cs-surface: #ffffff;
+  --cs-line: #e5e7eb;
+  --cs-mat: #52555a; /* grey mat behind the sheet on screen */
+  --cs-toolbar-bg: #1b1e22;
+  --cs-toolbar-line: #34383e;
+  --cs-toolbar-ink: #e8eaed;
+  --cs-accent: #c4933f; /* the Wings jewel (the sheet ships on the house brand) */
+  --cs-accent-ink: #001e50;
+}
 
 .csheet {
   box-sizing: border-box;
@@ -8,8 +24,8 @@
   max-width: 720px;
   margin: 0 auto;
   padding: 40px 48px;
-  background: #ffffff;
-  color: #0f1216;
+  background: var(--cs-surface);
+  color: var(--cs-ink);
   font-family: var(--font-ui, system-ui, sans-serif);
   font-size: 13px;
   line-height: 1.5;
@@ -27,11 +43,11 @@
   margin-top: 4px;
   font-family: var(--font-mono, monospace);
   font-size: 12px;
-  color: #6b7280;
+  color: var(--cs-ink-soft);
 }
 .csheet-rule {
   height: 2px;
-  background: #0f1216;
+  background: var(--cs-ink);
   margin: 14px 0 22px;
 }
 .csheet-table {
@@ -40,7 +56,10 @@
 }
 .csheet-table td {
   padding: 6px 4px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--cs-line);
+}
+.csheet-table tr {
+  break-inside: avoid;
 }
 .csheet-table td.csheet-val {
   text-align: right;
@@ -54,7 +73,7 @@
   font-size: 11px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #374151;
+  color: var(--cs-ink-mid);
 }
 .csheet-table tr.csheet-spacer td {
   border-bottom: none;
@@ -63,15 +82,15 @@
 .csheet-foot {
   margin-top: 28px;
   padding-top: 12px;
-  border-top: 1px solid #e5e7eb;
-  color: #6b7280;
+  border-top: 1px solid var(--cs-line);
+  color: var(--cs-ink-soft);
   font-size: 11px;
 }
 
-/* Page frame — forces a light ground over TOWER's dark root body. */
+/* Page frame — forces a light ground over TOWER's root body. */
 .csheet-page {
   min-height: 100vh;
-  background: #52555a;
+  background: var(--cs-mat);
   padding: 32px 16px 64px;
 }
 .csheet-page .csheet {
@@ -85,15 +104,15 @@
   justify-content: space-between;
   gap: 16px;
   padding: 10px 14px;
-  background: #1b1e22;
-  border: 1px solid #34383e;
-  color: #e8eaed;
+  background: var(--cs-toolbar-bg);
+  border: 1px solid var(--cs-toolbar-line);
+  color: var(--cs-toolbar-ink);
   font-family: var(--font-ui, system-ui, sans-serif);
 }
 .csheet-toolbar-btn {
   padding: 8px 14px;
-  background: #ffb020;
-  color: #101214;
+  background: var(--cs-accent);
+  color: var(--cs-accent-ink);
   border: none;
   font-size: 12px;
   font-weight: 600;
@@ -105,7 +124,7 @@
   max-width: 720px;
   margin: 80px auto;
   padding: 40px;
-  background: #fff;
+  background: var(--cs-surface);
   text-align: center;
   font-family: var(--font-ui, system-ui, sans-serif);
 }
@@ -120,7 +139,7 @@
     padding: 0;
   }
   .csheet-page {
-    background: #ffffff;
+    background: var(--cs-surface);
     padding: 0;
   }
   .csheet-page .csheet {

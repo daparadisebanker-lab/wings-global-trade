@@ -4,10 +4,12 @@
 // tracking itself is `QcTracker` (a sibling component); this panel just lets
 // the operator pick which PO to track by calling `onSelectPo`.
 import { useState, useTransition } from 'react'
-import { advancePOStatus, issuePO } from '@/lib/actions/containers'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { advancePOStatus, issuePO, listSuppliersForContainer } from '@/lib/actions/containers'
 import { canAdvancePoStatus, parseDecimalToMinor } from '@/lib/actions/containers-logic'
 import { PO_STATUSES, type PoStatus, type PurchaseOrderRow } from '@/lib/actions/containers-types'
 import { formatMinor } from '@/lib/money'
+import { EntityCombobox, type EntityOption } from '@/components/ui/EntityCombobox'
 import { usePurchaseOrdersQuery } from './usePurchaseOrdersQuery'
 
 const STATUS_STYLE: Record<PoStatus, string> = {
@@ -38,12 +40,59 @@ export function POPanel({
   onSelectPo: (poId: string) => void
 }) {
   const query = usePurchaseOrdersQuery(containerId)
+  const suppliersQuery = useQuery({
+    queryKey: ['tower', 'containers', 'suppliers', containerId],
+    queryFn: async () => {
+      const result = await listSuppliersForContainer(containerId)
+      if (result.error) throw new Error(result.error.message)
+      return result.data
+    },
+    enabled: canWrite,
+  })
+  const supplierOptions: EntityOption[] = (suppliersQuery.data ?? []).map((s) => ({
+    id: s.id,
+    label: s.name,
+    hint: s.country,
+    badge: s.verified ? '✓' : null,
+  }))
   const [supplierId, setSupplierId] = useState('')
   const [description, setDescription] = useState('')
   const [qty, setQty] = useState('1')
   const [unitPrice, setUnitPrice] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
+  const queryClient = useQueryClient()
+  const poKey = ['tower', 'containers', 'purchase-orders', containerId] as const
+
+  // PO status advance is optimistic — the status stamp flips the instant you
+  // click, rolling back only if the server refuses the transition. Scoped per
+  // PO so advancing one row never disables the others' buttons.
+  const advanceMutation = useMutation({
+    mutationFn: async ({ poId, status }: { poId: string; status: PoStatus }) => {
+      const result = await advancePOStatus(poId, status)
+      if (result.error) throw new Error(result.error.message)
+      return result.data
+    },
+    onMutate: async ({ poId, status }) => {
+      setError(null)
+      await queryClient.cancelQueries({ queryKey: poKey })
+      const prev = queryClient.getQueryData<PurchaseOrderRow[]>(poKey)
+      if (prev) {
+        queryClient.setQueryData<PurchaseOrderRow[]>(
+          poKey,
+          prev.map((p) => (p.id === poId ? { ...p, status } : p)),
+        )
+      }
+      return { prev }
+    },
+    onError: (err: Error, _vars, ctx) => {
+      if (ctx?.prev) queryClient.setQueryData(poKey, ctx.prev)
+      setError(err.message)
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: poKey })
+    },
+  })
 
   function submitIssue() {
     setError(null)
@@ -74,17 +123,6 @@ export function POPanel({
     })
   }
 
-  function advance(po: PurchaseOrderRow, status: PoStatus) {
-    startTransition(async () => {
-      const result = await advancePOStatus(po.id, status)
-      if (result.error) {
-        setError(`${result.error.code}: ${result.error.message}`)
-        return
-      }
-      await query.refetch()
-    })
-  }
-
   return (
     <div className="flex flex-col gap-3">
       <h2 className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
@@ -95,12 +133,17 @@ export function POPanel({
         <div className="flex flex-wrap items-end gap-3 rounded-card border border-line bg-surface-1 p-3">
           <label className="flex flex-col gap-1">
             <span className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary">
-              Proveedor (ID) / Supplier (ID)
+              Proveedor / Supplier
             </span>
-            <input
-              value={supplierId}
-              onChange={(e) => setSupplierId(e.target.value)}
-              className="w-56 rounded-card border border-line bg-surface-0 px-3 py-1.5 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent"
+            <EntityCombobox
+              className="w-56"
+              options={supplierOptions}
+              value={supplierId || null}
+              onChange={(id) => setSupplierId(id ?? '')}
+              loading={suppliersQuery.isLoading}
+              placeholder="Buscar proveedor… / Search supplier…"
+              ariaLabel="Proveedor / Supplier"
+              emptyText="Sin proveedores para esta marca / No suppliers for this brand"
             />
           </label>
           <label className="flex flex-col gap-1">
@@ -184,8 +227,8 @@ export function POPanel({
                   <button
                     key={s}
                     type="button"
-                    onClick={() => advance(po, s)}
-                    disabled={isPending}
+                    onClick={() => advanceMutation.mutate({ poId: po.id, status: s })}
+                    disabled={advanceMutation.isPending && advanceMutation.variables?.poId === po.id}
                     className="rounded-card border border-line px-2 py-1 font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:text-ink-primary disabled:opacity-40"
                   >
                     → {s}

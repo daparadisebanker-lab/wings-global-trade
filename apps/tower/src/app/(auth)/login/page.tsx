@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react'
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/client'
 
 /**
- * Login — magic link + Google OAuth (ARCHITECTURE Auth). This is an auth handoff
- * to Supabase, not a domain mutation, so it runs the SDK client-side; the session
- * cookie is then refreshed by the middleware. Async errors are handled explicitly
- * and shown as a contained message — never a raw error.
+ * Login — magic link (ARCHITECTURE Auth). This is an auth handoff to Supabase,
+ * not a domain mutation, so it runs the SDK client-side; the session cookie is
+ * then refreshed by the middleware. Async errors are handled explicitly and
+ * shown as a contained message — never a raw error.
  */
 /** Bilingual copy for callback-reported failures (?error= from /auth/callback). */
 const CALLBACK_ERRORS: Record<string, string> = {
@@ -63,26 +63,6 @@ export default function LoginPage() {
     }
   }
 
-  async function signInWithGoogle() {
-    if (!configured) return
-    setMessage(null)
-    try {
-      const supabase = createClient()
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo },
-      })
-      if (error) {
-        setStatus('error')
-        setMessage('No se pudo iniciar con Google / Google sign-in failed')
-      }
-    } catch (err) {
-      console.error('[login:google]', err)
-      setStatus('error')
-      setMessage('Error inesperado / Unexpected error')
-    }
-  }
-
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-surface-0 px-6">
       {/* Wings brand hero — container yard at sunset, under a navy scrim so the
@@ -119,7 +99,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="tu@wingsglobaltrade.com"
-                className="rounded-card border border-line bg-surface-0 px-3 py-2 font-ui text-t0 text-ink-primary outline-none placeholder:text-ink-secondary"
+                className="rounded-card border border-line bg-surface-0 px-3 py-2 font-ui text-t0 text-ink-primary outline-none focus-visible:border-lane-accent placeholder:text-ink-secondary"
               />
               <button
                 type="submit"
@@ -131,14 +111,6 @@ export default function LoginPage() {
                   : 'Enviar enlace / Send link'}
               </button>
             </form>
-
-            <button
-              type="button"
-              onClick={signInWithGoogle}
-              className="mt-3 w-full rounded-card border border-line px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-ink-secondary hover:text-ink-primary"
-            >
-              Continuar con Google / Continue with Google
-            </button>
 
             {message ? (
               <p

@@ -115,11 +115,16 @@ export function ContainerBoard({
         </p>
       ) : null}
 
-      <div className="flex flex-1 gap-4 overflow-x-auto">
+      {/* Mobile: one focused column with a peek, scroll-snapped; desktop: fixed
+          288px columns. Mirrors the Pipeline board. */}
+      <div className="-mx-6 flex flex-1 snap-x snap-mandatory gap-4 overflow-x-auto px-6 scroll-p-6 md:mx-0 md:px-0">
         {CONTAINER_STATUSES.map((status) => {
           const items = columns.get(status) ?? []
           return (
-            <div key={status} className="flex w-72 flex-shrink-0 flex-col gap-3">
+            <div
+              key={status}
+              className="flex w-[86vw] max-w-[20rem] flex-shrink-0 snap-start flex-col gap-3 md:w-72 md:max-w-none"
+            >
               <div className="flex items-center justify-between border-b border-line pb-2">
                 <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">{status}</span>
                 <span className="font-mono text-label text-ink-secondary" data-numeric>

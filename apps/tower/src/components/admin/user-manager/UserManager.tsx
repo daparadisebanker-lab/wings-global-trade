@@ -157,7 +157,15 @@ export function UserManager({ lanes, brands }: { lanes: LaneAdminRow[]; brands: 
                   {selectedUser.isGroupAdmin ? 'Quitar admin' : 'Hacer admin de grupo'}
                 </button>
               </div>
-              <MembershipMatrix user={selectedUser} lanes={lanes} onSaved={invalidateUsers} />
+              {/* key=user id forces a fresh mount per user, so the matrix's
+                  local checkbox edits can never leak from one user to the next
+                  (its useState seeds from `user` only on mount). */}
+              <MembershipMatrix
+                key={selectedUser.id}
+                user={selectedUser}
+                lanes={lanes}
+                onSaved={invalidateUsers}
+              />
             </div>
           ) : (
             <div className="flex h-full min-h-[30vh] items-center justify-center">

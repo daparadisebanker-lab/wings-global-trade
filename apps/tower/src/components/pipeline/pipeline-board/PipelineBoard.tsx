@@ -3,8 +3,8 @@
 // Pipeline (CRM) board (COMPONENT_TREE §2 <PipelineBoard>): columns are the
 // active lane's archetype stage set — never configurable per-user, never
 // hardcoded here. Cards are RFQs; a lightweight inline form creates a new one.
-import { useMemo, useState, useTransition } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getStages } from '@/lib/archetypes'
 import type { EditableLane } from '@/lib/actions/catalog'
 import {
@@ -29,6 +29,18 @@ export function PipelineBoard({ lanes, initialLaneId }: { lanes: EditableLane[];
   const [newCurrency, setNewCurrency] = useState('USD')
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
+  const newFormFieldRef = useRef<HTMLSelectElement>(null)
+
+  // The new-RFQ form opens like a drawer: focus lands in it, Escape closes it.
+  useEffect(() => {
+    if (!showNewForm) return
+    newFormFieldRef.current?.focus()
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setShowNewForm(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [showNewForm])
 
   const lane = lanes.find((l) => l.laneId === laneId)
 
@@ -54,8 +66,44 @@ export function PipelineBoard({ lanes, initialLaneId }: { lanes: EditableLane[];
     enabled: Boolean(lane),
   })
 
-  const rfqsQuery = useRfqsQuery({ laneId: laneId ?? '' })
+  const rfqsInput = useMemo(() => ({ laneId: laneId ?? '' }), [laneId])
+  const rfqsKey = useMemo(() => ['tower', 'pipeline', 'rfqs', rfqsInput] as const, [rfqsInput])
+  const rfqsQuery = useRfqsQuery(rfqsInput)
   const capabilities = capsQuery.data
+  const queryClient = useQueryClient()
+
+  type RfqsPage = { rows: RfqRow[]; nextCursor: string | null }
+
+  // Stage moves are optimistic: the card jumps to its new column the instant you
+  // pick it, and rolls back only if the server rejects the transition. A kanban
+  // that waits for a round-trip before moving the card feels broken — this is the
+  // single highest-value optimism on the board.
+  const stageMutation = useMutation({
+    mutationFn: async ({ rfqId, stage }: { rfqId: string; stage: string }) => {
+      const result = await updateStage(rfqId, stage)
+      if (result.error) throw new Error(result.error.message)
+      return result.data
+    },
+    onMutate: async ({ rfqId, stage }) => {
+      setError(null)
+      await queryClient.cancelQueries({ queryKey: rfqsKey })
+      const prev = queryClient.getQueryData<RfqsPage>(rfqsKey)
+      if (prev) {
+        queryClient.setQueryData<RfqsPage>(rfqsKey, {
+          ...prev,
+          rows: prev.rows.map((r) => (r.id === rfqId ? { ...r, stage } : r)),
+        })
+      }
+      return { prev }
+    },
+    onError: (err: Error, _vars, ctx) => {
+      if (ctx?.prev) queryClient.setQueryData(rfqsKey, ctx.prev)
+      setError(err.message)
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: rfqsKey })
+    },
+  })
 
   const columns = useMemo(() => (lane ? getStages(lane.archetype) : []), [lane])
   const rows = rfqsQuery.data?.rows ?? []
@@ -70,18 +118,6 @@ export function PipelineBoard({ lanes, initialLaneId }: { lanes: EditableLane[];
     }
     return map
   }, [columns, rows])
-
-  function handleStageChange(rfqId: string, stage: string) {
-    setError(null)
-    startTransition(async () => {
-      const result = await updateStage(rfqId, stage)
-      if (result.error) {
-        setError(result.error.message)
-        return
-      }
-      await rfqsQuery.refetch()
-    })
-  }
 
   function handleCreate() {
     if (!laneId) return
@@ -138,13 +174,18 @@ export function PipelineBoard({ lanes, initialLaneId }: { lanes: EditableLane[];
       </div>
 
       {showNewForm ? (
-        <div className="flex flex-wrap items-end gap-3 rounded-card border border-line bg-surface-1 p-4">
-          <label className="flex flex-col gap-1">
+        <div
+          role="group"
+          aria-label="Nuevo RFQ / New RFQ"
+          className="tower-settle flex flex-wrap items-end gap-3 rounded-card border border-line bg-surface-1 p-4"
+        >
+          <label className="flex w-full flex-col gap-1 sm:w-auto">
             <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">Cuenta / Account</span>
             <select
+              ref={newFormFieldRef}
               value={newAccountId}
               onChange={(e) => setNewAccountId(e.target.value)}
-              className="w-56 rounded-card border border-line bg-surface-0 px-3 py-2 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent"
+              className="w-full rounded-card border border-line bg-surface-0 px-3 py-2 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent sm:w-56"
             >
               <option value="">Sin cuenta / No account</option>
               {(accountsQuery.data ?? []).map((a) => (
@@ -155,12 +196,12 @@ export function PipelineBoard({ lanes, initialLaneId }: { lanes: EditableLane[];
             </select>
           </label>
 
-          <label className="flex flex-col gap-1">
+          <label className="flex w-full flex-col gap-1 sm:w-auto">
             <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">Fuente / Source</span>
             <select
               value={newSource}
               onChange={(e) => setNewSource(e.target.value as RfqSource)}
-              className="rounded-card border border-line bg-surface-0 px-3 py-2 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent"
+              className="w-full rounded-card border border-line bg-surface-0 px-3 py-2 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent sm:w-auto"
             >
               {SOURCE_OPTIONS.map((s) => (
                 <option key={s} value={s}>
@@ -183,7 +224,7 @@ export function PipelineBoard({ lanes, initialLaneId }: { lanes: EditableLane[];
             type="button"
             onClick={handleCreate}
             disabled={isPending}
-            className="rounded-card bg-positive px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-surface-0 disabled:opacity-40"
+            className="w-full rounded-card bg-positive px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-surface-0 disabled:opacity-40 sm:w-auto"
           >
             Crear / Create
           </button>
@@ -201,11 +242,16 @@ export function PipelineBoard({ lanes, initialLaneId }: { lanes: EditableLane[];
         </p>
       ) : null}
 
-      <div className="flex flex-1 gap-4 overflow-x-auto">
+      {/* Mobile: one focused column with a peek of the next, scroll-snapped
+          (drag-free kanban). Desktop: fixed 288px columns side by side. */}
+      <div className="-mx-6 flex flex-1 snap-x snap-mandatory gap-4 overflow-x-auto px-6 scroll-p-6 md:mx-0 md:px-0">
         {columns.map((stage) => {
           const stageRows = byStage.get(stage.id) ?? []
           return (
-            <div key={stage.id} className="flex w-72 flex-none flex-col gap-3 rounded-card border border-line bg-surface-0 p-3">
+            <div
+              key={stage.id}
+              className="flex w-[86vw] max-w-[20rem] flex-none snap-start flex-col gap-3 rounded-card border border-line bg-surface-0 p-3 md:w-72 md:max-w-none"
+            >
               <div className="flex items-center justify-between border-b border-line pb-2">
                 <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-primary">{stage.label.es}</span>
                 <span className="font-mono text-label text-ink-secondary" data-numeric>
@@ -219,8 +265,8 @@ export function PipelineBoard({ lanes, initialLaneId }: { lanes: EditableLane[];
                     rfq={rfq}
                     archetype={rfq.laneArchetype}
                     canAdvanceStage={Boolean(capabilities?.canAdvanceStage)}
-                    busy={isPending}
-                    onStageChange={(nextStage) => handleStageChange(rfq.id, nextStage)}
+                    busy={stageMutation.isPending && stageMutation.variables?.rfqId === rfq.id}
+                    onStageChange={(nextStage) => stageMutation.mutate({ rfqId: rfq.id, stage: nextStage })}
                   />
                 ))}
                 {stageRows.length === 0 ? (

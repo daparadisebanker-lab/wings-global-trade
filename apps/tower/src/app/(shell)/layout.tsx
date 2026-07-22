@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { ShellChrome } from '@/components/shell/ShellChrome'
+import { TowerQueryProvider } from '@/components/shell/TowerQueryProvider'
 import { getLaneMemberships, getIsGroupAdmin, getHasRbMembership } from '@/lib/lanes/memberships'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { getMyRepProfile } from '@/lib/actions/rep-profile'
@@ -34,14 +35,16 @@ export default async function ShellLayout({ children }: { children: ReactNode })
   }
 
   return (
-    <ShellChrome
-      memberships={memberships}
-      userEmail={userEmail}
-      isGroupAdmin={isGroupAdmin}
-      hasRbMembership={hasRbMembership}
-      needsOnboarding={needsOnboarding}
-    >
-      {children}
-    </ShellChrome>
+    <TowerQueryProvider>
+      <ShellChrome
+        memberships={memberships}
+        userEmail={userEmail}
+        isGroupAdmin={isGroupAdmin}
+        hasRbMembership={hasRbMembership}
+        needsOnboarding={needsOnboarding}
+      >
+        {children}
+      </ShellChrome>
+    </TowerQueryProvider>
   )
 }

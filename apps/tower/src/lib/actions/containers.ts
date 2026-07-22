@@ -973,3 +973,142 @@ export async function computeLandedCost(
 
   return ok(mapLandedCostRow(data))
 }
+
+// ============================================================
+// Entity lookups for the container-desk forms (typeahead pickers).
+// The issue-PO and commit forms once took hand-typed UUIDs; these back the
+// EntityCombobox instead. Each resolves the container's OWN brand server-side
+// (RLS-scoped) so the client never passes a brand id and can't widen scope —
+// the picker only ever shows entities the operator may already reach.
+// ============================================================
+
+export interface SupplierOption {
+  id: string
+  name: string
+  country: string | null
+  verified: boolean
+}
+
+export interface AccountOption {
+  id: string
+  name: string
+  country: string | null
+}
+
+export interface OrderOption {
+  id: string
+  status: string
+  incoterm: string | null
+  accountName: string | null
+  createdAt: string
+}
+
+/** The container's brand id, or null if unreadable/no access (RLS-scoped). */
+async function containerBrandId(
+  supabase: ReturnType<SupabaseClient['schema']>,
+  containerId: string,
+): Promise<string | null> {
+  const { data, error } = await supabase
+    .from('containers')
+    .select('brand_id')
+    .eq('id', containerId)
+    .maybeSingle()
+  if (error || !data) return null
+  return (data as { brand_id: string }).brand_id
+}
+
+/** Suppliers registered under the container's brand, A→Z (typeahead source). */
+export async function listSuppliersForContainer(containerId: string): Promise<ActionResult<SupplierOption[]>> {
+  const gate = await requireUser()
+  if (!gate.ok) return gate.error
+  const { supabase } = gate
+
+  const parsed = uuidSchema.safeParse(containerId)
+  if (!parsed.success) return fail('VALIDATION', 'ID inválido / Invalid id')
+
+  const brandId = await containerBrandId(supabase, parsed.data)
+  if (!brandId) return fail('FORBIDDEN_LANE', 'Contenedor no encontrado o sin acceso / Container not found or no access')
+
+  const { data, error } = await supabase
+    .from('suppliers')
+    .select('id,name,country,verified')
+    .eq('brand_id', brandId)
+    .order('name', { ascending: true })
+    .limit(200)
+
+  if (error) return fail('VALIDATION', 'No se pudieron listar los proveedores / Could not list suppliers')
+  return ok((data ?? []) as SupplierOption[])
+}
+
+/** Accounts under the container's brand, A→Z (commit form's account picker). */
+export async function listAccountsForContainer(containerId: string): Promise<ActionResult<AccountOption[]>> {
+  const gate = await requireUser()
+  if (!gate.ok) return gate.error
+  const { supabase } = gate
+
+  const parsed = uuidSchema.safeParse(containerId)
+  if (!parsed.success) return fail('VALIDATION', 'ID inválido / Invalid id')
+
+  const brandId = await containerBrandId(supabase, parsed.data)
+  if (!brandId) return fail('FORBIDDEN_LANE', 'Contenedor no encontrado o sin acceso / Container not found or no access')
+
+  const { data, error } = await supabase
+    .from('accounts')
+    .select('id,name,country')
+    .eq('brand_id', brandId)
+    .order('name', { ascending: true })
+    .limit(200)
+
+  if (error) return fail('VALIDATION', 'No se pudieron listar las cuentas / Could not list accounts')
+  return ok((data ?? []) as AccountOption[])
+}
+
+/**
+ * Orders under the container's brand — optionally narrowed to one account (the
+ * commit form scopes orders to the chosen account, since an order belongs to an
+ * account). Orders carry no human name, so the account name + status + date
+ * compose the label client-side. Newest first.
+ */
+export async function listOrdersForContainer(
+  containerId: string,
+  accountId?: string,
+): Promise<ActionResult<OrderOption[]>> {
+  const gate = await requireUser()
+  if (!gate.ok) return gate.error
+  const { supabase } = gate
+
+  const parsed = uuidSchema.safeParse(containerId)
+  if (!parsed.success) return fail('VALIDATION', 'ID inválido / Invalid id')
+
+  const brandId = await containerBrandId(supabase, parsed.data)
+  if (!brandId) return fail('FORBIDDEN_LANE', 'Contenedor no encontrado o sin acceso / Container not found or no access')
+
+  let q = supabase
+    .from('orders')
+    .select('id,status,incoterm,created_at,accounts(name)')
+    .eq('brand_id', brandId)
+
+  if (accountId) {
+    const accParsed = uuidSchema.safeParse(accountId)
+    if (!accParsed.success) return fail('VALIDATION', 'Cuenta inválida / Invalid account')
+    q = q.eq('account_id', accParsed.data)
+  }
+
+  const { data, error } = await q.order('created_at', { ascending: false }).limit(100)
+
+  if (error) return fail('VALIDATION', 'No se pudieron listar las órdenes / Could not list orders')
+
+  const rows = (data ?? []).map((raw) => {
+    const r = raw as { id: string; status: string; incoterm: string | null; created_at: string; accounts: { name: string } | { name: string }[] | null }
+    const acc = Array.isArray(r.accounts) ? r.accounts[0] : r.accounts
+    return {
+      id: r.id,
+      status: r.status,
+      incoterm: r.incoterm,
+      accountName: acc?.name ?? null,
+      createdAt: r.created_at,
+    } satisfies OrderOption
+  })
+
+  return ok(rows)
+}

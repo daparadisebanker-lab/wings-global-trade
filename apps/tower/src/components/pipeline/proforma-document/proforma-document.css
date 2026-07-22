@@ -178,6 +178,9 @@
 .pdoc-table th.pd-col-qty {
   width: 11%;
 }
+.pdoc-table tbody tr {
+  break-inside: avoid;
+}
 .pdoc-table tbody td {
   border: 1px solid var(--pd-line);
   padding: 11px 10px;

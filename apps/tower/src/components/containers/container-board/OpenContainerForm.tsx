@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useEffect, useRef, useState, useTransition } from 'react'
 import { openContainer } from '@/lib/actions/containers'
 import { CONTAINER_KINDS, CONTAINER_MODES } from '@/lib/actions/containers-types'
 
@@ -25,6 +25,18 @@ export function OpenContainerForm({
   const [publicFillVisible, setPublicFillVisible] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
+  const firstFieldRef = useRef<HTMLSelectElement>(null)
+
+  // Open like a drawer: move focus into the panel on mount, and let Escape
+  // close it — the inline form is now keyboard-complete, not just present.
+  useEffect(() => {
+    firstFieldRef.current?.focus()
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
 
   function submit() {
     setError(null)
@@ -54,7 +66,11 @@ export function OpenContainerForm({
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-card border border-line bg-surface-1 p-4">
+    <div
+      role="group"
+      aria-label="Abrir contenedor / Open container"
+      className="tower-settle flex flex-col gap-3 rounded-card border border-line bg-surface-1 p-4"
+    >
       <div className="flex items-center justify-between">
         <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
           Abrir contenedor / Open container
@@ -68,6 +84,7 @@ export function OpenContainerForm({
         <label className="flex flex-col gap-1">
           <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">Tipo / Kind</span>
           <select
+            ref={firstFieldRef}
             value={kind}
             onChange={(e) => setKind(e.target.value as (typeof CONTAINER_KINDS)[number])}
             className="rounded-card border border-line bg-surface-0 px-3 py-2 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent"
