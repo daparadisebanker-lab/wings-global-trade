@@ -10,7 +10,114 @@ rewrite; zero feature regression.
 
 ---
 
-## P8f — Latent-class fix (silently-broken utilities) + table shells  ·  status: built, in review
+## P8g — Final restyle cut: cross-engine chart chrome + last header outlier + classify-first  ·  status: built, in review
+
+The **closing cut of the restyle sweep**. Started as a short tail (chart type token +
+last header outlier + two classifications) and grew one substantive item when Fable's
+F-P8g-1 review surfaced a real cross-engine question in the chart chrome — settled
+empirically and hardened with a CSS rule. Still no new components.
+
+**Conversions (genuine token debt):**
+- **Chart axis/tooltip `fontSize: 11` → `var(--type-label)`** (both charts ·
+  `funnel-chart.tsx`, `source-split.tsx`, 4 sites). The last raw numeric type sizes
+  in the codebase. `--type-label` = 12px (TOWER scale; there is no 11px token), so
+  ticks/tooltip snap up 1px to the label token.
+- **Cross-engine chart-chrome CSS rule** (`globals.css`, new `[data-app='tower']`
+  block) — the substance of this cut, after Fable's F-P8g-1 caught that recharts
+  spreads the `AXIS_TICK` object (`fill`/`fontFamily`/`fontSize`) and the `stroke`/
+  Tooltip-`cursor` props onto SVG `<text>`/`<line>` as **presentation attributes**,
+  where `var()` is not guaranteed. *Empirically settled* (headless Chromium 1194 ≈
+  Chrome 133, `getComputedStyle` fixture): `var()` **does** resolve in SVG paint/font
+  presentation attributes in current Chromium — and per W3C SVG WG threads (Jul/Nov
+  2025) current Firefox + WebKit resolve them too. So there is **no live dark-mode
+  invisibility** in any current engine; severity is LOW. The residual is *old Safari /
+  pre-2023 Chromium* (behaviour still unspecified — W3C SVG #987), where each
+  var()-bearing presentation attr drops to its initial: tick `fill`→black (~1.47:1 on
+  Nightwatch `--surface-1` #2a2a2c — invisible) and grid/axis `stroke`→none (rules
+  vanish, both themes). Fix: an author-origin CSS rule always outranks a
+  specificity-0 presentation attribute *in every engine*, and CSS-property `var()` is
+  universal (2016+) — so the scoped block pins tick text (`fill`/`font-family`/
+  `font-size`), grid+axis+tick-line `stroke`, and the tooltip-cursor `fill` to the
+  tokens via recharts' stable v2 class names. The JSX keeps its `var()` values as an
+  in-engine fallback (additive, belt-and-suspenders — chosen over the CSS-only removal
+  the recon proposed, which would have leaned on recharts' unverified default-tick
+  render path). Token-lint stays green; charts made engine-independent, not just
+  Chromium-correct. (Blast radius audited: exactly these 2 files use recharts; no other
+  chart lib exists. Data-mark `Bar`/`Cell` fills stay in JSX — per-key colours can't be
+  one uniform rule; they resolve in all current engines.)
+- **`CatalogBrowse` H1 `text-t2` → `text-t3`** (1 site). The lone module-header
+  outlier flagged in P8f — now aligned to the dominant `font-display text-t3`
+  convention shared by the 3 Windows and the 7 admin/catalog sibling headers. Closes
+  wayfinding parity across every module title.
+
+**Classifications (deliberate — NOT converted, classify-before-convert §P8e):**
+- **`ContainerPromoPanel` canvas ground `#F8F6F0`** — kept as a raw hex, now with an
+  inline comment marking it a **fixed brand artifact ground**. This is the off-white
+  painted behind the exported PNG/JPG container share card (§5-bis marketing window);
+  the asset ships to WhatsApp/ads and must stay identical across channels and immune
+  to TOWER's light/dark theme. Binding it to `--surface-0` would theme-couple a shared
+  brand raster — exactly the PT decision that generated brand artifacts keep Wings
+  identity independent of TOWER chrome. Same family as the P8e World-B exemption.
+- **`BrandKitPanel` asset-preview frames `rounded-none`** (4 sites) — left flat. These
+  are `h-16` bordered logo/PDF preview swatches; a hard edge reads as a contact-sheet
+  asset frame, consistent with the chart frames in this same phase (`border border-line`
+  at 0px) and sanctioned by CLAUDE.md §2 ("structural 0 remains available where a hard
+  edge is wanted"). `rounded-none` is a self-documenting intent class, not raw-value
+  debt, so it's classified here rather than annotated per line.
+
+**Charts stay flat-ruled** (data-layer law): the chart-chrome CSS rule sets only
+colour + rule (`fill`/`stroke`/type token) — no elevation, no radius, no material. The
+containers remain `border border-line bg-surface-1` as before.
+
+**QA:** `var()`-in-presentation-attribute resolution verified empirically in Chromium
+(fixture returned the token colour + 12px, not the black/none fallbacks); the scoped
+CSS block resolves in Daylight + Nightwatch (tokens re-point under `[data-theme='dark']`
+within the same `[data-app='tower']` scope); both charts render ticks/grid/axis in the
+tokens with the CSS as the cross-engine guarantor; CatalogBrowse title now matches its
+nav siblings; share-card export byte-for-byte unchanged (hex untouched); brand-kit
+previews unchanged.
+
+### §8 — Acceptance ledger (sweep close)
+
+With P8g the macOS restyle sweep (P1 → P8g) is **closed**. Standing acceptance state:
+
+**Green — shipped & verified**
+- **Token lint (QA-2):** zero raw type/radius/color values left in restyled shell +
+  feature code; the last raws (chart `fontSize`) converted, chart chrome now
+  token-pinned via a cross-engine CSS rule, and every remaining raw is a *documented*
+  exemption (World-B navy dock, share-card `#F8F6F0` ground, chart/asset hard edges).
+- **Chart chrome engine-independent:** `var()`-in-SVG-presentation-attribute resolution
+  proven in current engines and hardened for old Safari / pre-2023 Chromium via the
+  scoped author-origin CSS rule (F-P8g-1).
+- **Material system** adopted across shell (P1–P5) and every feature surface
+  (P8a–P8g): materials, elevation, `rounded-card-lg`/panel radii, spring motion.
+- **Both themes** (Daylight + Nightwatch) complete and reachable; OS-auto-dark on.
+- **Data-layer law** upheld — tables + charts stay flat-ruled (4px/0px + hairline, no
+  elevation), depth reserved for the atmosphere.
+- **Reduced-motion parity (QA-5, keyboard):** `motion-reduce` guards on all reveal/hover
+  transitions; reveals collapse to crossfade.
+- **Wholesale-language (QA-3):** untouched — no retail vocabulary introduced anywhere in
+  the sweep.
+
+**Open — deliberately deferred (do not block the sweep close; tracked for a follow-on)**
+- **Control Center pull-down gesture + pill.** P5 shipped the CC grid + status; the
+  drag-to-reveal gesture and the pill affordance that hints it are not yet wired.
+- **Keyboard shortcuts `⌘1–9` (jump-to-tool) and `⌘⇧C`.** The nav registry supports the
+  targets; the global keydown handler is not mounted.
+- **Awwwards / mirror (swap) test formal pass (QA-1, QA-6).** Needs a live visual review
+  on production across 375 / 768 / 1440 and a two-lane swap check — a review pass, not a
+  code change.
+- **Adjacent `var()`-in-SVG-presentation-attribute surfaces (same technique, out of the
+  charts scope).** The chart-chrome CSS rule couples to recharts v2 class names —
+  re-verify on any recharts v3 upgrade. And the same old-engine caveat (fixed for charts
+  here) still applies untouched to the `packages/ui` diagram organs (Pallet/Exploded/
+  Packing/ContainerSlice/ContainerFit) and hand-rolled SVG (`nav-icons`, `MisterMark`,
+  `DocumentLink`) — a separate remediation if the org ever needs old-Safari parity there;
+  live risk ~zero on current engines.
+
+---
+
+## P8f — Latent-class fix (silently-broken utilities) + table shells  ·  status: SHIPPED to production
 
 Fifth restyle cut, and the sweep's **first visible bug-fix**: three utility classes
 used in markup but **defined nowhere in the theme** — they render as no-ops today, so
