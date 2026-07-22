@@ -73,7 +73,7 @@ export default function AdminPage() {
           <Link
             key={card.href}
             href={card.href}
-            className="group flex flex-col gap-3 rounded-card border border-line bg-surface-1 p-4 transition-colors hover:border-lane-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lane-accent"
+            className="group flex flex-col gap-3 rounded-card-lg border border-line bg-surface-1 p-4 shadow-elevation-1 transition-[border-color,box-shadow] duration-150 ease-spring-settle hover:border-lane-accent hover:shadow-elevation-2 motion-reduce:transition-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lane-accent"
           >
             <span className="font-mono text-label uppercase tracking-[0.15em] text-lane-accent">{card.tag}</span>
             <span className="font-ui text-t2 text-ink-primary">{t(card.title, locale)}</span>
