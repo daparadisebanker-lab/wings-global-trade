@@ -10,7 +10,30 @@ rewrite; zero feature regression.
 
 ---
 
-## P8a — Restyle sweep (shared surfaces) + orphan cleanup  ·  status: built, in review
+## P8b — Restyle sweep (board cards + admin landing grid)  ·  status: built, in review
+
+Second restyle cut (folds the recon's P8b cards + P8c grids — same card-surface
+change). Tokens only, additive, zero feature regression. Radius precedent from P8a
+holds: content cards → `rounded-card-lg` (12px, spec §2.5 "cards").
+- `containers/container-board/ContainerCard.tsx` — `rounded-card`→`rounded-card-lg`;
+  `shadow-elevation-1` + `hover:shadow-elevation-2`; transition list gains box-shadow
+  + `ease-spring-snappy`; `motion-reduce:transition-none`; keeps the lane-accent hover
+  border + `motion-safe:hover:-translate-y-px`.
+- `pipeline/pipeline-board/RfqCard.tsx` + `intelligence/triage-queue/TriageCard.tsx` —
+  root `rounded-card`→`rounded-card-lg` + `shadow-elevation-1` (static cards, no hover).
+- `app/(shell)/admin/page.tsx` — the index grid tile: `rounded-card`→`rounded-card-lg`;
+  `transition-colors`→`transition-[border-color,box-shadow]` + `ease-spring-settle`;
+  `shadow-elevation-1` + `hover:shadow-elevation-2`; `motion-reduce:transition-none`.
+
+Scope: card roots only (inner chips/inputs left for a later cut / P9). The marcas
+"landing" match was a filter chip (stays tight, not a card). Utilities all exist
+(card-lg, elevation-1/2, spring-snappy/settle). **QA:** both themes; reduced-motion
+kills the hover transitions; swap-test the lane-tinted cards on 2 lanes; no nested
+double-radius (board cards sit in gap-separated columns, not flush in a 4px shell).
+
+---
+
+## P8a — Restyle sweep (shared surfaces) + orphan cleanup  ·  status: SHIPPED to production
 
 First cut of the P8 component restyle sweep (recon: p8-recon workflow). The sweep
 brings feature components up to the macOS design system (P1 tokens/materials/radii/
