@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties, KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
+import Link from 'next/link'
 import { cn } from '@wings/trade-ui'
 import { CommandPalette } from './CommandPalette'
 import { toggleTheme } from './theme'
@@ -23,25 +24,47 @@ import { Dock } from '@/shell/dock/Dock'
 import { ControlCenterGrid, ControlCenterStatus } from '@/shell/control-center/ControlCenter'
 
 /** Location strip — TOWER › Módulo › subpágina, derived from the path so you
- *  always know where you are. Ids/numbers in the path are omitted. */
+ *  always know where you are. Ids/numbers in the path are omitted. Ancestor
+ *  crumbs are links (retrace one level); the current location stays a label. */
+const CRUMB_LINK =
+  'rounded-sm underline-offset-2 hover:text-ink-primary hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lane-accent'
+
 function Breadcrumb({ locale }: { locale: Locale }) {
   const pathname = usePathname()
   const mod = useActiveTool()
   const sub = pathname.split('/').filter(Boolean)[1]
   const isId = !!sub && (/^[0-9a-f-]{8,}$/i.test(sub) || /^\d+$/.test(sub))
+  const hasSub = !!sub && !isId
   return (
     <div className="flex items-center gap-2 border-b border-line bg-surface-1 px-4 py-2.5 font-mono text-label uppercase tracking-[0.14em] text-ink-secondary">
-      <span className="text-gold">TOWER</span>
+      {/* TOWER → home cockpit; a link whenever it is an ancestor (a module is active). */}
+      {mod ? (
+        <Link href="/signals" className={`text-gold ${CRUMB_LINK}`}>
+          TOWER
+        </Link>
+      ) : (
+        <span className="text-gold" aria-current="page">
+          TOWER
+        </span>
+      )}
       {mod ? (
         <>
           <span aria-hidden>›</span>
-          <span className="text-ink-primary">{t(mod.label, locale)}</span>
+          {hasSub ? (
+            <Link href={mod.href} className={`text-ink-primary ${CRUMB_LINK}`}>
+              {t(mod.label, locale)}
+            </Link>
+          ) : (
+            <span className="text-ink-primary" aria-current="page">
+              {t(mod.label, locale)}
+            </span>
+          )}
         </>
       ) : null}
-      {sub && !isId ? (
+      {hasSub ? (
         <>
           <span aria-hidden>›</span>
-          <span>{sub.replace(/-/g, ' ')}</span>
+          <span aria-current="page">{sub.replace(/-/g, ' ')}</span>
         </>
       ) : null}
     </div>

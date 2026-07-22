@@ -30,17 +30,26 @@ export default async function CostingPage() {
 
   return (
     <div className="flex h-full flex-col gap-4 overflow-y-auto p-6">
-      <header className="flex flex-col gap-1 border-b border-line pb-4">
-        <div className="flex items-center gap-3">
+      <header className="flex flex-wrap items-end justify-between gap-4 border-b border-line pb-4">
+        <div className="flex flex-col gap-1">
           <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">CST · Costeo SUNAT</span>
-          <Link href="/costing/bulk" className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary hover:text-lane-accent">
-            Importación masiva →
-          </Link>
-          <Link href="/costing/prorrateo" className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary hover:text-lane-accent">
-            Prorrateo →
-          </Link>
+          <h1 className="font-display text-t2 text-ink-primary">Costo de importación (Perú)</h1>
         </div>
-        <h1 className="font-display text-t2 text-ink-primary">Costo de importación (Perú)</h1>
+        {/* Sub-tools surfaced as clear buttons (were easy-to-miss header text links). */}
+        <nav aria-label="Herramientas de costeo / Costing tools" className="flex flex-wrap items-center gap-2">
+          <Link
+            href="/costing/bulk"
+            className="inline-flex items-center rounded-control border border-line bg-surface-1 px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-ink-primary transition-colors hover:border-lane-accent hover:text-lane-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lane-accent"
+          >
+            Importación masiva
+          </Link>
+          <Link
+            href="/costing/prorrateo"
+            className="inline-flex items-center rounded-control border border-line bg-surface-1 px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-ink-primary transition-colors hover:border-lane-accent hover:text-lane-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lane-accent"
+          >
+            Prorrateo
+          </Link>
+        </nav>
       </header>
       <CostCalculator lanes={lanes} initialHistory={initialHistory} />
     </div>
