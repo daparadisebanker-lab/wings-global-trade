@@ -222,6 +222,10 @@ export function ShellChrome({
             'md:sticky md:top-0 md:z-auto md:h-screen md:max-w-none',
             collapsed ? 'md:w-16' : 'md:w-64',
             drawerOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
+            // P4b: the Dock is the desktop nav → retire the rail on desktop. Kept
+            // for a zero-module operator (their designed empty note lives here).
+            // Below md the aside stays the off-canvas drawer, untouched.
+            visible.size > 0 && 'md:hidden',
           )}
         >
           <div className="flex items-center border-b border-line p-4">
@@ -331,7 +335,15 @@ export function ShellChrome({
 
       {/* Desktop Dock — the primary desktop nav (registry-driven). Desktop-only
           (the component gates hidden md:flex); mobile keeps the drawer. */}
-      <Dock visible={visible} pinned={dockPinned} onTogglePinned={toggleDock} onOpenSearch={() => setPaletteOpen(true)} />
+      <Dock
+        visible={visible}
+        pinned={dockPinned}
+        onTogglePinned={toggleDock}
+        onOpenSearch={() => setPaletteOpen(true)}
+        lanes={memberships}
+        activeLaneId={activeLaneId}
+        onSelectLane={setActiveLaneId}
+      />
 
       {/* Mister — the copilot dock (World B) + its floating door. The launcher
           hides while the dock is open so they never overlap. */}

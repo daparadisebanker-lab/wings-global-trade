@@ -3,18 +3,21 @@
 // The desktop Dock (TOWER-REDESIGN §3.1) — the primary desktop navigation.
 // Renders EXCLUSIVELY from the navigation registry (TOOLS × the rbac `visible`
 // set), split by `section` into core | divider | utility, with the active dot
-// from `useActiveTool` — no third nav list exists. Desktop-only (`hidden
-// md:flex`, CSS-gated so there is no hydration wobble); below md the off-canvas
-// drawer is untouched. Pin state is owned by ShellChrome (drives the content
-// padding); the Dock only reflects it and calls back to toggle.
+// from `useActiveTool` — no third nav list exists. A leading lane-stamp tile
+// opens the LaneSwitcher in a popover (P4b — lane switching re-homed off the
+// retired rail; LaneSwitcher is a props-passthrough, no internal edits). Desktop
+// -only (`hidden md:flex`, CSS-gated); below md the off-canvas drawer is
+// untouched. Pin state is owned by ShellChrome (drives the content padding).
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { cn } from '@wings/trade-ui'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import type { ModuleId } from '@/lib/nav'
+import type { LaneMembership } from '@/lib/lanes/memberships'
 import { TOOLS, type TowerTool } from '@/shell/navigation/registry'
 import { useActiveTool } from '@/shell/navigation/useActiveTool'
 import { NAV_ICONS } from '@/components/shell/nav-icons'
+import { LaneSwitcher } from '@/components/shell/LaneSwitcher'
 
 function DockTile({ tool, active, locale }: { tool: TowerTool; active: boolean; locale: Locale }) {
   const Icon = NAV_ICONS[tool.icon]
@@ -39,30 +42,58 @@ export function Dock({
   pinned,
   onTogglePinned,
   onOpenSearch,
+  lanes,
+  activeLaneId,
+  onSelectLane,
   locale = DEFAULT_LOCALE,
 }: {
   visible: Set<ModuleId>
   pinned: boolean
   onTogglePinned: () => void
   onOpenSearch: () => void
+  lanes: LaneMembership[]
+  activeLaneId: string | null
+  onSelectLane: (laneId: string) => void
   locale?: Locale
 }) {
   const active = useActiveTool()
   const [revealed, setRevealed] = useState(false)
+  const [laneOpen, setLaneOpen] = useState(false)
+  const laneRef = useRef<HTMLDivElement>(null)
+
+  // Close the lane popover on outside click / Escape.
+  useEffect(() => {
+    if (!laneOpen) return
+    const onDoc = (e: MouseEvent) => {
+      if (laneRef.current && !laneRef.current.contains(e.target as Node)) setLaneOpen(false)
+    }
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLaneOpen(false)
+    }
+    document.addEventListener('mousedown', onDoc)
+    document.addEventListener('keydown', onEsc)
+    return () => {
+      document.removeEventListener('mousedown', onDoc)
+      document.removeEventListener('keydown', onEsc)
+    }
+  }, [laneOpen])
 
   const tools = TOOLS.filter((tl) => visible.has(tl.id))
   const core = tools.filter((tl) => tl.section === 'core')
   const utility = tools.filter((tl) => tl.section === 'utility')
 
-  // Auto-hidden: shown only while revealed (pointer in the summon zone or
-  // keyboard focus inside). Pinned: always shown.
-  const shown = pinned || revealed
+  // A zero-module operator keeps the rail's designed empty note on desktop
+  // (ShellChrome un-hides the aside for them); the Dock stands down entirely.
+  if (tools.length === 0) return null
+
+  const activeLane = lanes.find((l) => l.laneId === activeLaneId) ?? null
+  // Include laneOpen: an auto-hidden dock must not slide off while its lane
+  // popover is open (crossing the gap to the popover would otherwise fire
+  // mouseleave and hide both). Outside-click/Escape close it, then hide resumes.
+  const shown = pinned || revealed || laneOpen
 
   return (
     <>
-      {/* Summon zone — a thin bottom-edge hover catcher, only when auto-hidden.
-          Un-reveal on leave too, so a pointer that dips in and back out (never
-          entering the dock) doesn't leave it stuck open (review F-P4a-1). */}
       {!pinned ? (
         <div
           aria-hidden
@@ -88,6 +119,38 @@ export function Dock({
           if (!pinned && !e.currentTarget.contains(e.relatedTarget as Node | null)) setRevealed(false)
         }}
       >
+        {/* Lane stamp — opens the LaneSwitcher popover (only when the operator
+            holds lanes). The stamp square is tinted by the active lane accent. */}
+        {lanes.length > 0 ? (
+          <div className="mac-dock-lane" ref={laneRef}>
+            <button
+              type="button"
+              onClick={() => setLaneOpen((v) => !v)}
+              aria-haspopup="dialog"
+              aria-expanded={laneOpen}
+              data-tip={activeLane ? activeLane.laneName : t({ es: 'Lanes', en: 'Lanes' }, locale)}
+              aria-label={t({ es: 'Cambiar lane', en: 'Switch lane' }, locale)}
+              className="mac-dock-tile"
+            >
+              <span aria-hidden className="mac-dock-stamp" />
+            </button>
+            {laneOpen ? (
+              <div className="mac-dock-lane-pop" role="dialog" aria-label={t({ es: 'Lanes', en: 'Lanes' }, locale)}>
+                <LaneSwitcher
+                  lanes={lanes}
+                  activeLaneId={activeLaneId}
+                  onSelect={(id) => {
+                    onSelectLane(id)
+                    setLaneOpen(false)
+                  }}
+                  locale={locale}
+                />
+              </div>
+            ) : null}
+            <span aria-hidden className="mac-dock-div" />
+          </div>
+        ) : null}
+
         {core.map((tl) => (
           <DockTile key={tl.id} tool={tl} active={active?.id === tl.id} locale={locale} />
         ))}
@@ -98,7 +161,6 @@ export function Dock({
           <DockTile key={tl.id} tool={tl} active={active?.id === tl.id} locale={locale} />
         ))}
 
-        {/* ⌘K search trigger (an action, not a route). */}
         <button
           type="button"
           onClick={onOpenSearch}
@@ -112,7 +174,6 @@ export function Dock({
           </svg>
         </button>
 
-        {/* Auto-hide / pin toggle. */}
         <button
           type="button"
           onClick={onTogglePinned}
