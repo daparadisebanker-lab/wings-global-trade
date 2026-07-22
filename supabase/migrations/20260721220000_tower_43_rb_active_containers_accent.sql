@@ -14,7 +14,13 @@
 
 set search_path to tower, public;
 
-create or replace view public.rb_active_containers as
+-- Drop + recreate rather than `create or replace`: the new column (`accent`) sits
+-- mid-list, and CREATE OR REPLACE VIEW may only APPEND columns — a mid-list insert
+-- is rejected. The drop is atomic inside this migration's transaction (no reader
+-- downtime), the site reads the view with select('*') so column order is
+-- irrelevant, and the grants are re-applied below exactly as tower_33 set them.
+drop view if exists public.rb_active_containers;
+create view public.rb_active_containers as
 select
   c.id,
   c.code,
