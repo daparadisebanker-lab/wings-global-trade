@@ -14,22 +14,22 @@ import { createServerSupabase } from '@/lib/supabase/server'
 import { fail, ok, type ActionResult } from './result'
 import type { QuoteLineComputed } from './pipeline-logic'
 import { getMyRepProfile, getRepProfile, getRepSignatureUrl } from './rep-profile'
-import { WINGS_ISSUER } from '@/lib/quotation/company'
 import { buildIssuedByRep, itemNo, type IssuedByRep } from '@/lib/quotation/document'
 import {
   computeProformaTotals,
   DEFAULT_PROFORMA_OBSERVATIONS,
-  DEFAULT_PROFORMA_TAX_BPS,
-  DEFAULT_PROFORMA_TAX_LABEL,
-  DEFAULT_BANKING,
-  WINGS_EXPORTER,
-  withDefaultProformaTerms,
   type BankingDetails,
   type ProformaDocument,
   type ProformaTerms,
   type QuotationLine,
   type TradeParty,
 } from '@/lib/quotation/proforma'
+import {
+  DEFAULT_ISSUER,
+  resolveIssuer,
+  withEntityProformaTerms,
+  type IssuerEntity,
+} from '@/lib/quotation/issuers'
 
 const uuidSchema = z.string().uuid()
 
@@ -71,6 +71,7 @@ interface RawBillTo {
   contact?: string | null
   address?: string | null
   city?: string | null
+  country?: string | null
   phone?: string | null
   email?: string | null
 }
@@ -99,7 +100,7 @@ function daysBetween(fromIso: string | null, toIso: string | null): number | nul
 /** Importer party from the account + first contact (mirrors quotation deriveBillTo). */
 async function deriveImporter(supabase: TowerClient, accountId: string | null): Promise<RawBillTo> {
   if (!accountId) return {}
-  const { data: account } = await supabase.from('accounts').select('name').eq('id', accountId).maybeSingle()
+  const { data: account } = await supabase.from('accounts').select('name,country').eq('id', accountId).maybeSingle()
   const { data: contact } = await supabase
     .from('contacts')
     .select('full_name,email,whatsapp')
@@ -107,8 +108,10 @@ async function deriveImporter(supabase: TowerClient, accountId: string | null): 
     .limit(1)
     .maybeSingle()
   const c = contact as { full_name?: string; email?: string; whatsapp?: string } | null
+  const a = account as { name?: string; country?: string } | null
   return {
-    company: (account as { name?: string } | null)?.name ?? '',
+    company: a?.name ?? '',
+    country: a?.country ?? null,
     attention: c?.full_name ?? null,
     email: c?.email ?? null,
     phone: c?.whatsapp ?? null,
@@ -144,12 +147,22 @@ async function resolveIssuedBy(currentUserId: string, createdBy: string | null):
   return buildIssuedByRep(profile, signatureUrl)
 }
 
-function toDocument(row: RawQuoteRow, importerRaw: RawBillTo, issuedBy: IssuedByRep | null): ProformaDocument {
+function toDocument(
+  row: RawQuoteRow,
+  importerRaw: RawBillTo,
+  issuedBy: IssuedByRep | null,
+  entity: IssuerEntity,
+): ProformaDocument {
   const currency = row.currency || 'USD'
   const lines: QuoteLineComputed[] = Array.isArray(row.lines) ? row.lines : []
 
-  const taxLabel = row.tax_label ?? DEFAULT_PROFORMA_TAX_LABEL
-  const taxBps = row.tax_bps ?? DEFAULT_PROFORMA_TAX_BPS
+  // Tax posture follows the resolved entity. For the historical default (Wings
+  // PE) the stored column wins (it already carries the operator's value / the
+  // DB default IGV 18%); a specifically-matched entity (e.g. Shining Star CL,
+  // FOB / 0 bps) imposes its own posture so a Chilean export prints no IGV line.
+  const entityIsDefault = entity.id === DEFAULT_ISSUER.id
+  const taxLabel = entityIsDefault ? (row.tax_label ?? entity.taxLabel) : entity.taxLabel
+  const taxBps = entityIsDefault ? (row.tax_bps ?? entity.taxBps) : entity.taxBps
   const totals = computeProformaTotals(
     lines.map((l) => l.totalMinor),
     taxLabel,
@@ -177,17 +190,20 @@ function toDocument(row: RawQuoteRow, importerRaw: RawBillTo, issuedBy: IssuedBy
     status: row.status,
     currency,
     issuedOn: row.issued_on,
-    issuedCity: row.terms?.issuedCity ?? 'Lima',
+    issuedCity: row.terms?.issuedCity ?? entity.defaultIssueCity,
     validityLabel: validDays !== null ? `${validDays} días` : null,
-    incoterm: row.terms?.incoterm ?? 'CIF - Callao (Incoterms ® 2020)',
-    exporter: WINGS_EXPORTER,
+    incoterm: row.terms?.incoterm ?? entity.defaultIncoterm,
+    exporter: entity.exporter,
     importer: toImporter(importerRaw),
     lines: docLines,
     totals,
-    terms: withDefaultProformaTerms(row.terms),
-    banking: DEFAULT_BANKING as BankingDetails,
+    terms: withEntityProformaTerms(row.terms, entity),
+    // `null` banking → an empty block; the renderer hides the section (hasBankingDetails).
+    banking: (entity.banking ?? {}) as BankingDetails,
     observations,
-    issuer: WINGS_ISSUER,
+    issuer: entity.issuer,
+    issuerId: entity.id,
+    locale: entity.locale,
     issuedBy,
   }
 }
@@ -210,6 +226,15 @@ export async function getProformaDocument(quoteId: string): Promise<ActionResult
     importerRaw = await deriveImporter(auth.supabase, accountId)
   }
 
+  // Which legal entity issues this — resolved from where the goods are going
+  // (the stated port of destination, else the buyer's country). Iquique/Chile →
+  // Shining Star (CL); Callao/Perú or anything unmatched → Wings (PE). When a
+  // `quotes.issuer_id` column later exists, prefer issuerById(row.issuer_id).
+  const entity = resolveIssuer({
+    port: row.terms?.portOfDestination ?? null,
+    country: importerRaw.country ?? importerRaw.city ?? null,
+  })
+
   const issuedBy = await resolveIssuedBy(auth.user.id, row.created_by)
-  return ok(toDocument(row, importerRaw, issuedBy))
+  return ok(toDocument(row, importerRaw, issuedBy, entity))
 }

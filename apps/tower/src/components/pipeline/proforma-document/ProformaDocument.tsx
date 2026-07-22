@@ -6,6 +6,7 @@
 // DISPLAY-formatted es-PE here (never re-computed from these strings). Styling
 // scoped in proforma-document.css. Bilingual: ES primary, EN secondary.
 import type { ProformaDocument } from '@/lib/quotation/proforma'
+import { hasBankingDetails } from '@/lib/quotation/issuers'
 import './proforma-document.css'
 
 /** Display only (es-PE grouping, no symbol — the column header carries (USD)).
@@ -189,17 +190,21 @@ export function ProformaDocument({ doc }: { doc: ProformaDocument }) {
         <TermRow label="Garantía" labelEn="Warranty" value={terms.warranty} />
       </div>
 
-      {/* Banking */}
-      <div className="pdoc-section-bar">
-        Datos bancarios<span className="pdoc-section-en"> · Bank details</span>
-      </div>
-      <div className="pdoc-terms">
-        <TermRow label="Banco" labelEn="Bank" value={banking.bank} />
-        <TermRow label="Nombre" labelEn="Account name" value={banking.accountName} />
-        <TermRow label="Cuenta USD" labelEn="USD account" value={banking.accountUsd} />
-        <TermRow label="Código SWIFT" labelEn="SWIFT" value={banking.swift} />
-        <TermRow label="CCI" labelEn="CCI" value={banking.cci} />
-      </div>
+      {/* Banking — omitted entirely for entities that issue without a bank block. */}
+      {hasBankingDetails(banking) ? (
+        <>
+          <div className="pdoc-section-bar">
+            Datos bancarios<span className="pdoc-section-en"> · Bank details</span>
+          </div>
+          <div className="pdoc-terms">
+            <TermRow label="Banco" labelEn="Bank" value={banking.bank} />
+            <TermRow label="Nombre" labelEn="Account name" value={banking.accountName} />
+            <TermRow label="Cuenta USD" labelEn="USD account" value={banking.accountUsd} />
+            <TermRow label="Código SWIFT" labelEn="SWIFT" value={banking.swift} />
+            <TermRow label="CCI" labelEn="CCI" value={banking.cci} />
+          </div>
+        </>
+      ) : null}
 
       {/* Notes */}
       {doc.observations.length > 0 ? (
