@@ -2,6 +2,9 @@
 -- the operating documents that don't live anywhere structured yet: spec sheets,
 -- supplier docs, certificates, and saved quotations. Mister will pull from this
 -- (Slice 3D). Numbered 47 to clear PR #4's 39–42 and the RB fiche 43–46.
+--
+-- Filename version (20260722042534) matches the version this migration was
+-- recorded under when applied to the wings-operations project.
 -- ------------------------------------------------------------
 -- STORAGE ACCESS MODEL — identical to tower_34 (product-media / brand-kits):
 -- the `lane-documents` bucket is PRIVATE with NO storage.objects policy. Every
