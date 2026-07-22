@@ -10,7 +10,69 @@ rewrite; zero feature regression.
 
 ---
 
-## P2b — Nightwatch (dark) + theme toggle  ·  status: built, PREVIEW-only (not prod)
+## P4a — Desktop Dock + rail demotion  ·  status: built, in review
+
+Orchestrator ruling: Option B refined — P4a = Dock + rail demoted to a "stamp
+strip" via ADDITIVE `md:hidden` wrappers (no NavRail/LaneSwitcher/aside internals
+edited; mobile drawer pixel-identical). P4b (later) re-homes lane switching +
+retires the rail on desktop.
+
+**What landed**
+- `src/shell/dock/Dock.tsx` (`'use client'`) — the desktop Dock. Renders ONLY
+  from the registry: `TOOLS.filter(visible.has)` split by `section` (core |
+  divider | utility) + a ⌘K trigger tile + a pin/auto-hide toggle. Active dot
+  from `useActiveTool` (gold). Tiles are `<Link>`s (deep links preserved).
+  Desktop-only via `hidden md:flex` (CSS-gated, no hydration wobble).
+- `globals.css` — Dock styles: chrome material (opaque-first fallback), 48px
+  tiles, `--radius-dock` body / `--radius-control` tiles, `--elevation-3`,
+  `--spring-snappy`/`--duration-snappy`, hover magnification (1.18 / neighbours
+  1.08 via `+` and `:has`, `(hover:hover)` only), 400ms tooltip, 4px active dot,
+  auto-hide slide + 24px summon zone, launcher clearance, reduced-motion → fade +
+  no magnification.
+- `ShellChrome.tsx` — additive only: `dockPinned` state (persisted `tower-dock`,
+  default pinned, read post-mount), `⌘.` keybind, `data-dock-pinned` on root,
+  Dock mounted by the palette. Rail demotion via wrappers: NavRail wrapped in
+  `md:hidden` **only when `visible.size > 0`** (zero-module operators keep the
+  designed empty note on desktop); the rail footer (Mister entry + collapse)
+  wrapped `md:hidden`. Content clearance `md:pb-24` pinned / `md:pb-6` auto-hidden
+  on `<main>` (mobile untouched).
+
+**Z-ladder (declared):** content(auto) < summon-zone(29) < Dock(30) <
+palette-overlay(40) = mobile aside(40) < launcher(45) < palette-content(50).
+Dock(30) and mobile drawer-scrim(30) never coexist (Dock desktop / drawer mobile).
+
+**Padding contract:** on `<main>`, `md:` only — mobile has no Dock, no change.
+One-time padding settle after hydration for auto-hide users (pin read post-mount)
+— accepted.
+
+**Deferrals:** `⌘1–9` tile jumps → P6 (`order` already in registry); lane
+switching re-home + full aside `md:hidden` → P4b (needs user input on placement);
+`⌘.` vs Safari "stop loading" → preview QA (fallback = P6 palette "Collapse dock").
+
+**Review fixes (Fable P4a: APPROVE-WITH-FIXES):**
+- F-P4a-1 (applied) — auto-hide stuck-open bug: the summon zone had `onMouseEnter`
+  only. Added `onMouseLeave` on the zone + `onMouseEnter` on the nav so a pointer
+  that dips in and back out can't leave the dock stuck open.
+- F-P4a-2 (applied) — `.mac-dock` `gap 6px → 4px`: on the 8pt scale AND buys ~25px
+  margin so a 13-tile full-admin dock clears a 768px viewport.
+- F-P4a-3 (applied) — tooltip `font-size 12px → var(--type-label)`.
+- F-P4a-4 (applied) — tile/tooltip `ease` keywords → `var(--ease-settle)` (livery
+  convention; reduced-motion `linear` kept).
+- F-P4a-5 (applied) — corrected the `.is-hidden` comment (24px summon zone is the
+  reveal affordance; no literal 4px peek).
+
+**Post-deploy QA (log results here):** full-admin dock at exactly 768px; `⌘.` in
+Safari (stop-loading collision); auto-hide reveal/leave cycles; magnification in
+Firefox <121 (previous-neighbour degrades gracefully); dock in dark mode; launcher
+clearance pinned vs auto-hidden.
+
+**Preview note:** orchestrator recommends preview + user sign-off (largest desktop
+interaction change). User's standing policy is straight-to-prod on Fable approval;
+proceeding to prod on approval, rollback available if anything reads wrong.
+
+---
+
+## P2b — Nightwatch (dark) + theme toggle  ·  status: SHIPPED to production
 
 The first big *visible* change. Deployed to preview and reviewed BEFORE production
 (the user-agreed exception to the auto-deploy loop).
