@@ -58,7 +58,7 @@ def money_rows() -> tuple[str, str]:
     subtotal += 336.00
     rows.append(
         '<tr><td class="pd-item">10</td>'
-        '<td class="pd-desc">Marco de madera · Wooden frame</td>'
+        '<td class="pd-desc">Marco de madera</td>'
         f'<td class="pd-pic">{frame_img}</td>'
         '<td class="pd-cell-num">7</td>'
         '<td class="pd-cell-num">48.00</td>'
@@ -68,7 +68,7 @@ def money_rows() -> tuple[str, str]:
     subtotal += 340.00
     rows.append(
         '<tr><td class="pd-item">11</td>'
-        '<td class="pd-desc">Flete y gastos varios de aduana · Shipping &amp; Customs miscellaneous fees</td>'
+        '<td class="pd-desc">Flete y gastos varios de aduana</td>'
         '<td class="pd-pic"></td>'
         '<td class="pd-cell-num">1</td>'
         '<td class="pd-cell-num">340.00</td>'
@@ -207,7 +207,7 @@ HTMLDOC = f"""<!doctype html>
 
   <header class="pdoc-header">
     <div>
-      <span class="pdoc-kicker">Factura proforma · Proforma invoice</span>
+      <span class="pdoc-kicker">Factura proforma</span>
       <h1 class="pdoc-title">Proforma</h1>
       <p class="pdoc-number" data-draft="false">PF-WGT-2026-0723</p>
     </div>
@@ -219,7 +219,7 @@ HTMLDOC = f"""<!doctype html>
   <div class="pdoc-rule" aria-hidden="true"></div>
 
   <div class="pdoc-dateline">
-    <span>Tacna, 23-07-2026</span>
+    <span>Iquique, 23-07-2026</span>
     <span>Validez: 15 días</span>
     <span>Incoterm: FOB</span>
     <span>Moneda: USD</span>
@@ -227,7 +227,7 @@ HTMLDOC = f"""<!doctype html>
 
   <div class="pdoc-parties">
     <div class="pdoc-party">
-      <div class="pdoc-party-head">Vendedor / Exportador<span class="pdoc-party-en"> · Seller / Exporter</span></div>
+      <div class="pdoc-party-head">Vendedor / Exportador</div>
       <div class="pdoc-party-name">IMPORT - EXPORT SHINING STAR LIMITADA</div>
       <dl class="pdoc-party-meta">
         <dt>RUT</dt><dd>76029544-2</dd>
@@ -238,7 +238,7 @@ HTMLDOC = f"""<!doctype html>
       </dl>
     </div>
     <div class="pdoc-party">
-      <div class="pdoc-party-head">Comprador / Importador<span class="pdoc-party-en"> · Buyer / Importer</span></div>
+      <div class="pdoc-party-head">Comprador / Importador</div>
       <div class="pdoc-party-name">Renata Revol</div>
       <dl class="pdoc-party-meta">
         <dt>Origen</dt><dd>Bolivia</dd>
@@ -253,7 +253,7 @@ HTMLDOC = f"""<!doctype html>
       <tr>
         <th class="pd-col-item">Ítem</th>
         <th class="pd-col-desc">Descripción</th>
-        <th class="pd-col-pic">Imagen · Picture</th>
+        <th class="pd-col-pic">Imagen</th>
         <th class="pd-col-qty">Cant.</th>
         <th>Precio unit. (USD)</th>
         <th>Precio total (USD)</th>
@@ -275,16 +275,16 @@ HTMLDOC = f"""<!doctype html>
     </div>
   </div>
 
-  <div class="pdoc-section-bar">Condiciones comerciales<span class="pdoc-section-en"> · Commercial conditions</span></div>
+  <div class="pdoc-section-bar">Condiciones comerciales</div>
   <div class="pdoc-terms">
-    <span class="pdoc-term-label">Puerto de origen<span class="pdoc-term-en"> · Port of origin</span></span><span>Qingdao, China</span>
-    <span class="pdoc-term-label">Puerto de destino<span class="pdoc-term-en"> · Port of destination</span></span><span>Iquique, Chile</span>
-    <span class="pdoc-term-label">Forma de pago<span class="pdoc-term-en"> · Payment terms</span></span><span>50% adelantado y 50% al embarque en el puerto de origen.</span>
-    <span class="pdoc-term-label">Tiempo de entrega<span class="pdoc-term-en"> · Delivery time</span></span><span>Embarque dentro de 30 días naturales tras recibir el pago final.</span>
-    <span class="pdoc-term-label">Vigencia de la oferta<span class="pdoc-term-en"> · Offer validity</span></span><span>15 días desde la fecha de esta proforma.</span>
+    <span class="pdoc-term-label">Puerto de origen</span><span>Qingdao, China</span>
+    <span class="pdoc-term-label">Puerto de destino</span><span>Iquique, Chile</span>
+    <span class="pdoc-term-label">Forma de pago</span><span>50% adelantado y 50% al embarque en el puerto de origen.</span>
+    <span class="pdoc-term-label">Tiempo de entrega</span><span>Embarque dentro de 30 días naturales tras recibir el pago final.</span>
+    <span class="pdoc-term-label">Vigencia de la oferta</span><span>15 días desde la fecha de esta proforma.</span>
   </div>
 
-  <div class="pdoc-section-bar">Observaciones<span class="pdoc-section-en"> · Notes</span></div>
+  <div class="pdoc-section-bar">Observaciones</div>
   <ul class="pdoc-observations">
     <li>Los precios indicados corresponden a términos FOB.</li>
     <li>Los precios están expresados en dólares americanos (USD).</li>
@@ -297,7 +297,7 @@ HTMLDOC = f"""<!doctype html>
   </div>
 
   <div class="pdoc-issuedby">
-    <div class="pdoc-issuedby-label">Atendido por · Issued by</div>
+    <div class="pdoc-issuedby-label">Atendido por</div>
     <div class="pdoc-signature">{SIGNATURE}</div>
     <div class="pdoc-issuedby-name">Saad Muhammad</div>
     <div class="pdoc-issuedby-title">Representante comercial · Wings Global Trade</div>
@@ -311,7 +311,7 @@ HTMLDOC = f"""<!doctype html>
       <div>Tel: +507 6025-07</div>
     </div>
     <div class="pd-foot-right">
-      <div>Ctra. Panamericana Sur Km. 1303 Mz. Q Lt. 8-9</div>
+      <div>Pasaje Cuatro 2213, Condominio Oasis, Iquique, Chile</div>
       <div>wingsglobaltrade.com</div>
     </div>
   </footer>
