@@ -31,6 +31,17 @@ const config: Config = {
         stamp: 'var(--stamp)',
         // Active-lane tint — set by LaneSwitcher; tints stamps/series/chips only.
         'lane-accent': 'var(--lane-accent)',
+        // ── macOS material layer (TOWER-REDESIGN P1, ratified 2026-07-22) ──
+        'surface-base': 'var(--surface-base)',
+        'surface-raised': 'var(--surface-raised)',
+        'surface-sunken': 'var(--surface-sunken)',
+        'ink-tertiary': 'var(--ink-tertiary)',
+        'accent-wings': 'var(--accent-wings)',
+        'accent-wings-hover': 'var(--accent-wings-hover)',
+        'signal-positive': 'var(--signal-positive)',
+        'signal-negative': 'var(--signal-negative)',
+        'signal-caution': 'var(--signal-caution)',
+        'line-hairline': 'var(--line-hairline)',
       },
       fontFamily: {
         // Display = NissanOpti (brand headers); UI = Flexo (body); mono = Teko
@@ -52,9 +63,26 @@ const config: Config = {
         't5': ['var(--type-5)', { lineHeight: '1.1' }],
       },
       borderRadius: {
-        // 0 structural, ≤2px cards (Prime Directive: no rounded-soft SaaS).
+        // Legacy control-room radii (kept; `card` stays 4px until the sweep).
         structural: 'var(--radius-structural)',
         card: 'var(--radius-card)',
+        // ── macOS material scale (TOWER-REDESIGN P1, ratified 2026-07-22) ──
+        control: 'var(--radius-control)',
+        'card-lg': 'var(--radius-card-lg)',
+        panel: 'var(--radius-panel)',
+        dock: 'var(--radius-dock)',
+        pill: 'var(--radius-pill)',
+      },
+      boxShadow: {
+        'elevation-1': 'var(--elevation-1)',
+        'elevation-2': 'var(--elevation-2)',
+        'elevation-3': 'var(--elevation-3)',
+        'elevation-4': 'var(--elevation-4)',
+      },
+      transitionTimingFunction: {
+        'spring-snappy': 'var(--spring-snappy)',
+        'spring-settle': 'var(--spring-settle)',
+        'ease-exit': 'var(--ease-exit)',
       },
       spacing: {
         // Operational row heights (DESIGN_SYSTEM density).
