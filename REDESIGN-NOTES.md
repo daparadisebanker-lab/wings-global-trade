@@ -10,7 +10,43 @@ rewrite; zero feature regression.
 
 ---
 
-## P8b — Restyle sweep (board cards + admin landing grid)  ·  status: built, in review
+## P8d — Restyle sweep (inline reveal forms) + .mac-motion cleanup  ·  status: built, in review
+
+Third restyle cut. Tokens only, additive, zero feature regression.
+
+**Key finding correcting the recon:** these four "modal forms" are **inline reveal
+panels, NOT overlay modals** — no scrim, no `fixed inset-0`; they reveal in the flow.
+So the modal-sheet treatment Fable flagged for P8d (scrim / slide-up / scale-fade /
+`elevation-4`, `radius-panel` 16px) does **not** apply. And `tower-settle` (opacity +
+`translateY(4px)`, 180ms `--ease-settle`, reduced-motion→opacity-only) is already the
+correct inline-reveal primitive — two of the four use it. Migrating to `.mac-motion`
+(the recon's suggestion) would have **removed** the reveal, since `.mac-motion` has no
+base animation.
+
+- `clients/NewClient.tsx`, `containers/.../OpenContainerForm.tsx`,
+  `admin/lane-registry/RegisterLaneForm.tsx`, `pipeline/.../PipelineBoard.tsx` (filter
+  bar): `rounded-card`→`rounded-card-lg` (12px — **content-surface bucket, NOT panel-16**;
+  they're inline, not sheets, so I did not stretch `radius-panel` to them) + `shadow-
+  elevation-2` (a step above the board cards' elevation-1).
+- **Motion (F-P8d-1):** `tower-settle` stays only on the two that genuinely reveal on
+  user action — `OpenContainerForm` + the `PipelineBoard` RFQ bar. `NewClient` and
+  `RegisterLaneForm` are **permanent page furniture** (always mounted — ClientsWindow
+  renders NewClient unconditionally; LaneRegistry gates RegisterLaneForm on data
+  presence, not a user action), so they get **no entrance motion** — animating them
+  would double up on the `mac-page` route transition and violates motion honesty
+  (motion signals a state change; their arrival is the page's arrival).
+- **`.mac-motion` retired** (globals.css): the P1 reduced-motion hook had no base rule
+  and no consumer (grep-confirmed zero uses) — deleted the dead `@media` block. This
+  closes the debt Fable queued from P8a. Inline reveals use `tower-settle`; the page
+  transition uses `mac-page-in`; both keep their own reduced-motion handling.
+
+**QA:** the four forms reveal with the settle motion in both themes; reduced-motion
+collapses to opacity-only (tower-settle's own reduced-motion rule); no scrim/overlay
+regression (they were never modals); elevation-2 reads raised in dark.
+
+---
+
+## P8b — Restyle sweep (board cards + admin landing grid)  ·  status: SHIPPED to production
 
 Second restyle cut (folds the recon's P8b cards + P8c grids — same card-surface
 change). Tokens only, additive, zero feature regression. Radius precedent from P8a

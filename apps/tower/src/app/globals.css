@@ -500,18 +500,6 @@
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
-@media (prefers-reduced-motion: reduce) {
-  /* macOS spring motion collapses to an 80ms opacity fade (redesign §2.8). */
-  [data-app='tower'] .mac-motion,
-  [data-app='tower'] .mac-motion * {
-    transition-duration: 80ms !important;
-    transition-timing-function: linear !important;
-    transition-delay: 0ms !important;
-    animation-duration: 80ms !important;
-    animation-delay: 0ms !important;
-  }
-}
-
 /* ═══════════════════════════════════════════════════════════════════════════
    TOWER-REDESIGN · P2a — shell frame: page transition on route change.
    Applied to <main key={pathname}> so it replays on navigation (the element
