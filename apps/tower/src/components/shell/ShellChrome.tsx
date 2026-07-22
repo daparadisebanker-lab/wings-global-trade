@@ -172,8 +172,8 @@ export function ShellChrome({
           aria-modal={isMobile && drawerOpen ? true : undefined}
           aria-label={isMobile ? t({ es: 'Menú de navegación', en: 'Navigation menu' }, DEFAULT_LOCALE) : undefined}
           className={cn(
-            'tower-rail fixed inset-y-0 left-0 z-40 flex w-64 flex-col overflow-y-auto border-r border-line bg-surface-1 transition-transform duration-200',
-            'md:sticky md:top-0 md:z-auto md:h-screen',
+            'tower-rail fixed inset-y-0 left-0 z-40 flex w-[86vw] max-w-80 flex-col overflow-y-auto border-r border-line bg-surface-1 transition-transform duration-200',
+            'md:sticky md:top-0 md:z-auto md:h-screen md:max-w-none',
             collapsed ? 'md:w-16' : 'md:w-64',
             drawerOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
           )}
@@ -219,7 +219,10 @@ export function ShellChrome({
               {!collapsed ? (
                 <>
                   <span className="font-mono text-label uppercase tracking-[0.12em]">Mister</span>
-                  <span className="ml-auto font-mono text-label tracking-[0.1em] text-ink-secondary group-hover:text-ink-primary">
+                  <span
+                    data-kbd-hint
+                    className="ml-auto font-mono text-label tracking-[0.1em] text-ink-secondary group-hover:text-ink-primary"
+                  >
                     ⌘J
                   </span>
                 </>
@@ -258,11 +261,11 @@ export function ShellChrome({
         </div>
       </div>
 
-      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} isGroupAdmin={isGroupAdmin} />
+      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} isGroupAdmin={isGroupAdmin} visible={visible} />
 
       {/* Mister — the copilot dock (World B) + its floating door. The launcher
           hides while the dock is open so they never overlap. */}
-      {!misterOpen ? (
+      {!misterOpen && !drawerOpen ? (
         <button
           type="button"
           onClick={() => setMisterOpen(true)}

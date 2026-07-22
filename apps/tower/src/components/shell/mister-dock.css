@@ -38,6 +38,7 @@
   right: 0;
   height: var(--mister-vh, 100%);
   width: min(430px, 100vw);
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -414,11 +415,16 @@
 .mister-input textarea {
   flex: 1;
   border: none;
+  /* iOS/Safari draws a native inset border + rounding on <textarea> even with
+     border:none — appearance:none removes that doubled box inside the pill. */
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 0;
   background: transparent;
   resize: none;
   outline: none;
   font-family: var(--font-ui);
-  font-size: 15px;
+  font-size: 16px; /* ≥16px: stops iOS from zooming the page on focus */
   color: #10233f;
   max-height: 120px;
   line-height: 1.4;
@@ -536,4 +542,62 @@
   .mister-input .send:active:not(:disabled) {
     transform: none;
   }
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Phone: the dock IS the screen. Full-bleed (no side sliver of the shell
+   showing through), no left border seam. Below the desktop side-panel width.
+   ─────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .mister-panel {
+    width: 100%;
+    border-left: none;
+  }
+}
+
+/* Empty-state suggestion chips — the greeting names what Mister can do; these
+   make each capability a tappable starting point instead of a dead paragraph
+   above an empty void. Tapping seeds the composer so the operator can edit and
+   send. Shown only on the first, empty turn. */
+.mister-suggests {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 2px 6px 6px;
+}
+.mister-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 13px;
+  border-radius: 999px;
+  border: 1px solid rgba(168, 192, 220, 0.28);
+  background: rgba(158, 182, 210, 0.1);
+  color: #dbe6f3;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease, transform 120ms var(--ease-settle);
+}
+.mister-chip .g {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 50%;
+  background: #e0b866;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .mister-chip:hover {
+    background: rgba(158, 182, 210, 0.18);
+    border-color: rgba(224, 184, 102, 0.5);
+  }
+  .mister-chip:active {
+    transform: scale(0.97);
+  }
+}
+.mister-chip:focus-visible {
+  outline: 2px solid #e0b866;
+  outline-offset: 2px;
 }

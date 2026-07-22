@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ChangeEvent, type ClipboardEvent } from 'react'
 import { cn } from '@wings/trade-ui'
-import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
+import { DEFAULT_LOCALE, t, type Locale, type Localized } from '@/lib/i18n'
 import { askMister } from '@/lib/actions/mister-copilot'
 import { textResult, type CopilotResult } from '@/lib/copilot/types'
 import { MisterMark } from './MisterMark'
@@ -15,6 +15,17 @@ type Msg = { who: 'op'; text: string; image?: string } | { who: 'mi'; result: Co
 type Pending = { mediaType: string; dataBase64: string; preview: string }
 
 const ALLOWED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/gif']
+
+/** First-turn starting points — one per capability named in the greeting. A chip
+ *  either seeds the composer (`prefill`, cursor left ready to complete) or opens
+ *  the screenshot picker (`attach`). Never auto-sends: the operator stays in
+ *  control of the turn. */
+const SUGGESTIONS: { label: Localized; prefill?: Localized; attach?: boolean }[] = [
+  { label: { es: 'Armar un contenedor', en: 'Pack a container' }, prefill: { es: 'Arma un contenedor con ', en: 'Pack a container with ' } },
+  { label: { es: 'Costear un aterrizaje', en: 'Cost a landing' }, prefill: { es: 'Costea el aterrizaje de ', en: 'Cost the landing of ' } },
+  { label: { es: 'Redactar una cotización', en: 'Draft a quote' }, prefill: { es: 'Redacta una cotización para ', en: 'Draft a quote for ' } },
+  { label: { es: 'Leer una captura', en: 'Read a screenshot' }, attach: true },
+]
 
 /** Read a File into a Pending: strip the data: prefix off for the wire, keep it for preview. */
 function fileToPending(file: File): Promise<Pending | null> {
@@ -204,6 +215,29 @@ export function MisterDock({
               )}
             </p>
             <span className="cap">{t({ es: '¿Qué necesitas?', en: 'What do you need?' }, locale)}</span>
+            {thread.length === 0 ? (
+              <div className="mister-suggests">
+                {SUGGESTIONS.map((s) => (
+                  <button
+                    key={s.label.en}
+                    type="button"
+                    className="mister-chip"
+                    tabIndex={open ? 0 : -1}
+                    onClick={() => {
+                      if (s.attach) {
+                        fileRef.current?.click()
+                        return
+                      }
+                      setDraft(t(s.prefill!, locale))
+                      inputRef.current?.focus()
+                    }}
+                  >
+                    <span aria-hidden className="g" />
+                    {t(s.label, locale)}
+                  </button>
+                ))}
+              </div>
+            ) : null}
           </div>
 
           {thread.map((m, i) => {
