@@ -16,6 +16,7 @@ import {
   DOCUMENT_KINDS,
   DOCUMENT_SELECT,
   DOCUMENTS_BUCKET,
+  type DocumentKind,
   type DocumentListItem,
   type RawDocumentRow,
 } from './documents-logic'
@@ -44,6 +45,32 @@ export async function listDocuments(): Promise<ActionResult<DocumentListItem[]>>
     .limit(500)
 
   if (error) return fail('VALIDATION', 'No se pudieron listar los documentos / Could not list documents')
+  return ok(((data ?? []) as unknown as RawDocumentRow[]).map(mapDocumentRow))
+}
+
+/**
+ * Search the drive (RLS-scoped) — a title ILIKE, optionally filtered by kind.
+ * The seam Mister reads through (Slice 3D). Bounded to 8 hits.
+ */
+export async function searchDocuments(
+  query: string,
+  kind?: DocumentKind | null,
+): Promise<ActionResult<DocumentListItem[]>> {
+  const gate = await requireUser()
+  if (!gate.ok) return gate.error
+
+  let q = gate.supabase
+    .from('documents')
+    .select(DOCUMENT_SELECT)
+    .order('created_at', { ascending: false })
+    .limit(8)
+
+  const trimmed = (query ?? '').trim()
+  if (trimmed) q = q.ilike('title', `%${trimmed}%`)
+  if (kind) q = q.eq('kind', kind)
+
+  const { data, error } = await q
+  if (error) return fail('VALIDATION', 'No se pudo buscar en el drive / Could not search the drive')
   return ok(((data ?? []) as unknown as RawDocumentRow[]).map(mapDocumentRow))
 }
 

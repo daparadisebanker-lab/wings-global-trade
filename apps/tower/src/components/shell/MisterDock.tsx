@@ -197,8 +197,8 @@ export function MisterDock({
               <b>Mister</b>
               {t(
                 {
-                  es: ' — tu versión interna. Puedo armar un contenedor, costear un aterrizaje, redactar una cotización o leer la captura de un proveedor.',
-                  en: " — your internal version. I can pack a container, cost a landing, draft a quote, or read a supplier screenshot.",
+                  es: ' — tu versión interna. Puedo armar un contenedor, costear un aterrizaje, redactar una cotización, leer la captura de un proveedor o buscar un documento en el drive.',
+                  en: ' — your internal version. I can pack a container, cost a landing, draft a quote, read a supplier screenshot, or find a document in the drive.',
                 },
                 locale,
               )}
