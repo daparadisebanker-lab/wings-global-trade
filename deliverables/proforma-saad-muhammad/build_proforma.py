@@ -144,7 +144,7 @@ HTMLDOC = f"""<!doctype html>
   .pdoc-table th.pd-col-pic {{ width: 21%; }}
   .pdoc-table th.pd-col-qty {{ width: 10%; }}
   .pdoc-table tbody tr {{ break-inside: avoid; }}
-  .pdoc-table tbody td {{ border: 1px solid var(--pd-line); padding: 11px 10px; vertical-align: middle; font-size: 12px; }}
+  .pdoc-table tbody td {{ border: 1px solid var(--pd-line); padding: 8px 10px; vertical-align: middle; font-size: 12px; }}
   .pd-item {{ font-weight: 600; text-align: center; }}
   .pd-desc {{ text-align: left; }}
   .pd-pic {{ text-align: center; padding: 6px; }}
@@ -239,11 +239,13 @@ HTMLDOC = f"""<!doctype html>
     </div>
     <div class="pdoc-party">
       <div class="pdoc-party-head">Comprador / Importador<span class="pdoc-party-en"> · Buyer / Importer</span></div>
-      <div class="pdoc-party-name">Renata Revol</div>
+      <div class="pdoc-party-name">IMPORT - EXPORT SHINING STAR LIMITADA</div>
       <dl class="pdoc-party-meta">
-        <dt>Origen</dt><dd>Bolivia</dd>
-        <dt>Teléfono</dt><dd>+591 68173247</dd>
+        <dt>RUT</dt><dd>76029544-2</dd>
+        <dt>Dirección</dt><dd>Pasaje Cuatro 2213, Condominio Oasis</dd>
+        <dt>Ciudad</dt><dd>Iquique, Chile</dd>
         <dt>Contacto</dt><dd>Renata Revol</dd>
+        <dt>Teléfono</dt><dd>+591 68173247</dd>
       </dl>
     </div>
   </div>
