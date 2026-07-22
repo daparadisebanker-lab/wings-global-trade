@@ -33,6 +33,18 @@ function scalar(v: string | string[] | undefined): string | undefined {
   return Array.isArray(v) ? v[0] : v
 }
 
+/** Rebuild the incoming query string so the .xlsx download reflects the SAME
+ *  slots / quantity / buyer params the document was rendered with. */
+function queryString(sp: SearchParams): string {
+  const qs = new URLSearchParams()
+  for (const [key, value] of Object.entries(sp)) {
+    const v = scalar(value)
+    if (v != null && v !== '') qs.set(key, v)
+  }
+  const s = qs.toString()
+  return s ? `?${s}` : ''
+}
+
 /** Map the raw query string to the action's input (the action Zod-validates it). */
 function toInput(sp: SearchParams): RbQuoteInput {
   return {
@@ -61,6 +73,7 @@ export default async function RbContainerQuotePage({
   const { brand, code } = await params
   const sp = await searchParams
   const result = await getRbContainerQuoteByCode(brand, code, toInput(sp))
+  const xlsxHref = `/marcas/${encodeURIComponent(brand)}/contenedor/${encodeURIComponent(code)}/tech-sheet.xlsx${queryString(sp)}`
 
   if (result.error) {
     return (
@@ -77,7 +90,7 @@ export default async function RbContainerQuotePage({
 
   return (
     <div className="rbqdoc-page">
-      <PrintBar quoteRef={doc.quoteRef} />
+      <PrintBar quoteRef={doc.quoteRef} xlsxHref={xlsxHref} />
       <RbContainerQuoteDocument doc={doc} />
       <div className="rbqdoc-annex">
         <RbTechSheet
@@ -86,6 +99,8 @@ export default async function RbContainerQuotePage({
           containerCode={doc.containerCode}
           reference={doc.quoteRef}
           sections={doc.techSheet}
+          specRows={doc.specRows}
+          diagram={doc.diagram}
         />
       </div>
     </div>

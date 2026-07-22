@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { money, addMinor, lineTotalMinor, applyBps, formatMinor } from './money'
+import { money, addMinor, lineTotalMinor, applyBps, formatMinor, formatAccounting } from './money'
 
 describe('money (integer minor units)', () => {
   it('rejects non-integer minor', () => {
@@ -24,5 +24,16 @@ describe('money (integer minor units)', () => {
 
   it('formats for display only', () => {
     expect(formatMinor(123456, 'USD', 'en-US')).toBe('$1,234.56')
+  })
+
+  it('renders negative money in accounting parentheses, not a minus sign', () => {
+    expect(formatMinor(-123456, 'USD', 'en-US')).toBe('($1,234.56)')
+    expect(formatMinor(0, 'USD', 'en-US')).toBe('$0.00')
+  })
+
+  it('formatAccounting parenthesises negatives (no currency symbol)', () => {
+    expect(formatAccounting(1234.56, 'en-US')).toBe('1,234.56')
+    expect(formatAccounting(-1234.56, 'en-US')).toBe('(1,234.56)')
+    expect(formatAccounting(0, 'en-US')).toBe('0.00')
   })
 })

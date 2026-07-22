@@ -27,6 +27,10 @@ function rowValue(sections: ReturnType<typeof buildTechSheetSections>, title: st
   return s?.rows.find((r) => r.labelEn === labelEn)?.value
 }
 
+function row(sections: ReturnType<typeof buildTechSheetSections>, title: string, labelEn: string) {
+  return sections.find((x) => x.titleEn === title)?.rows.find((r) => r.labelEn === labelEn)
+}
+
 /** Digits only — assert numeric content without depending on the runtime ICU
  *  grouping separator (es-PE resolves to "." with full ICU, "," without). */
 function digits(v: string | undefined): string {
@@ -72,5 +76,32 @@ describe('buildTechSheetSections', () => {
 
   it('is pure — identical facts produce identical output', () => {
     expect(buildTechSheetSections(BASE)).toEqual(buildTechSheetSections(BASE))
+  })
+
+  it('carries a machine-typed `num` for numeric rows so an export types them as real numbers', () => {
+    const s = buildTechSheetSections(BASE)
+    // Counts: raw integers, unit absent.
+    expect(row(s, 'Container', 'Total slots')?.num).toBe(10)
+    expect(row(s, 'Container', 'Packages per container')?.num).toBe(1000)
+    expect(row(s, 'Container', 'Total slots')?.unit).toBeUndefined()
+    // Volume rows tagged m³ ; weight rows tagged kg.
+    expect(row(s, 'Slot', 'Weight per slot')?.num).toBeCloseTo(970, 5)
+    expect(row(s, 'Slot', 'Weight per slot')?.unit).toBe('kg')
+    expect(row(s, 'Packaging', 'Package volume')?.num).toBeCloseTo(0.05, 5)
+    expect(row(s, 'Packaging', 'Package volume')?.unit).toBe('m³')
+  })
+
+  it('leaves identifier/text rows non-numeric (num null) — HS, GTIN, route, class', () => {
+    const s = buildTechSheetSections(BASE)
+    expect(row(s, 'Customs', 'HS code')?.num).toBeNull()
+    expect(row(s, 'Packaging', 'GTIN')?.num).toBeNull()
+    expect(row(s, 'Container', 'Route')?.num).toBeNull()
+    expect(row(s, 'Container', 'Class')?.num).toBeNull()
+  })
+
+  it('nulls a numeric row when the underlying product fact is absent', () => {
+    const s = buildTechSheetSections({ ...BASE, product: null })
+    expect(row(s, 'Customs', 'MOQ')?.num).toBeNull()
+    expect(row(s, 'Customs', 'CBM per unit')?.num).toBeNull()
   })
 })

@@ -7,6 +7,7 @@ import {
   defaultSpecs,
   toContainerPromo,
   routeLabelOf,
+  waMeUrl,
 } from './container-promo-logic'
 
 const NOW = new Date('2026-07-20T12:00:00Z')
@@ -119,6 +120,20 @@ describe('toContainerPromo', () => {
     expect(routeLabelOf({ origin: 'Qingdao', destination: 'Callao' })).toBe('Qingdao → Callao')
     expect(routeLabelOf({})).toBeUndefined()
     expect(routeLabelOf(null)).toBeUndefined()
+  })
+})
+
+describe('waMeUrl', () => {
+  it("addresses the rep's own number, stripping the + and any spacing", () => {
+    expect(waMeUrl('+51 987 654 321', 'hola mundo')).toBe('https://wa.me/51987654321?text=hola%20mundo')
+  })
+  it('falls back to the generic chooser link when there is no number', () => {
+    expect(waMeUrl(null, 'hola')).toBe('https://wa.me/?text=hola')
+    expect(waMeUrl(undefined, 'hola')).toBe('https://wa.me/?text=hola')
+    expect(waMeUrl('', 'hola')).toBe('https://wa.me/?text=hola')
+  })
+  it('URL-encodes the share text', () => {
+    expect(waMeUrl('+5117654321', 'a & b · c')).toBe('https://wa.me/5117654321?text=a%20%26%20b%20%C2%B7%20c')
   })
 })
 

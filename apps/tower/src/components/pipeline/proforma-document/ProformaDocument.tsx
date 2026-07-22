@@ -221,6 +221,20 @@ export function ProformaDocument({ doc }: { doc: ProformaDocument }) {
         <div className="pdoc-close-signoff">{issuer.name}</div>
       </div>
 
+      {/* Issuing rep — "Atendido por / Issued by". Signature is a signed READ url
+          rendered through <img> (never inline SVG); degrades to name + title. */}
+      {doc.issuedBy ? (
+        <div className="pdoc-issuedby">
+          <div className="pdoc-issuedby-label">Atendido por · Issued by</div>
+          {doc.issuedBy.signatureUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img className="pdoc-signature" src={doc.issuedBy.signatureUrl} alt="Firma" />
+          ) : null}
+          <div className="pdoc-issuedby-name">{doc.issuedBy.displayName}</div>
+          {doc.issuedBy.title ? <div className="pdoc-issuedby-title">{doc.issuedBy.title}</div> : null}
+        </div>
+      ) : null}
+
       {/* Footer */}
       <footer className="pdoc-footer">
         <div>

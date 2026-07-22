@@ -11,7 +11,15 @@
 import React, { useMemo } from 'react'
 import { DEFAULT_LOCALE, type Locale } from '../../../lib/i18n'
 import type { JsonSchema } from '../../../lib/schemas/spec'
-import { ArrayField, BooleanField, EnumField, LocalizedStringField, NumberField, StringField } from './fields'
+import {
+  ArrayField,
+  BooleanField,
+  EnumField,
+  LocalizedStringField,
+  NumberField,
+  SpecRowsField,
+  StringField,
+} from './fields'
 import { mergeSpecValue } from './state'
 import { validateSpecValue } from './validate'
 
@@ -29,6 +37,7 @@ function renderField(
   prop: JsonSchema['properties'][string],
   props: Omit<Parameters<typeof StringField>[0], 'fieldKey' | 'prop'>,
 ) {
+  if (prop['x-spec-rows']) return <SpecRowsField key={key} fieldKey={key} prop={prop} {...props} />
   if (prop['x-localized']) return <LocalizedStringField key={key} fieldKey={key} prop={prop} {...props} />
   if (prop.enum) return <EnumField key={key} fieldKey={key} prop={prop} {...props} />
 

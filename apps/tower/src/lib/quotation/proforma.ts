@@ -11,12 +11,17 @@
 // quoted order — never a cart, never a retail unit price. The vocabulary lint
 // applies to every string produced here.
 import type { CompanyInfo } from './company'
-import { computeQuotationTotals, type QuotationLine, type QuotationTotals } from './document'
+import {
+  computeQuotationTotals,
+  type IssuedByRep,
+  type QuotationLine,
+  type QuotationTotals,
+} from './document'
 
-// Re-exported so the proforma action/renderer import the line + totals shape
-// from one place, exactly as the quotation document does.
-export type { QuotationLine, QuotationTotals } from './document'
-export { computeQuotationTotals } from './document'
+// Re-exported so the proforma action/renderer import the line + totals + issuing
+// rep shapes from one place, exactly as the quotation document does.
+export type { IssuedByRep, QuotationLine, QuotationTotals } from './document'
+export { buildIssuedByRep, computeQuotationTotals } from './document'
 
 // ── Trade parties (VENDEDOR / EXPORTADOR · COMPRADOR / IMPORTADOR) ────────────
 export interface TradeParty {
@@ -73,6 +78,8 @@ export interface ProformaDocument {
   banking: BankingDetails
   observations: string[]
   issuer: CompanyInfo
+  /** The issuing rep ("Atendido por"), or null → fall back to the company block. */
+  issuedBy: IssuedByRep | null
 }
 
 // ── Doc number ───────────────────────────────────────────────────────────────

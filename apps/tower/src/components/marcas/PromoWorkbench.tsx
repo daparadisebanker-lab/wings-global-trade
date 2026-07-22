@@ -16,7 +16,17 @@ import { ContainerPromoPanel } from './ContainerPromoPanel'
 
 const LABEL = 'font-mono text-label uppercase tracking-[0.08em] text-ink-secondary'
 
-export function PromoWorkbench({ initialRows }: { initialRows: PromotableContainerRow[] }) {
+export function PromoWorkbench({
+  initialRows,
+  repWhatsappE164 = null,
+  repWhatsappLabel = null,
+}: {
+  initialRows: PromotableContainerRow[]
+  /** The signed-in rep's own WhatsApp Business line — threaded to the share panel
+   *  so each rep's promo deep-links open from their own number (tower_39). */
+  repWhatsappE164?: string | null
+  repWhatsappLabel?: string | null
+}) {
   const [rows, setRows] = useState(initialRows)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [detail, setDetail] = useState<ContainerPromoDetail | null>(null)
@@ -88,7 +98,13 @@ export function PromoWorkbench({ initialRows }: { initialRows: PromotableContain
         ) : isLoading && !detail ? (
           <p className={LABEL}>Cargando…</p>
         ) : detail ? (
-          <ContainerPromoPanel key={detail.id} initial={detail} onChanged={refreshRows} />
+          <ContainerPromoPanel
+            key={detail.id}
+            initial={detail}
+            onChanged={refreshRows}
+            repWhatsappE164={repWhatsappE164}
+            repWhatsappLabel={repWhatsappLabel}
+          />
         ) : (
           <div className="flex h-full min-h-[40vh] items-center justify-center rounded-card border border-line">
             <p className="font-ui text-t0 text-ink-secondary">

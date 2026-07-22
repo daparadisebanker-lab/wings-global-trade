@@ -15,8 +15,29 @@ import { PROJECT_SPEC_FIELDS } from './project'
 import { specFieldsToJsonSchema, specFieldsToZodObject } from './to-json-schema'
 import type { JsonSchema } from './types'
 
-/** Bumping this requires a new `tower.spec_schemas` row (version, not an edit-in-place — ADR-3/ADR-6). */
+/**
+ * Baseline version most archetypes still sit at. A field-def change bumps that
+ * ONE archetype's entry in `SPEC_SCHEMA_VERSIONS` (a new `tower.spec_schemas`
+ * row, never an edit-in-place — ADR-3/ADR-6), leaving this constant as the
+ * shared floor for the untouched archetypes.
+ */
 export const SPEC_SCHEMA_VERSION = 1
+
+/**
+ * Per-archetype spec-schema version. Bumping one archetype (adding a field def)
+ * means a NEW versioned row for THAT archetype only — the other six are unmoved.
+ * ALLOCATION → v2 adds the `specRows` object-array field (migration tower_44);
+ * getSpecSchema resolves the highest published version.
+ */
+export const SPEC_SCHEMA_VERSIONS: Record<Archetype, number> = {
+  EQUIPMENT: SPEC_SCHEMA_VERSION,
+  PROJECT: SPEC_SCHEMA_VERSION,
+  COMMODITY: SPEC_SCHEMA_VERSION,
+  PROGRAM: SPEC_SCHEMA_VERSION,
+  CREDENTIAL: SPEC_SCHEMA_VERSION,
+  ORIGIN: SPEC_SCHEMA_VERSION,
+  ALLOCATION: 2,
+}
 
 export const SPEC_FIELD_DEFAULTS: Record<Archetype, SpecFieldDef[]> = {
   EQUIPMENT: EQUIPMENT_SPEC_FIELDS,
@@ -33,7 +54,7 @@ const ARCHETYPE_ENTRIES = Object.entries(SPEC_FIELD_DEFAULTS) as [Archetype, Spe
 export const SPEC_JSON_SCHEMA_DEFAULTS: Record<Archetype, JsonSchema> = Object.fromEntries(
   ARCHETYPE_ENTRIES.map(([archetype, fields]) => [
     archetype,
-    specFieldsToJsonSchema(archetype, SPEC_SCHEMA_VERSION, fields),
+    specFieldsToJsonSchema(archetype, SPEC_SCHEMA_VERSIONS[archetype], fields),
   ]),
 ) as Record<Archetype, JsonSchema>
 

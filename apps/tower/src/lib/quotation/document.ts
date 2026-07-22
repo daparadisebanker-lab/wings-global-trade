@@ -52,6 +52,35 @@ export interface QuotationTotals {
   totalMinor: number
 }
 
+// ── Issuing rep ("Atendido por / Issued by") ─────────────────────────────────
+// The rep who owns the quote (tower.quotes.created_by), resolved through the
+// tower_39 rep-identity contract. Rendered as a signed <img> signature + name +
+// title near the signature area. `signatureUrl` is a short-lived signed READ url
+// for `<img src>` ONLY (rendering an SVG through <img> neutralizes any embedded
+// script) — never inline the SVG. Null when the rep has no signature (the block
+// degrades to name + title); the whole field is null when no rep is resolvable
+// (the document falls back to the company close block).
+export interface IssuedByRep {
+  displayName: string
+  title: string | null
+  signatureUrl: string | null
+}
+
+/**
+ * Build the "Atendido por / Issued by" block from a resolved rep profile plus an
+ * (optional) signed signature url. Pure — the document action does the I/O
+ * (profile read + signed url) and hands the result here. Returns null when there
+ * is no usable display name, so the renderer shows the company close block only.
+ */
+export function buildIssuedByRep(
+  profile: { displayName: string | null; title: string | null } | null | undefined,
+  signatureUrl: string | null | undefined,
+): IssuedByRep | null {
+  const name = profile?.displayName?.trim()
+  if (!name) return null
+  return { displayName: name, title: profile?.title ?? null, signatureUrl: signatureUrl ?? null }
+}
+
 export interface QuotationDocument {
   quoteId: string
   /** null until the quote is issued (a number is minted). */
@@ -70,6 +99,8 @@ export interface QuotationDocument {
   terms: CommercialTerms
   observations: string[]
   issuer: CompanyInfo
+  /** The issuing rep ("Atendido por"), or null → fall back to the company block. */
+  issuedBy: IssuedByRep | null
 }
 
 // ── Pure math ────────────────────────────────────────────────────────────────

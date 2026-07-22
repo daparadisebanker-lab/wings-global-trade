@@ -2,12 +2,16 @@ import Link from 'next/link'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { PromoWorkbench } from '@/components/marcas'
 import { listPromotableContainers } from '@/lib/actions/container-promo'
+import { getMyRepProfile } from '@/lib/actions/rep-profile'
 
 // Promoción de contenedores (container-promotion feature, root CLAUDE.md §5-bis).
 // Server-fetches the containers the user may promote (RLS: a rep sees only their
 // brands', a group admin sees all) and hands them to the marketing workbench.
+// The signed-in rep's own WhatsApp line is fetched here too so promo shares open
+// from their own number (each rep reaches a different demographic; tower_39).
 export default async function PromocionPage() {
-  const result = await listPromotableContainers()
+  const [result, repProfile] = await Promise.all([listPromotableContainers(), getMyRepProfile()])
+  const rep = repProfile.data ?? null
 
   if (result.error) {
     return (
@@ -36,7 +40,11 @@ export default async function PromocionPage() {
           ← Marcas
         </Link>
       </header>
-      <PromoWorkbench initialRows={result.data} />
+      <PromoWorkbench
+        initialRows={result.data}
+        repWhatsappE164={rep?.whatsappE164 ?? null}
+        repWhatsappLabel={rep?.whatsappLabel ?? null}
+      />
     </div>
   )
 }

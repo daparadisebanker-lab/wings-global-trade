@@ -8,8 +8,9 @@ import { useQueryClient } from '@tanstack/react-query'
 import { inviteUser, setUserGroupAdmin, type LaneAdminRow } from '@/lib/actions/admin'
 import { ADMIN_USERS_KEY, useAdminUsersQuery } from './useAdminUsersQuery'
 import { MembershipMatrix } from './MembershipMatrix'
+import { RepInvitePanel, type RepBrandOption } from './RepInvitePanel'
 
-export function UserManager({ lanes }: { lanes: LaneAdminRow[] }) {
+export function UserManager({ lanes, brands }: { lanes: LaneAdminRow[]; brands: RepBrandOption[] }) {
   const queryClient = useQueryClient()
   const usersQuery = useAdminUsersQuery()
   const users = useMemo(() => usersQuery.data ?? [], [usersQuery.data])
@@ -80,6 +81,9 @@ export function UserManager({ lanes }: { lanes: LaneAdminRow[] }) {
           </p>
         ) : null}
       </section>
+
+      {/* Rep enrollment — invite + membership + empty rep profile in one act. */}
+      <RepInvitePanel lanes={lanes} brands={brands} onInvited={invalidateUsers} />
 
       {usersQuery.error ? (
         <p role="alert" className="font-ui text-t0 text-negative">

@@ -632,7 +632,15 @@ export async function transitionContainer(id: string, status: string): Promise<A
     .select(CONTAINER_SELECT_COLS)
     .single()
 
-  if (error) return fail('FORBIDDEN_LANE', 'No se pudo cambiar el estado / Could not change status')
+  if (error) {
+    // DB backstop (migration tower_39 containers_status_guard) — mirrors the
+    // canTransitionContainerStatus check above; mapped like commitCbm maps
+    // commit_container_cbm's raised codes.
+    if ((error.message ?? '').includes('STATUS_TRANSITION_INVALID')) {
+      return fail('STAGE_INVALID', 'Transición de estado inválida / Invalid status transition')
+    }
+    return fail('FORBIDDEN_LANE', 'No se pudo cambiar el estado / Could not change status')
+  }
 
   const committed = await committedCbmByContainerId(supabase, [parsed.data.id])
   return ok(mapContainerRow(data as unknown as RawContainerRow, committed?.get(parsed.data.id) ?? 0))
@@ -764,7 +772,14 @@ export async function advancePOStatus(poId: string, status: string): Promise<Act
     .select('id,container_id,supplier_id,lane_id,lines,total_minor,currency,status,suppliers(name)')
     .single()
 
-  if (error) return fail('FORBIDDEN_LANE', 'No se pudo actualizar la orden de compra / Could not update purchase order')
+  if (error) {
+    // DB backstop (migration tower_39 purchase_orders_status_guard) — mirrors the
+    // canAdvancePoStatus check above.
+    if ((error.message ?? '').includes('STATUS_TRANSITION_INVALID')) {
+      return fail('STAGE_INVALID', 'Transición de estado inválida / Invalid status transition')
+    }
+    return fail('FORBIDDEN_LANE', 'No se pudo actualizar la orden de compra / Could not update purchase order')
+  }
 
   return ok(mapPurchaseOrderRow(data as unknown as RawPurchaseOrderRow))
 }

@@ -14,7 +14,7 @@
 // only (Prime Directive 2): never a cart, never a retail unit price — the unit is
 // a slot. The tech-sheet sections are built in @wings/rb-core (buildTechSheetSections).
 import { lineTotalMinor } from '@/lib/money'
-import type { TechSheetSection } from '@wings/rb-core'
+import type { TechSheetSection, RbPackingDiagramSpec } from '@wings/rb-core'
 import type { CompanyInfo } from './company'
 import {
   computeQuotationTotals,
@@ -27,6 +27,17 @@ import {
 // import them from one place, exactly as the proforma document does.
 export type { BillTo, CommercialTerms, QuotationTotals } from './document'
 export { computeQuotationTotals } from './document'
+
+// ── Fiche spec rows (ALLOCATION specs.specRows) ──────────────────────────────
+// A brand-authored {label, value, icon?} presentation row from the ALLOCATION
+// spec (spec_schemas v2 · migration tower_44). Exhibited on the tech sheet as a
+// tabular-mono {label · value} table; `icon` is a bounded token (SPEC_ROW_ICONS),
+// mapped to a glyph at render — never a raw asset path.
+export interface RbSpecRow {
+  label: string
+  value: string
+  icon?: string
+}
 
 // ── A rendered allocation line (the negotiated slots) ────────────────────────
 // One line = one product's slot allocation in the container. `slots` is the unit
@@ -96,6 +107,12 @@ export interface RbContainerQuoteDocument {
   /** null when the quote is un-priced (no money to total). */
   totals: QuotationTotals | null
   techSheet: TechSheetSection[]
+  /** Brand-authored fiche rows from the ALLOCATION spec (specs.specRows). Empty when none. */
+  specRows: RbSpecRow[]
+  /** Package/packing drawing geometry (rb_diagram_specs, tower_45) mapped to the
+   *  shared PackingDiagram organ's spec. null when the product has no authored
+   *  geometry — the tech sheet then stays spec-led (no drawing). */
+  diagram: RbPackingDiagramSpec | null
   terms: CommercialTerms
   observations: string[]
   issuer: CompanyInfo

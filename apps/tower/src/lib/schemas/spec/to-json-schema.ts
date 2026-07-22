@@ -5,7 +5,7 @@
 import { z } from 'zod'
 import type { Archetype } from '@/lib/archetypes'
 import type { Localized } from '@/lib/i18n'
-import type { EnumOption, SpecFieldDef } from './fields'
+import { SPEC_ROW_ICONS, type EnumOption, type SpecFieldDef } from './fields'
 import type { JsonSchema, JsonSchemaProperty } from './types'
 
 function applyRequired<T extends z.ZodTypeAny>(schema: T, required?: boolean) {
@@ -46,6 +46,14 @@ export function fieldToZod(field: SpecFieldDef): z.ZodTypeAny {
     case 'array': {
       const item = field.items.type === 'number' ? z.number() : z.string()
       return applyRequired(z.array(item), field.required)
+    }
+    case 'specRows': {
+      const row = z.object({
+        label: z.string(),
+        value: z.string(),
+        icon: z.enum([...SPEC_ROW_ICONS] as [string, ...string[]]).optional(),
+      })
+      return applyRequired(z.array(row), field.required)
     }
   }
 }
@@ -106,6 +114,21 @@ function fieldToJsonSchemaProperty(field: SpecFieldDef, order: number): JsonSche
                     }
                   : {}),
               },
+        ...common,
+      }
+    case 'specRows':
+      return {
+        type: 'array',
+        'x-spec-rows': true,
+        items: {
+          type: 'object',
+          properties: {
+            label: { type: 'string' },
+            value: { type: 'string' },
+            icon: { type: 'string', enum: [...SPEC_ROW_ICONS] },
+          },
+          required: ['label', 'value'],
+        },
         ...common,
       }
   }

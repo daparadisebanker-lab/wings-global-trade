@@ -245,8 +245,11 @@ on conflict (archetype, lane_id, version) do nothing;
 -- ALLOCATION (7th archetype, root §5-bis) — represented brands (RB/xx). R1:
 -- presentation-only spec (geometry lives in rb_diagram_specs). lane_id = null,
 -- no lane override. Kept identical to specFieldsToJsonSchema(ALLOCATION_SPEC_FIELDS).
+-- v2 adds the `specRows` object-array fiche field (SpecForm framework amendment);
+-- the incremental v2 seed for already-migrated DBs is migration tower_44. The v1
+-- block below is retained (append-only history — resolveSpecSchema picks highest).
 insert into tower.spec_schemas (archetype, lane_id, version, json_schema)
-select 'ALLOCATION', null, 1, $allocation_schema$
+select 'ALLOCATION', null, 1, $allocation_schema_v1$
 {
   "type": "object",
   "x-archetype": "ALLOCATION",
@@ -258,8 +261,42 @@ select 'ALLOCATION', null, 1, $allocation_schema$
   },
   "required": ["unitLabel", "description"]
 }
-$allocation_schema$::jsonb
+$allocation_schema_v1$::jsonb
 where not exists (
   select 1 from tower.spec_schemas where archetype = 'ALLOCATION' and lane_id is null and version = 1
+)
+on conflict (archetype, lane_id, version) do nothing;
+
+insert into tower.spec_schemas (archetype, lane_id, version, json_schema)
+select 'ALLOCATION', null, 2, $allocation_schema_v2$
+{
+  "type": "object",
+  "x-archetype": "ALLOCATION",
+  "x-version": 2,
+  "properties": {
+    "unitLabel": { "type": "string", "x-localized": true, "x-label": { "es": "Etiqueta de unidad", "en": "Unit label" }, "x-order": 0 },
+    "description": { "type": "string", "x-localized": true, "x-label": { "es": "Descripción", "en": "Description" }, "x-order": 1 },
+    "highlights": { "type": "array", "items": { "type": "string" }, "x-label": { "es": "Destacados", "en": "Highlights" }, "x-order": 2 },
+    "specRows": {
+      "type": "array",
+      "x-spec-rows": true,
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": { "type": "string" },
+          "value": { "type": "string" },
+          "icon": { "type": "string", "enum": ["box", "pallet", "cbm", "weight", "clock", "doc", "tag"] }
+        },
+        "required": ["label", "value"]
+      },
+      "x-label": { "es": "Ficha de especificaciones", "en": "Specification rows" },
+      "x-order": 3
+    }
+  },
+  "required": ["unitLabel", "description"]
+}
+$allocation_schema_v2$::jsonb
+where not exists (
+  select 1 from tower.spec_schemas where archetype = 'ALLOCATION' and lane_id is null and version = 2
 )
 on conflict (archetype, lane_id, version) do nothing;

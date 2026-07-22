@@ -13,7 +13,7 @@ import React, { useId, useState } from 'react'
 import type { ChangeEvent, ReactNode } from 'react'
 import { cn } from '@wings/trade-ui'
 import { DEFAULT_LOCALE, t, type Locale, type Localized } from '../../../lib/i18n'
-import type { JsonSchemaProperty } from '../../../lib/schemas/spec'
+import { isScalarArrayItems, type JsonSchemaProperty } from '../../../lib/schemas/spec'
 import { normalizeLocalizedPair, updateLocalizedPair } from './state'
 
 const inputBase =
@@ -185,8 +185,11 @@ export function ArrayField({ fieldKey, prop, value, onChange, locale, disabled, 
   const id = useId()
   const [draft, setDraft] = useState('')
   const items = Array.isArray(value) ? (value as (string | number)[]) : []
-  const isNumeric = prop.items?.type === 'number'
-  const enumOptions = prop.items?.enum
+  // Scalar-array field only — `specRows` (object items) is routed to SpecRowsField
+  // upstream, so narrowing to the scalar items shape here is total and safe.
+  const scalarItems = isScalarArrayItems(prop.items) ? prop.items : undefined
+  const isNumeric = scalarItems?.type === 'number'
+  const enumOptions = scalarItems?.enum
 
   function addItem(raw: string) {
     const next = isNumeric ? Number(raw) : raw
@@ -211,7 +214,7 @@ export function ArrayField({ fieldKey, prop, value, onChange, locale, disabled, 
       {enumOptions ? (
         <div className="flex flex-wrap gap-3">
           {enumOptions.map((optionValue) => {
-            const labels = prop.items?.['x-enum-labels'] ?? {}
+            const labels = scalarItems?.['x-enum-labels'] ?? {}
             const checked = items.includes(optionValue)
             return (
               <label key={optionValue} className="flex items-center gap-1.5 font-ui text-t0 text-ink-primary">
@@ -268,6 +271,105 @@ export function ArrayField({ fieldKey, prop, value, onChange, locale, disabled, 
           />
         </div>
       )}
+    </FieldShell>
+  )
+}
+
+interface SpecRow {
+  label: string
+  value: string
+  icon?: string
+}
+
+/**
+ * Editor for the `specRows` object-array kind: `{ label, value, icon? }` rows the
+ * scalar ArrayField cannot express. Add / edit / remove rows; the optional icon
+ * is chosen from the bounded set the schema publishes (prop.items.properties.icon.enum).
+ * TOWER control-room tokens only — no raw hex/px.
+ */
+export function SpecRowsField({ fieldKey, prop, value, onChange, locale, disabled, error, required }: FieldProps) {
+  const id = useId()
+  const rows: SpecRow[] = Array.isArray(value) ? (value as SpecRow[]) : []
+  const objectItems = prop.items && prop.items.type === 'object' ? prop.items : undefined
+  const iconOptions = objectItems?.properties.icon?.enum ?? []
+
+  function patchRow(index: number, patch: Partial<SpecRow>) {
+    onChange(rows.map((row, i) => (i === index ? { ...row, ...patch } : row)))
+  }
+  function addRow() {
+    onChange([...rows, { label: '', value: '' }])
+  }
+  function removeRow(index: number) {
+    onChange(rows.filter((_, i) => i !== index))
+  }
+
+  return (
+    <FieldShell
+      htmlFor={id}
+      label={t(prop['x-label'], locale)}
+      description={prop['x-description'] ? t(prop['x-description'], locale) : undefined}
+      error={error}
+      required={required}
+    >
+      <div className="flex flex-col gap-2" data-spec-rows>
+        {rows.map((row, index) => (
+          <div key={index} className="flex items-start gap-2">
+            {iconOptions.length > 0 ? (
+              <select
+                aria-label={t({ es: 'Ícono', en: 'Icon' }, locale)}
+                disabled={disabled}
+                value={row.icon ?? ''}
+                onChange={(e) => patchRow(index, { icon: e.target.value || undefined })}
+                className={cn(inputBase, 'w-28 shrink-0')}
+              >
+                <option value="">{t({ es: '— sin ícono —', en: '— no icon —' }, locale)}</option>
+                {iconOptions.map((icon) => (
+                  <option key={icon} value={icon}>
+                    {icon}
+                  </option>
+                ))}
+              </select>
+            ) : null}
+            <input
+              type="text"
+              aria-label={t({ es: 'Etiqueta', en: 'Label' }, locale)}
+              disabled={disabled}
+              value={row.label}
+              onChange={(e) => patchRow(index, { label: e.target.value })}
+              placeholder={t({ es: 'Etiqueta', en: 'Label' }, locale)}
+              className={inputBase}
+            />
+            <input
+              type="text"
+              aria-label={t({ es: 'Valor', en: 'Value' }, locale)}
+              disabled={disabled}
+              value={row.value}
+              onChange={(e) => patchRow(index, { value: e.target.value })}
+              placeholder={t({ es: 'Valor', en: 'Value' }, locale)}
+              className={cn(inputBase, 'font-mono')}
+            />
+            {!disabled && (
+              <button
+                type="button"
+                aria-label={t({ es: 'Quitar fila', en: 'Remove row' }, locale)}
+                onClick={() => removeRow(index)}
+                className="mt-2 shrink-0 text-ink-secondary hover:text-negative"
+              >
+                ×
+              </button>
+            )}
+          </div>
+        ))}
+        {!disabled && (
+          <button
+            type="button"
+            onClick={addRow}
+            className="w-fit rounded-card border border-line px-2.5 py-1 font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:border-lane-accent hover:text-lane-accent"
+          >
+            {t({ es: 'Añadir fila', en: 'Add row' }, locale)}
+          </button>
+        )}
+      </div>
     </FieldShell>
   )
 }

@@ -10,7 +10,7 @@
 import React from 'react'
 import { cn } from '@wings/trade-ui'
 import { DEFAULT_LOCALE, t, type Locale } from '../../../lib/i18n'
-import type { JsonSchema, JsonSchemaProperty } from '../../../lib/schemas/spec'
+import { isScalarArrayItems, type JsonSchema, type JsonSchemaProperty } from '../../../lib/schemas/spec'
 
 export interface SpecViewProps {
   schema: JsonSchema
@@ -26,9 +26,22 @@ function formatValue(prop: JsonSchemaProperty, value: unknown, locale: Locale): 
     return text && text.length > 0 ? text : null
   }
 
+  if (prop['x-spec-rows']) {
+    if (!Array.isArray(value) || value.length === 0) return null
+    return (value as Array<{ label?: unknown; value?: unknown }>)
+      .map((row) => {
+        const label = typeof row?.label === 'string' ? row.label : ''
+        const rowValue = typeof row?.value === 'string' ? row.value : ''
+        return label && rowValue ? `${label}: ${rowValue}` : label || rowValue
+      })
+      .filter((s) => s.length > 0)
+      .join(' · ') || null
+  }
+
   if (prop.type === 'array') {
     if (!Array.isArray(value) || value.length === 0) return null
-    const labels = prop.items?.['x-enum-labels'] ?? {}
+    const scalarItems = isScalarArrayItems(prop.items) ? prop.items : undefined
+    const labels = scalarItems?.['x-enum-labels'] ?? {}
     return value.map((item) => (labels[String(item)] ? t(labels[String(item)], locale) : String(item))).join(' · ')
   }
 

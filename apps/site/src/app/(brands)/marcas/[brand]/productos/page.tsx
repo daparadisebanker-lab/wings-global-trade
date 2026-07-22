@@ -48,7 +48,12 @@ export default async function BrandProductsPage({ params }: PageProps) {
       </header>
 
       <div className="mt-12 space-y-14">
-        {products.map((product, idx) => (
+        {products.map((product, idx) => {
+          // Primary technical drawing: the fixture's packing OR the live geometry
+          // authored in TOWER (rb_diagram_specs, Wave 4). Absent → the fiche stays
+          // spec-led. The exploded + pallet pair remains fixture-only.
+          const primaryPacking = product.diagrams?.packing ?? product.packingDiagram
+          return (
           <article
             key={product.slug}
             data-reveal
@@ -81,14 +86,14 @@ export default async function BrandProductsPage({ params }: PageProps) {
                 drawings render only when present; otherwise the fiche is spec-led. */}
             <div className="space-y-8 p-4 md:space-y-10 md:p-9">
               <div
-                className={`grid gap-8 md:gap-10 ${product.diagrams ? 'lg:grid-cols-[minmax(320px,460px)_1fr]' : ''} ${
-                  product.diagrams && idx % 2 === 1 ? 'lg:[direction:rtl]' : ''
+                className={`grid gap-8 md:gap-10 ${primaryPacking ? 'lg:grid-cols-[minmax(320px,460px)_1fr]' : ''} ${
+                  primaryPacking && idx % 2 === 1 ? 'lg:[direction:rtl]' : ''
                 }`}
               >
-                {product.diagrams ? (
+                {primaryPacking ? (
                   <div className="lg:[direction:ltr]">
                     <TechDraw>
-                      <PackingDiagram spec={product.diagrams.packing} />
+                      <PackingDiagram spec={primaryPacking} />
                     </TechDraw>
                   </div>
                 ) : null}
@@ -138,7 +143,8 @@ export default async function BrandProductsPage({ params }: PageProps) {
               </Link>
             </div>
           </article>
-        ))}
+          )
+        })}
       </div>
     </div>
   )

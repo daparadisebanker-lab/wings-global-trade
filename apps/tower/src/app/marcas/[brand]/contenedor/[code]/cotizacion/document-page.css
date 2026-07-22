@@ -42,6 +42,11 @@
   font-size: 13px;
   letter-spacing: 0.02em;
 }
+.rbqdoc-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 .rbqdoc-toolbar-btn {
   padding: 8px 14px;
   background: #ffb020;
@@ -55,6 +60,24 @@
 }
 .rbqdoc-toolbar-btn:hover {
   background: #ffc04d;
+}
+/* Secondary action: the .xlsx tech-sheet download (outline, not the primary fill). */
+.rbqdoc-toolbar-link {
+  padding: 8px 14px;
+  background: transparent;
+  color: #e8eaed;
+  border: 1px solid #4a4e55;
+  font-family: var(--font-ui, system-ui, sans-serif);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+}
+.rbqdoc-toolbar-link:hover {
+  border-color: #ffb020;
+  color: #ffffff;
 }
 
 .rbqdoc-error {

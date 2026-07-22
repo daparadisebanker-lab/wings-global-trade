@@ -36,13 +36,16 @@ import {
   type RbContainerQuoteDocument,
   type RbPackingExhibit,
   type RbSlotLine,
+  type RbSpecRow,
 } from '@/lib/quotation/rb-container'
 import {
   buildTechSheetSections,
   cascadeForSlots,
+  packingSpecFromGeometry,
   slotsForQuantity,
   SHIPPING_PHASE_LABELS,
   type RbContainerTemplate,
+  type RbPackingDiagramSpec,
   type ShippingPhase,
   type TechSheetFacts,
 } from '@wings/rb-core'
@@ -131,10 +134,49 @@ interface PackingRow {
 }
 
 interface ProductRow {
+  id: string
   name: unknown
   hs_code: string | null
   moq: number | string | null
   cbm_per_unit: number | string | null
+  specs: unknown
+}
+
+/**
+ * Extract the ALLOCATION fiche rows from a product's `specs` jsonb (specs.specRows,
+ * spec_schemas v2 · tower_44). Defensive: display-only, never trusts shape — a
+ * malformed row is dropped, an empty label+value is skipped. Presentation only;
+ * no slot/packing math lives here (§5-bis.4).
+ */
+function specRowsFrom(specs: unknown): RbSpecRow[] {
+  if (typeof specs !== 'object' || specs === null) return []
+  const raw = (specs as Record<string, unknown>).specRows
+  if (!Array.isArray(raw)) return []
+  const rows: RbSpecRow[] = []
+  for (const item of raw) {
+    if (typeof item !== 'object' || item === null) continue
+    const rec = item as Record<string, unknown>
+    const label = typeof rec.label === 'string' ? rec.label : ''
+    const value = typeof rec.value === 'string' ? rec.value : ''
+    if (label === '' && value === '') continue
+    const icon = typeof rec.icon === 'string' ? rec.icon : undefined
+    rows.push(icon ? { label, value, icon } : { label, value })
+  }
+  return rows
+}
+
+// Bounded diagram geometry (rb_diagram_specs, tower_45 — read only).
+interface DiagramRow {
+  package_length_mm: number
+  package_width_mm: number
+  package_height_mm: number
+  units_per_package: number
+  packages_per_slot: number
+  cells_across: number
+  cells_high: number
+  cells_deep: number
+  detail: string
+  caption: string | null
 }
 
 function numOrNull(v: number | string | null | undefined): number | null {
@@ -171,15 +213,46 @@ async function packingFor(supabase: TowerClient, slug: string): Promise<PackingR
   return (data as PackingRow | null) ?? null
 }
 
-/** rb_products (tower_26) row for the container's product — optional customs/name data. */
+/** rb_products (tower_26) row for the container's product — optional customs/name
+ *  data + the id used to key the diagram geometry. */
 async function productFor(supabase: TowerClient, brandId: string, slug: string): Promise<ProductRow | null> {
   const { data } = await supabase
     .from('rb_products')
-    .select('name,hs_code,moq,cbm_per_unit')
+    .select('id,name,hs_code,moq,cbm_per_unit,specs')
     .eq('represented_brand_id', brandId)
     .eq('slug', slug)
     .maybeSingle()
   return (data as ProductRow | null) ?? null
+}
+
+/** Bounded diagram geometry for the product, mapped to the shared PackingDiagram
+ *  spec (rb_diagram_specs, tower_45 · R1). RLS-scoped read; null when the product
+ *  has no authored geometry — the tech sheet then stays spec-led. */
+async function diagramFor(supabase: TowerClient, rbProductId: string, title: string): Promise<RbPackingDiagramSpec | null> {
+  const { data } = await supabase
+    .from('rb_diagram_specs')
+    .select(
+      'package_length_mm,package_width_mm,package_height_mm,units_per_package,packages_per_slot,cells_across,cells_high,cells_deep,detail,caption',
+    )
+    .eq('rb_product_id', rbProductId)
+    .maybeSingle()
+  if (!data) return null
+  const g = data as DiagramRow
+  return packingSpecFromGeometry(
+    {
+      packageLengthMm: g.package_length_mm,
+      packageWidthMm: g.package_width_mm,
+      packageHeightMm: g.package_height_mm,
+      unitsPerPackage: g.units_per_package,
+      packagesPerSlot: g.packages_per_slot,
+      cellsAcross: g.cells_across,
+      cellsHigh: g.cells_high,
+      cellsDeep: g.cells_deep,
+      detail: g.detail === 'rolls' ? 'rolls' : 'slabs',
+      caption: g.caption,
+    },
+    title,
+  )
 }
 
 function billToFrom(input: z.infer<typeof rbQuoteInputSchema>): BillTo {
@@ -265,6 +338,10 @@ export async function getRbContainerQuoteByCode(
   const productEs = localized(product?.name, 'es') ?? packing.product_name
   const productEn = localized(product?.name, 'en') ?? packing.product_name
 
+  // Diagram geometry (rb_diagram_specs, tower_45 · R1) — read only when the
+  // product row resolved; the tech sheet draws the master package when present.
+  const diagram = product?.id ? await diagramFor(auth.supabase, product.id, productEs) : null
+
   const line: RbSlotLine = buildRbSlotLine({
     index: 0,
     productEs,
@@ -335,6 +412,8 @@ export async function getRbContainerQuoteByCode(
     packing: packingExhibit,
     totals,
     techSheet: buildTechSheetSections(facts),
+    specRows: specRowsFrom(product?.specs),
+    diagram,
     terms: withDefaultTerms(DEFAULT_RB_TERMS),
     observations: DEFAULT_RB_OBSERVATIONS,
     issuer: WINGS_ISSUER,

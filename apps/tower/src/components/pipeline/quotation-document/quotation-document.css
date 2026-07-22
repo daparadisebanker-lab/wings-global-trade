@@ -255,6 +255,37 @@
   margin-top: 2px;
   font-weight: 600;
 }
+
+/* ── Issuing rep ("Atendido por / Issued by") ───────────────────────────── */
+.qdoc-issuedby {
+  margin: 22px 0 0;
+  max-width: 260px;
+}
+.qdoc-issuedby-label {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--qd-muted);
+  margin-bottom: 8px;
+}
+.qdoc-signature {
+  display: block;
+  height: 56px;
+  width: auto;
+  max-width: 240px;
+  object-fit: contain;
+}
+.qdoc-issuedby-name {
+  font-weight: 600;
+  padding-top: 6px;
+  border-top: 1px solid var(--qd-line);
+}
+.qdoc-issuedby-title {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--qd-muted);
+}
+
 .qdoc-footer {
   display: flex;
   justify-content: space-between;
