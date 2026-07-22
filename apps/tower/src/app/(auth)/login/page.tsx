@@ -1,67 +1,36 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClient, isSupabaseConfigured } from '@/lib/supabase/client'
+import { isSupabaseConfigured } from '@/lib/supabase/client'
 
 /**
- * Login — magic link (ARCHITECTURE Auth). This is an auth handoff to Supabase,
- * not a domain mutation, so it runs the SDK client-side; the session cookie is
- * then refreshed by the middleware. Async errors are handled explicitly and
- * shown as a contained message — never a raw error.
+ * Login — email + shared-passcode sign-in (no magic link). The form POSTs to the
+ * server route /auth/email-signin, which validates the passcode, checks the email
+ * is a provisioned account, and mints the session server-side before redirecting
+ * into the shell. Access is granted by an admin from Usuarios / Users; a brand-new
+ * email gets a clean "ask an administrator" message rather than an empty shell.
  */
-/** Bilingual copy for callback-reported failures (?error= from /auth/callback). */
-const CALLBACK_ERRORS: Record<string, string> = {
-  link: 'El enlace no es válido o caducó — solicita uno nuevo. / The link is invalid or expired — request a new one.',
+/** Bilingual copy for sign-in failures surfaced via ?error= from the sign-in route. */
+const LOGIN_ERRORS: Record<string, string> = {
+  passcode: 'Código de acceso incorrecto. / Incorrect access code.',
+  denied:
+    'Este correo no tiene acceso — pídeselo a un administrador. / This email has no access — ask an administrator.',
+  email: 'Correo inválido. / Invalid email.',
+  link: 'No se pudo iniciar la sesión — inténtalo de nuevo. / Could not start the session — try again.',
   config: 'Autenticación no configurada. / Authentication is not configured.',
 }
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('')
-  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
   const [message, setMessage] = useState<string | null>(null)
 
-  // Surface a failure reported by /auth/callback (?error=). Read on mount, not
+  // Surface a failure reported by the sign-in route (?error=). Read on mount, not
   // in the initializer — the page is prerendered and the URL only exists client-side.
   useEffect(() => {
     const error = new URLSearchParams(window.location.search).get('error')
-    if (error && CALLBACK_ERRORS[error]) {
-      setStatus('error')
-      setMessage(CALLBACK_ERRORS[error])
-    }
+    if (error && LOGIN_ERRORS[error]) setMessage(LOGIN_ERRORS[error])
   }, [])
 
   const configured = isSupabaseConfigured()
-  // Land on the server-side callback so the PKCE exchange happens before the
-  // shell's auth guard sees the request (see app/auth/callback/route.ts).
-  const redirectTo =
-    typeof window !== 'undefined'
-      ? `${window.location.origin}/auth/callback?next=/signals`
-      : undefined
-
-  async function sendMagicLink(e: React.FormEvent) {
-    e.preventDefault()
-    if (!configured) return
-    setStatus('sending')
-    setMessage(null)
-    try {
-      const supabase = createClient()
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: { emailRedirectTo: redirectTo },
-      })
-      if (error) {
-        setStatus('error')
-        setMessage('No se pudo enviar el enlace / Could not send the link')
-        return
-      }
-      setStatus('sent')
-      setMessage('Revisa tu correo / Check your email')
-    } catch (err) {
-      console.error('[login:magic-link]', err)
-      setStatus('error')
-      setMessage('Error inesperado / Unexpected error')
-    }
-  }
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-surface-0 px-6">
@@ -87,45 +56,48 @@ export default function LoginPage() {
             environment.
           </p>
         ) : (
-          <>
-            <form onSubmit={sendMagicLink} className="mt-6 flex flex-col gap-3">
-              <label htmlFor="email" className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
-                Correo / Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="tu@wingsglobaltrade.com"
-                className="rounded-card border border-line bg-surface-0 px-3 py-2 font-ui text-t0 text-ink-primary outline-none focus-visible:border-lane-accent placeholder:text-ink-secondary"
-              />
-              <button
-                type="submit"
-                disabled={status === 'sending'}
-                className="rounded-card bg-accent px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-surface-0 disabled:opacity-50"
-              >
-                {status === 'sending'
-                  ? 'Enviando… / Sending…'
-                  : 'Enviar enlace / Send link'}
-              </button>
-            </form>
-
-            {message ? (
-              <p
-                role="status"
-                className={
-                  status === 'error'
-                    ? 'mt-4 font-ui text-t0 text-negative'
-                    : 'mt-4 font-ui text-t0 text-positive'
-                }
-              >
-                {message}
-              </p>
-            ) : null}
-          </>
+          <form method="post" action="/auth/email-signin" className="mt-6 flex flex-col gap-3">
+            <label htmlFor="email" className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
+              Correo / Email
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              autoComplete="email"
+              placeholder="tu@wingsglobaltrade.com"
+              className="rounded-card border border-line bg-surface-0 px-3 py-2 font-ui text-t0 text-ink-primary outline-none focus-visible:border-lane-accent placeholder:text-ink-secondary"
+            />
+            <label
+              htmlFor="passcode"
+              className="mt-1 font-mono text-label uppercase tracking-[0.1em] text-ink-secondary"
+            >
+              Código de acceso / Access code
+            </label>
+            <input
+              id="passcode"
+              name="passcode"
+              type="password"
+              required
+              autoComplete="off"
+              placeholder="••••••••"
+              className="rounded-card border border-line bg-surface-0 px-3 py-2 font-ui text-t0 text-ink-primary outline-none focus-visible:border-lane-accent placeholder:text-ink-secondary"
+            />
+            <button
+              type="submit"
+              className="mt-1 rounded-card bg-accent px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-surface-0"
+            >
+              Entrar / Enter
+            </button>
+          </form>
         )}
+
+        {message ? (
+          <p role="status" className="mt-4 font-ui text-t0 text-negative">
+            {message}
+          </p>
+        ) : null}
       </div>
     </div>
   )

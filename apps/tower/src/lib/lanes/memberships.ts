@@ -33,6 +33,7 @@ export async function getLaneMemberships(): Promise<LaneMembership[]> {
     // Shape aligns with the tower schema (lane_memberships → lanes). Finalized by
     // the DB track; until then this query errors and we degrade to [].
     const { data, error } = await supabase
+      .schema('tower')
       .from('lane_memberships')
       .select('role, lanes(id, code, slug, name, brand_id)')
 
@@ -73,7 +74,7 @@ export async function getIsGroupAdmin(): Promise<boolean> {
       data: { user },
     } = await supabase.auth.getUser()
     if (!user) return false
-    const { data } = await supabase.from('profiles').select('is_group_admin').eq('id', user.id).maybeSingle()
+    const { data } = await supabase.schema('tower').from('profiles').select('is_group_admin').eq('id', user.id).maybeSingle()
     return Boolean((data as { is_group_admin?: boolean } | null)?.is_group_admin)
   } catch {
     return false
@@ -95,7 +96,7 @@ export async function getHasRbMembership(): Promise<boolean> {
       data: { user },
     } = await supabase.auth.getUser()
     if (!user) return false
-    const { data } = await supabase.from('rb_memberships').select('role').limit(1)
+    const { data } = await supabase.schema('tower').from('rb_memberships').select('role').limit(1)
     return Boolean(data && data.length > 0)
   } catch {
     return false
