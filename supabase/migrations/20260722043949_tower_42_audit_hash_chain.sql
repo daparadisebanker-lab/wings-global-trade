@@ -62,6 +62,11 @@ $fn$;
 
 -- ── Backfill existing rows into a chain (deterministic order by identity id) ──
 -- Runs BEFORE the append-only + chain triggers exist, so these UPDATEs are legal.
+-- `where entry_hash is null` makes the backfill a no-op re-run: once the chain
+-- exists every row is sealed, so a re-application selects zero rows and never
+-- attempts an UPDATE against the now append-only table (which its own
+-- audit_log_no_update trigger would reject). On a fresh DB the column is all-null
+-- so every row is chained, in id order, exactly as before.
 do $do$
 declare
   r         record;
@@ -70,7 +75,7 @@ declare
   v_payload text;
   v_hash    text;
 begin
-  for r in select * from tower.audit_log order by id asc loop
+  for r in select * from tower.audit_log where entry_hash is null order by id asc loop
     v_seq := v_seq + 1;
     v_payload := tower.audit_entry_payload(v_seq, r.at, r.actor, r.table_name, r.row_id, r.action, r.before, r.after);
     v_hash := tower.audit_chain_hash(v_prev, v_payload);
