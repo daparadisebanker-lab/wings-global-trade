@@ -39,7 +39,9 @@ Files: `supabase/migrations/YYYYMMDDHHMMSS_tower_NN_short_name.sql`. The `tower_
 
 > **Why this rule is law (2026-07-21):** two workstreams both branched off the same base and independently grabbed `tower_39–42` for *different* migrations (a rep-identity session + PR #4's audit hash-chain). Reconciling cost a full renumber (40/41/42 → 44/45/46). Merge `master` **before** numbering, every time.
 
-**High-water mark (update when you add migrations):** max used = **`tower_46`** · next free = **`tower_47`**. Reserved-but-unbuilt: `tower_27–29` (RB console), `tower_37` (journey-automation slot). Known artifact: two files share timestamp `20260721180000` (`tower_39_rep_profiles` + `tower_39_status_transition_guards`) — both applied to prod; harmless, left as-is.
+**High-water mark (update when you add migrations):** max claimed = **`tower_47`** (`lane_documents` — applied to prod `20260722042534`, file **not yet in repo** as of 2026-07-22, see drift note) · next free = **`tower_48`**. Reserved-but-unbuilt: `tower_27–29` (RB console), `tower_37` (journey-automation slot). `tower_39` is deliberately double-used (`rep_profiles` + PR #4's `status_transition_guards`); the timestamp collision was reconciled in **PR #6** (PR #4's four migrations re-timestamped to `20260722…`).
+
+> **Drift watch (2026-07-22):** `tower_47_lane_documents` is applied to prod but its migration file is absent from `master` — a prod change without a committed migration (violates root law: *never manual prod SQL*). Recover the file into `supabase/migrations/` before the next `db push`, or the DB and repo stay out of sync. Always cross-check the prod ledger (`list_migrations`) against `ls supabase/migrations` when reconciling.
 
 **Applying to prod** (`pyznlglvwihosemqkhtq`): via Supabase MCP `execute_sql` or the SQL Editor. **Record the ledger row `supabase_migrations.schema_migrations` at the file's EXACT timestamp version** — do not let `apply_migration` auto-timestamp diverge from the filename, or `supabase db push` will try to re-run it. Every prod schema change has a committed migration file — no manual prod SQL that isn't captured as a migration (root law).
 
