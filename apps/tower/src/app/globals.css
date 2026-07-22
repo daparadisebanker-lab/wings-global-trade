@@ -9,12 +9,17 @@
 @tailwind utilities;
 
 /* ============================================================
-   Typographic voice
-   Shared UI grotesque for labels/nav; tabular mono is the dominant voice.
-   Flexo (the ecosystem's UI grotesque) is self-hosted below — same faces the
-   live site ships. Mono stays the platform tabular stack: data columns need a
-   true monospace, and DESIGN_SYSTEM (deeper file) keeps TOWER's chips on mono
-   rather than the site's Teko labels.
+   Typographic voice (split — TOWER-only, 2026-07)
+   The TOWER *tool* speaks Inter (self-hosted variable, below): chrome, nav,
+   tables, forms, Mister, palette. Numerals ride Inter's tabular figures via the
+   .font-mono / [data-numeric] rule below — no separate monospace face.
+   The Wings brand faces — NissanOpti (display) · Flexo (body) · Teko (numerals),
+   the same set the live site ships — are self-hosted below too but are reserved
+   for generated *artifacts* (documents + the container share card), which
+   re-declare the three font tokens at their own root (the brand-type rule below).
+   LOAD-BEARING: keep every NissanOpti/Flexo/Teko @font-face — the in-page promo
+   preview inlines the rb-core SVG and resolves its hardcoded families against
+   them. Do NOT prune these as "unused"; the tool voice never references them.
    ============================================================ */
 @font-face {
   font-family: 'Flexo';
@@ -77,16 +82,55 @@
   font-display: swap;
 }
 
+/* Inter — TOWER's UI voice (the tool). Self-hosted variable file (OFL, Fontsource),
+   one file, weight axis 100–900. SF-adjacent so the app reads macOS-native, but —
+   unlike San Francisco itself — legal to ship on every OS. App numerals use Inter's
+   own tabular figures (the .font-mono / [data-numeric] rule below), so no separate
+   monospace is needed. (Typography split — TOWER-only, 2026-07.) */
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/inter/inter-variable-latin.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  /* The Wings three-font system (self-hosted above; same faces as the live site).
-     Display = NissanOpti (brand headers, the wordmark). Body/UI = Flexo. Data +
-     labels + numerals = Teko — the Wings label voice, tabular figures below. */
-  --font-display: 'NissanOpti', 'Times New Roman', Georgia, serif;
-  --font-ui: 'Flexo', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'Teko', 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  /* TOWER's tool voice is Inter — chrome, tables, nav, forms, Mister, palette,
+     dashboards. The Wings brand faces (NissanOpti/Flexo/Teko, still loaded above)
+     are reserved for generated artifacts (documents + the container share card),
+     which re-declare these three tokens at their own root via the brand-type rule
+     below. The rb-core share card hardcodes the faces in-SVG and needs no help. */
+  --font-display: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  /* Fallback stays monospace, not system-ui — if Inter ever fails to load, numeral
+     columns must still degrade to fixed-width digits (Directive 5), never to
+     proportional figures. (review F-PT-1) */
+  --font-mono: 'Inter', ui-monospace, 'SF Mono', Menlo, monospace;
   /* Mono micro-label — the uppercase stamped chips/tags. Nudged up one step for
      a decision-dense surface. Tokenized so components never inline a raw px. */
   --type-label: 12px;
+}
+
+/* Brand artifacts wear the Wings type system, NOT the Inter tool voice — the
+   generated documents and any shareable brand surface. Each re-declares the three
+   font tokens at its own root, so its whole subtree resolves font-ui/display/mono
+   back to the live-site faces regardless of the app default. Add `wings-brand-type`
+   to any future artifact root; the current document roots are wired here directly.
+   (The rb-core container share card hardcodes the faces in its SVG — not listed.) */
+.wings-brand-type,
+.pdoc,
+.qdoc,
+.fdoc,
+.rts,
+.rbq,
+.pdoc-page,
+.qdoc-page,
+.fdoc-page,
+.rbqdoc-page {
+  --font-display: 'NissanOpti', 'Times New Roman', Georgia, serif;
+  --font-ui: 'Flexo', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Teko', 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 }
 
 /* ============================================================
