@@ -28,6 +28,29 @@ export function NavRail({
 }) {
   const pathname = usePathname()
 
+  // No visible modules → a designed note, never a blank void. Reached by an
+  // account with no lane role and no admin flag (RLS would return no rows
+  // anyway); collapsed rail keeps it to an icon-less hint. Hidden when collapsed
+  // on desktop (the rail is 64px — no room for prose).
+  if (visible.size === 0 && !collapsed) {
+    return (
+      <nav aria-label={t({ es: 'Módulos', en: 'Modules' }, locale)} className="flex flex-col gap-3 p-4">
+        <p className="font-ui text-t0 text-ink-secondary">
+          {t(
+            { es: 'Tu cuenta aún no tiene módulos asignados.', en: 'Your account has no modules assigned yet.' },
+            locale,
+          )}
+        </p>
+        <p className="font-mono text-label uppercase tracking-[0.12em] text-ink-secondary">
+          {t(
+            { es: 'Pídele acceso a un administrador.', en: 'Ask an administrator for access.' },
+            locale,
+          )}
+        </p>
+      </nav>
+    )
+  }
+
   return (
     <nav aria-label={t({ es: 'Módulos', en: 'Modules' }, locale)} className="flex flex-col gap-6 p-3">
       {NAV_GROUPS.map((group) => {

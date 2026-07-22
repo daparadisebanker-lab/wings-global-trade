@@ -345,3 +345,11 @@
     );
   }
 }
+
+/* Keyboard-shortcut hints (⌘K, ⌘J) are noise on a touch device with no keyboard.
+   Hide anything marked [data-kbd-hint] on coarse-pointer / no-hover inputs. */
+@media (hover: none) and (pointer: coarse) {
+  [data-kbd-hint] {
+    display: none !important;
+  }
+}

@@ -4,7 +4,7 @@
 // items to render so a user isn't shown a module with nothing behind it. Even if
 // a module were shown, RLS returns no rows; even if hidden, the route still
 // exists. The two must never drift into being the actual gate.
-import type { ModuleId } from './nav'
+import { MODULES, type ModuleId } from './nav'
 
 /**
  * Lane roles — MUST match the `tower.lane_memberships.role` enum exactly
@@ -13,13 +13,17 @@ import type { ModuleId } from './nav'
  */
 export type Role = 'LANE_DIRECTOR' | 'CATALOG_EDITOR' | 'TRADE_OPS' | 'SALES' | 'VIEWER'
 
-const ALL_MODULES: ModuleId[] = ['catalog', 'pipeline', 'containers', 'costing', 'marcas', 'signals', 'intelligence', 'admin']
+// Group admins see every real module. Derived from the nav MODULES list — the
+// single source of truth — so a module added to the rail can NEVER silently go
+// missing here again (the drift that once hid Cotizaciones/Clientes/Documentos
+// from the rail while the ⌘K palette still listed them).
+const ALL_MODULES: ModuleId[] = MODULES.map((m) => m.id)
 
 const ROLE_MODULES: Record<Role, ModuleId[]> = {
-  LANE_DIRECTOR: ['catalog', 'pipeline', 'containers', 'costing', 'signals', 'intelligence'],
-  CATALOG_EDITOR: ['catalog', 'signals'],
-  TRADE_OPS: ['containers', 'costing', 'catalog', 'signals'],
-  SALES: ['pipeline', 'signals'],
+  LANE_DIRECTOR: ['catalog', 'pipeline', 'quotations', 'clients', 'containers', 'costing', 'signals', 'intelligence', 'documents'],
+  CATALOG_EDITOR: ['catalog', 'documents', 'signals'],
+  TRADE_OPS: ['containers', 'costing', 'catalog', 'documents', 'signals'],
+  SALES: ['pipeline', 'quotations', 'clients', 'signals'],
   VIEWER: ['signals'],
 }
 

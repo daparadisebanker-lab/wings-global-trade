@@ -3,7 +3,7 @@
 import { Command } from 'cmdk'
 import { useRouter } from 'next/navigation'
 import { DEFAULT_LOCALE, t, type Locale, type Localized } from '@/lib/i18n'
-import { MODULES } from '@/lib/nav'
+import { MODULES, type ModuleId } from '@/lib/nav'
 
 /** Admin ⌘K destinations (COMPONENT_TREE §6) — shown only to group admins.
  * /admin/audit and /admin/webhooks are a parallel agent's routes; linked here
@@ -41,14 +41,20 @@ export function CommandPalette({
   open,
   onOpenChange,
   isGroupAdmin = false,
+  visible,
   locale = DEFAULT_LOCALE,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   isGroupAdmin?: boolean
+  /** Same permission-derived module set the rail uses (lib/rbac). The palette
+   *  and the rail MUST agree — jumping to a module the rail hides lands the
+   *  operator on an RLS-empty page. Omitted → show all (safe legacy default). */
+  visible?: Set<ModuleId>
   locale?: Locale
 }) {
   const router = useRouter()
+  const modules = visible ? MODULES.filter((m) => visible.has(m.id)) : MODULES
 
   const go = (href: string) => {
     onOpenChange(false)
@@ -77,7 +83,7 @@ export function CommandPalette({
           heading={t({ es: 'Módulos', en: 'Modules' }, locale)}
           className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:font-mono [&_[cmdk-group-heading]]:text-label [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.12em] [&_[cmdk-group-heading]]:text-ink-secondary"
         >
-          {MODULES.map((m) => (
+          {modules.map((m) => (
             <Command.Item
               key={m.id}
               value={`${t(m.label, locale)} ${m.id} ${m.tag}`}
