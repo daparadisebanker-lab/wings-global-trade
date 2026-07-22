@@ -557,3 +557,145 @@
 .rbqdoc-page {
   color-scheme: light;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TOWER-REDESIGN · P4a — desktop Dock. Fixed bottom-center, chrome material,
+   registry-driven, desktop-only (component gates `hidden md:flex`).
+   Z-ladder (declared): content(auto) < Dock(30) < palette-overlay(40) <
+   launcher(45) < palette-content(50). Summon zone sits at 29 (just under Dock).
+   Reduced-motion collapses reveal/hide to a fade and kills magnification.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.mac-dock {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  align-items: center;
+  gap: 4px; /* on the 8pt scale + buys ~25px margin so a full-admin dock clears 768px (review F-P4a-2) */
+  padding: 8px;
+  border-radius: var(--radius-dock);
+  box-shadow: var(--elevation-3);
+  background: var(--surface-1); /* opaque fallback first */
+  background: color-mix(in srgb, var(--surface-1) 72%, transparent);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+  backdrop-filter: blur(24px) saturate(1.6);
+  border: 1px solid var(--line-hairline, var(--line));
+  transition: transform var(--duration-snappy, 300ms) var(--spring-snappy);
+  will-change: transform;
+}
+.mac-dock.is-hidden {
+  transform: translateX(-50%) translateY(calc(100% + 12px)); /* slides fully off; the invisible 24px summon zone is the reveal affordance (F-P4a-5) */
+}
+.mac-dock-summon {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 24px;
+  z-index: 29;
+}
+.mac-dock-tile {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-control);
+  color: var(--ink-secondary);
+  cursor: pointer;
+  transform-origin: bottom center;
+  transition: transform var(--duration-snappy, 300ms) var(--spring-snappy), color 140ms var(--ease-settle), background 140ms var(--ease-settle);
+}
+.mac-dock-tile:hover {
+  color: var(--ink-primary);
+  background: color-mix(in srgb, var(--ink-primary) 8%, transparent);
+}
+.mac-dock-tile[data-active='true'] {
+  color: var(--gold);
+}
+.mac-dock-tile:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+.mac-dock-ico {
+  width: 22px;
+  height: 22px;
+}
+.mac-dock-dot {
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+.mac-dock-div {
+  flex: none;
+  width: 1px;
+  height: 28px;
+  margin: 0 4px;
+  background: var(--line);
+}
+/* Tooltip — label above the tile, revealed after a 400ms hover/focus delay. */
+.mac-dock-tile::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  padding: 4px 8px;
+  border-radius: var(--radius-control);
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  box-shadow: var(--elevation-2);
+  color: var(--ink-primary);
+  font-family: var(--font-ui);
+  font-size: var(--type-label);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms var(--ease-settle), transform 120ms var(--spring-snappy);
+}
+.mac-dock-tile:hover::after,
+.mac-dock-tile:focus-visible::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  transition-delay: 400ms;
+}
+/* Magnification (transform-only): hovered 1.18, immediate neighbours 1.08. */
+@media (prefers-reduced-motion: no-preference) and (hover: hover) {
+  .mac-dock-tile:hover {
+    transform: scale(1.18);
+  }
+  .mac-dock-tile:hover + .mac-dock-tile,
+  .mac-dock-tile:has(+ .mac-dock-tile:hover) {
+    transform: scale(1.08);
+  }
+}
+/* Mister launcher clears the pinned Dock band on desktop. */
+@media (min-width: 768px) {
+  [data-dock-pinned='true'] .mister-launch {
+    bottom: 96px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mac-dock {
+    transition: opacity 80ms linear;
+  }
+  .mac-dock.is-hidden {
+    transform: translateX(-50%);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .mac-dock-tile {
+    transition: color 80ms linear, background 80ms linear;
+  }
+  .mac-dock-tile::after {
+    transition: none;
+  }
+}

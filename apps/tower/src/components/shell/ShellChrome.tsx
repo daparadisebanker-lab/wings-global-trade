@@ -17,6 +17,7 @@ import { visibleModules, type Role } from '@/lib/rbac'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import { useActiveTool } from '@/shell/navigation/useActiveTool'
 import { GreetingBar } from '@/shell/frame/GreetingBar'
+import { Dock } from '@/shell/dock/Dock'
 
 /** Location strip — TOWER › Módulo › subpágina, derived from the path so you
  *  always know where you are. Ids/numbers in the path are omitted. */
@@ -75,6 +76,9 @@ export function ShellChrome({
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [misterOpen, setMisterOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  // Desktop Dock pin state (default pinned; persisted). Owned here because it
+  // drives the content-bottom padding; the Dock reflects it + toggles it.
+  const [dockPinned, setDockPinned] = useState(true)
   const railRef = useRef<HTMLElement>(null)
   const restoreFocusRef = useRef<HTMLElement | null>(null)
 
@@ -88,6 +92,19 @@ export function ShellChrome({
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'j') {
         e.preventDefault()
         setMisterOpen((v) => !v)
+      }
+      // ⌘. toggles the desktop Dock between pinned and auto-hidden.
+      if ((e.metaKey || e.ctrlKey) && e.key === '.') {
+        e.preventDefault()
+        setDockPinned((v) => {
+          const n = !v
+          try {
+            localStorage.setItem('tower-dock', n ? 'pinned' : 'hidden')
+          } catch {
+            /* private mode */
+          }
+          return n
+        })
       }
       if (e.key === 'Escape') setDrawerOpen(false)
     }
@@ -104,6 +121,16 @@ export function ShellChrome({
     update()
     mq.addEventListener('change', update)
     return () => mq.removeEventListener('change', update)
+  }, [])
+
+  // Restore the persisted Dock pin state (default pinned). Read after mount so
+  // there is no SSR/CSR mismatch on the padding contract.
+  useEffect(() => {
+    try {
+      if (localStorage.getItem('tower-dock') === 'hidden') setDockPinned(false)
+    } catch {
+      /* private mode — stays pinned */
+    }
   }, [])
 
   // The off-screen mobile drawer must not be reachable by keyboard / AT.
@@ -153,8 +180,24 @@ export function ShellChrome({
     ? ({ '--lane-accent': activeLane.accent } as CSSProperties)
     : undefined
 
+  const toggleDock = () => {
+    setDockPinned((v) => {
+      const n = !v
+      try {
+        localStorage.setItem('tower-dock', n ? 'pinned' : 'hidden')
+      } catch {
+        /* private mode */
+      }
+      return n
+    })
+  }
+
   return (
-    <div style={rootStyle} className="tower-premium-ground min-h-screen bg-surface-0 text-ink-primary">
+    <div
+      style={rootStyle}
+      data-dock-pinned={dockPinned}
+      className="tower-premium-ground min-h-screen bg-surface-0 text-ink-primary"
+    >
       <RouteProgress />
       <div className="flex min-h-screen">
         {/* Mobile drawer backdrop */}
@@ -201,9 +244,18 @@ export function ShellChrome({
             <LaneSwitcher lanes={memberships} activeLaneId={activeLaneId} onSelect={setActiveLaneId} />
           ) : null}
 
-          <NavRail visible={visible} collapsed={collapsed} onNavigate={() => setDrawerOpen(false)} />
+          {/* Module nav: on md+ the Dock is the primary nav, so the rail's module
+              list is hidden there — EXCEPT when the operator has zero visible
+              modules, when the rail keeps NavRail's designed empty note (no Dock
+              tiles to show it otherwise). Below md the drawer is unchanged. */}
+          <div className={visible.size > 0 ? 'md:hidden' : undefined}>
+            <NavRail visible={visible} collapsed={collapsed} onNavigate={() => setDrawerOpen(false)} />
+          </div>
 
-          <div className="mt-auto flex flex-col">
+          {/* Rail footer (Mister entry + collapse) is drawer-only now — on desktop
+              the floating launcher + ⌘J cover Mister and there is nothing to
+              collapse (the module list moved to the Dock). */}
+          <div className="mt-auto flex flex-col md:hidden">
             {/* Mister — a persistent rail entry (the dock is also ⌘J + the floating
                 door). Its own mark, so it reads as the copilot, not a module. */}
             <button
@@ -261,13 +313,25 @@ export function ShellChrome({
               scroll, while inner overflow-x-auto tables keep their own scroll.
               key={pathname} + .mac-page replays the shell-frame page transition on
               every navigation (transform+opacity only; reduced-motion → fade). */}
-          <main key={pathname} data-lane={activeLane?.laneSlug} className="mac-page min-w-0 flex-1 overflow-x-clip">
+          <main
+            key={pathname}
+            data-lane={activeLane?.laneSlug}
+            className={cn(
+              'mac-page min-w-0 flex-1 overflow-x-clip',
+              // Content clearance for the desktop Dock (mobile has no Dock → no change).
+              dockPinned ? 'md:pb-24' : 'md:pb-6',
+            )}
+          >
             {children}
           </main>
         </div>
       </div>
 
       <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} isGroupAdmin={isGroupAdmin} visible={visible} />
+
+      {/* Desktop Dock — the primary desktop nav (registry-driven). Desktop-only
+          (the component gates hidden md:flex); mobile keeps the drawer. */}
+      <Dock visible={visible} pinned={dockPinned} onTogglePinned={toggleDock} onOpenSearch={() => setPaletteOpen(true)} />
 
       {/* Mister — the copilot dock (World B) + its floating door. The launcher
           hides while the dock is open so they never overlap. */}
