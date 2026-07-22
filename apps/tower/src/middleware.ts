@@ -42,7 +42,7 @@ export async function middleware(request: NextRequest) {
   // drops the session it just renewed.
   if (authConfigured && user && pathname === '/login') {
     const url = request.nextUrl.clone()
-    url.pathname = '/catalog'
+    url.pathname = '/signals'
     url.search = ''
     const redirect = NextResponse.redirect(url)
     response.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie))
