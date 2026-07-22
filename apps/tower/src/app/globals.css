@@ -406,6 +406,10 @@
   --spring-snappy: cubic-bezier(0.32, 0.72, 0, 1);
   --spring-settle: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-exit:     cubic-bezier(0.4, 0, 1, 1);
+  /* Durations (redesign §2.8) tokenized so shell files never inline literals. */
+  --duration-snappy: 300ms;
+  --duration-settle: 450ms;
+  --duration-exit:   180ms;
 }
 
 /* — Color · Nightwatch (dark) — macOS tokens only; core livery tokens are
@@ -431,15 +435,15 @@
 /* — Materials (the depth system). M1 blurs the ground; @supports guards the
    fallback so unsupported browsers get a 94%-opaque chrome instead. — */
 .material-chrome {
+  /* Opaque fallback FIRST (progressive enhancement): an engine old enough to
+     lack backdrop-filter also lacks color-mix(), so both color-mix lines below
+     would be dropped — this solid declaration guarantees a background survives.
+     Modern engines override it with the translucent one. (Fixes review F1.) */
+  background: var(--surface-raised);
   background: color-mix(in srgb, var(--surface-raised) 72%, transparent);
   -webkit-backdrop-filter: blur(24px) saturate(1.6);
   backdrop-filter: blur(24px) saturate(1.6);
   border: 1px solid var(--line-hairline);
-}
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .material-chrome {
-    background: color-mix(in srgb, var(--surface-raised) 94%, transparent);
-  }
 }
 .material-panel {
   background: var(--surface-raised);
@@ -457,6 +461,8 @@
   [data-app='tower'] .mac-motion * {
     transition-duration: 80ms !important;
     transition-timing-function: linear !important;
+    transition-delay: 0ms !important;
     animation-duration: 80ms !important;
+    animation-delay: 0ms !important;
   }
 }

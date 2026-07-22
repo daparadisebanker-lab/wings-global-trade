@@ -2,33 +2,19 @@
 
 import { Command } from 'cmdk'
 import { useRouter } from 'next/navigation'
-import { DEFAULT_LOCALE, t, type Locale, type Localized } from '@/lib/i18n'
-import { MODULES, type ModuleId } from '@/lib/nav'
+import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
+import type { ModuleId } from '@/lib/nav'
+import {
+  ADMIN_ACTIONS,
+  ADMIN_DESTINATIONS,
+  EVERYONE_ACTIONS,
+  SELF_DESTINATIONS,
+  TOOLS,
+} from '@/shell/navigation/registry'
 
-/** Admin ⌘K destinations (COMPONENT_TREE §6) — shown only to group admins.
- * /admin/audit and /admin/webhooks are a parallel agent's routes; linked here
- * per the wave brief. */
-const ADMIN_DESTINATIONS: { href: string; label: Localized; tag: string }[] = [
-  { href: '/admin', label: { es: 'Administración', en: 'Admin home' }, tag: 'ADM' },
-  { href: '/admin/users', label: { es: 'Usuarios y accesos', en: 'Users & access' }, tag: 'USR' },
-  { href: '/admin/lanes', label: { es: 'Registro de lanes', en: 'Lane registry' }, tag: 'LNE' },
-  { href: '/admin/brands', label: { es: 'Marcas', en: 'Brands' }, tag: 'BRD' },
-  { href: '/admin/audit', label: { es: 'Auditoría', en: 'Audit' }, tag: 'AUD' },
-  { href: '/admin/webhooks', label: { es: 'Webhooks', en: 'Webhooks' }, tag: 'WHK' },
-]
-
-/** Admin ⌘K run-actions — each opens the surface where the action is completed. */
-const ADMIN_ACTIONS: { href: string; label: Localized }[] = [
-  { href: '/admin/users', label: { es: 'Invitar usuario…', en: 'Invite user…' } },
-  { href: '/admin/users', label: { es: 'Invitar rep…', en: 'Invite rep…' } },
-  { href: '/admin/lanes', label: { es: 'Registrar lane…', en: 'Register lane…' } },
-  { href: '/admin/brands', label: { es: 'Nueva marca…', en: 'New brand…' } },
-]
-
-/** Everyone-facing ⌘K destinations (not admin-gated). */
-const SELF_DESTINATIONS: { href: string; label: Localized; tag: string }[] = [
-  { href: '/perfil', label: { es: 'Mi perfil', en: 'My profile' }, tag: 'PRF' },
-]
+// ⌘K destinations + actions now live in the shell navigation registry (the one
+// source of truth — TOWER-REDESIGN §5), imported above. The palette renders
+// entirely from the registry so it can never drift from the rail.
 
 /**
  * ⌘K CommandPalette (COMPONENT_TREE) — Linear-grade jump + actions. Wave 1 wires
@@ -54,7 +40,9 @@ export function CommandPalette({
   locale?: Locale
 }) {
   const router = useRouter()
-  const modules = visible ? MODULES.filter((m) => visible.has(m.id)) : MODULES
+  // Read the canonical TOOLS directly (typed TowerTool, so keywords are available
+  // for search); still filtered by the rail's rbac `visible` set so the two agree.
+  const modules = visible ? TOOLS.filter((m) => visible.has(m.id)) : TOOLS
 
   const go = (href: string) => {
     onOpenChange(false)
@@ -90,7 +78,7 @@ export function CommandPalette({
           {modules.map((m) => (
             <Command.Item
               key={m.id}
-              value={`${t(m.label, locale)} ${m.id} ${m.tag}`}
+              value={`${t(m.label, locale)} ${m.id} ${m.tag} ${m.keywords.join(' ')}`}
               onSelect={() => go(m.href)}
               className="flex cursor-pointer items-center gap-3 rounded-card px-3 py-2 font-ui text-t0 text-ink-primary aria-selected:bg-surface-0"
             >
@@ -100,10 +88,10 @@ export function CommandPalette({
               {t(m.label, locale)}
             </Command.Item>
           ))}
-          {SELF_DESTINATIONS.map((d) => (
+          {SELF_DESTINATIONS.filter((d) => !d.adminOnly || isGroupAdmin).map((d) => (
             <Command.Item
               key={d.href}
-              value={`${t(d.label, locale)} ${d.tag} perfil profile`}
+              value={`${t(d.label, locale)} ${d.tag} ${d.keywords.join(' ')}`}
               onSelect={() => go(d.href)}
               className="flex cursor-pointer items-center gap-3 rounded-card px-3 py-2 font-ui text-t0 text-ink-primary aria-selected:bg-surface-0"
             >
@@ -119,24 +107,27 @@ export function CommandPalette({
           heading={t({ es: 'Acciones', en: 'Actions' }, locale)}
           className="[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:font-mono [&_[cmdk-group-heading]]:text-label [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.12em] [&_[cmdk-group-heading]]:text-ink-secondary"
         >
-          <Command.Item
-            disabled
-            className="flex items-center gap-3 rounded-card px-3 py-2 font-ui text-t0 text-ink-secondary opacity-50"
-          >
-            {t({ es: 'Publicar producto…', en: 'Publish product…' }, locale)}
-          </Command.Item>
-          <Command.Item
-            disabled
-            className="flex items-center gap-3 rounded-card px-3 py-2 font-ui text-t0 text-ink-secondary opacity-50"
-          >
-            {t({ es: 'Nuevo RFQ…', en: 'New RFQ…' }, locale)}
-          </Command.Item>
+          {EVERYONE_ACTIONS.filter((a) => !a.adminOnly || isGroupAdmin).map((a) => (
+            <Command.Item
+              key={a.id}
+              disabled={a.disabled}
+              value={a.disabled ? undefined : `${t(a.label, locale)} ${a.keywords.join(' ')}`}
+              onSelect={a.disabled || !a.href ? undefined : () => go(a.href!)}
+              className={
+                a.disabled
+                  ? 'flex items-center gap-3 rounded-card px-3 py-2 font-ui text-t0 text-ink-secondary opacity-50'
+                  : 'flex cursor-pointer items-center gap-3 rounded-card px-3 py-2 font-ui text-t0 text-ink-primary aria-selected:bg-surface-0'
+              }
+            >
+              {t(a.label, locale)}
+            </Command.Item>
+          ))}
           {isGroupAdmin
             ? ADMIN_ACTIONS.map((a) => (
                 <Command.Item
-                  key={a.href + t(a.label, locale)}
-                  value={`admin ${t(a.label, locale)}`}
-                  onSelect={() => go(a.href)}
+                  key={a.id}
+                  value={`admin ${t(a.label, locale)} ${a.keywords.join(' ')}`}
+                  onSelect={a.href ? () => go(a.href!) : undefined}
                   className="flex cursor-pointer items-center gap-3 rounded-card px-3 py-2 font-ui text-t0 text-ink-primary aria-selected:bg-surface-0"
                 >
                   {t(a.label, locale)}
@@ -153,7 +144,7 @@ export function CommandPalette({
             {ADMIN_DESTINATIONS.map((d) => (
               <Command.Item
                 key={d.href}
-                value={`${t(d.label, locale)} ${d.tag} admin`}
+                value={`${t(d.label, locale)} ${d.tag} ${d.keywords.join(' ')}`}
                 onSelect={() => go(d.href)}
                 className="flex cursor-pointer items-center gap-3 rounded-card px-3 py-2 font-ui text-t0 text-ink-primary aria-selected:bg-surface-0"
               >

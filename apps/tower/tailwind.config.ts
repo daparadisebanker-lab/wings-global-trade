@@ -80,9 +80,11 @@ const config: Config = {
         'elevation-4': 'var(--elevation-4)',
       },
       transitionTimingFunction: {
+        // Keys are bare; Tailwind prefixes the `ease-` namespace → `ease-spring-snappy`,
+        // `ease-exit` (review F4: key 'ease-exit' would have produced `ease-ease-exit`).
         'spring-snappy': 'var(--spring-snappy)',
         'spring-settle': 'var(--spring-settle)',
-        'ease-exit': 'var(--ease-exit)',
+        'exit': 'var(--ease-exit)',
       },
       spacing: {
         // Operational row heights (DESIGN_SYSTEM density).
