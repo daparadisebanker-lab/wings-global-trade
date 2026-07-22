@@ -44,9 +44,12 @@ const config: Config = {
         'line-hairline': 'var(--line-hairline)',
       },
       fontFamily: {
-        // Display = NissanOpti (brand headers); UI = Flexo (body); mono = Teko
-        // (the Wings label + numeral voice, tabular figures).
-        display: ['var(--font-display)', 'Georgia', 'serif'],
+        // TOWER's tool voice is Inter, wired through the --font-* tokens
+        // (globals.css). Brand artifacts re-point those same tokens to
+        // NissanOpti/Flexo/Teko at their own root, so `font-display/ui/mono`
+        // resolve to the Wings faces inside a document without any class change.
+        // Fallbacks below are inert (the token always resolves first).
+        display: ['var(--font-display)', 'system-ui', 'sans-serif'],
         ui: ['var(--font-ui)', 'system-ui', 'sans-serif'],
         mono: ['var(--font-mono)', 'ui-monospace', 'monospace'],
       },
