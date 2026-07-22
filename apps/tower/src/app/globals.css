@@ -410,6 +410,7 @@
   --duration-snappy: 300ms;
   --duration-settle: 450ms;
   --duration-exit:   180ms;
+  --duration-page:   200ms;
 }
 
 /* — Color · Nightwatch (dark) — macOS tokens only; core livery tokens are
@@ -464,5 +465,39 @@
     transition-delay: 0ms !important;
     animation-duration: 80ms !important;
     animation-delay: 0ms !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TOWER-REDESIGN · P2a — shell frame: page transition on route change.
+   Applied to <main key={pathname}> so it replays on navigation (the element
+   remounts when the path changes). Transform + opacity only (never layout).
+   Reduced-motion collapses to a pure opacity fade (redesign §2.8).
+   ═══════════════════════════════════════════════════════════════════════════ */
+@keyframes mac-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.mac-page {
+  animation: mac-page-in var(--duration-page, 200ms) var(--spring-settle) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  @keyframes mac-page-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  .mac-page {
+    animation-duration: 80ms;
+    animation-timing-function: linear;
   }
 }

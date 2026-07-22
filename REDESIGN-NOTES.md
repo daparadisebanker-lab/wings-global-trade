@@ -10,6 +10,56 @@ rewrite; zero feature regression.
 
 ---
 
+## P2a — Shell frame (page transition + greeting bar)  ·  status: built, in review
+
+Frame only — NO theme toggle (the reviewer's P2a/P2b split; the toggle + full
+dark re-points ship as P2b).
+
+**What landed**
+- `apps/tower/src/shell/frame/GreetingBar.tsx` — a slim top strip: time-of-day
+  greeting + today's date (es-PE) + operator identity (`userEmail`). Real data
+  only; time-sensitive values computed after mount (neutral "Hola" + no date on
+  SSR/first paint) so there is no hydration mismatch.
+- `globals.css` — `--duration-page: 200ms` token + `.mac-page` page-transition
+  (200ms fade + `translateY(8→0)`, transform+opacity only). Reduced-motion
+  redefines the keyframe to opacity-only at 80ms linear.
+- `ShellChrome.tsx` — additive wrap: `<GreetingBar>` inserted below TopBar; the
+  content `<main>` gains `key={pathname}` + `.mac-page` so the transition replays
+  on navigation. The rail, TopBar, Breadcrumb, RouteProgress, OnboardingBanner,
+  Mister dock/launcher, drawer a11y machinery — all untouched. NavRail remains
+  the working nav until the P4 Dock.
+
+**Deliberate deferrals (logged)**
+- **Ground swap deferred.** The macOS `--surface-base` (#F5F5F7) ground is NOT
+  applied yet — the content keeps the existing warm-white `--premium-ground`.
+  The ground/material adoption lands in the P8 sweep with the material cards, so
+  P2a stays additive (only the greeting strip + a subtle page-in animation are
+  visible). Avoids flattening the designed premium gradient before it's QA'd.
+- No Dock content-padding (96px) — that is P4's job.
+
+**Visible deltas this phase:** a new greeting strip below the top bar **(desktop
+only, `md+`)**; a 200ms page-in animation on route change (opacity-only under
+reduced-motion).
+
+**Review fixes / notes (Fable P2a: APPROVE-WITH-FIXES):**
+- F-P2a-1 (applied) — GreetingBar is `hidden md:flex` (desktop only). Three
+  stacked strips would have eaten ~140px of a 390px viewport, undoing the mobile
+  work in `f44cde2`. Mobile greeting/identity arrives with the **P5 Control
+  Center** quick-status row (spec §3.2), not a persistent mobile strip.
+- F-P2a-2 (runtime check, PENDING) — with `<main key={pathname}>` remounting on
+  navigation + a 200ms entrance, browser Back/Forward scroll restoration must be
+  confirmed on the deployed build (navigate deep into /catalog → open a record →
+  Back → scroll restores). Next's scroll restoration should re-apply; verify and
+  record here. Not statically verifiable.
+- F-P2a-3 (tripwire, no change) — while `.mac-page` animates, `<main>`'s
+  `transform` is the containing block for any `position: fixed` descendant.
+  Safe TODAY (all fixed UI lives in the shell outside `<main>`; page content uses
+  only `sticky`). RULE for P8 + future features: any fixed-position UI rendered
+  inside page content must be portaled, or it mispositions for 200ms after each
+  navigation.
+
+---
+
 ## P3 — Navigation registry + useActiveTool  ·  status: reviewed (APPROVE-WITH-FIXES), committing
 
 The one source of truth (TOWER-REDESIGN §5, "one registry" DoD gate).
