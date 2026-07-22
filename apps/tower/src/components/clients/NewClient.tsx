@@ -79,7 +79,7 @@ export function NewClient({ locale }: { locale: Locale }) {
   const canSave = Boolean(brandId) && name.trim().length > 0 && !saving
 
   return (
-    <div className="flex w-full max-w-md flex-col gap-3 rounded-card border border-line bg-surface-1 p-4">
+    <div className="flex w-full max-w-md flex-col gap-3 rounded-card-lg border border-line bg-surface-1 p-4 shadow-elevation-2">
       <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
         {t({ es: 'Nuevo cliente', en: 'New client' }, locale)}
       </span>
