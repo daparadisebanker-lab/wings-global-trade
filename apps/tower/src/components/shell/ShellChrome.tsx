@@ -15,13 +15,13 @@ import { TopBar } from './TopBar'
 import type { LaneMembership } from '@/lib/lanes/memberships'
 import { visibleModules, type Role } from '@/lib/rbac'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
-import { MODULES } from '@/lib/nav'
+import { useActiveTool } from '@/shell/navigation/useActiveTool'
 
 /** Location strip — TOWER › Módulo › subpágina, derived from the path so you
  *  always know where you are. Ids/numbers in the path are omitted. */
 function Breadcrumb({ locale }: { locale: Locale }) {
   const pathname = usePathname()
-  const mod = MODULES.find((m) => pathname.startsWith(m.href))
+  const mod = useActiveTool()
   const sub = pathname.split('/').filter(Boolean)[1]
   const isId = !!sub && (/^[0-9a-f-]{8,}$/i.test(sub) || /^\d+$/.test(sub))
   return (

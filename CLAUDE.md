@@ -44,7 +44,7 @@ Root holds only config, README, DECISIONS.md, this file, and the knowledge/progr
 3. **Components consume semantic tokens only.** Never a raw hex, never a raw px outside the primitive scale. If a design need can't be expressed in tokens, the token system gets extended at Tier 2 — the component never gets a hardcoded value.
 4. **One brain, many mouths.** Mister is a single engine. Lanes get knowledge packs and livery chrome, never a separate bot.
 5. **Numbers are exhibited, not hidden.** CBM, MOQ, lead times, HS codes, pallet counts — tabular mono, treated as brand assets.
-6. **The refusals are law:** no rounded-soft SaaS aesthetics (radius 0–2px only), no stock photography, no gradient meshes, no retail vocabulary, no lane without a stamp.
+6. **The refusals are law:** no stock photography, no retail vocabulary, no lane without a stamp. *(Amended 2026-07-22 — ratified decision, see DECISIONS.md “macOS material adoption”: the former refusals of rounded radii and gradient/soft materials are **lifted ecosystem-wide.** The macOS material system — radii up to 20px, translucent blur “materials”, elevation, and the deep-blue accent — is now permitted across TOWER, the lanes, and `@wings/trade-ui`. Radius/material values are governed by §2 below and the TOWER-REDESIGN token layer. The remaining refusals stand.)*
 
 ---
 
@@ -53,8 +53,8 @@ Root holds only config, README, DECISIONS.md, this file, and the knowledge/progr
 - Spacing: `4 8 12 16 24 32 48 64 96 128`
 - Type scale: 1.25 modular — `14 / 17.5 / 22 / 27 / 34 / 42 / 53 / 66 / 83`
 - Grid: 12-col, shared gutters/max-widths/breakpoints
-- Radii: 0 structural, ≤2px cards
-- Motion: `--ease-gantry: cubic-bezier(0.83,0,0.17,1)` (structural moves) · `--ease-settle: cubic-bezier(0.22,1,0.36,1)` (reveals) · reduced-motion always collapses to crossfade
+- Radii: **macOS material scale — control 8px · card 12px · panel 16px · dock 20px · pill 999px** *(amended 2026-07-22, ratified; supersedes the former “0 structural, ≤2px cards”. Structural 0 remains available where a hard edge is wanted.)*
+- Motion: `--ease-gantry: cubic-bezier(0.83,0,0.17,1)` (structural moves) · `--ease-settle: cubic-bezier(0.22,1,0.36,1)` (reveals) · **plus the macOS spring set — `--spring-snappy` (0.32,0.72,0,1) · `--spring-settle` (0.16,1,0.3,1) · `--ease-exit` (0.4,0,1,1)** · reduced-motion always collapses to crossfade
 - UI typeface: the shared grotesque (labels, tables, nav, Mister) + tabular mono for all numerals
 - Shared organs: `ManifestTable` · `LaneStamp` · `FillMeter` (container visualizer) · `RFQFlow` · `SpecSheet` (scoped blueprint mode) · `MisterDock` · `TrustFooter`
 - The lane-switch transition (livery flood + stamp-settle, 600–800ms, interruptible)

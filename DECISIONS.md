@@ -1,5 +1,24 @@
 # DECISIONS.md — WINGS Homepage Build
 
+## macOS material adoption — ratified 2026-07-22 (ecosystem-wide)
+
+- **Decision:** the frozen-skeleton refusals of rounded radii and soft/gradient
+  materials (root `CLAUDE.md` §1.6, §2) are **lifted for the whole ecosystem**
+  (Option C of the material ruling). TOWER migrates to the macOS-grade shell in
+  `TOWER-REDESIGN.md`; the lanes and `@wings/trade-ui` may adopt the same material
+  language. Radius scale is now control 8 / card 12 / panel 16 / dock 20 / pill 999px;
+  translucent blur “materials”, elevation, spring motion, and a deep-blue accent are
+  permitted. Structural 0 stays available for hard edges.
+- **Rationale:** TOWER needs a spatial operating-environment identity; the user
+  elected to move the entire ecosystem rather than carve out a TOWER-only exemption.
+- **Scope of the migration:** additive only — wrap, don’t rewrite. Zero feature
+  regression. Delivered in waves per the merged plan (Path to 100 × macOS Shell).
+  Progress + visual notes logged in `REDESIGN-NOTES.md`.
+- **What did NOT change:** the spacing grid, the modular type scale, tabular
+  numerals, the wholesale directives, token-only discipline, and the remaining
+  refusals (no stock photography, no retail vocabulary, no lane without a stamp).
+
+
 ## Monorepo migration — COMPLETE (waves M0–M4, 2026-07)
 
 - The repo is now the ecosystem monorepo: `apps/site` (the live site) + `packages/*`
