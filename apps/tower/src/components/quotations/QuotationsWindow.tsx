@@ -41,12 +41,12 @@ export function QuotationsWindow({ items, locale }: { items: QuotationListItem[]
           {TAG}
         </span>
         <div className="flex items-baseline justify-between gap-4">
-          <h1 className="text-h2 font-semibold">{t(TITLE, locale)}</h1>
+          <h1 className="font-display text-t3 text-ink-primary">{t(TITLE, locale)}</h1>
           <span className="font-mono text-label text-ink-secondary" data-numeric>
             {items.length}
           </span>
         </div>
-        <p className="max-w-prose text-body-sm text-ink-secondary">
+        <p className="max-w-prose text-t0 text-ink-secondary">
           {t(
             {
               es: 'Cotizaciones borrador y emitidas. Ábrelas para imprimir. Pídele a Mister “ármame una cotización” para crear una nueva.',
@@ -58,7 +58,7 @@ export function QuotationsWindow({ items, locale }: { items: QuotationListItem[]
       </header>
 
       {items.length === 0 ? (
-        <div className="rounded-card border border-hairline bg-surface-1 p-8 text-center text-body-sm text-ink-secondary">
+        <div className="rounded-card border border-line-hairline bg-surface-1 p-8 text-center text-t0 text-ink-secondary">
           {t(
             {
               es: 'Todavía no hay cotizaciones. Genera la primera con Mister.',
@@ -72,13 +72,13 @@ export function QuotationsWindow({ items, locale }: { items: QuotationListItem[]
           {/* Mobile: one card per quotation — the total is the headline. */}
           <ul className="flex flex-col gap-3 md:hidden">
             {items.map((q) => (
-              <li key={q.id} className="flex flex-col gap-3 rounded-card border border-hairline bg-surface-1 p-4">
+              <li key={q.id} className="flex flex-col gap-3 rounded-card border border-line-hairline bg-surface-1 p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex min-w-0 flex-col gap-0.5">
                     <span className="truncate font-mono text-t0 text-ink-primary" data-numeric>
                       {q.quoteNo ?? t({ es: 'Borrador', en: 'Draft' }, locale)}
                     </span>
-                    <span className="truncate text-body-sm text-ink-secondary">{q.clientName ?? '—'}</span>
+                    <span className="truncate text-t0 text-ink-secondary">{q.clientName ?? '—'}</span>
                   </div>
                   <StatusPill status={q.status} />
                 </div>
@@ -94,7 +94,7 @@ export function QuotationsWindow({ items, locale }: { items: QuotationListItem[]
                     {q.createdAt.slice(0, 10)}
                   </span>
                 </div>
-                <div className="flex items-center gap-6 border-t border-hairline pt-3">
+                <div className="flex items-center gap-6 border-t border-line-hairline pt-3">
                   {q.status === 'DRAFT' ? <IssueButton quoteId={q.id} locale={locale} /> : null}
                   <Link
                     href={`/proforma/${q.id}/document`}
@@ -108,10 +108,10 @@ export function QuotationsWindow({ items, locale }: { items: QuotationListItem[]
           </ul>
 
           {/* Desktop: the full manifest table. */}
-          <div className="hidden overflow-x-auto rounded-card border border-hairline md:block">
-            <table className="w-full border-collapse text-body-sm">
+          <div className="hidden overflow-x-auto rounded-card border border-line-hairline md:block">
+            <table className="w-full border-collapse text-t0">
             <thead>
-              <tr className="border-b border-hairline text-left font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
+              <tr className="border-b border-line-hairline text-left font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
                 <Cell>{t({ es: 'Número', en: 'Number' }, locale)}</Cell>
                 <Cell>{t({ es: 'Cliente', en: 'Client' }, locale)}</Cell>
                 <Cell>{t({ es: 'Lane', en: 'Lane' }, locale)}</Cell>
@@ -123,7 +123,7 @@ export function QuotationsWindow({ items, locale }: { items: QuotationListItem[]
             </thead>
             <tbody>
               {items.map((q) => (
-                <tr key={q.id} className="border-b border-hairline last:border-0 hover:bg-surface-2">
+                <tr key={q.id} className="border-b border-line-hairline last:border-0 hover:bg-surface-2">
                   <Cell className="font-mono" >
                     {q.quoteNo ?? (
                       <span className="text-ink-secondary">{t({ es: 'borrador', en: 'draft' }, locale)}</span>
