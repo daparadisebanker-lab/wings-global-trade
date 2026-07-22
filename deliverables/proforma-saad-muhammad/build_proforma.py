@@ -228,24 +228,22 @@ HTMLDOC = f"""<!doctype html>
   <div class="pdoc-parties">
     <div class="pdoc-party">
       <div class="pdoc-party-head">Vendedor / Exportador<span class="pdoc-party-en"> · Seller / Exporter</span></div>
-      <div class="pdoc-party-name">WINGS GLOBAL TRADE S.A.C.</div>
-      <dl class="pdoc-party-meta">
-        <dt>RUC</dt><dd>20601234567</dd>
-        <dt>Dirección</dt><dd>Ctra. Panamericana Sur Km. 1303 Mz. Q Lt. 8-9</dd>
-        <dt>Ciudad</dt><dd>Tacna, Perú</dd>
-        <dt>Teléfono</dt><dd>+507 6025-07</dd>
-        <dt>Email</dt><dd>importaciones@wingsglobaltrade.com</dd>
-      </dl>
-    </div>
-    <div class="pdoc-party">
-      <div class="pdoc-party-head">Comprador / Importador<span class="pdoc-party-en"> · Buyer / Importer</span></div>
       <div class="pdoc-party-name">IMPORT - EXPORT SHINING STAR LIMITADA</div>
       <dl class="pdoc-party-meta">
         <dt>RUT</dt><dd>76029544-2</dd>
         <dt>Dirección</dt><dd>Pasaje Cuatro 2213, Condominio Oasis</dd>
         <dt>Ciudad</dt><dd>Iquique, Chile</dd>
-        <dt>Contacto</dt><dd>Renata Revol</dd>
+        <dt>Teléfono</dt><dd>+56 937305608</dd>
+        <dt>Email</dt><dd>importaciones@wingsglobaltrade.com</dd>
+      </dl>
+    </div>
+    <div class="pdoc-party">
+      <div class="pdoc-party-head">Comprador / Importador<span class="pdoc-party-en"> · Buyer / Importer</span></div>
+      <div class="pdoc-party-name">Renata Revol</div>
+      <dl class="pdoc-party-meta">
+        <dt>Origen</dt><dd>Bolivia</dd>
         <dt>Teléfono</dt><dd>+591 68173247</dd>
+        <dt>Contacto</dt><dd>Renata Revol</dd>
       </dl>
     </div>
   </div>
@@ -310,7 +308,7 @@ HTMLDOC = f"""<!doctype html>
     <div>
       <div>¿Consultas?</div>
       <div>Email: importaciones@wingsglobaltrade.com</div>
-      <div>WhatsApp: +34 674 00 64 38</div>
+      <div>Tel: +507 6025-07</div>
     </div>
     <div class="pd-foot-right">
       <div>Ctra. Panamericana Sur Km. 1303 Mz. Q Lt. 8-9</div>
