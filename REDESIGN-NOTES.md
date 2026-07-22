@@ -10,6 +10,66 @@ rewrite; zero feature regression.
 
 ---
 
+## P2b — Nightwatch (dark) + theme toggle  ·  status: built, PREVIEW-only (not prod)
+
+The first big *visible* change. Deployed to preview and reviewed BEFORE production
+(the user-agreed exception to the auto-deploy loop).
+
+**What landed**
+- `globals.css` — full `[data-app='tower'][data-theme='dark']` re-point of the core
+  livery (`--surface-0/1/2`, `--ink-primary/secondary`, `--line`, `--accent/accent-ink`,
+  `--gold/gold-ink`, `--positive/negative`, `--stamp`, `--scrim`) PLUS explicit dark
+  values for the premium/tile set (`--premium-ground/chrome`, the three
+  `--premium-*-shadow`, `--premium-tile`, `--tile-ink(-muted)`, `--tile-positive/negative`)
+  — never composed, because they mix from `--ink-primary` which is now light and
+  would invert. `color-scheme: dark`.
+- `components/shell/ThemeToggle.tsx` + mounted in TopBar (right cluster). Writes the
+  `tower-theme` key (P1 bootstrap contract); flips `data-theme` instantly; renders
+  after mount (no hydration mismatch); `aria-pressed` + labeled + gold focus ring.
+- Document/print exemption: verified by grep that the document CSS
+  (proforma/quote/ficha/cost-sheet/rb) uses ZERO livery color tokens — they are
+  self-scoped hardcoded light palettes, so dark cannot reach them. Added defensive
+  `color-scheme: light` on the document page frames.
+
+**Design decision — inverted primary.** As in light (where `--accent == --ink-primary`
+= navy), dark keeps them equal (`#f5f5f7`): a primary button is a light fill with
+dark ink. High-contrast, macOS-appropriate; the gold jewel carries brand colour.
+
+**Deferrals (logged, deliberate):**
+- **OS-preference auto-dark deferred to P5.** The bootstrap stays explicit-only
+  (no `prefers-color-scheme` fallback yet). Reason: the toggle is desktop-only in
+  P2b (per the reviewer, mobile waits for the P5 Control Center) — so if OS-dark
+  auto-applied, a dark-OS mobile user would be stuck with no way out. Dark must be
+  escapable everywhere before it can be automatic. P5 mounts the mobile toggle AND
+  turns on the OS fallback together.
+- Mobile toggle → P5 Control Center quick-status row.
+
+**Contrast spot-check (WCAG AA; full matrix pending on preview):**
+`ink-primary #f5f5f7` on `surface-0 #1c1c1e` ≈ 15:1 ✓ · `ink-secondary #9a9aa2` on
+`surface-0` ≈ 6.2:1 ✓ · `gold #e0b866` on `surface-0` ≈ 9.6:1 ✓ (emphasis/large) ·
+`accent-ink #17171a` on `accent #f5f5f7` ≈ 16:1 ✓ · `gold-ink #1a1c1f` on `gold` ≈ 9:1 ✓.
+PENDING on preview: every LaneSwitcher lane-accent against dark surfaces; `/login`
+hero+scrim legibility in dark; positive/negative chips on dark rows; the full
+375/768/1440 × both-theme × (table · board · form · document · /login) matrix.
+
+**Review fixes (Fable P2b: APPROVE-WITH-FIXES; both sequencing calls accepted):**
+- F-P2b-1 (applied) — dark `--negative` lifted `#e0564a → #ec7b72`: the old value
+  passed on `surface-0` but FAILED AA (~3.8:1) on `surface-1/2`, where negative
+  text (failed QC, expired, negative deltas) actually renders. Now ≈5.2:1 on
+  surface-1. `--tile-negative` re-derives (var-based).
+- F-P2b-2 (applied) — doc `color-scheme: light` selector corrected
+  `.rbqdoc-annex → .rbqdoc-page` (the actual marcas-cotización page frame).
+- F-P2b-3 (applied) — ThemeToggle renders an invisible same-footprint placeholder
+  pre-mount instead of `null`, so the TopBar cluster doesn't shift on hydration.
+- Coverage-ledger exemption: `--texture` (value `none`, colorless) has no dark
+  counterpart — nothing to re-point. `--lane-accent` auto-re-points via
+  `var(--accent)`; per-lane inline accents parked in the preview QA matrix.
+
+**Why preview-only:** dark is now reachable on a live app. Holding production until
+the preview QA matrix + user review pass (F-P2a-2 scroll check rides along).
+
+---
+
 ## P2a — Shell frame (page transition + greeting bar)  ·  status: built, in review
 
 Frame only — NO theme toggle (the reviewer's P2a/P2b split; the toggle + full
