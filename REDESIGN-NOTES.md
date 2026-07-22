@@ -10,7 +10,76 @@ rewrite; zero feature regression.
 
 ---
 
-## P7 — Operations cockpit (Signal Deck) + cockpit as post-login home  ·  status: built, in review
+## P8a — Restyle sweep (shared surfaces) + orphan cleanup  ·  status: built, in review
+
+First cut of the P8 component restyle sweep (recon: p8-recon workflow). The sweep
+brings feature components up to the macOS design system (P1 tokens/materials/radii/
+springs). Sub-phased so each cut is one Fable review; **P8a = the two genuinely
+shared/shell surfaces + the grep-proven orphan cleanup** (smallest-safe). Tokens
+only, additive, zero feature regression.
+
+**Restyle (2 files):**
+- `ui/EntityCombobox.tsx` (shared — also drives CommitmentsTable + POPanel): field
+  wrapper `rounded-card` → `rounded-control` (8px); the results popover
+  `border border-line bg-surface-1` → `.material-panel` (opaque-raised: bg +
+  hairline border + `elevation-2`) + `rounded-card-lg`. Opaque **material-panel**,
+  not translucent material-chrome — the list is a scroll container, and blur-over-
+  scroll janks + can drop contrast (recon Risk 1).
+- `shell/Notifications.tsx`: popover `rounded-card border border-line bg-surface-1`
+  → `.material-panel` + `rounded-card-lg`, with a `tower-fade` reveal.
+
+**Recon correction:** the plan suggested `.mac-motion` for the Notifications reveal,
+but there is **no base `.mac-motion` animation** — it's only a reduced-motion *hook*
+(globals.css:505), so it would be a no-op reveal. Used the proven opacity-only
+`tower-fade` (`--ease-settle`) instead — the same reveal the palette + combobox use,
+inherently reduced-motion-safe.
+
+**Orphan cleanup (grep-proven safe):**
+- **Deleted `components/shell/NavRail.tsx`** — the old grouped rail, orphaned since
+  P4b/P5 (Dock + Control Center replaced it). Only self-reference; no live import.
+- **`lib/nav.ts`** — deleted the `NavGroup` interface + `NAV_GROUPS` const (sole
+  consumer was NavRail); **kept `NavGroupId`** (still used by `NavModule.group` +
+  the registry). Comment updated.
+- **`ShellChrome.tsx` — removed the dead `collapsed` state**: its only toggle sat
+  `hidden md:flex` inside an `md:hidden`/drawer-only aside, so `collapsed` was
+  provably always `false`. Rendering the `!collapsed` branches unconditionally
+  (imagotipo header, LaneSwitcher, Mister label) is **byte-identical output** — the
+  isotipo/collapse-button arms were dead. `md:w-64` fixed.
+
+Kept (still referenced, NOT deleted): `MODULES`, `NAV_ICONS`, `NavGroupId`,
+`NavModule.group`. Comment-only staleness (a few `// NavRail` mentions) left as
+historical context.
+
+**Queued (P8 sub-phases, each its own cut):** P8b board cards (Container/Rfq/Triage),
+P8c landing grids, P8d reveal/modal forms (motion), P8e Mister artifact raws→tokens,
+P8f stale-vocab (`border-hairline`→`border-line-hairline`) + table shells, P8g
+dashboard/canvas raws. Deferred to a separate program: **P9 primitive extraction**
+(Card/Button/Badge/Input — a ~49-file refactor, not a retheme; out of this sweep).
+
+**Fable review (APPROVE-WITH-FIXES):**
+- **F-P8a-1 (radius) — resolved as a logged deviation + standing rule.** Spec §2.5
+  lists "popovers" at `radius-panel` (16px), but both restyled surfaces are
+  **attached** dropdowns (anchored to a field/bell). Standing rule for the whole
+  sweep: **attached/anchored dropdowns + popovers = `rounded-card-lg` (12px)** — one
+  step tighter than the 8px control they hang off — while **free-floating sheets /
+  Control Center keep `radius-panel` (16px)**. macOS-correct (attached menus aren't
+  as round as sheets); carried forward as precedent for P8b–g.
+- **Bonus (verified by review): the `collapsed` removal fixes a latent focus-trap
+  edge.** The `display:none` collapse button was still in the DOM and was the mobile
+  drawer trap's *last* focusable (the trap query doesn't filter by visibility), so
+  shift-Tab from the first element `focus()`-ed a hidden node (silent no-op, broke
+  the wrap). Deleting it makes the Mister button the real last stop — trap now wraps.
+- **`.mac-motion` cleanup debt** (P1 reduced-motion hook has no base rule / consumer):
+  either P8d gives it a real base animation or it gets deleted — queued into P8d/P8f.
+
+**Post-deploy QA:** EntityCombobox dropdown + Notifications popover render the panel
+material in both themes; combobox swap-test on 2 lanes; desktop shell unchanged
+(logo/LaneSwitcher/Mister after the collapsed removal); mobile drawer unchanged +
+focus-trap wraps; reduced-motion (tower-fade opacity-only); `tsc` clean (orphan safety).
+
+---
+
+## P7 — Operations cockpit (Signal Deck) + cockpit as post-login home  ·  status: SHIPPED to production
 
 User ruling (via AskUserQuestion): (1) a **TRUE operations dashboard** leading with
 EXACT operational state — new aggregate read-endpoints AUTHORIZED (lifting the
