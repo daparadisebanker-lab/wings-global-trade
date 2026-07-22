@@ -132,5 +132,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return back(origin, 'link')
   }
 
-  return NextResponse.redirect(new URL('/catalog', origin), { status: 303 })
+  // /signals is the post-login home (P7 operations cockpit) — matches the
+  // middleware and /auth/callback destinations.
+  return NextResponse.redirect(new URL('/signals', origin), { status: 303 })
 }
