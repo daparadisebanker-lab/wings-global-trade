@@ -22,12 +22,12 @@ export function ClientsWindow({ items, locale }: { items: ClientListItem[]; loca
           {TAG}
         </span>
         <div className="flex items-baseline justify-between gap-4">
-          <h1 className="text-h2 font-semibold">{t(TITLE, locale)}</h1>
+          <h1 className="font-display text-t3 text-ink-primary">{t(TITLE, locale)}</h1>
           <span className="font-mono text-label text-ink-secondary" data-numeric>
             {items.length}
           </span>
         </div>
-        <p className="max-w-prose text-body-sm text-ink-secondary">
+        <p className="max-w-prose text-t0 text-ink-secondary">
           {t(
             {
               es: 'Los clientes de tus marcas. Créalos aquí o al cotizar con Mister; viven en un solo lugar.',
@@ -42,7 +42,7 @@ export function ClientsWindow({ items, locale }: { items: ClientListItem[]; loca
       </header>
 
       {items.length === 0 ? (
-        <div className="rounded-card border border-hairline bg-surface-1 p-8 text-center text-body-sm text-ink-secondary">
+        <div className="rounded-card border border-line-hairline bg-surface-1 p-8 text-center text-t0 text-ink-secondary">
           {t(
             {
               es: 'Todavía no hay clientes. Crea el primero al armar una cotización con Mister.',
@@ -56,7 +56,7 @@ export function ClientsWindow({ items, locale }: { items: ClientListItem[]; loca
           {/* Mobile: one card per client. */}
           <ul className="flex flex-col gap-3 md:hidden">
             {items.map((c) => (
-              <li key={c.id} className="flex flex-col gap-2 rounded-card border border-hairline bg-surface-1 p-4">
+              <li key={c.id} className="flex flex-col gap-2 rounded-card border border-line-hairline bg-surface-1 p-4">
                 <div className="flex items-start justify-between gap-3">
                   <span className="truncate font-medium text-ink-primary">{c.name}</span>
                   <span className="shrink-0 font-mono text-label tabular-nums text-ink-secondary" data-numeric>
@@ -75,10 +75,10 @@ export function ClientsWindow({ items, locale }: { items: ClientListItem[]; loca
           </ul>
 
           {/* Desktop: the table. */}
-          <div className="hidden overflow-x-auto rounded-card border border-hairline md:block">
-            <table className="w-full border-collapse text-body-sm">
+          <div className="hidden overflow-x-auto rounded-card border border-line-hairline md:block">
+            <table className="w-full border-collapse text-t0">
             <thead>
-              <tr className="border-b border-hairline text-left font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
+              <tr className="border-b border-line-hairline text-left font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
                 <Cell>{t({ es: 'Cliente', en: 'Client' }, locale)}</Cell>
                 <Cell>{t({ es: 'Marca', en: 'Brand' }, locale)}</Cell>
                 <Cell>{t({ es: 'País / Región', en: 'Country / Region' }, locale)}</Cell>
@@ -88,7 +88,7 @@ export function ClientsWindow({ items, locale }: { items: ClientListItem[]; loca
             </thead>
             <tbody>
               {items.map((c) => (
-                <tr key={c.id} className="border-b border-hairline last:border-0 hover:bg-surface-2">
+                <tr key={c.id} className="border-b border-line-hairline last:border-0 hover:bg-surface-2">
                   <Cell className="font-medium text-ink-primary">{c.name}</Cell>
                   <Cell className="font-mono text-ink-secondary">{c.brandName ?? '—'}</Cell>
                   <Cell className="text-ink-secondary">

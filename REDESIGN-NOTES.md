@@ -10,7 +10,299 @@ rewrite; zero feature regression.
 
 ---
 
-## P6 — ⌘K record search + recents + live actions  ·  status: built, in review
+## P8f — Latent-class fix (silently-broken utilities) + table shells  ·  status: built, in review
+
+Fifth restyle cut, and the sweep's **first visible bug-fix**: three utility classes
+used in markup but **defined nowhere in the theme** — they render as no-ops today, so
+fixing them is a *visible* change (surfaces gain the styling that was silently
+missing). Full latent-class sweep run per Fable's P8f watch-item (c) — these three are
+the complete inventory; all colors (incl. `ink-tertiary`), radii, and other utilities
+verified defined.
+
+**The inventory + per-site assessment:**
+- **`border-hairline` → `border-line-hairline`** (17 sites · ClientsWindow,
+  QuotationsWindow, DocumentsWindow). `hairline` is not a color; `line-hairline` is
+  (both themes, globals.css:428/467). *Visible change:* cards, table shells, and row
+  dividers **gain a hairline border that was rendering as none.** Correct — these are
+  list/table surfaces that should be ruled.
+- **`text-body-sm` → `text-t0`** (11 sites · the 3 Windows + DocumentUploader). No
+  `body-sm` size token; `t0` is the base body. *Visible change:* descriptive
+  paragraphs, empty-state copy, table body text pin to **15px** (were inheriting).
+  (TOWER's scale is decision-grade — one step above the frozen skeleton: `--type-0`
+  = 15px, not the family's 14; globals.css:124-127. F-P8f-1.)
+- **`text-h2` → `font-display text-t3 text-ink-primary`** (3 sites · the 3 Window H1s).
+  No `h2` size token, and rather than mint a third header style, the H1s now match the
+  **dominant module-header convention** (`font-display text-t3`, the 7 admin/catalog
+  sibling headers; post-PT `font-display` = Inter, so alignment is free — F-P8f-2).
+  *Visible change (the biggest):* the window titles ("Clientes", "Cotizaciones",
+  "Documentos") were rendering at inherited/tiny size — now proper module headings,
+  consistent with their nav siblings (wayfinding parity). CatalogBrowse's lone `text-t2`
+  header is queued as a P8g one-liner to close the last outlier.
+
+**Table shells kept FLAT-RULED** (Fable data-layer law, watch-item d): I swapped the
+border class (hairline yes) but did **not** add `rounded-card-lg`/`shadow-elevation` to
+the data tables — they stay `rounded-card` (4px) + hairline, flat. Cards/shadows are
+for content cards, not the data layer.
+
+**Bonus (P8d family completion):** DocumentUploader is a user-triggered reveal form
+(the `!open`→button→panel pattern) that the P8d recon missed — gave it the same
+`rounded-card-lg` + `shadow-elevation-2` + `tower-settle` as OpenContainerForm, so the
+reveal-form family is now consistent.
+
+**QA:** the three Windows in both themes (headings now properly sized, hairlines now
+visible); `line-hairline` resolves in Daylight + Nightwatch; the DocumentUploader
+panel reveals with the settle motion; data tables remain flat-ruled.
+
+---
+
+## P8e — Mister artifacts: classify-before-convert (World-B exemption)  ·  status: SHIPPED to production
+
+Fourth restyle cut. **Classify-first, per Fable's P8e watch-item** — and the answer
+is that the Mister artifact renderers are a **deliberate token-system exemption, not
+debt.** The dock is a fixed navy "World B" that intentionally does NOT follow the
+light/dark instrument tokens (same principle as the endorsed-brand palettes,
+CLAUDE.md §5). Its bespoke in-bubble micro-geometry + font sizes are hand-tuned for
+the chat-bubble context; converting them to the app scale would (a) change the visual
+sizes and (b) make World B follow the theme — exactly what Fable warned against. So
+they stay, now **explicitly documented as the exemption** in `mister-theme.ts`.
+
+**The genuine debt (fixed):** four stray raw hex had escaped the centralized
+`MISTER_ARTIFACT` palette — `#dbe6f3` (body blue), `#00112e` ×2 (bubble ink on the
+gold buttons), `#e88` (error red). Added `body`, `ink`, `error`, `steelLine` to `MISTER_ARTIFACT`
+and repointed the call sites (`ProposalArtifact` ×2, `QuoteProposalArtifact` ×3 incl.
+F-P8e-1's steel border). The World-B palette is now one-file **except `FitScene`'s
+documented scene-local alpha ramp** (`STEEL`/`STEEL_SOFT`/`STEEL_FLOOR`/`GOLD_TOP/
+RIGHT/LEFT` — named, single-file, SVG-scene-specific derivations of the World-B
+steel/gold; a deliberate scene sub-palette, not anonymous debt; its last inline fill
+was folded into `STEEL_FLOOR`). Kept untouched: the PT artifact/token split + brand
+`@font-face` (World B uses `--font-mono` via the constant, unaffected). Added a
+cross-reference comment atop `mister-dock.css` pointing to the exemption doc.
+
+Net: colors centralized (real cleanup), geometry/type left as documented exemption
+(the correct classification). QA: Mister dock artifacts render identically (same
+values, now named); no theme-following introduced.
+
+---
+
+## P8d — Restyle sweep (inline reveal forms) + .mac-motion cleanup  ·  status: SHIPPED to production
+
+Third restyle cut. Tokens only, additive, zero feature regression.
+
+**Key finding correcting the recon:** these four "modal forms" are **inline reveal
+panels, NOT overlay modals** — no scrim, no `fixed inset-0`; they reveal in the flow.
+So the modal-sheet treatment Fable flagged for P8d (scrim / slide-up / scale-fade /
+`elevation-4`, `radius-panel` 16px) does **not** apply. And `tower-settle` (opacity +
+`translateY(4px)`, 180ms `--ease-settle`, reduced-motion→opacity-only) is already the
+correct inline-reveal primitive — two of the four use it. Migrating to `.mac-motion`
+(the recon's suggestion) would have **removed** the reveal, since `.mac-motion` has no
+base animation.
+
+- `clients/NewClient.tsx`, `containers/.../OpenContainerForm.tsx`,
+  `admin/lane-registry/RegisterLaneForm.tsx`, `pipeline/.../PipelineBoard.tsx` (filter
+  bar): `rounded-card`→`rounded-card-lg` (12px — **content-surface bucket, NOT panel-16**;
+  they're inline, not sheets, so I did not stretch `radius-panel` to them) + `shadow-
+  elevation-2` (a step above the board cards' elevation-1).
+- **Motion (F-P8d-1):** `tower-settle` stays only on the two that genuinely reveal on
+  user action — `OpenContainerForm` + the `PipelineBoard` RFQ bar. `NewClient` and
+  `RegisterLaneForm` are **permanent page furniture** (always mounted — ClientsWindow
+  renders NewClient unconditionally; LaneRegistry gates RegisterLaneForm on data
+  presence, not a user action), so they get **no entrance motion** — animating them
+  would double up on the `mac-page` route transition and violates motion honesty
+  (motion signals a state change; their arrival is the page's arrival).
+- **`.mac-motion` retired** (globals.css): the P1 reduced-motion hook had no base rule
+  and no consumer (grep-confirmed zero uses) — deleted the dead `@media` block. This
+  closes the debt Fable queued from P8a. Inline reveals use `tower-settle`; the page
+  transition uses `mac-page-in`; both keep their own reduced-motion handling.
+
+**QA:** the four forms reveal with the settle motion in both themes; reduced-motion
+collapses to opacity-only (tower-settle's own reduced-motion rule); no scrim/overlay
+regression (they were never modals); elevation-2 reads raised in dark.
+
+---
+
+## P8b — Restyle sweep (board cards + admin landing grid)  ·  status: SHIPPED to production
+
+Second restyle cut (folds the recon's P8b cards + P8c grids — same card-surface
+change). Tokens only, additive, zero feature regression. Radius precedent from P8a
+holds: content cards → `rounded-card-lg` (12px, spec §2.5 "cards").
+- `containers/container-board/ContainerCard.tsx` — `rounded-card`→`rounded-card-lg`;
+  `shadow-elevation-1` + `hover:shadow-elevation-2`; transition list gains box-shadow
+  + `ease-spring-snappy`; `motion-reduce:transition-none`; keeps the lane-accent hover
+  border + `motion-safe:hover:-translate-y-px`.
+- `pipeline/pipeline-board/RfqCard.tsx` + `intelligence/triage-queue/TriageCard.tsx` —
+  root `rounded-card`→`rounded-card-lg` + `shadow-elevation-1` (static cards, no hover).
+- `app/(shell)/admin/page.tsx` — the index grid tile: `rounded-card`→`rounded-card-lg`;
+  `transition-colors`→`transition-[border-color,box-shadow]` + `ease-spring-settle`;
+  `shadow-elevation-1` + `hover:shadow-elevation-2`; `motion-reduce:transition-none`.
+
+Scope: card roots only (inner chips/inputs left for a later cut / P9). The marcas
+"landing" match was a filter chip (stays tight, not a card). Utilities all exist
+(card-lg, elevation-1/2, spring-snappy/settle). **QA:** both themes; reduced-motion
+kills the hover transitions; swap-test the lane-tinted cards on 2 lanes; no nested
+double-radius (board cards sit in gap-separated columns, not flush in a 4px shell).
+
+---
+
+## P8a — Restyle sweep (shared surfaces) + orphan cleanup  ·  status: SHIPPED to production
+
+First cut of the P8 component restyle sweep (recon: p8-recon workflow). The sweep
+brings feature components up to the macOS design system (P1 tokens/materials/radii/
+springs). Sub-phased so each cut is one Fable review; **P8a = the two genuinely
+shared/shell surfaces + the grep-proven orphan cleanup** (smallest-safe). Tokens
+only, additive, zero feature regression.
+
+**Restyle (2 files):**
+- `ui/EntityCombobox.tsx` (shared — also drives CommitmentsTable + POPanel): field
+  wrapper `rounded-card` → `rounded-control` (8px); the results popover
+  `border border-line bg-surface-1` → `.material-panel` (opaque-raised: bg +
+  hairline border + `elevation-2`) + `rounded-card-lg`. Opaque **material-panel**,
+  not translucent material-chrome — the list is a scroll container, and blur-over-
+  scroll janks + can drop contrast (recon Risk 1).
+- `shell/Notifications.tsx`: popover `rounded-card border border-line bg-surface-1`
+  → `.material-panel` + `rounded-card-lg`, with a `tower-fade` reveal.
+
+**Recon correction:** the plan suggested `.mac-motion` for the Notifications reveal,
+but there is **no base `.mac-motion` animation** — it's only a reduced-motion *hook*
+(globals.css:505), so it would be a no-op reveal. Used the proven opacity-only
+`tower-fade` (`--ease-settle`) instead — the same reveal the palette + combobox use,
+inherently reduced-motion-safe.
+
+**Orphan cleanup (grep-proven safe):**
+- **Deleted `components/shell/NavRail.tsx`** — the old grouped rail, orphaned since
+  P4b/P5 (Dock + Control Center replaced it). Only self-reference; no live import.
+- **`lib/nav.ts`** — deleted the `NavGroup` interface + `NAV_GROUPS` const (sole
+  consumer was NavRail); **kept `NavGroupId`** (still used by `NavModule.group` +
+  the registry). Comment updated.
+- **`ShellChrome.tsx` — removed the dead `collapsed` state**: its only toggle sat
+  `hidden md:flex` inside an `md:hidden`/drawer-only aside, so `collapsed` was
+  provably always `false`. Rendering the `!collapsed` branches unconditionally
+  (imagotipo header, LaneSwitcher, Mister label) is **byte-identical output** — the
+  isotipo/collapse-button arms were dead. `md:w-64` fixed.
+
+Kept (still referenced, NOT deleted): `MODULES`, `NAV_ICONS`, `NavGroupId`,
+`NavModule.group`. Comment-only staleness (a few `// NavRail` mentions) left as
+historical context.
+
+**Queued (P8 sub-phases, each its own cut):** P8b board cards (Container/Rfq/Triage),
+P8c landing grids, P8d reveal/modal forms (motion), P8e Mister artifact raws→tokens,
+P8f stale-vocab (`border-hairline`→`border-line-hairline`) + table shells, P8g
+dashboard/canvas raws. Deferred to a separate program: **P9 primitive extraction**
+(Card/Button/Badge/Input — a ~49-file refactor, not a retheme; out of this sweep).
+
+**Fable review (APPROVE-WITH-FIXES):**
+- **F-P8a-1 (radius) — resolved as a logged deviation + standing rule.** Spec §2.5
+  lists "popovers" at `radius-panel` (16px), but both restyled surfaces are
+  **attached** dropdowns (anchored to a field/bell). Standing rule for the whole
+  sweep: **attached/anchored dropdowns + popovers = `rounded-card-lg` (12px)** — one
+  step tighter than the 8px control they hang off — while **free-floating sheets /
+  Control Center keep `radius-panel` (16px)**. macOS-correct (attached menus aren't
+  as round as sheets); carried forward as precedent for P8b–g.
+- **Bonus (verified by review): the `collapsed` removal fixes a latent focus-trap
+  edge.** The `display:none` collapse button was still in the DOM and was the mobile
+  drawer trap's *last* focusable (the trap query doesn't filter by visibility), so
+  shift-Tab from the first element `focus()`-ed a hidden node (silent no-op, broke
+  the wrap). Deleting it makes the Mister button the real last stop — trap now wraps.
+- **`.mac-motion` cleanup debt** (P1 reduced-motion hook has no base rule / consumer):
+  either P8d gives it a real base animation or it gets deleted — queued into P8d/P8f.
+
+**Post-deploy QA:** EntityCombobox dropdown + Notifications popover render the panel
+material in both themes; combobox swap-test on 2 lanes; desktop shell unchanged
+(logo/LaneSwitcher/Mister after the collapsed removal); mobile drawer unchanged +
+focus-trap wraps; reduced-motion (tower-fade opacity-only); `tsc` clean (orphan safety).
+
+---
+
+## P7 — Operations cockpit (Signal Deck) + cockpit as post-login home  ·  status: SHIPPED to production
+
+User ruling (via AskUserQuestion): (1) a **TRUE operations dashboard** leading with
+EXACT operational state — new aggregate read-endpoints AUTHORIZED (lifting the
+no-new-infra default for this phase, by directive); (2) the cockpit **becomes the
+post-login home**. Recon: p7-recon + p7-ops-recon workflows. App-local to apps/tower;
+**no DB migration** — every metric is an exact count on an existing table.
+
+**Enum verification (I corrected real recon errors before writing a predicate):**
+predicates checked against the live CHECK constraints / TS validators —
+`containers.status` (OPEN|FILLING|BOOKED|IN_TRANSIT|ARRIVED|CLEARED|CLOSED),
+`quotes.status` (…|SENT|…), `products.status` (…|PUBLISHED|…), `ai_drafts`
+(status DRAFT + kind TRIAGE), `rb_slot_allocations.status` (RESERVED|CONFIRMED|
+LOADED|RELEASED), `represented_brands.status` (…|LIVE — verified via `RbStatus`
+LINE), `rb_containers.shipping_phase` (…|EN_TRANSITO). Corrections vs the recon:
+**dropped the guessed RFQ "pre-contract" stage cut** (`rfqs.stage` is bare
+archetype-specific text, no universal open-set → ship honest **RFQs total**);
+**dropped `orders`** (OrderStatus unconfirmed) and **`purchase_orders`** (no drill
+route); used **`text-t5`** for the hero (the scale stops at t5 — `text-t6/t7`
+would be dead classes).
+
+**KPIs (exact counts, RLS-scoped, module-gated):**
+- Lane: Containers in transit (**HERO**), Containers filling (OPEN+FILLING), Quotes
+  awaiting reply (SENT), RFQs total, Products published, Triage backlog, Clients total.
+- RB (gated on `marcas`): RB in transit, RB reservations live, Brands live.
+- **No deltas** — point-in-time state has no honest baseline; a synthesized delta
+  would be a fabricated number. A genuine 0 renders honestly; a wholly-empty deck
+  (no eligible tile) shows one laid-out note.
+
+**KPIs DROPPED / DEFERRED (never faked):**
+- **Open-pipeline value ($)** — permanently dropped: `rfqs` has no amount column.
+- **"Active clients"** — no active flag on `accounts` → shipped as **Clients (total)**.
+- **Quoted value / GMV** — computable but needs a currency-grouped `SUM` via an
+  RPC/view (a **prod-Supabase migration** = higher stakes). **Deferred to a flagged
+  P7.1 decision, not built.** ⚑ *This is the one place the user's "pipeline value"
+  ask can't be honored without a migration — surfacing it, not silently dropping it.*
+
+**New surfaces:**
+- `lib/actions/operations.ts` — `getOperationsSnapshot({ includeRb })`: 7 lane + 3 RB
+  exact `count:'exact',head:true` queries in parallel on the RLS-scoped client; one
+  unreadable table degrades to 0, never blanks the deck.
+- `components/operations/` — `OperationsBand` (asymmetric hero 2×2 + gated satellite
+  drill-links; reuses `.tower-tile`/`.tile-k`/`.tile-v`, tabular numerals; elevation
+  on the hero only), `QuickActions` (registry-reused pills, gated on the target
+  module — no fourth nav list), `SignalsFeed` (admin-only `listAuditLog` ×20, relative
+  time; non-admins get nothing — no fabricated feed), `relative-time.ts`.
+- `signals/page.tsx` — the substantive restructure: fetches rbac set + ops snapshot
+  alongside the deck; **removed the full-page NO_LANES EmptyState** (it blanked the
+  home for RB-only / no-lane operators — a real regression now that /signals is the
+  front door); ops cockpit renders for every identity, analytics renders only when
+  the deck loads (else an inline note).
+
+**Front door → /signals** (4 one-line edits, guards preserved): `middleware.ts:45`,
+`auth/callback/route.ts:22`, `app/page.tsx:6`, `(auth)/login/page.tsx:38`. Safe: the
+unauth guard + PKCE exchange + onboarding banner are untouched; `signals` is in every
+`ROLE_MODULES`/`RB_REP_MODULES`/`ALL_MODULES` (no role lacks it — strictly safer than
+today's `/catalog`, which SALES/VIEWER can't even see); a truly-empty identity lands
+on the band's laid-out empty note, not a void.
+
+**Fable review (APPROVE-WITH-FIXES) — applied before commit:**
+- **F-P7-1** — `rbReservationsLive` diverged from the canonical `tower.rb_slots_taken`
+  math and would silently under-count: a CONFIRMED reservation keeps its original
+  `expires_at`, so guarding all three statuses drops confirmed-but-past-expiry rows.
+  Fixed to count CONFIRMED/LOADED unconditionally + RESERVED only while unexpired
+  (matches `computeSlotBreakdown`).
+- **F-P7-2** — `n()` mapped a query *error* → 0, fabricating a false exact count in a
+  partial outage. Now returns **null** → the tile renders "—" (`aria-label` "no
+  disponible"); a genuine RLS-scoped 0 still renders 0. Snapshot fields are `number | null`.
+- **F-P7-3** — fixed the `includeRb` docstring (home passes `true`; RLS makes it safe)
+  and the `products.status` comment (includes `IN_REVIEW`).
+- **F-P7-4** — `app/page.tsx` comment repointed (Catalog Studio → Signal Deck).
+- **F-P7-5** — restored the "ask an administrator" guidance in the zero-visible note.
+Verified clean by the review: every remaining predicate against the live CHECKs, RLS
+= the boundary (anon+cookies client, not service role), the 4-point redirect (no loop,
+guards preserved, every role sees signals), and rbac parity on tiles + quick-actions.
+
+**Known limits / follow-ups:** 10 exact counts per home load (force-dynamic, no cache)
+— fine for an internal tool now; revisit with `unstable_cache` (~30–60s) if home
+traffic grows (F-P7-6). Value/GMV (P7.1, migration). RFQs shows total (no
+archetype-universal "open" cut). Optional hygiene: clear `expires_at` on
+RESERVED→CONFIRMED (a mutation change, separate decision).
+
+**Post-deploy QA:** login lands on /signals; hero = containers-in-transit with the
+asymmetric 2×2; every tile drill-links; a hidden module's tile never renders (rbac);
+RB tiles only for marcas-visible; admin sees the audit feed, non-admins don't; a
+no-lane / RB-only operator gets the cockpit (not a blank home); both themes; mobile
+single-column hero-first; genuine 0s render honestly.
+
+---
+
+## P6 — ⌘K record search + recents + live actions  ·  status: SHIPPED to production
 
 The palette grows from tools/actions to **records** and **recents**, and the last
 dead affordances go live. Recon by the p6-recon workflow (4 parallel readers +

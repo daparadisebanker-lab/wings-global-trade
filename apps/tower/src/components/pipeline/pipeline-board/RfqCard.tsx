@@ -41,7 +41,7 @@ export function RfqCard({
   const stages = getStages(archetype)
 
   return (
-    <div className="flex flex-col gap-2 rounded-card border border-line bg-surface-1 p-3">
+    <div className="flex flex-col gap-2 rounded-card-lg border border-line bg-surface-1 p-3 shadow-elevation-1">
       <div className="flex items-start justify-between gap-2">
         <Link
           href={`/pipeline/${rfq.id}`}

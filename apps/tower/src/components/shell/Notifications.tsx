@@ -30,7 +30,7 @@ export function Notifications({ locale = DEFAULT_LOCALE }: { locale?: Locale }) 
         <div
           role="dialog"
           aria-label={t({ es: 'Avisos', en: 'Alerts' }, locale)}
-          className="absolute right-0 top-full z-20 mt-2 w-72 rounded-card border border-line bg-surface-1 p-4"
+          className="material-panel tower-fade absolute right-0 top-full z-20 mt-2 w-72 rounded-card-lg p-4"
         >
           <p className="font-ui text-t0 text-ink-secondary">
             {t({ es: 'Sin avisos', en: 'No alerts' }, locale)}
