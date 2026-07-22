@@ -1,6 +1,7 @@
 'use client'
 
 import { Notifications } from './Notifications'
+import { ThemeToggle } from './ThemeToggle'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 
 /**
@@ -70,6 +71,7 @@ export function TopBar({
             ⌘K
           </span>
         </button>
+        <ThemeToggle locale={locale} />
         <Notifications locale={locale} />
         <span className="hidden max-w-[220px] truncate font-ui text-t0 text-ink-secondary lg:inline" data-numeric>
           {userEmail ?? '—'}
