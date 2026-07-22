@@ -21,7 +21,7 @@ LOGISTICS = [
     ("Gastos del puerto Iquique, Chile", 1742.76),
     ("Costo de carga, descarga y almacenaje", None),  # No incluido
 ]
-PROFORMA_SALE = 5051.00
+PROFORMA_SALE = 5676.00
 
 
 def fmt(v: float) -> str:

@@ -16,7 +16,7 @@ SRC_PDF = "/root/.claude/uploads/9b3418c8-23ea-51a6-a669-775bbf844870/7afdb45d-f
 LOGO_SVG = "/home/user/wings-global-trade/apps/tower/public/brand/wings-imagotipo.svg"
 
 # ── Line items (unit price USD 0.35 for the moldings; frame + logistics as PI) ─
-UNIT = 0.35
+UNIT = 0.40
 MODELS = ["603", "713", "643", "628", "9901", "822", "817", "810", "800"]
 QTYS = [2500, 1250, 1250, 1250, 1250, 1250, 1250, 1250, 1250]
 
