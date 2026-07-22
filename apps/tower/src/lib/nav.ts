@@ -14,6 +14,7 @@ export type ModuleId =
   | 'marcas'
   | 'signals'
   | 'intelligence'
+  | 'documents'
   | 'admin'
 
 /** IA groups — the rail renders these as labelled sections (in this order). */
@@ -51,5 +52,6 @@ export const MODULES: NavModule[] = [
   { id: 'marcas', href: '/marcas', label: { es: 'Marcas', en: 'Brands' }, tag: 'MRC', group: 'intel', icon: 'marcas' },
   { id: 'signals', href: '/signals', label: { es: 'Señales', en: 'Signals' }, tag: 'SIG', group: 'intel', icon: 'signals' },
   { id: 'intelligence', href: '/intelligence', label: { es: 'Inteligencia', en: 'Intelligence' }, tag: 'INT', group: 'intel', icon: 'intelligence' },
+  { id: 'documents', href: '/documents', label: { es: 'Documentos', en: 'Documents' }, tag: 'DOC', group: 'intel', icon: 'documents' },
   { id: 'admin', href: '/admin', label: { es: 'Administración', en: 'Admin' }, tag: 'ADM', group: 'system', icon: 'admin' },
 ]

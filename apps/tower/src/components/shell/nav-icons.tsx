@@ -85,6 +85,12 @@ const Intelligence: FC<IconProps> = (p) => (
   </SVG>
 )
 
+const Documents: FC<IconProps> = (p) => (
+  <SVG {...p}>
+    <path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h3l1.5 2h6A1.5 1.5 0 0 1 16.5 8.5v6A1.5 1.5 0 0 1 15 16H4.5A1.5 1.5 0 0 1 3 14.5v-8z" />
+  </SVG>
+)
+
 const Admin: FC<IconProps> = (p) => (
   <SVG {...p}>
     <path d="M3 6h14M3 10h14M3 14h14" />
@@ -104,5 +110,6 @@ export const NAV_ICONS: Record<NavIconId, FC<IconProps>> = {
   marcas: Marcas,
   signals: Signals,
   intelligence: Intelligence,
+  documents: Documents,
   admin: Admin,
 }
