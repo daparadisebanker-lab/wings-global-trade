@@ -87,7 +87,9 @@ export function NavRail({
                       <span
                         className={cn(
                           'ml-auto font-mono text-label tracking-[0.1em]',
-                          active ? 'text-gold' : 'text-ink-secondary group-hover:text-ink-primary',
+                          active
+                            ? 'font-medium text-ink-primary'
+                            : 'text-ink-secondary group-hover:text-ink-primary',
                         )}
                       >
                         {m.tag}
