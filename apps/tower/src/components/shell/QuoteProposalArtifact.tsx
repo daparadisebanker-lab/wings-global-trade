@@ -18,7 +18,7 @@ import { MISTER_ARTIFACT } from './mister-theme'
  * the lane/account fetch + save state. INLINE styles, dark-bubble palette.
  */
 
-const { text: TEXT, muted: MUTED, gold: GOLD, steel: STEEL, panelBg: PANEL_BG, fieldBg: FIELD_BG, border: BORDER, mono: MONO } =
+const { text: TEXT, muted: MUTED, gold: GOLD, steel: STEEL, error: ERROR, ink: INK, panelBg: PANEL_BG, fieldBg: FIELD_BG, border: BORDER, steelLine: STEEL_LINE, mono: MONO } =
   MISTER_ARTIFACT
 
 const BASIS_STYLE: Record<PriceBasis, { color: string; label: { es: string; en: string } }> = {
@@ -206,7 +206,7 @@ function SavePanel({ data, locale }: { data: QuoteProposalData; locale: Locale }
             />
           ) : null}
 
-          {error ? <span style={{ fontSize: 11, color: '#e88' }}>{error}</span> : null}
+          {error ? <span style={{ fontSize: 11, color: ERROR }}>{error}</span> : null}
 
           <button type="button" onClick={onSave} disabled={!canSave} style={saveButtonStyle(canSave)}>
             {saving
@@ -241,9 +241,9 @@ function saveButtonStyle(enabled: boolean): React.CSSProperties {
     fontSize: 11,
     letterSpacing: '0.06em',
     textTransform: 'uppercase',
-    color: enabled ? '#00112e' : MUTED,
+    color: enabled ? INK : MUTED,
     background: enabled ? GOLD : 'transparent',
-    border: `1px solid ${enabled ? GOLD : 'rgba(168,192,220,0.3)'}`,
+    border: `1px solid ${enabled ? GOLD : STEEL_LINE}`,
     borderRadius: 6,
     padding: '6px 12px',
     cursor: enabled ? 'pointer' : 'default',

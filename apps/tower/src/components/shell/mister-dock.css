@@ -2,7 +2,10 @@
    A contained, more-expressive world than the instrument shell around it
    (scoped-experience Law 4). Everything here is scoped under .mister-dock so the
    soft/gradient register can never bleed into TOWER's data surfaces. On close
-   the panel translates fully off-screen and goes inert — zero residue (Law 2). */
+   the panel translates fully off-screen and goes inert — zero residue (Law 2).
+   Its hardcoded navy palette + bespoke geometry are a RATIFIED token-system
+   exemption (deliberate identity, not debt) — see the exemption doc in
+   `mister-theme.ts`; only `var(--font-*)` (the tool voice) follows the app. */
 
 .mister-dock {
   position: fixed;

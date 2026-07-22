@@ -10,7 +10,36 @@ rewrite; zero feature regression.
 
 ---
 
-## P8d — Restyle sweep (inline reveal forms) + .mac-motion cleanup  ·  status: built, in review
+## P8e — Mister artifacts: classify-before-convert (World-B exemption)  ·  status: built, in review
+
+Fourth restyle cut. **Classify-first, per Fable's P8e watch-item** — and the answer
+is that the Mister artifact renderers are a **deliberate token-system exemption, not
+debt.** The dock is a fixed navy "World B" that intentionally does NOT follow the
+light/dark instrument tokens (same principle as the endorsed-brand palettes,
+CLAUDE.md §5). Its bespoke in-bubble micro-geometry + font sizes are hand-tuned for
+the chat-bubble context; converting them to the app scale would (a) change the visual
+sizes and (b) make World B follow the theme — exactly what Fable warned against. So
+they stay, now **explicitly documented as the exemption** in `mister-theme.ts`.
+
+**The genuine debt (fixed):** four stray raw hex had escaped the centralized
+`MISTER_ARTIFACT` palette — `#dbe6f3` (body blue), `#00112e` ×2 (bubble ink on the
+gold buttons), `#e88` (error red). Added `body`, `ink`, `error`, `steelLine` to `MISTER_ARTIFACT`
+and repointed the call sites (`ProposalArtifact` ×2, `QuoteProposalArtifact` ×3 incl.
+F-P8e-1's steel border). The World-B palette is now one-file **except `FitScene`'s
+documented scene-local alpha ramp** (`STEEL`/`STEEL_SOFT`/`STEEL_FLOOR`/`GOLD_TOP/
+RIGHT/LEFT` — named, single-file, SVG-scene-specific derivations of the World-B
+steel/gold; a deliberate scene sub-palette, not anonymous debt; its last inline fill
+was folded into `STEEL_FLOOR`). Kept untouched: the PT artifact/token split + brand
+`@font-face` (World B uses `--font-mono` via the constant, unaffected). Added a
+cross-reference comment atop `mister-dock.css` pointing to the exemption doc.
+
+Net: colors centralized (real cleanup), geometry/type left as documented exemption
+(the correct classification). QA: Mister dock artifacts render identically (same
+values, now named); no theme-following introduced.
+
+---
+
+## P8d — Restyle sweep (inline reveal forms) + .mac-motion cleanup  ·  status: SHIPPED to production
 
 Third restyle cut. Tokens only, additive, zero feature regression.
 
