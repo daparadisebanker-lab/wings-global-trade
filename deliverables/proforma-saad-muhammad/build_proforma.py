@@ -228,7 +228,7 @@ HTMLDOC = f"""<!doctype html>
         <dt>Dirección</dt><dd>Ctra. Panamericana Sur Km. 1303 Mz. Q Lt. 8-9</dd>
         <dt>Ciudad</dt><dd>Tacna, Perú</dd>
         <dt>Teléfono</dt><dd>+507 6025-07</dd>
-        <dt>Email</dt><dd>comercial@wingsglobaltrade.com</dd>
+        <dt>Email</dt><dd>importaciones@wingsglobaltrade.com</dd>
       </dl>
     </div>
     <div class="pdoc-party">
@@ -294,13 +294,14 @@ HTMLDOC = f"""<!doctype html>
     <div class="pdoc-issuedby-label">Atendido por · Issued by</div>
     <div class="pdoc-issuedby-name">Saad Muhammad</div>
     <div class="pdoc-issuedby-title">Representante comercial · Wings Global Trade</div>
+    <div class="pdoc-issuedby-title">WhatsApp: +34 674 00 64 38</div>
   </div>
 
   <footer class="pdoc-footer">
     <div>
       <div>¿Consultas?</div>
-      <div>Email: comercial@wingsglobaltrade.com</div>
-      <div>o llámanos a +507 6025-07</div>
+      <div>Email: importaciones@wingsglobaltrade.com</div>
+      <div>WhatsApp: +34 674 00 64 38</div>
     </div>
     <div class="pd-foot-right">
       <div>Ctra. Panamericana Sur Km. 1303 Mz. Q Lt. 8-9</div>
