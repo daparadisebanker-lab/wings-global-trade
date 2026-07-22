@@ -11,12 +11,14 @@ import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
  * therefore the whole page — never forces a horizontal scroll at 390px.
  */
 export function TopBar({
+  userName,
   userEmail,
   isGroupAdmin,
   onOpenSearch,
   onOpenMenu,
   locale = DEFAULT_LOCALE,
 }: {
+  userName: string | null
   userEmail: string | null
   isGroupAdmin: boolean
   onOpenSearch: () => void
@@ -73,8 +75,11 @@ export function TopBar({
         </button>
         <ThemeToggle locale={locale} />
         <Notifications locale={locale} />
-        <span className="hidden max-w-[220px] truncate font-ui text-t0 text-ink-secondary lg:inline" data-numeric>
-          {userEmail ?? '—'}
+        {/* Glanceable identity — name when the rep profile has one, else email.
+            The actionable account menu (recap + sign out) lives one strip down in
+            the GreetingBar (desktop) and the Control Center (mobile). */}
+        <span className="hidden max-w-[220px] truncate font-ui text-t0 text-ink-secondary lg:inline">
+          {userName ?? userEmail ?? '—'}
         </span>
       </div>
     </header>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
+import { UserMenu } from './UserMenu'
 
 // Slim greeting strip (TOWER-REDESIGN §7 P2 "top greeting bar"). Real data only:
 // a time-of-day greeting + today's date (es-PE) + the operator identity — never a
@@ -15,9 +16,11 @@ function greetingFor(hour: number, locale: Locale): string {
 }
 
 export function GreetingBar({
+  userName,
   userEmail,
   locale = DEFAULT_LOCALE,
 }: {
+  userName: string | null
   userEmail: string | null
   locale?: Locale
 }) {
@@ -45,11 +48,7 @@ export function GreetingBar({
           </span>
         ) : null}
       </div>
-      {userEmail ? (
-        <span className="hidden truncate font-mono text-label tracking-[0.04em] text-ink-secondary sm:inline">
-          {userEmail}
-        </span>
-      ) : null}
+      {userName || userEmail ? <UserMenu name={userName} email={userEmail} locale={locale} /> : null}
     </div>
   )
 }

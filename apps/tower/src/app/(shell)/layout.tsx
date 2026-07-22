@@ -25,6 +25,11 @@ export default async function ShellLayout({ children }: { children: ReactNode })
   // as reps have no row → no banner. Gentle prompt only, never a hard block.
   const needsOnboarding = !repProfile.error && repProfile.data != null && repProfile.data.onboardedAt == null
 
+  // Prefer the rep's display name over their raw account email in the shell
+  // identity. Empty/whitespace-only names fall through to the email.
+  const rawName = repProfile.error ? null : repProfile.data?.displayName ?? null
+  const userName = rawName && rawName.trim() ? rawName.trim() : null
+
   let userEmail: string | null = null
   const supabase = await createServerSupabase()
   if (supabase) {
@@ -38,6 +43,7 @@ export default async function ShellLayout({ children }: { children: ReactNode })
     <TowerQueryProvider>
       <ShellChrome
         memberships={memberships}
+        userName={userName}
         userEmail={userEmail}
         isGroupAdmin={isGroupAdmin}
         hasRbMembership={hasRbMembership}
