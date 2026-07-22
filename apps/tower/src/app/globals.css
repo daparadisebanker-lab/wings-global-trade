@@ -782,3 +782,32 @@
   outline: 2px solid var(--gold);
   outline-offset: 2px;
 }
+
+/* WINGS charts (recharts) — cross-engine token pinning for the data layer.
+   recharts writes the axis-tick style object + the stroke/cursor props as SVG
+   *presentation attributes*. var() inside a presentation attribute resolves in
+   current Chromium/Firefox/WebKit but NOT in older Safari / older Chromium (the
+   behaviour is still unspecified — W3C SVG issue #987). An author-origin CSS rule
+   always outranks a presentation attribute (specificity 0, no !important), and its
+   var() resolves in every engine that has CSS custom properties — so this block is
+   the engine-independent source of truth for chart chrome; the JSX keeps the same
+   var() values as an in-engine fallback. Without it, on a non-resolving engine the
+   tick fill drops to initial black (~1.47:1 on Nightwatch --surface-1 #2a2a2c —
+   invisible) and the grid/axis stroke drops to initial none (rules vanish). Charts
+   stay the flat-ruled data layer — colour + rule only, no elevation. Selectors
+   couple to recharts v2 class names (pinned ^2.15); re-verify on a v3 upgrade. */
+[data-app='tower'] .recharts-cartesian-axis-tick-value,
+[data-app='tower'] .recharts-cartesian-axis-tick-value tspan,
+[data-app='tower'] .recharts-cartesian-axis-tick text {
+  fill: var(--ink-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+}
+[data-app='tower'] .recharts-cartesian-grid line,
+[data-app='tower'] .recharts-cartesian-axis-line,
+[data-app='tower'] .recharts-cartesian-axis-tick-line {
+  stroke: var(--line);
+}
+[data-app='tower'] .recharts-tooltip-cursor {
+  fill: var(--surface-0);
+}
