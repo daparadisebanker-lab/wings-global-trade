@@ -22,6 +22,7 @@ import { recordRecent } from '@/shell/navigation/recents'
 import { GreetingBar } from '@/shell/frame/GreetingBar'
 import { Dock } from '@/shell/dock/Dock'
 import { ControlCenterGrid, ControlCenterStatus } from '@/shell/control-center/ControlCenter'
+import { NavSidebar } from '@/shell/navigation/NavSidebar'
 
 /** Location strip — TOWER › Módulo › subpágina, derived from the path so you
  *  always know where you are. Ids/numbers in the path are omitted. Ancestor
@@ -266,10 +267,9 @@ export function ShellChrome({
             'tower-rail fixed inset-y-0 left-0 z-40 flex w-[86vw] max-w-80 flex-col overflow-y-auto border-r border-line bg-surface-1 transition-transform duration-200',
             'md:sticky md:top-0 md:z-auto md:h-screen md:max-w-none md:w-64',
             drawerOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
-            // P4b: the Dock is the desktop nav → retire the rail on desktop. Kept
-            // for a zero-module operator (their designed empty note lives here).
-            // Below md the aside stays the off-canvas drawer, untouched.
-            visible.size > 0 && 'md:hidden',
+            // Phase C: the desktop module sidebar (labeled, expandable) lives here
+            // now — kept alongside the Dock (decision: both surfaces). Below md the
+            // aside stays the off-canvas drawer, untouched.
           )}
         >
           <div className="flex items-center border-b border-line p-4">
@@ -285,12 +285,14 @@ export function ShellChrome({
 
           <LaneSwitcher lanes={memberships} activeLaneId={activeLaneId} onSelect={setActiveLaneId} />
 
-          {/* Mobile Control Center: the module grid (registry-driven) + a
-              quick-status row (greeting/identity + theme toggle). This is the
-              mobile nav now — the aside is mobile-only after P4b. The `md:hidden`
-              gate keeps the zero-module empty note reachable on desktop. */}
-          <div className={visible.size > 0 ? 'md:hidden' : undefined}>
+          {/* Mobile: the Control Center module grid (registry-driven). */}
+          <div className="md:hidden">
             <ControlCenterGrid visible={visible} onNavigate={() => setDrawerOpen(false)} />
+          </div>
+          {/* Desktop: the labeled module sidebar with expandable per-module quick
+              actions (Phase C) — the calm counterpart to the Dock's quick-launch. */}
+          <div className="hidden md:block">
+            <NavSidebar visible={visible} />
           </div>
           <div className="md:hidden">
             <ControlCenterStatus userEmail={userEmail} />
