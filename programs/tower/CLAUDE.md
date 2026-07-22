@@ -29,6 +29,22 @@ packages/ui            ← organs (frozen; changes require the swap test)
 - Errors: typed codes from API_MAP; global boundary; raw errors never rendered.
 - Styling: DESIGN_SYSTEM.md tokens only; active-lane accent via `--lane-accent`, surfaces never change.
 
+## Migration numbering & application (append-only law — never violate)
+Files: `supabase/migrations/YYYYMMDDHHMMSS_tower_NN_short_name.sql`. The `tower_NN` number is **append-only**: never reused, never reordered, same law as lane/container codes (Directive 4). One concern per file; every mutating table gets `audit_trigger()` in the same migration.
+
+**Before you add ANY migration in a new batch — do this first, or you WILL collide:**
+1. `git fetch origin && git checkout <your-branch> && git merge origin/master` (or rebase). A long-lived branch that hasn't taken `master` is the #1 source of number collisions.
+2. Find the current max: `ls supabase/migrations | grep -oE 'tower_[0-9]+' | sort -t_ -k2 -n | tail -1`. **Take the next integer above the max. Never backfill a gap** — a gap may be a reservation.
+3. Timestamp prefix strictly increasing (they apply in timestamp order).
+
+> **Why this rule is law (2026-07-21):** two workstreams both branched off the same base and independently grabbed `tower_39–42` for *different* migrations (a rep-identity session + PR #4's audit hash-chain). Reconciling cost a full renumber (40/41/42 → 44/45/46). Merge `master` **before** numbering, every time.
+
+**High-water mark (update when you add migrations):** max used = **`tower_46`** · next free = **`tower_47`**. Reserved-but-unbuilt: `tower_27–29` (RB console), `tower_37` (journey-automation slot). Known artifact: two files share timestamp `20260721180000` (`tower_39_rep_profiles` + `tower_39_status_transition_guards`) — both applied to prod; harmless, left as-is.
+
+**Applying to prod** (`pyznlglvwihosemqkhtq`): via Supabase MCP `execute_sql` or the SQL Editor. **Record the ledger row `supabase_migrations.schema_migrations` at the file's EXACT timestamp version** — do not let `apply_migration` auto-timestamp diverge from the filename, or `supabase db push` will try to re-run it. Every prod schema change has a committed migration file — no manual prod SQL that isn't captured as a migration (root law).
+
+**View changes:** `CREATE OR REPLACE VIEW` may only *append* columns. Adding a column mid-list (or reordering) requires `DROP VIEW IF EXISTS` + `CREATE VIEW` (atomic inside the migration's transaction — no reader downtime) and re-issuing the grants.
+
 ## Definition of done (any TOWER feature)
 - [ ] RLS policy written and tested with a non-admin membership fixture
 - [ ] Zod schema on every input; audit trigger verified in the change
