@@ -10,7 +10,46 @@ rewrite; zero feature regression.
 
 ---
 
-## P4a — Desktop Dock + rail demotion  ·  status: built, in review
+## P4b — Rail retired on desktop + lane switching re-homed  ·  status: built, in review
+
+User chose the **Dock lane tile + popover** placement (Option 1).
+
+**What landed**
+- `Dock.tsx` — a leading lane-stamp tile (tinted by the active lane accent) opens
+  the **LaneSwitcher in a popover** (panel material, `--radius-panel`, outside-
+  click + Escape close, `role="dialog"`, `aria-haspopup`/`aria-expanded`).
+  LaneSwitcher is a **props-passthrough** (`lanes`/`activeLaneId`/`onSelect`) — zero
+  internal edits; `--lane-accent` state stays in ShellChrome. Lane tile shown only
+  when `lanes.length > 0`. Dock now returns null when the operator has zero
+  modules (`tools.length === 0`) so it never shows an empty shell.
+- `ShellChrome.tsx` — the `<aside>` gets `md:hidden` **gated on `visible.size > 0`**:
+  the desktop rail is retired for normal operators (Dock is the nav), but a
+  zero-module operator keeps the aside on desktop for NavRail's designed empty
+  note. Below md the aside stays the off-canvas drawer, untouched — the mobile
+  focus-trap/inert contract is gated on `isMobile` and never fires on desktop, and
+  `md:hidden` keeps the aside in the DOM (`display:none`) so `railRef` stays valid.
+  Lane props passed to the Dock; `--lane-accent` flood unchanged.
+- `globals.css` — lane stamp + `.mac-dock-lane-pop` popover styles (tokens only).
+
+**Two LaneSwitcher instances, one visible per surface:** desktop → the Dock
+popover; mobile → the drawer's (inside the aside). Shared state via ShellChrome.
+Reviewer verified exactly one is in the a11y tree per viewport (the other's
+surface is `display:none`).
+
+**Review fixes (Fable P4b: APPROVE-WITH-FIXES):**
+- F-P4b-1 (applied) — `shown = pinned || revealed || laneOpen`: an auto-hidden
+  dock must not slide off while the lane popover is open (crossing the 12px gap
+  would fire mouseleave and hide both).
+- F-P4b-2 (applied) — lane stamp `border-radius 3px → var(--radius-card)`.
+
+**Post-deploy QA:** lane popover open/close (click, outside-click, Escape); accent
+flood still applies on select; multi-lane vs single-lane vs zero-lane; zero-module
+operator still gets the rail empty note on desktop; popover in dark mode; keyboard
+(Tab into stamp → Enter → focus into LaneSwitcher rows).
+
+---
+
+## P4a — Desktop Dock + rail demotion  ·  status: SHIPPED to production
 
 Orchestrator ruling: Option B refined — P4a = Dock + rail demoted to a "stamp
 strip" via ADDITIVE `md:hidden` wrappers (no NavRail/LaneSwitcher/aside internals
