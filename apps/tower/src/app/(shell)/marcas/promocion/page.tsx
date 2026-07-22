@@ -9,8 +9,12 @@ import { getMyRepProfile } from '@/lib/actions/rep-profile'
 // brands', a group admin sees all) and hands them to the marketing workbench.
 // The signed-in rep's own WhatsApp line is fetched here too so promo shares open
 // from their own number (each rep reaches a different demographic; tower_39).
-export default async function PromocionPage() {
-  const [result, repProfile] = await Promise.all([listPromotableContainers(), getMyRepProfile()])
+export default async function PromocionPage({ searchParams }: { searchParams: Promise<{ c?: string }> }) {
+  const [result, repProfile, params] = await Promise.all([
+    listPromotableContainers(),
+    getMyRepProfile(),
+    searchParams,
+  ])
   const rep = repProfile.data ?? null
 
   if (result.error) {
@@ -42,6 +46,7 @@ export default async function PromocionPage() {
       </header>
       <PromoWorkbench
         initialRows={result.data}
+        initialSelectedId={params.c}
         repWhatsappE164={rep?.whatsappE164 ?? null}
         repWhatsappLabel={rep?.whatsappLabel ?? null}
       />
