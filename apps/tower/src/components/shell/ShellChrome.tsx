@@ -16,6 +16,7 @@ import type { LaneMembership } from '@/lib/lanes/memberships'
 import { visibleModules, type Role } from '@/lib/rbac'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import { useActiveTool } from '@/shell/navigation/useActiveTool'
+import { GreetingBar } from '@/shell/frame/GreetingBar'
 
 /** Location strip — TOWER › Módulo › subpágina, derived from the path so you
  *  always know where you are. Ids/numbers in the path are omitted. */
@@ -139,6 +140,8 @@ export function ShellChrome({
     }
   }
 
+  // Drives the page-transition replay (keys <main>) — the frame's route change.
+  const pathname = usePathname()
   const roles = useMemo(() => memberships.map((m) => m.role) as Role[], [memberships])
   const visible = useMemo(
     () => visibleModules(roles, isGroupAdmin, hasRbMembership),
@@ -251,11 +254,14 @@ export function ShellChrome({
             onOpenSearch={() => setPaletteOpen(true)}
             onOpenMenu={() => setDrawerOpen(true)}
           />
+          <GreetingBar userEmail={userEmail} />
           <Breadcrumb locale={DEFAULT_LOCALE} />
           {needsOnboarding ? <OnboardingBanner /> : null}
           {/* overflow-x-clip: a mobile safety net — no page-wide horizontal
-              scroll, while inner overflow-x-auto tables keep their own scroll. */}
-          <main data-lane={activeLane?.laneSlug} className="min-w-0 flex-1 overflow-x-clip">
+              scroll, while inner overflow-x-auto tables keep their own scroll.
+              key={pathname} + .mac-page replays the shell-frame page transition on
+              every navigation (transform+opacity only; reduced-motion → fade). */}
+          <main key={pathname} data-lane={activeLane?.laneSlug} className="mac-page min-w-0 flex-1 overflow-x-clip">
             {children}
           </main>
         </div>
