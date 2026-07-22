@@ -89,6 +89,10 @@ SIGNATURE = (HERE / "signature.svg").read_text(encoding="utf-8")
 
 ROWS, SUBTOTAL = money_rows()
 
+# Print-only spacer height that drops the sign-off + footer onto the bottom
+# padding of page 2. Calibrated against the rendered layout (see measure step).
+TAIL_SPACER = "28mm"
+
 HTMLDOC = f"""<!doctype html>
 <html lang="es">
 <head>
@@ -198,6 +202,9 @@ HTMLDOC = f"""<!doctype html>
     .pdoc-page {{ min-height: 0; padding: 0; }}
     .pdoc-page .pdoc {{ box-shadow: none; }}
     .pdoc {{ max-width: none; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }}
+    /* Push the sign-off + footer to the bottom padding of page 2 so the tail
+       never reads as dead space. Spacer is print-only; screen keeps flow. */
+    .pdoc-tailspacer {{ height: {TAIL_SPACER}; }}
   }}
 </style>
 </head>
@@ -291,6 +298,8 @@ HTMLDOC = f"""<!doctype html>
     <li>Cualquier variación en costos logísticos, fletes o tipo de cambio podría afectar el precio final.</li>
   </ul>
 
+  <div class="pdoc-tailspacer" aria-hidden="true"></div>
+
   <div class="pdoc-close">
     <div>Atentamente,</div>
     <div class="pdoc-close-signoff">WINGS GLOBAL TRADE</div>
@@ -311,7 +320,6 @@ HTMLDOC = f"""<!doctype html>
       <div>Tel: +507 6025-07</div>
     </div>
     <div class="pd-foot-right">
-      <div>Pasaje Cuatro 2213, Condominio Oasis, Iquique, Chile</div>
       <div>wingsglobaltrade.com</div>
     </div>
   </footer>
