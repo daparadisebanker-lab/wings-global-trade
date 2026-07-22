@@ -3,13 +3,15 @@
 // Container detail — composes the Container Desk organs (COMPONENT_TREE §3:
 // FillMeter3D-as-instrument · CommitmentsTable · POPanel · DocumentVault ·
 // CostSheet). FillMeter3D itself is the public site's visualizer reused as an
-// operational instrument — out of this wave's ownership (a site-side organ);
-// FillBar (container-board/) stands in as the operational figure here.
+// operational instrument — out of this wave's ownership (a site-side organ).
+// ContainerCubicaje (Phase D) now carries the fill visual here: the FitScene
+// isometric cube, surfaced on the container's own detail — reachable beyond Mister.
 import { useState } from 'react'
 import Link from 'next/link'
 import { CommitmentsTable } from '../commitments-table'
 import { CostSheet } from '../cost-sheet'
-import { FillBar, StatusChip } from '../container-board'
+import { StatusChip } from '../container-board'
+import { ContainerCubicaje } from './ContainerCubicaje'
 import { DocumentVault } from '../document-vault'
 import { POPanel } from '../po-panel'
 import { QcTracker } from '../qc-tracker'
@@ -45,13 +47,14 @@ export function ContainerDetail({
               : ''}
           </span>
         </div>
-        <FillBar
-          committedCbm={container.committedCbm}
-          capacityCbm={container.capacityCbm}
-          fillPercent={container.fillPercent}
-          className="max-w-md"
-        />
       </div>
+
+      <ContainerCubicaje
+        code={container.code}
+        committedCbm={container.committedCbm}
+        capacityCbm={container.capacityCbm}
+        fillPercent={container.fillPercent}
+      />
 
       <section>
         <CommitmentsTable containerId={container.id} canCommit={capabilities.canCommit} />
