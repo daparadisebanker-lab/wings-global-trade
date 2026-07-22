@@ -1,35 +1,37 @@
 // src/app/auth/email-signin/route.ts
 // Passcode sign-in — replaces the magic-link round trip. The operator enters
 // their email + the shared team passcode; if the passcode matches AND the email
-// belongs to a provisioned account (an admin created their tower.profiles row),
-// we mint a real Supabase session server-side (no email is sent) and drop them
-// into the shell. RLS is untouched — the session is an ordinary Supabase JWT, so
-// auth.uid() and every policy keep working exactly as before.
+// is authorized, we mint a real Supabase session server-side (no email is sent)
+// and drop them into the shell. RLS is untouched — the session is an ordinary
+// Supabase JWT, so auth.uid() and every policy keep working exactly as before.
+//
+// Two authorization paths:
+//   1. Allowlisted team (lib/auth/allowlist.ts) → auto-provisioned as a group
+//      admin on first sign-in: their auth account + tower.profiles row are
+//      created on the spot. This is the "enter your email and you're in" path.
+//   2. Anyone else → must already have a tower.profiles row (an admin added them
+//      from Usuarios / Users). Existence in auth alone is not access.
 //
 // Security posture (deliberate, internal tool). Removing the magic link makes the
-// email the identifier and the shared passcode the secret:
-//   1. the passcode gates entry (constant-time compared);
-//   2. the per-email tower.profiles check bounds entry to people an admin has
-//      authorized — auth-user existence alone (e.g. a leftover OTP self-signup)
-//      is NOT enough;
-//   3. a stranger who reaches Supabase's OTP endpoint directly still lands
-//      profile-less → tower.is_group_admin() is false and every RLS policy
-//      returns nothing → an empty, powerless shell.
-// Hardening backlog (see the session notes): rotate/lengthen the passcode into
-// TOWER_ACCESS_PASSCODE, add rate limiting, and — once external reps are migrated
-// off magic links — restrict public signups at the Supabase Auth layer. Do NOT
-// disable the email provider outright: generateLink() below depends on it.
+// email the identifier and the shared passcode the secret. To reach admin you
+// need BOTH the passcode AND an allowlisted address. A stranger who reaches
+// Supabase's OTP endpoint directly still lands profile-less → tower.is_group_admin()
+// is false and every RLS policy returns nothing → an empty, powerless shell.
+// Hardening backlog: move the passcode + allowlist into the environment
+// (TOWER_ACCESS_PASSCODE / TOWER_ADMIN_ALLOWLIST) so repo access alone is not app
+// access, lengthen the passcode, and add rate limiting. Do NOT disable the email
+// provider outright — generateLink() below depends on it.
 import { NextResponse, type NextRequest } from 'next/server'
 import { timingSafeEqual } from 'node:crypto'
 import { createServerSupabase, createServiceClient } from '@/lib/supabase/server'
+import { isAllowlisted } from '@/lib/auth/allowlist'
 
 export const dynamic = 'force-dynamic'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 /** Shared team passcode. Prefer TOWER_ACCESS_PASSCODE in the environment; the
- *  literal fallback keeps the door working before the env var is set. Move the
- *  value fully into the environment for production hygiene. */
+ *  literal fallback keeps the door working before the env var is set. */
 function expectedPasscode(): string {
   return process.env.TOWER_ACCESS_PASSCODE?.trim() || 'WGT2026'
 }
@@ -68,27 +70,58 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const supabase = await createServerSupabase()
   if (!service || !supabase) return back(origin, 'config')
 
-  // Resolve + authorize in one step: generateLink('magiclink') both proves the
-  // auth user exists (it errors otherwise) and returns a consumable email OTP.
-  // No email is sent — we consume the token ourselves via verifyOtp below.
-  const { data: link, error: linkError } = await service.auth.admin.generateLink({
-    type: 'magiclink',
-    email,
-  })
-  if (linkError || !link?.user) return back(origin, 'denied')
+  const allow = isAllowlisted(email)
 
-  // Authorization gate: an admin must have provisioned this person (a
-  // tower.profiles row exists). Existence in auth alone is not access.
-  const { data: profile, error: profileError } = await service
-    .schema('tower')
-    .from('profiles')
-    .select('id')
-    .eq('id', link.user.id)
-    .maybeSingle()
-  if (profileError) return back(origin, 'config')
-  if (!profile) return back(origin, 'denied')
+  // Resolve the auth user. generateLink('magiclink') both proves the user exists
+  // (it errors otherwise) and returns a consumable email OTP — no email is sent.
+  let link = await service.auth.admin.generateLink({ type: 'magiclink', email })
+  if (link.error || !link.data?.user) {
+    // No account yet. Only an allowlisted first-timer may be created on sign-in.
+    if (!allow) return back(origin, 'denied')
+    const created = await service.auth.admin.createUser({ email, email_confirm: true })
+    if (created.error || !created.data?.user) {
+      console.error('[auth/email-signin] createUser failed:', created.error?.message)
+      return back(origin, 'link')
+    }
+    link = await service.auth.admin.generateLink({ type: 'magiclink', email })
+    if (link.error || !link.data?.user) return back(origin, 'link')
+  }
+  const userId = link.data?.user?.id
+  if (!userId) return back(origin, 'link')
 
-  const otp = (link.properties as { email_otp?: string } | null)?.email_otp
+  if (allow) {
+    // Auto-provision as group admin. Preserve an existing display name; only
+    // seed the name when the profile is first created.
+    const { data: existing, error: readError } = await service
+      .schema('tower')
+      .from('profiles')
+      .select('id')
+      .eq('id', userId)
+      .maybeSingle()
+    if (readError) return back(origin, 'config')
+    const write = existing
+      ? await service.schema('tower').from('profiles').update({ is_group_admin: true }).eq('id', userId)
+      : await service
+          .schema('tower')
+          .from('profiles')
+          .insert({ id: userId, full_name: allow.name, is_group_admin: true })
+    if (write.error) {
+      console.error('[auth/email-signin] profile provision failed:', write.error.message)
+      return back(origin, 'config')
+    }
+  } else {
+    // Not allowlisted → an admin must have provisioned them (profile exists).
+    const { data: profile, error: profileError } = await service
+      .schema('tower')
+      .from('profiles')
+      .select('id')
+      .eq('id', userId)
+      .maybeSingle()
+    if (profileError) return back(origin, 'config')
+    if (!profile) return back(origin, 'denied')
+  }
+
+  const otp = (link.data.properties as { email_otp?: string } | null)?.email_otp
   if (!otp) return back(origin, 'link')
 
   // Consume the OTP on the cookie-writing server client → sets the session
