@@ -16,6 +16,7 @@ import { TOOLS } from '@/shell/navigation/registry'
 import { useActiveTool } from '@/shell/navigation/useActiveTool'
 import { NAV_ICONS } from '@/components/shell/nav-icons'
 import { ThemeToggle } from '@/components/shell/ThemeToggle'
+import { UserMenu } from '@/shell/frame/UserMenu'
 
 /** Registry-driven module grid — same TOOLS × `visible` × `useActiveTool` as the
  *  Dock; no new nav list. Keeps NavRail's designed empty note for zero-module. */
@@ -77,12 +78,22 @@ function greetingFor(hour: number, locale: Locale): string {
 }
 
 /** Quick-status row — greeting + date + operator identity + the mobile theme
- *  toggle. Time-sensitive values resolve after mount (no hydration mismatch). */
+ *  toggle, and (below) the account recap + Sign out. Identity shows the rep's
+ *  NAME when their profile has one, falling back to the account email. Sign out
+ *  and "what you've been working on" live inline here because the mobile drawer
+ *  scrolls — an absolute popover would clip. Time-sensitive values resolve after
+ *  mount (no hydration mismatch). */
 export function ControlCenterStatus({
+  userName,
   userEmail,
+  active = false,
   locale = DEFAULT_LOCALE,
 }: {
+  userName: string | null
   userEmail: string | null
+  /** True while the mobile drawer is open — forwarded so the inline recap
+   *  re-reads the recents trail each open instead of going mount-stale. */
+  active?: boolean
   locale?: Locale
 }) {
   const [now, setNow] = useState<Date | null>(null)
@@ -94,19 +105,32 @@ export function ControlCenterStatus({
   const dateLabel = now
     ? now.toLocaleDateString(locale === 'es' ? 'es-PE' : 'en-US', { weekday: 'long', day: 'numeric', month: 'long' })
     : null
+  const identity = userName ?? userEmail
 
   return (
-    <div className="flex items-center gap-3 border-t border-line p-3">
-      <div className="min-w-0 flex-1">
-        <div className="font-ui text-t0 text-ink-primary">{greeting}</div>
-        {dateLabel ? (
-          <div className="truncate font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">{dateLabel}</div>
-        ) : null}
-        {userEmail ? (
-          <div className="truncate font-mono text-label tracking-[0.04em] text-ink-secondary">{userEmail}</div>
-        ) : null}
+    <div className="flex flex-col gap-3 border-t border-line p-3">
+      <div className="flex items-center gap-3">
+        <div className="min-w-0 flex-1">
+          <div className="font-ui text-t0 text-ink-primary">{greeting}</div>
+          {dateLabel ? (
+            <div className="truncate font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
+              {dateLabel}
+            </div>
+          ) : null}
+          {identity ? (
+            <div
+              className={cn(
+                'truncate text-ink-secondary',
+                userName ? 'font-ui text-t0' : 'font-mono text-label tracking-[0.04em]',
+              )}
+            >
+              {identity}
+            </div>
+          ) : null}
+        </div>
+        <ThemeToggle locale={locale} className="inline-flex h-11 w-11" />
       </div>
-      <ThemeToggle locale={locale} className="inline-flex h-11 w-11" />
+      {identity ? <UserMenu name={userName} email={userEmail} locale={locale} inline active={active} /> : null}
     </div>
   )
 }

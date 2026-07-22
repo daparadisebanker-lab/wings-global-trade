@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties, KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
+import Link from 'next/link'
 import { cn } from '@wings/trade-ui'
 import { CommandPalette } from './CommandPalette'
 import { toggleTheme } from './theme'
@@ -21,27 +22,50 @@ import { recordRecent } from '@/shell/navigation/recents'
 import { GreetingBar } from '@/shell/frame/GreetingBar'
 import { Dock } from '@/shell/dock/Dock'
 import { ControlCenterGrid, ControlCenterStatus } from '@/shell/control-center/ControlCenter'
+import { NavSidebar } from '@/shell/navigation/NavSidebar'
 
 /** Location strip — TOWER › Módulo › subpágina, derived from the path so you
- *  always know where you are. Ids/numbers in the path are omitted. */
+ *  always know where you are. Ids/numbers in the path are omitted. Ancestor
+ *  crumbs are links (retrace one level); the current location stays a label. */
+const CRUMB_LINK =
+  'rounded-sm underline-offset-2 hover:text-ink-primary hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lane-accent'
+
 function Breadcrumb({ locale }: { locale: Locale }) {
   const pathname = usePathname()
   const mod = useActiveTool()
   const sub = pathname.split('/').filter(Boolean)[1]
   const isId = !!sub && (/^[0-9a-f-]{8,}$/i.test(sub) || /^\d+$/.test(sub))
+  const hasSub = !!sub && !isId
   return (
     <div className="flex items-center gap-2 border-b border-line bg-surface-1 px-4 py-2.5 font-mono text-label uppercase tracking-[0.14em] text-ink-secondary">
-      <span className="text-gold">TOWER</span>
+      {/* TOWER → home cockpit; a link whenever it is an ancestor (a module is active). */}
+      {mod ? (
+        <Link href="/signals" className={`text-gold ${CRUMB_LINK}`}>
+          TOWER
+        </Link>
+      ) : (
+        <span className="text-gold" aria-current="page">
+          TOWER
+        </span>
+      )}
       {mod ? (
         <>
           <span aria-hidden>›</span>
-          <span className="text-ink-primary">{t(mod.label, locale)}</span>
+          {hasSub ? (
+            <Link href={mod.href} className={`text-ink-primary ${CRUMB_LINK}`}>
+              {t(mod.label, locale)}
+            </Link>
+          ) : (
+            <span className="text-ink-primary" aria-current="page">
+              {t(mod.label, locale)}
+            </span>
+          )}
         </>
       ) : null}
-      {sub && !isId ? (
+      {hasSub ? (
         <>
           <span aria-hidden>›</span>
-          <span>{sub.replace(/-/g, ' ')}</span>
+          <span aria-current="page">{sub.replace(/-/g, ' ')}</span>
         </>
       ) : null}
     </div>
@@ -60,6 +84,7 @@ function Breadcrumb({ locale }: { locale: Locale }) {
  */
 export function ShellChrome({
   memberships,
+  userName,
   userEmail,
   isGroupAdmin = false,
   hasRbMembership = false,
@@ -67,6 +92,7 @@ export function ShellChrome({
   children,
 }: {
   memberships: LaneMembership[]
+  userName: string | null
   userEmail: string | null
   isGroupAdmin?: boolean
   hasRbMembership?: boolean
@@ -243,10 +269,9 @@ export function ShellChrome({
             'tower-rail fixed inset-y-0 left-0 z-40 flex w-[86vw] max-w-80 flex-col overflow-y-auto border-r border-line bg-surface-1 transition-transform duration-200',
             'md:sticky md:top-0 md:z-auto md:h-screen md:max-w-none md:w-64',
             drawerOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
-            // P4b: the Dock is the desktop nav → retire the rail on desktop. Kept
-            // for a zero-module operator (their designed empty note lives here).
-            // Below md the aside stays the off-canvas drawer, untouched.
-            visible.size > 0 && 'md:hidden',
+            // Phase C: the desktop module sidebar (labeled, expandable) lives here
+            // now — kept alongside the Dock (decision: both surfaces). Below md the
+            // aside stays the off-canvas drawer, untouched.
           )}
         >
           <div className="flex items-center border-b border-line p-4">
@@ -262,15 +287,17 @@ export function ShellChrome({
 
           <LaneSwitcher lanes={memberships} activeLaneId={activeLaneId} onSelect={setActiveLaneId} />
 
-          {/* Mobile Control Center: the module grid (registry-driven) + a
-              quick-status row (greeting/identity + theme toggle). This is the
-              mobile nav now — the aside is mobile-only after P4b. The `md:hidden`
-              gate keeps the zero-module empty note reachable on desktop. */}
-          <div className={visible.size > 0 ? 'md:hidden' : undefined}>
+          {/* Mobile: the Control Center module grid (registry-driven). */}
+          <div className="md:hidden">
             <ControlCenterGrid visible={visible} onNavigate={() => setDrawerOpen(false)} />
           </div>
+          {/* Desktop: the labeled module sidebar with expandable per-module quick
+              actions (Phase C) — the calm counterpart to the Dock's quick-launch. */}
+          <div className="hidden md:block">
+            <NavSidebar visible={visible} />
+          </div>
           <div className="md:hidden">
-            <ControlCenterStatus userEmail={userEmail} />
+            <ControlCenterStatus userName={userName} userEmail={userEmail} active={drawerOpen} />
           </div>
 
           {/* Footer — Mister entry (drawer-only; on desktop the floating launcher
@@ -301,12 +328,13 @@ export function ShellChrome({
 
         <div className="flex min-h-screen min-w-0 flex-1 flex-col">
           <TopBar
+            userName={userName}
             userEmail={userEmail}
             isGroupAdmin={isGroupAdmin}
             onOpenSearch={() => setPaletteOpen(true)}
             onOpenMenu={() => setDrawerOpen(true)}
           />
-          <GreetingBar userEmail={userEmail} />
+          <GreetingBar userName={userName} userEmail={userEmail} />
           <Breadcrumb locale={DEFAULT_LOCALE} />
           {needsOnboarding ? <OnboardingBanner /> : null}
           {/* overflow-x-clip: a mobile safety net — no page-wide horizontal

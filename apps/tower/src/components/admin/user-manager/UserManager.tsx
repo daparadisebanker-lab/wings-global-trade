@@ -33,10 +33,13 @@ export function UserManager({ lanes, brands }: { lanes: LaneAdminRow[]; brands: 
     startInvite(async () => {
       const result = await inviteUser(value)
       if (result.error) {
-        setInviteBanner({ tone: 'negative', text: `No se pudo invitar / Could not invite: ${result.error.message}` })
+        setInviteBanner({ tone: 'negative', text: `No se pudo agregar / Could not add: ${result.error.message}` })
         return
       }
-      setInviteBanner({ tone: 'positive', text: `Invitación enviada a ${result.data.email} / Invite sent.` })
+      setInviteBanner({
+        tone: 'positive',
+        text: `Usuario agregado: ${result.data.email} — dale acceso abajo / User added — grant access below.`,
+      })
       setEmail('')
       invalidateUsers()
     })
@@ -51,7 +54,7 @@ export function UserManager({ lanes, brands }: { lanes: LaneAdminRow[]; brands: 
 
       {/* Invite flow */}
       <section className="flex flex-col gap-2 rounded-card border border-line bg-surface-1 p-4">
-        <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">Invitar / Invite</span>
+        <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">Agregar usuario / Add user</span>
         <div className="flex flex-wrap items-center gap-3">
           <input
             type="email"
@@ -69,7 +72,7 @@ export function UserManager({ lanes, brands }: { lanes: LaneAdminRow[]; brands: 
             disabled={isInviting || email.trim().length === 0}
             className="rounded-card bg-accent px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-surface-0 disabled:opacity-40"
           >
-            Enviar invitación / Send invite
+            Agregar / Add
           </button>
         </div>
         {inviteBanner ? (
