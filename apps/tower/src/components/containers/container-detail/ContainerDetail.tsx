@@ -12,6 +12,7 @@ import { CommitmentsTable } from '../commitments-table'
 import { CostSheet } from '../cost-sheet'
 import { StatusChip } from '../container-board'
 import { ContainerCubicaje } from './ContainerCubicaje'
+import { ContainerShareCard } from './ContainerShareCard'
 import { DocumentVault } from '../document-vault'
 import { POPanel } from '../po-panel'
 import { QcTracker } from '../qc-tracker'
@@ -55,6 +56,8 @@ export function ContainerDetail({
         capacityCbm={container.capacityCbm}
         fillPercent={container.fillPercent}
       />
+
+      <ContainerShareCard container={container} />
 
       <section>
         <CommitmentsTable containerId={container.id} canCommit={capabilities.canCommit} />
