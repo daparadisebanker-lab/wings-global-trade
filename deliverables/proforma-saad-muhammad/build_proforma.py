@@ -68,7 +68,7 @@ def money_rows() -> tuple[str, str]:
     subtotal += 340.00
     rows.append(
         '<tr><td class="pd-item">11</td>'
-        '<td class="pd-desc">Flete y gastos varios de aduana</td>'
+        '<td class="pd-desc">Flete y gastos varios de aduana en origen (China)</td>'
         '<td class="pd-pic"></td>'
         '<td class="pd-cell-num">1</td>'
         '<td class="pd-cell-num">340.00</td>'
@@ -214,7 +214,6 @@ HTMLDOC = f"""<!doctype html>
 
   <header class="pdoc-header">
     <div>
-      <span class="pdoc-kicker">Factura proforma</span>
       <h1 class="pdoc-title">Proforma</h1>
       <p class="pdoc-number" data-draft="false">PF-WGT-2026-0723</p>
     </div>
