@@ -501,3 +501,59 @@
     animation-timing-function: linear;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TOWER-REDESIGN · P2b — Nightwatch (dark). Re-points the FULL core livery so
+   dark is complete when the toggle makes it reachable. The premium/tile set gets
+   EXPLICIT dark values — never composed — because they mix from --ink-primary,
+   which is now light and would invert shadows/tiles. Documents are exempt
+   (self-scoped hardcoded palettes; verified no livery-token usage).
+   ═══════════════════════════════════════════════════════════════════════════ */
+[data-app='tower'][data-theme='dark'] {
+  --surface-0: #1c1c1e; /* ground */
+  --surface-1: #2a2a2c; /* raised panel / rows — lighter than ground */
+  --surface-2: #242427; /* zebra / inset well — subtle vs surface-1 */
+  --ink-primary: #f5f5f7;
+  --ink-secondary: #9a9aa2; /* ≥6:1 on surface-0 */
+  --line: #38383e; /* hairline on dark */
+  /* Primary stays monochrome-inverted (as in light, --accent == ink): a light
+     fill with dark ink — high-contrast, brand-neutral; gold carries the colour. */
+  --accent: #f5f5f7;
+  --accent-ink: #17171a; /* dark text on the light accent fill */
+  --gold: #e0b866; /* the jewel, lifted for dark grounds */
+  --gold-ink: #1a1c1f; /* dark text on gold */
+  --positive: #4cbf8a;
+  /* Lifted from #e0564a → clears AA on the RAISED surfaces where negative text
+     actually renders (rows/panels): ≈5.2:1 on surface-1, ≈6.2:1 on surface-0
+     (review F-P2b-1). --tile-negative re-derives automatically (var-based). */
+  --negative: #ec7b72;
+  --stamp: #f5f5f7; /* the LaneStamp reads light on the dark ground */
+  --scrim: color-mix(in srgb, #05070a 74%, transparent);
+
+  /* Premium/atmosphere — explicit dark values (do NOT trust ink-composition). */
+  --premium-ground: linear-gradient(180deg, var(--surface-1) 0%, var(--surface-0) 55%, #141416 100%);
+  --premium-chrome: linear-gradient(180deg, var(--surface-1) 0%, var(--surface-2) 100%);
+  --premium-rail-shadow: 4px 0 20px -20px rgba(0, 0, 0, 0.6);
+  --premium-bar-shadow: 0 6px 18px -18px rgba(0, 0, 0, 0.65);
+  --premium-panel-shadow: 0 10px 26px -24px rgba(0, 0, 0, 0.6);
+  --premium-tile: linear-gradient(158deg, #26323f 0%, #1b2430 52%, #12181f 100%);
+
+  /* Tile ink stays LIGHT on the dark steel tile (accent-ink is now dark). */
+  --tile-ink: #f4f7fb;
+  --tile-ink-muted: color-mix(in srgb, #f4f7fb 60%, transparent);
+  --tile-positive: color-mix(in srgb, var(--positive) 70%, white);
+  --tile-negative: color-mix(in srgb, var(--negative) 72%, white);
+
+  color-scheme: dark;
+}
+
+/* Print/document routes are theme-independent — force a light color-scheme so
+   UA scrollbars/controls never invert even when the operator's shell is dark.
+   (The document bodies already use self-scoped hardcoded light palettes.) */
+.pdoc-page,
+.qdoc-page,
+.fdoc-page,
+.csheet-page,
+.rbqdoc-page {
+  color-scheme: light;
+}
