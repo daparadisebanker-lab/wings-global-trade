@@ -53,7 +53,7 @@ export function TriageCard({
   const archetypeLabel = p.proposedArchetype ? t(getArchetypeConfig(p.proposedArchetype).label, locale) : null
 
   return (
-    <article className="flex flex-col gap-3 rounded-card border border-line bg-surface-1 p-4">
+    <article className="flex flex-col gap-3 rounded-card-lg border border-line bg-surface-1 p-4 shadow-elevation-1">
       <header className="flex items-start justify-between gap-4">
         <span className="font-mono text-label text-ink-secondary" data-numeric>
           {formatDate(draft.createdAt, locale)}
