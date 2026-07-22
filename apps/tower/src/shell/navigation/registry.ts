@@ -49,7 +49,12 @@ export interface PaletteDestination {
   label: Localized
   tag: string
   keywords: string[]
-  /** Rendered only to group admins. */
+  /** Group-admin gate. CONSUMED by the palette: `SELF_DESTINATIONS`/
+   *  `EVERYONE_ACTIONS` are rendered to everyone through a `!adminOnly ||
+   *  isGroupAdmin` filter, so this flag is what would hide an admin-only entry
+   *  living in those everyone-lists. On the `ADMIN_*` lists (rendered only inside
+   *  the `isGroupAdmin` block) it is redundant-but-defensive — kept so those rows
+   *  stay gated if ever moved out of that block. */
   adminOnly?: boolean
 }
 
@@ -68,21 +73,41 @@ export const ADMIN_DESTINATIONS: PaletteDestination[] = [
   { id: 'admin-webhooks', href: '/admin/webhooks', label: { es: 'Webhooks', en: 'Webhooks' }, tag: 'WHK', adminOnly: true, keywords: ['webhooks', 'n8n', 'revalidate'] },
 ]
 
-/** A ⌘K run-action. `href` opens the surface where the action completes; a
- *  `disabled` action is an honest placeholder whose flow is not yet wired. */
+/** A ⌘K run-action. `href` opens the surface where the action completes. */
 export interface PaletteAction {
   id: string
   label: Localized
   href?: string
   keywords: string[]
+  /** Group-admin gate — same semantics as `PaletteDestination.adminOnly`
+   *  (consumed by the everyone-list filter; defensive on the `ADMIN_*` lists). */
   adminOnly?: boolean
-  disabled?: boolean
 }
 
-/** Everyone-facing actions — the two honest placeholders (wired in Wave 2). */
+/** Everyone-facing actions (P6 — now live). Each opens the surface that hosts
+ *  its create flow: the same "land on the module index where the flow begins"
+ *  semantics as ADMIN_ACTIONS — the create forms live behind parametric routes
+ *  (`/catalog/[id]`, the inline Nuevo-RFQ form on the Pipeline board) that can't
+ *  be a static href. No `disabled` entry remains → the palette has no dead
+ *  affordance anywhere. */
 export const EVERYONE_ACTIONS: PaletteAction[] = [
-  { id: 'act-publish', label: { es: 'Publicar producto…', en: 'Publish product…' }, disabled: true, keywords: ['publicar', 'publish', 'producto', 'product'] },
-  { id: 'act-new-rfq', label: { es: 'Nuevo RFQ…', en: 'New RFQ…' }, disabled: true, keywords: ['nuevo', 'new', 'rfq', 'cotización'] },
+  { id: 'act-publish', href: '/catalog', label: { es: 'Publicar producto…', en: 'Publish product…' }, keywords: ['publicar', 'publish', 'producto', 'product'] },
+  { id: 'act-new-rfq', href: '/pipeline', label: { es: 'Nuevo RFQ…', en: 'New RFQ…' }, keywords: ['nuevo', 'new', 'rfq', 'cotización'] },
+]
+
+/** Client-only palette actions — they run a shell callback (theme, dock) rather
+ *  than navigate, so they carry no href. The palette maps `id → threaded handler`
+ *  and renders an item only when its handler is present (no dead affordance); the
+ *  registry itself stays React-free (no callbacks live here). */
+export type LocalActionId = 'toggle-theme' | 'toggle-dock'
+export interface LocalAction {
+  id: LocalActionId
+  label: Localized
+  keywords: string[]
+}
+export const LOCAL_ACTIONS: LocalAction[] = [
+  { id: 'toggle-theme', label: { es: 'Cambiar tema (claro / oscuro)', en: 'Toggle theme (light / dark)' }, keywords: ['tema', 'theme', 'oscuro', 'claro', 'dark', 'light', 'modo'] },
+  { id: 'toggle-dock', label: { es: 'Fijar u ocultar el Dock', en: 'Pin or hide the Dock' }, keywords: ['dock', 'colapsar', 'collapse', 'ocultar', 'pin', 'fijar'] },
 ]
 
 /** Admin run-actions (group-admin only) — each opens its completion surface. */
