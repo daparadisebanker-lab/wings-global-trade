@@ -83,6 +83,10 @@ LOGO = LOGO[LOGO.index("<svg"):]
 # Give it the doc logo class + drop the fixed pixel width/height so CSS sizes it.
 LOGO = LOGO.replace("<svg ", '<svg class="pdoc-logo" ', 1)
 
+# Saad's signature — vectorized from IMG_6615.jpeg (potrace); inlined so the
+# document stays self-contained. Regenerate signature.svg with make_signature().
+SIGNATURE = (HERE / "signature.svg").read_text(encoding="utf-8")
+
 ROWS, SUBTOTAL = money_rows()
 
 HTMLDOC = f"""<!doctype html>
@@ -162,15 +166,17 @@ HTMLDOC = f"""<!doctype html>
   .pdoc-observations li {{ position: relative; padding-left: 18px; margin-bottom: 4px; }}
   .pdoc-observations li::before {{ content: '•'; position: absolute; left: 4px; }}
 
-  .pdoc-close {{ margin: 30px 0 0; }}
+  .pdoc-close {{ margin: 24px 0 0; }}
   .pdoc-close-signoff {{ margin-top: 2px; font-weight: 600; }}
 
-  .pdoc-issuedby {{ margin: 22px 0 0; max-width: 300px; }}
-  .pdoc-issuedby-label {{ font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--pd-muted); margin-bottom: 8px; }}
-  .pdoc-issuedby-name {{ font-weight: 600; padding-top: 34px; border-top: 1px solid var(--pd-line); }}
+  .pdoc-issuedby {{ margin: 16px 0 0; max-width: 300px; break-inside: avoid; }}
+  .pdoc-issuedby-label {{ font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--pd-muted); margin-bottom: 6px; }}
+  .pdoc-signature {{ height: 52px; margin-bottom: 2px; }}
+  .pdoc-signature svg {{ display: block; height: 100%; width: auto; max-width: 260px; }}
+  .pdoc-issuedby-name {{ font-weight: 600; padding-top: 6px; border-top: 1px solid var(--pd-line); }}
   .pdoc-issuedby-title {{ margin-top: 2px; font-size: 12px; color: var(--pd-muted); }}
 
-  .pdoc-footer {{ display: flex; justify-content: space-between; gap: 24px; margin-top: 36px; padding-top: 14px; border-top: 1px solid var(--pd-line); color: var(--pd-muted); font-size: 12px; }}
+  .pdoc-footer {{ display: flex; justify-content: space-between; gap: 24px; margin-top: 24px; padding-top: 14px; border-top: 1px solid var(--pd-line); color: var(--pd-muted); font-size: 12px; break-inside: avoid; }}
   .pdoc-footer .pd-foot-right {{ text-align: right; }}
 
   @media (max-width: 640px) {{
@@ -292,6 +298,7 @@ HTMLDOC = f"""<!doctype html>
 
   <div class="pdoc-issuedby">
     <div class="pdoc-issuedby-label">Atendido por · Issued by</div>
+    <div class="pdoc-signature">{SIGNATURE}</div>
     <div class="pdoc-issuedby-name">Saad Muhammad</div>
     <div class="pdoc-issuedby-title">Representante comercial · Wings Global Trade</div>
     <div class="pdoc-issuedby-title">WhatsApp: +34 674 00 64 38</div>
