@@ -10,7 +10,97 @@ rewrite; zero feature regression.
 
 ---
 
-## P6 — ⌘K record search + recents + live actions  ·  status: built, in review
+## P7 — Operations cockpit (Signal Deck) + cockpit as post-login home  ·  status: built, in review
+
+User ruling (via AskUserQuestion): (1) a **TRUE operations dashboard** leading with
+EXACT operational state — new aggregate read-endpoints AUTHORIZED (lifting the
+no-new-infra default for this phase, by directive); (2) the cockpit **becomes the
+post-login home**. Recon: p7-recon + p7-ops-recon workflows. App-local to apps/tower;
+**no DB migration** — every metric is an exact count on an existing table.
+
+**Enum verification (I corrected real recon errors before writing a predicate):**
+predicates checked against the live CHECK constraints / TS validators —
+`containers.status` (OPEN|FILLING|BOOKED|IN_TRANSIT|ARRIVED|CLEARED|CLOSED),
+`quotes.status` (…|SENT|…), `products.status` (…|PUBLISHED|…), `ai_drafts`
+(status DRAFT + kind TRIAGE), `rb_slot_allocations.status` (RESERVED|CONFIRMED|
+LOADED|RELEASED), `represented_brands.status` (…|LIVE — verified via `RbStatus`
+LINE), `rb_containers.shipping_phase` (…|EN_TRANSITO). Corrections vs the recon:
+**dropped the guessed RFQ "pre-contract" stage cut** (`rfqs.stage` is bare
+archetype-specific text, no universal open-set → ship honest **RFQs total**);
+**dropped `orders`** (OrderStatus unconfirmed) and **`purchase_orders`** (no drill
+route); used **`text-t5`** for the hero (the scale stops at t5 — `text-t6/t7`
+would be dead classes).
+
+**KPIs (exact counts, RLS-scoped, module-gated):**
+- Lane: Containers in transit (**HERO**), Containers filling (OPEN+FILLING), Quotes
+  awaiting reply (SENT), RFQs total, Products published, Triage backlog, Clients total.
+- RB (gated on `marcas`): RB in transit, RB reservations live, Brands live.
+- **No deltas** — point-in-time state has no honest baseline; a synthesized delta
+  would be a fabricated number. A genuine 0 renders honestly; a wholly-empty deck
+  (no eligible tile) shows one laid-out note.
+
+**KPIs DROPPED / DEFERRED (never faked):**
+- **Open-pipeline value ($)** — permanently dropped: `rfqs` has no amount column.
+- **"Active clients"** — no active flag on `accounts` → shipped as **Clients (total)**.
+- **Quoted value / GMV** — computable but needs a currency-grouped `SUM` via an
+  RPC/view (a **prod-Supabase migration** = higher stakes). **Deferred to a flagged
+  P7.1 decision, not built.** ⚑ *This is the one place the user's "pipeline value"
+  ask can't be honored without a migration — surfacing it, not silently dropping it.*
+
+**New surfaces:**
+- `lib/actions/operations.ts` — `getOperationsSnapshot({ includeRb })`: 7 lane + 3 RB
+  exact `count:'exact',head:true` queries in parallel on the RLS-scoped client; one
+  unreadable table degrades to 0, never blanks the deck.
+- `components/operations/` — `OperationsBand` (asymmetric hero 2×2 + gated satellite
+  drill-links; reuses `.tower-tile`/`.tile-k`/`.tile-v`, tabular numerals; elevation
+  on the hero only), `QuickActions` (registry-reused pills, gated on the target
+  module — no fourth nav list), `SignalsFeed` (admin-only `listAuditLog` ×20, relative
+  time; non-admins get nothing — no fabricated feed), `relative-time.ts`.
+- `signals/page.tsx` — the substantive restructure: fetches rbac set + ops snapshot
+  alongside the deck; **removed the full-page NO_LANES EmptyState** (it blanked the
+  home for RB-only / no-lane operators — a real regression now that /signals is the
+  front door); ops cockpit renders for every identity, analytics renders only when
+  the deck loads (else an inline note).
+
+**Front door → /signals** (4 one-line edits, guards preserved): `middleware.ts:45`,
+`auth/callback/route.ts:22`, `app/page.tsx:6`, `(auth)/login/page.tsx:38`. Safe: the
+unauth guard + PKCE exchange + onboarding banner are untouched; `signals` is in every
+`ROLE_MODULES`/`RB_REP_MODULES`/`ALL_MODULES` (no role lacks it — strictly safer than
+today's `/catalog`, which SALES/VIEWER can't even see); a truly-empty identity lands
+on the band's laid-out empty note, not a void.
+
+**Fable review (APPROVE-WITH-FIXES) — applied before commit:**
+- **F-P7-1** — `rbReservationsLive` diverged from the canonical `tower.rb_slots_taken`
+  math and would silently under-count: a CONFIRMED reservation keeps its original
+  `expires_at`, so guarding all three statuses drops confirmed-but-past-expiry rows.
+  Fixed to count CONFIRMED/LOADED unconditionally + RESERVED only while unexpired
+  (matches `computeSlotBreakdown`).
+- **F-P7-2** — `n()` mapped a query *error* → 0, fabricating a false exact count in a
+  partial outage. Now returns **null** → the tile renders "—" (`aria-label` "no
+  disponible"); a genuine RLS-scoped 0 still renders 0. Snapshot fields are `number | null`.
+- **F-P7-3** — fixed the `includeRb` docstring (home passes `true`; RLS makes it safe)
+  and the `products.status` comment (includes `IN_REVIEW`).
+- **F-P7-4** — `app/page.tsx` comment repointed (Catalog Studio → Signal Deck).
+- **F-P7-5** — restored the "ask an administrator" guidance in the zero-visible note.
+Verified clean by the review: every remaining predicate against the live CHECKs, RLS
+= the boundary (anon+cookies client, not service role), the 4-point redirect (no loop,
+guards preserved, every role sees signals), and rbac parity on tiles + quick-actions.
+
+**Known limits / follow-ups:** 10 exact counts per home load (force-dynamic, no cache)
+— fine for an internal tool now; revisit with `unstable_cache` (~30–60s) if home
+traffic grows (F-P7-6). Value/GMV (P7.1, migration). RFQs shows total (no
+archetype-universal "open" cut). Optional hygiene: clear `expires_at` on
+RESERVED→CONFIRMED (a mutation change, separate decision).
+
+**Post-deploy QA:** login lands on /signals; hero = containers-in-transit with the
+asymmetric 2×2; every tile drill-links; a hidden module's tile never renders (rbac);
+RB tiles only for marcas-visible; admin sees the audit feed, non-admins don't; a
+no-lane / RB-only operator gets the cockpit (not a blank home); both themes; mobile
+single-column hero-first; genuine 0s render honestly.
+
+---
+
+## P6 — ⌘K record search + recents + live actions  ·  status: SHIPPED to production
 
 The palette grows from tools/actions to **records** and **recents**, and the last
 dead affordances go live. Recon by the p6-recon workflow (4 parallel readers +

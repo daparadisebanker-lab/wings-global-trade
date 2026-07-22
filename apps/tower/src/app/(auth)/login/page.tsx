@@ -35,7 +35,7 @@ export default function LoginPage() {
   // shell's auth guard sees the request (see app/auth/callback/route.ts).
   const redirectTo =
     typeof window !== 'undefined'
-      ? `${window.location.origin}/auth/callback?next=/catalog`
+      ? `${window.location.origin}/auth/callback?next=/signals`
       : undefined
 
   async function sendMagicLink(e: React.FormEvent) {

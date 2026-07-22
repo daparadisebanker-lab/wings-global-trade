@@ -19,7 +19,7 @@ export const dynamic = 'force-dynamic'
 
 /** Only same-origin absolute paths — never an open redirect. */
 function safeNext(raw: string | null): string {
-  if (!raw || !raw.startsWith('/') || raw.startsWith('//')) return '/catalog'
+  if (!raw || !raw.startsWith('/') || raw.startsWith('//')) return '/signals'
   return raw
 }
 
