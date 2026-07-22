@@ -18,6 +18,7 @@ const W = 44 // depth  (z → lower-left)
 
 const STEEL = 'rgba(168,192,220,0.5)'
 const STEEL_SOFT = 'rgba(168,192,220,0.28)'
+const STEEL_FLOOR = 'rgba(168,192,220,0.06)' // empty-container floor fill
 // Gold, shaded by face so the load reads as a solid with light from above.
 const GOLD_TOP = 'rgba(224,184,102,0.95)'
 const GOLD_RIGHT = 'rgba(224,184,102,0.7)'
@@ -53,7 +54,7 @@ export function FitScene({ pct, label }: { pct: number; label: string }) {
       </defs>
 
       {/* floor + hidden faces (dashed) read the empty container as a box */}
-      <polygon points={floor} fill="rgba(168,192,220,0.06)" stroke="none" />
+      <polygon points={floor} fill={STEEL_FLOOR} stroke="none" />
       <g fill="none" stroke={STEEL_SOFT} strokeWidth="0.8" strokeDasharray="3 4">
         <polygon points={shell.top} />
         <polygon points={shell.left} />
