@@ -207,6 +207,35 @@
 [data-app='tower'] .tower-tile .tile-dn { color: var(--tile-negative); }
 [data-app='tower'] .tower-tile .tile-flat { color: var(--tile-ink-muted); }
 
+/* Nav rail — the manifest column. Each item is a manifest row: hover nudges it
+   toward you on the gantry ease; the active row reads as a stamped panel — a warm
+   gold wash behind the gold rail, its index code lit gold. Gradient/wash lives in
+   the chrome (the rail), never behind data. Reduced-motion drops the nudge. */
+[data-app='tower'] .tower-nav-item {
+  transition:
+    background-color 140ms var(--ease-settle),
+    border-color 180ms var(--ease-gantry),
+    transform 180ms var(--ease-gantry);
+}
+[data-app='tower'] .tower-nav-item :is(svg, span) {
+  transition: color 140ms var(--ease-settle);
+}
+[data-app='tower'] .tower-nav-item:hover {
+  transform: translateX(2px);
+}
+[data-app='tower'] .tower-nav-item[data-active='true'] {
+  background-color: color-mix(in srgb, var(--gold) 9%, var(--surface-0));
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-app='tower'] .tower-nav-item,
+  [data-app='tower'] .tower-nav-item :is(svg, span) {
+    transition: background-color 120ms linear, color 120ms linear;
+  }
+  [data-app='tower'] .tower-nav-item:hover {
+    transform: none;
+  }
+}
+
 /* All numerals tabular — CBM, MOQ, currency, codes, timestamps are brand
    assets and must not shift width. */
 [data-app='tower'] .font-mono,

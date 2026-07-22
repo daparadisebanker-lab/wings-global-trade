@@ -29,7 +29,7 @@ export function NavRail({
   const pathname = usePathname()
 
   return (
-    <nav aria-label={t({ es: 'Módulos', en: 'Modules' }, locale)} className="flex flex-col gap-5 p-3">
+    <nav aria-label={t({ es: 'Módulos', en: 'Modules' }, locale)} className="flex flex-col gap-6 p-3">
       {NAV_GROUPS.map((group) => {
         const items = MODULES.filter((m) => m.group === group.id && visible.has(m.id))
         if (items.length === 0) return null
@@ -38,7 +38,8 @@ export function NavRail({
             {collapsed ? (
               <span aria-hidden className="mx-2 mb-1 h-px bg-line" />
             ) : (
-              <span className="px-2 pb-1 font-mono text-label uppercase tracking-[0.18em] text-ink-secondary">
+              <span className="flex items-center gap-2 px-2 pb-1 font-mono text-label uppercase tracking-[0.18em] text-ink-secondary">
+                <span aria-hidden className="inline-block h-1 w-1 bg-gold" />
                 {t(group.label, locale)}
               </span>
             )}
@@ -51,14 +52,15 @@ export function NavRail({
                   href={m.href}
                   onClick={onNavigate}
                   aria-current={active ? 'page' : undefined}
+                  data-active={active}
                   title={collapsed ? t(m.label, locale) : undefined}
                   className={cn(
-                    'group flex items-center gap-3 rounded-card border-l-2 border-transparent px-3 py-3 text-t0 transition-colors',
+                    'tower-nav-item group flex items-center gap-3 rounded-card border-l-2 border-transparent px-3 py-3 text-t0',
                     'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lane-accent',
                     collapsed && 'justify-center px-0',
                     active
-                      ? 'border-gold bg-surface-0 text-ink-primary'
-                      : 'text-ink-secondary hover:bg-surface-0 hover:text-ink-primary',
+                      ? 'border-gold text-ink-primary'
+                      : 'text-ink-secondary hover:border-line hover:bg-surface-0 hover:text-ink-primary',
                   )}
                 >
                   <Icon
@@ -69,8 +71,13 @@ export function NavRail({
                   />
                   {!collapsed ? (
                     <>
-                      <span className="font-ui">{t(m.label, locale)}</span>
-                      <span className="ml-auto font-mono text-label tracking-[0.1em] text-ink-secondary">
+                      <span className={cn('font-ui', active && 'font-medium')}>{t(m.label, locale)}</span>
+                      <span
+                        className={cn(
+                          'ml-auto font-mono text-label tracking-[0.1em]',
+                          active ? 'text-gold' : 'text-ink-secondary group-hover:text-ink-primary',
+                        )}
+                      >
                         {m.tag}
                       </span>
                     </>
