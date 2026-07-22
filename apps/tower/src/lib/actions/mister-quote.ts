@@ -11,6 +11,7 @@ import { z } from 'zod'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { listArchetypes, type Archetype } from '@/lib/archetypes'
 import { createRFQ, composeQuote } from './pipeline'
+import { createClient } from './clients'
 import { toQuoteLineDrafts } from './mister-quote-logic'
 import { ok, fail, type ActionResult } from './result'
 
@@ -76,18 +77,13 @@ export async function saveMisterQuoteDraft(
     return fail('VALIDATION', 'Todas las líneas están por cotizar / Every line is still to-quote')
   }
 
-  // Resolve the client: an existing account, or create one under the lane's brand.
+  // Resolve the client: an existing account, or create one under the lane's brand
+  // via the shared createClient path (single account-insert source of truth).
   let accountId = parsed.data.accountId ?? null
   if (!accountId && parsed.data.newClientName) {
-    const { data: account, error: accountError } = await db
-      .from('accounts')
-      .insert({ brand_id: laneRow.brand_id, name: parsed.data.newClientName })
-      .select('id')
-      .single()
-    if (accountError || !account) {
-      return fail('FORBIDDEN_LANE', 'No se pudo crear el cliente / Could not create the client')
-    }
-    accountId = (account as { id: string }).id
+    const created = await createClient({ brandId: laneRow.brand_id, name: parsed.data.newClientName })
+    if (created.error) return fail(created.error.code, created.error.message)
+    accountId = created.data.id
   }
 
   // Sanctioned mutation path: createRFQ (source MISTER) → composeQuote (DRAFT).

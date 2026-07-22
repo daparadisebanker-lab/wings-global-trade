@@ -1,5 +1,6 @@
 import { t, type Locale } from '@/lib/i18n'
 import type { ClientListItem } from '@/lib/actions/clients-logic'
+import { NewClient } from './NewClient'
 
 // The Clients window — the per-lane clients database. A standalone list of every
 // account the caller can see, joined to its brand. Read-only surface (2A);
@@ -29,12 +30,15 @@ export function ClientsWindow({ items, locale }: { items: ClientListItem[]; loca
         <p className="max-w-prose text-body-sm text-ink-secondary">
           {t(
             {
-              es: 'Los clientes de tus marcas. Se crean al cotizar con Mister (“+ Nuevo cliente”) y viven aquí.',
-              en: 'Your brands’ clients. Created while quoting with Mister (“+ New client”) and kept here.',
+              es: 'Los clientes de tus marcas. Créalos aquí o al cotizar con Mister; viven en un solo lugar.',
+              en: 'Your brands’ clients. Create them here or while quoting with Mister; they live in one place.',
             },
             locale,
           )}
         </p>
+        <div className="mt-2">
+          <NewClient locale={locale} />
+        </div>
       </header>
 
       {items.length === 0 ? (
