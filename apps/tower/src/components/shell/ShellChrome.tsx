@@ -75,7 +75,6 @@ export function ShellChrome({
 }) {
   const [activeLaneId, setActiveLaneId] = useState<string | null>(memberships[0]?.laneId ?? null)
   const [paletteOpen, setPaletteOpen] = useState(false)
-  const [collapsed, setCollapsed] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [misterOpen, setMisterOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
@@ -242,8 +241,7 @@ export function ShellChrome({
           aria-label={isMobile ? t({ es: 'Menú de navegación', en: 'Navigation menu' }, DEFAULT_LOCALE) : undefined}
           className={cn(
             'tower-rail fixed inset-y-0 left-0 z-40 flex w-[86vw] max-w-80 flex-col overflow-y-auto border-r border-line bg-surface-1 transition-transform duration-200',
-            'md:sticky md:top-0 md:z-auto md:h-screen md:max-w-none',
-            collapsed ? 'md:w-16' : 'md:w-64',
+            'md:sticky md:top-0 md:z-auto md:h-screen md:max-w-none md:w-64',
             drawerOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
             // P4b: the Dock is the desktop nav → retire the rail on desktop. Kept
             // for a zero-module operator (their designed empty note lives here).
@@ -252,24 +250,17 @@ export function ShellChrome({
           )}
         >
           <div className="flex items-center border-b border-line p-4">
-            {collapsed ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src="/brand/wings-isotipo.webp" alt="Wings Global Trade" className="mx-auto h-7 w-7" />
-            ) : (
-              <div className="flex flex-col gap-2.5">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/brand/wings-imagotipo.svg" alt="Wings Global Trade" className="h-8 w-auto" />
-                <span className="flex items-center gap-2 font-mono text-label uppercase tracking-[0.18em] text-ink-secondary">
-                  <span aria-hidden className="inline-block h-1.5 w-1.5 bg-gold" />
-                  Admin Portal
-                </span>
-              </div>
-            )}
+            <div className="flex flex-col gap-2.5">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brand/wings-imagotipo.svg" alt="Wings Global Trade" className="h-8 w-auto" />
+              <span className="flex items-center gap-2 font-mono text-label uppercase tracking-[0.18em] text-ink-secondary">
+                <span aria-hidden className="inline-block h-1.5 w-1.5 bg-gold" />
+                Admin Portal
+              </span>
+            </div>
           </div>
 
-          {!collapsed ? (
-            <LaneSwitcher lanes={memberships} activeLaneId={activeLaneId} onSelect={setActiveLaneId} />
-          ) : null}
+          <LaneSwitcher lanes={memberships} activeLaneId={activeLaneId} onSelect={setActiveLaneId} />
 
           {/* Mobile Control Center: the module grid (registry-driven) + a
               quick-status row (greeting/identity + theme toggle). This is the
@@ -294,36 +285,16 @@ export function ShellChrome({
                 setDrawerOpen(false)
               }}
               aria-label={t({ es: 'Abrir Mister (⌘J)', en: 'Open Mister (⌘J)' }, DEFAULT_LOCALE)}
-              className={cn(
-                'group flex items-center gap-3 border-t border-line px-4 py-3 text-ink-secondary transition-colors hover:text-ink-primary',
-                collapsed && 'justify-center px-0',
-              )}
+              className="group flex items-center gap-3 border-t border-line px-4 py-3 text-ink-secondary transition-colors hover:text-ink-primary"
             >
               <MisterMark size={20} className="shrink-0" />
-              {!collapsed ? (
-                <>
-                  <span className="font-mono text-label uppercase tracking-[0.12em]">Mister</span>
-                  <span
-                    data-kbd-hint
-                    className="ml-auto font-mono text-label tracking-[0.1em] text-ink-secondary group-hover:text-ink-primary"
-                  >
-                    ⌘J
-                  </span>
-                </>
-              ) : null}
-            </button>
-            <button
-              type="button"
-              onClick={() => setCollapsed((v) => !v)}
-              aria-label={
-                collapsed
-                  ? t({ es: 'Expandir menú', en: 'Expand menu' }, DEFAULT_LOCALE)
-                  : t({ es: 'Colapsar menú', en: 'Collapse menu' }, DEFAULT_LOCALE)
-              }
-              className="hidden items-center gap-2 border-t border-line px-4 py-3 font-mono text-label uppercase tracking-[0.12em] text-ink-secondary transition-colors hover:text-ink-primary md:flex"
-            >
-              <span aria-hidden>{collapsed ? '»' : '«'}</span>
-              {!collapsed ? <span>{t({ es: 'Colapsar', en: 'Collapse' }, DEFAULT_LOCALE)}</span> : null}
+              <span className="font-mono text-label uppercase tracking-[0.12em]">Mister</span>
+              <span
+                data-kbd-hint
+                className="ml-auto font-mono text-label tracking-[0.1em] text-ink-secondary group-hover:text-ink-primary"
+              >
+                ⌘J
+              </span>
             </button>
           </div>
         </aside>
