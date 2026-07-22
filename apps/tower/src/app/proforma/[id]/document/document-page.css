@@ -61,6 +61,22 @@
   font-size: 13px;
 }
 
+/* Narrow viewport: shrink the desk margin so the sheet gets the width, and let
+   the toolbar wrap instead of squeezing the label and button onto one line. */
+@media (max-width: 640px) {
+  .pdoc-page {
+    padding: 16px 10px 48px;
+  }
+  .pdoc-toolbar {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .pdoc-toolbar-btn {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+}
+
 @media print {
   .pdoc-page {
     background: #ffffff;
