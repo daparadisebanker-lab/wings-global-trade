@@ -728,3 +728,25 @@
   border-radius: var(--radius-panel);
   box-shadow: var(--elevation-3);
 }
+
+/* WINGS Control Center tiles (P5, tap-first) — the mobile module grid inside the
+   drawer. ≥56px touch targets; active tile gets the gold edge (livery active). */
+.cc-tile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 72px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+  background: var(--surface-1);
+  color: var(--ink-secondary);
+}
+.cc-tile[data-active='true'] {
+  border-color: var(--gold);
+  color: var(--ink-primary);
+}
+.cc-tile:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}

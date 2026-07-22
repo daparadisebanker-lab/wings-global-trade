@@ -8,7 +8,6 @@ import { CommandPalette } from './CommandPalette'
 import { LaneSwitcher } from './LaneSwitcher'
 import { MisterDock } from './MisterDock'
 import { MisterMark } from './MisterMark'
-import { NavRail } from './NavRail'
 import { OnboardingBanner } from './OnboardingBanner'
 import { RouteProgress } from './RouteProgress'
 import { TopBar } from './TopBar'
@@ -18,6 +17,7 @@ import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import { useActiveTool } from '@/shell/navigation/useActiveTool'
 import { GreetingBar } from '@/shell/frame/GreetingBar'
 import { Dock } from '@/shell/dock/Dock'
+import { ControlCenterGrid, ControlCenterStatus } from '@/shell/control-center/ControlCenter'
 
 /** Location strip — TOWER › Módulo › subpágina, derived from the path so you
  *  always know where you are. Ids/numbers in the path are omitted. */
@@ -248,17 +248,19 @@ export function ShellChrome({
             <LaneSwitcher lanes={memberships} activeLaneId={activeLaneId} onSelect={setActiveLaneId} />
           ) : null}
 
-          {/* Module nav: on md+ the Dock is the primary nav, so the rail's module
-              list is hidden there — EXCEPT when the operator has zero visible
-              modules, when the rail keeps NavRail's designed empty note (no Dock
-              tiles to show it otherwise). Below md the drawer is unchanged. */}
+          {/* Mobile Control Center: the module grid (registry-driven) + a
+              quick-status row (greeting/identity + theme toggle). This is the
+              mobile nav now — the aside is mobile-only after P4b. The `md:hidden`
+              gate keeps the zero-module empty note reachable on desktop. */}
           <div className={visible.size > 0 ? 'md:hidden' : undefined}>
-            <NavRail visible={visible} collapsed={collapsed} onNavigate={() => setDrawerOpen(false)} />
+            <ControlCenterGrid visible={visible} onNavigate={() => setDrawerOpen(false)} />
+          </div>
+          <div className="md:hidden">
+            <ControlCenterStatus userEmail={userEmail} />
           </div>
 
-          {/* Rail footer (Mister entry + collapse) is drawer-only now — on desktop
-              the floating launcher + ⌘J cover Mister and there is nothing to
-              collapse (the module list moved to the Dock). */}
+          {/* Footer — Mister entry (drawer-only; on desktop the floating launcher
+              + ⌘J cover it). Collapse is gone (module list moved to the Dock). */}
           <div className="mt-auto flex flex-col md:hidden">
             {/* Mister — a persistent rail entry (the dock is also ⌘J + the floating
                 door). Its own mark, so it reads as the copilot, not a module. */}

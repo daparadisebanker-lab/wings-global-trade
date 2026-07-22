@@ -11,12 +11,11 @@ export const metadata: Metadata = {
  * tokens (globals.css) across the whole app, including the login route. Spanish
  * is the default locale (Wings is Spanish-first).
  */
-// Applies a persisted theme before first paint (no flash). Only an explicit
-// stored choice flips to dark — no data-theme means Daylight (light), so partial
-// dark never ships to live users before the component sweep completes. The theme
-// toggle that writes this key mounts with the macOS shell (P2), not before, so we
-// never expose a control that has nothing to theme yet.
-const THEME_BOOTSTRAP = `try{var t=localStorage.getItem('tower-theme');if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}`
+// Applies the resolved theme before first paint (no flash). An explicit stored
+// choice always wins; absent one, it honors the OS `prefers-color-scheme` (P5 —
+// safe to enable now that dark is escapable on BOTH surfaces: the desktop TopBar
+// toggle and the mobile Control Center toggle).
+const THEME_BOOTSTRAP = `try{var t=localStorage.getItem('tower-theme');if(t==='dark'||t==='light'){document.documentElement.setAttribute('data-theme',t);}else if(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){document.documentElement.setAttribute('data-theme','dark');}}catch(e){}`
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
