@@ -325,6 +325,47 @@
   text-align: right;
 }
 
+/* ── Narrow viewport (operator on a phone) ──────────────────────────────────
+   Collapse the two-column zones to a single column and relax the fixed-width
+   term grid so the sheet never overflows its frame. Long, unbreakable strings
+   (emails, account numbers) are allowed to wrap. Print is unaffected: A4 renders
+   far wider than this breakpoint, so @media print keeps the reference layout. */
+@media (max-width: 640px) {
+  .pdoc {
+    padding: 28px 22px 32px;
+  }
+  .pdoc-title {
+    font-size: 34px;
+  }
+  .pdoc-parties {
+    grid-template-columns: 1fr;
+  }
+  .pdoc-party-name,
+  .pdoc-party-meta dd {
+    overflow-wrap: anywhere;
+  }
+  .pdoc-terms {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .pdoc-term-label {
+    margin-top: 10px;
+  }
+  .pdoc-terms > span:first-child {
+    margin-top: 0;
+  }
+  .pdoc-totals {
+    width: 100%;
+  }
+  .pdoc-footer {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .pdoc-footer .pd-foot-right {
+    text-align: left;
+  }
+}
+
 /* ── Print ──────────────────────────────────────────────────────────────── */
 @media print {
   @page {
