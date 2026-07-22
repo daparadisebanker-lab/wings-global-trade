@@ -55,6 +55,7 @@ export function MisterDock({
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const threadRef = useRef<HTMLDivElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
+  const panelRef = useRef<HTMLElement>(null)
 
   // Open like a door: focus the input. Escape closes (only while open).
   useEffect(() => {
@@ -77,6 +78,25 @@ export function MisterDock({
     const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
     el.scrollTo({ top: el.scrollHeight, behavior: reduce ? 'auto' : 'smooth' })
   }, [thread, busy])
+
+  // iOS: the on-screen keyboard shrinks the VISUAL viewport but not the layout
+  // viewport, so a height:100% panel would push its input under the keyboard.
+  // Size the panel to the visual viewport so the input stays above the keyboard.
+  useEffect(() => {
+    if (!open) return
+    const vv = window.visualViewport
+    const panel = panelRef.current
+    if (!vv || !panel) return
+    const apply = () => panel.style.setProperty('--mister-vh', `${Math.round(vv.height)}px`)
+    apply()
+    vv.addEventListener('resize', apply)
+    vv.addEventListener('scroll', apply)
+    return () => {
+      vv.removeEventListener('resize', apply)
+      vv.removeEventListener('scroll', apply)
+      panel.style.removeProperty('--mister-vh')
+    }
+  }, [open])
 
   // Pull an image out of a paste, if one is there; falls through to normal text paste.
   async function onPaste(e: ClipboardEvent<HTMLTextAreaElement>) {
@@ -145,6 +165,7 @@ export function MisterDock({
         onClick={onClose}
       />
       <aside
+        ref={panelRef}
         className="mister-panel"
         role="dialog"
         aria-modal="false"

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import type { ProposalDraftData } from '@/lib/copilot/capabilities/proposal-draft'
+import { MISTER_ARTIFACT } from './mister-theme'
 
 /**
  * The proposal "artifact" — a copy-ready client message Mister drafted, ES primary
@@ -12,12 +13,7 @@ import type { ProposalDraftData } from '@/lib/copilot/capabilities/proposal-draf
  * language toggle state.
  */
 
-const TEXT = '#eef4fb'
-const MUTED = '#a8c0dc'
-const GOLD = '#e0b866'
-const PANEL_BG = 'rgba(0,17,46,0.55)'
-const BORDER = '1px solid rgba(168,192,220,0.2)'
-const MONO = 'var(--font-mono)'
+const { text: TEXT, muted: MUTED, gold: GOLD, panelBg: PANEL_BG, border: BORDER, mono: MONO } = MISTER_ARTIFACT
 
 const CHANNEL_LABEL: Record<string, string> = {
   whatsapp: 'WhatsApp',

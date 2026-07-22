@@ -7,6 +7,7 @@ import { listPipelineLanes, listAccountsForBrand, type AccountOption } from '@/l
 import { saveMisterQuoteDraft } from '@/lib/actions/mister-quote'
 import type { EditableLane } from '@/lib/actions/catalog'
 import type { PriceBasis, QuoteProposalData, QuoteProposalLine } from '@/lib/copilot/capabilities/quote-build'
+import { MISTER_ARTIFACT } from './mister-theme'
 
 /**
  * The quote-proposal artifact — Mister's assembled quote, plus the save-draft
@@ -17,14 +18,8 @@ import type { PriceBasis, QuoteProposalData, QuoteProposalLine } from '@/lib/cop
  * the lane/account fetch + save state. INLINE styles, dark-bubble palette.
  */
 
-const TEXT = '#eef4fb'
-const MUTED = '#a8c0dc'
-const GOLD = '#e0b866'
-const STEEL = '#9db4d4'
-const PANEL_BG = 'rgba(0,17,46,0.55)'
-const FIELD_BG = 'rgba(0,17,46,0.5)'
-const BORDER = '1px solid rgba(168,192,220,0.2)'
-const MONO = 'var(--font-mono)'
+const { text: TEXT, muted: MUTED, gold: GOLD, steel: STEEL, panelBg: PANEL_BG, fieldBg: FIELD_BG, border: BORDER, mono: MONO } =
+  MISTER_ARTIFACT
 
 const BASIS_STYLE: Record<PriceBasis, { color: string; label: { es: string; en: string } }> = {
   costed: { color: GOLD, label: { es: 'costeado', en: 'costed' } },

@@ -1,5 +1,6 @@
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import type { SupplierExtractData } from '@/lib/copilot/capabilities/supplier-screenshot'
+import { MISTER_ARTIFACT } from './mister-theme'
 
 /**
  * The supplier-screenshot "artifact" — the offer Mister read out of a screenshot,
@@ -8,12 +9,7 @@ import type { SupplierExtractData } from '@/lib/copilot/capabilities/supplier-sc
  * other artifacts. Only fields that were actually read are shown.
  */
 
-const TEXT = '#eef4fb'
-const MUTED = '#a8c0dc'
-const GOLD = '#e0b866'
-const PANEL_BG = 'rgba(0,17,46,0.55)'
-const BORDER = '1px solid rgba(168,192,220,0.2)'
-const MONO = 'var(--font-mono)'
+const { text: TEXT, muted: MUTED, gold: GOLD, panelBg: PANEL_BG, border: BORDER, mono: MONO } = MISTER_ARTIFACT
 
 const SOURCE_LABEL: Record<string, string> = {
   whatsapp: 'WhatsApp',

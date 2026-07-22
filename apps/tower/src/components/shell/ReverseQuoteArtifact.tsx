@@ -1,5 +1,6 @@
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import type { ReverseQuoteData } from '@/lib/copilot/capabilities/reverse-quote'
+import { MISTER_ARTIFACT } from './mister-theme'
 
 /**
  * The reverse-quote "artifact" Mister renders inside its dark bubble — the sale
@@ -8,12 +9,7 @@ import type { ReverseQuoteData } from '@/lib/copilot/capabilities/reverse-quote'
  * mister-dock.css) so this capability's chrome ships self-contained.
  */
 
-const TEXT = '#eef4fb'
-const MUTED = '#a8c0dc'
-const GOLD = '#e0b866'
-const PANEL_BG = 'rgba(0,17,46,0.55)'
-const BORDER = '1px solid rgba(168,192,220,0.2)'
-const MONO = 'var(--font-mono)'
+const { text: TEXT, muted: MUTED, gold: GOLD, panelBg: PANEL_BG, border: BORDER, mono: MONO } = MISTER_ARTIFACT
 
 function money(n: number): string {
   return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })

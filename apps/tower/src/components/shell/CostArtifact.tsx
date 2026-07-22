@@ -1,5 +1,6 @@
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import type { LandedCostData } from '@/lib/copilot/capabilities/landed-cost'
+import { MISTER_ARTIFACT } from './mister-theme'
 
 /**
  * The landed-cost "artifact" Mister renders inside its dark bubble — the SUNAT
@@ -9,12 +10,7 @@ import type { LandedCostData } from '@/lib/copilot/capabilities/landed-cost'
  */
 
 // ── Dark-bubble palette ──────────────────────────────────────────────────────
-const TEXT = '#eef4fb'
-const MUTED = '#a8c0dc'
-const ACCENT = '#e0b866'
-const PANEL_BG = 'rgba(0,17,46,0.55)'
-const BORDER = '1px solid rgba(168,192,220,0.2)'
-const MONO = "var(--font-mono)"
+const { text: TEXT, muted: MUTED, gold: ACCENT, panelBg: PANEL_BG, border: BORDER, mono: MONO } = MISTER_ARTIFACT
 
 /** Accounting format: negatives in parentheses, tabular, 2 decimals. */
 function money(value: number): string {

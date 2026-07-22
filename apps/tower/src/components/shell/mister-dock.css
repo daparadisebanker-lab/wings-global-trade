@@ -36,7 +36,7 @@
   position: absolute;
   top: 0;
   right: 0;
-  height: 100%;
+  height: var(--mister-vh, 100%);
   width: min(430px, 100vw);
   display: flex;
   flex-direction: column;
