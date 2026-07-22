@@ -10,7 +10,82 @@ rewrite; zero feature regression.
 
 ---
 
-## P4b — Rail retired on desktop + lane switching re-homed  ·  status: built, in review
+## P5 — WINGS Control Center (mobile), tap-first  ·  status: reviewed (APPROVE-WITH-FIXES), committing
+
+User chose **tap-first, straight-to-prod** — solid + accessible Control Center now;
+the finger-tracked pull-down gesture + top-right pill are a later polish pass (they
+need a touch device to tune). Built by restyling the existing mobile drawer (the
+`<aside>`, mobile-only after P4b) so it INHERITS the proven a11y contract
+(inert-when-closed, focus trap + restore, scrim, ≥44px) — lowest risk.
+
+**What landed**
+- `src/shell/control-center/ControlCenter.tsx` — `ControlCenterGrid` (registry-
+  driven 2-col module tile grid, TOOLS × `visible` × `useActiveTool`; no new nav
+  list; keeps the zero-module empty note) + `ControlCenterStatus` (quick-status
+  row: greeting + es-PE date + operator identity + the mobile theme toggle).
+- `ThemeToggle.tsx` — now takes a `className` prop (default `hidden md:inline-flex`
+  for the TopBar; the Control Center passes `inline-flex` to show it on mobile).
+- `layout.tsx` — the bootstrap now honors `prefers-color-scheme` when no stored
+  choice exists (the **P2b OS-auto-dark debt**, safe now that dark is escapable on
+  BOTH surfaces: desktop TopBar toggle + mobile Control Center toggle).
+- `ShellChrome.tsx` — the drawer renders `ControlCenterGrid` (replacing NavRail) +
+  `ControlCenterStatus`; NavRail import removed (NavRail.tsx now unused, left in
+  place). Below `md` the drawer a11y/trigger (hamburger) is unchanged.
+
+**Three parked debts discharged:** mobile theme toggle ✓ · OS-auto-dark ✓ ·
+mobile greeting/identity ✓ (F-P2a-1).
+
+**Two ThemeToggle + two greeting sources, one visible per surface:** desktop →
+TopBar toggle + GreetingBar; mobile → Control Center toggle + status row. Shared
+`data-theme`/`tower-theme` state, can't disagree.
+
+**Deferred to a later polish pass (needs device testing):** the top-right WINGS
+pill, top-anchored panel, and the interruptible pull-down gesture (spec §3.2's
+signature). Current trigger = the existing hamburger; current position = the
+existing slide-in. Long-press-pill → palette also deferred (search stays via ⌘K /
+the hamburger drawer + palette).
+
+**Post-deploy QA:** mobile toggle flips + persists; OS-dark auto-applies on a
+dark-OS device and is escapable via the toggle; grid nav + active state; zero-
+module empty note on mobile; quick-status greeting/date/identity; dark mode of the
+whole drawer; focus trap still cycles the grid tiles + toggle.
+
+**Fable review (APPROVE-WITH-FIXES) — applied before commit:**
+- **F-P5-1** — the mobile theme toggle was 40×40; spec §8 requires ≥44px on
+  mobile. The size utilities moved out of ThemeToggle's base string into the
+  `className` prop (deterministic — `cn` is plain concatenation, no
+  tailwind-merge, so a size override must not depend on stylesheet order): default
+  `hidden h-10 w-10 md:inline-flex`; the Control Center passes `inline-flex h-11
+  w-11`. Desktop byte-equivalent (attribute order is CSS-irrelevant).
+- **F-P5-2** — twin toggles snapshotted `data-theme` once on mount, so the hidden
+  mobile instance went stale after a desktop toggle + resize below `md`. The mount
+  effect now attaches a `MutationObserver` on `<html>` (`data-theme`) and syncs
+  local state; disconnects on cleanup. Future-proofs any 3rd instance.
+- **F-P5-3** — `.cc-tile` deviated from spec §3.2 (56px/8px/`radius-card-lg`)
+  without a logged deviation. Aligned to spec: `min-height: 72px`, grid `gap-3`
+  (12px), `var(--radius-panel)`. No deviation remains to log.
+
+**Ledger (reviewer-required honesty notes):**
+- **IA — mobile group labels dropped:** the drawer's 3-group nav (Operación ·
+  Marca e inteligencia · Sistema) flattens into the spec-§3.2 2-col tile grid.
+  Deliberate and spec-sanctioned; the registry's `group` field survives for the
+  palette's future use. Recorded so the IA scorecard trail reflects the change.
+- **Spec §8 Control Center acceptance line stays OPEN.** Tap-first delivers a
+  functional, a11y-inherited Control Center, but does NOT close §8's signature
+  (interruptible pull-down gesture, top-right pill morph, top-anchored panel,
+  three-way dismiss). The Path-to-100 scorecard must not mark §8 complete on P5.
+  When the gesture lands it must be **additive** over this tap-first base (spec:
+  "pull down **or** tap"). Deferred: needs a touch device to tune.
+
+**Orphaned, intentionally kept one phase:** `NavRail.tsx` + `NAV_GROUPS` are now
+fully unreferenced (every remaining mention is a comment) but retained for
+rollback; delete in the P8 sweep with nav.ts's stale header comment. `collapsed`
+state stays referenced (button renders nowhere since P4a) — no unused-var; build
+is strict-safe (no `noUnusedLocals`).
+
+---
+
+## P4b — Rail retired on desktop + lane switching re-homed  ·  status: SHIPPED to production
 
 User chose the **Dock lane tile + popover** placement (Option 1).
 
