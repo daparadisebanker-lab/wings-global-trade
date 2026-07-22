@@ -1,10 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import { cn } from '@wings/trade-ui'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import { MODULES, NAV_GROUPS, type ModuleId } from '@/lib/nav'
+import { useActiveTool } from '@/shell/navigation/useActiveTool'
 import { NAV_ICONS } from './nav-icons'
 
 /**
@@ -26,7 +26,7 @@ export function NavRail({
   collapsed?: boolean
   onNavigate?: () => void
 }) {
-  const pathname = usePathname()
+  const activeTool = useActiveTool()
 
   // No visible modules → a designed note, never a blank void. Reached by an
   // account with no lane role and no admin flag (RLS would return no rows
@@ -78,7 +78,7 @@ export function NavRail({
             )}
             <ul role="list" className="flex flex-col gap-1">
               {items.map((m) => {
-                const active = pathname.startsWith(m.href)
+                const active = activeTool?.id === m.id
                 const Icon = NAV_ICONS[m.icon]
                 return (
                   <li key={m.id}>

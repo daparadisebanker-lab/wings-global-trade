@@ -3,6 +3,7 @@
 // list; routes live under app/(shell)/{module}. Modules resolve into three IA
 // groups so the rail reads as sections, not a flat list.
 import type { Localized } from './i18n'
+import { TOOLS } from '@/shell/navigation/registry'
 
 export type ModuleId =
   | 'catalog'
@@ -42,16 +43,9 @@ export interface NavModule {
   icon: NavIconId
 }
 
-export const MODULES: NavModule[] = [
-  { id: 'catalog', href: '/catalog', label: { es: 'Catálogo', en: 'Catalog' }, tag: 'CAT', group: 'operate', icon: 'catalog' },
-  { id: 'pipeline', href: '/pipeline', label: { es: 'Pipeline', en: 'Pipeline' }, tag: 'PIP', group: 'operate', icon: 'pipeline' },
-  { id: 'quotations', href: '/quotations', label: { es: 'Cotizaciones', en: 'Quotations' }, tag: 'COT', group: 'operate', icon: 'quotations' },
-  { id: 'clients', href: '/clients', label: { es: 'Clientes', en: 'Clients' }, tag: 'CLI', group: 'operate', icon: 'clients' },
-  { id: 'containers', href: '/containers', label: { es: 'Contenedores', en: 'Containers' }, tag: 'CTN', group: 'operate', icon: 'containers' },
-  { id: 'costing', href: '/costing', label: { es: 'Costeo', en: 'Costing' }, tag: 'CST', group: 'operate', icon: 'costing' },
-  { id: 'marcas', href: '/marcas', label: { es: 'Marcas', en: 'Brands' }, tag: 'MRC', group: 'intel', icon: 'marcas' },
-  { id: 'signals', href: '/signals', label: { es: 'Señales', en: 'Signals' }, tag: 'SIG', group: 'intel', icon: 'signals' },
-  { id: 'intelligence', href: '/intelligence', label: { es: 'Inteligencia', en: 'Intelligence' }, tag: 'INT', group: 'intel', icon: 'intelligence' },
-  { id: 'documents', href: '/documents', label: { es: 'Documentos', en: 'Documents' }, tag: 'DOC', group: 'intel', icon: 'documents' },
-  { id: 'admin', href: '/admin', label: { es: 'Administración', en: 'Admin' }, tag: 'ADM', group: 'system', icon: 'admin' },
-]
+// The canonical tool list now lives in the shell navigation registry — the one
+// source of truth (TOWER-REDESIGN §5, "one registry" DoD gate). Re-exported here
+// so every existing importer of `MODULES` (NavRail, CommandPalette, the
+// Breadcrumb) keeps working unchanged. `TowerTool extends NavModule`, so this is
+// type-preserving and additive.
+export const MODULES: NavModule[] = TOOLS

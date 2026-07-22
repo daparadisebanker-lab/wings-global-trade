@@ -367,3 +367,102 @@
     font-size: 16px !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TOWER-REDESIGN · P1 — macOS material token layer  (ratified 2026-07-22)
+   Additive. Introduces the macOS-grade token set (TOWER-REDESIGN.md §2) as a
+   NEW layer alongside the existing control-room livery — no existing token is
+   redefined, so the live app is visually unchanged until surfaces adopt these
+   (the P8 sweep). Colliding names (--radius-card) are given fresh macOS names.
+   Light = "Daylight" (default); dark = "Nightwatch" under [data-theme='dark'].
+   ═══════════════════════════════════════════════════════════════════════════ */
+[data-app='tower'] {
+  /* — Color · Daylight (light) — */
+  --surface-base:   #f5f5f7;
+  --surface-raised: #ffffff;
+  --surface-sunken: #ececef;
+  --ink-tertiary:   #aeaeb2;
+  --accent-wings:       #0a3d62;
+  --accent-wings-hover: #0c4a76;
+  --signal-positive: #1f7a4d;
+  --signal-negative: #b3382c;
+  --signal-caution:  #b07d2b;
+  --line-hairline:   rgba(0, 0, 0, 0.08);
+
+  /* — Elevation — */
+  --elevation-1: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --elevation-2: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --elevation-3: 0 12px 32px rgba(0, 0, 0, 0.14);
+  --elevation-4: 0 24px 64px rgba(0, 0, 0, 0.22);
+
+  /* — Radius · macOS scale (new names; existing --radius-card stays 4px) — */
+  --radius-control: 8px;
+  --radius-card-lg: 12px;
+  --radius-panel:   16px;
+  --radius-dock:    20px;
+  --radius-pill:    999px;
+
+  /* — Motion · macOS spring set (adds to --ease-gantry/--ease-settle) — */
+  --spring-snappy: cubic-bezier(0.32, 0.72, 0, 1);
+  --spring-settle: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-exit:     cubic-bezier(0.4, 0, 1, 1);
+  /* Durations (redesign §2.8) tokenized so shell files never inline literals. */
+  --duration-snappy: 300ms;
+  --duration-settle: 450ms;
+  --duration-exit:   180ms;
+}
+
+/* — Color · Nightwatch (dark) — macOS tokens only; core livery tokens are
+   re-pointed in the wave that mounts the theme toggle + completes the sweep,
+   so partial dark never ships to the live app before it is QA'd. — */
+[data-app='tower'][data-theme='dark'] {
+  --surface-base:   #1c1c1e;
+  --surface-raised: #2c2c2e;
+  --surface-sunken: #161618;
+  --ink-tertiary:   #636366;
+  --accent-wings:       #4c8cbf;
+  --accent-wings-hover: #5e9dce;
+  --signal-positive: #32b37a;
+  --signal-negative: #e0564a;
+  --signal-caution:  #d9a441;
+  --line-hairline:   rgba(255, 255, 255, 0.10);
+  --elevation-1: 0 1px 2px rgba(0, 0, 0, 0.30);
+  --elevation-2: 0 4px 12px rgba(0, 0, 0, 0.36);
+  --elevation-3: 0 12px 32px rgba(0, 0, 0, 0.48);
+  --elevation-4: 0 24px 64px rgba(0, 0, 0, 0.60);
+}
+
+/* — Materials (the depth system). M1 blurs the ground; @supports guards the
+   fallback so unsupported browsers get a 94%-opaque chrome instead. — */
+.material-chrome {
+  /* Opaque fallback FIRST (progressive enhancement): an engine old enough to
+     lack backdrop-filter also lacks color-mix(), so both color-mix lines below
+     would be dropped — this solid declaration guarantees a background survives.
+     Modern engines override it with the translucent one. (Fixes review F1.) */
+  background: var(--surface-raised);
+  background: color-mix(in srgb, var(--surface-raised) 72%, transparent);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+  backdrop-filter: blur(24px) saturate(1.6);
+  border: 1px solid var(--line-hairline);
+}
+.material-panel {
+  background: var(--surface-raised);
+  border: 1px solid var(--line-hairline);
+  box-shadow: var(--elevation-2);
+}
+.material-scrim {
+  background: rgba(0, 0, 0, 0.35);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+@media (prefers-reduced-motion: reduce) {
+  /* macOS spring motion collapses to an 80ms opacity fade (redesign §2.8). */
+  [data-app='tower'] .mac-motion,
+  [data-app='tower'] .mac-motion * {
+    transition-duration: 80ms !important;
+    transition-timing-function: linear !important;
+    transition-delay: 0ms !important;
+    animation-duration: 80ms !important;
+    animation-delay: 0ms !important;
+  }
+}
