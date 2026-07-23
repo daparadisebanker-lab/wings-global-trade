@@ -46,7 +46,7 @@ function seedPct(fraction: number): string {
 
 export function LandedCostEditor({ result, locale = DEFAULT_LOCALE, seq }: { result: unknown; locale?: Locale; seq: number }) {
   const seed = (result as LandedCostData).input
-  const { draft: d, persist } = useArtifactDraft<LCSnap>(seq)
+  const { draft: d, persist } = useArtifactDraft<LCSnap>(String(seq))
 
   const [fob, setFob] = useState(d?.fob ?? (seed?.fob ? String(seed.fob) : ''))
   const [incoterm, setIncoterm] = useState<Incoterm>(d?.incoterm ?? seed?.incoterm ?? 'FOB')
@@ -133,7 +133,7 @@ export function LandedCostEditor({ result, locale = DEFAULT_LOCALE, seq }: { res
       {computed ? (
         <>
           <CostArtifact result={computed.data} locale={locale} />
-          <CostSheetSavePanel inputs={computed.inputs} locale={locale} />
+          <CostSheetSavePanel inputs={computed.inputs} locale={locale} draftKey={`${seq}:commit`} />
         </>
       ) : (
         <p style={{ margin: 0, fontSize: 12.5, color: MUTED }}>

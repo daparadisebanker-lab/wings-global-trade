@@ -11,7 +11,19 @@ import Link from 'next/link'
 import { t, type Locale } from '@/lib/i18n'
 import { listContainerLanes, openContainer } from '@/lib/actions/containers'
 import type { ContainerKind } from '@/lib/actions/containers-types'
+import { usePersistOnUnmount } from './mister/editor-kit'
+import { useArtifactDraft } from './mister/MisterProvider'
 import { MISTER_ARTIFACT } from './mister-theme'
+
+/** Persisted panel state (canvas working memory) — the "container opened ✓" latch
+ *  + deep-link survive a remount so a real container can't be opened twice. */
+type CAPSnap = {
+  laneId: string
+  capacity: string
+  origin: string
+  destination: string
+  saved: { id: string; code: string } | null
+}
 
 const { text: TEXT, muted: MUTED, gold: GOLD, error: ERROR, ink: INK, fieldBg: FIELD_BG, border: BORDER, steelLine: STEEL_LINE, mono: MONO } =
   MISTER_ARTIFACT
@@ -65,19 +77,24 @@ export function ContainerActivatePanel({
   kind,
   suggestedCapacityCbm,
   locale,
+  draftKey,
 }: {
   kind: ContainerKind
   suggestedCapacityCbm: number
   locale: Locale
+  draftKey?: string
 }) {
+  const { draft: d, persist } = useArtifactDraft<CAPSnap>(draftKey)
   const [lanes, setLanes] = useState<Lane[] | null>(null)
-  const [laneId, setLaneId] = useState('')
-  const [capacity, setCapacity] = useState(String(suggestedCapacityCbm))
-  const [origin, setOrigin] = useState('')
-  const [destination, setDestination] = useState('')
-  const [saved, setSaved] = useState<{ id: string; code: string } | null>(null)
+  const [laneId, setLaneId] = useState(d?.laneId ?? '')
+  const [capacity, setCapacity] = useState(d?.capacity ?? String(suggestedCapacityCbm))
+  const [origin, setOrigin] = useState(d?.origin ?? '')
+  const [destination, setDestination] = useState(d?.destination ?? '')
+  const [saved, setSaved] = useState<{ id: string; code: string } | null>(d?.saved ?? null)
   const [error, setError] = useState<string | null>(null)
   const [saving, startSave] = useTransition()
+
+  usePersistOnUnmount<CAPSnap>({ laneId, capacity, origin, destination, saved }, persist)
 
   // Keep the capacity suggestion in step with the kind, until the operator edits it.
   useEffect(() => {

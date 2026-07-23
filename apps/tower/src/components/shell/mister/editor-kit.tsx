@@ -8,17 +8,37 @@
 import { useEffect, useRef, type ReactNode } from 'react'
 import { MISTER_ARTIFACT } from '../mister-theme'
 
+/** Shallow per-field equality for the flat editor snapshots (arrays compared by
+ *  reference — setState always produces a fresh reference on a real edit). */
+function shallowEqual(a: unknown, b: unknown): boolean {
+  if (Object.is(a, b)) return true
+  if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) return false
+  const ka = Object.keys(a as Record<string, unknown>)
+  const kb = Object.keys(b as Record<string, unknown>)
+  if (ka.length !== kb.length) return false
+  return ka.every((k) => Object.is((a as Record<string, unknown>)[k], (b as Record<string, unknown>)[k]))
+}
+
 /**
  * Persist an editor's latest snapshot to its artifact draft ON UNMOUNT — exactly
  * when switching artifacts would otherwise discard in-progress edits (Fable review
  * finding 5). Writing only on unmount (not per keystroke) keeps the provider from
- * re-rendering the whole shell on every character. The editor seeds its initial
- * state from `draft` (via useArtifactDraft) so a remount rehydrates.
+ * re-rendering the whole shell on every character. DIRTY-GATED: a snapshot equal
+ * to the mount-time one is never written, so merely viewing an artifact (or a
+ * pristine second instance) can't clobber a real draft or churn the provider. The
+ * editor seeds its initial state from `draft` (via useArtifactDraft) so a remount
+ * rehydrates.
  */
 export function usePersistOnUnmount<T>(snapshot: T, persist: (value: T) => void): void {
   const ref = useRef(snapshot)
   ref.current = snapshot
-  useEffect(() => () => persist(ref.current), [persist])
+  const initial = useRef(snapshot) // mount-time snapshot, captured once
+  useEffect(
+    () => () => {
+      if (!shallowEqual(ref.current, initial.current)) persist(ref.current)
+    },
+    [persist],
+  )
 }
 
 const { text: TEXT, muted: MUTED, fieldBg: FIELD_BG, border: BORDER, mono: MONO } = MISTER_ARTIFACT

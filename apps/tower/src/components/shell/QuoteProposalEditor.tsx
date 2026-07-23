@@ -82,7 +82,7 @@ const fieldStyle: React.CSSProperties = {
 
 export function QuoteProposalEditor({ result, locale = DEFAULT_LOCALE, seq }: { result: unknown; locale?: Locale; seq: number }) {
   const data = result as QuoteProposalData
-  const { draft: d, persist } = useArtifactDraft<{ lines: EditLine[]; nextId: number }>(seq)
+  const { draft: d, persist } = useArtifactDraft<{ lines: EditLine[]; nextId: number }>(String(seq))
 
   const [lines, setLines] = useState<EditLine[]>(
     () =>
@@ -236,7 +236,7 @@ export function QuoteProposalEditor({ result, locale = DEFAULT_LOCALE, seq }: { 
         </span>
       ) : null}
 
-      <QuoteSavePanel lines={saveLines} hasGaps={hasGaps} locale={locale} />
+      <QuoteSavePanel lines={saveLines} hasGaps={hasGaps} locale={locale} draftKey={`${seq}:commit`} />
     </div>
   )
 }

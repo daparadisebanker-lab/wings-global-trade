@@ -38,7 +38,7 @@ type FitSnap = {
 export function ContainerFitEditor({ result, locale = DEFAULT_LOCALE, seq }: { result: unknown; locale?: Locale; seq: number }) {
   const payload = result as ContainerFitPayload
   const seed = payload.input
-  const { draft: d, persist } = useArtifactDraft<FitSnap>(seq)
+  const { draft: d, persist } = useArtifactDraft<FitSnap>(String(seq))
 
   const [kind, setKind] = useState<ContainerKind>(d?.kind ?? seed?.containerKind ?? payload.containerKind)
   const [lengthM, setLengthM] = useState(d?.lengthM ?? (seed?.itemLengthM ? String(seed.itemLengthM) : ''))
@@ -117,7 +117,7 @@ export function ContainerFitEditor({ result, locale = DEFAULT_LOCALE, seq }: { r
         </p>
       )}
 
-      <ContainerActivatePanel kind={kind} suggestedCapacityCbm={CONTAINER_SPECS[kind].internalCbm} locale={locale} />
+      <ContainerActivatePanel kind={kind} suggestedCapacityCbm={CONTAINER_SPECS[kind].internalCbm} locale={locale} draftKey={`${seq}:commit`} />
     </div>
   )
 }

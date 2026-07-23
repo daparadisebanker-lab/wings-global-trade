@@ -69,7 +69,7 @@ const pctStr = (f: number) => `${(f * 100).toFixed(1)}%`
 export function ReverseQuoteEditor({ result, locale = DEFAULT_LOCALE, seq }: { result: unknown; locale?: Locale; seq: number }) {
   const payload = result as ReverseQuoteData
   const seed = payload.input
-  const { draft: d, persist } = useArtifactDraft<RQSnap>(seq)
+  const { draft: d, persist } = useArtifactDraft<RQSnap>(String(seq))
 
   const [fob, setFob] = useState(d?.fob ?? (payload.fob ? String(payload.fob) : ''))
   const [incoterm, setIncoterm] = useState<Incoterm>(d?.incoterm ?? payload.incoterm ?? 'FOB')
@@ -184,7 +184,7 @@ export function ReverseQuoteEditor({ result, locale = DEFAULT_LOCALE, seq }: { r
               )}
             </p>
           ) : (
-            <CostSheetSavePanel inputs={solved.commitInputs} locale={locale} />
+            <CostSheetSavePanel inputs={solved.commitInputs} locale={locale} draftKey={`${seq}:commit`} />
           )}
         </>
       ) : (

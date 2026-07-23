@@ -12,7 +12,13 @@ import Link from 'next/link'
 import { t, type Locale } from '@/lib/i18n'
 import { listCostingLanes, saveCostCalculation, type CostingLane } from '@/lib/actions/costing'
 import type { ImportInputs } from '@/lib/costing/types'
+import { usePersistOnUnmount } from './mister/editor-kit'
+import { useArtifactDraft } from './mister/MisterProvider'
 import { MISTER_ARTIFACT } from './mister-theme'
+
+/** Persisted panel state (canvas working memory) — the saved latch + deep-link
+ *  survive a remount so a saved sheet can't be re-submitted into a duplicate. */
+type CSPSnap = { laneId: string; label: string; saved: { id: string } | null; savedFingerprint: string | null }
 
 const { text: TEXT, muted: MUTED, gold: GOLD, error: ERROR, ink: INK, fieldBg: FIELD_BG, border: BORDER, steelLine: STEEL_LINE, mono: MONO } =
   MISTER_ARTIFACT
@@ -60,21 +66,39 @@ function buttonStyle(enabled: boolean): React.CSSProperties {
   }
 }
 
-export function CostSheetSavePanel({ inputs, locale }: { inputs: ImportInputs; locale: Locale }) {
+export function CostSheetSavePanel({
+  inputs,
+  locale,
+  draftKey,
+}: {
+  inputs: ImportInputs
+  locale: Locale
+  draftKey?: string
+}) {
+  const { draft: d, persist } = useArtifactDraft<CSPSnap>(draftKey)
   const [lanes, setLanes] = useState<CostingLane[] | null>(null)
-  const [laneId, setLaneId] = useState('')
-  const [label, setLabel] = useState('')
-  const [saved, setSaved] = useState<{ id: string } | null>(null)
+  const [laneId, setLaneId] = useState(d?.laneId ?? '')
+  const [label, setLabel] = useState(d?.label ?? '')
+  const [saved, setSaved] = useState<{ id: string } | null>(d?.saved ?? null)
+  const [savedFingerprint, setSavedFingerprint] = useState<string | null>(d?.savedFingerprint ?? null)
   const [error, setError] = useState<string | null>(null)
   const [saving, startSave] = useTransition()
 
+  usePersistOnUnmount<CSPSnap>({ laneId, label, saved, savedFingerprint }, persist)
+
   // When the upstream artifact re-solves (the `inputs` change), the "saved ✓"
   // confirmation must retract — otherwise it keeps vouching for an OLD sheet while
-  // a new, uncommittable price is on screen (Fable review finding 2).
+  // a new, uncommittable price is on screen (Fable review finding 2). But a bare
+  // remount (which rehydrates a still-valid saved sheet) must NOT retract: only
+  // clear when the current inputs differ from the ones that were saved.
   const inputsFingerprint = JSON.stringify(inputs)
   useEffect(() => {
-    setSaved(null)
+    if (saved && savedFingerprint !== inputsFingerprint) {
+      setSaved(null)
+      setSavedFingerprint(null)
+    }
     setError(null)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inputsFingerprint])
 
   useEffect(() => {
@@ -98,6 +122,7 @@ export function CostSheetSavePanel({ inputs, locale }: { inputs: ImportInputs; l
         return
       }
       setSaved({ id: res.data.id })
+      setSavedFingerprint(inputsFingerprint)
     })
   }
 

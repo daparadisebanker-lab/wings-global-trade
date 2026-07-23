@@ -43,10 +43,12 @@ interface MisterContextValue {
   selectArtifact: (seq: number) => void
   /** The artifact the canvas is showing (selected, else newest, else none). */
   selectedArtifact: CopilotResult | null
-  /** Canvas working memory — an editor's in-progress state, kept per artifact seq
-   *  so a remount (switching artifacts) rehydrates instead of resetting to seed. */
-  artifactDrafts: Record<number, unknown>
-  saveArtifactDraft: (seq: number, value: unknown) => void
+  /** Canvas working memory — an editor's (or its commit panel's) in-progress state,
+   *  kept per string key so a remount (switching artifacts) rehydrates instead of
+   *  resetting to seed. Editors key on String(seq); their commit panels on
+   *  `${seq}:commit` so a "saved ✓" latch + deep-link survive a flip (no re-submit). */
+  artifactDrafts: Record<string, unknown>
+  saveArtifactDraft: (key: string, value: unknown) => void
 }
 
 const MisterContext = createContext<MisterContextValue | null>(null)
@@ -97,9 +99,15 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
 
   const latestSeq = artifacts.length ? artifacts[artifacts.length - 1].seq : null
   const [selectedSeq, setSelectedSeq] = useState<number | null>(null)
-  // A freshly-composed artifact always takes the canvas; the operator can flip back after.
+  // A freshly-composed artifact takes the canvas — UNLESS the operator is actively
+  // editing the current one (focus inside the canvas), in which case stealing it
+  // would remount the editor and yank focus mid-keystroke. The new artifact still
+  // appears in the switcher for a deliberate flip.
   useEffect(() => {
-    if (latestSeq !== null) setSelectedSeq(latestSeq)
+    if (latestSeq === null) return
+    const active = typeof document !== 'undefined' ? document.activeElement : null
+    if (active && active.closest?.('.ck-canvas-art')) return
+    setSelectedSeq(latestSeq)
   }, [latestSeq])
 
   const selectedArtifact = useMemo(
@@ -112,9 +120,9 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
   // artifact seq) on unmount, so flipping the switcher and back — or a new artifact
   // stealing the canvas mid-edit — rehydrates instead of discarding the operator's
   // tuned numbers (closes the remount data-loss the review flagged).
-  const [artifactDrafts, setArtifactDrafts] = useState<Record<number, unknown>>({})
-  const saveArtifactDraft = useCallback((seq: number, value: unknown) => {
-    setArtifactDrafts((prev) => ({ ...prev, [seq]: value }))
+  const [artifactDrafts, setArtifactDrafts] = useState<Record<string, unknown>>({})
+  const saveArtifactDraft = useCallback((key: string, value: unknown) => {
+    setArtifactDrafts((prev) => ({ ...prev, [key]: value }))
   }, [])
 
   const value = useMemo<MisterContextValue>(
@@ -147,10 +155,17 @@ export function useMister(): MisterContextValue {
   return ctx
 }
 
-/** Read/write one artifact's canvas working memory (its editor's persisted state). */
-export function useArtifactDraft<T>(seq: number): { draft: T | undefined; persist: (value: T) => void } {
+/** Read/write one slot of canvas working memory. `key` undefined (e.g. a commit
+ *  panel used in a read-only thread artifact, not the canvas) → no-op, so the
+ *  consumer behaves as if there were no working memory. */
+export function useArtifactDraft<T>(key: string | undefined): { draft: T | undefined; persist: (value: T) => void } {
   const { artifactDrafts, saveArtifactDraft } = useMister()
-  const draft = artifactDrafts[seq] as T | undefined
-  const persist = useCallback((value: T) => saveArtifactDraft(seq, value), [seq, saveArtifactDraft])
+  const draft = key !== undefined ? (artifactDrafts[key] as T | undefined) : undefined
+  const persist = useCallback(
+    (value: T) => {
+      if (key !== undefined) saveArtifactDraft(key, value)
+    },
+    [key, saveArtifactDraft],
+  )
   return { draft, persist }
 }

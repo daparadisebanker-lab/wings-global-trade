@@ -52,17 +52,18 @@ export function MisterCanvas() {
         ) : null}
       </div>
 
-      {/* Switcher — only once there's more than one composition to move between. */}
+      {/* Switcher — only once there's more than one composition to move between.
+          role="group" + aria-pressed (not a tablist — we don't implement the
+          tab keyboard model; buttons are individually Tab-reachable). */}
       {artifacts.length > 1 ? (
-        <div className="ck-switcher" role="tablist" aria-label={t({ es: 'Composiciones', en: 'Compositions' }, locale)}>
+        <div className="ck-switcher" role="group" aria-label={t({ es: 'Composiciones', en: 'Compositions' }, locale)}>
           {artifacts.map((a) => {
             const active = a.seq === selectedSeq
             return (
               <button
                 key={a.seq}
                 type="button"
-                role="tab"
-                aria-selected={active}
+                aria-pressed={active}
                 className={active ? 'ck-switch is-active' : 'ck-switch'}
                 onClick={() => selectArtifact(a.seq)}
               >
