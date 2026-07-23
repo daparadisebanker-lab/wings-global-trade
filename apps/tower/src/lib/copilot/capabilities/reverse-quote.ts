@@ -110,6 +110,9 @@ export interface ReverseQuoteData {
   cashOutlay: number
   fob: number
   incoterm: Incoterm
+  /** The base cost inputs behind the solve — lets the canvas editor seed its
+   *  controls, re-solve, and commit a cost sheet (read-only renderer ignores it). */
+  input: ImportInputs
 }
 
 // ── Extraction (model → params) ──────────────────────────────────────────────
@@ -221,6 +224,7 @@ export const reverseQuoteCapability: Capability = {
       cashOutlay: solution.result.cashOutlay,
       fob,
       incoterm,
+      input: baseInputs,
     }
 
     return { renderer: 'reverse-quote', note, data }
