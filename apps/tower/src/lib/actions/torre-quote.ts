@@ -30,6 +30,7 @@ import {
   type RawTorreDraftRow,
 } from '@/lib/torre/drafts'
 import type { SourceRef, TorreArtifactPayload } from '@/lib/torre/artifacts'
+import { resolveFreightRate, type RateRow } from '@/lib/torre/rates'
 
 const uuid = z.string().uuid()
 
@@ -120,6 +121,50 @@ export async function runTorreQuote(input: RunTorreQuoteInput): Promise<ActionRe
     )
   }
 
+  const today = serverToday(parsed.data.today)
+
+  // Freight (A1): operator-stated wins; else source a DATED rate from rate_tables —
+  // never invented (Directive 4). A lapsed rate carries a past validUntil so the quote
+  // run raises the rate-expiry blocker; nothing matching → null → rate-missing blocker.
+  const { data: freightRows } = await db
+    .from('rate_tables')
+    .select('kind,route,mode,container_type,rate_minor,currency,valid_from,valid_to,source')
+    .eq('brand_id', laneRow.brand_id)
+  const rates: RateRow[] = (
+    (freightRows ?? []) as Array<{
+      kind: 'FREIGHT' | 'INSURANCE'
+      route: string
+      mode: 'SEA' | 'AIR' | 'LAND'
+      container_type: string | null
+      rate_minor: number
+      currency: string
+      valid_from: string
+      valid_to: string | null
+      source: string | null
+    }>
+  ).map((r) => ({
+    kind: r.kind,
+    route: r.route,
+    mode: r.mode,
+    containerType: r.container_type,
+    rateMinor: r.rate_minor,
+    currency: r.currency,
+    validFrom: r.valid_from,
+    validTo: r.valid_to,
+    source: r.source,
+  }))
+
+  let effectiveSpec = spec
+  let freightSource: SourceRef | null =
+    spec.freightInternational != null ? { kind: 'operator', label: 'Flete indicado por el operador' } : null
+  if (spec.freightInternational == null) {
+    const resolved = resolveFreightRate(rates, { mode: 'SEA' }, today)
+    if (resolved) {
+      effectiveSpec = { ...spec, freightInternational: resolved.rateMajor }
+      freightSource = resolved.source
+    }
+  }
+
   // Build the context (rates from config; brand-default Ad Valorem; mocked TRM).
   const adValoremRate = resolveAdValoremRate(adValoremTable, '') // brand default (never null)
   const ctx: QuoteRunContext = {
@@ -130,7 +175,7 @@ export async function runTorreQuote(input: RunTorreQuoteInput): Promise<ActionRe
     adValoremRate,
     exchangeRate: 3.7, // MOCK_CONNECTORS: no live TRM feed; referential rate
     marginDefault: 0.18,
-    freightSource: spec.freightInternational != null ? { kind: 'operator', label: 'Flete indicado por el operador' } : null,
+    freightSource,
     tariffSource: {
       kind: 'tariff_position',
       label: `Ad Valorem ${(adValoremRate * 100).toFixed(0)}% (predeterminado de marca)`,
@@ -138,12 +183,12 @@ export async function runTorreQuote(input: RunTorreQuoteInput): Promise<ActionRe
     trmSource: { kind: 'org_rule', label: 'TC referencial 3.70 (mock)' },
     marginSource: { kind: 'org_rule', label: `Margen por defecto ${(0.18 * 100).toFixed(0)}%` },
     validityDays: 15,
-    today: serverToday(parsed.data.today),
+    today,
     defaultClientName: spec.clientName,
     defaultLanguage: spec.language ?? 'es',
   }
 
-  const runInput = assembleQuoteRunInput(spec, ctx)
+  const runInput = assembleQuoteRunInput(effectiveSpec, ctx)
   const result = buildQuoteRun(runInput)
 
   if (!persist) {
