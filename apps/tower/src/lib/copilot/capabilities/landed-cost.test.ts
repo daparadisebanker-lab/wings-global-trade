@@ -67,6 +67,44 @@ describe('landedCostCapability.run — Part B context inheritance', () => {
   })
 })
 
+describe('landedCostCapability.run — provenance (Scenario Ledger)', () => {
+  it('stamps seededFrom with the inherited (deviating, unstated) fields', async () => {
+    const client = stubClient({ understood: true, exchangeRate: 3.9 })
+    const ctx = {
+      kind: 'costing' as const,
+      inputs: { ...DEFAULT_INPUTS, fob: 8000, adValoremRate: 0.06 },
+      sourceSeq: 2,
+    }
+    const res = await landedCostCapability.run(client, '¿y si el TC sube a 3.9?', undefined, ctx)
+    const data = res.data as LandedCostData
+    expect(data.seededFrom?.seq).toBe(2)
+    const fields = (data.seededFrom?.fields ?? []).map((f) => f.es)
+    // FOB + Ad Valorem were inherited (deviate from defaults, never restated); TC was restated.
+    expect(fields).toContain('FOB 8,000') // the load-bearing base price is disclosed
+    expect(fields).toContain('Ad Val 6.0%')
+    expect(fields.some((f) => f.startsWith('TC'))).toBe(false)
+  })
+
+  it('has no seededFrom without a canvas context (nothing was inherited)', async () => {
+    const client = stubClient({ understood: true, fob: 8000 })
+    const res = await landedCostCapability.run(client, 'costea un FOB de 8000', undefined, undefined)
+    const data = res.data as LandedCostData
+    expect(data.seededFrom).toBeUndefined()
+  })
+
+  it('drops provenance when the client sourceSeq is junk', async () => {
+    const client = stubClient({ understood: true, exchangeRate: 3.9 })
+    const ctx = {
+      kind: 'costing' as const,
+      inputs: { ...DEFAULT_INPUTS, fob: 8000, adValoremRate: 0.06 },
+      sourceSeq: -5,
+    }
+    const res = await landedCostCapability.run(client, '¿y con TC 3.9?', undefined, ctx)
+    const data = res.data as LandedCostData
+    expect(data.seededFrom).toBeUndefined()
+  })
+})
+
 describe('buildInputs', () => {
   it('applies the full Peru-SUNAT defaults when nothing is mentioned', () => {
     const inputs = buildInputs({})

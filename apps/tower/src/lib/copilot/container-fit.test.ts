@@ -27,6 +27,38 @@ describe('containerFitCapability.run — Part B context inheritance', () => {
   })
 })
 
+describe('containerFitCapability.run — provenance (Scenario Ledger)', () => {
+  it('stamps seededFrom with the inherited box + container on a weight-only follow-up', async () => {
+    const client = stubClient({ understood: true, weightEachKg: 950 })
+    const input: ContainerFitInput = {
+      itemLengthM: 1.2,
+      itemWidthM: 1.0,
+      itemHeightM: 1.1,
+      weightEachKg: 500,
+      weightCapKg: null,
+      quantity: null,
+      containerKind: '20GP',
+    }
+    const res = await containerFitCapability.run(client, '¿y si pesan 950 kg cada una?', undefined, {
+      kind: 'fit',
+      input,
+      sourceSeq: 4,
+    })
+    const data = res.data as ContainerFitPayload
+    expect(data.seededFrom?.seq).toBe(4)
+    const fields = (data.seededFrom?.fields ?? []).map((f) => f.es)
+    expect(fields).toContain('Caja 1.2×1×1.1 m')
+    expect(fields).toContain('20GP')
+  })
+
+  it('has no seededFrom when the box is stated fresh (no canvas)', async () => {
+    const client = stubClient({ understood: true, itemLengthM: 1, itemWidthM: 1, itemHeightM: 1, containerKind: '40HC' })
+    const res = await containerFitCapability.run(client, 'una caja de 1×1×1 en un 40HC', undefined, undefined)
+    const data = res.data as ContainerFitPayload
+    expect(data.seededFrom).toBeUndefined()
+  })
+})
+
 describe('computeContainerFit', () => {
   it('returns null on non-positive geometry', () => {
     expect(

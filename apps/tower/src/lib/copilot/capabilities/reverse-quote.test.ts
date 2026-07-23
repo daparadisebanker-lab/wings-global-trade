@@ -54,6 +54,30 @@ describe('reverseQuoteCapability.run — Part B context inheritance', () => {
   })
 })
 
+describe('reverseQuoteCapability.run — provenance (Scenario Ledger)', () => {
+  it('stamps seededFrom with the inherited incoterm + fuel', async () => {
+    const client = stubClient({ understood: true, marginPct: 25 })
+    const ctx = {
+      kind: 'costing' as const,
+      inputs: { ...DEFAULT_INPUTS, fob: 40000, incoterm: 'CIF' as const, fuelType: 'diesel' as const, marginMode: 'percent' as const, marginPercent: 0.2 },
+      sourceSeq: 1,
+    }
+    const res = await reverseQuoteCapability.run(client, '¿y con 25% de margen?', undefined, ctx)
+    const data = res.data as ReverseQuoteData
+    expect(data.seededFrom?.seq).toBe(1)
+    const fields = (data.seededFrom?.fields ?? []).map((f) => f.es)
+    expect(fields).toContain('CIF')
+    expect(fields).toContain('diesel')
+  })
+
+  it('has no seededFrom when solving fresh without a canvas', async () => {
+    const client = stubClient({ understood: true, fob: 50000, marginPct: 25 })
+    const res = await reverseQuoteCapability.run(client, 'precio para 25% sobre 50000', undefined, undefined)
+    const data = res.data as ReverseQuoteData
+    expect(data.seededFrom).toBeUndefined()
+  })
+})
+
 // A realistic base: FOB high enough that the engine's $1000 percent-mode floor
 // never binds, so a gross target is achieved exactly.
 const base: ImportInputs = { ...DEFAULT_INPUTS, fob: 50000, incoterm: 'FOB' }

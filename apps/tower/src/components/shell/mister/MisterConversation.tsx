@@ -13,6 +13,7 @@ import { t, type Locale, type Localized } from '@/lib/i18n'
 import { MisterMark } from '../MisterMark'
 import { MISTER_RENDERERS } from '../mister-renderers'
 import { useMister, type Pending } from './MisterProvider'
+import { artifactLabel } from './handoffs'
 import '../mister-dock.css'
 
 const ALLOWED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/gif']
@@ -43,7 +44,21 @@ function fileToPending(file: File): Promise<Pending | null> {
 }
 
 export function MisterConversation() {
-  const { locale, thread, busy, pending, draft, setDraft, setPending, send } = useMister()
+  const {
+    locale,
+    thread,
+    busy,
+    pending,
+    draft,
+    setDraft,
+    setPending,
+    send,
+    selectedArtifact,
+    selectedSeq,
+    hasCanvasContext,
+    skipCanvasContext,
+    setSkipCanvasContext,
+  } = useMister()
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const threadRef = useRef<HTMLDivElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)
@@ -163,6 +178,41 @@ export function MisterConversation() {
           </div>
         ) : null}
       </div>
+
+      {/* Canvas-context chip (Scenario Ledger): discloses that the next ask will
+          inherit the artifact on the canvas, with ✕ to send without it. */}
+      {hasCanvasContext && selectedArtifact ? (
+        <div className="mister-ctx-chip">
+          {skipCanvasContext ? (
+            <>
+              <span className="meta">
+                {t({ es: 'Enviar sin heredar', en: 'Sending without inheriting' }, locale)}:{' '}
+                {t(artifactLabel(selectedArtifact.renderer), locale)}
+                {selectedSeq != null ? ` #${selectedSeq}` : ''}
+              </span>
+              <button type="button" className="use" onClick={() => setSkipCanvasContext(false)}>
+                {t({ es: 'usar lienzo', en: 'use canvas' }, locale)}
+              </button>
+            </>
+          ) : (
+            <>
+              <span aria-hidden className="g" />
+              <span className="meta">
+                {t({ es: 'Hereda del lienzo', en: 'Inherits canvas' }, locale)}: {t(artifactLabel(selectedArtifact.renderer), locale)}
+                {selectedSeq != null ? ` #${selectedSeq}` : ''}
+              </span>
+              <button
+                type="button"
+                className="drop"
+                onClick={() => setSkipCanvasContext(true)}
+                aria-label={t({ es: 'Enviar sin heredar el lienzo', en: 'Send without inheriting the canvas' }, locale)}
+              >
+                ✕
+              </button>
+            </>
+          )}
+        </div>
+      ) : null}
 
       {pending ? (
         <div className="mister-attach">

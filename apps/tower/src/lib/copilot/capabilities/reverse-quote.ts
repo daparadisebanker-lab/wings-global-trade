@@ -18,6 +18,7 @@ import type { IntelligenceClient } from '@/lib/ai/client'
 import { DEFAULT_INPUTS } from '@/lib/costing/engine'
 import type { FuelType, ImportInputs, Incoterm } from '@/lib/costing/types'
 import { solveReverseQuote, type MarginKind } from '../reverse-quote-solve'
+import { inheritedCostingLabels, safeSeq } from '../canvas-seed'
 import { textResult, type Capability, type CanvasContext, type CopilotResult } from '../types'
 
 // The solver + payload types live in a pure, CLIENT-SAFE module so the canvas
@@ -147,6 +148,18 @@ export const reverseQuoteCapability: Capability = {
     // One source of truth for the payload (and the commit inputs the editor uses),
     // so the displayed price and any saved cost sheet can never drift.
     const { data } = solveReverseQuote(baseInputs, marginKind, targetPct)
+
+    // Provenance: which cost inputs were inherited from the canvas this ask chained off.
+    const stated = new Set<string>()
+    if (statedFob !== null && statedFob > 0) stated.add('fob')
+    if (incotermOf(obj.incoterm) !== null) stated.add('incoterm')
+    if (fuelOf(obj.fuelType) !== null) stated.add('fuelType')
+    if (num(obj.engineCC) !== null) stated.add('engineCC')
+    const seq = safeSeq(context?.sourceSeq)
+    if (ctxBase && seq !== undefined && data.input) {
+      const fields = inheritedCostingLabels(data.input, DEFAULT_INPUTS, stated)
+      if (fields.length) data.seededFrom = { seq, fields }
+    }
 
     return { renderer: 'reverse-quote', note, data }
   },

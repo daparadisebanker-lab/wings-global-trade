@@ -130,6 +130,14 @@ export function CostArtifact({
         </span>
       </div>
 
+      {/* Provenance (Scenario Ledger) — the numbers inherited from a prior canvas. */}
+      {r.seededFrom ? (
+        <p style={{ margin: '0 0 8px', fontFamily: MONO, fontSize: 10, letterSpacing: '0.04em', color: ACCENT }}>
+          {t({ es: 'Heredado del lienzo', en: 'Inherited from canvas' }, locale)} #{r.seededFrom.seq}:{' '}
+          {r.seededFrom.fields.map((f) => t(f, locale)).join(' · ')}
+        </p>
+      ) : null}
+
       {/* SUNAT chain */}
       <Row label="CIF" value={r.cif} currency={c} />
       <Row label={t({ es: 'Ad Valorem', en: 'Ad Valorem' }, locale)} value={r.adValorem} currency={c} />

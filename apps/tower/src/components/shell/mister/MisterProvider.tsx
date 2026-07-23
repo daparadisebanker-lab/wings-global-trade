@@ -8,11 +8,26 @@
 // (draft in the overlay, keep drafting after you navigate). So the state lifts
 // here, wrapping the whole shell. The engine is unchanged: send() still calls the
 // single-shot askMister() server action and appends its CopilotResult.
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import { askMister } from '@/lib/actions/mister-copilot'
 import { textResult, type CanvasContext, type CopilotResult } from '@/lib/copilot/types'
 import { MISTER_RENDERERS } from '../mister-renderers'
+
+// Register the canvas getter BEFORE paint so the composer chip never renders a frame
+// without its context (the editor mounts in the same commit the selection changes).
+// Isomorphic so an SSR pass (provider wraps the shell) doesn't warn.
+const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
 /** One turn in the thread — the operator's message, or Mister's result. */
 export type MisterMsg = { who: 'op'; text: string; image?: string } | { who: 'mi'; result: CopilotResult }
@@ -53,6 +68,16 @@ interface MisterContextValue {
    *  send() reads the selected artifact's getter to pass canvas context into a
    *  chained ask. A ref registry, so per-keystroke updates never re-render. */
   registerCanvasGetter: (seq: number, getter: () => CanvasContext | null) => () => void
+  /** An editor reports whether its context is currently non-null (computable). The
+   *  chip must reflect what send() will actually attach, not merely that an editor is
+   *  mounted — an editor with blanked/invalid inputs registers but yields null. */
+  setContextLive: (seq: number, live: boolean) => void
+  /** True when the selected artifact has a LIVE (non-null) editor context that the
+   *  next ask would inherit — drives the composer's disclosure chip (Scenario Ledger). */
+  hasCanvasContext: boolean
+  /** The operator ✕'d the chip: skip inheritance for the next send (one-shot). */
+  skipCanvasContext: boolean
+  setSkipCanvasContext: (skip: boolean) => void
 }
 
 const MisterContext = createContext<MisterContextValue | null>(null)
@@ -66,7 +91,16 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
   // Live canvas-context registry (Part B). Refs so a mounted editor can update its
   // getter every render without re-rendering the shell; send() reads them at call time.
   const canvasGetters = useRef(new Map<number, () => CanvasContext | null>())
+  // Seqs whose editor currently yields a non-null context (computable inputs). The
+  // chip keys off THIS, not mere registration, so it never promises an inheritance
+  // that send() won't carry.
+  const liveSeqs = useRef(new Set<number>())
   const selectedSeqRef = useRef<number | null>(null)
+  // Bumped when editors register/unregister or their context flips null↔non-null,
+  // so `hasCanvasContext` is reactive.
+  const [getterVersion, setGetterVersion] = useState(0)
+  // One-shot: the operator ✕'d the context chip, so the NEXT send skips inheritance.
+  const [skipCanvasContext, setSkipCanvasContext] = useState(false)
 
   const send = useCallback(async () => {
     const text = draft.trim()
@@ -76,9 +110,10 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
     setDraft('')
     setPending(null)
     setBusy(true)
-    // Carry the canvas the operator was on into a chained ask.
+    // Carry the canvas the operator was on into a chained ask — unless they ✕'d it.
     const seq = selectedSeqRef.current
-    const context = (seq != null ? canvasGetters.current.get(seq)?.() : null) ?? undefined
+    const context = skipCanvasContext ? undefined : (seq != null ? canvasGetters.current.get(seq)?.() : null) ?? undefined
+    if (skipCanvasContext) setSkipCanvasContext(false) // one-shot
     try {
       const result = await askMister(
         text,
@@ -94,7 +129,7 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
     } finally {
       setBusy(false)
     }
-  }, [draft, pending, busy, locale])
+  }, [draft, pending, busy, locale, skipCanvasContext])
 
   // Every renderable artifact (never the plain 'text' bubble), with a stable
   // per-session seq assigned by arrival order — the canvas switcher's model.
@@ -136,10 +171,39 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
   }, [selectedSeq])
   const registerCanvasGetter = useCallback((seq: number, getter: () => CanvasContext | null) => {
     canvasGetters.current.set(seq, getter)
+    setGetterVersion((v) => v + 1)
     return () => {
-      if (canvasGetters.current.get(seq) === getter) canvasGetters.current.delete(seq)
+      if (canvasGetters.current.get(seq) === getter) {
+        canvasGetters.current.delete(seq)
+        liveSeqs.current.delete(seq)
+        setGetterVersion((v) => v + 1)
+      }
     }
   }, [])
+
+  // An editor reports its context liveness (non-null); only a real transition bumps
+  // the version, so a per-keystroke re-render of a still-live editor is a no-op here.
+  const setContextLive = useCallback((seq: number, live: boolean) => {
+    const set = liveSeqs.current
+    if (live === set.has(seq)) return
+    if (live) set.add(seq)
+    else set.delete(seq)
+    setGetterVersion((v) => v + 1)
+  }, [])
+
+  // Reactive: does the artifact on the canvas have a LIVE (non-null) editor context
+  // the next ask would actually inherit?
+  const hasCanvasContext = useMemo(
+    () => selectedSeq != null && liveSeqs.current.has(selectedSeq),
+    [selectedSeq, getterVersion],
+  )
+
+  // The ✕-skip is a one-shot about the artifact that was on the canvas when it was
+  // clicked; a switcher flip changes the target, so clear it — never let a skip
+  // decided for #2 silently drop #1's inheritance.
+  useEffect(() => {
+    setSkipCanvasContext(false)
+  }, [selectedSeq])
 
   // Canvas working memory: each editor writes its latest state here (keyed by the
   // artifact seq) on unmount, so flipping the switcher and back — or a new artifact
@@ -167,8 +231,29 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
       artifactDrafts,
       saveArtifactDraft,
       registerCanvasGetter,
+      setContextLive,
+      hasCanvasContext,
+      skipCanvasContext,
+      setSkipCanvasContext,
     }),
-    [locale, thread, busy, pending, draft, send, artifacts, selectedSeq, selectArtifact, selectedArtifact, artifactDrafts, saveArtifactDraft, registerCanvasGetter],
+    [
+      locale,
+      thread,
+      busy,
+      pending,
+      draft,
+      send,
+      artifacts,
+      selectedSeq,
+      selectArtifact,
+      selectedArtifact,
+      artifactDrafts,
+      saveArtifactDraft,
+      registerCanvasGetter,
+      setContextLive,
+      hasCanvasContext,
+      skipCanvasContext,
+    ],
   )
 
   return <MisterContext.Provider value={value}>{children}</MisterContext.Provider>
@@ -183,12 +268,19 @@ export function useMister(): MisterContextValue {
 
 /** Register the mounted editor's LIVE canvas context (its normalized inputs) so a
  *  chained ask inherits it (Part B). The getter returns the latest via a ref, so
- *  editing never re-renders the shell; it unregisters on unmount. */
+ *  editing never re-renders the shell; it unregisters on unmount. Liveness (context
+ *  non-null) is reported separately so the composer chip reflects what send() will
+ *  actually attach — an editor with blanked inputs is registered but not live. */
 export function useCanvasContext(seq: number, context: CanvasContext | null): void {
-  const { registerCanvasGetter } = useMister()
+  const { registerCanvasGetter, setContextLive } = useMister()
   const ref = useRef(context)
   ref.current = context
-  useEffect(() => registerCanvasGetter(seq, () => ref.current), [seq, registerCanvasGetter])
+  useIsoLayoutEffect(() => registerCanvasGetter(seq, () => ref.current), [seq, registerCanvasGetter])
+  const live = context != null
+  useIsoLayoutEffect(() => {
+    setContextLive(seq, live)
+    return () => setContextLive(seq, false)
+  }, [seq, live, setContextLive])
 }
 
 /** Read/write one slot of canvas working memory. `key` undefined (e.g. a commit

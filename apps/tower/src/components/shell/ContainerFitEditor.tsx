@@ -66,7 +66,7 @@ export function ContainerFitEditor({ result, locale = DEFAULT_LOCALE, seq }: { r
 
   // Feed the current box back into Mister so a chained ask inherits it (Part B) —
   // only once it's a real fit (matches the costing editors' gate-on-computable).
-  useCanvasContext(seq, fit ? { kind: 'fit', input: fitInput } : null)
+  useCanvasContext(seq, fit ? { kind: 'fit', input: fitInput, sourceSeq: seq } : null)
 
   return (
     <div style={{ background: PANEL_BG, border: BORDER, borderRadius: 12, padding: '14px 16px', color: TEXT, display: 'flex', flexDirection: 'column', gap: 12 }}>
