@@ -1,13 +1,12 @@
 'use client'
 
-// LandedCostEditor — the editable landed-cost surface (Phase E, editors batch).
-// The thread shows the read-only SUNAT chain; the canvas serves THIS: change the
-// FOB, incoterm, margin, Ad Valorem, fuel or engine and the whole chain (CIF →
-// Ad Valorem → ISC → IGV → landed → margin → sale price) recomputes instantly
-// through the SAME parity-validated engine (computeImportCost — no rate invented,
-// no server round-trip). Rendered through the existing CostArtifact. There is no
-// persistence seam for a standalone landed cost yet (unlike quotes), so the commit
-// here is a hand-off into the full Costing calculator; the rail also links there.
+// LandedCostEditor — the editable landed-cost surface (Phase E editor loop,
+// hardened by Fable review). Change FOB, incoterm, margin, Ad Valorem, exchange
+// rate, fuel or engine and the whole SUNAT chain recomputes instantly through the
+// parity-validated engine (computeImportCost — no rate invented, no server round-
+// trip), rendered by CostArtifact. Commits a real cost sheet via CostSheetSavePanel
+// (saveCostCalculation, server-authoritative). Uses the shared editor-kit so the
+// locale-hardened parseNum + Field are identical across every editor.
 import { useMemo, useState } from 'react'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import { computeImportCost } from '@/lib/costing/engine'
@@ -15,9 +14,10 @@ import type { FuelType, ImportInputs, Incoterm } from '@/lib/costing/types'
 import type { LandedCostData } from '@/lib/copilot/capabilities/landed-cost'
 import { CostArtifact } from './CostArtifact'
 import { CostSheetSavePanel } from './CostSheetSavePanel'
+import { Field, fieldStyle, parseNum } from './mister/editor-kit'
 import { MISTER_ARTIFACT } from './mister-theme'
 
-const { text: TEXT, muted: MUTED, panelBg: PANEL_BG, fieldBg: FIELD_BG, border: BORDER, mono: MONO } = MISTER_ARTIFACT
+const { text: TEXT, muted: MUTED, panelBg: PANEL_BG, border: BORDER } = MISTER_ARTIFACT
 
 const INCOTERMS: Incoterm[] = ['EXW', 'FOB', 'CFR', 'CIF']
 const FUELS: { value: FuelType; label: { es: string; en: string } }[] = [
@@ -27,41 +27,9 @@ const FUELS: { value: FuelType; label: { es: string; en: string } }[] = [
   { value: 'electric', label: { es: 'Eléctrico', en: 'Electric' } },
 ]
 
-/** Parse a positive decimal; blank/invalid → null (fall back to the seed value). */
-function parseNum(raw: string): number | null {
-  const cleaned = raw.replace(/[^0-9.]/g, '')
-  if (cleaned === '' || cleaned === '.') return null
-  const n = Number(cleaned)
-  return Number.isFinite(n) && n >= 0 ? n : null
-}
-
-const fieldStyle: React.CSSProperties = {
-  width: '100%',
-  background: FIELD_BG,
-  color: TEXT,
-  border: BORDER,
-  borderRadius: 8,
-  padding: '7px 9px',
-  fontFamily: MONO,
-  fontSize: 13,
-  textAlign: 'right',
-  WebkitAppearance: 'none',
-  appearance: 'none',
-}
-const labelStyle: React.CSSProperties = {
-  fontFamily: MONO,
-  fontSize: 9.5,
-  letterSpacing: '0.06em',
-  textTransform: 'uppercase',
-  color: MUTED,
-}
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <label style={{ display: 'flex', flexDirection: 'column', gap: 3, flex: 1, minWidth: 0 }}>
-      <span style={labelStyle}>{label}</span>
-      {children}
-    </label>
-  )
+/** Seed a percent field at full precision, trimming only float noise (finding 3). */
+function seedPct(fraction: number): string {
+  return String(Math.round(fraction * 1e6) / 1e4)
 }
 
 export function LandedCostEditor({ result, locale = DEFAULT_LOCALE }: { result: unknown; locale?: Locale }) {
@@ -69,32 +37,34 @@ export function LandedCostEditor({ result, locale = DEFAULT_LOCALE }: { result: 
 
   const [fob, setFob] = useState(seed?.fob ? String(seed.fob) : '')
   const [incoterm, setIncoterm] = useState<Incoterm>(seed?.incoterm ?? 'FOB')
-  const [marginPct, setMarginPct] = useState(seed ? String(Math.round(seed.marginPercent * 1000) / 10) : '')
-  const [adValoremPct, setAdValoremPct] = useState(seed ? String(Math.round(seed.adValoremRate * 1000) / 10) : '')
+  const [marginPct, setMarginPct] = useState(seed ? seedPct(seed.marginPercent) : '')
+  const [adValoremPct, setAdValoremPct] = useState(seed ? seedPct(seed.adValoremRate) : '')
   const [fuelType, setFuelType] = useState<FuelType>(seed?.fuelType ?? 'gasoline')
   const [engineCC, setEngineCC] = useState(seed?.engineCC ? String(seed.engineCC) : '')
   const [exchangeRate, setExchangeRate] = useState(seed?.exchangeRate ? String(seed.exchangeRate) : '')
 
-  const data = useMemo<LandedCostData | null>(() => {
+  const computed = useMemo(() => {
     if (!seed) return null
     const inputs: ImportInputs = {
       ...seed,
       fob: parseNum(fob) ?? seed.fob,
       incoterm,
       fuelType,
-      engineCC: parseNum(engineCC) ?? seed.engineCC,
+      // Server requires an integer engineCC (finding 4) — match the preview.
+      engineCC: Math.round(parseNum(engineCC) ?? seed.engineCC),
       adValoremRate: (parseNum(adValoremPct) ?? seed.adValoremRate * 100) / 100,
       marginMode: 'percent',
       marginPercent: (parseNum(marginPct) ?? seed.marginPercent * 100) / 100,
       exchangeRate: parseNum(exchangeRate) || seed.exchangeRate,
     }
-    return {
+    const data: LandedCostData = {
       ...computeImportCost(inputs),
       currency: 'USD',
       incoterm: inputs.incoterm,
       productName: inputs.productName,
       input: inputs,
     }
+    return { data, inputs }
   }, [seed, fob, incoterm, marginPct, adValoremPct, fuelType, engineCC, exchangeRate])
 
   return (
@@ -105,7 +75,7 @@ export function LandedCostEditor({ result, locale = DEFAULT_LOCALE }: { result: 
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
         <Field label={`${incoterm} (USD)`}>
-          <input inputMode="decimal" style={fieldStyle} value={fob} onChange={(e) => setFob(e.target.value)} placeholder="0" />
+          <input inputMode="decimal" style={fieldStyle} value={fob} onChange={(e) => setFob(e.target.value)} placeholder={seed ? String(seed.fob) : '0'} />
         </Field>
         <Field label={t({ es: 'Incoterm', en: 'Incoterm' }, locale)}>
           <select style={{ ...fieldStyle, textAlign: 'left' }} value={incoterm} onChange={(e) => setIncoterm(e.target.value as Incoterm)}>
@@ -120,13 +90,13 @@ export function LandedCostEditor({ result, locale = DEFAULT_LOCALE }: { result: 
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
         <Field label={t({ es: 'Margen (%)', en: 'Margin (%)' }, locale)}>
-          <input inputMode="decimal" style={fieldStyle} value={marginPct} onChange={(e) => setMarginPct(e.target.value)} placeholder="0" />
+          <input inputMode="decimal" style={fieldStyle} value={marginPct} onChange={(e) => setMarginPct(e.target.value)} placeholder={seed ? seedPct(seed.marginPercent) : '0'} />
         </Field>
         <Field label={t({ es: 'Ad Valorem (%)', en: 'Ad Valorem (%)' }, locale)}>
-          <input inputMode="decimal" style={fieldStyle} value={adValoremPct} onChange={(e) => setAdValoremPct(e.target.value)} placeholder="0" />
+          <input inputMode="decimal" style={fieldStyle} value={adValoremPct} onChange={(e) => setAdValoremPct(e.target.value)} placeholder={seed ? seedPct(seed.adValoremRate) : '0'} />
         </Field>
         <Field label={t({ es: 'Tipo de cambio', en: 'Exchange rate' }, locale)}>
-          <input inputMode="decimal" style={fieldStyle} value={exchangeRate} onChange={(e) => setExchangeRate(e.target.value)} placeholder="3.70" />
+          <input inputMode="decimal" style={fieldStyle} value={exchangeRate} onChange={(e) => setExchangeRate(e.target.value)} placeholder={seed ? String(seed.exchangeRate) : '3.70'} />
         </Field>
       </div>
 
@@ -141,14 +111,14 @@ export function LandedCostEditor({ result, locale = DEFAULT_LOCALE }: { result: 
           </select>
         </Field>
         <Field label={t({ es: 'Cilindrada (CC)', en: 'Engine (CC)' }, locale)}>
-          <input inputMode="numeric" style={fieldStyle} value={engineCC} onChange={(e) => setEngineCC(e.target.value)} placeholder="—" />
+          <input inputMode="numeric" style={fieldStyle} value={engineCC} onChange={(e) => setEngineCC(e.target.value)} placeholder={seed?.engineCC ? String(seed.engineCC) : '—'} />
         </Field>
       </div>
 
-      {data ? (
+      {computed ? (
         <>
-          <CostArtifact result={data} locale={locale} />
-          <CostSheetSavePanel inputs={data.input} locale={locale} />
+          <CostArtifact result={computed.data} locale={locale} />
+          <CostSheetSavePanel inputs={computed.inputs} locale={locale} />
         </>
       ) : (
         <p style={{ margin: 0, fontSize: 12.5, color: MUTED }}>

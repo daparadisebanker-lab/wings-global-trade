@@ -25,7 +25,9 @@ export interface LandedCostData extends ImportResult {
   currency: string
   incoterm: Incoterm
   productName: string
-  input: ImportInputs
+  /** Optional so consumers guard it — the editor seeds from it; the read-only
+   *  renderer and any older payload ignore it (Fable review finding 14). */
+  input?: ImportInputs
 }
 
 // ── Standard Peru-SUNAT defaults (identity blanked; numbers mirror the app) ──
@@ -96,7 +98,7 @@ Responde SOLO con un objeto JSON, sin texto alrededor, con esta forma exacta:
   "insuranceRate": number|null,
   "exchangeRate": number|null,
   "marginPercent": number|null,
-  "note": string
+  "note": string                         // nota breve EN EL IDIOMA de la frase del operador (español o inglés)
 }
 
 Reglas de unidades: convierte SIEMPRE porcentajes a fracción (18% → 0.18, Ad Valorem 6% → 0.06),

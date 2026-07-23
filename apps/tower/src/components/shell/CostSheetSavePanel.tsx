@@ -68,6 +68,15 @@ export function CostSheetSavePanel({ inputs, locale }: { inputs: ImportInputs; l
   const [error, setError] = useState<string | null>(null)
   const [saving, startSave] = useTransition()
 
+  // When the upstream artifact re-solves (the `inputs` change), the "saved ✓"
+  // confirmation must retract — otherwise it keeps vouching for an OLD sheet while
+  // a new, uncommittable price is on screen (Fable review finding 2).
+  const inputsFingerprint = JSON.stringify(inputs)
+  useEffect(() => {
+    setSaved(null)
+    setError(null)
+  }, [inputsFingerprint])
+
   useEffect(() => {
     let live = true
     listCostingLanes().then((res) => {
@@ -94,7 +103,11 @@ export function CostSheetSavePanel({ inputs, locale }: { inputs: ImportInputs; l
 
   if (saved) {
     return (
-      <div style={{ marginTop: 10, paddingTop: 10, borderTop: BORDER, display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div
+        role="status"
+        aria-live="polite"
+        style={{ marginTop: 10, paddingTop: 10, borderTop: BORDER, display: 'flex', flexDirection: 'column', gap: 8 }}
+      >
         <span style={{ fontFamily: MONO, fontSize: 11, letterSpacing: '0.06em', color: GOLD, textTransform: 'uppercase' }}>
           {t({ es: 'Hoja de costo guardada ✓', en: 'Cost sheet saved ✓' }, locale)}
         </span>
@@ -118,23 +131,27 @@ export function CostSheetSavePanel({ inputs, locale }: { inputs: ImportInputs; l
         {t({ es: 'Guardar hoja de costo', en: 'Save cost sheet' }, locale)}
       </span>
 
-      <label style={labelStyle}>{t({ es: 'Lane', en: 'Lane' }, locale)}</label>
-      <select style={fieldStyle} value={laneId} onChange={(e) => setLaneId(e.target.value)}>
-        <option value="">{t({ es: '— Elige una lane —', en: '— Choose a lane —' }, locale)}</option>
-        {(lanes ?? []).map((l) => (
-          <option key={l.id} value={l.id}>
-            {l.code} · {l.name}
-          </option>
-        ))}
-      </select>
+      <label style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+        <span style={labelStyle}>{t({ es: 'Lane', en: 'Lane' }, locale)}</span>
+        <select style={fieldStyle} value={laneId} onChange={(e) => setLaneId(e.target.value)}>
+          <option value="">{t({ es: '— Elige una lane —', en: '— Choose a lane —' }, locale)}</option>
+          {(lanes ?? []).map((l) => (
+            <option key={l.id} value={l.id}>
+              {l.code} · {l.name}
+            </option>
+          ))}
+        </select>
+      </label>
 
-      <label style={labelStyle}>{t({ es: 'Etiqueta (opcional)', en: 'Label (optional)' }, locale)}</label>
-      <input
-        style={fieldStyle}
-        value={label}
-        onChange={(e) => setLabel(e.target.value)}
-        placeholder={t({ es: 'p. ej. Montacargas — cliente X', en: 'e.g. Forklift — client X' }, locale)}
-      />
+      <label style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+        <span style={labelStyle}>{t({ es: 'Etiqueta (opcional)', en: 'Label (optional)' }, locale)}</span>
+        <input
+          style={fieldStyle}
+          value={label}
+          onChange={(e) => setLabel(e.target.value)}
+          placeholder={t({ es: 'p. ej. Montacargas — cliente X', en: 'e.g. Forklift — client X' }, locale)}
+        />
+      </label>
 
       {error ? <span style={{ fontSize: 11, color: ERROR }}>{error}</span> : null}
 
