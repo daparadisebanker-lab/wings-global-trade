@@ -11,6 +11,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { cn } from '@wings/trade-ui'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import { MISTER_ARTIFACT } from '@/components/shell/mister-theme'
+import { ConstellationField } from '@/components/shell/mister/ConstellationField'
 import { useTorreDraftsQuery } from './useTorreDraftsQuery'
 import { approveTorreDraft, rejectTorreDraft } from '@/lib/actions/torre-review'
 import { approveSideEffect, canApproveTorre } from '@/lib/torre/review-logic'
@@ -110,7 +111,8 @@ export function TorreReviewQueue({ locale = DEFAULT_LOCALE }: { locale?: Locale 
       {/* Queue list — host Tower chrome */}
       <div className="flex flex-col gap-1" role="listbox" aria-label={t({ es: 'Cola de revisión', en: 'Review queue' }, locale)}>
         <div className="mb-1 flex items-center justify-between px-1">
-          <span className="font-mono text-label uppercase tracking-[0.12em] text-ink-secondary">
+          <span className="flex items-center gap-2 font-mono text-label uppercase tracking-[0.12em] text-ink-secondary">
+            <ConstellationField size={20} state={pending ? 'thinking' : 'idle'} gradient ariaLabel="Mister" />
             {drafts.length} {t({ es: 'pendiente(s)', en: 'pending' }, locale)}
           </span>
           <span className="font-mono text-label text-ink-tertiary">J/K · ⌘↵ · R</span>
