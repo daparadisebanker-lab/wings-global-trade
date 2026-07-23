@@ -21,6 +21,7 @@ import {
 } from '@/lib/torre/artifacts'
 import type { QuoteRunResult } from '@/lib/torre/quote-run'
 import type { ImportResult } from '@/lib/costing/types'
+import './mister/mister-motion.css'
 
 const { text: TEXT, body: BODY, muted: MUTED, gold: ACCENT, steel: STEEL, error: ERR, panelBg: PANEL_BG, fieldBg: FIELD_BG, border: BORDER, steelLine: STEEL_LINE, mono: MONO } =
   MISTER_ARTIFACT
@@ -123,8 +124,34 @@ function Row({ label, value, currency, emphasis, accent, caution }: { label: str
   )
 }
 
+/**
+ * The document metadata strip (MISTER · <kind> · v<n> · <date>). When `sweep` is
+ * set (an approve just landed) a single Sky glow crosses it, 600ms — the "shipped"
+ * moment, paired with the avatar's CONFIRM snap. `key` forces a fresh sweep each time.
+ */
+function MetaStrip({ label, sweep }: { label: string; sweep?: boolean }) {
+  return (
+    <div
+      key={sweep ? 'sweep' : 'rest'}
+      className={sweep ? 'mister-motion mister-sweep' : undefined}
+      style={{
+        marginTop: 10,
+        paddingTop: 6,
+        borderTop: BORDER,
+        fontFamily: MONO,
+        fontSize: 10,
+        letterSpacing: '0.1em',
+        textTransform: 'uppercase',
+        color: MUTED,
+      }}
+    >
+      {label}
+    </div>
+  )
+}
+
 // ── (1) cotizacion card ───────────────────────────────────────────────────────
-export function CotizacionCard({ payload, locale = DEFAULT_LOCALE }: { payload: CotizacionPayload; locale?: Locale }) {
+export function CotizacionCard({ payload, locale = DEFAULT_LOCALE, sweep }: { payload: CotizacionPayload; locale?: Locale; sweep?: boolean }) {
   const c = payload.currency
   return (
     <div style={{ background: PANEL_BG, border: BORDER, borderRadius: 12, padding: '12px 14px', color: TEXT }}>
@@ -182,12 +209,14 @@ export function CotizacionCard({ payload, locale = DEFAULT_LOCALE }: { payload: 
           ))}
         </ul>
       )}
+
+      <MetaStrip sweep={sweep} label={`MISTER · COTIZACIÓN · v${payload.version} · ${payload.validityUntil}`} />
     </div>
   )
 }
 
 // ── (2) hoja_costos card (the internal trace) ─────────────────────────────────
-export function HojaCostosCard({ payload, locale = DEFAULT_LOCALE }: { payload: HojaCostosPayload; locale?: Locale }) {
+export function HojaCostosCard({ payload, locale = DEFAULT_LOCALE, sweep }: { payload: HojaCostosPayload; locale?: Locale; sweep?: boolean }) {
   const r = payload.result as unknown as Partial<ImportResult>
   const c = payload.currency
   const hasNumbers = typeof r.landedCost === 'number'
@@ -244,12 +273,13 @@ export function HojaCostosCard({ payload, locale = DEFAULT_LOCALE }: { payload: 
 
       <BlockerPanel blockers={payload.blockers} locale={locale} />
       <Sources sources={payload.sources} locale={locale} />
+      <MetaStrip sweep={sweep} label={`MISTER · HOJA DE COSTOS · v${payload.version}`} />
     </div>
   )
 }
 
 // ── (3) comunicacion card (the cover message) ─────────────────────────────────
-export function ComunicacionCard({ payload, locale = DEFAULT_LOCALE }: { payload: ComunicacionPayload; locale?: Locale }) {
+export function ComunicacionCard({ payload, locale = DEFAULT_LOCALE, sweep }: { payload: ComunicacionPayload; locale?: Locale; sweep?: boolean }) {
   return (
     <div style={{ background: PANEL_BG, border: BORDER, borderRadius: 12, padding: '12px 14px', color: TEXT }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
@@ -263,6 +293,7 @@ export function ComunicacionCard({ payload, locale = DEFAULT_LOCALE }: { payload
       <div style={{ marginTop: 8, paddingTop: 6, borderTop: BORDER, fontFamily: MONO, fontSize: 10.5, color: ACCENT }}>
         {t({ es: 'Al aprobar', en: 'On approve' }, locale)}: {locale === 'en' ? payload.sideEffect.en : payload.sideEffect.es}
       </div>
+      <MetaStrip sweep={sweep} label={`MISTER · COMUNICACIÓN · v${payload.version}`} />
     </div>
   )
 }

@@ -6,8 +6,11 @@
 // the M ([12,13],[12,16],[14,15],[15,16]); bridges are tangent metaballs (Hiroyuki
 // Sato construction, waist v=0.5, handle 2.4·r), re-derived every frame — never
 // stroked lines. States: BASE (static) · IDLE (noise drift) · THINKING (shrink +
-// vortex). prefers-reduced-motion → BASE. This is the only always-animated element.
+// vortex) · LOADING (condensation: grain scatters then condenses into the M) ·
+// CONFIRM (snap to exact formation + one Sky halo pulse — the "shipped" moment).
+// prefers-reduced-motion → BASE. This is the only always-animated element.
 import { useEffect, useRef } from 'react'
+import { CONDENSATION, condensationScatter, staggerFor, confirmHalo } from './constellation-motion'
 
 type Dot = { id: number; x: number; y: number; r: number; kind: 'sat' | 'core'; color: string }
 
@@ -38,13 +41,39 @@ const BRIDGES: [number, number][] = [
   [14, 15],
   [15, 16],
 ]
-const FLAT = '#3B82F6'
+const FLAT = '#3B82F6' // brand Blue (isotipo flat mode, CONSTELLATION-SPEC §3)
+const SKY = '#92C5FC' // brand Sky — the CONFIRM halo stroke (35% alpha)
 
-export type ConstellationState = 'base' | 'idle' | 'thinking'
+// Precomputed, deterministic: each dot's rank by distance from the centroid
+// (0 = nearest → condenses first) and its outward scatter direction.
+const RANK: Record<number, number> = {}
+;[...DOTS]
+  .map((d) => ({ id: d.id, dist: Math.hypot(d.x - 0.5, d.y - 0.5) }))
+  .sort((a, b) => a.dist - b.dist)
+  .forEach((r, i) => {
+    RANK[r.id] = i
+  })
+const SCATTER_DIR: Record<number, { x: number; y: number }> = {}
+DOTS.forEach((d, i) => {
+  let dx = d.x - 0.5
+  let dy = d.y - 0.5
+  const m = Math.hypot(dx, dy)
+  if (m < 1e-4) {
+    const a = (i / DOTS.length) * Math.PI * 2
+    dx = Math.cos(a)
+    dy = Math.sin(a)
+  } else {
+    dx /= m
+    dy /= m
+  }
+  SCATTER_DIR[d.id] = { x: dx, y: dy }
+})
+
+export type ConstellationState = 'base' | 'idle' | 'thinking' | 'loading' | 'confirm'
 
 interface Props {
   size?: number
-  /** 'base' static · 'idle' subtle drift · 'thinking' shrink+vortex. */
+  /** 'base' static · 'idle' drift · 'thinking' shrink+vortex · 'loading' condensation · 'confirm' halo snap. */
   state?: ConstellationState
   /** Flat single-hue (default) or per-dot gradient (≥96px). */
   gradient?: boolean
@@ -146,6 +175,15 @@ export function ConstellationField({ size = 40, state = 'idle', gradient = false
           nx += amp * Math.sin(tt * (0.4 + i * 0.03) + i)
           ny += amp * Math.cos(tt * (0.35 + i * 0.02) + i)
         }
+        if (effState === 'loading') {
+          // condensation: interpolate between scattered (radius 0.5) and formation.
+          const s = condensationScatter(tt * 1000, staggerFor(RANK[drec.id]))
+          const dir = SCATTER_DIR[drec.id]
+          const sx = 0.5 + dir.x * CONDENSATION.scatter
+          const sy = 0.5 + dir.y * CONDENSATION.scatter
+          nx = drec.x + (sx - drec.x) * s
+          ny = drec.y + (sy - drec.y) * s
+        }
         if (rot) {
           const rx = nx - cx
           const ry = ny - cy
@@ -183,6 +221,21 @@ export function ConstellationField({ size = 40, state = 'idle', gradient = false
         ctx.arc(drec.x, drec.y, drec.r, 0, Math.PI * 2)
         ctx.fillStyle = drec.color
         ctx.fill()
+      }
+
+      // CONFIRM: one Sky halo pulse emanating from the core M (1.8·r, 600ms, once).
+      if (effState === 'confirm') {
+        const halo = confirmHalo(tt * 1000)
+        if (halo) {
+          const coreR = 0.14 * size // the core M's radius from the centroid
+          ctx.beginPath()
+          ctx.arc(cx * size, cy * size, coreR * halo.radiusScale, 0, Math.PI * 2)
+          ctx.strokeStyle = SKY
+          ctx.globalAlpha = halo.alpha
+          ctx.lineWidth = Math.max(1, size * 0.03)
+          ctx.stroke()
+          ctx.globalAlpha = 1
+        }
       }
 
       if (effState !== 'base') raf = requestAnimationFrame(draw)

@@ -12,6 +12,7 @@ import { cn } from '@wings/trade-ui'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import { MISTER_ARTIFACT } from '@/components/shell/mister-theme'
 import { ConstellationField } from '@/components/shell/mister/ConstellationField'
+import { Condensation, HairlineSweep, ThreeDots } from '@/components/shell/mister/MisterLoaders'
 import { useTorreDraftsQuery } from './useTorreDraftsQuery'
 import { approveTorreDraft, rejectTorreDraft } from '@/lib/actions/torre-review'
 import { approveSideEffect, canApproveTorre } from '@/lib/torre/review-logic'
@@ -36,6 +37,9 @@ export function TorreReviewQueue({ locale = DEFAULT_LOCALE }: { locale?: Locale 
   const [pending, startTransition] = useTransition()
   const [index, setIndex] = useState(0)
   const [status, setStatus] = useState<{ text: string; tone: 'ok' | 'err' } | null>(null)
+  // The approve signature moment: true for ~650ms after a successful approve so the
+  // metadata strip glow-sweeps and the avatar snaps to CONFIRM before the item leaves.
+  const [justApproved, setJustApproved] = useState(false)
 
   const selected = drafts[Math.min(index, Math.max(0, drafts.length - 1))] ?? null
 
@@ -48,9 +52,18 @@ export function TorreReviewQueue({ locale = DEFAULT_LOCALE }: { locale?: Locale 
       if (!rec || !canApproveTorre(rec.payload)) return
       startTransition(async () => {
         const res = await approveTorreDraft(rec.id)
-        if (res.error) setStatus({ text: res.error.message, tone: 'err' })
-        else setStatus({ text: t(res.data.sideEffect, locale), tone: 'ok' })
-        refetch()
+        if (res.error) {
+          setStatus({ text: res.error.message, tone: 'err' })
+          refetch()
+          return
+        }
+        setStatus({ text: t(res.data.sideEffect, locale), tone: 'ok' })
+        // Play the "shipped" moment, THEN let the approved item leave the queue.
+        setJustApproved(true)
+        window.setTimeout(() => {
+          setJustApproved(false)
+          refetch()
+        }, 650)
       })
     },
     [locale, refetch],
@@ -93,7 +106,7 @@ export function TorreReviewQueue({ locale = DEFAULT_LOCALE }: { locale?: Locale 
     return () => window.removeEventListener('keydown', onKey)
   }, [drafts.length, selected, doApprove, doReject])
 
-  if (isLoading) return <p className="font-ui text-t0 text-ink-secondary">{t({ es: 'Cargando…', en: 'Loading…' }, locale)}</p>
+  if (isLoading) return <Condensation caption={t({ es: 'Reuniendo artefactos…', en: 'Gathering artifacts…' }, locale)} />
   if (isError) return <p className="font-ui text-t0 text-negative">{error?.message}</p>
   if (drafts.length === 0)
     return (
@@ -112,7 +125,7 @@ export function TorreReviewQueue({ locale = DEFAULT_LOCALE }: { locale?: Locale 
       <div className="flex flex-col gap-1" role="listbox" aria-label={t({ es: 'Cola de revisión', en: 'Review queue' }, locale)}>
         <div className="mb-1 flex items-center justify-between px-1">
           <span className="flex items-center gap-2 font-mono text-label uppercase tracking-[0.12em] text-ink-secondary">
-            <ConstellationField size={20} state={pending ? 'thinking' : 'idle'} gradient ariaLabel="Mister" />
+            <ConstellationField size={20} state={justApproved ? 'confirm' : pending ? 'thinking' : 'idle'} gradient ariaLabel="Mister" />
             {drafts.length} {t({ es: 'pendiente(s)', en: 'pending' }, locale)}
           </span>
           <span className="font-mono text-label text-ink-tertiary">J/K · ⌘↵ · R</span>
@@ -150,10 +163,11 @@ export function TorreReviewQueue({ locale = DEFAULT_LOCALE }: { locale?: Locale 
       <div className="flex flex-col gap-3">
         {selected && (
           <>
+            {pending && <HairlineSweep />}
             <div className="rounded-panel p-4" style={{ background: MISTER_ARTIFACT.ink }}>
-              {selected.payload.kind === 'COTIZACION' && <CotizacionCard payload={selected.payload} locale={locale} />}
-              {selected.payload.kind === 'HOJA_COSTOS' && <HojaCostosCard payload={selected.payload} locale={locale} />}
-              {selected.payload.kind === 'COMUNICACION' && <ComunicacionCard payload={selected.payload} locale={locale} />}
+              {selected.payload.kind === 'COTIZACION' && <CotizacionCard payload={selected.payload} locale={locale} sweep={justApproved} />}
+              {selected.payload.kind === 'HOJA_COSTOS' && <HojaCostosCard payload={selected.payload} locale={locale} sweep={justApproved} />}
+              {selected.payload.kind === 'COMUNICACION' && <ComunicacionCard payload={selected.payload} locale={locale} sweep={justApproved} />}
             </div>
 
             {status && (
@@ -180,7 +194,13 @@ export function TorreReviewQueue({ locale = DEFAULT_LOCALE }: { locale?: Locale 
                   approvable && !pending ? 'bg-accent text-accent-ink hover:opacity-90' : 'cursor-not-allowed bg-surface-2 text-ink-tertiary',
                 )}
               >
-                {t(approveSideEffect(selected.payload), locale)} <span className="font-mono text-label opacity-70">⌘↵</span>
+                {pending ? (
+                  <ThreeDots />
+                ) : (
+                  <>
+                    {t(approveSideEffect(selected.payload), locale)} <span className="font-mono text-label opacity-70">⌘↵</span>
+                  </>
+                )}
               </button>
               <button
                 type="button"
