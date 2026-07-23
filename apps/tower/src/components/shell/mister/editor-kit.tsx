@@ -5,8 +5,21 @@
 // navy field styles + a <Field> wrapper; the copies had already drifted (one
 // rejected zero, others didn't) and one carried a locale bug. Consolidated here
 // so a fix lands once for every editor.
-import type { ReactNode } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 import { MISTER_ARTIFACT } from '../mister-theme'
+
+/**
+ * Persist an editor's latest snapshot to its artifact draft ON UNMOUNT — exactly
+ * when switching artifacts would otherwise discard in-progress edits (Fable review
+ * finding 5). Writing only on unmount (not per keystroke) keeps the provider from
+ * re-rendering the whole shell on every character. The editor seeds its initial
+ * state from `draft` (via useArtifactDraft) so a remount rehydrates.
+ */
+export function usePersistOnUnmount<T>(snapshot: T, persist: (value: T) => void): void {
+  const ref = useRef(snapshot)
+  ref.current = snapshot
+  useEffect(() => () => persist(ref.current), [persist])
+}
 
 const { text: TEXT, muted: MUTED, fieldBg: FIELD_BG, border: BORDER, mono: MONO } = MISTER_ARTIFACT
 

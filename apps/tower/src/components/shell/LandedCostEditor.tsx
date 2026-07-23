@@ -14,8 +14,20 @@ import type { FuelType, ImportInputs, Incoterm } from '@/lib/costing/types'
 import type { LandedCostData } from '@/lib/copilot/capabilities/landed-cost'
 import { CostArtifact } from './CostArtifact'
 import { CostSheetSavePanel } from './CostSheetSavePanel'
-import { Field, fieldStyle, parseNum } from './mister/editor-kit'
+import { Field, fieldStyle, parseNum, usePersistOnUnmount } from './mister/editor-kit'
+import { useArtifactDraft } from './mister/MisterProvider'
 import { MISTER_ARTIFACT } from './mister-theme'
+
+/** Persisted editor state (canvas working memory) — survives artifact remount. */
+type LCSnap = {
+  fob: string
+  incoterm: Incoterm
+  marginPct: string
+  adValoremPct: string
+  fuelType: FuelType
+  engineCC: string
+  exchangeRate: string
+}
 
 const { text: TEXT, muted: MUTED, panelBg: PANEL_BG, border: BORDER } = MISTER_ARTIFACT
 
@@ -32,16 +44,19 @@ function seedPct(fraction: number): string {
   return String(Math.round(fraction * 1e6) / 1e4)
 }
 
-export function LandedCostEditor({ result, locale = DEFAULT_LOCALE }: { result: unknown; locale?: Locale }) {
+export function LandedCostEditor({ result, locale = DEFAULT_LOCALE, seq }: { result: unknown; locale?: Locale; seq: number }) {
   const seed = (result as LandedCostData).input
+  const { draft: d, persist } = useArtifactDraft<LCSnap>(seq)
 
-  const [fob, setFob] = useState(seed?.fob ? String(seed.fob) : '')
-  const [incoterm, setIncoterm] = useState<Incoterm>(seed?.incoterm ?? 'FOB')
-  const [marginPct, setMarginPct] = useState(seed ? seedPct(seed.marginPercent) : '')
-  const [adValoremPct, setAdValoremPct] = useState(seed ? seedPct(seed.adValoremRate) : '')
-  const [fuelType, setFuelType] = useState<FuelType>(seed?.fuelType ?? 'gasoline')
-  const [engineCC, setEngineCC] = useState(seed?.engineCC ? String(seed.engineCC) : '')
-  const [exchangeRate, setExchangeRate] = useState(seed?.exchangeRate ? String(seed.exchangeRate) : '')
+  const [fob, setFob] = useState(d?.fob ?? (seed?.fob ? String(seed.fob) : ''))
+  const [incoterm, setIncoterm] = useState<Incoterm>(d?.incoterm ?? seed?.incoterm ?? 'FOB')
+  const [marginPct, setMarginPct] = useState(d?.marginPct ?? (seed ? seedPct(seed.marginPercent) : ''))
+  const [adValoremPct, setAdValoremPct] = useState(d?.adValoremPct ?? (seed ? seedPct(seed.adValoremRate) : ''))
+  const [fuelType, setFuelType] = useState<FuelType>(d?.fuelType ?? seed?.fuelType ?? 'gasoline')
+  const [engineCC, setEngineCC] = useState(d?.engineCC ?? (seed?.engineCC ? String(seed.engineCC) : ''))
+  const [exchangeRate, setExchangeRate] = useState(d?.exchangeRate ?? (seed?.exchangeRate ? String(seed.exchangeRate) : ''))
+
+  usePersistOnUnmount<LCSnap>({ fob, incoterm, marginPct, adValoremPct, fuelType, engineCC, exchangeRate }, persist)
 
   const computed = useMemo(() => {
     if (!seed) return null

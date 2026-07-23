@@ -43,6 +43,10 @@ interface MisterContextValue {
   selectArtifact: (seq: number) => void
   /** The artifact the canvas is showing (selected, else newest, else none). */
   selectedArtifact: CopilotResult | null
+  /** Canvas working memory — an editor's in-progress state, kept per artifact seq
+   *  so a remount (switching artifacts) rehydrates instead of resetting to seed. */
+  artifactDrafts: Record<number, unknown>
+  saveArtifactDraft: (seq: number, value: unknown) => void
 }
 
 const MisterContext = createContext<MisterContextValue | null>(null)
@@ -104,6 +108,15 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
   )
   const selectArtifact = useCallback((seq: number) => setSelectedSeq(seq), [])
 
+  // Canvas working memory: each editor writes its latest state here (keyed by the
+  // artifact seq) on unmount, so flipping the switcher and back — or a new artifact
+  // stealing the canvas mid-edit — rehydrates instead of discarding the operator's
+  // tuned numbers (closes the remount data-loss the review flagged).
+  const [artifactDrafts, setArtifactDrafts] = useState<Record<number, unknown>>({})
+  const saveArtifactDraft = useCallback((seq: number, value: unknown) => {
+    setArtifactDrafts((prev) => ({ ...prev, [seq]: value }))
+  }, [])
+
   const value = useMemo<MisterContextValue>(
     () => ({
       locale,
@@ -118,8 +131,10 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
       selectedSeq,
       selectArtifact,
       selectedArtifact,
+      artifactDrafts,
+      saveArtifactDraft,
     }),
-    [locale, thread, busy, pending, draft, send, artifacts, selectedSeq, selectArtifact, selectedArtifact],
+    [locale, thread, busy, pending, draft, send, artifacts, selectedSeq, selectArtifact, selectedArtifact, artifactDrafts, saveArtifactDraft],
   )
 
   return <MisterContext.Provider value={value}>{children}</MisterContext.Provider>
@@ -130,4 +145,12 @@ export function useMister(): MisterContextValue {
   const ctx = useContext(MisterContext)
   if (!ctx) throw new Error('useMister must be used within a MisterProvider')
   return ctx
+}
+
+/** Read/write one artifact's canvas working memory (its editor's persisted state). */
+export function useArtifactDraft<T>(seq: number): { draft: T | undefined; persist: (value: T) => void } {
+  const { artifactDrafts, saveArtifactDraft } = useMister()
+  const draft = artifactDrafts[seq] as T | undefined
+  const persist = useCallback((value: T) => saveArtifactDraft(seq, value), [seq, saveArtifactDraft])
+  return { draft, persist }
 }

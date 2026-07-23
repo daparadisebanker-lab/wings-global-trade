@@ -36,6 +36,8 @@ export function MisterCanvas() {
   // Prefer an editable surface when the capability has one; the thread stays read-only.
   const editor = MISTER_CANVAS_EDITORS[selectedArtifact.renderer]
   const editable = Boolean(editor)
+  // The shown artifact's stable seq — the editor's key for its canvas working memory.
+  const currentSeq = artifacts.find((a) => a.result === selectedArtifact)?.seq ?? selectedSeq ?? 0
 
   return (
     <div className="ck-canvas-scroll">
@@ -75,10 +77,11 @@ export function MisterCanvas() {
       ) : null}
 
       {selectedArtifact.note ? <p className="ck-canvas-note">{selectedArtifact.note}</p> : null}
-      {/* key on selectedSeq so the reveal replays (and editor state resets) on swap. */}
-      <div key={selectedSeq ?? 'art'} className="ck-canvas-art">
+      {/* key on the shown seq so the reveal replays on swap; the editor rehydrates
+          its state from the provider's per-seq working memory across the remount. */}
+      <div key={currentSeq} className="ck-canvas-art">
         {editor
-          ? editor(selectedArtifact.data, locale)
+          ? editor(selectedArtifact.data, locale, currentSeq)
           : (MISTER_RENDERERS[selectedArtifact.renderer]?.(selectedArtifact.data, locale) ?? (
               <span>{selectedArtifact.text ?? ''}</span>
             ))}

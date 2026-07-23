@@ -14,7 +14,8 @@ import { computeContainerFit, CONTAINER_SPECS } from '@/lib/copilot/container-fi
 import type { ContainerFitPayload } from '@/lib/copilot/capabilities/container-fit'
 import { FitArtifact } from './FitArtifact'
 import { ContainerActivatePanel } from './ContainerActivatePanel'
-import { Field, fieldStyle, parseNum } from './mister/editor-kit'
+import { Field, fieldStyle, parseNum, usePersistOnUnmount } from './mister/editor-kit'
+import { useArtifactDraft } from './mister/MisterProvider'
 import { MISTER_ARTIFACT } from './mister-theme'
 
 const { text: TEXT, muted: MUTED, panelBg: PANEL_BG, border: BORDER } = MISTER_ARTIFACT
@@ -23,17 +24,31 @@ const { text: TEXT, muted: MUTED, panelBg: PANEL_BG, border: BORDER } = MISTER_A
 // makes a blank/zero field read as "absent" rather than a bogus 0.
 const dim = (raw: string) => parseNum(raw, { allowZero: false })
 
-export function ContainerFitEditor({ result, locale = DEFAULT_LOCALE }: { result: unknown; locale?: Locale }) {
+/** Persisted editor state (canvas working memory) — survives artifact remount. */
+type FitSnap = {
+  kind: ContainerKind
+  lengthM: string
+  widthM: string
+  heightM: string
+  weightEach: string
+  quantity: string
+  weightCap: string
+}
+
+export function ContainerFitEditor({ result, locale = DEFAULT_LOCALE, seq }: { result: unknown; locale?: Locale; seq: number }) {
   const payload = result as ContainerFitPayload
   const seed = payload.input
+  const { draft: d, persist } = useArtifactDraft<FitSnap>(seq)
 
-  const [kind, setKind] = useState<ContainerKind>(seed?.containerKind ?? payload.containerKind)
-  const [lengthM, setLengthM] = useState(seed?.itemLengthM ? String(seed.itemLengthM) : '')
-  const [widthM, setWidthM] = useState(seed?.itemWidthM ? String(seed.itemWidthM) : '')
-  const [heightM, setHeightM] = useState(seed?.itemHeightM ? String(seed.itemHeightM) : '')
-  const [weightEach, setWeightEach] = useState(seed?.weightEachKg ? String(seed.weightEachKg) : '')
-  const [quantity, setQuantity] = useState(seed?.quantity ? String(seed.quantity) : '')
-  const [weightCap, setWeightCap] = useState(seed?.weightCapKg ? String(seed.weightCapKg) : '')
+  const [kind, setKind] = useState<ContainerKind>(d?.kind ?? seed?.containerKind ?? payload.containerKind)
+  const [lengthM, setLengthM] = useState(d?.lengthM ?? (seed?.itemLengthM ? String(seed.itemLengthM) : ''))
+  const [widthM, setWidthM] = useState(d?.widthM ?? (seed?.itemWidthM ? String(seed.itemWidthM) : ''))
+  const [heightM, setHeightM] = useState(d?.heightM ?? (seed?.itemHeightM ? String(seed.itemHeightM) : ''))
+  const [weightEach, setWeightEach] = useState(d?.weightEach ?? (seed?.weightEachKg ? String(seed.weightEachKg) : ''))
+  const [quantity, setQuantity] = useState(d?.quantity ?? (seed?.quantity ? String(seed.quantity) : ''))
+  const [weightCap, setWeightCap] = useState(d?.weightCap ?? (seed?.weightCapKg ? String(seed.weightCapKg) : ''))
+
+  usePersistOnUnmount<FitSnap>({ kind, lengthM, widthM, heightM, weightEach, quantity, weightCap }, persist)
 
   const fit = useMemo(
     () =>
