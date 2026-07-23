@@ -65,8 +65,9 @@ describe('reverseQuoteCapability.run — provenance (Scenario Ledger)', () => {
     const res = await reverseQuoteCapability.run(client, '¿y con 25% de margen?', undefined, ctx)
     const data = res.data as ReverseQuoteData
     expect(data.seededFrom?.seq).toBe(1)
-    expect(data.seededFrom?.fields).toContain('CIF')
-    expect(data.seededFrom?.fields).toContain('diesel')
+    const fields = (data.seededFrom?.fields ?? []).map((f) => f.es)
+    expect(fields).toContain('CIF')
+    expect(fields).toContain('diesel')
   })
 
   it('has no seededFrom when solving fresh without a canvas', async () => {

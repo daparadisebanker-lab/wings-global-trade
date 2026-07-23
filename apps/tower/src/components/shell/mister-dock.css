@@ -204,6 +204,13 @@
   border-radius: 50%;
   background: #e0b866;
 }
+/* Provenance ledger line — sentence case (units like "m" / "kg c/u" must not be
+   uppercased), matching CostArtifact / ReverseQuoteArtifact's 10px mono treatment. */
+.fit-prov {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
 .fit-top {
   display: flex;
   align-items: center;

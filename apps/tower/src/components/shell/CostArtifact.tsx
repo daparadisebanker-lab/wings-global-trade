@@ -134,7 +134,7 @@ export function CostArtifact({
       {r.seededFrom ? (
         <p style={{ margin: '0 0 8px', fontFamily: MONO, fontSize: 10, letterSpacing: '0.04em', color: ACCENT }}>
           {t({ es: 'Heredado del lienzo', en: 'Inherited from canvas' }, locale)} #{r.seededFrom.seq}:{' '}
-          {r.seededFrom.fields.join(' · ')}
+          {r.seededFrom.fields.map((f) => t(f, locale)).join(' · ')}
         </p>
       ) : null}
 

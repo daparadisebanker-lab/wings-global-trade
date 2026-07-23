@@ -78,9 +78,11 @@ describe('landedCostCapability.run — provenance (Scenario Ledger)', () => {
     const res = await landedCostCapability.run(client, '¿y si el TC sube a 3.9?', undefined, ctx)
     const data = res.data as LandedCostData
     expect(data.seededFrom?.seq).toBe(2)
-    // Ad Valorem was inherited (deviates from default 0, never restated); TC was restated.
-    expect(data.seededFrom?.fields).toContain('Ad Val 6.0%')
-    expect(data.seededFrom?.fields.some((f) => f.startsWith('TC'))).toBe(false)
+    const fields = (data.seededFrom?.fields ?? []).map((f) => f.es)
+    // FOB + Ad Valorem were inherited (deviate from defaults, never restated); TC was restated.
+    expect(fields).toContain('FOB 8,000') // the load-bearing base price is disclosed
+    expect(fields).toContain('Ad Val 6.0%')
+    expect(fields.some((f) => f.startsWith('TC'))).toBe(false)
   })
 
   it('has no seededFrom without a canvas context (nothing was inherited)', async () => {

@@ -185,7 +185,11 @@ export function MisterConversation() {
         <div className="mister-ctx-chip">
           {skipCanvasContext ? (
             <>
-              <span className="meta">{t({ es: 'Enviar sin lienzo', en: 'Sending without canvas' }, locale)}</span>
+              <span className="meta">
+                {t({ es: 'Enviar sin heredar', en: 'Sending without inheriting' }, locale)}:{' '}
+                {t(artifactLabel(selectedArtifact.renderer), locale)}
+                {selectedSeq != null ? ` #${selectedSeq}` : ''}
+              </span>
               <button type="button" className="use" onClick={() => setSkipCanvasContext(false)}>
                 {t({ es: 'usar lienzo', en: 'use canvas' }, locale)}
               </button>

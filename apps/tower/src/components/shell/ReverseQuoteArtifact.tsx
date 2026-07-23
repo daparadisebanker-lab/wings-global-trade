@@ -59,7 +59,7 @@ export function ReverseQuoteArtifact({
       {result.seededFrom ? (
         <div style={{ fontFamily: MONO, fontSize: 10, letterSpacing: '0.04em', color: GOLD }}>
           {t({ es: 'Heredado del lienzo', en: 'Inherited from canvas' }, locale)} #{result.seededFrom.seq}:{' '}
-          {result.seededFrom.fields.join(' · ')}
+          {result.seededFrom.fields.map((f) => t(f, locale)).join(' · ')}
         </div>
       ) : null}
 

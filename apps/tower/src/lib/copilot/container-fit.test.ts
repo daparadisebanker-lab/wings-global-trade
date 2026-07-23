@@ -46,8 +46,9 @@ describe('containerFitCapability.run — provenance (Scenario Ledger)', () => {
     })
     const data = res.data as ContainerFitPayload
     expect(data.seededFrom?.seq).toBe(4)
-    expect(data.seededFrom?.fields).toContain('Caja 1.2×1×1.1 m')
-    expect(data.seededFrom?.fields).toContain('20GP')
+    const fields = (data.seededFrom?.fields ?? []).map((f) => f.es)
+    expect(fields).toContain('Caja 1.2×1×1.1 m')
+    expect(fields).toContain('20GP')
   })
 
   it('has no seededFrom when the box is stated fresh (no canvas)', async () => {

@@ -91,13 +91,18 @@ export const containerFitCapability: Capability = {
         'Necesito las medidas de la caja (largo × ancho × alto). / I need the box dimensions (L × W × H).',
       )
     }
-    // Provenance: which box / container was inherited from the canvas this chained off.
+    // Provenance: which box / container was inherited from the canvas this chained
+    // off. Dimensions are tracked individually — a follow-up may restate only the
+    // length and inherit the width + height, which must still be disclosed.
     const statedFit = new Set<string>()
-    if (num(obj.itemLengthM) !== null || num(obj.itemWidthM) !== null || num(obj.itemHeightM) !== null) statedFit.add('box')
+    if (num(obj.itemLengthM) !== null) statedFit.add('itemLengthM')
+    if (num(obj.itemWidthM) !== null) statedFit.add('itemWidthM')
+    if (num(obj.itemHeightM) !== null) statedFit.add('itemHeightM')
     if (modelKind !== null) statedFit.add('containerKind')
     if (num(obj.weightEachKg) !== null) statedFit.add('weightEachKg')
+    if (num(obj.quantity) !== null) statedFit.add('quantity')
     const seq = safeSeq(context?.sourceSeq)
-    const fitFields = ctx && seq !== undefined ? inheritedFitLabels(fitInput, statedFit) : []
+    const fitFields = ctx && seq !== undefined ? inheritedFitLabels(fitInput, statedFit, ctxKind, '40HC') : []
     const seededFrom: SeededFrom | undefined =
       seq !== undefined && fitFields.length ? { seq, fields: fitFields } : undefined
 

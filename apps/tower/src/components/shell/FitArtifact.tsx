@@ -1,6 +1,7 @@
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import type { ContainerFitResult } from '@/lib/copilot/container-fit'
 import type { SeededFrom } from '@/lib/copilot/types'
+import { MISTER_ARTIFACT } from './mister-theme'
 import { FitScene } from './FitScene'
 
 /**
@@ -26,11 +27,13 @@ export function FitArtifact({
         <span className="g" aria-hidden="true" /> Container fit · {fit.containerLabel}
       </div>
 
-      {/* Provenance (Scenario Ledger) — inherited from a prior canvas. */}
+      {/* Provenance (Scenario Ledger) — inherited from a prior canvas. Its own class
+          (sentence case, not the uppercased .fit-label) so all three artifacts render
+          the ledger identically; gold from the shared token, not a hardcoded hex. */}
       {fit.seededFrom ? (
-        <div className="fit-label" style={{ color: '#e0b866' }}>
+        <div className="fit-prov" style={{ color: MISTER_ARTIFACT.gold }}>
           {t({ es: 'Heredado del lienzo', en: 'Inherited from canvas' }, locale)} #{fit.seededFrom.seq}:{' '}
-          {fit.seededFrom.fields.join(' · ')}
+          {fit.seededFrom.fields.map((f) => t(f, locale)).join(' · ')}
         </div>
       ) : null}
 
