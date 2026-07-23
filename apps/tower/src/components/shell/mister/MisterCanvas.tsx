@@ -5,6 +5,7 @@
 // artifact is rebuilt — same organ, more room). When more than one artifact has
 // been composed this session, a switcher lets the operator flip between them
 // (fit → cost → quote…), which is what makes this a workspace and not a readout.
+import { useRef } from 'react'
 import { t } from '@/lib/i18n'
 import { MisterMark } from '../MisterMark'
 import { MISTER_RENDERERS } from '../mister-renderers'
@@ -15,6 +16,9 @@ import { artifactLabel } from './handoffs'
 
 export function MisterCanvas() {
   const { locale, artifacts, selectedSeq, selectArtifact, selectedArtifact } = useMister()
+  // Focus lands here after a lineage jump, so keyboard users don't drop to <body>
+  // when the pill unmounts (a root parent has no lineage bar of its own).
+  const titleRef = useRef<HTMLSpanElement>(null)
 
   if (!selectedArtifact) {
     return (
@@ -49,7 +53,9 @@ export function MisterCanvas() {
           <span aria-hidden className="g" />
           {t({ es: 'Lienzo', en: 'Canvas' }, locale)}
         </span>
-        <span className="ck-canvas-title">{t(artifactLabel(selectedArtifact.renderer), locale)}</span>
+        <span ref={titleRef} tabIndex={-1} className="ck-canvas-title">
+          {t(artifactLabel(selectedArtifact.renderer), locale)}
+        </span>
         {editable ? (
           <span className="ck-canvas-editable">{t({ es: 'Editable', en: 'Editable' }, locale)}</span>
         ) : null}
@@ -67,6 +73,14 @@ export function MisterCanvas() {
                 key={a.seq}
                 type="button"
                 aria-pressed={active}
+                // The seq badge + parent tag are aria-hidden decoration; name the button
+                // so AT users can tell two same-kind compositions apart (and hear lineage).
+                aria-label={
+                  `#${a.seq} ${t(artifactLabel(a.result.renderer), locale)}` +
+                  (a.parentSeq != null
+                    ? t({ es: `, heredado de #${a.parentSeq}`, en: `, inherited from #${a.parentSeq}` }, locale)
+                    : '')
+                }
                 className={active ? 'ck-switch is-active' : 'ck-switch'}
                 onClick={() => selectArtifact(a.seq)}
               >
@@ -87,7 +101,7 @@ export function MisterCanvas() {
 
       {/* Lineage bar (Scenario Ledger Stage 2) — provenance made visible + clickable
           on the canvas, where the editors don't render the seededFrom header. */}
-      {currentEntry ? <MisterLineage entry={currentEntry} /> : null}
+      {currentEntry ? <MisterLineage entry={currentEntry} onJump={() => titleRef.current?.focus()} /> : null}
 
       {/* key on the shown seq so the reveal replays on swap; the editor rehydrates
           its state from the provider's per-seq working memory across the remount. */}

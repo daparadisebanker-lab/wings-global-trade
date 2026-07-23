@@ -198,7 +198,9 @@ export const landedCostCapability: Capability = {
     const seq = safeSeq(context?.sourceSeq)
     const inheritedFields = ctxBase && seq !== undefined ? inheritedCostingLabels(inputs, COST_DEFAULTS, stated) : []
     const seededFrom: SeededFrom | undefined =
-      seq !== undefined && inheritedFields.length ? { seq, fields: inheritedFields } : undefined
+      seq !== undefined && inheritedFields.length
+        ? { seq, fields: inheritedFields, baseline: context?.baseline }
+        : undefined
 
     const data: LandedCostData = {
       ...result,

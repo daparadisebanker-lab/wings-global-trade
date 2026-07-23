@@ -116,6 +116,11 @@
   letter-spacing: 0.02em;
   color: #eef4fb;
 }
+/* Programmatic focus target after a lineage jump (tabIndex -1, not Tab-reachable) —
+   no visible ring on the silent focus move. */
+.ck-canvas-title:focus {
+  outline: none;
+}
 .ck-canvas-editable {
   font-family: var(--font-mono);
   font-size: 9px;

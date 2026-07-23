@@ -38,4 +38,29 @@ describe('sanitizeCanvasContext (trust boundary)', () => {
     expect(sanitizeCanvasContext('nope')).toBeUndefined()
     expect(sanitizeCanvasContext(undefined)).toBeUndefined()
   })
+
+  it('keeps a valid lineage baseline (Stage 2)', () => {
+    const ctx = {
+      kind: 'costing',
+      inputs: { fob: 8000 },
+      baseline: { renderer: 'landed-cost', landedCost: 10240, salePriceFinal: 15000 },
+    }
+    expect(sanitizeCanvasContext(ctx)).toEqual(ctx)
+  })
+
+  it('strips a malformed baseline but keeps the otherwise-valid context', () => {
+    const bad = { kind: 'costing', inputs: { fob: 8000 }, baseline: { renderer: 'landed-cost', landedCost: NaN } }
+    const out = sanitizeCanvasContext(bad)
+    expect(out).toBeTruthy()
+    expect((out as { baseline?: unknown }).baseline).toBeUndefined()
+    // Unknown renderer / bad marginKind are stripped too.
+    const badKind = { kind: 'fit', input: { itemLengthM: 1 }, baseline: { renderer: 'evil', x: 1 } }
+    expect((sanitizeCanvasContext(badKind) as { baseline?: unknown }).baseline).toBeUndefined()
+    const badMargin = {
+      kind: 'costing',
+      inputs: { fob: 1 },
+      baseline: { renderer: 'reverse-quote', salePrice: 1, achievedPct: 0.2, marginKind: 'evil' },
+    }
+    expect((sanitizeCanvasContext(badMargin) as { baseline?: unknown }).baseline).toBeUndefined()
+  })
 })

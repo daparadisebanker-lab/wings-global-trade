@@ -158,7 +158,7 @@ export const reverseQuoteCapability: Capability = {
     const seq = safeSeq(context?.sourceSeq)
     if (ctxBase && seq !== undefined && data.input) {
       const fields = inheritedCostingLabels(data.input, DEFAULT_INPUTS, stated)
-      if (fields.length) data.seededFrom = { seq, fields }
+      if (fields.length) data.seededFrom = { seq, fields, baseline: context?.baseline }
     }
 
     return { renderer: 'reverse-quote', note, data }

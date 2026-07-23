@@ -40,15 +40,20 @@ export function deltasFor(renderer: string, child: unknown, parent: unknown): De
     const p = parent as LandedCostData
     return [
       delta({ es: 'Costo puesto', en: 'Landed cost' }, c.landedCost, p.landedCost, signedMoney),
-      delta({ es: 'Precio final', en: 'Final price' }, c.salePriceFinal, p.salePriceFinal, signedMoney),
+      // Matches the card's row for the same figure (avoids "Final price" vs "Sale price (final)").
+      delta({ es: 'Precio de venta', en: 'Sale price' }, c.salePriceFinal, p.salePriceFinal, signedMoney),
     ].filter((d): d is Delta => d !== null)
   }
   if (renderer === 'reverse-quote') {
     const c = child as ReverseQuoteData
     const p = parent as ReverseQuoteData
+    // achievedPct is relative to the payload's OWN marginKind (gross vs net-cash are
+    // different measures) — compare it only when both scenarios use the same kind, so
+    // a follow-up that switches kind never subtracts one measure from the other.
+    const sameMargin = Boolean(c.marginKind) && c.marginKind === p.marginKind
     return [
       delta({ es: 'Precio de venta', en: 'Sale price' }, c.salePrice, p.salePrice, signedMoney),
-      delta({ es: 'Margen', en: 'Margin' }, c.achievedPct * 100, p.achievedPct * 100, signedPp),
+      sameMargin ? delta({ es: 'Margen', en: 'Margin' }, c.achievedPct * 100, p.achievedPct * 100, signedPp) : null,
     ].filter((d): d is Delta => d !== null)
   }
   if (renderer === 'fit') {

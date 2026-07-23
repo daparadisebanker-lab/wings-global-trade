@@ -83,8 +83,24 @@ export function LandedCostEditor({ result, locale = DEFAULT_LOCALE, seq }: { res
   }, [seed, fob, incoterm, marginPct, adValoremPct, fuelType, engineCC, exchangeRate])
 
   // Feed the tuned inputs back into Mister so a chained ask inherits them (Part B);
-  // sourceSeq lets the chained artifact name this canvas in its provenance.
-  useCanvasContext(seq, computed ? { kind: 'costing', inputs: computed.inputs, sourceSeq: seq } : null)
+  // sourceSeq lets the chained artifact name this canvas in its provenance, and
+  // baseline snapshots THIS canvas's headline so the child's lineage delta compares
+  // against what it actually inherited (Stage 2), not this artifact's stale first render.
+  useCanvasContext(
+    seq,
+    computed
+      ? {
+          kind: 'costing',
+          inputs: computed.inputs,
+          sourceSeq: seq,
+          baseline: {
+            renderer: 'landed-cost',
+            landedCost: computed.data.landedCost,
+            salePriceFinal: computed.data.salePriceFinal,
+          },
+        }
+      : null,
+  )
 
   return (
     <div style={{ background: PANEL_BG, border: BORDER, borderRadius: 12, padding: '14px 16px', color: TEXT, display: 'flex', flexDirection: 'column', gap: 12 }}>

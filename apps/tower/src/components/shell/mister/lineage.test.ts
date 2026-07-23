@@ -27,20 +27,29 @@ describe('deriveParentSeq', () => {
 })
 
 describe('deltasFor', () => {
-  it('landed-cost: signed landed-cost + final-price deltas, grouped', () => {
+  it('landed-cost: signed landed-cost + sale-price deltas, grouped', () => {
     const child = { landedCost: 10240, salePriceFinal: 15000 }
     const parent = { landedCost: 8000, salePriceFinal: 12500 }
     const d = map(deltasFor('landed-cost', child, parent))
     expect(d['Costo puesto']).toBe('+2,240.00')
-    expect(d['Precio final']).toBe('+2,500.00')
+    expect(d['Precio de venta']).toBe('+2,500.00') // salePriceFinal, labelled like the card
   })
 
-  it('reverse-quote: sale-price delta (money) + margin delta (pp)', () => {
-    const child = { salePrice: 60000, achievedPct: 0.25 }
-    const parent = { salePrice: 58000, achievedPct: 0.22 }
+  it('reverse-quote: sale-price delta + margin delta when both are the same kind', () => {
+    const child = { salePrice: 60000, achievedPct: 0.25, marginKind: 'bruto' }
+    const parent = { salePrice: 58000, achievedPct: 0.22, marginKind: 'bruto' }
     const d = map(deltasFor('reverse-quote', child, parent))
     expect(d['Precio de venta']).toBe('+2,000.00')
     expect(d['Margen']).toBe('+3 pp') // (0.25 - 0.22) * 100
+  })
+
+  it('reverse-quote: DROPS the margin chip across kinds (never subtracts net-cash from gross)', () => {
+    const child = { salePrice: 60000, achievedPct: 0.12, marginKind: 'neto_caja' }
+    const parent = { salePrice: 58000, achievedPct: 0.25, marginKind: 'bruto' }
+    const d = deltasFor('reverse-quote', child, parent)
+    expect(map(d)['Precio de venta']).toBe('+2,000.00') // sale price stays (both final price)
+    expect(map(d)['Margen']).toBeUndefined() // -13pp gross-vs-net-cash never shown
+    expect(d).toHaveLength(1)
   })
 
   it('fit: units delta + volume-utilization delta (pp), signs shown', () => {

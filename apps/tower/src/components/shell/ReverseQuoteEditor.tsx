@@ -102,7 +102,24 @@ export function ReverseQuoteEditor({ result, locale = DEFAULT_LOCALE, seq }: { r
 
   // Feed the tuned inputs back into Mister so a chained ask inherits them (Part B).
   // commitInputs pins the margin (gross → marginPercent), so the target travels too.
-  useCanvasContext(seq, solved ? { kind: 'costing', inputs: solved.commitInputs, sourceSeq: seq } : null)
+  // baseline snapshots this solved headline (incl. marginKind) for the child's Stage 2
+  // lineage delta — so a gross↔net-cash switch never subtracts mismatched measures.
+  useCanvasContext(
+    seq,
+    solved
+      ? {
+          kind: 'costing',
+          inputs: solved.commitInputs,
+          sourceSeq: seq,
+          baseline: {
+            renderer: 'reverse-quote',
+            salePrice: solved.data.salePrice,
+            achievedPct: solved.data.achievedPct,
+            marginKind: solved.data.marginKind,
+          },
+        }
+      : null,
+  )
 
   return (
     <div style={{ background: PANEL_BG, border: BORDER, borderRadius: 12, padding: '14px 16px', color: MISTER_ARTIFACT.text, display: 'flex', flexDirection: 'column', gap: 12 }}>
