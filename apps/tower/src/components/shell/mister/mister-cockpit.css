@@ -284,6 +284,64 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Scenario Ledger Stage 3 — pinned session baseline. */
+.ck-pin {
+  margin-left: auto;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(168, 192, 220, 0.28);
+  background: transparent;
+  color: #b9cae0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
+}
+.ck-pin:hover {
+  border-color: rgba(224, 184, 102, 0.5);
+  color: #e0b866;
+}
+.ck-pin.is-pinned {
+  border-color: rgba(224, 184, 102, 0.6);
+  background: rgba(216, 169, 75, 0.14);
+  color: #e0b866;
+}
+.ck-pin:focus-visible {
+  outline: 2px solid #e0b866;
+  outline-offset: 2px;
+}
+/* Switcher chip's compact headline vs the pinned base + the pinned-chip glyph. */
+.ck-switch .d {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: #dbe6f3;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.9;
+}
+.ck-switch .pin {
+  font-size: 9px;
+}
+/* The "vs base #N" row — its own line under the lineage bar; the tag carries the
+   gold baseline accent, the delta values stay neutral (exhibited, not judged). */
+.ck-lineage.is-base {
+  margin-top: -6px;
+}
+.ck-base-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(224, 184, 102, 0.35);
+  color: #e0b866;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+.ck-delta.is-base {
+  border-color: rgba(224, 184, 102, 0.22);
+}
+
 /* Empty canvas — a quiet invitation, not a dead void. */
 .ck-canvas-empty {
   flex: 1;

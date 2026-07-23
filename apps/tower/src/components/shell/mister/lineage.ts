@@ -28,6 +28,33 @@ function delta(label: Localized, a: number, b: number, fmt: (n: number) => strin
   return Number.isFinite(a) && Number.isFinite(b) ? { label, value: fmt(a - b) } : null
 }
 
+/** The single lead comparable figure for a renderer (Scenario Ledger Stage 3) — a
+ *  compact headline delta for the switcher chip: landed-cost → Δ landed cost;
+ *  reverse-quote → Δ sale price; fit → Δ units. null when not comparable/finite. */
+export function headlineDelta(renderer: string, child: unknown, base: unknown): Delta | null {
+  if (!child || !base) return null
+  if (renderer === 'landed-cost') {
+    return delta(
+      { es: 'Costo puesto', en: 'Landed cost' },
+      (child as LandedCostData).landedCost,
+      (base as LandedCostData).landedCost,
+      signedMoney,
+    )
+  }
+  if (renderer === 'reverse-quote') {
+    return delta(
+      { es: 'Precio de venta', en: 'Sale price' },
+      (child as ReverseQuoteData).salePrice,
+      (base as ReverseQuoteData).salePrice,
+      signedMoney,
+    )
+  }
+  if (renderer === 'fit') {
+    return delta({ es: 'Unidades', en: 'Units' }, (child as ContainerFitResult).units, (base as ContainerFitResult).units, signedInt)
+  }
+  return null
+}
+
 /** Deltas between a child artifact and its parent of the SAME renderer, read
  *  straight off both stored payloads. Signed, tabular; the sign is exhibited, not
  *  judged (no color meaning — a bigger landed cost is not "bad" here). Returns []

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { deriveParentSeq, deltasFor } from './lineage'
+import { deriveParentSeq, deltasFor, headlineDelta } from './lineage'
 
 /** Flatten deltas to a {label: value} map on the ES side for assertions. */
 const map = (ds: { label: { es: string }; value: string }[]) =>
@@ -81,5 +81,22 @@ describe('deltasFor', () => {
     expect(d).toHaveLength(1)
     expect(map(d)['Costo puesto']).toBe('+1,000.00')
     expect(JSON.stringify(d)).not.toContain('NaN')
+  })
+})
+
+describe('headlineDelta (Stage 3 switcher hint)', () => {
+  it('returns the single lead figure per renderer', () => {
+    expect(headlineDelta('landed-cost', { landedCost: 9000 }, { landedCost: 8000 })).toEqual({
+      label: { es: 'Costo puesto', en: 'Landed cost' },
+      value: '+1,000.00',
+    })
+    expect(headlineDelta('reverse-quote', { salePrice: 61000 }, { salePrice: 60000 })?.value).toBe('+1,000.00')
+    expect(headlineDelta('fit', { units: 60 }, { units: 68 })?.value).toBe('-8')
+  })
+
+  it('returns null for an unknown renderer or a non-finite figure', () => {
+    expect(headlineDelta('quote-proposal', { x: 1 }, { x: 2 })).toBeNull()
+    expect(headlineDelta('landed-cost', { landedCost: NaN }, { landedCost: 8000 })).toBeNull()
+    expect(headlineDelta('fit', null, { units: 1 })).toBeNull()
   })
 })

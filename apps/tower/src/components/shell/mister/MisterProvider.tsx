@@ -21,7 +21,7 @@ import {
 } from 'react'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import { askMister } from '@/lib/actions/mister-copilot'
-import { textResult, type CanvasContext, type CopilotResult, type SeededFrom } from '@/lib/copilot/types'
+import { textResult, type CanvasContext, type CopilotResult, type LineageBaseline, type SeededFrom } from '@/lib/copilot/types'
 import { MISTER_RENDERERS } from '../mister-renderers'
 import { deriveParentSeq } from './lineage'
 
@@ -82,6 +82,13 @@ interface MisterContextValue {
   /** The operator ✕'d the chip: skip inheritance for the next send (one-shot). */
   skipCanvasContext: boolean
   setSkipCanvasContext: (skip: boolean) => void
+  /** The artifact pinned as the session baseline (Scenario Ledger Stage 3), or null. */
+  pinnedSeq: number | null
+  /** Its headline captured AT PIN TIME from the live canvas, so a base tuned before
+   *  pinning compares truthfully; null when the pinned artifact had no live editor. */
+  pinnedBaseline: LineageBaseline | null
+  /** Toggle the pin on an artifact — must be the mounted one to snapshot its baseline. */
+  pinBaseline: (seq: number) => void
 }
 
 const MisterContext = createContext<MisterContextValue | null>(null)
@@ -105,6 +112,11 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
   const [getterVersion, setGetterVersion] = useState(0)
   // One-shot: the operator ✕'d the context chip, so the NEXT send skips inheritance.
   const [skipCanvasContext, setSkipCanvasContext] = useState(false)
+  // The session baseline (Stage 3): which artifact is pinned, and its headline
+  // snapshot captured at pin time from the live canvas getter (so a base tuned
+  // before pinning still compares against what the operator actually pinned).
+  const [pinnedSeq, setPinnedSeq] = useState<number | null>(null)
+  const [pinnedBaseline, setPinnedBaseline] = useState<LineageBaseline | null>(null)
 
   const send = useCallback(async () => {
     const text = draft.trim()
@@ -210,6 +222,22 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
     setSkipCanvasContext(false)
   }, [selectedSeq])
 
+  // Toggle the session baseline. Snapshot the pinned artifact's LIVE headline from its
+  // canvas getter (it must be the mounted artifact to pin), so the "vs base" deltas
+  // reflect what the operator pinned even if they tuned it first.
+  const pinBaseline = useCallback(
+    (seq: number) => {
+      if (pinnedSeq === seq) {
+        setPinnedSeq(null)
+        setPinnedBaseline(null)
+        return
+      }
+      setPinnedSeq(seq)
+      setPinnedBaseline(canvasGetters.current.get(seq)?.()?.baseline ?? null)
+    },
+    [pinnedSeq],
+  )
+
   // Canvas working memory: each editor writes its latest state here (keyed by the
   // artifact seq) on unmount, so flipping the switcher and back — or a new artifact
   // stealing the canvas mid-edit — rehydrates instead of discarding the operator's
@@ -240,6 +268,9 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
       hasCanvasContext,
       skipCanvasContext,
       setSkipCanvasContext,
+      pinnedSeq,
+      pinnedBaseline,
+      pinBaseline,
     }),
     [
       locale,
@@ -258,6 +289,9 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
       setContextLive,
       hasCanvasContext,
       skipCanvasContext,
+      pinnedSeq,
+      pinnedBaseline,
+      pinBaseline,
     ],
   )
 
