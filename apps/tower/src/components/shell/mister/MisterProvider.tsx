@@ -8,10 +8,10 @@
 // (draft in the overlay, keep drafting after you navigate). So the state lifts
 // here, wrapping the whole shell. The engine is unchanged: send() still calls the
 // single-shot askMister() server action and appends its CopilotResult.
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import { askMister } from '@/lib/actions/mister-copilot'
-import { textResult, type CopilotResult } from '@/lib/copilot/types'
+import { textResult, type CanvasContext, type CopilotResult } from '@/lib/copilot/types'
 import { MISTER_RENDERERS } from '../mister-renderers'
 
 /** One turn in the thread — the operator's message, or Mister's result. */
@@ -49,6 +49,10 @@ interface MisterContextValue {
    *  `${seq}:commit` so a "saved ✓" latch + deep-link survive a flip (no re-submit). */
   artifactDrafts: Record<string, unknown>
   saveArtifactDraft: (key: string, value: unknown) => void
+  /** The mounted canvas editor registers a getter for its live inputs here (Part B);
+   *  send() reads the selected artifact's getter to pass canvas context into a
+   *  chained ask. A ref registry, so per-keystroke updates never re-render. */
+  registerCanvasGetter: (seq: number, getter: () => CanvasContext | null) => () => void
 }
 
 const MisterContext = createContext<MisterContextValue | null>(null)
@@ -59,6 +63,11 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
   const [pending, setPending] = useState<Pending | null>(null)
   const [draft, setDraft] = useState('')
 
+  // Live canvas-context registry (Part B). Refs so a mounted editor can update its
+  // getter every render without re-rendering the shell; send() reads them at call time.
+  const canvasGetters = useRef(new Map<number, () => CanvasContext | null>())
+  const selectedSeqRef = useRef<number | null>(null)
+
   const send = useCallback(async () => {
     const text = draft.trim()
     const attachment = pending
@@ -67,10 +76,14 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
     setDraft('')
     setPending(null)
     setBusy(true)
+    // Carry the canvas the operator was on into a chained ask.
+    const seq = selectedSeqRef.current
+    const context = (seq != null ? canvasGetters.current.get(seq)?.() : null) ?? undefined
     try {
       const result = await askMister(
         text,
         attachment ? { mediaType: attachment.mediaType, dataBase64: attachment.dataBase64 } : undefined,
+        context,
       )
       setThread((prev) => [...prev, { who: 'mi', result: result.error ? textResult(result.error.message) : result.data }])
     } catch {
@@ -116,6 +129,15 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
   )
   const selectArtifact = useCallback((seq: number) => setSelectedSeq(seq), [])
 
+  // Mirror the current selection + register/unregister canvas getters (Part B).
+  selectedSeqRef.current = selectedSeq
+  const registerCanvasGetter = useCallback((seq: number, getter: () => CanvasContext | null) => {
+    canvasGetters.current.set(seq, getter)
+    return () => {
+      if (canvasGetters.current.get(seq) === getter) canvasGetters.current.delete(seq)
+    }
+  }, [])
+
   // Canvas working memory: each editor writes its latest state here (keyed by the
   // artifact seq) on unmount, so flipping the switcher and back — or a new artifact
   // stealing the canvas mid-edit — rehydrates instead of discarding the operator's
@@ -141,8 +163,9 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
       selectedArtifact,
       artifactDrafts,
       saveArtifactDraft,
+      registerCanvasGetter,
     }),
-    [locale, thread, busy, pending, draft, send, artifacts, selectedSeq, selectArtifact, selectedArtifact, artifactDrafts, saveArtifactDraft],
+    [locale, thread, busy, pending, draft, send, artifacts, selectedSeq, selectArtifact, selectedArtifact, artifactDrafts, saveArtifactDraft, registerCanvasGetter],
   )
 
   return <MisterContext.Provider value={value}>{children}</MisterContext.Provider>
@@ -153,6 +176,16 @@ export function useMister(): MisterContextValue {
   const ctx = useContext(MisterContext)
   if (!ctx) throw new Error('useMister must be used within a MisterProvider')
   return ctx
+}
+
+/** Register the mounted editor's LIVE canvas context (its normalized inputs) so a
+ *  chained ask inherits it (Part B). The getter returns the latest via a ref, so
+ *  editing never re-renders the shell; it unregisters on unmount. */
+export function useCanvasContext(seq: number, context: CanvasContext | null): void {
+  const { registerCanvasGetter } = useMister()
+  const ref = useRef(context)
+  ref.current = context
+  useEffect(() => registerCanvasGetter(seq, () => ref.current), [seq, registerCanvasGetter])
 }
 
 /** Read/write one slot of canvas working memory. `key` undefined (e.g. a commit

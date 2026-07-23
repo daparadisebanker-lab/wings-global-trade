@@ -7,7 +7,7 @@ import { INTELLIGENCE_MODELS } from '@/lib/ai/types'
 import { extractJsonObject } from '@/lib/ai/parse'
 import type { IntelligenceClient } from '@/lib/ai/client'
 import { CAPABILITIES } from './registry'
-import { textResult, type Attachment, type CopilotResult } from './types'
+import { textResult, type Attachment, type CanvasContext, type CopilotResult } from './types'
 
 function routerSystem(): string {
   const list = CAPABILITIES.map(
@@ -34,10 +34,11 @@ export async function routeAndRun(
   client: IntelligenceClient,
   text: string,
   attachment?: Attachment,
+  context?: CanvasContext,
 ): Promise<CopilotResult> {
   if (attachment) {
     const visionCap = CAPABILITIES.find((c) => c.acceptsImage)
-    if (visionCap) return visionCap.run(client, text, attachment)
+    if (visionCap) return visionCap.run(client, text, attachment, context)
     // No image capability registered — fall through to text routing on the caption.
   }
 
@@ -57,5 +58,5 @@ export async function routeAndRun(
       `Puedo ayudarte con: / I can help with:\n${menu}`,
     )
   }
-  return cap.run(client, text)
+  return cap.run(client, text, undefined, context)
 }

@@ -10,12 +10,12 @@
 import { useMemo, useState } from 'react'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import { CONTAINER_KINDS, type ContainerKind } from '@/lib/actions/containers-types'
-import { computeContainerFit, CONTAINER_SPECS } from '@/lib/copilot/container-fit'
+import { computeContainerFit, CONTAINER_SPECS, type ContainerFitInput } from '@/lib/copilot/container-fit'
 import type { ContainerFitPayload } from '@/lib/copilot/capabilities/container-fit'
 import { FitArtifact } from './FitArtifact'
 import { ContainerActivatePanel } from './ContainerActivatePanel'
 import { Field, fieldStyle, parseNum, usePersistOnUnmount } from './mister/editor-kit'
-import { useArtifactDraft } from './mister/MisterProvider'
+import { useArtifactDraft, useCanvasContext } from './mister/MisterProvider'
 import { MISTER_ARTIFACT } from './mister-theme'
 
 const { text: TEXT, muted: MUTED, panelBg: PANEL_BG, border: BORDER } = MISTER_ARTIFACT
@@ -50,19 +50,22 @@ export function ContainerFitEditor({ result, locale = DEFAULT_LOCALE, seq }: { r
 
   usePersistOnUnmount<FitSnap>({ kind, lengthM, widthM, heightM, weightEach, quantity, weightCap }, persist)
 
-  const fit = useMemo(
-    () =>
-      computeContainerFit({
-        itemLengthM: dim(lengthM) ?? 0,
-        itemWidthM: dim(widthM) ?? 0,
-        itemHeightM: dim(heightM) ?? 0,
-        weightEachKg: dim(weightEach),
-        weightCapKg: dim(weightCap),
-        quantity: dim(quantity),
-        containerKind: kind,
-      }),
+  const fitInput = useMemo<ContainerFitInput>(
+    () => ({
+      itemLengthM: dim(lengthM) ?? 0,
+      itemWidthM: dim(widthM) ?? 0,
+      itemHeightM: dim(heightM) ?? 0,
+      weightEachKg: dim(weightEach),
+      weightCapKg: dim(weightCap),
+      quantity: dim(quantity),
+      containerKind: kind,
+    }),
     [lengthM, widthM, heightM, weightEach, weightCap, quantity, kind],
   )
+  const fit = useMemo(() => computeContainerFit(fitInput), [fitInput])
+
+  // Feed the current box back into Mister so a chained ask inherits it (Part B).
+  useCanvasContext(seq, { kind: 'fit', input: fitInput })
 
   return (
     <div style={{ background: PANEL_BG, border: BORDER, borderRadius: 12, padding: '14px 16px', color: TEXT, display: 'flex', flexDirection: 'column', gap: 12 }}>

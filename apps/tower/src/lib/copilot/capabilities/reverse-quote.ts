@@ -18,7 +18,7 @@ import type { IntelligenceClient } from '@/lib/ai/client'
 import { DEFAULT_INPUTS } from '@/lib/costing/engine'
 import type { FuelType, ImportInputs, Incoterm } from '@/lib/costing/types'
 import { solveReverseQuote, type MarginKind } from '../reverse-quote-solve'
-import { textResult, type Capability, type CopilotResult } from '../types'
+import { textResult, type Capability, type CanvasContext, type CopilotResult } from '../types'
 
 // The solver + payload types live in a pure, CLIENT-SAFE module so the canvas
 // editor can import them without pulling this capability's LLM graph into the
@@ -82,7 +82,7 @@ export const reverseQuoteCapability: Capability = {
       'What sale price hits a 25% gross margin on a $40,000 CIF?',
     ],
   },
-  async run(client: IntelligenceClient, text: string): Promise<CopilotResult> {
+  async run(client: IntelligenceClient, text: string, _attachment, context?: CanvasContext): Promise<CopilotResult> {
     const raw = await client.complete({
       model: INTELLIGENCE_MODELS.reason,
       system: SYSTEM,
@@ -117,12 +117,15 @@ export const reverseQuoteCapability: Capability = {
     const targetPct = normalizePct(marginRaw)
     const incoterm = incotermOf(obj.incoterm)
 
+    // Chained ask: inherit the canvas's tuned base (Ad Valorem / TC / freight)
+    // from the artifact the operator was on, else the app SUNAT defaults.
+    const ctxBase = context?.kind === 'costing' ? context.inputs : DEFAULT_INPUTS
     const baseInputs: ImportInputs = {
-      ...DEFAULT_INPUTS,
+      ...ctxBase,
       fob,
       incoterm,
       fuelType: fuelOf(obj.fuelType),
-      engineCC: num(obj.engineCC) ?? DEFAULT_INPUTS.engineCC,
+      engineCC: num(obj.engineCC) ?? ctxBase.engineCC,
     }
 
     // One source of truth for the payload (and the commit inputs the editor uses),

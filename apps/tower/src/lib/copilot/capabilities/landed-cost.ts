@@ -15,7 +15,7 @@ import type {
   Incoterm,
   Origin,
 } from '@/lib/costing/types'
-import { textResult, type Capability, type CopilotResult } from '../types'
+import { textResult, type Capability, type CanvasContext, type CopilotResult } from '../types'
 
 // ── The renderer payload (ImportResult + display extras) ─────────────────────
 /** What the 'landed-cost' renderer receives — the full SUNAT result plus currency +
@@ -51,14 +51,18 @@ const INCOTERMS: readonly Incoterm[] = ['EXW', 'FOB', 'CFR', 'CIF']
  * mentioned override. Undefined/null values in `partial` never clobber a default.
  * This is the deterministic seam the test exercises.
  */
-export function buildInputs(partial: Partial<ImportInputs>): ImportInputs {
-  const out: ImportInputs = { ...COST_DEFAULTS }
+export function buildInputsFrom(base: ImportInputs, partial: Partial<ImportInputs>): ImportInputs {
+  const out: ImportInputs = { ...base }
   for (const [key, value] of Object.entries(partial)) {
     if (value !== undefined && value !== null) {
       ;(out as unknown as Record<string, unknown>)[key] = value
     }
   }
   return out
+}
+/** Standard-defaults variant — the base is the app's SUNAT defaults. */
+export function buildInputs(partial: Partial<ImportInputs>): ImportInputs {
+  return buildInputsFrom(COST_DEFAULTS, partial)
 }
 
 // ── Extraction guards ────────────────────────────────────────────────────────
@@ -117,7 +121,7 @@ export const landedCostCapability: Capability = {
       'Landed cost for a diesel generator, CIF 8,500, margin 15%',
     ],
   },
-  async run(client: IntelligenceClient, text: string): Promise<CopilotResult> {
+  async run(client: IntelligenceClient, text: string, _attachment, context?: CanvasContext): Promise<CopilotResult> {
     const raw = await client.complete({
       model: INTELLIGENCE_MODELS.reason,
       system: SYSTEM,
@@ -159,7 +163,10 @@ export const landedCostCapability: Capability = {
       marginPercent: num(obj.marginPercent) ?? undefined,
     }
 
-    const inputs = buildInputs(partial)
+    // Chained ask: seed unspecified fields from the canvas the operator was tuning
+    // (their Ad Valorem / TC / freight carry) instead of the app defaults.
+    const base = context?.kind === 'costing' ? context.inputs : COST_DEFAULTS
+    const inputs = buildInputsFrom(base, partial)
     const result = computeImportCost(inputs)
 
     const data: LandedCostData = {

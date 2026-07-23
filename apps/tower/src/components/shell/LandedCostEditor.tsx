@@ -15,7 +15,7 @@ import type { LandedCostData } from '@/lib/copilot/capabilities/landed-cost'
 import { CostArtifact } from './CostArtifact'
 import { CostSheetSavePanel } from './CostSheetSavePanel'
 import { Field, fieldStyle, parseNum, usePersistOnUnmount } from './mister/editor-kit'
-import { useArtifactDraft } from './mister/MisterProvider'
+import { useArtifactDraft, useCanvasContext } from './mister/MisterProvider'
 import { MISTER_ARTIFACT } from './mister-theme'
 
 /** Persisted editor state (canvas working memory) — survives artifact remount. */
@@ -81,6 +81,9 @@ export function LandedCostEditor({ result, locale = DEFAULT_LOCALE, seq }: { res
     }
     return { data, inputs }
   }, [seed, fob, incoterm, marginPct, adValoremPct, fuelType, engineCC, exchangeRate])
+
+  // Feed the tuned inputs back into Mister so a chained ask inherits them (Part B).
+  useCanvasContext(seq, computed ? { kind: 'costing', inputs: computed.inputs } : null)
 
   return (
     <div style={{ background: PANEL_BG, border: BORDER, borderRadius: 12, padding: '14px 16px', color: TEXT, display: 'flex', flexDirection: 'column', gap: 12 }}>

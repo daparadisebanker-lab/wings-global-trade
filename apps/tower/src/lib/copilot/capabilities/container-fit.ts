@@ -7,7 +7,7 @@ import { extractJsonObject } from '@/lib/ai/parse'
 import type { IntelligenceClient } from '@/lib/ai/client'
 import { CONTAINER_KINDS, type ContainerKind } from '@/lib/actions/containers-types'
 import { computeContainerFit, type ContainerFitInput, type ContainerFitResult } from '../container-fit'
-import { textResult, type Capability, type CopilotResult } from '../types'
+import { textResult, type Capability, type CanvasContext, type CopilotResult } from '../types'
 
 /** The 'fit' renderer payload: the computed fit plus the input that produced it,
  *  so the canvas editor can seed its controls and recompute (read-only renderer
@@ -54,7 +54,7 @@ export const containerFitCapability: Capability = {
       'How many pallets fit in a reefer?',
     ],
   },
-  async run(client: IntelligenceClient, text: string): Promise<CopilotResult> {
+  async run(client: IntelligenceClient, text: string, _attachment, context?: CanvasContext): Promise<CopilotResult> {
     const raw = await client.complete({
       model: INTELLIGENCE_MODELS.reason,
       system: SYSTEM,
@@ -71,14 +71,20 @@ export const containerFitCapability: Capability = {
       )
     }
 
+    // Chained ask ("now pack 4 of these in a 40HC"): inherit the box the operator
+    // was fitting from the canvas, overriding only what this message restates.
+    const ctx = context?.kind === 'fit' ? context.input : null
+    const modelKind = (CONTAINER_KINDS as readonly string[]).includes(obj?.containerKind as string)
+      ? (obj.containerKind as ContainerKind)
+      : null
     const fitInput: ContainerFitInput = {
-      itemLengthM: num(obj.itemLengthM) ?? 0,
-      itemWidthM: num(obj.itemWidthM) ?? 0,
-      itemHeightM: num(obj.itemHeightM) ?? 0,
-      weightEachKg: num(obj.weightEachKg),
-      weightCapKg: num(obj.weightCapKg),
-      quantity: num(obj.quantity),
-      containerKind: kind(obj.containerKind),
+      itemLengthM: num(obj.itemLengthM) ?? ctx?.itemLengthM ?? 0,
+      itemWidthM: num(obj.itemWidthM) ?? ctx?.itemWidthM ?? 0,
+      itemHeightM: num(obj.itemHeightM) ?? ctx?.itemHeightM ?? 0,
+      weightEachKg: num(obj.weightEachKg) ?? ctx?.weightEachKg ?? null,
+      weightCapKg: num(obj.weightCapKg) ?? ctx?.weightCapKg ?? null,
+      quantity: num(obj.quantity) ?? ctx?.quantity ?? null,
+      containerKind: modelKind ?? ctx?.containerKind ?? kind(obj.containerKind),
     }
     const fit = computeContainerFit(fitInput)
     if (!fit) {

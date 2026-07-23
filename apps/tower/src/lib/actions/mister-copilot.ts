@@ -9,7 +9,7 @@
 import { createServerSupabase } from '@/lib/supabase/server'
 import { getIntelligenceClient } from '@/lib/ai/client'
 import { routeAndRun } from '@/lib/copilot/router'
-import { textResult, type Attachment, type CopilotResult } from '@/lib/copilot/types'
+import { textResult, type Attachment, type CanvasContext, type CopilotResult } from '@/lib/copilot/types'
 import { ok, fail, type ActionResult } from './result'
 
 // Vision guardrails: accepted image types and a cap on the decoded payload so a
@@ -20,6 +20,7 @@ const MAX_IMAGE_BASE64 = 5_000_000
 export async function askMister(
   text: string,
   attachment?: Attachment,
+  context?: CanvasContext,
 ): Promise<ActionResult<CopilotResult>> {
   const trimmed = (text ?? '').trim()
   // With an image, text is optional (the screenshot is the payload).
@@ -56,7 +57,7 @@ export async function askMister(
   }
 
   try {
-    return ok(await routeAndRun(client, trimmed, attachment))
+    return ok(await routeAndRun(client, trimmed, attachment, context))
   } catch (err) {
     console.error('[mister:askMister]', err)
     return ok(textResult('No pude procesarlo ahora — intenta de nuevo. / Could not process that — try again.'))

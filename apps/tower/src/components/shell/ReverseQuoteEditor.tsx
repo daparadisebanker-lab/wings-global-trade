@@ -15,7 +15,7 @@ import { solveReverseQuote, type MarginKind, type ReverseQuoteData } from '@/lib
 import { ReverseQuoteArtifact } from './ReverseQuoteArtifact'
 import { CostSheetSavePanel } from './CostSheetSavePanel'
 import { Field, fieldStyle, parseNum, usePersistOnUnmount } from './mister/editor-kit'
-import { useArtifactDraft } from './mister/MisterProvider'
+import { useArtifactDraft, useCanvasContext } from './mister/MisterProvider'
 import { MISTER_ARTIFACT } from './mister-theme'
 
 /** Persisted editor state (canvas working memory) — survives artifact remount. */
@@ -99,6 +99,9 @@ export function ReverseQuoteEditor({ result, locale = DEFAULT_LOCALE, seq }: { r
     const overCap = marginKind === 'bruto' && targetPct > MAX_GROSS_TARGET
     return { data, commitInputs, targetPct, overCap }
   }, [seed, fob, incoterm, marginKind, targetPctInput, adValoremPct, exchangeRate, fuelType, engineCC, payload.targetPct])
+
+  // Feed the tuned base inputs back into Mister so a chained ask inherits them (Part B).
+  useCanvasContext(seq, solved?.data.input ? { kind: 'costing', inputs: solved.data.input } : null)
 
   return (
     <div style={{ background: PANEL_BG, border: BORDER, borderRadius: 12, padding: '14px 16px', color: MISTER_ARTIFACT.text, display: 'flex', flexDirection: 'column', gap: 12 }}>
