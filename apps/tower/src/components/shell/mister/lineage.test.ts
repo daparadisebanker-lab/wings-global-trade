@@ -62,4 +62,15 @@ describe('deltasFor', () => {
     expect(deltasFor('landed-cost', null, { landedCost: 1 })).toEqual([])
     expect(deltasFor('landed-cost', { landedCost: NaN }, { landedCost: 1 })).toEqual([])
   })
+
+  it('drops only the chip whose field is missing, keeps the comparable one', () => {
+    // A partial payload (final price absent) still yields the landed-cost delta and
+    // never renders "NaN" for the missing figure.
+    const child = { landedCost: 9000 }
+    const parent = { landedCost: 8000 }
+    const d = deltasFor('landed-cost', child, parent)
+    expect(d).toHaveLength(1)
+    expect(map(d)['Costo puesto']).toBe('+1,000.00')
+    expect(JSON.stringify(d)).not.toContain('NaN')
+  })
 })

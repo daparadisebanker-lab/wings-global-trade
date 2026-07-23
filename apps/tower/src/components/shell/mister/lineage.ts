@@ -22,39 +22,42 @@ const signedInt = (n: number): string =>
 const signedPp = (n: number): string =>
   `${n.toLocaleString('en-US', { signDisplay: 'exceptZero', maximumFractionDigits: 1 })} pp`
 
+/** Build one delta only when BOTH operands are finite — an older/partial payload
+ *  missing a field drops that chip rather than rendering "NaN" as a figure. */
+function delta(label: Localized, a: number, b: number, fmt: (n: number) => string): Delta | null {
+  return Number.isFinite(a) && Number.isFinite(b) ? { label, value: fmt(a - b) } : null
+}
+
 /** Deltas between a child artifact and its parent of the SAME renderer, read
  *  straight off both stored payloads. Signed, tabular; the sign is exhibited, not
  *  judged (no color meaning — a bigger landed cost is not "bad" here). Returns []
- *  when the two artifacts are different kinds (nothing comparable) or a payload is
- *  missing a field. */
+ *  when the two artifacts are different kinds (nothing comparable); individual
+ *  chips drop when a payload lacks the field they compare. */
 export function deltasFor(renderer: string, child: unknown, parent: unknown): Delta[] {
   if (!child || !parent) return []
   if (renderer === 'landed-cost') {
     const c = child as LandedCostData
     const p = parent as LandedCostData
-    if (!Number.isFinite(c.landedCost) || !Number.isFinite(p.landedCost)) return []
     return [
-      { label: { es: 'Costo puesto', en: 'Landed cost' }, value: signedMoney(c.landedCost - p.landedCost) },
-      { label: { es: 'Precio final', en: 'Final price' }, value: signedMoney(c.salePriceFinal - p.salePriceFinal) },
-    ]
+      delta({ es: 'Costo puesto', en: 'Landed cost' }, c.landedCost, p.landedCost, signedMoney),
+      delta({ es: 'Precio final', en: 'Final price' }, c.salePriceFinal, p.salePriceFinal, signedMoney),
+    ].filter((d): d is Delta => d !== null)
   }
   if (renderer === 'reverse-quote') {
     const c = child as ReverseQuoteData
     const p = parent as ReverseQuoteData
-    if (!Number.isFinite(c.salePrice) || !Number.isFinite(p.salePrice)) return []
     return [
-      { label: { es: 'Precio de venta', en: 'Sale price' }, value: signedMoney(c.salePrice - p.salePrice) },
-      { label: { es: 'Margen', en: 'Margin' }, value: signedPp((c.achievedPct - p.achievedPct) * 100) },
-    ]
+      delta({ es: 'Precio de venta', en: 'Sale price' }, c.salePrice, p.salePrice, signedMoney),
+      delta({ es: 'Margen', en: 'Margin' }, c.achievedPct * 100, p.achievedPct * 100, signedPp),
+    ].filter((d): d is Delta => d !== null)
   }
   if (renderer === 'fit') {
     const c = child as ContainerFitResult
     const p = parent as ContainerFitResult
-    if (!Number.isFinite(c.units) || !Number.isFinite(p.units)) return []
     return [
-      { label: { es: 'Unidades', en: 'Units' }, value: signedInt(c.units - p.units) },
-      { label: { es: 'Volumen', en: 'Volume' }, value: signedPp(c.cbmUsedPct - p.cbmUsedPct) },
-    ]
+      delta({ es: 'Unidades', en: 'Units' }, c.units, p.units, signedInt),
+      delta({ es: 'Volumen', en: 'Volume' }, c.cbmUsedPct, p.cbmUsedPct, signedPp),
+    ].filter((d): d is Delta => d !== null)
   }
   return []
 }
