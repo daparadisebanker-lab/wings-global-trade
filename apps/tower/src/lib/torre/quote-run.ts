@@ -19,11 +19,13 @@ import type { ImportInputs, Incoterm, FuelType, Origin } from '@/lib/costing/typ
 import {
   type Blocker,
   type SourceRef,
+  type ConfidenceState,
   type HojaCostosPayload,
   type CotizacionPayload,
   type ComunicacionPayload,
   isApprovable,
 } from './artifacts'
+import type { QuoteSpec } from './parse-spec'
 
 // ── The structured input the model parses into (the model NEVER produces money math) ──
 export interface QuoteRunInput {
@@ -200,7 +202,8 @@ export function buildQuoteRun(inp: QuoteRunInput): QuoteRunResult {
   const baseResult = canCompute ? computeImportCost(baseInputs) : null
 
   // Numbers are provisional (not verified) whenever any blocker is open.
-  const numberState = blockers.length === 0 ? 'verified' : canCompute ? 'estimado' : 'requiere_verificacion'
+  const numberState: ConfidenceState =
+    blockers.length === 0 ? 'verified' : canCompute ? 'estimado' : 'requiere_verificacion'
 
   // ── (3) hoja_costos — the internal trace ───────────────────────────────────
   const sources: SourceRef[] = [{ kind: 'engine', label: 'Motor SUNAT (computeImportCost)' }]
@@ -351,6 +354,68 @@ export function buildQuoteRun(inp: QuoteRunInput): QuoteRunResult {
 
 function round2(n: number): number {
   return Math.round(n * 100) / 100
+}
+
+// ── Assembler: a model-extracted QuoteSpec + the lane's costing reference → the
+// structured QuoteRunInput. Rates ALWAYS come from the lane config (never the
+// model); international freight is left null when unstated (a hard blocker — never
+// invented), while the standard operational gastos fall back to engine defaults. ──
+export interface QuoteRunContext {
+  laneCode: string | null
+  igvRate: number
+  percepcionRate: number
+  insuranceRate: number
+  /** Resolved Ad Valorem fraction, or null when the tariff is unresolved (→ blocker). */
+  adValoremRate: number | null
+  exchangeRate: number
+  /** Org-rule default margin (fraction) when the operator states none. */
+  marginDefault: number
+  freightSource: SourceRef | null
+  tariffSource: SourceRef | null
+  trmSource: SourceRef | null
+  marginSource: SourceRef | null
+  validityDays: number
+  today: string
+  defaultClientName: string | null
+  defaultLanguage: string
+}
+
+export function assembleQuoteRunInput(spec: QuoteSpec, ctx: QuoteRunContext): QuoteRunInput {
+  const fuelType = spec.fuelType ?? 'gasoline'
+  return {
+    productName: spec.productName ?? '',
+    brand: spec.brand ?? '',
+    model: spec.model ?? '',
+    fuelType,
+    engineCC: spec.engineCC ?? (fuelType === 'electric' ? 0 : 1500),
+    origin: spec.origin ?? 'china',
+    year: 2026,
+    clientName: spec.clientName ?? ctx.defaultClientName,
+    laneCode: ctx.laneCode,
+    language: spec.language ?? ctx.defaultLanguage,
+    quantity: spec.quantity && spec.quantity > 0 ? spec.quantity : 1,
+    fob: spec.fob,
+    incoterm: spec.incoterm ?? 'FOB',
+    scenarios: spec.scenarios,
+    // A route freight rate is NEVER invented — null stays null (→ rate-missing blocker).
+    freightInternational: spec.freightInternational,
+    // Standard operational gastos fall back to engine defaults (not route rates).
+    freightZofratacna: null,
+    portExpenses: null,
+    customsAgency: null,
+    igvRate: ctx.igvRate,
+    percepcionRate: ctx.percepcionRate,
+    insuranceRate: ctx.insuranceRate,
+    adValoremRate: ctx.adValoremRate,
+    marginPercent: spec.marginPercent ?? ctx.marginDefault,
+    exchangeRate: ctx.exchangeRate,
+    freightSource: ctx.freightSource,
+    tariffSource: ctx.tariffSource,
+    trmSource: ctx.trmSource,
+    marginSource: ctx.marginSource,
+    validityDays: ctx.validityDays,
+    today: ctx.today,
+  }
 }
 
 function coverES(client: string, inp: QuoteRunInput): string {

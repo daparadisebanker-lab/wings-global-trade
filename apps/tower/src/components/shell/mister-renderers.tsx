@@ -9,6 +9,8 @@ import { SupplierExtractArtifact } from './SupplierExtractArtifact'
 import { ProposalArtifact } from './ProposalArtifact'
 import { QuoteProposalArtifact } from './QuoteProposalArtifact'
 import { DocumentsArtifact } from './DocumentsArtifact'
+import { TorreQuoteArtifact } from './TorreQuoteArtifact'
+import type { TorreQuoteRenderData } from '@/lib/copilot/capabilities/quote-run'
 
 /**
  * Maps a CopilotResult.renderer key → the component that draws it. The built-in
@@ -27,4 +29,5 @@ export const MISTER_RENDERERS: Record<string, (data: unknown, locale: Locale) =>
   proposal: (data, locale) => <ProposalArtifact result={data} locale={locale} />,
   'quote-proposal': (data, locale) => <QuoteProposalArtifact result={data} locale={locale} />,
   documents: (data, locale) => <DocumentsArtifact result={data} locale={locale} />,
+  'torre-quote': (data, locale) => <TorreQuoteArtifact result={(data as TorreQuoteRenderData).result} locale={locale} />,
 }
