@@ -18,11 +18,14 @@ import type {
 import { textResult, type Capability, type CopilotResult } from '../types'
 
 // ── The renderer payload (ImportResult + display extras) ─────────────────────
-/** What the 'landed-cost' renderer receives — the full SUNAT result plus currency + header context. */
+/** What the 'landed-cost' renderer receives — the full SUNAT result plus currency +
+ *  header context, and the `input` that produced it so the canvas editor can seed
+ *  its controls and recompute (the read-only renderer ignores `input`). */
 export interface LandedCostData extends ImportResult {
   currency: string
   incoterm: Incoterm
   productName: string
+  input: ImportInputs
 }
 
 // ── Standard Peru-SUNAT defaults (identity blanked; numbers mirror the app) ──
@@ -162,6 +165,7 @@ export const landedCostCapability: Capability = {
       currency: 'USD',
       incoterm: inputs.incoterm,
       productName: inputs.productName,
+      input: inputs,
     }
     return { renderer: 'landed-cost', note, data }
   },

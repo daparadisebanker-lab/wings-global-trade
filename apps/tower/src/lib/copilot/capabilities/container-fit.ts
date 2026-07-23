@@ -6,8 +6,13 @@ import { INTELLIGENCE_MODELS } from '@/lib/ai/types'
 import { extractJsonObject } from '@/lib/ai/parse'
 import type { IntelligenceClient } from '@/lib/ai/client'
 import { CONTAINER_KINDS, type ContainerKind } from '@/lib/actions/containers-types'
-import { computeContainerFit } from '../container-fit'
+import { computeContainerFit, type ContainerFitInput, type ContainerFitResult } from '../container-fit'
 import { textResult, type Capability, type CopilotResult } from '../types'
+
+/** The 'fit' renderer payload: the computed fit plus the input that produced it,
+ *  so the canvas editor can seed its controls and recompute (read-only renderer
+ *  ignores `input`). */
+export type ContainerFitPayload = ContainerFitResult & { input: ContainerFitInput }
 
 const SYSTEM = `Eres Mister, el copiloto interno de Wings Global Trade. Tu única tarea aquí es
 convertir una frase en español (o inglés) sobre cuántas unidades entran en un contenedor
@@ -66,7 +71,7 @@ export const containerFitCapability: Capability = {
       )
     }
 
-    const fit = computeContainerFit({
+    const fitInput: ContainerFitInput = {
       itemLengthM: num(obj.itemLengthM) ?? 0,
       itemWidthM: num(obj.itemWidthM) ?? 0,
       itemHeightM: num(obj.itemHeightM) ?? 0,
@@ -74,12 +79,14 @@ export const containerFitCapability: Capability = {
       weightCapKg: num(obj.weightCapKg),
       quantity: num(obj.quantity),
       containerKind: kind(obj.containerKind),
-    })
+    }
+    const fit = computeContainerFit(fitInput)
     if (!fit) {
       return textResult(
         'Necesito las medidas de la caja (largo × ancho × alto). / I need the box dimensions (L × W × H).',
       )
     }
-    return { renderer: 'fit', note, data: fit }
+    const data: ContainerFitPayload = { ...fit, input: fitInput }
+    return { renderer: 'fit', note, data }
   },
 }
