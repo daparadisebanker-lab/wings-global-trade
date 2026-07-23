@@ -8,8 +8,9 @@ import { cn } from '@wings/trade-ui'
 import { CommandPalette } from './CommandPalette'
 import { toggleTheme } from './theme'
 import { LaneSwitcher } from './LaneSwitcher'
-import { MisterDock } from './MisterDock'
 import { MisterMark } from './MisterMark'
+import { MisterProvider } from './mister/MisterProvider'
+import { MisterCockpit } from './mister/MisterCockpit'
 import { OnboardingBanner } from './OnboardingBanner'
 import { RouteProgress } from './RouteProgress'
 import { TopBar } from './TopBar'
@@ -246,6 +247,7 @@ export function ShellChrome({
       data-dock-pinned={dockPinned}
       className="tower-premium-ground min-h-screen bg-surface-0 text-ink-primary"
     >
+     <MisterProvider locale={DEFAULT_LOCALE}>
       <RouteProgress />
       <div className="flex min-h-screen">
         {/* Mobile drawer backdrop */}
@@ -376,8 +378,8 @@ export function ShellChrome({
         onSelectLane={setActiveLaneId}
       />
 
-      {/* Mister — the copilot dock (World B) + its floating door. The launcher
-          hides while the dock is open so they never overlap. */}
+      {/* Mister — the full-width production cockpit (World B) + its floating door.
+          The launcher hides while the cockpit is open so they never overlap. */}
       {!misterOpen && !drawerOpen ? (
         <button
           type="button"
@@ -389,7 +391,8 @@ export function ShellChrome({
           <MisterMark size={26} />
         </button>
       ) : null}
-      <MisterDock open={misterOpen} onClose={() => setMisterOpen(false)} />
+      <MisterCockpit mode="overlay" open={misterOpen} onClose={() => setMisterOpen(false)} />
+     </MisterProvider>
     </div>
   )
 }

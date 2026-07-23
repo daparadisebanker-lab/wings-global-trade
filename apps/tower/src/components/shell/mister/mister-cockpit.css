@@ -1,0 +1,508 @@
+/* Mister cockpit — the full-width production surface (Phase E slice 1).
+   World-B navy, same RATIFIED palette exemption as the dock (see mister-theme.ts).
+   The conversation reuses mister-dock.css (thread/greet/row/bubble/input/chip); this
+   file adds only the 3-zone frame, the canvas, the commit rail, and the overlay
+   choreography. Everything is scoped under .mister-cockpit / .mister-cockpit-overlay
+   so the soft register never bleeds onto TOWER's data surfaces. */
+
+/* ── The frame ──────────────────────────────────────────────────────────── */
+.mister-cockpit {
+  color: #f4f7fb;
+  font-family: var(--font-ui);
+  background:
+    radial-gradient(90% 55% at 28% -8%, rgba(74, 108, 148, 0.32) 0%, transparent 58%),
+    linear-gradient(180deg, #06254f 0%, #001e50 40%, #00112e 100%);
+}
+.mister-cockpit.is-page {
+  height: 100%;
+  min-height: 32rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.ck-shell {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* header — reuses .mister-bar / .mister-id / .mister-close from mister-dock.css */
+.ck-bar {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(168, 192, 220, 0.18);
+}
+
+/* grid: single column (phone → spine only); three columns from lg up. */
+.ck-grid {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+}
+.ck-spine {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.ck-canvas,
+.ck-rail {
+  display: none;
+  min-height: 0;
+}
+@media (min-width: 1024px) {
+  .ck-grid {
+    grid-template-columns: minmax(360px, 400px) minmax(0, 1fr) minmax(300px, 360px);
+  }
+  .ck-canvas {
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid rgba(168, 192, 220, 0.16);
+  }
+  .ck-rail {
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid rgba(168, 192, 220, 0.16);
+  }
+}
+@media (min-width: 1440px) {
+  .ck-grid {
+    grid-template-columns: minmax(380px, 440px) minmax(0, 1fr) minmax(320px, 400px);
+  }
+}
+
+/* The spine hosts the conversation — it must fill and let the thread scroll. */
+.mister-conversation {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px 14px 14px;
+}
+
+/* ── Composition canvas ─────────────────────────────────────────────────── */
+.ck-canvas-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 26px clamp(20px, 4vw, 56px) 40px;
+}
+.ck-canvas-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.ck-canvas-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #7f97b6;
+}
+.ck-canvas-eyebrow .g {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #e0b866;
+}
+.ck-canvas-title {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: #eef4fb;
+}
+.ck-canvas-editable {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #001e50;
+  background: #e0b866;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.ck-canvas-note {
+  margin: 0 0 16px;
+  max-width: 62ch;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: #dbe6f3;
+}
+/* The artifact, given room. Renderers style themselves (dark-bubble palette);
+   the canvas just caps the measure so a wide card stays readable. */
+.ck-canvas-art {
+  max-width: 760px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ck-canvas-art {
+    animation: ck-art-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+@keyframes ck-art-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Canvas switcher — flip between the compositions made this session. */
+.ck-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 18px;
+}
+.ck-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px 7px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(168, 192, 220, 0.24);
+  background: rgba(158, 182, 210, 0.08);
+  color: #b9cae0;
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
+}
+.ck-switch .n {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(168, 192, 220, 0.18);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: #dbe6f3;
+}
+.ck-switch.is-active {
+  border-color: rgba(224, 184, 102, 0.55);
+  background: rgba(216, 169, 75, 0.14);
+  color: #fff;
+}
+.ck-switch.is-active .n {
+  background: #e0b866;
+  color: #001e50;
+}
+.ck-switch:focus-visible {
+  outline: 2px solid #e0b866;
+  outline-offset: 2px;
+}
+
+/* Empty canvas — a quiet invitation, not a dead void. */
+.ck-canvas-empty {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 40px;
+  text-align: center;
+  color: #a8c0dc;
+}
+.ck-canvas-empty .ck-empty-hi {
+  margin: 4px 0 0;
+  font-size: 18px;
+  font-weight: 500;
+  color: #eef4fb;
+}
+.ck-canvas-empty .ck-empty-sub {
+  margin: 0;
+  max-width: 44ch;
+  font-size: 14px;
+  line-height: 1.55;
+  color: #8ba4c4;
+}
+
+/* ── Commit / redirect rail ─────────────────────────────────────────────── */
+.ck-rail-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 22px 20px 32px;
+}
+.ck-rail-sec {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 0;
+  border-top: 1px solid rgba(168, 192, 220, 0.14);
+}
+.ck-rail-sec:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+.ck-rail-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #e0b866;
+}
+.ck-rail-lead {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #b9cae0;
+}
+.ck-rail-tag {
+  align-self: flex-start;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #dbe6f3;
+  border: 1px solid rgba(168, 192, 220, 0.3);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+.ck-rail-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 2px;
+}
+.ck-rail-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 13px;
+  border-radius: 12px;
+  border: 1px solid rgba(168, 192, 220, 0.22);
+  background: rgba(158, 182, 210, 0.1);
+  color: #eef4fb;
+  font-size: 13.5px;
+  text-decoration: none;
+  transition: background 140ms ease, border-color 140ms ease, transform 120ms var(--ease-settle);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ck-rail-link:hover {
+    background: rgba(158, 182, 210, 0.18);
+    border-color: rgba(224, 184, 102, 0.5);
+    transform: translateX(2px);
+  }
+}
+.ck-rail-link span {
+  color: #e0b866;
+}
+.ck-rail-link:focus-visible {
+  outline: 2px solid #e0b866;
+  outline-offset: 2px;
+}
+
+/* Rail tabs — Redirigir | Revisión, with a live pending badge. */
+.ck-rail-tabs {
+  display: flex;
+  gap: 6px;
+  padding-bottom: 4px;
+}
+.ck-rail-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #8ba4c4;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 140ms ease, color 140ms ease, border-color 140ms ease;
+}
+.ck-rail-tab:hover {
+  color: #dbe6f3;
+}
+.ck-rail-tab.is-active {
+  color: #fff;
+  background: rgba(158, 182, 210, 0.12);
+  border-color: rgba(168, 192, 220, 0.24);
+}
+.ck-rail-tab:focus-visible {
+  outline: 2px solid #e0b866;
+  outline-offset: 2px;
+}
+.ck-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #e0b866;
+  color: #001e50;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Inline review queue (navy-native) */
+.ck-rev {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ck-rev-note {
+  margin: 4px 0;
+  font-size: 13px;
+  color: #8ba4c4;
+}
+.ck-rev-err {
+  margin: 0;
+  font-size: 12.5px;
+  color: #f2b8b8;
+}
+.ck-rev-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ck-rev-group-h {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #7f97b6;
+}
+.ck-rev-card {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 11px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(168, 192, 220, 0.2);
+  background: rgba(0, 17, 46, 0.4);
+}
+.ck-rev-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.ck-rev-title {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #eef4fb;
+}
+.ck-rev-conf-n {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #e0b866;
+}
+.ck-rev-sub {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.02em;
+  color: #8ba4c4;
+}
+.ck-conf {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(168, 192, 220, 0.16);
+  overflow: hidden;
+}
+.ck-conf span {
+  display: block;
+  height: 100%;
+  background: #e0b866;
+}
+.ck-rev-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 2px;
+}
+.ck-rev-approve,
+.ck-rev-reject {
+  flex: 1;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 120ms ease, background 140ms ease;
+}
+.ck-rev-approve {
+  border: 1px solid #e0b866;
+  background: #e0b866;
+  color: #001e50;
+}
+.ck-rev-reject {
+  border: 1px solid rgba(168, 192, 220, 0.3);
+  background: transparent;
+  color: #dbe6f3;
+}
+.ck-rev-approve:disabled,
+.ck-rev-reject:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.ck-rev-approve:focus-visible,
+.ck-rev-reject:focus-visible {
+  outline: 2px solid #e0b866;
+  outline-offset: 2px;
+}
+
+/* ── Overlay choreography (⌘J) ──────────────────────────────────────────── */
+.mister-cockpit-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+}
+.mister-cockpit-overlay.is-open {
+  pointer-events: auto;
+}
+.mister-cockpit-overlay .mister-cockpit-scrim {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: color-mix(in srgb, #00112e 60%, transparent);
+  opacity: 0;
+  transition: opacity 260ms ease;
+}
+.mister-cockpit-overlay.is-open .mister-cockpit-scrim {
+  opacity: 1;
+}
+.mister-cockpit-overlay .mister-cockpit.is-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 240ms ease, transform 300ms var(--ease-gantry);
+  will-change: opacity, transform;
+}
+.mister-cockpit-overlay.is-open .mister-cockpit.is-overlay {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mister-cockpit-overlay .mister-cockpit.is-overlay {
+    transform: none;
+    transition: opacity 160ms linear;
+  }
+}

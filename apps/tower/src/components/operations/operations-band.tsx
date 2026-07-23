@@ -39,7 +39,7 @@ export function OperationsBand({
     { key: 'quotesAwaiting', value: snapshot.quotesAwaiting, label: { es: 'Cotizaciones por responder', en: 'Quotes awaiting reply' }, tag: 'COT', module: 'quotations', href: '/quotations' },
     { key: 'rfqsTotal', value: snapshot.rfqsTotal, label: { es: 'RFQs (total)', en: 'RFQs (total)' }, tag: 'PIP', module: 'pipeline', href: '/pipeline' },
     { key: 'containersFilling', value: snapshot.containersFilling, label: { es: 'Contenedores en llenado', en: 'Containers filling' }, tag: 'CTN', module: 'containers', href: '/containers' },
-    { key: 'triageBacklog', value: snapshot.triageBacklog, label: { es: 'Triage pendiente', en: 'Triage backlog' }, tag: 'INT', module: 'intelligence', href: '/intelligence' },
+    { key: 'triageBacklog', value: snapshot.triageBacklog, label: { es: 'Triage pendiente', en: 'Triage backlog' }, tag: 'INT', module: 'intelligence', href: '/intelligence/revision' },
     { key: 'productsPublished', value: snapshot.productsPublished, label: { es: 'Productos publicados', en: 'Products published' }, tag: 'CAT', module: 'catalog', href: '/catalog' },
     { key: 'clientsTotal', value: snapshot.clientsTotal, label: { es: 'Clientes', en: 'Clients' }, tag: 'CLI', module: 'clients', href: '/clients' },
     { key: 'rbContainersInTransit', value: snapshot.rbContainersInTransit, label: { es: 'RB en tránsito', en: 'RB in transit' }, tag: 'MRC', module: 'marcas', href: '/marcas' },
