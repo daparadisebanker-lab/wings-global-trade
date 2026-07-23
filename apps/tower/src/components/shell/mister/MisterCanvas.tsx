@@ -8,6 +8,7 @@
 import { t } from '@/lib/i18n'
 import { MisterMark } from '../MisterMark'
 import { MISTER_RENDERERS } from '../mister-renderers'
+import { MISTER_CANVAS_EDITORS } from './canvas-editors'
 import { useMister } from './MisterProvider'
 import { artifactLabel } from './handoffs'
 
@@ -32,6 +33,10 @@ export function MisterCanvas() {
     )
   }
 
+  // Prefer an editable surface when the capability has one; the thread stays read-only.
+  const editor = MISTER_CANVAS_EDITORS[selectedArtifact.renderer]
+  const editable = Boolean(editor)
+
   return (
     <div className="ck-canvas-scroll">
       <div className="ck-canvas-head">
@@ -40,6 +45,9 @@ export function MisterCanvas() {
           {t({ es: 'Lienzo', en: 'Canvas' }, locale)}
         </span>
         <span className="ck-canvas-title">{t(artifactLabel(selectedArtifact.renderer), locale)}</span>
+        {editable ? (
+          <span className="ck-canvas-editable">{t({ es: 'Editable', en: 'Editable' }, locale)}</span>
+        ) : null}
       </div>
 
       {/* Switcher — only once there's more than one composition to move between. */}
@@ -67,11 +75,13 @@ export function MisterCanvas() {
       ) : null}
 
       {selectedArtifact.note ? <p className="ck-canvas-note">{selectedArtifact.note}</p> : null}
-      {/* key on selectedSeq so the reveal replays when the operator swaps artifacts. */}
+      {/* key on selectedSeq so the reveal replays (and editor state resets) on swap. */}
       <div key={selectedSeq ?? 'art'} className="ck-canvas-art">
-        {MISTER_RENDERERS[selectedArtifact.renderer]?.(selectedArtifact.data, locale) ?? (
-          <span>{selectedArtifact.text ?? ''}</span>
-        )}
+        {editor
+          ? editor(selectedArtifact.data, locale)
+          : (MISTER_RENDERERS[selectedArtifact.renderer]?.(selectedArtifact.data, locale) ?? (
+              <span>{selectedArtifact.text ?? ''}</span>
+            ))}
       </div>
     </div>
   )

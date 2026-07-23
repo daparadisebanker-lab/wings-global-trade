@@ -116,6 +116,16 @@
   letter-spacing: 0.02em;
   color: #eef4fb;
 }
+.ck-canvas-editable {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #001e50;
+  background: #e0b866;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
 .ck-canvas-note {
   margin: 0 0 16px;
   max-width: 62ch;
