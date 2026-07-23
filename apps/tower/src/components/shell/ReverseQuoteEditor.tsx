@@ -100,8 +100,9 @@ export function ReverseQuoteEditor({ result, locale = DEFAULT_LOCALE, seq }: { r
     return { data, commitInputs, targetPct, overCap }
   }, [seed, fob, incoterm, marginKind, targetPctInput, adValoremPct, exchangeRate, fuelType, engineCC, payload.targetPct])
 
-  // Feed the tuned base inputs back into Mister so a chained ask inherits them (Part B).
-  useCanvasContext(seq, solved?.data.input ? { kind: 'costing', inputs: solved.data.input } : null)
+  // Feed the tuned inputs back into Mister so a chained ask inherits them (Part B).
+  // commitInputs pins the margin (gross → marginPercent), so the target travels too.
+  useCanvasContext(seq, solved ? { kind: 'costing', inputs: solved.commitInputs } : null)
 
   return (
     <div style={{ background: PANEL_BG, border: BORDER, borderRadius: 12, padding: '14px 16px', color: MISTER_ARTIFACT.text, display: 'flex', flexDirection: 'column', gap: 12 }}>

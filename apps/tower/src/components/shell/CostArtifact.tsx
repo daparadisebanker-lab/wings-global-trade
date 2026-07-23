@@ -174,22 +174,24 @@ export function CostArtifact({
         />
       </div>
 
-      <p
-        style={{
-          margin: '8px 0 0',
-          fontSize: 10.5,
-          lineHeight: 1.4,
-          color: MUTED,
-        }}
-      >
-        {t(
-          {
-            es: 'Cadena SUNAT con tasas estándar; ajusta cualquier tasa en la calculadora de costos.',
-            en: 'SUNAT chain at standard rates; fine-tune any rate in the cost calculator.',
-          },
-          locale,
-        )}
-      </p>
+      {/* Assumptions strip — the SUNAT rates behind these numbers, exhibited (not
+          hidden) so a canvas-inherited or tuned rate never reads as "standard". */}
+      {r.input ? (
+        <p style={{ margin: '8px 0 0', fontFamily: MONO, fontSize: 10.5, lineHeight: 1.4, color: MUTED }}>
+          TC {r.input.exchangeRate} · Ad Val {(r.input.adValoremRate * 100).toFixed(1)}% ·{' '}
+          {t({ es: 'Flete', en: 'Freight' }, locale)} {money(r.input.freightInternational)} · {r.input.fuelType}
+        </p>
+      ) : (
+        <p style={{ margin: '8px 0 0', fontSize: 10.5, lineHeight: 1.4, color: MUTED }}>
+          {t(
+            {
+              es: 'Cadena SUNAT con tasas estándar; ajusta cualquier tasa en la calculadora de costos.',
+              en: 'SUNAT chain at standard rates; fine-tune any rate in the cost calculator.',
+            },
+            locale,
+          )}
+        </p>
+      )}
     </div>
   )
 }

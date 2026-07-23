@@ -109,6 +109,13 @@ export function ReverseQuoteArtifact({
           value={pct(result.targetPct)}
         />
       </div>
+
+      {/* Assumptions exhibited (not hidden) so an inherited TC / Ad Valorem shows. */}
+      {result.input ? (
+        <div style={{ fontFamily: MONO, fontSize: 10.5, color: MUTED }}>
+          TC {result.input.exchangeRate} · Ad Val {(result.input.adValoremRate * 100).toFixed(1)}%
+        </div>
+      ) : null}
     </div>
   )
 }

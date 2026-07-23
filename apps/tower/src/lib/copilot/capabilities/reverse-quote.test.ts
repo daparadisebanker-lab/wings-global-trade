@@ -1,10 +1,45 @@
 import { describe, it, expect } from 'vitest'
 import { computeImportCost, DEFAULT_INPUTS } from '@/lib/costing/engine'
 import type { ImportInputs } from '@/lib/costing/types'
+import type { IntelligenceClient } from '@/lib/ai/client'
 import {
   MARGIN_TOLERANCE,
   solveSalePriceForMargin,
+  reverseQuoteCapability,
+  type ReverseQuoteData,
 } from './reverse-quote'
+
+function stubClient(json: object): IntelligenceClient {
+  return { complete: async () => JSON.stringify(json) } as unknown as IntelligenceClient
+}
+
+describe('reverseQuoteCapability.run — Part B context inheritance', () => {
+  it('inherits incoterm + fuel from the canvas (not clobbered to FOB/gasoline)', async () => {
+    const client = stubClient({ understood: true, marginPct: 25 })
+    const ctx = {
+      kind: 'costing' as const,
+      inputs: { ...DEFAULT_INPUTS, fob: 40000, incoterm: 'CIF' as const, fuelType: 'diesel' as const, marginMode: 'percent' as const, marginPercent: 0.2 },
+    }
+    const res = await reverseQuoteCapability.run(client, '¿y con 25% de margen?', undefined, ctx)
+    const data = res.data as ReverseQuoteData
+    expect(data.input?.incoterm).toBe('CIF') // inherited, not FOB
+    expect(data.input?.fuelType).toBe('diesel') // inherited, not gasoline
+    expect(data.input?.fob).toBe(40000) // inherited (fob not restated)
+    expect(data.targetPct).toBeCloseTo(0.25) // stated
+  })
+
+  it('inherits the gross target margin on a fob-only follow-up', async () => {
+    const client = stubClient({ understood: true, fob: 50000 })
+    const ctx = {
+      kind: 'costing' as const,
+      inputs: { ...DEFAULT_INPUTS, fob: 40000, marginMode: 'percent' as const, marginPercent: 0.22 },
+    }
+    const res = await reverseQuoteCapability.run(client, '¿y sobre un FOB de 50,000?', undefined, ctx)
+    const data = res.data as ReverseQuoteData
+    expect(data.input?.fob).toBe(50000) // overridden
+    expect(data.targetPct).toBeCloseTo(0.22) // inherited
+  })
+})
 
 // A realistic base: FOB high enough that the engine's $1000 percent-mode floor
 // never binds, so a gross target is achieved exactly.

@@ -9,6 +9,7 @@
 import { createServerSupabase } from '@/lib/supabase/server'
 import { getIntelligenceClient } from '@/lib/ai/client'
 import { routeAndRun } from '@/lib/copilot/router'
+import { sanitizeCanvasContext } from '@/lib/copilot/context-guard'
 import { textResult, type Attachment, type CanvasContext, type CopilotResult } from '@/lib/copilot/types'
 import { ok, fail, type ActionResult } from './result'
 
@@ -57,7 +58,8 @@ export async function askMister(
   }
 
   try {
-    return ok(await routeAndRun(client, trimmed, attachment, context))
+    // Client-supplied context: validate at the trust boundary before it seeds a compute.
+    return ok(await routeAndRun(client, trimmed, attachment, sanitizeCanvasContext(context)))
   } catch (err) {
     console.error('[mister:askMister]', err)
     return ok(textResult('No pude procesarlo ahora — intenta de nuevo. / Could not process that — try again.'))

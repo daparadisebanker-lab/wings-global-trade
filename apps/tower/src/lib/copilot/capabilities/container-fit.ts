@@ -27,21 +27,18 @@ Responde SOLO con un objeto JSON, sin texto alrededor, con esta forma exacta:
   "itemHeightM": number|null,
   "weightEachKg": number|null,
   "quantity": number|null,
-  "containerKind": "20GP"|"40GP"|"40HC"|"REEFER",
+  "containerKind": "20GP"|"40GP"|"40HC"|"REEFER"|null,
   "weightCapKg": number|null,
   "note": string
 }
 
-Convierte unidades: cm→m (÷100), toneladas→kg (×1000). Si la frase NO trata de cuántas
-unidades entran en un contenedor, devuelve understood=false y una "note" breve en español.`
+Convierte unidades: cm→m (÷100), toneladas→kg (×1000). En una PREGUNTA DE SEGUIMIENTO el operador
+puede cambiar UN SOLO dato ("¿y si pesan 950 kg cada una?", "y en un 40HC"); deja en null todo lo
+que NO repita — el sistema hereda la caja y el contenedor del cálculo en pantalla. Si la frase NO
+trata de cuántas unidades entran en un contenedor, devuelve understood=false y una "note" breve en español.`
 
 function num(v: unknown): number | null {
   return typeof v === 'number' && Number.isFinite(v) ? v : null
-}
-function kind(v: unknown): ContainerKind {
-  return (CONTAINER_KINDS as readonly string[]).includes(v as string)
-    ? (v as ContainerKind)
-    : '40HC'
 }
 
 export const containerFitCapability: Capability = {
@@ -74,9 +71,10 @@ export const containerFitCapability: Capability = {
     // Chained ask ("now pack 4 of these in a 40HC"): inherit the box the operator
     // was fitting from the canvas, overriding only what this message restates.
     const ctx = context?.kind === 'fit' ? context.input : null
-    const modelKind = (CONTAINER_KINDS as readonly string[]).includes(obj?.containerKind as string)
-      ? (obj.containerKind as ContainerKind)
-      : null
+    const isKind = (v: unknown): v is ContainerKind => (CONTAINER_KINDS as readonly string[]).includes(v as string)
+    // Validate BOTH the model's and the client-supplied kind the same way.
+    const modelKind = isKind(obj?.containerKind) ? obj.containerKind : null
+    const ctxKind = ctx && isKind(ctx.containerKind) ? ctx.containerKind : null
     const fitInput: ContainerFitInput = {
       itemLengthM: num(obj.itemLengthM) ?? ctx?.itemLengthM ?? 0,
       itemWidthM: num(obj.itemWidthM) ?? ctx?.itemWidthM ?? 0,
@@ -84,7 +82,7 @@ export const containerFitCapability: Capability = {
       weightEachKg: num(obj.weightEachKg) ?? ctx?.weightEachKg ?? null,
       weightCapKg: num(obj.weightCapKg) ?? ctx?.weightCapKg ?? null,
       quantity: num(obj.quantity) ?? ctx?.quantity ?? null,
-      containerKind: modelKind ?? ctx?.containerKind ?? kind(obj.containerKind),
+      containerKind: modelKind ?? ctxKind ?? '40HC',
     }
     const fit = computeContainerFit(fitInput)
     if (!fit) {

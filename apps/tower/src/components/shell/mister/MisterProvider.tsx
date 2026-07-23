@@ -129,8 +129,11 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
   )
   const selectArtifact = useCallback((seq: number) => setSelectedSeq(seq), [])
 
-  // Mirror the current selection + register/unregister canvas getters (Part B).
-  selectedSeqRef.current = selectedSeq
+  // Mirror the current selection into a ref for send() (an event handler that runs
+  // after commit) — via an effect, not a write-during-render (concurrent-safe).
+  useEffect(() => {
+    selectedSeqRef.current = selectedSeq
+  }, [selectedSeq])
   const registerCanvasGetter = useCallback((seq: number, getter: () => CanvasContext | null) => {
     canvasGetters.current.set(seq, getter)
     return () => {

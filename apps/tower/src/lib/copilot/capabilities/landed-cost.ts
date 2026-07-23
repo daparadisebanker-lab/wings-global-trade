@@ -83,7 +83,9 @@ el sistema corre el motor SUNAT del Perú con sus tasas estándar.
 
 Extrae SOLO los campos que el operador nombra explícitamente. Deja en null todo lo que NO diga
 — el sistema aplica los valores por defecto (IGV 18%, percepción 3.5%, seguro 1.5%, tipo de
-cambio 3.70, Ad Valorem 0). No inventes precio ni tasas.
+cambio 3.70, Ad Valorem 0). No inventes precio ni tasas. En una PREGUNTA DE SEGUIMIENTO el
+operador puede cambiar UN SOLO campo (p.ej. "¿y si el flete sube a 2,500?" o "¿y con TC 3.9?");
+deja en null todo lo que NO repita — el sistema hereda el resto del cálculo que ya está en pantalla.
 
 Responde SOLO con un objeto JSON, sin texto alrededor, con esta forma exacta:
 {
@@ -96,6 +98,10 @@ Responde SOLO con un objeto JSON, sin texto alrededor, con esta forma exacta:
   "origin": "china"|"other"|null,
   "incoterm": "EXW"|"FOB"|"CFR"|"CIF"|null,
   "fob": number|null,
+  "freightInternational": number|null,
+  "freightZofratacna": number|null,
+  "portExpenses": number|null,
+  "customsAgency": number|null,
   "adValoremRate": number|null,
   "igvRate": number|null,
   "percepcionRate": number|null,
@@ -138,16 +144,22 @@ export const landedCostCapability: Capability = {
       )
     }
 
-    const fob = num(obj.fob)
-    if (fob === null || fob <= 0) {
+    // Resolve the price through the canvas BEFORE bailing: a follow-up that keeps
+    // the same product ("¿y si el TC sube a 3.9?") never restates the FOB.
+    const statedFob = num(obj.fob)
+    const ctxBase = context?.kind === 'costing' ? context.inputs : null
+    const effFob = statedFob !== null && statedFob > 0 ? statedFob : ctxBase && ctxBase.fob > 0 ? ctxBase.fob : null
+    if (effFob === null) {
       return textResult(
         'Necesito el precio FOB o CIF en USD para calcular el landed cost. / I need the FOB or CIF price in USD to compute the landed cost.',
       )
     }
 
-    // Only the fields the operator actually mentioned; the rest fall to defaults.
+    // Only the fields the operator actually mentioned; the rest inherit from the
+    // canvas base (chained ask) or the app defaults. fob is set only when stated,
+    // so buildInputsFrom keeps the canvas fob on a follow-up that didn't restate it.
     const partial: Partial<ImportInputs> = {
-      fob,
+      fob: statedFob ?? undefined,
       productName: str(obj.productName) ?? undefined,
       brand: str(obj.brand) ?? undefined,
       model: str(obj.model) ?? undefined,
@@ -155,6 +167,10 @@ export const landedCostCapability: Capability = {
       engineCC: num(obj.engineCC) ?? undefined,
       origin: oneOf(obj.origin, ORIGINS) ?? undefined,
       incoterm: oneOf(obj.incoterm, INCOTERMS) ?? undefined,
+      freightInternational: num(obj.freightInternational) ?? undefined,
+      freightZofratacna: num(obj.freightZofratacna) ?? undefined,
+      portExpenses: num(obj.portExpenses) ?? undefined,
+      customsAgency: num(obj.customsAgency) ?? undefined,
       adValoremRate: num(obj.adValoremRate) ?? undefined,
       igvRate: num(obj.igvRate) ?? undefined,
       percepcionRate: num(obj.percepcionRate) ?? undefined,
@@ -163,9 +179,9 @@ export const landedCostCapability: Capability = {
       marginPercent: num(obj.marginPercent) ?? undefined,
     }
 
-    // Chained ask: seed unspecified fields from the canvas the operator was tuning
-    // (their Ad Valorem / TC / freight carry) instead of the app defaults.
-    const base = context?.kind === 'costing' ? context.inputs : COST_DEFAULTS
+    // Merge context OVER defaults so a partial/hostile context can never leave a
+    // required field undefined reaching the engine.
+    const base = ctxBase ? { ...COST_DEFAULTS, ...ctxBase } : COST_DEFAULTS
     const inputs = buildInputsFrom(base, partial)
     const result = computeImportCost(inputs)
 

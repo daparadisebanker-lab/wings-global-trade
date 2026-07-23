@@ -1,5 +1,31 @@
 import { describe, it, expect } from 'vitest'
-import { computeContainerFit, CONTAINER_SPECS, STOWAGE_FACTOR } from './container-fit'
+import { computeContainerFit, CONTAINER_SPECS, STOWAGE_FACTOR, type ContainerFitInput } from './container-fit'
+import { containerFitCapability, type ContainerFitPayload } from './capabilities/container-fit'
+import type { IntelligenceClient } from '@/lib/ai/client'
+
+function stubClient(json: object): IntelligenceClient {
+  return { complete: async () => JSON.stringify(json) } as unknown as IntelligenceClient
+}
+
+describe('containerFitCapability.run — Part B context inheritance', () => {
+  it('inherits the box + container from the canvas on a weight-only follow-up', async () => {
+    const client = stubClient({ understood: true, weightEachKg: 950 })
+    const input: ContainerFitInput = {
+      itemLengthM: 1.2,
+      itemWidthM: 1.0,
+      itemHeightM: 1.1,
+      weightEachKg: 500,
+      weightCapKg: null,
+      quantity: null,
+      containerKind: '20GP',
+    }
+    const res = await containerFitCapability.run(client, '¿y si pesan 950 kg cada una?', undefined, { kind: 'fit', input })
+    const data = res.data as ContainerFitPayload
+    expect(data.input.itemLengthM).toBe(1.2) // inherited box
+    expect(data.input.containerKind).toBe('20GP') // inherited container (not defaulted to 40HC)
+    expect(data.input.weightEachKg).toBe(950) // overridden
+  })
+})
 
 describe('computeContainerFit', () => {
   it('returns null on non-positive geometry', () => {
