@@ -12,9 +12,24 @@
 // writes an ai_draft (CLAUDE.md Directive 7 — propose, then dispose).
 
 import type { IntelligenceClient, ImageInput } from '@/lib/ai/client'
+import type { ImportInputs } from '@/lib/costing/types'
+import type { ContainerFitInput } from './container-fit'
 
 /** An attachment the operator sends with a message — currently a pasted/added image. */
 export type Attachment = ImageInput
+
+/**
+ * Canvas working memory, fed back into a CHAINED ask (Phase E round 3 / Part B).
+ * When the operator has an artifact open on the canvas and types a follow-up
+ * ("y si el flete sube a 2,500?"), the currently-mounted editor's normalized
+ * inputs travel with the message so the capability seeds from what the operator
+ * already tuned instead of engine defaults. Plain JSON (crosses the server-action
+ * boundary). The costing capabilities (landed-cost, reverse-quote) share
+ * ImportInputs, so one 'costing' kind covers both.
+ */
+export type CanvasContext =
+  | { kind: 'costing'; inputs: ImportInputs }
+  | { kind: 'fit'; input: ContainerFitInput }
 
 /** The result a capability returns; the dock renders it via `renderer`. */
 export interface CopilotResult {
@@ -39,9 +54,12 @@ export interface Capability {
   /**
    * Parse the message and produce a result. Throws only on a transport error
    * from the client; an unparseable message should return a `text` result. The
-   * optional attachment is present only for image-accepting capabilities.
+   * optional attachment is present only for image-accepting capabilities. The
+   * optional `context` is the canvas working memory of the artifact the operator
+   * had open — a capability may seed unspecified fields from it (Part B); ignoring
+   * it is fine (a fewer-param run still satisfies this contract).
    */
-  run(client: IntelligenceClient, text: string, attachment?: Attachment): Promise<CopilotResult>
+  run(client: IntelligenceClient, text: string, attachment?: Attachment, context?: CanvasContext): Promise<CopilotResult>
 }
 
 /** A plain-text result — the graceful fallback every capability can return. */

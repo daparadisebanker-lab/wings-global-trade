@@ -18,7 +18,7 @@ import type { IntelligenceClient } from '@/lib/ai/client'
 import { DEFAULT_INPUTS } from '@/lib/costing/engine'
 import type { FuelType, ImportInputs, Incoterm } from '@/lib/costing/types'
 import { solveReverseQuote, type MarginKind } from '../reverse-quote-solve'
-import { textResult, type Capability, type CopilotResult } from '../types'
+import { textResult, type Capability, type CanvasContext, type CopilotResult } from '../types'
 
 // The solver + payload types live in a pure, CLIENT-SAFE module so the canvas
 // editor can import them without pulling this capability's LLM graph into the
@@ -37,17 +37,19 @@ el sistema resuelve la aritmética con el motor de costos SUNAT.
 Responde SOLO con un objeto JSON, sin texto alrededor, con esta forma exacta:
 {
   "understood": boolean,
-  "marginPct": number|null,             // el margen objetivo tal como lo dijo el operador (ej. 22 para 22%)
-  "marginKind": "bruto"|"neto_caja",    // "bruto"=margen bruto; "neto_caja"=margen neto de caja. Si no lo aclara, usa "bruto".
+  "marginPct": number|null,             // el margen objetivo tal como lo dijo el operador (ej. 22 para 22%); null si no lo repite
+  "marginKind": "bruto"|"neto_caja"|null, // null si el operador no lo aclara (se hereda del lienzo, o "bruto" por defecto)
   "fob": number|null,                    // el costo base declarado (FOB, o el valor CFR/CIF/EXW). null si no lo dieron.
-  "incoterm": "EXW"|"FOB"|"CFR"|"CIF",  // el incoterm del valor dado; usa "FOB" si no se especifica.
-  "fuelType": "gasoline"|"diesel"|"hybrid"|"electric",  // para el ISC; usa "gasoline" si no se dice.
+  "incoterm": "EXW"|"FOB"|"CFR"|"CIF"|null, // null si el operador no lo menciona
+  "fuelType": "gasoline"|"diesel"|"hybrid"|"electric"|null,  // null si el operador no lo menciona
   "engineCC": number|null,               // cilindrada del motor para el ISC; null si no aplica.
   "note": string                         // nota breve EN EL IDIOMA de la frase del operador (español o inglés).
 }
 
 Reglas: "margen neto", "neto de caja", "net cash", "net margin" → "neto_caja".
 "margen bruto", "bruto", "gross" → "bruto". Interpreta separadores de miles (78,400 → 78400).
+En una PREGUNTA DE SEGUIMIENTO el operador puede cambiar UN SOLO campo ("¿y con 25%?", "¿y sobre un
+FOB de 50,000?"); deja en null todo lo que NO repita — el sistema hereda el resto del lienzo.
 Si la frase NO pide un precio de venta para un margen objetivo, devuelve understood=false con una "note" breve en español.`
 
 const FUELS: readonly FuelType[] = ['gasoline', 'diesel', 'hybrid', 'electric']
@@ -61,14 +63,16 @@ function num(v: unknown): number | null {
 function normalizePct(raw: number): number {
   return Math.abs(raw) > 1 ? raw / 100 : raw
 }
-function fuelOf(v: unknown): FuelType {
-  return FUELS.includes(v as FuelType) ? (v as FuelType) : DEFAULT_INPUTS.fuelType
+// Nullable so run() can tell "operator stated it" from "operator left it unset"
+// (and inherit the canvas value on a follow-up) rather than force a default.
+function fuelOf(v: unknown): FuelType | null {
+  return FUELS.includes(v as FuelType) ? (v as FuelType) : null
 }
-function incotermOf(v: unknown): Incoterm {
-  return INCOTERMS.includes(v as Incoterm) ? (v as Incoterm) : 'FOB'
+function incotermOf(v: unknown): Incoterm | null {
+  return INCOTERMS.includes(v as Incoterm) ? (v as Incoterm) : null
 }
-function marginKindOf(v: unknown): MarginKind {
-  return v === 'neto_caja' ? 'neto_caja' : 'bruto'
+function marginKindOf(v: unknown): MarginKind | null {
+  return v === 'neto_caja' ? 'neto_caja' : v === 'bruto' ? 'bruto' : null
 }
 
 export const reverseQuoteCapability: Capability = {
@@ -82,7 +86,7 @@ export const reverseQuoteCapability: Capability = {
       'What sale price hits a 25% gross margin on a $40,000 CIF?',
     ],
   },
-  async run(client: IntelligenceClient, text: string): Promise<CopilotResult> {
+  async run(client: IntelligenceClient, text: string, _attachment, context?: CanvasContext): Promise<CopilotResult> {
     const raw = await client.complete({
       model: INTELLIGENCE_MODELS.reason,
       system: SYSTEM,
@@ -99,30 +103,45 @@ export const reverseQuoteCapability: Capability = {
       )
     }
 
-    const fob = num(obj.fob)
-    if (fob === null || fob <= 0) {
+    // Chained ask: inherit the canvas's tuned base from the artifact the operator
+    // was on, else the app SUNAT defaults. Resolve BEFORE the guards so a follow-up
+    // that keeps the price or the margin need not restate it.
+    const ctxBase = context?.kind === 'costing' ? context.inputs : null
+
+    const statedFob = num(obj.fob)
+    const effFob = statedFob !== null && statedFob > 0 ? statedFob : ctxBase && ctxBase.fob > 0 ? ctxBase.fob : null
+    if (effFob === null) {
       return textResult(
         'Necesito el costo base (FOB, o el valor CIF/CFR). / I need the cost basis (FOB, or the CIF/CFR value).',
       )
     }
 
-    const marginRaw = num(obj.marginPct)
-    if (marginRaw === null || marginRaw === 0) {
+    const statedMargin = num(obj.marginPct)
+    // Inherit a gross target from the canvas (net-cash pins a price, not a %, so it
+    // is not inheritable as a margin — the operator restates it).
+    const ctxTargetPct = ctxBase && ctxBase.marginMode === 'percent' && ctxBase.marginPercent > 0 ? ctxBase.marginPercent : null
+    const targetPct = statedMargin !== null && statedMargin !== 0 ? normalizePct(statedMargin) : ctxTargetPct
+    if (targetPct === null || targetPct === 0) {
       return textResult(
         '¿Qué margen objetivo? Dame el % (bruto o neto de caja). / What target margin? Give me the % (gross or net-cash).',
       )
     }
 
-    const marginKind = marginKindOf(obj.marginKind)
-    const targetPct = normalizePct(marginRaw)
-    const incoterm = incotermOf(obj.incoterm)
+    // Merge context OVER defaults so a partial/hostile context can never leave a
+    // required field undefined reaching the engine.
+    const base = ctxBase ? { ...DEFAULT_INPUTS, ...ctxBase } : DEFAULT_INPUTS
+    // Inherit incoterm / fuel / margin-kind when the follow-up doesn't restate them.
+    const marginKind: MarginKind =
+      marginKindOf(obj.marginKind) ?? (ctxBase?.marginMode === 'target_price' ? 'neto_caja' : 'bruto')
+    const incoterm = incotermOf(obj.incoterm) ?? base.incoterm
+    const fuelType = fuelOf(obj.fuelType) ?? base.fuelType
 
     const baseInputs: ImportInputs = {
-      ...DEFAULT_INPUTS,
-      fob,
+      ...base,
+      fob: effFob,
       incoterm,
-      fuelType: fuelOf(obj.fuelType),
-      engineCC: num(obj.engineCC) ?? DEFAULT_INPUTS.engineCC,
+      fuelType,
+      engineCC: num(obj.engineCC) ?? base.engineCC,
     }
 
     // One source of truth for the payload (and the commit inputs the editor uses),

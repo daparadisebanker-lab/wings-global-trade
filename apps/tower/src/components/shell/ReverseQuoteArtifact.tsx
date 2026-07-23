@@ -109,6 +109,17 @@ export function ReverseQuoteArtifact({
           value={pct(result.targetPct)}
         />
       </div>
+
+      {/* Assumptions exhibited (not hidden) so an inherited TC / Ad Valorem / freight
+          / fuel shows on the sale-price surface. Freight only when the engine uses it
+          (EXW/FOB); under CFR/CIF it's already inside the stated value. */}
+      {result.input ? (
+        <div style={{ fontFamily: MONO, fontSize: 10.5, color: MUTED }}>
+          TC {result.input.exchangeRate} · Ad Val {(result.input.adValoremRate * 100).toFixed(1)}%
+          {result.incoterm === 'EXW' || result.incoterm === 'FOB' ? ` · Flete ${money(result.input.freightInternational)}` : ''} ·{' '}
+          {result.input.fuelType}
+        </div>
+      ) : null}
     </div>
   )
 }
