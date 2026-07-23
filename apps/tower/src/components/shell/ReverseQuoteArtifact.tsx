@@ -55,6 +55,14 @@ export function ReverseQuoteArtifact({
         {t({ es: 'Precio de venta', en: 'Sale price' }, locale)} · {kindLabel} {pct(result.targetPct)}
       </div>
 
+      {/* Provenance (Scenario Ledger) — inherited from a prior canvas. */}
+      {result.seededFrom ? (
+        <div style={{ fontFamily: MONO, fontSize: 10, letterSpacing: '0.04em', color: GOLD }}>
+          {t({ es: 'Heredado del lienzo', en: 'Inherited from canvas' }, locale)} #{result.seededFrom.seq}:{' '}
+          {result.seededFrom.fields.join(' · ')}
+        </div>
+      ) : null}
+
       {/* The headline: the sale price that hits the target. Fluid so a large
           number never overflows a narrow phone. */}
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap', minWidth: 0 }}>

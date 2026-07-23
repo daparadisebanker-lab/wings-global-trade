@@ -1,5 +1,6 @@
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import type { ContainerFitResult } from '@/lib/copilot/container-fit'
+import type { SeededFrom } from '@/lib/copilot/types'
 import { FitScene } from './FitScene'
 
 /**
@@ -11,7 +12,7 @@ export function FitArtifact({
   fit,
   locale = DEFAULT_LOCALE,
 }: {
-  fit: ContainerFitResult
+  fit: ContainerFitResult & { seededFrom?: SeededFrom }
   locale?: Locale
 }) {
   const limited =
@@ -24,6 +25,14 @@ export function FitArtifact({
       <div className="fit-label">
         <span className="g" aria-hidden="true" /> Container fit · {fit.containerLabel}
       </div>
+
+      {/* Provenance (Scenario Ledger) — inherited from a prior canvas. */}
+      {fit.seededFrom ? (
+        <div className="fit-label" style={{ color: '#e0b866' }}>
+          {t({ es: 'Heredado del lienzo', en: 'Inherited from canvas' }, locale)} #{fit.seededFrom.seq}:{' '}
+          {fit.seededFrom.fields.join(' · ')}
+        </div>
+      ) : null}
 
       <div className="fit-top">
         <div className="fit-headline">

@@ -7,12 +7,13 @@ import { extractJsonObject } from '@/lib/ai/parse'
 import type { IntelligenceClient } from '@/lib/ai/client'
 import { CONTAINER_KINDS, type ContainerKind } from '@/lib/actions/containers-types'
 import { computeContainerFit, type ContainerFitInput, type ContainerFitResult } from '../container-fit'
-import { textResult, type Capability, type CanvasContext, type CopilotResult } from '../types'
+import { inheritedFitLabels, safeSeq } from '../canvas-seed'
+import { textResult, type Capability, type CanvasContext, type CopilotResult, type SeededFrom } from '../types'
 
 /** The 'fit' renderer payload: the computed fit plus the input that produced it,
  *  so the canvas editor can seed its controls and recompute (read-only renderer
- *  ignores `input`). */
-export type ContainerFitPayload = ContainerFitResult & { input: ContainerFitInput }
+ *  ignores `input`). `seededFrom` carries provenance for a chained follow-up. */
+export type ContainerFitPayload = ContainerFitResult & { input: ContainerFitInput; seededFrom?: SeededFrom }
 
 const SYSTEM = `Eres Mister, el copiloto interno de Wings Global Trade. Tu única tarea aquí es
 convertir una frase en español (o inglés) sobre cuántas unidades entran en un contenedor
@@ -90,7 +91,17 @@ export const containerFitCapability: Capability = {
         'Necesito las medidas de la caja (largo × ancho × alto). / I need the box dimensions (L × W × H).',
       )
     }
-    const data: ContainerFitPayload = { ...fit, input: fitInput }
+    // Provenance: which box / container was inherited from the canvas this chained off.
+    const statedFit = new Set<string>()
+    if (num(obj.itemLengthM) !== null || num(obj.itemWidthM) !== null || num(obj.itemHeightM) !== null) statedFit.add('box')
+    if (modelKind !== null) statedFit.add('containerKind')
+    if (num(obj.weightEachKg) !== null) statedFit.add('weightEachKg')
+    const seq = safeSeq(context?.sourceSeq)
+    const fitFields = ctx && seq !== undefined ? inheritedFitLabels(fitInput, statedFit) : []
+    const seededFrom: SeededFrom | undefined =
+      seq !== undefined && fitFields.length ? { seq, fields: fitFields } : undefined
+
+    const data: ContainerFitPayload = { ...fit, input: fitInput, seededFrom }
     return { renderer: 'fit', note, data }
   },
 }

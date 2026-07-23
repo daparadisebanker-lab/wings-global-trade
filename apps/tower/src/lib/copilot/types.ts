@@ -28,8 +28,16 @@ export type Attachment = ImageInput
  * ImportInputs, so one 'costing' kind covers both.
  */
 export type CanvasContext =
-  | { kind: 'costing'; inputs: ImportInputs }
-  | { kind: 'fit'; input: ContainerFitInput }
+  | { kind: 'costing'; inputs: ImportInputs; sourceSeq?: number }
+  | { kind: 'fit'; input: ContainerFitInput; sourceSeq?: number }
+
+/** Provenance for a chained artifact (Scenario Ledger Stage 1): which prior canvas
+ *  artifact its inherited numbers came from, and the human-readable fields inherited
+ *  (e.g. ['TC 3.85', 'Ad Val 6.0%']). Rendered as one header line on the artifact. */
+export interface SeededFrom {
+  seq: number
+  fields: string[]
+}
 
 /** The result a capability returns; the dock renders it via `renderer`. */
 export interface CopilotResult {

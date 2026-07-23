@@ -7,6 +7,7 @@
 // capability re-exports it (tests + renderers import from the capability unchanged).
 import { computeImportCost } from '@/lib/costing/engine'
 import type { ImportInputs, ImportResult, Incoterm } from '@/lib/costing/types'
+import type { SeededFrom } from './types'
 
 /** Which margin the operator is targeting. */
 export type MarginKind = 'bruto' | 'neto_caja'
@@ -43,6 +44,8 @@ export interface ReverseQuoteData {
    *  controls, re-solve, and commit a cost sheet. Optional so consumers guard it
    *  (older payloads / read-only renderer ignore it). */
   input?: ImportInputs
+  /** Provenance when this result inherited numbers from a prior canvas artifact. */
+  seededFrom?: SeededFrom
 }
 
 /** Read the requested margin off an engine result as a decimal fraction. */

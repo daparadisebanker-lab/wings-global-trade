@@ -15,7 +15,8 @@ import type {
   Incoterm,
   Origin,
 } from '@/lib/costing/types'
-import { textResult, type Capability, type CanvasContext, type CopilotResult } from '../types'
+import { textResult, type Capability, type CanvasContext, type CopilotResult, type SeededFrom } from '../types'
+import { inheritedCostingLabels, safeSeq } from '../canvas-seed'
 
 // ── The renderer payload (ImportResult + display extras) ─────────────────────
 /** What the 'landed-cost' renderer receives — the full SUNAT result plus currency +
@@ -28,6 +29,8 @@ export interface LandedCostData extends ImportResult {
   /** Optional so consumers guard it — the editor seeds from it; the read-only
    *  renderer and any older payload ignore it (Fable review finding 14). */
   input?: ImportInputs
+  /** Provenance when this result inherited numbers from a prior canvas artifact. */
+  seededFrom?: SeededFrom
 }
 
 // ── Standard Peru-SUNAT defaults (identity blanked; numbers mirror the app) ──
@@ -190,12 +193,20 @@ export const landedCostCapability: Capability = {
     const inputs = buildInputsFrom(base, partial)
     const result = computeImportCost(inputs)
 
+    // Provenance: which numbers were inherited from the canvas this ask chained off.
+    const stated = new Set(Object.entries(partial).filter(([, v]) => v !== undefined).map(([k]) => k))
+    const seq = safeSeq(context?.sourceSeq)
+    const inheritedFields = ctxBase && seq !== undefined ? inheritedCostingLabels(inputs, COST_DEFAULTS, stated) : []
+    const seededFrom: SeededFrom | undefined =
+      seq !== undefined && inheritedFields.length ? { seq, fields: inheritedFields } : undefined
+
     const data: LandedCostData = {
       ...result,
       currency: 'USD',
       incoterm: inputs.incoterm,
       productName: inputs.productName,
       input: inputs,
+      seededFrom,
     }
     return { renderer: 'landed-cost', note, data }
   },

@@ -53,6 +53,12 @@ interface MisterContextValue {
    *  send() reads the selected artifact's getter to pass canvas context into a
    *  chained ask. A ref registry, so per-keystroke updates never re-render. */
   registerCanvasGetter: (seq: number, getter: () => CanvasContext | null) => () => void
+  /** True when the selected artifact has a live editor context that the next ask
+   *  would inherit — drives the composer's disclosure chip (Scenario Ledger). */
+  hasCanvasContext: boolean
+  /** The operator ✕'d the chip: skip inheritance for the next send (one-shot). */
+  skipCanvasContext: boolean
+  setSkipCanvasContext: (skip: boolean) => void
 }
 
 const MisterContext = createContext<MisterContextValue | null>(null)
@@ -67,6 +73,10 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
   // getter every render without re-rendering the shell; send() reads them at call time.
   const canvasGetters = useRef(new Map<number, () => CanvasContext | null>())
   const selectedSeqRef = useRef<number | null>(null)
+  // Bumped when editors register/unregister, so `hasCanvasContext` is reactive.
+  const [getterVersion, setGetterVersion] = useState(0)
+  // One-shot: the operator ✕'d the context chip, so the NEXT send skips inheritance.
+  const [skipCanvasContext, setSkipCanvasContext] = useState(false)
 
   const send = useCallback(async () => {
     const text = draft.trim()
@@ -76,9 +86,10 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
     setDraft('')
     setPending(null)
     setBusy(true)
-    // Carry the canvas the operator was on into a chained ask.
+    // Carry the canvas the operator was on into a chained ask — unless they ✕'d it.
     const seq = selectedSeqRef.current
-    const context = (seq != null ? canvasGetters.current.get(seq)?.() : null) ?? undefined
+    const context = skipCanvasContext ? undefined : (seq != null ? canvasGetters.current.get(seq)?.() : null) ?? undefined
+    if (skipCanvasContext) setSkipCanvasContext(false) // one-shot
     try {
       const result = await askMister(
         text,
@@ -94,7 +105,7 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
     } finally {
       setBusy(false)
     }
-  }, [draft, pending, busy, locale])
+  }, [draft, pending, busy, locale, skipCanvasContext])
 
   // Every renderable artifact (never the plain 'text' bubble), with a stable
   // per-session seq assigned by arrival order — the canvas switcher's model.
@@ -136,10 +147,20 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
   }, [selectedSeq])
   const registerCanvasGetter = useCallback((seq: number, getter: () => CanvasContext | null) => {
     canvasGetters.current.set(seq, getter)
+    setGetterVersion((v) => v + 1)
     return () => {
-      if (canvasGetters.current.get(seq) === getter) canvasGetters.current.delete(seq)
+      if (canvasGetters.current.get(seq) === getter) {
+        canvasGetters.current.delete(seq)
+        setGetterVersion((v) => v + 1)
+      }
     }
   }, [])
+
+  // Reactive: is a live editor context registered for the artifact on the canvas?
+  const hasCanvasContext = useMemo(
+    () => selectedSeq != null && canvasGetters.current.has(selectedSeq),
+    [selectedSeq, getterVersion],
+  )
 
   // Canvas working memory: each editor writes its latest state here (keyed by the
   // artifact seq) on unmount, so flipping the switcher and back — or a new artifact
@@ -167,8 +188,27 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
       artifactDrafts,
       saveArtifactDraft,
       registerCanvasGetter,
+      hasCanvasContext,
+      skipCanvasContext,
+      setSkipCanvasContext,
     }),
-    [locale, thread, busy, pending, draft, send, artifacts, selectedSeq, selectArtifact, selectedArtifact, artifactDrafts, saveArtifactDraft, registerCanvasGetter],
+    [
+      locale,
+      thread,
+      busy,
+      pending,
+      draft,
+      send,
+      artifacts,
+      selectedSeq,
+      selectArtifact,
+      selectedArtifact,
+      artifactDrafts,
+      saveArtifactDraft,
+      registerCanvasGetter,
+      hasCanvasContext,
+      skipCanvasContext,
+    ],
   )
 
   return <MisterContext.Provider value={value}>{children}</MisterContext.Provider>

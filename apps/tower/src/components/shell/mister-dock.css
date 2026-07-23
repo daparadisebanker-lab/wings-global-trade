@@ -388,6 +388,66 @@
   outline-offset: 2px;
 }
 
+/* Canvas-context chip (Scenario Ledger) — sits above the input to disclose that the
+   next ask will inherit the artifact on the canvas, with ✕ to send without it. */
+.mister-ctx-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px 6px 10px;
+  border-radius: 12px;
+  background: rgba(216, 169, 75, 0.12);
+  border: 1px solid rgba(224, 184, 102, 0.35);
+}
+.mister-ctx-chip .g {
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 50%;
+  background: #e0b866;
+}
+.mister-ctx-chip .meta {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  color: #e6d3ab;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mister-ctx-chip .drop {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border-radius: 50%;
+  border: none;
+  background: rgba(224, 184, 102, 0.22);
+  color: #f4f7fb;
+  font-size: 11px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.mister-ctx-chip .drop:hover {
+  background: rgba(224, 184, 102, 0.36);
+}
+.mister-ctx-chip .use {
+  border: none;
+  background: transparent;
+  color: #e0b866;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+.mister-ctx-chip .drop:focus-visible,
+.mister-ctx-chip .use:focus-visible {
+  outline: 2px solid #e0b866;
+  outline-offset: 2px;
+}
+
 /* input */
 .mister-input {
   display: flex;
