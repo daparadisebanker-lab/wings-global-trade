@@ -10,6 +10,7 @@ import { MisterMark } from '../MisterMark'
 import { MISTER_RENDERERS } from '../mister-renderers'
 import { MISTER_CANVAS_EDITORS } from './canvas-editors'
 import { useMister } from './MisterProvider'
+import { MisterLineage } from './MisterLineage'
 import { artifactLabel } from './handoffs'
 
 export function MisterCanvas() {
@@ -36,8 +37,10 @@ export function MisterCanvas() {
   // Prefer an editable surface when the capability has one; the thread stays read-only.
   const editor = MISTER_CANVAS_EDITORS[selectedArtifact.renderer]
   const editable = Boolean(editor)
-  // The shown artifact's stable seq — the editor's key for its canvas working memory.
-  const currentSeq = artifacts.find((a) => a.result === selectedArtifact)?.seq ?? selectedSeq ?? 0
+  // The shown artifact's entry — its stable seq keys the editor's working memory, and
+  // its parentSeq drives the lineage bar (Scenario Ledger Stage 2).
+  const currentEntry = artifacts.find((a) => a.result === selectedArtifact) ?? null
+  const currentSeq = currentEntry?.seq ?? selectedSeq ?? 0
 
   return (
     <div className="ck-canvas-scroll">
@@ -71,6 +74,9 @@ export function MisterCanvas() {
                   {a.seq}
                 </span>
                 {t(artifactLabel(a.result.renderer), locale)}
+                {a.parentSeq != null ? (
+                  <span aria-hidden className="par">← {a.parentSeq}</span>
+                ) : null}
               </button>
             )
           })}
@@ -78,6 +84,11 @@ export function MisterCanvas() {
       ) : null}
 
       {selectedArtifact.note ? <p className="ck-canvas-note">{selectedArtifact.note}</p> : null}
+
+      {/* Lineage bar (Scenario Ledger Stage 2) — provenance made visible + clickable
+          on the canvas, where the editors don't render the seededFrom header. */}
+      {currentEntry ? <MisterLineage entry={currentEntry} /> : null}
+
       {/* key on the shown seq so the reveal replays on swap; the editor rehydrates
           its state from the provider's per-seq working memory across the remount. */}
       <div key={currentSeq} className="ck-canvas-art">
