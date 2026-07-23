@@ -1,7 +1,7 @@
 // src/components/features/navigation/SiteNav.tsx
 'use client'
 
-import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -14,6 +14,7 @@ import { SearchBar } from '@/components/features/homepage/SearchBar'
 
 interface SiteNavProps {
   categories: Category[]
+  subcategoriesByCategory: Record<string, { slug: string; name_es: string }[]>
 }
 
 const LINKS = [
@@ -24,7 +25,7 @@ const LINKS = [
   { href: '/nosotros',   label: 'Nosotros' },
 ]
 
-export function SiteNav({ categories }: SiteNavProps) {
+export function SiteNav({ categories, subcategoriesByCategory }: SiteNavProps) {
   const [scrolled, setScrolled] = useState(false)
   const [hidden, setHidden] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -164,10 +165,13 @@ export function SiteNav({ categories }: SiteNavProps) {
                 aria-haspopup="true"
                 aria-expanded={menuHovered}
                 aria-controls="catalogo-mega-menu"
-                onClick={(e: ReactMouseEvent) => {
-                  e.preventDefault()
+                // Click NAVIGATES to the gateway (the menu is a hover/focus
+                // affordance, not a click-trap); focus opens the mega for
+                // keyboard users, Enter then follows through to /catalogo.
+                onClick={() => setSearchOpen(false)}
+                onFocus={() => {
+                  setMenuHovered(true)
                   setSearchOpen(false)
-                  setMenuHovered((o) => !o)
                 }}
                 className={cn(
                   'flex items-center gap-1 font-mono text-[11px] uppercase tracking-nav text-warm-white/70 transition-colors hover:text-warm-white',
@@ -215,7 +219,7 @@ export function SiteNav({ categories }: SiteNavProps) {
                 setMenuHovered(false)
                 setSearchOpen((o) => !o)
               }}
-              className="flex h-8 w-8 items-center justify-center text-warm-white/70 transition-colors duration-200 hover:text-warm-white"
+              className="flex h-8 items-center gap-2 text-warm-white/70 transition-colors duration-200 hover:text-warm-white"
             >
               <svg
                 viewBox="0 0 20 20"
@@ -228,6 +232,7 @@ export function SiteNav({ categories }: SiteNavProps) {
                 <circle cx="9" cy="9" r="6" />
                 <path d="M14 14l4 4" strokeLinecap="round" />
               </svg>
+              <span className="font-mono text-[11px] uppercase tracking-nav">Buscar</span>
             </button>
             <Link
               href="/contacto"
@@ -269,7 +274,11 @@ export function SiteNav({ categories }: SiteNavProps) {
 
         {/* Mega-menu panel — sits inside <header> so mouse enter/leave is unified */}
         <div id="catalogo-mega-menu" className="relative z-10 hidden lg:block">
-          <MegaMenu categories={categories} open={menuHovered} />
+          <MegaMenu
+            categories={categories}
+            subcategoriesByCategory={subcategoriesByCategory}
+            open={menuHovered}
+          />
         </div>
 
         {/* Search panel — desktop overlay, reuses SearchBar so submit routes through detectSearchIntent */}

@@ -4,13 +4,11 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Suspense } from 'react'
 import {
-  getCategories,
   getCategoryBySlug,
   getProducts,
   getProductFacets,
   getSubcategories,
 } from '@/lib/catalog-data'
-import { CategoryNav } from '@/components/features/catalog/CategoryNav'
 import { ProductGrid } from '@/components/features/catalog/ProductGrid'
 import { FilterSidebar } from '@/components/features/catalog/FilterSidebar'
 import { FilterPanel } from '@/components/features/catalog/FilterPanel'
@@ -20,7 +18,11 @@ import { breadcrumbSchema } from '@/lib/schema'
 import { MisterDeadEnd } from '@/components/features/shared/MisterDeadEnd'
 import { SubcategoryGateway } from '@/components/features/catalog/SubcategoryGateway'
 import { FilterChipRow } from '@/components/features/catalog/FilterChipRow'
-import { cn } from '@/lib/utils'
+import { CategoryShelfNav } from '@/components/features/catalog/CategoryShelfNav'
+import { CategoryReveal } from '@/components/features/catalog/CategoryReveal'
+import { CategoryIntelligence } from '@/components/features/catalog/CategoryIntelligence'
+import { getCategoryIdentity } from '@/lib/category-identity'
+import { CategoryIcon } from '@/components/features/homepage/CategoryIcon'
 
 interface PageProps {
   params: Promise<{ category: string }>
@@ -149,8 +151,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
   const cat = await getCategoryBySlug(category)
   if (!cat) notFound()
 
-  const [categories, subcategories, { products }, facets] = await Promise.all([
-    getCategories(),
+  const [subcategories, { products }, facets] = await Promise.all([
     getSubcategories(category),
     getProducts({ category, q, sub, hp, traction, transmission, brand, fuel, payload, usage }),
     getProductFacets(category, sub),
@@ -158,6 +159,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
 
   const seoMeta = CATEGORY_SEO[category]
   const markets = seoMeta?.markets ?? 'China, Japón y Tailandia'
+  const identity = getCategoryIdentity(cat)
 
   // Collect unique source markets from returned products for the data strip
   const productMarkets = Array.from(
@@ -201,28 +203,20 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
     return `/catalogo/${category}${qs ? `?${qs}` : ''}`
   }
 
-  /** Build subcategory tab URL, preserving active filter params */
-  function buildSubUrl(subSlug: string | null): string {
-    const params = new URLSearchParams()
-    if (q) params.set('q', q)
-    if (subSlug) params.set('sub', subSlug)
-    if (hp) params.set('hp', hp)
-    if (traction) params.set('traction', traction)
-    if (transmission) params.set('transmission', transmission)
-    if (brand) params.set('brand', brand)
-    if (fuel) params.set('fuel', fuel)
-    if (payload) params.set('payload', payload)
-    if (usage) params.set('usage', usage)
-    const qs = params.toString()
-    return `/catalogo/${category}${qs ? `?${qs}` : ''}`
-  }
-
   return (
     <>
       <JsonLd data={breadcrumbSchema(breadcrumbs)} />
 
-      {/* ── Editorial Hero (Task 10) ─────────────────────────────────────── */}
+      {/* Category entry reveal — once-per-session brand moment (Áladín port) */}
+      <CategoryReveal name={cat.name_es} tagline={identity.tagline} iconKey={identity.iconKey} />
+
+      {/* ── Editorial Hero — carries the category motif ──────────────────── */}
       <header className="hero-mesh hero-grain relative overflow-hidden px-6 pb-20 pt-36 text-warm-white md:px-10 md:pb-28 md:pt-48">
+        {/* Category icon watermark — the branded signal (family gold, faint) */}
+        <CategoryIcon
+          iconKey={identity.iconKey}
+          className="pointer-events-none absolute -right-8 top-24 h-72 w-72 text-gold/[0.05] md:h-96 md:w-96"
+        />
         <div className="relative z-[1] mx-auto w-full max-w-6xl">
           {/* Eyebrow */}
           <p className="mb-4 font-mono text-[10px] uppercase tracking-widest-3 text-gold/80">
@@ -232,13 +226,12 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
           {/* Title */}
           <h1 className="font-display text-display-lg font-light">{cat.name_es}</h1>
 
-          {/* Subtitle */}
+          {/* Subtitle — the category's identity tagline */}
           <p className="mt-5 max-w-2xl font-body text-body-lg text-warm-white/55">
-            {products.length} modelos disponibles · Importación desde {markets}. Consulta técnica
-            sin cuenta requerida.
+            {identity.tagline}
           </p>
 
-          {/* Data strip — Alibaba intelligence layer */}
+          {/* Data strip — numbers exhibited (root §1.5) */}
           <div className="mt-8 border-t border-warm-white/10 pt-5">
             <p className="font-mono text-[10px] uppercase tracking-widest-3 text-gold/60">
               {products.length} modelos
@@ -248,6 +241,16 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
           </div>
         </div>
       </header>
+
+      {/* Sticky category shelf — identity bar + subcategory horizontal nav +
+          gold scroll-progress line (the "branded space" spine) */}
+      <Suspense fallback={null}>
+        <CategoryShelfNav
+          category={{ slug: cat.slug, name_es: cat.name_es, iconKey: identity.iconKey }}
+          subcategories={subcategories.map((s) => ({ id: s.id, slug: s.slug, name_es: s.name_es }))}
+          count={products.length}
+        />
+      </Suspense>
 
       {/* ── Content area ────────────────────────────────────────────────── */}
       <div className="bg-warm-white px-6 py-12 md:px-10">
@@ -263,51 +266,16 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
             className="mb-8"
           />
 
-          {/* Category nav */}
-          <div className="mb-6">
-            <CategoryNav categories={categories} activeSlug={cat.slug} />
+          {/* Category intelligence — register + exhibited numbers */}
+          <div className="mb-8">
+            <CategoryIntelligence
+              categoryName={cat.name_es}
+              identity={identity}
+              productCount={products.length}
+              subcategoryCount={subcategories.length}
+              productMarkets={productMarkets}
+            />
           </div>
-
-          {/* Subcategory tabs (Task 3) */}
-          {subcategories.length > 0 && (
-            <nav
-              aria-label="Subcategorías"
-              className="no-scrollbar -mx-6 mb-8 flex gap-0 overflow-x-auto border-b border-[rgba(0,30,80,0.06)] px-6 md:mx-0 md:px-0"
-            >
-              {/* "All" tab */}
-              <Link
-                href={buildSubUrl(null)}
-                aria-current={!sub ? 'page' : undefined}
-                className={cn(
-                  'shrink-0 pb-3 pr-6 font-mono text-[11px] uppercase tracking-nav transition-colors',
-                  !sub
-                    ? 'border-b-2 border-gold text-gold'
-                    : 'border-b-2 border-transparent text-navy/45 hover:text-navy',
-                )}
-              >
-                Todos
-              </Link>
-
-              {subcategories.map((sc) => {
-                const isActive = sub === sc.slug
-                return (
-                  <Link
-                    key={sc.id}
-                    href={buildSubUrl(sc.slug)}
-                    aria-current={isActive ? 'page' : undefined}
-                    className={cn(
-                      'shrink-0 pb-3 pr-6 font-mono text-[11px] uppercase tracking-nav transition-colors',
-                      isActive
-                        ? 'border-b-2 border-gold text-gold'
-                        : 'border-b-2 border-transparent text-navy/45 hover:text-navy',
-                    )}
-                  >
-                    {sc.name_es}
-                  </Link>
-                )
-              })}
-            </nav>
-          )}
 
           {/* Horizontal quick-filter chip row */}
           <Suspense fallback={null}>

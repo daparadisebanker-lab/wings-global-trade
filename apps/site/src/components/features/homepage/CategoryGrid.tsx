@@ -4,7 +4,12 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import type { Category } from '@/types/database'
+import { CategoryIcon } from '@/components/features/homepage/CategoryIcon'
 
+// Hero images per category slug (real assets). A category without an entry
+// falls back to a branded icon card — the grid itself is DB-driven (it renders
+// whatever categories the page passes, in DB order), so a new category always
+// appears without editing this file.
 const CATEGORY_IMAGES: Record<string, { src: string; objectPosition?: string }> = {
   'maquinaria-agricola': { src: '/images/categories/agricola-desktop.png' },
   buses:                 { src: '/images/categories/buses-desktop.png' },
@@ -14,16 +19,6 @@ const CATEGORY_IMAGES: Record<string, { src: string; objectPosition?: string }> 
   automoviles:           { src: '/images/categories/automoviles.png' },
   repuestos:             { src: '/images/categories/repuestos-desktop.png' },
 }
-
-const ORDERED_SLUGS = [
-  'maquinaria-agricola',
-  'buses',
-  'equipo-industrial',
-  'camiones',
-  'utv',
-  'automoviles',
-  'repuestos',
-]
 
 // ---------------------------------------------------------------------------
 // Individual category card
@@ -66,7 +61,10 @@ function CategoryCard({ category, index, priority, sizes }: CardProps) {
             />
           </motion.div>
         ) : (
-          <div className="absolute inset-0 bg-navy-dark" />
+          // Branded fallback for a category without a hero image.
+          <div className="absolute inset-0 flex items-center justify-center bg-[#000C1F]">
+            <CategoryIcon iconKey={category.icon_key} className="h-16 w-16 text-gold/20" />
+          </div>
         )}
 
         {/* Persistent bottom gradient */}
@@ -199,9 +197,9 @@ interface CategoryGridProps {
 }
 
 export function CategoryGrid({ categories }: CategoryGridProps) {
-  const all = ORDERED_SLUGS
-    .map((slug) => categories.find((c) => c.slug === slug))
-    .filter(Boolean) as Category[]
+  // DB-driven: render exactly the categories the page provides
+  // (getNavCategories → active, non-empty, in DB sort_order).
+  const all = categories
 
   const ENTER = (delay = 0) => ({
     initial:    { opacity: 0, y: 28 },

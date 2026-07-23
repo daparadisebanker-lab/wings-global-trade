@@ -73,7 +73,7 @@ export function MultiInquiryPanel() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 left-6 z-40 flex items-center gap-2 bg-navy px-4 py-3 font-mono text-[11px] uppercase tracking-nav text-warm-white shadow-card-hover transition-all hover:bg-navy-light"
+        className="fixed bottom-[calc(4rem+1rem)] left-6 z-40 flex items-center gap-2 bg-navy px-4 py-3 font-mono text-[11px] uppercase tracking-nav text-warm-white shadow-card-hover transition-all hover:bg-navy-light lg:bottom-6"
       >
         <span className="flex h-5 w-5 items-center justify-center rounded-full bg-gold font-mono text-[10px] font-medium text-navy">
           {count}

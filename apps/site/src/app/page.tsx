@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
 import { RB_BRANDS } from '@/lib/rb/fixtures'
-import { getCategories } from '@/lib/catalog-data'
+import { getNavCategories } from '@/lib/catalog-data'
 import { HeroNarrativeCarousel } from '@/components/features/homepage/HeroNarrativeCarousel'
 import { StatBar } from '@/components/features/homepage/StatBar'
 import { CategoryGrid } from '@/components/features/homepage/CategoryGrid'
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
 }
 
 export default async function HomePage() {
-  const categories = await getCategories()
+  const categories = await getNavCategories()
 
   return (
     <>

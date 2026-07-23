@@ -33,6 +33,33 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
 }
 
 /**
+ * Categories for NAVIGATION surfaces — only those with at least one active
+ * product. Hides empty categories (e.g. the `buses-y-transporte` /
+ * `motocicletas` shadow duplicates) from the mega-menu, gateway, mobile menu,
+ * footer and homepage grid. Their pages stay valid routes: getCategories /
+ * getCategoryBySlug / sitemap are unchanged, so direct URLs still resolve —
+ * an empty category simply isn't linked to. Seed/local mode returns all
+ * (the seed set has no empty categories).
+ */
+export async function getNavCategories(): Promise<Category[]> {
+  const categories = await getCategories()
+  const supabase = createServiceClient()
+  if (!supabase) return categories
+
+  const { data, error } = await supabase
+    .from('products')
+    .select('category_id')
+    .eq('is_active', true)
+
+  if (error || !data) {
+    console.warn('[catalog-data] getNavCategories', error?.message)
+    return categories
+  }
+  const withProducts = new Set((data as { category_id: string }[]).map((r) => r.category_id))
+  return categories.filter((c) => withProducts.has(c.id))
+}
+
+/**
  * Fetch subcategories for a given category slug.
  * Queries the `subcategories` table joined by category_id.
  * Returns an empty array if the table does not exist or Supabase is not configured.
@@ -53,6 +80,27 @@ export async function getSubcategories(categorySlug: string): Promise<Subcategor
   if (error) {
     // Subcategories table may not exist yet — degrade gracefully.
     console.warn('[catalog-data] getSubcategories', error.message)
+    return []
+  }
+  return (data ?? []) as Subcategory[]
+}
+
+/**
+ * Fetch every subcategory across all categories in one query. Used by the
+ * mega-menu to derive its columns from live data (no hardcoded links).
+ * Returns [] when Supabase is not configured or the table is absent.
+ */
+export async function getAllSubcategories(): Promise<Subcategory[]> {
+  const supabase = createServiceClient()
+  if (!supabase) return []
+
+  const { data, error } = await supabase
+    .from('subcategories')
+    .select('*')
+    .order('sort_order', { ascending: true })
+
+  if (error) {
+    console.warn('[catalog-data] getAllSubcategories', error.message)
     return []
   }
   return (data ?? []) as Subcategory[]

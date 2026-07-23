@@ -187,7 +187,9 @@ function FloatingTriggerButton({ activeCount, onClick }: FloatingTriggerProps) {
       type="button"
       onClick={onClick}
       className={cn(
-        'fixed bottom-[84px] right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-navy shadow-lg lg:hidden',
+        // Anchor of the mobile bottom-right FAB ladder, sitting above the
+        // MobileTabBar (64px). The Compare FAB stacks above this one.
+        'fixed bottom-[calc(4rem+1rem)] right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-navy shadow-lg lg:hidden',
         'transition-colors duration-200 hover:bg-navy-light',
         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold',
       )}

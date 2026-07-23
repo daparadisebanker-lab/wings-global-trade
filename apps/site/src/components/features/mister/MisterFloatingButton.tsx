@@ -10,9 +10,12 @@ import { motion } from 'framer-motion'
 import { useMister } from '@/components/features/mister/MisterProvider'
 import { launcherVariants } from '@/lib/mister/motion'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
+import { useComparisonContext } from '@/contexts/comparison-context'
+import { cn } from '@/lib/utils'
 
 export function MisterFloatingButton() {
   const { toggle, isOpen, entries, inFlight, isStreaming } = useMister()
+  const { items } = useComparisonContext()
   const pathname = usePathname()
   const reduced = useReducedMotion()
   const [mounted, setMounted] = useState(false)
@@ -24,13 +27,23 @@ export function MisterFloatingButton() {
 
   const hasActiveSession = entries.length > 1
   const isPulsing = inFlight || isStreaming
+  // The desktop CompareBar is a full-width bottom bar shown while comparing
+  // (items > 0). Lift the door above it so the two never overlap.
+  const comparing = items.length > 0
 
   return (
     <motion.div
       variants={launcherVariants}
       initial="hidden"
       animate={reduced ? 'visibleReduced' : 'visible'}
-      className="fixed bottom-[max(2rem,env(safe-area-inset-bottom))] right-8 z-[60]"
+      // Hidden < lg — on mobile the Mister entry point lives in MobileTabBar,
+      // so there are never two competing bottom-right controls.
+      className={cn(
+        'fixed right-8 z-[60] hidden transition-[bottom] duration-300 lg:block',
+        comparing
+          ? 'bottom-[calc(72px+1.5rem)]'
+          : 'bottom-[max(2rem,env(safe-area-inset-bottom))]',
+      )}
     >
       <button
         type="button"
