@@ -14,8 +14,21 @@ import type { FuelType, ImportInputs, Incoterm } from '@/lib/costing/types'
 import { solveReverseQuote, type MarginKind, type ReverseQuoteData } from '@/lib/copilot/reverse-quote-solve'
 import { ReverseQuoteArtifact } from './ReverseQuoteArtifact'
 import { CostSheetSavePanel } from './CostSheetSavePanel'
-import { Field, fieldStyle, parseNum } from './mister/editor-kit'
+import { Field, fieldStyle, parseNum, usePersistOnUnmount } from './mister/editor-kit'
+import { useArtifactDraft } from './mister/MisterProvider'
 import { MISTER_ARTIFACT } from './mister-theme'
+
+/** Persisted editor state (canvas working memory) — survives artifact remount. */
+type RQSnap = {
+  fob: string
+  incoterm: Incoterm
+  marginKind: MarginKind
+  targetPctInput: string
+  adValoremPct: string
+  exchangeRate: string
+  fuelType: FuelType
+  engineCC: string
+}
 
 const { muted: MUTED, panelBg: PANEL_BG, border: BORDER } = MISTER_ARTIFACT
 
@@ -53,18 +66,21 @@ function seedPct(fraction: number): string {
 const money = (n: number) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 const pctStr = (f: number) => `${(f * 100).toFixed(1)}%`
 
-export function ReverseQuoteEditor({ result, locale = DEFAULT_LOCALE }: { result: unknown; locale?: Locale }) {
+export function ReverseQuoteEditor({ result, locale = DEFAULT_LOCALE, seq }: { result: unknown; locale?: Locale; seq: number }) {
   const payload = result as ReverseQuoteData
   const seed = payload.input
+  const { draft: d, persist } = useArtifactDraft<RQSnap>(String(seq))
 
-  const [fob, setFob] = useState(payload.fob ? String(payload.fob) : '')
-  const [incoterm, setIncoterm] = useState<Incoterm>(payload.incoterm ?? 'FOB')
-  const [marginKind, setMarginKind] = useState<MarginKind>(payload.marginKind ?? 'bruto')
-  const [targetPctInput, setTargetPctInput] = useState(seedPct(payload.targetPct ?? 0))
-  const [adValoremPct, setAdValoremPct] = useState(seed ? seedPct(seed.adValoremRate) : '')
-  const [exchangeRate, setExchangeRate] = useState(seed?.exchangeRate ? String(seed.exchangeRate) : '')
-  const [fuelType, setFuelType] = useState<FuelType>(seed?.fuelType ?? 'gasoline')
-  const [engineCC, setEngineCC] = useState(seed?.engineCC ? String(seed.engineCC) : '')
+  const [fob, setFob] = useState(d?.fob ?? (payload.fob ? String(payload.fob) : ''))
+  const [incoterm, setIncoterm] = useState<Incoterm>(d?.incoterm ?? payload.incoterm ?? 'FOB')
+  const [marginKind, setMarginKind] = useState<MarginKind>(d?.marginKind ?? payload.marginKind ?? 'bruto')
+  const [targetPctInput, setTargetPctInput] = useState(d?.targetPctInput ?? seedPct(payload.targetPct ?? 0))
+  const [adValoremPct, setAdValoremPct] = useState(d?.adValoremPct ?? (seed ? seedPct(seed.adValoremRate) : ''))
+  const [exchangeRate, setExchangeRate] = useState(d?.exchangeRate ?? (seed?.exchangeRate ? String(seed.exchangeRate) : ''))
+  const [fuelType, setFuelType] = useState<FuelType>(d?.fuelType ?? seed?.fuelType ?? 'gasoline')
+  const [engineCC, setEngineCC] = useState(d?.engineCC ?? (seed?.engineCC ? String(seed.engineCC) : ''))
+
+  usePersistOnUnmount<RQSnap>({ fob, incoterm, marginKind, targetPctInput, adValoremPct, exchangeRate, fuelType, engineCC }, persist)
 
   const solved = useMemo(() => {
     if (!seed) return null
@@ -168,7 +184,7 @@ export function ReverseQuoteEditor({ result, locale = DEFAULT_LOCALE }: { result
               )}
             </p>
           ) : (
-            <CostSheetSavePanel inputs={solved.commitInputs} locale={locale} />
+            <CostSheetSavePanel inputs={solved.commitInputs} locale={locale} draftKey={`${seq}:commit`} />
           )}
         </>
       ) : (

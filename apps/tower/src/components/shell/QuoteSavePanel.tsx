@@ -13,7 +13,19 @@ import { t, type Locale } from '@/lib/i18n'
 import { listPipelineLanes, listAccountsForBrand, type AccountOption } from '@/lib/actions/pipeline'
 import { saveMisterQuoteDraft } from '@/lib/actions/mister-quote'
 import type { EditableLane } from '@/lib/actions/catalog'
+import { usePersistOnUnmount } from './mister/editor-kit'
+import { useArtifactDraft } from './mister/MisterProvider'
 import { MISTER_ARTIFACT } from './mister-theme'
+
+/** Persisted panel state (canvas working memory) — the saved latch + deep-link
+ *  survive a remount so a saved draft can't be re-submitted into a duplicate. */
+type QSPSnap = {
+  laneId: string
+  clientChoice: string
+  newClientName: string
+  saved: { quoteId: string } | null
+  savedFingerprint: string | null
+}
 
 const { text: TEXT, muted: MUTED, gold: GOLD, error: ERROR, ink: INK, fieldBg: FIELD_BG, border: BORDER, steelLine: STEEL_LINE, mono: MONO } =
   MISTER_ARTIFACT
@@ -66,15 +78,40 @@ function saveButtonStyle(enabled: boolean): React.CSSProperties {
   }
 }
 
-export function QuoteSavePanel({ lines, hasGaps, locale }: { lines: SaveLine[]; hasGaps: boolean; locale: Locale }) {
+export function QuoteSavePanel({
+  lines,
+  hasGaps,
+  locale,
+  draftKey,
+}: {
+  lines: SaveLine[]
+  hasGaps: boolean
+  locale: Locale
+  draftKey?: string
+}) {
+  const { draft: d, persist } = useArtifactDraft<QSPSnap>(draftKey)
   const [lanes, setLanes] = useState<EditableLane[] | null>(null)
-  const [laneId, setLaneId] = useState('')
+  const [laneId, setLaneId] = useState(d?.laneId ?? '')
   const [accounts, setAccounts] = useState<AccountOption[]>([])
-  const [clientChoice, setClientChoice] = useState('') // '' = none, uuid = existing, '__new__' = new
-  const [newClientName, setNewClientName] = useState('')
-  const [saved, setSaved] = useState<{ quoteId: string } | null>(null)
+  const [clientChoice, setClientChoice] = useState(d?.clientChoice ?? '') // '' = none, uuid = existing, '__new__' = new
+  const [newClientName, setNewClientName] = useState(d?.newClientName ?? '')
+  const [saved, setSaved] = useState<{ quoteId: string } | null>(d?.saved ?? null)
+  const [savedFingerprint, setSavedFingerprint] = useState<string | null>(d?.savedFingerprint ?? null)
   const [error, setError] = useState<string | null>(null)
   const [saving, startSave] = useTransition()
+
+  usePersistOnUnmount<QSPSnap>({ laneId, clientChoice, newClientName, saved, savedFingerprint }, persist)
+
+  // Retract the "saved ✓" only when the quote lines have actually changed since
+  // the save — a bare remount that rehydrates a still-valid draft keeps its link.
+  const linesFingerprint = JSON.stringify(lines)
+  useEffect(() => {
+    if (saved && savedFingerprint !== linesFingerprint) {
+      setSaved(null)
+      setSavedFingerprint(null)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [linesFingerprint])
 
   // Load the operator's lanes once.
   useEffect(() => {
@@ -123,6 +160,7 @@ export function QuoteSavePanel({ lines, hasGaps, locale }: { lines: SaveLine[]; 
         return
       }
       setSaved({ quoteId: res.data.quoteId })
+      setSavedFingerprint(linesFingerprint)
     })
   }
 

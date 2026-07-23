@@ -36,6 +36,8 @@ export function MisterCanvas() {
   // Prefer an editable surface when the capability has one; the thread stays read-only.
   const editor = MISTER_CANVAS_EDITORS[selectedArtifact.renderer]
   const editable = Boolean(editor)
+  // The shown artifact's stable seq — the editor's key for its canvas working memory.
+  const currentSeq = artifacts.find((a) => a.result === selectedArtifact)?.seq ?? selectedSeq ?? 0
 
   return (
     <div className="ck-canvas-scroll">
@@ -50,17 +52,18 @@ export function MisterCanvas() {
         ) : null}
       </div>
 
-      {/* Switcher — only once there's more than one composition to move between. */}
+      {/* Switcher — only once there's more than one composition to move between.
+          role="group" + aria-pressed (not a tablist — we don't implement the
+          tab keyboard model; buttons are individually Tab-reachable). */}
       {artifacts.length > 1 ? (
-        <div className="ck-switcher" role="tablist" aria-label={t({ es: 'Composiciones', en: 'Compositions' }, locale)}>
+        <div className="ck-switcher" role="group" aria-label={t({ es: 'Composiciones', en: 'Compositions' }, locale)}>
           {artifacts.map((a) => {
             const active = a.seq === selectedSeq
             return (
               <button
                 key={a.seq}
                 type="button"
-                role="tab"
-                aria-selected={active}
+                aria-pressed={active}
                 className={active ? 'ck-switch is-active' : 'ck-switch'}
                 onClick={() => selectArtifact(a.seq)}
               >
@@ -75,10 +78,11 @@ export function MisterCanvas() {
       ) : null}
 
       {selectedArtifact.note ? <p className="ck-canvas-note">{selectedArtifact.note}</p> : null}
-      {/* key on selectedSeq so the reveal replays (and editor state resets) on swap. */}
-      <div key={selectedSeq ?? 'art'} className="ck-canvas-art">
+      {/* key on the shown seq so the reveal replays on swap; the editor rehydrates
+          its state from the provider's per-seq working memory across the remount. */}
+      <div key={currentSeq} className="ck-canvas-art">
         {editor
-          ? editor(selectedArtifact.data, locale)
+          ? editor(selectedArtifact.data, locale, currentSeq)
           : (MISTER_RENDERERS[selectedArtifact.renderer]?.(selectedArtifact.data, locale) ?? (
               <span>{selectedArtifact.text ?? ''}</span>
             ))}

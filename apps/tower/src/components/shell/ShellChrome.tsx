@@ -110,6 +110,11 @@ export function ShellChrome({
   const [dockPinned, setDockPinned] = useState(true)
   const railRef = useRef<HTMLElement>(null)
   const restoreFocusRef = useRef<HTMLElement | null>(null)
+  // On /intelligence the cockpit is rendered inline (page mode); mounting the
+  // overlay cockpit there too would put TWO editor hosts on one artifact seq and
+  // corrupt the canvas working memory. This ref lets the (mount-once) key handler
+  // read the current route so ⌘J is a no-op on that page.
+  const onCockpitPageRef = useRef(false)
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -117,10 +122,12 @@ export function ShellChrome({
         e.preventDefault()
         setPaletteOpen((v) => !v)
       }
-      // ⌘J / Ctrl-J summons Mister — the copilot dock (the palette is ⌘K).
+      // ⌘J / Ctrl-J summons Mister — the copilot cockpit overlay (the palette is
+      // ⌘K). On /intelligence the cockpit is already the page, so ⌘J is a no-op
+      // there (opening the overlay too would double-mount the editors).
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'j') {
         e.preventDefault()
-        setMisterOpen((v) => !v)
+        if (!onCockpitPageRef.current) setMisterOpen((v) => !v)
       }
       // ⌘. toggles the desktop Dock between pinned and auto-hidden.
       if ((e.metaKey || e.ctrlKey) && e.key === '.') {
@@ -198,6 +205,10 @@ export function ShellChrome({
 
   // Drives the page-transition replay (keys <main>) — the frame's route change.
   const pathname = usePathname()
+  // /intelligence renders the cockpit inline (page mode) — never mount the overlay
+  // cockpit there too (one editor host per artifact seq; see onCockpitPageRef).
+  const onCockpitPage = pathname === '/intelligence'
+  onCockpitPageRef.current = onCockpitPage
   const roles = useMemo(() => memberships.map((m) => m.role) as Role[], [memberships])
   const visible = useMemo(
     () => visibleModules(roles, isGroupAdmin, hasRbMembership),
@@ -379,8 +390,10 @@ export function ShellChrome({
       />
 
       {/* Mister — the full-width production cockpit (World B) + its floating door.
-          The launcher hides while the cockpit is open so they never overlap. */}
-      {!misterOpen && !drawerOpen ? (
+          The launcher hides while the cockpit is open so they never overlap, and
+          on /intelligence (where the cockpit IS the page) both are suppressed so
+          only one editor host exists per artifact. */}
+      {!misterOpen && !drawerOpen && !onCockpitPage ? (
         <button
           type="button"
           onClick={() => setMisterOpen(true)}
@@ -391,7 +404,7 @@ export function ShellChrome({
           <MisterMark size={26} />
         </button>
       ) : null}
-      <MisterCockpit mode="overlay" open={misterOpen} onClose={() => setMisterOpen(false)} />
+      {!onCockpitPage ? <MisterCockpit mode="overlay" open={misterOpen} onClose={() => setMisterOpen(false)} /> : null}
      </MisterProvider>
     </div>
   )

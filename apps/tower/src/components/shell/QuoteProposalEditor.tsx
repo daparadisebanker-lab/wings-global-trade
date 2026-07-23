@@ -14,6 +14,8 @@ import { addMinor, formatMinor, lineTotalMinor as calcLineTotal } from '@/lib/mo
 import type { PriceBasis, QuoteProposalData } from '@/lib/copilot/capabilities/quote-build'
 import { MISTER_ARTIFACT } from './mister-theme'
 import { QuoteSavePanel, type SaveLine } from './QuoteSavePanel'
+import { usePersistOnUnmount } from './mister/editor-kit'
+import { useArtifactDraft } from './mister/MisterProvider'
 
 const { text: TEXT, muted: MUTED, gold: GOLD, steel: STEEL, error: ERROR, panelBg: PANEL_BG, fieldBg: FIELD_BG, border: BORDER, mono: MONO } =
   MISTER_ARTIFACT
@@ -78,24 +80,29 @@ const fieldStyle: React.CSSProperties = {
   appearance: 'none',
 }
 
-export function QuoteProposalEditor({ result, locale = DEFAULT_LOCALE }: { result: unknown; locale?: Locale }) {
+export function QuoteProposalEditor({ result, locale = DEFAULT_LOCALE, seq }: { result: unknown; locale?: Locale; seq: number }) {
   const data = result as QuoteProposalData
+  const { draft: d, persist } = useArtifactDraft<{ lines: EditLine[]; nextId: number }>(String(seq))
 
-  const [lines, setLines] = useState<EditLine[]>(() =>
-    data.lines.map((l, i) => {
-      const major = l.unitPriceMinor !== null ? String(l.unitPriceMinor / 100) : ''
-      return {
-        id: i,
-        description: l.description,
-        quantity: l.quantity,
-        priceMajor: major,
-        origBasis: l.basis,
-        origNote: l.basisNote,
-        origMajor: major,
-      }
-    }),
+  const [lines, setLines] = useState<EditLine[]>(
+    () =>
+      d?.lines ??
+      data.lines.map((l, i) => {
+        const major = l.unitPriceMinor !== null ? String(l.unitPriceMinor / 100) : ''
+        return {
+          id: i,
+          description: l.description,
+          quantity: l.quantity,
+          priceMajor: major,
+          origBasis: l.basis,
+          origNote: l.basisNote,
+          origMajor: major,
+        }
+      }),
   )
-  const [nextId, setNextId] = useState(data.lines.length)
+  const [nextId, setNextId] = useState(d?.nextId ?? data.lines.length)
+
+  usePersistOnUnmount({ lines, nextId }, persist)
 
   const derived = useMemo(() => lines.map(derive), [lines])
   const hasGaps = lines.length === 0 || derived.some((d) => d.unitPriceMinor === null)
@@ -229,7 +236,7 @@ export function QuoteProposalEditor({ result, locale = DEFAULT_LOCALE }: { resul
         </span>
       ) : null}
 
-      <QuoteSavePanel lines={saveLines} hasGaps={hasGaps} locale={locale} />
+      <QuoteSavePanel lines={saveLines} hasGaps={hasGaps} locale={locale} draftKey={`${seq}:commit`} />
     </div>
   )
 }
