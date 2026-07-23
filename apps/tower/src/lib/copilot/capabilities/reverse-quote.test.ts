@@ -39,6 +39,19 @@ describe('reverseQuoteCapability.run — Part B context inheritance', () => {
     expect(data.input?.fob).toBe(50000) // overridden
     expect(data.targetPct).toBeCloseTo(0.22) // inherited
   })
+
+  it('derives neto_caja margin kind from a target_price canvas when the follow-up omits it', async () => {
+    // Model restates only the margin %; a target_price canvas means the operator was
+    // on a net-cash quote, so the kind should inherit as neto_caja (not default bruto).
+    const client = stubClient({ understood: true, marginPct: 12, fob: 45000 })
+    const ctx = {
+      kind: 'costing' as const,
+      inputs: { ...DEFAULT_INPUTS, fob: 40000, marginMode: 'target_price' as const, targetSalePrice: 55000 },
+    }
+    const res = await reverseQuoteCapability.run(client, '¿y con 12%?', undefined, ctx)
+    const data = res.data as ReverseQuoteData
+    expect(data.marginKind).toBe('neto_caja')
+  })
 })
 
 // A realistic base: FOB high enough that the engine's $1000 percent-mode floor

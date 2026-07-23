@@ -19,6 +19,19 @@ describe('sanitizeCanvasContext (trust boundary)', () => {
     expect(sanitizeCanvasContext({ kind: 'fit', input: { itemLengthM: -Infinity } })).toBeUndefined()
   })
 
+  it('rejects numeric-looking STRINGS, nulls, and non-scalars (decimal.js coercion path)', () => {
+    expect(sanitizeCanvasContext({ kind: 'costing', inputs: { fob: '1e99' } })).toBeUndefined()
+    expect(sanitizeCanvasContext({ kind: 'costing', inputs: { exchangeRate: 'NaN' } })).toBeUndefined()
+    expect(sanitizeCanvasContext({ kind: 'costing', inputs: { freightInternational: null } })).toBeUndefined()
+    expect(sanitizeCanvasContext({ kind: 'costing', inputs: { fob: { evil: 1 } } })).toBeUndefined()
+    // A genuine text field (not numeric) is fine.
+    expect(sanitizeCanvasContext({ kind: 'costing', inputs: { productName: 'Montacargas', fob: 8000 } })).toBeTruthy()
+  })
+
+  it('rejects an over-large payload', () => {
+    expect(sanitizeCanvasContext({ kind: 'costing', inputs: { productName: 'x'.repeat(50_000) } })).toBeUndefined()
+  })
+
   it('rejects unknown kinds and non-objects', () => {
     expect(sanitizeCanvasContext({ kind: 'evil', inputs: {} })).toBeUndefined()
     expect(sanitizeCanvasContext(null)).toBeUndefined()

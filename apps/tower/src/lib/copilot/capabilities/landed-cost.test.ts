@@ -44,6 +44,27 @@ describe('landedCostCapability.run — Part B context inheritance', () => {
     const res = await landedCostCapability.run(client, '¿y con TC 3.9?', undefined, undefined)
     expect(res.renderer).toBe('text') // bails: no fob anywhere
   })
+
+  it('forces percent margin mode even when the canvas came from a net-cash reverse quote', async () => {
+    // A net-cash ReverseQuoteEditor registers marginMode:'target_price' + a pinned price.
+    const client = stubClient({ understood: true, marginPercent: 0.15 })
+    const ctx = {
+      kind: 'costing' as const,
+      inputs: { ...DEFAULT_INPUTS, fob: 20000, marginMode: 'target_price' as const, targetSalePrice: 60000 },
+    }
+    const res = await landedCostCapability.run(client, 'margen 15%', undefined, ctx)
+    const data = res.data as LandedCostData
+    expect(data.input?.marginMode).toBe('percent') // never inherits target_price
+    expect(data.margenBrutoPct).toBeCloseTo(0.15, 2) // the stated margin, honored
+  })
+
+  it('a model-emitted fob:0 does not clobber the inherited canvas fob', async () => {
+    const client = stubClient({ understood: true, fob: 0 })
+    const ctx = { kind: 'costing' as const, inputs: { ...DEFAULT_INPUTS, fob: 8000 } }
+    const res = await landedCostCapability.run(client, '¿y con eso?', undefined, ctx)
+    const data = res.data as LandedCostData
+    expect(data.input?.fob).toBe(8000) // kept, not overwritten with 0
+  })
 })
 
 describe('buildInputs', () => {

@@ -159,7 +159,9 @@ export const landedCostCapability: Capability = {
     // canvas base (chained ask) or the app defaults. fob is set only when stated,
     // so buildInputsFrom keeps the canvas fob on a follow-up that didn't restate it.
     const partial: Partial<ImportInputs> = {
-      fob: statedFob ?? undefined,
+      // Only a POSITIVE stated fob overrides — a model-emitted 0/negative must not
+      // clobber the inherited canvas fob (it would compute a garbage CIF).
+      fob: statedFob !== null && statedFob > 0 ? statedFob : undefined,
       productName: str(obj.productName) ?? undefined,
       brand: str(obj.brand) ?? undefined,
       model: str(obj.model) ?? undefined,
@@ -180,8 +182,11 @@ export const landedCostCapability: Capability = {
     }
 
     // Merge context OVER defaults so a partial/hostile context can never leave a
-    // required field undefined reaching the engine.
-    const base = ctxBase ? { ...COST_DEFAULTS, ...ctxBase } : COST_DEFAULTS
+    // required field undefined reaching the engine. Force PERCENT margin mode: a
+    // net-cash reverse-quote canvas carries marginMode:'target_price' + a pinned
+    // targetSalePrice, which landed-cost's extraction can never express — inheriting
+    // it would silently price against the previous artifact's pinned sale price.
+    const base: ImportInputs = { ...COST_DEFAULTS, ...(ctxBase ?? {}), marginMode: 'percent' }
     const inputs = buildInputsFrom(base, partial)
     const result = computeImportCost(inputs)
 
