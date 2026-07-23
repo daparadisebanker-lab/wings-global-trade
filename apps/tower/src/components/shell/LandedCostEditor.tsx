@@ -14,9 +14,10 @@ import { computeImportCost } from '@/lib/costing/engine'
 import type { FuelType, ImportInputs, Incoterm } from '@/lib/costing/types'
 import type { LandedCostData } from '@/lib/copilot/capabilities/landed-cost'
 import { CostArtifact } from './CostArtifact'
+import { CostSheetSavePanel } from './CostSheetSavePanel'
 import { MISTER_ARTIFACT } from './mister-theme'
 
-const { text: TEXT, muted: MUTED, gold: GOLD, panelBg: PANEL_BG, fieldBg: FIELD_BG, border: BORDER, mono: MONO } = MISTER_ARTIFACT
+const { text: TEXT, muted: MUTED, panelBg: PANEL_BG, fieldBg: FIELD_BG, border: BORDER, mono: MONO } = MISTER_ARTIFACT
 
 const INCOTERMS: Incoterm[] = ['EXW', 'FOB', 'CFR', 'CIF']
 const FUELS: { value: FuelType; label: { es: string; en: string } }[] = [
@@ -54,15 +55,6 @@ const labelStyle: React.CSSProperties = {
   textTransform: 'uppercase',
   color: MUTED,
 }
-const linkStyle: React.CSSProperties = {
-  fontFamily: MONO,
-  fontSize: 11,
-  letterSpacing: '0.04em',
-  textTransform: 'uppercase',
-  color: GOLD,
-  textDecoration: 'none',
-}
-
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label style={{ display: 'flex', flexDirection: 'column', gap: 3, flex: 1, minWidth: 0 }}>
@@ -154,18 +146,15 @@ export function LandedCostEditor({ result, locale = DEFAULT_LOCALE }: { result: 
       </div>
 
       {data ? (
-        <CostArtifact result={data} locale={locale} />
+        <>
+          <CostArtifact result={data} locale={locale} />
+          <CostSheetSavePanel inputs={data.input} locale={locale} />
+        </>
       ) : (
         <p style={{ margin: 0, fontSize: 12.5, color: MUTED }}>
           {t({ es: 'Sin datos de entrada para recalcular.', en: 'No input data to recompute.' }, locale)}
         </p>
       )}
-
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <a href="/costing" style={linkStyle}>
-          {t({ es: 'Abrir en Costeo →', en: 'Open in Costing →' }, locale)}
-        </a>
-      </div>
     </div>
   )
 }
