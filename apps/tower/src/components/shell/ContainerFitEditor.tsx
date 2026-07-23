@@ -66,7 +66,18 @@ export function ContainerFitEditor({ result, locale = DEFAULT_LOCALE, seq }: { r
 
   // Feed the current box back into Mister so a chained ask inherits it (Part B) —
   // only once it's a real fit (matches the costing editors' gate-on-computable).
-  useCanvasContext(seq, fit ? { kind: 'fit', input: fitInput, sourceSeq: seq } : null)
+  // baseline snapshots this fit's headline for the child's Stage 2 lineage delta.
+  useCanvasContext(
+    seq,
+    fit
+      ? {
+          kind: 'fit',
+          input: fitInput,
+          sourceSeq: seq,
+          baseline: { renderer: 'fit', units: fit.units, cbmUsedPct: fit.cbmUsedPct },
+        }
+      : null,
+  )
 
   return (
     <div style={{ background: PANEL_BG, border: BORDER, borderRadius: 12, padding: '14px 16px', color: TEXT, display: 'flex', flexDirection: 'column', gap: 12 }}>

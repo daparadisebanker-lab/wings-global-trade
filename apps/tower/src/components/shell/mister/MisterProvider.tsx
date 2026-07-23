@@ -21,8 +21,9 @@ import {
 } from 'react'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import { askMister } from '@/lib/actions/mister-copilot'
-import { textResult, type CanvasContext, type CopilotResult } from '@/lib/copilot/types'
+import { textResult, type CanvasContext, type CopilotResult, type SeededFrom } from '@/lib/copilot/types'
 import { MISTER_RENDERERS } from '../mister-renderers'
+import { deriveParentSeq } from './lineage'
 
 // Register the canvas getter BEFORE paint so the composer chip never renders a frame
 // without its context (the editor mounts in the same commit the selection changes).
@@ -39,6 +40,9 @@ export type Pending = { mediaType: string; dataBase64: string; preview: string }
 export interface ArtifactEntry {
   seq: number
   result: CopilotResult
+  /** The seq of the artifact this one chained off (Scenario Ledger Stage 2), when its
+   *  payload carries provenance pointing at an earlier artifact this session — else null. */
+  parentSeq: number | null
 }
 
 interface MisterContextValue {
@@ -139,7 +143,8 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
     for (const m of thread) {
       if (m.who === 'mi' && m.result.renderer !== 'text' && m.result.renderer in MISTER_RENDERERS) {
         seq += 1
-        list.push({ seq, result: m.result })
+        const parentRaw = (m.result.data as { seededFrom?: SeededFrom } | undefined)?.seededFrom?.seq
+        list.push({ seq, result: m.result, parentSeq: deriveParentSeq(parentRaw, seq) })
       }
     }
     return list

@@ -33,9 +33,30 @@ function inputsAreSafe(obj: unknown): boolean {
   return true
 }
 
+/** The lineage baseline (Stage 2) is client-supplied and only feeds display deltas,
+ *  but it renders as money on the cockpit — so validate its shape + finite numbers.
+ *  An invalid baseline is stripped (the delta falls back to the parent's payload),
+ *  never trusted. */
+function baselineIsSafe(b: unknown): boolean {
+  if (!b || typeof b !== 'object' || Array.isArray(b)) return false
+  const o = b as Record<string, unknown>
+  const nums =
+    o.renderer === 'landed-cost'
+      ? [o.landedCost, o.salePriceFinal]
+      : o.renderer === 'reverse-quote'
+        ? [o.salePrice, o.achievedPct]
+        : o.renderer === 'fit'
+          ? [o.units, o.cbmUsedPct]
+          : null
+  if (!nums) return false
+  if (o.renderer === 'reverse-quote' && o.marginKind !== 'bruto' && o.marginKind !== 'neto_caja') return false
+  return nums.every((n) => typeof n === 'number' && Number.isFinite(n) && Math.abs(n) <= MAX_MAGNITUDE)
+}
+
 /** Validate a raw client context; return it typed, or undefined to drop it. The
  *  capabilities merge it over their defaults, so a shape that passes but is missing
- *  fields still can't break the engine. */
+ *  fields still can't break the engine. An unsafe `baseline` is stripped in place
+ *  rather than dropping the whole (otherwise valid) context. */
 export function sanitizeCanvasContext(raw: unknown): CanvasContext | undefined {
   if (!raw || typeof raw !== 'object') return undefined
   try {
@@ -43,8 +64,9 @@ export function sanitizeCanvasContext(raw: unknown): CanvasContext | undefined {
   } catch {
     return undefined // circular / non-serializable
   }
-  const c = raw as { kind?: unknown; inputs?: unknown; input?: unknown }
-  if (c.kind === 'costing' && inputsAreSafe(c.inputs)) return raw as CanvasContext
-  if (c.kind === 'fit' && inputsAreSafe(c.input)) return raw as CanvasContext
-  return undefined
+  const c = raw as { kind?: unknown; inputs?: unknown; input?: unknown; baseline?: unknown }
+  const ok = (c.kind === 'costing' && inputsAreSafe(c.inputs)) || (c.kind === 'fit' && inputsAreSafe(c.input))
+  if (!ok) return undefined
+  if (c.baseline !== undefined && !baselineIsSafe(c.baseline)) delete (raw as { baseline?: unknown }).baseline
+  return raw as CanvasContext
 }

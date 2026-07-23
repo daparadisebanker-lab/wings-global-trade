@@ -104,7 +104,7 @@ export const containerFitCapability: Capability = {
     const seq = safeSeq(context?.sourceSeq)
     const fitFields = ctx && seq !== undefined ? inheritedFitLabels(fitInput, statedFit, ctxKind, '40HC') : []
     const seededFrom: SeededFrom | undefined =
-      seq !== undefined && fitFields.length ? { seq, fields: fitFields } : undefined
+      seq !== undefined && fitFields.length ? { seq, fields: fitFields, baseline: context?.baseline } : undefined
 
     const data: ContainerFitPayload = { ...fit, input: fitInput, seededFrom }
     return { renderer: 'fit', note, data }

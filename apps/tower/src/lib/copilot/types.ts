@@ -29,17 +29,30 @@ export type Attachment = ImageInput
  * ImportInputs, so one 'costing' kind covers both.
  */
 export type CanvasContext =
-  | { kind: 'costing'; inputs: ImportInputs; sourceSeq?: number }
-  | { kind: 'fit'; input: ContainerFitInput; sourceSeq?: number }
+  | { kind: 'costing'; inputs: ImportInputs; sourceSeq?: number; baseline?: LineageBaseline }
+  | { kind: 'fit'; input: ContainerFitInput; sourceSeq?: number; baseline?: LineageBaseline }
+
+/** The PARENT artifact's headline figures captured AT CHAIN TIME — i.e. the state
+ *  the child actually inherited (the parent editor may have tuned it past its
+ *  original stored payload). The lineage deltas (Scenario Ledger Stage 2) compare
+ *  the child against THIS, not the parent's stale first render, so the exhibited
+ *  Δ is the effect of the follow-up alone. `marginKind` travels for reverse-quote
+ *  so a gross↔net-cash switch never subtracts one measure from the other. */
+export type LineageBaseline =
+  | { renderer: 'landed-cost'; landedCost: number; salePriceFinal: number }
+  | { renderer: 'reverse-quote'; salePrice: number; achievedPct: number; marginKind: 'bruto' | 'neto_caja' }
+  | { renderer: 'fit'; units: number; cbmUsedPct: number }
 
 /** Provenance for a chained artifact (Scenario Ledger Stage 1): which prior canvas
  *  artifact its inherited numbers came from, and the fields inherited — each a
  *  localized descriptor (e.g. { es: 'Flete 2,500', en: 'Freight 2,500' }) so the
  *  header matches the ES/EN parity of every other string on the artifact. Rendered
- *  as one line: `fields.map(f => t(f, locale)).join(' · ')`. */
+ *  as one line: `fields.map(f => t(f, locale)).join(' · ')`. `baseline` (Stage 2)
+ *  carries the parent's headline the child was compared against. */
 export interface SeededFrom {
   seq: number
   fields: Localized[]
+  baseline?: LineageBaseline
 }
 
 /** The result a capability returns; the dock renders it via `renderer`. */

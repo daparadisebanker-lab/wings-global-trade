@@ -116,6 +116,11 @@
   letter-spacing: 0.02em;
   color: #eef4fb;
 }
+/* Programmatic focus target after a lineage jump (tabIndex -1, not Tab-reachable) —
+   no visible ring on the silent focus move. */
+.ck-canvas-title:focus {
+  outline: none;
+}
 .ck-canvas-editable {
   font-family: var(--font-mono);
   font-size: 9px;
@@ -199,6 +204,84 @@
 .ck-switch:focus-visible {
   outline: 2px solid #e0b866;
   outline-offset: 2px;
+}
+/* Switcher tag: this composition descends from an earlier one (parent seq). */
+.ck-switch .par {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: #9fb3cc;
+  opacity: 0.85;
+}
+
+/* Scenario Ledger Stage 2 — lineage bar: the canvas artifact's provenance made
+   interactive (jump to the parent scenario) plus the deltas the inherited change
+   produced. Numbers exhibited, not judged — neutral, no good/bad color. */
+.ck-lineage {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin: 0 0 14px;
+}
+.ck-lineage-to {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  max-width: 100%;
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(224, 184, 102, 0.4);
+  background: rgba(216, 169, 75, 0.1);
+  color: #e0b866;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  text-align: left;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease;
+}
+.ck-lineage-to:hover {
+  background: rgba(216, 169, 75, 0.18);
+  border-color: rgba(224, 184, 102, 0.7);
+}
+.ck-lineage-to .g {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #e0b866;
+}
+.ck-lineage-to .arrow {
+  flex: none;
+  opacity: 0.7;
+}
+.ck-lineage-to:focus-visible {
+  outline: 2px solid #e0b866;
+  outline-offset: 2px;
+}
+.ck-deltas {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.ck-delta {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 4px 9px;
+  border-radius: 8px;
+  border: 1px solid rgba(168, 192, 220, 0.2);
+  background: rgba(158, 182, 210, 0.06);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.ck-delta .dl {
+  color: #9fb3cc;
+  letter-spacing: 0.03em;
+}
+.ck-delta .dv {
+  color: #dbe6f3;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Empty canvas — a quiet invitation, not a dead void. */
