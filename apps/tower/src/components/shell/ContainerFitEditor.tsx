@@ -14,47 +14,14 @@ import { computeContainerFit, CONTAINER_SPECS } from '@/lib/copilot/container-fi
 import type { ContainerFitPayload } from '@/lib/copilot/capabilities/container-fit'
 import { FitArtifact } from './FitArtifact'
 import { ContainerActivatePanel } from './ContainerActivatePanel'
+import { Field, fieldStyle, parseNum } from './mister/editor-kit'
 import { MISTER_ARTIFACT } from './mister-theme'
 
-const { text: TEXT, muted: MUTED, panelBg: PANEL_BG, fieldBg: FIELD_BG, border: BORDER, mono: MONO } = MISTER_ARTIFACT
+const { text: TEXT, muted: MUTED, panelBg: PANEL_BG, border: BORDER } = MISTER_ARTIFACT
 
-/** Parse a decimal field; blank/invalid → null (so an optional field clears cleanly). */
-function parseNum(raw: string): number | null {
-  const cleaned = raw.replace(/[^0-9.]/g, '')
-  if (cleaned === '' || cleaned === '.') return null
-  const n = Number(cleaned)
-  return Number.isFinite(n) && n > 0 ? n : null
-}
-
-const fieldStyle: React.CSSProperties = {
-  width: '100%',
-  background: FIELD_BG,
-  color: TEXT,
-  border: BORDER,
-  borderRadius: 8,
-  padding: '7px 9px',
-  fontFamily: MONO,
-  fontSize: 13,
-  textAlign: 'right',
-  WebkitAppearance: 'none',
-  appearance: 'none',
-}
-const labelStyle: React.CSSProperties = {
-  fontFamily: MONO,
-  fontSize: 9.5,
-  letterSpacing: '0.06em',
-  textTransform: 'uppercase',
-  color: MUTED,
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <label style={{ display: 'flex', flexDirection: 'column', gap: 3, flex: 1, minWidth: 0 }}>
-      <span style={labelStyle}>{label}</span>
-      {children}
-    </label>
-  )
-}
+// Dimensions and weights must be > 0 to be meaningful — the kit's allowZero:false
+// makes a blank/zero field read as "absent" rather than a bogus 0.
+const dim = (raw: string) => parseNum(raw, { allowZero: false })
 
 export function ContainerFitEditor({ result, locale = DEFAULT_LOCALE }: { result: unknown; locale?: Locale }) {
   const payload = result as ContainerFitPayload
@@ -71,12 +38,12 @@ export function ContainerFitEditor({ result, locale = DEFAULT_LOCALE }: { result
   const fit = useMemo(
     () =>
       computeContainerFit({
-        itemLengthM: parseNum(lengthM) ?? 0,
-        itemWidthM: parseNum(widthM) ?? 0,
-        itemHeightM: parseNum(heightM) ?? 0,
-        weightEachKg: parseNum(weightEach),
-        weightCapKg: parseNum(weightCap),
-        quantity: parseNum(quantity),
+        itemLengthM: dim(lengthM) ?? 0,
+        itemWidthM: dim(widthM) ?? 0,
+        itemHeightM: dim(heightM) ?? 0,
+        weightEachKg: dim(weightEach),
+        weightCapKg: dim(weightCap),
+        quantity: dim(quantity),
         containerKind: kind,
       }),
     [lengthM, widthM, heightM, weightEach, weightCap, quantity, kind],

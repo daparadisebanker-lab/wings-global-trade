@@ -3,6 +3,7 @@ import type { Locale } from '@/lib/i18n'
 import { QuoteProposalEditor } from '../QuoteProposalEditor'
 import { ContainerFitEditor } from '../ContainerFitEditor'
 import { LandedCostEditor } from '../LandedCostEditor'
+import { ReverseQuoteEditor } from '../ReverseQuoteEditor'
 
 /**
  * Optional per-capability EDITABLE surfaces for the composition canvas (Phase E
@@ -15,4 +16,5 @@ export const MISTER_CANVAS_EDITORS: Record<string, (data: unknown, locale: Local
   'quote-proposal': (data, locale) => <QuoteProposalEditor result={data} locale={locale} />,
   fit: (data, locale) => <ContainerFitEditor result={data} locale={locale} />,
   'landed-cost': (data, locale) => <LandedCostEditor result={data} locale={locale} />,
+  'reverse-quote': (data, locale) => <ReverseQuoteEditor result={data} locale={locale} />,
 }
