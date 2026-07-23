@@ -19,6 +19,10 @@ const BY_RENDERER: Record<string, HandoffLink[]> = {
     { href: '/costing', label: { es: 'Ver Costeo', en: 'View Costing' } },
   ],
   'quote-proposal': [{ href: '/quotations', label: { es: 'Abrir Cotizaciones', en: 'Open Quotations' } }],
+  'torre-quote': [
+    { href: '/intelligence/revision', label: { es: 'Cola de revisión', en: 'Review queue' } },
+    { href: '/quotations', label: { es: 'Abrir Cotizaciones', en: 'Open Quotations' } },
+  ],
   proposal: [
     { href: '/quotations', label: { es: 'Abrir Cotizaciones', en: 'Open Quotations' } },
     { href: '/pipeline', label: { es: 'Ver Pipeline', en: 'View Pipeline' } },
@@ -52,6 +56,8 @@ export function artifactLabel(renderer: string | null | undefined): Localized {
       return { es: 'Cotización inversa', en: 'Reverse quote' }
     case 'quote-proposal':
       return { es: 'Propuesta de cotización', en: 'Quote proposal' }
+    case 'torre-quote':
+      return { es: 'Par de cotización', en: 'Quote pair' }
     case 'proposal':
       return { es: 'Propuesta', en: 'Proposal' }
     case 'supplier-extract':

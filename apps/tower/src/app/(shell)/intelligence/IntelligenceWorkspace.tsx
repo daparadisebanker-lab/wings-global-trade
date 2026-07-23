@@ -11,16 +11,18 @@ import { cn } from '@wings/trade-ui'
 import { DEFAULT_LOCALE, t, type Locale, type Localized } from '@/lib/i18n'
 import { TriageQueue } from '@/components/intelligence/triage-queue'
 import { SpecExtractReview } from '@/components/intelligence/spec-extract'
+import { TorreReviewQueue } from '@/components/intelligence/torre-queue'
 
-type Panel = 'triage' | 'spec-extract'
+type Panel = 'torre' | 'triage' | 'spec-extract'
 
 const PANELS: { id: Panel; tag: string; label: Localized }[] = [
+  { id: 'torre', tag: 'COT', label: { es: 'Cotizaciones (Torre)', en: 'Quotes (Torre)' } },
   { id: 'triage', tag: 'TRI', label: { es: 'Triage', en: 'Triage' } },
   { id: 'spec-extract', tag: 'SPX', label: { es: 'Extracción de specs', en: 'Spec extraction' } },
 ]
 
 export function IntelligenceWorkspace({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
-  const [panel, setPanel] = useState<Panel>('triage')
+  const [panel, setPanel] = useState<Panel>('torre')
 
   return (
     <div className="flex h-full flex-col gap-6 p-6">
@@ -65,7 +67,13 @@ export function IntelligenceWorkspace({ locale = DEFAULT_LOCALE }: { locale?: Lo
       </div>
 
       <div className="flex-1">
-        {panel === 'triage' ? <TriageQueue locale={locale} /> : <SpecExtractReview locale={locale} />}
+        {panel === 'torre' ? (
+          <TorreReviewQueue locale={locale} />
+        ) : panel === 'triage' ? (
+          <TriageQueue locale={locale} />
+        ) : (
+          <SpecExtractReview locale={locale} />
+        )}
       </div>
     </div>
   )

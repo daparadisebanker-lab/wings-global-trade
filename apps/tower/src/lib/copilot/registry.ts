@@ -14,6 +14,7 @@ import { supplierScreenshotCapability } from './capabilities/supplier-screenshot
 import { proposalDraftCapability } from './capabilities/proposal-draft'
 import { quoteBuildCapability } from './capabilities/quote-build'
 import { documentSearchCapability } from './capabilities/document-search'
+import { quoteRunCapability } from './capabilities/quote-run'
 
 export const CAPABILITIES: Capability[] = [
   containerFitCapability,
@@ -23,4 +24,5 @@ export const CAPABILITIES: Capability[] = [
   proposalDraftCapability,
   quoteBuildCapability,
   documentSearchCapability,
+  quoteRunCapability,
 ]
