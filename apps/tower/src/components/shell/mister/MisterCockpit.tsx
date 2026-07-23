@@ -19,7 +19,7 @@ import { MisterCommitRail } from './MisterCommitRail'
 import { useMister } from './MisterProvider'
 import './mister-cockpit.css'
 
-function CockpitBody({ showClose, onClose }: { showClose: boolean; onClose?: () => void }) {
+function CockpitBody({ showClose, active, onClose }: { showClose: boolean; active: boolean; onClose?: () => void }) {
   const { locale } = useMister()
   return (
     <div className="ck-shell">
@@ -50,7 +50,7 @@ function CockpitBody({ showClose, onClose }: { showClose: boolean; onClose?: () 
           <MisterCanvas />
         </div>
         <aside className="ck-rail" aria-label={t({ es: 'Registrar y redirigir', en: 'Commit and hand-off' }, locale)}>
-          <MisterCommitRail />
+          <MisterCommitRail active={active} />
         </aside>
       </div>
     </div>
@@ -89,7 +89,7 @@ export function MisterCockpit({
   if (mode === 'page') {
     return (
       <div className="mister-cockpit is-page">
-        <CockpitBody showClose={false} />
+        <CockpitBody showClose={false} active />
       </div>
     )
   }
@@ -103,7 +103,7 @@ export function MisterCockpit({
         onClick={onClose}
       />
       <div className="mister-cockpit is-overlay" role="dialog" aria-modal="false" aria-label="Mister">
-        <CockpitBody showClose onClose={onClose} />
+        <CockpitBody showClose active={open} onClose={onClose} />
       </div>
     </div>
   )

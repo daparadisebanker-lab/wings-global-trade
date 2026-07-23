@@ -1,10 +1,10 @@
 'use client'
 
-// MisterCanvas — the composition canvas (Phase E slice 1, center zone). It pins
-// the latest renderable artifact and shows it BIG, reusing the same renderer map
-// the thread uses (no artifact is rebuilt for the canvas — it is the same organ,
-// given room to breathe). Empty until the first artifact arrives; then it swaps
-// to the newest one and replays a single settle keyed on artifactSeq.
+// MisterCanvas — the composition canvas (Phase E, center zone). It shows the
+// SELECTED artifact big, reusing the same renderer map the thread uses (no
+// artifact is rebuilt — same organ, more room). When more than one artifact has
+// been composed this session, a switcher lets the operator flip between them
+// (fit → cost → quote…), which is what makes this a workspace and not a readout.
 import { t } from '@/lib/i18n'
 import { MisterMark } from '../MisterMark'
 import { MISTER_RENDERERS } from '../mister-renderers'
@@ -12,18 +12,13 @@ import { useMister } from './MisterProvider'
 import { artifactLabel } from './handoffs'
 
 export function MisterCanvas() {
-  const { locale, latestArtifact, artifactSeq } = useMister()
+  const { locale, artifacts, selectedSeq, selectArtifact, selectedArtifact } = useMister()
 
-  if (!latestArtifact) {
+  if (!selectedArtifact) {
     return (
       <div className="ck-canvas-empty">
         <MisterMark size={54} />
-        <p className="ck-empty-hi">
-          {t(
-            { es: 'Tu composición aparece aquí.', en: 'Your composition appears here.' },
-            locale,
-          )}
-        </p>
+        <p className="ck-empty-hi">{t({ es: 'Tu composición aparece aquí.', en: 'Your composition appears here.' }, locale)}</p>
         <p className="ck-empty-sub">
           {t(
             {
@@ -37,7 +32,6 @@ export function MisterCanvas() {
     )
   }
 
-  const render = MISTER_RENDERERS[latestArtifact.renderer]
   return (
     <div className="ck-canvas-scroll">
       <div className="ck-canvas-head">
@@ -45,12 +39,39 @@ export function MisterCanvas() {
           <span aria-hidden className="g" />
           {t({ es: 'Lienzo', en: 'Canvas' }, locale)}
         </span>
-        <span className="ck-canvas-title">{t(artifactLabel(latestArtifact.renderer), locale)}</span>
+        <span className="ck-canvas-title">{t(artifactLabel(selectedArtifact.renderer), locale)}</span>
       </div>
-      {latestArtifact.note ? <p className="ck-canvas-note">{latestArtifact.note}</p> : null}
-      {/* key on artifactSeq so the reveal replays per NEW artifact, not per render. */}
-      <div key={artifactSeq} className="ck-canvas-art">
-        {render ? render(latestArtifact.data, locale) : <span>{latestArtifact.text ?? ''}</span>}
+
+      {/* Switcher — only once there's more than one composition to move between. */}
+      {artifacts.length > 1 ? (
+        <div className="ck-switcher" role="tablist" aria-label={t({ es: 'Composiciones', en: 'Compositions' }, locale)}>
+          {artifacts.map((a) => {
+            const active = a.seq === selectedSeq
+            return (
+              <button
+                key={a.seq}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                className={active ? 'ck-switch is-active' : 'ck-switch'}
+                onClick={() => selectArtifact(a.seq)}
+              >
+                <span aria-hidden className="n">
+                  {a.seq}
+                </span>
+                {t(artifactLabel(a.result.renderer), locale)}
+              </button>
+            )
+          })}
+        </div>
+      ) : null}
+
+      {selectedArtifact.note ? <p className="ck-canvas-note">{selectedArtifact.note}</p> : null}
+      {/* key on selectedSeq so the reveal replays when the operator swaps artifacts. */}
+      <div key={selectedSeq ?? 'art'} className="ck-canvas-art">
+        {MISTER_RENDERERS[selectedArtifact.renderer]?.(selectedArtifact.data, locale) ?? (
+          <span>{selectedArtifact.text ?? ''}</span>
+        )}
       </div>
     </div>
   )

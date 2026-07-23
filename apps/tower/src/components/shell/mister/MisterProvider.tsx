@@ -8,7 +8,7 @@
 // (draft in the overlay, keep drafting after you navigate). So the state lifts
 // here, wrapping the whole shell. The engine is unchanged: send() still calls the
 // single-shot askMister() server action and appends its CopilotResult.
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import { askMister } from '@/lib/actions/mister-copilot'
 import { textResult, type CopilotResult } from '@/lib/copilot/types'
@@ -20,6 +20,12 @@ export type MisterMsg = { who: 'op'; text: string; image?: string } | { who: 'mi
 /** A screenshot staged for the next turn — base64 for the wire, dataURL for preview. */
 export type Pending = { mediaType: string; dataBase64: string; preview: string }
 
+/** A renderable artifact produced this session, with a stable per-session seq. */
+export interface ArtifactEntry {
+  seq: number
+  result: CopilotResult
+}
+
 interface MisterContextValue {
   locale: Locale
   thread: MisterMsg[]
@@ -29,10 +35,14 @@ interface MisterContextValue {
   setDraft: (value: string) => void
   setPending: (value: Pending | null) => void
   send: () => Promise<void>
-  /** The most recent renderable artifact (non-text result) — the canvas subject. */
-  latestArtifact: CopilotResult | null
-  /** Monotonic count of arrived artifacts — lets the canvas replay its reveal per artifact. */
-  artifactSeq: number
+  /** Every renderable artifact produced this session, in order — the canvas switcher. */
+  artifacts: ArtifactEntry[]
+  /** The seq currently held on the canvas (the newest, unless the operator flipped back). */
+  selectedSeq: number | null
+  /** Pin an earlier artifact to the canvas. */
+  selectArtifact: (seq: number) => void
+  /** The artifact the canvas is showing (selected, else newest, else none). */
+  selectedArtifact: CopilotResult | null
 }
 
 const MisterContext = createContext<MisterContextValue | null>(null)
@@ -67,24 +77,49 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
     }
   }, [draft, pending, busy, locale])
 
-  // The canvas subject = the last result whose renderer draws an artifact (never
-  // the plain 'text' bubble). artifactSeq counts them so the canvas animates on
-  // each new artifact rather than on every keystroke.
-  const { latestArtifact, artifactSeq } = useMemo(() => {
-    let latest: CopilotResult | null = null
+  // Every renderable artifact (never the plain 'text' bubble), with a stable
+  // per-session seq assigned by arrival order — the canvas switcher's model.
+  const artifacts = useMemo<ArtifactEntry[]>(() => {
+    const list: ArtifactEntry[] = []
     let seq = 0
     for (const m of thread) {
       if (m.who === 'mi' && m.result.renderer !== 'text' && m.result.renderer in MISTER_RENDERERS) {
-        latest = m.result
         seq += 1
+        list.push({ seq, result: m.result })
       }
     }
-    return { latestArtifact: latest, artifactSeq: seq }
+    return list
   }, [thread])
 
+  const latestSeq = artifacts.length ? artifacts[artifacts.length - 1].seq : null
+  const [selectedSeq, setSelectedSeq] = useState<number | null>(null)
+  // A freshly-composed artifact always takes the canvas; the operator can flip back after.
+  useEffect(() => {
+    if (latestSeq !== null) setSelectedSeq(latestSeq)
+  }, [latestSeq])
+
+  const selectedArtifact = useMemo(
+    () => artifacts.find((a) => a.seq === selectedSeq)?.result ?? artifacts.at(-1)?.result ?? null,
+    [artifacts, selectedSeq],
+  )
+  const selectArtifact = useCallback((seq: number) => setSelectedSeq(seq), [])
+
   const value = useMemo<MisterContextValue>(
-    () => ({ locale, thread, busy, pending, draft, setDraft, setPending, send, latestArtifact, artifactSeq }),
-    [locale, thread, busy, pending, draft, send, latestArtifact, artifactSeq],
+    () => ({
+      locale,
+      thread,
+      busy,
+      pending,
+      draft,
+      setDraft,
+      setPending,
+      send,
+      artifacts,
+      selectedSeq,
+      selectArtifact,
+      selectedArtifact,
+    }),
+    [locale, thread, busy, pending, draft, send, artifacts, selectedSeq, selectArtifact, selectedArtifact],
   )
 
   return <MisterContext.Provider value={value}>{children}</MisterContext.Provider>
