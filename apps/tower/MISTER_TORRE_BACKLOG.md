@@ -125,8 +125,15 @@ off the World-B exemption; connectors mock-first behind adapters (`MOCK_CONNECTO
   MINUTES_SAVED baseline → hours returned + counts (weekly/monthly rollup). analista
   profile already exists (B3). 11 tests. Remaining: Brief screen UI + telemetry source
   events. Review: pending.
-- `TODO` **L6 · RAG / memory** — pgvector migration + ingest-on-approval + hybrid
-  retrieval + precedent Q&A with citations + learned-on-approval.
+- `DONE` **L6 · RAG / memory** — pure core (rag.ts): **chunkByStructure** (splits by
+  Markdown headings, packs paragraphs to maxChars, carries heading + entity metadata — no
+  blind windows); **hybridRank** (vector + keyword by weight + entity-filter boost,
+  deterministic recency tiebreak, top-k); **citationsFor** (deduped clickable sources —
+  every answer cites); **isRateOrPriceQuery** + **precedentAnswer** enforcing the freshness
+  law (a price/rate ask is guarded, redirected to get_rates/get_tariff — precedent is
+  context, never the live number). pgvector corpus migration (tower_53: knowledge_chunks +
+  hnsw + tsvector + entity GIN + RLS, approved-only). 10 tests. Remaining: embed job +
+  ingest-on-approval wiring + Q&A UI. Review: pending.
 - `TODO` **L7 · Surfaces & aesthetics** — persistent 420px side panel · inline
   intelligence pins (cell underline, `Mister ▸` row, ghost fields) · Cmd+K verbs ·
   remaining Constellation states (LISTENING/SPEAKING/ERROR) + the watch-catch pulse +
