@@ -65,7 +65,15 @@ off the World-B exemption; connectors mock-first behind adapters (`MOCK_CONNECTO
   (`router.ts`): model-first Haiku classifier + PURE keyword-stem heuristic fallback
   (`classifyIntent`/`parseRouterResponse`/`routeIntent`) → always returns a valid
   {profile, urgency}, never strands a run. 28 tests. Fable review: pending.
-- `TODO` **C1 · streaming** — SSE route for Torre runs (mirror api/ai/spec-extract).
+- `DONE` **C1 · streaming** — the full agentic run, streamed. `runToolLoop` gained an
+  `onStep` observer; `runTorreAgent` (run.ts) composes route→profile→scoped-belt→loop and
+  emits typed events (route·step·final). Shared **quote-core.ts** extracted from the
+  flagship action so propose_quote and runTorreQuote drive ONE money pipeline (+ hsCodeHint
+  to pin an agent-chosen HS position). Real RLS **provider.ts** (orders→milestones,
+  accounts/suppliers, rates/tariff/costing, propose_quote→core, draft_message→ai_drafts;
+  search_knowledge interim until L6). SSE route **POST /api/ai/torre** mirrors
+  api/ai/spec-extract. 16 new tests (loop stream, orchestrator, provider mapping). Fable
+  review: pending.
 
 ### Loops
 - `TODO` **L1 · Cotizar polish** — PDF export (branded), inline edit, comment-to-revise
