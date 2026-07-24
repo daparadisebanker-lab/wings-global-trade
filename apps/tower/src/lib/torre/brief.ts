@@ -10,7 +10,11 @@ import { partitionByDelivery, type Severity, type WatchRuleId, type WatchSignal 
 export type Role = 'LANE_DIRECTOR' | 'CATALOG_EDITOR' | 'TRADE_OPS' | 'SALES' | 'VIEWER'
 export type BriefCadence = 'morning' | 'friday' | 'month-end'
 
-/** Which roles care about each watch rule (so a SALES brief isn't full of ops noise). */
+// Which roles care about each watch rule (so a SALES brief isn't full of ops noise).
+// CATALOG_EDITOR maps to no rules BY DESIGN — a catalog editor has no import-ops concern,
+// so their Brief is signal-free (they still see approvable drafts + read watch_signals via
+// RLS). LANE_DIRECTOR covers all 8, so every rule reaches at least one role (see the
+// totality test). VIEWER is handled separately (sees all, read-only).
 const RULE_ROLES: Record<WatchRuleId, Role[]> = {
   'eta-slip': ['LANE_DIRECTOR', 'TRADE_OPS'],
   'doc-deadline': ['LANE_DIRECTOR', 'TRADE_OPS'],
@@ -48,6 +52,8 @@ export interface BriefInput {
   date: string
   cadence?: BriefCadence
   signals: WatchSignal[]
+  /** Already RLS-scoped to what THIS operator can see (the drafts query is role-scoped at
+   *  fetch); buildMorningBrief only filters to approvable, it does not re-scope by role. */
   pendingDrafts: PendingDraft[]
   telemetry?: BriefTelemetry
 }
@@ -95,8 +101,9 @@ export function buildMorningBrief(input: BriefInput): MorningBrief {
     attention: brief,
     drafts,
     quiet,
-    // weekly/monthly always show telemetry; morning only if provided
-    telemetry: cadence === 'morning' ? input.telemetry : (input.telemetry ?? { hoursReturned: 0, draftsApproved: 0, signalsResolved: 0 }),
+    // telemetry is surfaced when supplied (prominently on weekly/monthly); NEVER fabricated
+    // — "0 hours returned" when the data simply wasn't wired would be a vanity lie.
+    telemetry: input.telemetry,
   }
 }
 

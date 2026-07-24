@@ -96,24 +96,65 @@ describe('kill switches (activeRules)', () => {
   })
 })
 
-describe('reconcileWatch — idempotent across runs', () => {
-  const mk = (rule: WatchSignal['rule'], importRef = 'A'): WatchSignal => ({
-    rule, severity: 'medio', importRef, title: { es: '', en: '' }, detail: { es: '', en: '' },
+describe('reconcileWatch — idempotent + honest across runs', () => {
+  const mk = (rule: WatchSignal['rule'], severity: WatchSignal['severity'] = 'medio', importRef = 'A'): WatchSignal => ({
+    rule, severity, importRef, title: { es: '', en: '' }, detail: { es: '', en: '' },
+  })
+  const open = (rule: WatchSignal['rule'], severity: WatchSignal['severity'] = 'medio', status: 'OPEN' | 'MUTED' = 'OPEN') => ({
+    key: signalKey(mk(rule)), severity, status,
   })
 
   it('creates only signals with no open match (no duplicate re-ping)', () => {
-    const detected = [mk('eta-slip'), mk('rate-expiry')]
-    const open = new Set([signalKey(mk('eta-slip'))]) // eta-slip already open
-    const r = reconcileWatch(detected, open)
+    const r = reconcileWatch([mk('eta-slip'), mk('rate-expiry')], [open('eta-slip')])
     expect(r.toCreate.map((s) => s.rule)).toEqual(['rate-expiry'])
+    expect(r.toEscalate).toEqual([])
     expect(r.resolvedKeys).toEqual([])
   })
 
-  it('resolves an open signal whose exception cleared', () => {
-    const detected = [mk('eta-slip')]
-    const open = [signalKey(mk('eta-slip')), signalKey(mk('demurrage'))] // demurrage no longer detected
-    const r = reconcileWatch(detected, open)
+  it('escalates an open signal whose severity rose (the ping was going stale)', () => {
+    const r = reconcileWatch([mk('eta-slip', 'alto')], [open('eta-slip', 'medio')])
     expect(r.toCreate).toEqual([])
+    expect(r.toEscalate.map((s) => s.severity)).toEqual(['alto'])
+  })
+
+  it('does not escalate on same or lower severity', () => {
+    expect(reconcileWatch([mk('eta-slip', 'medio')], [open('eta-slip', 'alto')]).toEscalate).toEqual([])
+  })
+
+  it('resolves an OPEN signal whose exception cleared', () => {
+    const r = reconcileWatch([mk('eta-slip')], [open('eta-slip'), open('demurrage')])
     expect(r.resolvedKeys).toEqual(['A:demurrage'])
+  })
+
+  it('does NOT re-create a MUTED signal (kill switch survives reconcile), nor resolve it', () => {
+    const r = reconcileWatch([mk('demurrage')], [open('demurrage', 'inmediato', 'MUTED')])
+    expect(r.toCreate).toEqual([]) // muted → not recreated
+    expect(r.resolvedKeys).toEqual([]) // muted → not auto-resolved even if it kept firing
+  })
+})
+
+describe('robustness — malformed dates never false-fire the budget', () => {
+  it('a garbage/datetime date yields NO signal (not a false inmediato)', () => {
+    // a full timestamptz on arrivedOn used to make daysBetween NaN → demurrage inmediato
+    expect(runWatchRules(base({ arrival: { arrivedOn: 'not-a-date', freeDays: 5 } }))).toEqual([])
+    // a timestamptz is tolerated (time dropped), not NaN — 9 days over → still fires
+    expect(runWatchRules(base({ arrival: { arrivedOn: '2026-07-15T08:30:00Z', freeDays: 5 } }))[0]).toMatchObject({ rule: 'demurrage', severity: 'inmediato' })
+  })
+})
+
+describe('rule refinements from review', () => {
+  it('demurrage pre-warns (alto) while free days are nearly out, before charges accrue', () => {
+    const s = runWatchRules(base({ arrival: { arrivedOn: '2026-07-22', freeDays: 3 } }))[0] // elapsed 2, over -1
+    expect(s).toMatchObject({ rule: 'demurrage', severity: 'alto' })
+  })
+
+  it('doc-deadline flags an explicit vencido even without a dueDate', () => {
+    expect(runWatchRules(base({ requiredDocs: [{ doc: 'BL', status: 'vencido' }] }))[0]).toMatchObject({ severity: 'alto' })
+  })
+
+  it('margin-drift has a deadband (a hair under target does not fire)', () => {
+    expect(runWatchRules(base({ margin: { current: 0.1799, target: 0.18 } }))).toEqual([]) // within 95% deadband
+    expect(runWatchRules(base({ margin: { current: 0.165, target: 0.18 } }))[0]).toMatchObject({ severity: 'medio' }) // 90–95%
+    expect(runWatchRules(base({ margin: { current: 0.16, target: 0.18 } }))[0]).toMatchObject({ severity: 'alto' }) // <90%
   })
 })

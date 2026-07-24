@@ -23,10 +23,11 @@ create table if not exists tower.watch_signals (
   resolved_at     timestamptz
 );
 
--- At most one OPEN signal per import+rule (the reconciler's idempotency key). RESOLVED/
--- MUTED history rows are kept (append-only spirit), so the unique is PARTIAL on OPEN.
-create unique index if not exists watch_signals_open_key
-  on tower.watch_signals (brand_id, import_ref, rule) where status = 'OPEN';
+-- At most one ACTIVE (OPEN or MUTED) signal per import+rule — the reconciler's idempotency
+-- key. Covering MUTED too is what stops a muted exception from being re-created (un-muted)
+-- on the next reconcile. RESOLVED history rows are kept (append-only spirit) and excluded.
+create unique index if not exists watch_signals_active_key
+  on tower.watch_signals (brand_id, import_ref, rule) where status in ('OPEN', 'MUTED');
 create index if not exists watch_signals_brand_status_idx on tower.watch_signals (brand_id, status, severity);
 create index if not exists watch_signals_lane_idx on tower.watch_signals (lane_id);
 

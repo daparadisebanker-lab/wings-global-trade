@@ -56,9 +56,22 @@ describe('buildMorningBrief — bands & stillness', () => {
     expect(buildMorningBrief(input({ cadence: 'month-end' })).masthead.es).toMatch(/Cierre del mes/)
   })
 
-  it('weekly/monthly always carry telemetry; morning only if supplied', () => {
+  it('never fabricates telemetry — undefined when not supplied, on ANY cadence', () => {
     expect(buildMorningBrief(input({ cadence: 'morning' })).telemetry).toBeUndefined()
-    expect(buildMorningBrief(input({ cadence: 'friday' })).telemetry).toBeDefined()
+    expect(buildMorningBrief(input({ cadence: 'friday' })).telemetry).toBeUndefined() // no "0 hours" lie
+    const withData = buildMorningBrief(input({ cadence: 'friday', telemetry: { hoursReturned: 4.2, draftsApproved: 8, signalsResolved: 3 } }))
+    expect(withData.telemetry?.hoursReturned).toBe(4.2)
+  })
+})
+
+describe('RULE_ROLES totality', () => {
+  it('every watch rule reaches at least one role (nothing orphaned)', () => {
+    const rules: WatchSignal['rule'][] = ['eta-slip', 'doc-deadline', 'demurrage', 'rate-expiry', 'payment-milestone', 'quote-quiet', 'margin-drift', 'stale-import']
+    for (const rule of rules) {
+      // LANE_DIRECTOR covers all 8, so a director brief surfaces every rule
+      const b = buildMorningBrief(input({ role: 'LANE_DIRECTOR', signals: [{ rule, severity: 'alto', importRef: 'A', title: { es: '', en: '' }, detail: { es: '', en: '' } }] }))
+      expect([...b.urgent, ...b.attention]).toHaveLength(1)
+    }
   })
 })
 
