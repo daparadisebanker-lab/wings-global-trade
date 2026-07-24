@@ -8,7 +8,8 @@ build loop, how the governance holds, and what remains.
 The build ran **foundations → loops**, continuously, each item gated by
 `typecheck (cache-free) + vitest + next build` and reviewed by an independent **Fable**
 reviewer whose confirmed findings were applied before advancing. Test count grew from a
-**476** baseline to **868**.
+**476** baseline to **905**. Every pure/backend item is now built, tested, and
+Fable-reviewed; what remains is UI (needs visual QA) and two decision/provider-gated jobs.
 
 ---
 
@@ -73,9 +74,14 @@ closed the gaps that were found:
 - **L1 · Cotizar** — money-aware semantic diff (`diffTorreArtifact`), versioned revision
   (`reviseTorreArtifact`, honesty downgrade of edited prices), branded PDF print model,
   revise server action (versioned successor DRAFT + diff).
-- **L2 · Comunicar** — redactor tone/audience model, the send gate (`prepareSend`) +
-  mock-first adapters wired into approve as claim-before-send, inbound thread capture
-  (sender-scoped keys, References root).
+- **L2 · Comunicar** — redactor tone/audience model (now WIRED as the canonical prompt
+  contract via `toneGuidanceBlock` + `defaultLanguage` — one source of truth), the send gate
+  (`prepareSend`) + mock-first adapters wired into approve as claim-before-send, the send
+  **outbox** (`torre_sends`, one row per approval's send SENT/FAILED+reason, draft_id-idempotent,
+  RLS superset of the approve roles) via `runSendOnApprove`. Inbound thread capture
+  (`normalizeInbound`, sender-scoped keys, References root); inbound PERSISTENCE is already
+  served by the platform's `/api/hooks/whatsapp` → `whatsapp_messages` (a parallel Torre table
+  would fork the record) — email-inbound wiring is provider-dependent (deferred).
 - **L3 · Documentar** — four document artifact types (reporte_estado · checklist_docs ·
   acta · sop), each with schema + Markdown exporter (escaped, blockers shown) + queue
   renderer + eval-tests; a missing required doc is a derived blocker.
@@ -83,9 +89,15 @@ closed the gaps that were found:
   triage + interruption budget (only `inmediato` interrupts), idempotent reconciler with
   severity-escalation + MUTED survival, kill switches, `watch_signals` migration.
 - **L5 · Reportar** — the Morning Brief (per-role scoping, urgent/attention/drafts bands,
-  quiet flag, cadence mastheads) + productivity telemetry (never fabricated).
+  quiet flag, cadence mastheads) + productivity telemetry (never fabricated). The telemetry
+  SOURCE (`timeSavedEventsFromApprovals` + `getTorreTelemetry`) reads APPROVED artifacts in a
+  window and, after review, counts HONESTLY: a quote pair (COTIZACION + its HOJA) counts once,
+  a revision lineage counts once, `draftsApproved` counts every approval, `signalsResolved` is
+  omitted until tracked, and a `basis` note carries the methodology.
 - **L6 · RAG/memory** — structure-aware chunking, hybrid retrieval ranking, cited answers,
-  the freshness guard; the pgvector `knowledge_chunks` corpus (approved-only).
+  the freshness guard; the pgvector `knowledge_chunks` corpus (approved-only). Ingest-on-approval
+  is wired (`ingest.ts`: an approved artifact becomes corpus precedent, best-effort, HOJA excluded,
+  a DRAFT never ingested); embeddings stay null until a real provider (keyword retrieval works meanwhile).
 - **L7 · Surfaces** — the Cmd+K verb registry (loops → run/panel/route) and the remaining
   Constellation states (LISTENING/SPEAKING/ERROR/watch-catch), reduced-motion-aware.
 
@@ -95,8 +107,10 @@ closed the gaps that were found:
 
 `tower_48` (ai_drafts kinds, incl. the L3 document kinds, pre-reserved) · `tower_49`
 (rate_tables) · `tower_50` (tariff_positions) · `tower_51` (org_rules) · `tower_52`
-(watch_signals, partial-unique active key) · `tower_53` (knowledge_chunks, pgvector).
-These are committed as migration files; applying them is a pipeline concern.
+(watch_signals, partial-unique active key) · `tower_53` (knowledge_chunks, pgvector) ·
+`tower_54` (torre_sends, the send outbox). These are committed as migration files; applying
+them is a pipeline concern. Until applied, the Torre runtime degrades safely (the code reads
+`{ error }` and does not crash), but persistence-backed features won't function in prod.
 
 ---
 
@@ -107,19 +121,36 @@ SHIP to a genuine **BLOCK** (B2's first pass — the tool belt could not obey it
 the writer surface was redesigned, `get_costing_config` added, and the block was resolved
 and re-confirmed). Confirmed findings were applied and re-verified green before advancing —
 notably the `hsCodeHint` pin bypass, the agent-override provenance mislabel, the diff
-blocker-laundering holes, the send-ordering race, and the NaN-date false-`inmediato`.
+blocker-laundering holes, the send-ordering race, and the NaN-date false-`inmediato`. The
+later backend items were reviewed the same way: the **L5 telemetry** review (pair +
+revision-lineage double-counts → collapsed; honest counts; required window), the **L2 outbox**
+review (HOJA_COSTOS side effect moved after the claim; FAILED sends surfaced; a testable
+`runSendOnApprove`; an `error` column), and the **L2 tone wiring** review (the "single source
+of truth" was only real on a throwaway object — pointed the actual persistence path at tone.ts).
 
 ---
 
-## What remains (UI wiring + jobs on the tested cores)
+## What remains (all human-gated: visual QA or a decision/provider)
 
-The tested cores and governance are in place; the remaining work is wiring:
+Every pure/backend item is built, tested (905), and Fable-reviewed. What's left cannot be
+completed *to the project's Definition of Done* headlessly — it needs a browser (the Awwwards
+visual QA gate: "one deliberate moment of tension per key view") or a decision that is the
+owner's to make:
 
-- **UI**: the persistent 420px side panel + inline intelligence pins + the Cmd+K component
-  + ConstellationField state wiring (L7); the Brief screen (L5); a bespoke document renderer
-  vs the Markdown preview (L3); the inline-edit form + PDF component (L1); the signals view
-  + reconciler job (L4).
-- **Jobs / connectors**: the DB watch reconciler; the embed job + ingest-on-approval (L6);
-  real email/WhatsApp adapters behind the mock seam (L2); persisting the outbox/inbound rows.
-- **Source of truth**: `apps/tower/MISTER_TORRE_BACKLOG.md` tracks per-item status and the
+- **UI (build against the existing Torre component + token vocabulary; visual QA is the human gate):**
+  the persistent side panel + inline pins + surfacing the Torre verb registry in the *existing*
+  ⌘K `CommandPalette` (⌘K is already taken — this is an integration + UX decision, not a new palette)
+  + ConstellationField state wiring (L7); the Brief screen (L5); the Q&A view (L6); a bespoke
+  document renderer beyond the Markdown preview (L3); the inline-edit form + PDF component (L1);
+  the signals view (L4).
+- **Blocked on a decision / provider (do NOT improvise):**
+  - **L4 DB watch reconciler** — needs the import-tracking schema (how eta/docs/arrival/payment/
+    margin are represented over time). The 8 watch RULES are pure-tested; the reconciler that
+    feeds them from real import data needs that data model, a product decision.
+  - **L6 embed job** — needs a real embedding provider. A mock embedding is NOT a faithful
+    placeholder (it would write garbage vectors that corrupt the similarity leg), so unlike the
+    send mock this cannot be built mock-first; embeddings stay null and keyword retrieval carries L6.
+- **Pipeline task (human/CI):** apply migrations `tower_48`–`tower_54` via the Supabase
+  migration pipeline (never manual prod SQL).
+- **Source of truth:** `apps/tower/MISTER_TORRE_BACKLOG.md` tracks per-item status and the
   applied review findings.
