@@ -27,12 +27,16 @@ export const ORG_RULES_FALLBACK: OrgRules = {
 export function resolveMarginFraction(rules: OrgRules, archetype: string | null): number {
   const override = archetype ? rules.marginRules[archetype] : undefined
   const bps = typeof override === 'number' ? override : rules.marginDefaultBps
-  return bps / 10_000
+  // Clamp: margin_rules is free jsonb (no DB CHECK), so a fat-fingered 18000 or a
+  // negative can't flow unbounded into computeImportCost / client prices.
+  const clamped = Math.min(10_000, Math.max(0, bps))
+  return clamped / 10_000
 }
 
-/** The roles allowed to approve an artifact kind (empty = no matrix entry). */
+/** The roles allowed to approve an artifact kind (empty = no/invalid matrix entry). */
 export function rolesForKind(matrix: Record<string, string[]>, kind: string): string[] {
-  return matrix[kind] ?? []
+  const v = matrix[kind]
+  return Array.isArray(v) ? v : [] // guard: a malformed string value must not become substring-matched
 }
 
 /**

@@ -2,8 +2,8 @@
 // Tariff (HS) candidate resolution for the quote run (Mister Torre A2). PURE +
 // unit-tested. Given the brand's curated tariff_positions and a product text, return
 // the matching candidate positions by keyword. The action then: 1 candidate →
-// resolve the duty; ≥2 → ambiguous (the quote run blocks and PRESENTS both); 0 →
-// fall back to the brand-default Ad Valorem. Never guesses a duty from the model.
+// resolve the duty (blocking if the position is unverified/stale); ≥2 → ambiguous
+// (the quote run blocks and PRESENTS both); 0 → brand default or block. Never guesses.
 
 export interface TariffPosition {
   hsCode: string
@@ -26,6 +26,7 @@ function norm(s: string): string {
     .toLowerCase()
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '') // strip accents so 'electrógeno' matches 'electrogeno'
+    .trim()
 }
 
 /**
@@ -34,8 +35,8 @@ function norm(s: string): string {
  */
 export function resolveTariffCandidates(positions: TariffPosition[], text: string): TariffPosition[] {
   const hay = norm(text)
-  if (hay.trim().length === 0) return []
-  return positions.filter((p) => p.keywords.some((k) => k.trim().length > 0 && hay.includes(norm(k))))
+  if (hay.length === 0) return []
+  return positions.filter((p) => p.keywords.some((k) => norm(k).length > 0 && hay.includes(norm(k))))
 }
 
 /** Shape a position into the reviewer-facing candidate. */

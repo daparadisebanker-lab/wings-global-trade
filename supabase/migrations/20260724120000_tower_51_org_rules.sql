@@ -20,7 +20,7 @@ create table if not exists tower.org_rules (
   created_at         timestamptz not null default now()
 );
 
-create index if not exists org_rules_brand_idx on tower.org_rules (brand_id);
+-- (no extra index: the unique(brand_id) constraint already provides the index.)
 
 alter table tower.org_rules enable row level security;
 
@@ -42,11 +42,20 @@ create trigger audit_org_rules
   after insert or update or delete on tower.org_rules
   for each row execute function tower.audit_trigger();
 
+-- Keep updated_at honest on edits (the shared house idiom, tower_26).
+drop trigger if exists set_updated_at_org_rules on tower.org_rules;
+create trigger set_updated_at_org_rules
+  before update on tower.org_rules
+  for each row execute function tower.rb_set_updated_at();
+
 -- Seed one policy row per brand lacking one (idempotent via the brand_id unique).
 insert into tower.org_rules (brand_id, margin_default_bps, margin_rules, incoterm_default, validity_days, approval_matrix)
 select b.id, 1800,
   '{"EQUIPMENT":1800,"PROJECT":1500,"COMMODITY":1000,"PROGRAM":1600,"CREDENTIAL":2000,"ORIGIN":1200}'::jsonb,
   'FOB', 15,
-  '{"COTIZACION":["LANE_DIRECTOR","SALES"],"HOJA_COSTOS":["LANE_DIRECTOR","TRADE_OPS"],"COMUNICACION":["LANE_DIRECTOR","SALES","TRADE_OPS"]}'::jsonb
+  -- Kept consistent with the ai_drafts UPDATE RLS (LANE_DIRECTOR/TRADE_OPS only): the
+  -- matrix must not promise an approval role RLS will refuse. Broadening to SALES for
+  -- client cotizaciones is a deliberate RLS change for a later item, not a seed lie.
+  '{"COTIZACION":["LANE_DIRECTOR","TRADE_OPS"],"HOJA_COSTOS":["LANE_DIRECTOR","TRADE_OPS"],"COMUNICACION":["LANE_DIRECTOR","TRADE_OPS"]}'::jsonb
 from tower.brands b
 on conflict (brand_id) do nothing;

@@ -22,6 +22,10 @@ describe('resolveMarginFraction', () => {
     expect(resolveMarginFraction(rules, 'MEDICAL')).toBe(0.18)
     expect(resolveMarginFraction(rules, null)).toBe(0.18)
   })
+  it('clamps an out-of-range margin (fat-finger guard)', () => {
+    expect(resolveMarginFraction({ ...rules, marginRules: { X: 18000 } }, 'X')).toBe(1) // 180% → 100%
+    expect(resolveMarginFraction({ ...rules, marginRules: { X: -500 } }, 'X')).toBe(0)
+  })
 })
 
 describe('approval matrix', () => {

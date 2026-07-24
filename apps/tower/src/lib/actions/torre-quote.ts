@@ -73,6 +73,13 @@ function serverToday(pinned?: string): string {
   return pinned ?? new Date().toISOString().slice(0, 10)
 }
 
+/** ISO date `days` after a timestamptz/date string (for the tariff re-verify horizon). */
+function plusDaysISO(iso: string, days: number): string {
+  const d = new Date(iso)
+  d.setUTCDate(d.getUTCDate() + days)
+  return d.toISOString().slice(0, 10)
+}
+
 export async function runTorreQuote(input: RunTorreQuoteInput): Promise<ActionResult<TorreQuoteResult>> {
   const parsed = runSchema.safeParse(input)
   if (!parsed.success) return fail('VALIDATION', 'Entrada inválida / Invalid input')
@@ -107,6 +114,7 @@ export async function runTorreQuote(input: RunTorreQuoteInput): Promise<ActionRe
     .from('tariff_positions')
     .select('hs_code,description,keywords,duty_bps,iva_bps,verified_at')
     .eq('brand_id', laneRow.brand_id)
+    .order('hs_code') // deterministic candidate order (blocker chips + persisted reason)
   const tariffPositions: TariffPosition[] = (
     (tariffRows ?? []) as Array<{
       hs_code: string
@@ -215,31 +223,55 @@ export async function runTorreQuote(input: RunTorreQuoteInput): Promise<ActionRe
   )
   let adValoremRate: number | null
   let tariffCandidates: TariffCandidateRef[] | undefined
+  let tariffUnverified = false
   let tariffSource: SourceRef
   if (candidatePositions.length === 1) {
+    // 1 candidate → use its duty. verified_at drives honesty: unverified → block;
+    // verified → the source carries a re-verify horizon (verifiedAt + 1y) so a stale
+    // classification raises the tariff-stale blocker instead of passing silently.
     const p = candidatePositions[0]
     adValoremRate = p.dutyBps / 10_000
+    tariffUnverified = p.verifiedAt == null
+    const verifiedUntil = p.verifiedAt ? plusDaysISO(p.verifiedAt, 365) : undefined
     tariffSource = {
       kind: 'tariff_position',
-      label: `HS ${p.hsCode} · ${p.description} (${(adValoremRate * 100).toFixed(0)}%)`,
+      label: `HS ${p.hsCode} · ${p.description} (${(adValoremRate * 100).toFixed(0)}%)${tariffUnverified ? ' · sin verificar' : ''}`,
       ref: p.hsCode,
+      validUntil: verifiedUntil,
     }
   } else if (candidatePositions.length >= 2) {
     adValoremRate = null // → tariff-ambiguous blocker, carrying the candidates
     tariffCandidates = candidatePositions.map(toCandidate)
     tariffSource = { kind: 'tariff_position', label: `${candidatePositions.length} partidas candidatas` }
   } else {
-    const brandDefault = resolveAdValoremRate(adValoremTable, '')
-    adValoremRate = brandDefault
-    tariffSource = {
-      kind: 'tariff_position',
-      label: `Ad Valorem ${(brandDefault * 100).toFixed(0)}% (predeterminado de marca)`,
+    // 0 candidates → the CONFIGURED brand default (a '' prefix row), or — if none is
+    // configured — unresolved (null → block), never a silent 0%.
+    const hasDefault = adValoremTable.some((r) => r.hsPrefix === '')
+    if (hasDefault) {
+      const brandDefault = resolveAdValoremRate(adValoremTable, '')
+      adValoremRate = brandDefault
+      tariffSource = {
+        kind: 'tariff_position',
+        label: `Ad Valorem ${(brandDefault * 100).toFixed(0)}% (predeterminado de marca)`,
+      }
+    } else {
+      adValoremRate = null // no candidate + no configured default → unresolved (blocks)
+      tariffSource = { kind: 'tariff_position', label: 'Sin posición ni arancel predeterminado' }
     }
   }
 
   // Build the context (rates from config; tariff resolved above; margin/validity from
   // org_rules per the lane's archetype; mocked TRM).
   const marginDefault = resolveMarginFraction(org, laneRow.archetype)
+  // marginSource names WHOSE margin the quote actually used (mirrors freightSource):
+  // the operator's stated margin wins over the org rule; the fallback is labelled honestly.
+  const marginUsed = spec.marginPercent ?? marginDefault
+  const marginSource: SourceRef =
+    spec.marginPercent != null
+      ? { kind: 'operator', label: `Margen ${(marginUsed * 100).toFixed(0)}% (indicado por el operador)` }
+      : orgRow
+        ? { kind: 'org_rule', label: `Margen ${(marginUsed * 100).toFixed(0)}% (regla de marca${laneRow.archetype ? ` · ${laneRow.archetype}` : ''})` }
+        : { kind: 'org_rule', label: `Margen ${(marginUsed * 100).toFixed(0)}% (por defecto del sistema)` }
   const ctx: QuoteRunContext = {
     laneCode: laneRow.code,
     igvRate: (c?.igv_bps ?? 1800) / 10_000,
@@ -247,15 +279,14 @@ export async function runTorreQuote(input: RunTorreQuoteInput): Promise<ActionRe
     insuranceRate: (c?.insurance_bps ?? 150) / 10_000,
     adValoremRate,
     tariffCandidates,
+    tariffUnverified,
     exchangeRate: 3.7, // MOCK_CONNECTORS: no live TRM feed; referential rate
     marginDefault,
+    incotermDefault: org.incotermDefault,
     freightSource,
     tariffSource,
     trmSource: { kind: 'org_rule', label: 'TC referencial 3.70 (mock)' },
-    marginSource: {
-      kind: 'org_rule',
-      label: `Margen ${(marginDefault * 100).toFixed(0)}% (regla de marca${laneRow.archetype ? ` · ${laneRow.archetype}` : ''})`,
-    },
+    marginSource,
     validityDays: org.validityDays,
     today,
     defaultClientName: spec.clientName,

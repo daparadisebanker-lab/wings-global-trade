@@ -141,6 +141,12 @@ describe('buildQuoteRun — honesty (Directive 4/5): never invent numbers', () =
     expect(out.approvable).toBe(false)
   })
 
+  it('unverified single-candidate tariff → tariff-unverified blocker, not approvable', () => {
+    const out = buildQuoteRun(catInput({ tariffUnverified: true }))
+    expect(out.blockers.some((b) => b.id === 'tariff-unverified')).toBe(true)
+    expect(out.approvable).toBe(false)
+  })
+
   it('stale tariff (lapsed validity) → tariff-stale blocker', () => {
     const out = buildQuoteRun(
       catInput({ tariffSource: { kind: 'tariff_position', label: 'HS 8429.52', validUntil: '2026-06-30' } }),
