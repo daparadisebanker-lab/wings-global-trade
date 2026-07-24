@@ -16,6 +16,7 @@ import { TOOLS } from '@/shell/navigation/registry'
 import { useActiveTool } from '@/shell/navigation/useActiveTool'
 import { NAV_ICONS } from '@/components/shell/nav-icons'
 import { ThemeToggle } from '@/components/shell/ThemeToggle'
+import { MisterMark } from '@/components/shell/MisterMark'
 import { UserMenu } from '@/shell/frame/UserMenu'
 
 /** Registry-driven module grid — same TOOLS × `visible` × `useActiveTool` as the
@@ -23,16 +24,25 @@ import { UserMenu } from '@/shell/frame/UserMenu'
 export function ControlCenterGrid({
   visible,
   onNavigate,
+  onOpenMister,
   locale = DEFAULT_LOCALE,
 }: {
   visible: Set<ModuleId>
   onNavigate?: () => void
+  /** Opens the immersive Mister overlay (the copilot) — the mobile equivalent of the
+   *  desktop floating door / ⌘J. When wired, Mister is a dedicated entry here that
+   *  opens the immersive experience, so the RBAC-gated `intelligence` MODULE tile
+   *  (also labeled "Mister", but → the /intelligence page) is folded into it to avoid
+   *  a confusing second "Mister" — the overlay's Revisión tab covers that page's job. */
+  onOpenMister?: () => void
   locale?: Locale
 }) {
   const active = useActiveTool()
-  const tools = TOOLS.filter((tl) => visible.has(tl.id))
+  const tools = TOOLS.filter((tl) => visible.has(tl.id) && !(onOpenMister && tl.id === 'intelligence'))
 
-  if (tools.length === 0) {
+  // Mister is unconditional (the copilot isn't a module), so the empty note only
+  // shows when there are no modules AND no Mister entry to offer.
+  if (tools.length === 0 && !onOpenMister) {
     return (
       <div className="flex flex-col gap-3 p-4">
         <p className="font-ui text-t0 text-ink-secondary">
@@ -47,6 +57,22 @@ export function ControlCenterGrid({
 
   return (
     <nav aria-label={t({ es: 'Módulos', en: 'Modules' }, locale)} className="grid grid-cols-1 gap-3 p-3">
+      {/* Mister — the copilot, opening the immersive overlay (not a route). Same
+          entry the desktop floating door provides; first so it reads as primary. */}
+      {onOpenMister ? (
+        <button
+          type="button"
+          onClick={onOpenMister}
+          aria-label={t({ es: 'Abrir Mister (⌘J)', en: 'Open Mister (⌘J)' }, locale)}
+          className="cc-tile min-w-0 w-full text-left"
+        >
+          <MisterMark size={20} className="shrink-0" />
+          <span className="min-w-0 truncate font-ui text-t0">Mister</span>
+          <span aria-hidden className="ml-auto shrink-0 font-mono text-label tracking-[0.1em] text-ink-secondary">
+            ⌘J
+          </span>
+        </button>
+      ) : null}
       {tools.map((tl) => {
         const Icon = NAV_ICONS[tl.icon]
         const on = active?.id === tl.id

@@ -20,7 +20,6 @@ import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import { useActiveTool } from '@/shell/navigation/useActiveTool'
 import { resolveActiveTool } from '@/shell/navigation/registry'
 import { recordRecent } from '@/shell/navigation/recents'
-import { GreetingBar } from '@/shell/frame/GreetingBar'
 import { Dock } from '@/shell/dock/Dock'
 import { ControlCenterGrid, ControlCenterStatus } from '@/shell/control-center/ControlCenter'
 import { NavSidebar } from '@/shell/navigation/NavSidebar'
@@ -235,6 +234,15 @@ export function ShellChrome({
     })
   }, [pathname])
 
+  // A hand-off / nav link INSIDE the full-bleed Mister overlay navigates the page
+  // behind it; without dismissing the cockpit the destination stays hidden under the
+  // z-60 overlay and the link looks dead (the top "buttons don't work" report). Close
+  // it on every route change — its conversation/draft state lives in MisterProvider and
+  // survives navigation, so nothing is lost.
+  useEffect(() => {
+    setMisterOpen(false)
+  }, [pathname])
+
   const activeLane = memberships.find((m) => m.laneId === activeLaneId) ?? null
   const rootStyle = activeLane?.accent
     ? ({ '--lane-accent': activeLane.accent } as CSSProperties)
@@ -300,42 +308,26 @@ export function ShellChrome({
 
           <LaneSwitcher lanes={memberships} activeLaneId={activeLaneId} onSelect={setActiveLaneId} />
 
-          {/* Mobile: the Control Center module grid (registry-driven). */}
+          {/* Mobile: the Control Center module grid (registry-driven) + a dedicated
+              Mister entry that opens the immersive overlay (the copilot), so
+              "selecting Mister" here matches the desktop floating door / ⌘J. */}
           <div className="md:hidden">
-            <ControlCenterGrid visible={visible} onNavigate={() => setDrawerOpen(false)} />
+            <ControlCenterGrid
+              visible={visible}
+              onNavigate={() => setDrawerOpen(false)}
+              onOpenMister={() => {
+                setMisterOpen(true)
+                setDrawerOpen(false)
+              }}
+            />
           </div>
           {/* Desktop: the labeled module sidebar with expandable per-module quick
               actions (Phase C) — the calm counterpart to the Dock's quick-launch. */}
           <div className="hidden md:block">
             <NavSidebar visible={visible} />
           </div>
-          <div className="md:hidden">
+          <div className="mt-auto md:hidden">
             <ControlCenterStatus userName={userName} userEmail={userEmail} active={drawerOpen} />
-          </div>
-
-          {/* Footer — Mister entry (drawer-only; on desktop the floating launcher
-              + ⌘J cover it). Collapse is gone (module list moved to the Dock). */}
-          <div className="mt-auto flex flex-col md:hidden">
-            {/* Mister — a persistent rail entry (the dock is also ⌘J + the floating
-                door). Its own mark, so it reads as the copilot, not a module. */}
-            <button
-              type="button"
-              onClick={() => {
-                setMisterOpen(true)
-                setDrawerOpen(false)
-              }}
-              aria-label={t({ es: 'Abrir Mister (⌘J)', en: 'Open Mister (⌘J)' }, DEFAULT_LOCALE)}
-              className="group flex items-center gap-3 border-t border-line px-4 py-3 text-ink-secondary transition-colors hover:text-ink-primary"
-            >
-              <MisterMark size={20} className="shrink-0" />
-              <span className="font-mono text-label uppercase tracking-[0.12em]">Mister</span>
-              <span
-                data-kbd-hint
-                className="ml-auto font-mono text-label tracking-[0.1em] text-ink-secondary group-hover:text-ink-primary"
-              >
-                ⌘J
-              </span>
-            </button>
           </div>
         </aside>
 
@@ -347,7 +339,6 @@ export function ShellChrome({
             onOpenSearch={() => setPaletteOpen(true)}
             onOpenMenu={() => setDrawerOpen(true)}
           />
-          <GreetingBar userName={userName} userEmail={userEmail} />
           <Breadcrumb locale={DEFAULT_LOCALE} />
           {needsOnboarding ? <OnboardingBanner /> : null}
           {/* overflow-x-clip: a mobile safety net — no page-wide horizontal

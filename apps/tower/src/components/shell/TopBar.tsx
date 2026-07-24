@@ -1,14 +1,17 @@
 'use client'
 
-import { Notifications } from './Notifications'
 import { ThemeToggle } from './ThemeToggle'
+import { UserMenu } from '@/shell/frame/UserMenu'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 
 /**
- * TopBar (COMPONENT_TREE): hamburger (mobile) · brand switcher (group admin) ·
- * global search (⌘K palette) · notifications · user. Everything shrinks safely
- * on mobile (min-w-0 + icon-only search + hidden brand/email) so the bar — and
- * therefore the whole page — never forces a horizontal scroll at 390px.
+ * TopBar (COMPONENT_TREE) — the SINGLE header panel. hamburger (mobile) · brand
+ * switcher (group admin) · theme · the account menu (identity + recents + sign
+ * out). Search is NOT here on desktop: it lives in the Dock (⌘K), so the only
+ * "Buscar" affordance the header keeps is a mobile-only one (the Dock is
+ * desktop-only). The former GreetingBar strip and the Avisos stub were folded
+ * away — one bar, no duplicate identity, no dead "no alerts" popover. Everything
+ * shrinks safely (min-w-0) so the page never scrolls sideways at 390px.
  */
 export function TopBar({
   userName,
@@ -58,29 +61,27 @@ export function TopBar({
       </div>
 
       <div className="flex min-w-0 shrink-0 items-center gap-2 sm:gap-3">
+        {/* Search — MOBILE ONLY (md:hidden). Desktop search is the Dock's Buscar
+            tile + ⌘K, so the header never duplicates it; mobile has no Dock, so it
+            keeps a tap-reachable search here rather than stranding those users. */}
         <button
           type="button"
           onClick={onOpenSearch}
           aria-label={t({ es: 'Buscar', en: 'Search' }, locale)}
-          className="flex items-center gap-2 rounded-card border border-line px-3 py-1.5 font-mono text-label uppercase tracking-[0.1em] text-ink-secondary transition-colors hover:border-gold hover:text-ink-primary"
+          className="flex h-10 w-10 items-center justify-center rounded-card text-ink-secondary transition-colors hover:text-ink-primary md:hidden"
         >
-          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.6} aria-hidden>
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.6} aria-hidden>
             <circle cx="9" cy="9" r="5" />
             <path d="M13.5 13.5 17 17" strokeLinecap="round" />
           </svg>
-          <span className="hidden sm:inline">{t({ es: 'Buscar', en: 'Search' }, locale)}</span>
-          <span aria-hidden className="hidden opacity-70 sm:inline">
-            ⌘K
-          </span>
         </button>
         <ThemeToggle locale={locale} />
-        <Notifications locale={locale} />
-        {/* Glanceable identity — name when the rep profile has one, else email.
-            The actionable account menu (recap + sign out) lives one strip down in
-            the GreetingBar (desktop) and the Control Center (mobile). */}
-        <span className="hidden max-w-[220px] truncate font-ui text-t0 text-ink-secondary lg:inline">
-          {userName ?? userEmail ?? '—'}
-        </span>
+        {/* The account menu — identity + recent activity + sign out, in ONE control
+            (folded up from the removed GreetingBar). Desktop only; on mobile the
+            Control Center drawer carries the same identity + recap + sign out. */}
+        <div className="hidden md:block">
+          <UserMenu name={userName} email={userEmail} locale={locale} />
+        </div>
       </div>
     </header>
   )
