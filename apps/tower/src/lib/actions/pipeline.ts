@@ -13,6 +13,7 @@ import { createServerSupabase } from '@/lib/supabase/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { fail, ok, type ActionResult } from './result'
 import { isValidStage, isValidUnit, type Archetype } from '@/lib/archetypes'
+import { issuerById } from '@/lib/quotation/issuers'
 import { getConversation, type Conversation } from '@/lib/conversations'
 import type { EditableLane } from './catalog'
 import {
@@ -678,7 +679,23 @@ export async function listQuotes(rfqId: string): Promise<ActionResult<QuoteRow[]
  * preview numbers are never trusted or persisted directly (ARCHITECTURE
  * "Money is integers" / CLAUDE.md Directive 3).
  */
-export async function composeQuote(rfqId: string, lines: QuoteLineDraft[]): Promise<ActionResult<QuoteRow>> {
+/** Optional issuing context for a composed quote — the seam Wave 3 (Mister /
+ *  Torre capture) and the document UI write into. `issuerId` must resolve to a
+ *  known issuing entity; `portOfDestination` is stored on the quote's terms so
+ *  the proforma/cotización render resolves the right legal entity. */
+const composeOptsSchema = z
+  .object({
+    issuerId: z.string().trim().min(1).max(64).optional(),
+    portOfDestination: z.string().trim().min(1).max(120).optional(),
+  })
+  .optional()
+export type ComposeQuoteOpts = z.input<typeof composeOptsSchema>
+
+export async function composeQuote(
+  rfqId: string,
+  lines: QuoteLineDraft[],
+  opts?: ComposeQuoteOpts,
+): Promise<ActionResult<QuoteRow>> {
   const gate = await requireUser()
   if (!gate.ok) return gate.error
   const { supabase, user } = gate
@@ -689,6 +706,13 @@ export async function composeQuote(rfqId: string, lines: QuoteLineDraft[]): Prom
   const parsed = z.array(quoteLineInputSchema).min(1).max(200).safeParse(lines)
   if (!parsed.success) {
     return fail('VALIDATION', 'Datos inválidos / Invalid data', { lines: parsed.error.issues.map((i) => i.message) })
+  }
+
+  const optsParsed = composeOptsSchema.safeParse(opts)
+  if (!optsParsed.success) return fail('VALIDATION', 'Opciones inválidas / Invalid options')
+  // An explicit issuer must name a real entity (FK-safe + fail-fast).
+  if (optsParsed.data?.issuerId && !issuerById(optsParsed.data.issuerId)) {
+    return fail('VALIDATION', 'Entidad emisora desconocida / Unknown issuing entity')
   }
 
   const context = await loadRfqContext(supabase, rfqParsed.data)
@@ -721,6 +745,11 @@ export async function composeQuote(rfqId: string, lines: QuoteLineDraft[]): Prom
       currency: context.currency,
       status: 'DRAFT',
       created_by: user.id,
+      // Issuing context (omitted when not supplied → row unchanged from before).
+      ...(optsParsed.data?.issuerId ? { issuer_id: optsParsed.data.issuerId } : {}),
+      ...(optsParsed.data?.portOfDestination
+        ? { terms: { portOfDestination: optsParsed.data.portOfDestination } }
+        : {}),
     })
     .select('id,rfq_id,version,lines,total_minor,currency,status,valid_until,created_by,created_at')
     .single()

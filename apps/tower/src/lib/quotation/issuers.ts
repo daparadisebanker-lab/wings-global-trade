@@ -18,6 +18,7 @@
 // label + basis points and computed by the shared quotation math downstream.
 import type { CompanyInfo } from './company'
 import { WINGS_ISSUER } from './company'
+import type { CommercialTerms } from './document'
 import type { BankingDetails, ProformaTerms, TradeParty } from './proforma'
 import {
   DEFAULT_BANKING,
@@ -205,5 +206,45 @@ export function withEntityProformaTerms(
     deliveryTime: pick(s.deliveryTime, d.deliveryTime ?? null),
     validityText: pick(s.validityText, d.validityText ?? null),
     warranty: pick(s.warranty, d.warranty ?? null),
+  }
+}
+
+/**
+ * Tax posture for a document under an entity. The default entity (Wings PE) lets
+ * the stored / operator label+bps win (its own defaults equal the historical
+ * DEFAULT_TAX_*, so output is byte-identical); a specifically-matched entity
+ * (e.g. Shining Star CL, FOB / 0 bps) imposes its own posture — a Chilean export
+ * prints no IGV line. Shared by the proforma and cotización actions.
+ */
+export function entityTaxPosture(
+  entity: IssuerEntity,
+  storedLabel: string | null | undefined,
+  storedBps: number | null | undefined,
+): { taxLabel: string; taxBps: number } {
+  const isDefault = entity.id === DEFAULT_ISSUER.id
+  return {
+    taxLabel: isDefault ? (storedLabel ?? entity.taxLabel) : entity.taxLabel,
+    taxBps: isDefault ? (storedBps ?? entity.taxBps) : entity.taxBps,
+  }
+}
+
+/**
+ * Merge stored quotation terms over an entity's defaults (the CommercialTerms
+ * shape used by the cotización — no ports). Incoterm falls back to the entity's
+ * `defaultIncoterm`; payment/delivery/validity/warranty to its `terms`. Stored,
+ * non-empty fields win. Empty strings drop to the entity default.
+ */
+export function withEntityCommercialTerms(
+  stored: Partial<CommercialTerms> | null | undefined,
+  entity: IssuerEntity,
+): CommercialTerms {
+  const s = stored ?? {}
+  const pick = (v: string | null | undefined, d: string | null): string | null => (v && v.trim() ? v : d)
+  return {
+    paymentTerms: pick(s.paymentTerms, entity.terms.paymentTerms ?? null),
+    deliveryTime: pick(s.deliveryTime, entity.terms.deliveryTime ?? null),
+    incoterm: pick(s.incoterm, entity.defaultIncoterm ?? null),
+    warranty: pick(s.warranty, entity.terms.warranty ?? null),
+    validityText: pick(s.validityText, entity.terms.validityText ?? null),
   }
 }

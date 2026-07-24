@@ -1,12 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import {
   DEFAULT_ISSUER,
+  entityTaxPosture,
   hasBankingDetails,
   ISSUER_REGISTRY,
   issuerById,
   resolveIssuer,
   SHINING_STAR_CL,
   WINGS_PE,
+  withEntityCommercialTerms,
   withEntityProformaTerms,
 } from './issuers'
 
@@ -90,6 +92,33 @@ describe('entity data invariants', () => {
     expect(hasBankingDetails(WINGS_PE.banking)).toBe(true)
     expect(WINGS_PE.taxBps).toBe(1800)
     expect(DEFAULT_ISSUER).toBe(WINGS_PE)
+  })
+})
+
+describe('entityTaxPosture (shared by proforma + cotización)', () => {
+  it('default entity (PE): stored label/bps win — byte-identical to IGV 18%', () => {
+    expect(entityTaxPosture(WINGS_PE, 'IGV 18%', 1800)).toEqual({ taxLabel: 'IGV 18%', taxBps: 1800 })
+  })
+  it('default entity with null stored → the entity default (IGV 18%)', () => {
+    expect(entityTaxPosture(WINGS_PE, null, null)).toEqual({ taxLabel: 'IGV 18%', taxBps: 1800 })
+  })
+  it('matched entity (CL) imposes FOB / 0 bps even over a stored IGV', () => {
+    expect(entityTaxPosture(SHINING_STAR_CL, 'IGV 18%', 1800)).toEqual({ taxLabel: 'FOB', taxBps: 0 })
+  })
+})
+
+describe('withEntityCommercialTerms (cotización terms shape)', () => {
+  it('falls back to the CL entity defaults, incoterm from defaultIncoterm', () => {
+    const t = withEntityCommercialTerms(null, SHINING_STAR_CL)
+    expect(t.incoterm).toBe('FOB (Incoterms ® 2020)')
+    expect(t.paymentTerms).toBe('50% adelantado y 50% al embarque en el puerto de origen.')
+    expect(t.validityText).toBe('15 días desde la fecha de esta proforma.')
+    expect(t.warranty).toBeNull()
+  })
+  it('lets a stored field win over the entity default', () => {
+    const t = withEntityCommercialTerms({ incoterm: 'CFR - Iquique' }, SHINING_STAR_CL)
+    expect(t.incoterm).toBe('CFR - Iquique')
+    expect(t.paymentTerms).toBe('50% adelantado y 50% al embarque en el puerto de origen.')
   })
 })
 
