@@ -252,4 +252,34 @@ describe('runToolLoop', () => {
       runToolLoop({ nextTurn: scripted([{ text: 'x', toolCalls: [] }]), tools: [echoTool, { ...echoTool }] }),
     ).rejects.toThrow(/duplicate tool name "echo"/)
   })
+
+  it('streams each step to onStep, including the terminal step', async () => {
+    const seen: { index: number; calls: number; terminal: boolean }[] = []
+    await runToolLoop({
+      nextTurn: scripted([
+        { text: '', toolCalls: [{ id: 't1', name: 'echo', input: {} }] },
+        { text: 'done', toolCalls: [] },
+      ]),
+      tools: [echoTool],
+      onStep: (step, index) => {
+        seen.push({ index, calls: step.turn.toolCalls.length, terminal: step.turn.toolCalls.length === 0 })
+      },
+    })
+    expect(seen).toEqual([
+      { index: 0, calls: 1, terminal: false },
+      { index: 1, calls: 0, terminal: true },
+    ])
+  })
+
+  it('swallows a throwing onStep — the run still completes', async () => {
+    const r = await runToolLoop({
+      nextTurn: scripted([{ text: 'ok', toolCalls: [] }]),
+      tools: [],
+      onStep: () => {
+        throw new Error('emitter-broke')
+      },
+    })
+    expect(r.stopReason).toBe('stop')
+    expect(r.finalText).toBe('ok')
+  })
 })

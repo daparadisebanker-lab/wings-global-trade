@@ -78,6 +78,12 @@ export interface RunToolLoopOptions {
   maxSteps?: number
   /** Cancellation between steps (C1 SSE) — checked before each model call. */
   signal?: AbortSignal
+  /**
+   * Streaming side-channel (C1 SSE): called after each step is appended, including the
+   * terminal stop turn. Purely observational — a throwing/rejecting onStep is swallowed
+   * so a broken emitter (aborted client) can never crash the run.
+   */
+  onStep?: (step: AgentStep, index: number) => void | Promise<void>
 }
 
 /**
@@ -86,7 +92,7 @@ export interface RunToolLoopOptions {
  * throws become error results the model sees (it can recover), never crashes the run.
  * If `nextTurn` itself rejects, that propagates (the pure loop can't retry the model).
  */
-export async function runToolLoop({ nextTurn, tools, maxSteps = 8, signal }: RunToolLoopOptions): Promise<AgentResult> {
+export async function runToolLoop({ nextTurn, tools, maxSteps = 8, signal, onStep }: RunToolLoopOptions): Promise<AgentResult> {
   if (maxSteps < 1) throw new Error(`runToolLoop: maxSteps must be >= 1 (got ${maxSteps})`)
   const byName = new Map<string, AgentTool>()
   for (const t of tools) {
@@ -99,6 +105,16 @@ export async function runToolLoop({ nextTurn, tools, maxSteps = 8, signal }: Run
   let lastText = ''
   let lastStopHint: string | undefined
 
+  // Emit a completed step to the observer, swallowing any emitter error (streaming law).
+  const emit = async (step: AgentStep, index: number) => {
+    if (!onStep) return
+    try {
+      await onStep(step, index)
+    } catch {
+      // a broken/aborted emitter must never crash the run
+    }
+  }
+
   for (let i = 0; i < maxSteps; i++) {
     if (signal?.aborted) {
       return { finalText: lastText, steps, toolCallCount, stopReason: 'aborted', stopHint: lastStopHint }
@@ -108,7 +124,9 @@ export async function runToolLoop({ nextTurn, tools, maxSteps = 8, signal }: Run
     lastStopHint = turn.stopHint ?? lastStopHint
     if (turn.toolCalls.length === 0) {
       // Terminal turn — append it so `steps` is a complete transcript, then stop.
-      steps.push({ turn, results: [] })
+      const step: AgentStep = { turn, results: [] }
+      steps.push(step)
+      await emit(step, steps.length - 1)
       return { finalText: turn.text, steps, toolCallCount, stopReason: 'stop', stopHint: turn.stopHint }
     }
     const results: ToolResult[] = []
@@ -127,7 +145,9 @@ export async function runToolLoop({ nextTurn, tools, maxSteps = 8, signal }: Run
         results.push({ id: call.id, content: `Error: ${e instanceof Error ? e.message : String(e)}`, isError: true })
       }
     }
-    steps.push({ turn, results })
+    const step: AgentStep = { turn, results }
+    steps.push(step)
+    await emit(step, steps.length - 1)
   }
 
   // Hit the cap with the model still wanting tools — return honestly, don't pretend done.
