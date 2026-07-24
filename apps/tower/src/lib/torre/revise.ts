@@ -13,11 +13,15 @@
 // named side effect, change the spec/provenance, or make an edited number read verified.
 import {
   torreArtifactPayloadSchema,
+  type ActaPayload,
   type Blocker,
+  type ChecklistDocsPayload,
   type CotizacionPayload,
   type ComunicacionPayload,
   type HojaCostosPayload,
   type Machine,
+  type ReporteEstadoPayload,
+  type SopPayload,
   type SourceRef,
   type TorreArtifactPayload,
 } from './artifacts'
@@ -131,6 +135,50 @@ function hojaCostosFacts(p: HojaCostosPayload): Fact[] {
   return [...f, ...sourceFacts(p.sources), ...blockerFacts(p.blockers)]
 }
 
+function reporteEstadoFacts(p: ReporteEstadoPayload): Fact[] {
+  const f: Fact[] = [
+    { key: 'title', label: { es: 'Título', en: 'Title' }, value: p.title },
+    { key: 'importRef', label: { es: 'Import', en: 'Import' }, value: p.importRef },
+    { key: 'status', label: { es: 'Estado', en: 'Status' }, value: p.status },
+    { key: 'asOf', label: { es: 'Al', en: 'As of' }, value: p.asOf },
+    { key: 'summary', label: { es: 'Resumen', en: 'Summary' }, value: p.summary },
+  ]
+  p.milestones.forEach((m) => f.push({ key: `milestone:${m.label}`, label: { es: 'Hito', en: 'Milestone' }, value: `${m.done ? '✓' : '·'} ${m.date ?? ''}`.trim() }))
+  p.risks.forEach((r) => f.push({ key: `risk:${r.note}`, label: { es: 'Riesgo', en: 'Risk' }, value: `${r.severity}: ${r.note}` }))
+  p.nextActions.forEach((a) => f.push({ key: `action:${a}`, label: { es: 'Acción', en: 'Action' }, value: a }))
+  return [...f, ...sourceFacts(p.sources), ...blockerFacts(p.blockers)]
+}
+
+function checklistDocsFacts(p: ChecklistDocsPayload): Fact[] {
+  const f: Fact[] = [
+    { key: 'title', label: { es: 'Título', en: 'Title' }, value: p.title },
+    { key: 'importRef', label: { es: 'Import', en: 'Import' }, value: p.importRef },
+    { key: 'stage', label: { es: 'Etapa', en: 'Stage' }, value: p.stage },
+  ]
+  p.items.forEach((i) => f.push({ key: `doc:${i.doc}`, label: { es: 'Documento', en: 'Document' }, value: `${i.status}${i.required ? ' (req.)' : ''}` }))
+  return [...f, ...blockerFacts(p.blockers)]
+}
+
+function actaFacts(p: ActaPayload): Fact[] {
+  const f: Fact[] = [
+    { key: 'title', label: { es: 'Título', en: 'Title' }, value: p.title },
+    { key: 'date', label: { es: 'Fecha', en: 'Date' }, value: p.date },
+    { key: 'attendees', label: { es: 'Asistentes', en: 'Attendees' }, value: p.attendees.join(', ') },
+  ]
+  p.decisions.forEach((d) => f.push({ key: `decision:${d.topic}`, label: { es: 'Decisión', en: 'Decision' }, value: `${d.decision}${d.owner ? ` — ${d.owner}` : ''}` }))
+  p.actionItems.forEach((a) => f.push({ key: `actionItem:${a.task}`, label: { es: 'Tarea', en: 'Action item' }, value: `${a.task} — ${a.owner}${a.due ? ` (${a.due})` : ''}` }))
+  return [...f, ...blockerFacts(p.blockers)]
+}
+
+function sopFacts(p: SopPayload): Fact[] {
+  const f: Fact[] = [
+    { key: 'title', label: { es: 'Título', en: 'Title' }, value: p.title },
+    { key: 'scope', label: { es: 'Alcance', en: 'Scope' }, value: p.scope },
+  ]
+  p.steps.forEach((s) => f.push({ key: `step.${s.n}`, label: { es: `Paso ${s.n}`, en: `Step ${s.n}` }, value: `${s.action}${s.owner ? ` — ${s.owner}` : ''}` }))
+  return [...f, ...blockerFacts(p.blockers)]
+}
+
 function factsFor(p: TorreArtifactPayload): Fact[] {
   switch (p.kind) {
     case 'COTIZACION':
@@ -139,6 +187,14 @@ function factsFor(p: TorreArtifactPayload): Fact[] {
       return comunicacionFacts(p)
     case 'HOJA_COSTOS':
       return hojaCostosFacts(p)
+    case 'REPORTE_ESTADO':
+      return reporteEstadoFacts(p)
+    case 'CHECKLIST_DOCS':
+      return checklistDocsFacts(p)
+    case 'ACTA':
+      return actaFacts(p)
+    case 'SOP':
+      return sopFacts(p)
   }
 }
 

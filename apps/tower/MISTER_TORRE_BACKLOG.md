@@ -96,8 +96,14 @@ off the World-B exemption; connectors mock-first behind adapters (`MOCK_CONNECTO
   performs; a non-sendable message can't be approved); **inbound.ts** (normalizeInbound →
   thread-keyed capture for email/WhatsApp, replies group). 20 tests. Remaining: persist
   outbox/inbound to tables + redactor tone wired into the draft_message prompt. Review: pending.
-- `TODO` **L3 · Documentar** — artifact types reporte_estado · checklist_docs · acta ·
-  sop (schema+renderer+exporter+eval each) + the branded document frame.
+- `DONE` **L3 · Documentar** — four operational document artifact types added to the
+  ai_drafts union: **reporte_estado · checklist_docs · acta · sop**. Each has its zod
+  schema (artifacts.ts, wired through parseTorreArtifact/drafts/review-logic exhaustive
+  switches), a pure Markdown **exporter** (documents.ts) + shared branded **documentFrame**
+  (§5 endorsement slot, approvable flag), a **renderer** (queue Markdown preview in the
+  World-B panel), diff support (revise.ts factsFor), and **eval-tests** (schema validity +
+  honesty: a missing required doc is marked and warned, a blocked document is unapprovable).
+  Kinds were pre-reserved in migration tower_48 — no new migration. 16 tests. Review: pending.
 - `TODO` **L4 · Vigilar (Watch)** — `watch_signals` migration + reconciler + v1 rules
   (ETA slip, doc deadline, demurrage, rate expiry, payment milestone, quote-quiet,
   margin drift, stale import) + triage/severity + interruption budget + one-tap draft +

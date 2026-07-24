@@ -93,7 +93,16 @@ export const blockerSchema = z.object({
 
 // ── The Torre artifact kinds (join tower.ai_drafts.kind via migration tower_48) ─
 
-export const TORRE_ARTIFACT_KINDS = ['HOJA_COSTOS', 'COTIZACION', 'COMUNICACION'] as const
+export const TORRE_ARTIFACT_KINDS = [
+  'HOJA_COSTOS',
+  'COTIZACION',
+  'COMUNICACION',
+  // L3 · Documentar — the operational document family
+  'REPORTE_ESTADO',
+  'CHECKLIST_DOCS',
+  'ACTA',
+  'SOP',
+] as const
 export type TorreArtifactKind = (typeof TORRE_ARTIFACT_KINDS)[number]
 
 // ── Shared machine identity block ────────────────────────────────────────────
@@ -188,14 +197,89 @@ export const comunicacionPayloadSchema = z.object({
 })
 export type ComunicacionPayload = z.infer<typeof comunicacionPayloadSchema>
 
+// ── (4-7) L3 · Documentar — operational documents ────────────────────────────
+// Each is a schema-validated, versioned, human-approved document. They share the blocker
+// vocabulary (so isApprovable gates them identically) and carry sources for provenance.
+
+/** (4) reporte_estado — an import status report (per-import health snapshot). */
+export const reporteEstadoPayloadSchema = z.object({
+  kind: z.literal('REPORTE_ESTADO'),
+  version: z.number().int().positive().default(1),
+  title: z.string(),
+  importRef: z.string(),
+  status: z.string(),
+  asOf: z.string(), // ISO date the snapshot reflects
+  summary: z.string(),
+  milestones: z.array(z.object({ label: z.string(), date: z.string().nullable(), done: z.boolean() })),
+  risks: z.array(z.object({ severity: z.enum(['alta', 'media', 'baja']), note: z.string() })),
+  nextActions: z.array(z.string()),
+  sources: z.array(sourceRefSchema),
+  blockers: z.array(blockerSchema),
+})
+export type ReporteEstadoPayload = z.infer<typeof reporteEstadoPayloadSchema>
+
+/** (5) checklist_docs — required documents for an import stage, with presence status. */
+export const checklistDocsPayloadSchema = z.object({
+  kind: z.literal('CHECKLIST_DOCS'),
+  version: z.number().int().positive().default(1),
+  title: z.string(),
+  importRef: z.string(),
+  stage: z.string(),
+  items: z.array(
+    z.object({
+      doc: z.string(),
+      required: z.boolean(),
+      status: z.enum(['presente', 'faltante', 'vencido']),
+      note: z.string().optional(),
+    }),
+  ),
+  blockers: z.array(blockerSchema),
+})
+export type ChecklistDocsPayload = z.infer<typeof checklistDocsPayloadSchema>
+
+/** (6) acta — meeting minutes / decision record. */
+export const actaPayloadSchema = z.object({
+  kind: z.literal('ACTA'),
+  version: z.number().int().positive().default(1),
+  title: z.string(),
+  date: z.string(),
+  attendees: z.array(z.string()),
+  decisions: z.array(z.object({ topic: z.string(), decision: z.string(), owner: z.string().nullable().default(null) })),
+  actionItems: z.array(z.object({ task: z.string(), owner: z.string(), due: z.string().nullable().default(null) })),
+  blockers: z.array(blockerSchema),
+})
+export type ActaPayload = z.infer<typeof actaPayloadSchema>
+
+/** (7) sop — standard operating procedure. */
+export const sopPayloadSchema = z.object({
+  kind: z.literal('SOP'),
+  version: z.number().int().positive().default(1),
+  title: z.string(),
+  scope: z.string(),
+  steps: z.array(z.object({ n: z.number().int().positive(), action: z.string(), owner: z.string().nullable().default(null), note: z.string().optional() })),
+  blockers: z.array(blockerSchema),
+})
+export type SopPayload = z.infer<typeof sopPayloadSchema>
+
 // ── The discriminated union + approvability law ──────────────────────────────
 
-export type TorreArtifactPayload = HojaCostosPayload | CotizacionPayload | ComunicacionPayload
+export type TorreArtifactPayload =
+  | HojaCostosPayload
+  | CotizacionPayload
+  | ComunicacionPayload
+  | ReporteEstadoPayload
+  | ChecklistDocsPayload
+  | ActaPayload
+  | SopPayload
 
 export const torreArtifactPayloadSchema = z.discriminatedUnion('kind', [
   hojaCostosPayloadSchema,
   cotizacionPayloadSchema,
   comunicacionPayloadSchema,
+  reporteEstadoPayloadSchema,
+  checklistDocsPayloadSchema,
+  actaPayloadSchema,
+  sopPayloadSchema,
 ])
 
 /** Payload → its ai_drafts.kind. */

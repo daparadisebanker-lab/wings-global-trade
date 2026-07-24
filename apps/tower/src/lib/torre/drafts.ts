@@ -13,6 +13,10 @@ import type {
   HojaCostosPayload,
   CotizacionPayload,
   ComunicacionPayload,
+  ReporteEstadoPayload,
+  ChecklistDocsPayload,
+  ActaPayload,
+  SopPayload,
 } from './artifacts'
 import { parseTorreArtifact } from './artifacts'
 
@@ -26,7 +30,15 @@ export type TorrePayloadFor<K extends TorreArtifactKind> = K extends 'HOJA_COSTO
     ? CotizacionPayload
     : K extends 'COMUNICACION'
       ? ComunicacionPayload
-      : never
+      : K extends 'REPORTE_ESTADO'
+        ? ReporteEstadoPayload
+        : K extends 'CHECKLIST_DOCS'
+          ? ChecklistDocsPayload
+          : K extends 'ACTA'
+            ? ActaPayload
+            : K extends 'SOP'
+              ? SopPayload
+              : never
 
 /** The raw tower.ai_drafts row (snake_case) as PostgREST returns it. */
 export interface RawTorreDraftRow {

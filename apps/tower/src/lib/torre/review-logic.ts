@@ -35,6 +35,14 @@ export function approveSideEffect(payload: TorreArtifactPayload): Localized {
     case 'COMUNICACION':
       // The message already declares its own precise side effect.
       return payload.sideEffect
+    case 'REPORTE_ESTADO':
+      return { es: 'Aprobar y archivar el reporte de estado', en: 'Approve and file the status report' }
+    case 'CHECKLIST_DOCS':
+      return { es: 'Aprobar la lista de documentos', en: 'Approve the document checklist' }
+    case 'ACTA':
+      return { es: 'Aprobar y archivar el acta', en: 'Approve and file the minutes' }
+    case 'SOP':
+      return { es: 'Aprobar el procedimiento (SOP)', en: 'Approve the procedure (SOP)' }
   }
 }
 

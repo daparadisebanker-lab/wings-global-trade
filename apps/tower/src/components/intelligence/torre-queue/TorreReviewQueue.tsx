@@ -20,15 +20,22 @@ import { exportCotizacionXlsx, exportHojaCostosXlsx } from '@/lib/torre/export'
 import { CotizacionCard, HojaCostosCard, ComunicacionCard } from '@/components/shell/TorreQuoteArtifact'
 import type { TorreDraftRecord } from '@/lib/torre/drafts'
 import type { CotizacionPayload, HojaCostosPayload } from '@/lib/torre/artifacts'
+import { documentMarkdown } from '@/lib/torre/documents'
 
-const KIND_TAG: Record<string, string> = { COTIZACION: 'COT', HOJA_COSTOS: 'HOJ', COMUNICACION: 'MSG' }
+const KIND_TAG: Record<string, string> = {
+  COTIZACION: 'COT', HOJA_COSTOS: 'HOJ', COMUNICACION: 'MSG',
+  REPORTE_ESTADO: 'REP', CHECKLIST_DOCS: 'DOC', ACTA: 'ACT', SOP: 'SOP',
+}
 
+/** The document family (L3) all carry a `title`; a COMUNICACION uses its subject. */
 function title(rec: TorreDraftRecord, locale: Locale): string {
   const p = rec.payload
-  if (p.kind === 'HOJA_COSTOS') return p.title
   if (p.kind === 'COTIZACION') return `${p.machine.productName || t({ es: 'Cotización', en: 'Quotation' }, locale)}${p.clientName ? ` · ${p.clientName}` : ''}`
-  return p.subject ?? t({ es: 'Mensaje', en: 'Message' }, locale)
+  if (p.kind === 'COMUNICACION') return p.subject ?? t({ es: 'Mensaje', en: 'Message' }, locale)
+  return p.title // HOJA_COSTOS + REPORTE_ESTADO/CHECKLIST_DOCS/ACTA/SOP
 }
+
+const DOCUMENT_KINDS = new Set(['REPORTE_ESTADO', 'CHECKLIST_DOCS', 'ACTA', 'SOP'])
 
 export function TorreReviewQueue({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
   const { data, isLoading, isError, error } = useTorreDraftsQuery()
@@ -168,6 +175,14 @@ export function TorreReviewQueue({ locale = DEFAULT_LOCALE }: { locale?: Locale 
               {selected.payload.kind === 'COTIZACION' && <CotizacionCard payload={selected.payload} locale={locale} sweep={justApproved} />}
               {selected.payload.kind === 'HOJA_COSTOS' && <HojaCostosCard payload={selected.payload} locale={locale} sweep={justApproved} />}
               {selected.payload.kind === 'COMUNICACION' && <ComunicacionCard payload={selected.payload} locale={locale} sweep={justApproved} />}
+              {DOCUMENT_KINDS.has(selected.payload.kind) && (
+                <pre
+                  className="max-h-[60vh] overflow-auto whitespace-pre-wrap rounded-panel p-6 font-mono text-t0 leading-relaxed"
+                  style={{ background: MISTER_ARTIFACT.panelBg, color: MISTER_ARTIFACT.body, border: MISTER_ARTIFACT.border }}
+                >
+                  {documentMarkdown(selected.payload)}
+                </pre>
+              )}
             </div>
 
             {status && (
