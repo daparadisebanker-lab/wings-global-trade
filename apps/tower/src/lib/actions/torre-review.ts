@@ -27,7 +27,7 @@ import {
   type TorreDraftRecord,
   type TorreDraftStatus,
 } from '@/lib/torre/drafts'
-import { prepareSend, resolveSendAdapter, buildSendRow } from '@/lib/torre/comms/send'
+import { prepareSend, resolveSendAdapter, runSendOnApprove } from '@/lib/torre/comms/send'
 import { corpusRowsFromArtifact } from '@/lib/torre/ingest'
 import type { ImportInputs } from '@/lib/costing/types'
 
@@ -74,8 +74,12 @@ export async function listTorreDrafts(input: ListTorreDraftsInput = {}): Promise
 export interface ApproveTorreResult {
   record: TorreDraftRecord
   sideEffect: Localized
-  /** Present when the approved artifact was a COMUNICACION — the (mocked) send outcome. */
-  sent?: { channel: string; to: string; providerId?: string; mocked: boolean }
+  /** Present when the approved artifact was a COMUNICACION — the (mocked) send outcome. A
+   *  post-claim FAILED send is surfaced HONESTLY (ok:false + reason), never hidden as absence,
+   *  so the operator learns the named side effect didn't happen. */
+  sent?:
+    | { ok: true; channel: string; to: string; providerId?: string; mocked: boolean }
+    | { ok: false; channel: string; to: string; error: string; mocked: boolean }
 }
 
 /** Approve a Torre draft — gated by blockers; performs the named side effect. */
@@ -98,24 +102,12 @@ export async function approveTorreDraft(draftId: string): Promise<ActionResult<A
     return fail('VALIDATION', blockedReason(payload, 'es') ?? 'Con bloqueos / Has blockers')
   }
 
-  // ── The named side effect ──────────────────────────────────────────────────
-  if (payload.kind === 'HOJA_COSTOS') {
-    if (!record.laneId) return fail('VALIDATION', 'Falta lane para guardar el costeo / Missing lane')
-    const saved = await saveCostCalculation({
-      laneId: record.laneId,
-      label: payload.title,
-      inputs: payload.inputs as unknown as ImportInputs,
-    })
-    if (saved.error) return fail(saved.error.code, saved.error.message, saved.error.details)
-  }
-  // COTIZACION: recorded on approval; issuance to tower.quotes happens from the
-  // Quotations module (composeQuote/issueQuotation) — a separate human step.
-
-  // COMUNICACION: send-on-approve (L2). Order matters for the SACRED side effect:
-  //   pre-validate sendability (read-only) → CLAIM the draft (the atomic DRAFT→APPROVED
-  //   lock) → send ONLY after claiming. So a concurrent second approve fails the claim
-  //   and never sends twice, and a reject that wins the race means the claim fails and
-  //   nothing is sent. The connector is MOCK_CONNECTORS — the adapter RECORDS the send.
+  // ── Side effects are performed by the CLAIM WINNER ONLY ─────────────────────
+  // The atomic DRAFT→APPROVED claim (markReviewed) is the SINGLE serialization point: every
+  // named side effect happens AFTER it, so a concurrent second approve — or a reject that wins
+  // the race — fails the claim and performs NOTHING (no double cost-sheet, no double send, no
+  // side effect stranded on a draft that was actually rejected). Only cheap READ-ONLY validation
+  // runs before the claim, so an unsendable/mis-configured artifact never claims in the first place.
   let preparedMessage: ReturnType<typeof prepareSend> | null = null
   if (payload.kind === 'COMUNICACION') {
     preparedMessage = prepareSend(payload, record.id)
@@ -128,37 +120,47 @@ export async function approveTorreDraft(draftId: string): Promise<ActionResult<A
       return fail('VALIDATION', reason[preparedMessage.reason])
     }
   }
+  if (payload.kind === 'HOJA_COSTOS' && !record.laneId) {
+    return fail('VALIDATION', 'Falta lane para guardar el costeo / Missing lane')
+  }
 
   const approved = await markReviewed(db, record.id, 'APPROVED', auth.user.id)
   if (!approved) return fail('VALIDATION', 'No se pudo aprobar (¿ya revisado?) / Could not approve')
 
-  // Now that WE own the approval, perform the send (only the claim winner reaches here).
+  // HOJA_COSTOS: persist the cost_calculation — the named side effect — as the claim winner, so
+  // a concurrent approve can't persist it twice. If it fails here the draft is already APPROVED;
+  // the calc is regenerable from payload.inputs, so we surface the failure honestly rather than
+  // pretend the sheet was saved.
+  if (payload.kind === 'HOJA_COSTOS' && record.laneId) {
+    const saved = await saveCostCalculation({
+      laneId: record.laneId,
+      label: payload.title,
+      inputs: payload.inputs as unknown as ImportInputs,
+    })
+    if (saved.error) return fail(saved.error.code, saved.error.message, saved.error.details)
+  }
+  // COTIZACION: recorded on approval; issuance to tower.quotes happens from the Quotations
+  // module (composeQuote/issueQuotation) — a separate human step.
+
+  // COMUNICACION: send-on-approve + outbox ledger (L2), winner only. runSendOnApprove sends
+  // EXACTLY ONCE (we've won the claim) and writes the ledger BEST-EFFORT — a ledger failure
+  // never unwinds the send. The connector is MOCK_CONNECTORS: the adapter RECORDS the send.
   let sent: ApproveTorreResult['sent']
   if (preparedMessage?.ok) {
-    const result = await resolveSendAdapter(preparedMessage.message.channel).send(preparedMessage.message)
-
-    // Outbox (L2): record EVERY send attempt — SENT or FAILED — for audit + retry. Best-effort
-    // and non-blocking: the draft is already APPROVED and the message already left, so a failed
-    // ledger write must NEVER unwind that (it would strand an approval with no way back). The
-    // UNIQUE(draft_id) index makes this at-most-once even if this path were somehow re-entered.
-    try {
-      const { error: outboxError } = await db.from('torre_sends').insert(
-        buildSendRow(preparedMessage.message, result, {
-          brandId: record.brandId,
-          laneId: record.laneId,
-          draftId: record.id,
-        }),
-      )
-      if (outboxError) console.error('[torre/approve] outbox write failed (non-blocking)', outboxError)
-    } catch (e) {
-      console.error('[torre/approve] outbox write threw (non-blocking)', e)
-    }
-
-    if (result.ok) {
-      sent = { channel: result.channel, to: result.to, providerId: result.providerId, mocked: result.mocked }
-    } else {
-      // A real adapter could fail post-claim; the draft is already APPROVED. Surface it — the
-      // outbox row above carries the FAILED status for retry; the mock never reaches this branch.
+    const { result } = await runSendOnApprove(
+      preparedMessage.message,
+      { brandId: record.brandId, laneId: record.laneId, draftId: record.id },
+      {
+        send: (m) => resolveSendAdapter(m.channel).send(m),
+        record: async (row) => db.from('torre_sends').insert(row),
+      },
+    )
+    sent = result.ok
+      ? { ok: true, channel: result.channel, to: result.to, providerId: result.providerId, mocked: result.mocked }
+      : { ok: false, channel: result.channel, to: result.to, error: result.error ?? 'unknown send error', mocked: result.mocked }
+    if (!result.ok) {
+      // A real adapter could fail post-claim; the draft is already APPROVED and the FAILED
+      // outcome is surfaced to the operator via `sent.ok:false` (+ ledgered). MOCK never fails here.
       console.error('[torre/approve] send failed post-claim', result.error)
     }
   }

@@ -36,8 +36,8 @@ export type PreparedSend =
  * PURE: turn an approved COMUNICACION into a sendable message, or refuse. Refuses when the
  * payload still carries blockers (unapprovable → must never send), has no recipient, or
  * has an empty body. `idempotencyKey` (the draft id) rides on the message so a retried
- * approve can't send twice. The redactor's language rides through (es/en; a third language
- * is left as-is on the payload but coerced to es for the outbound label — noted).
+ * approve can't send twice. The payload's language rides through VERBATIM (a pt/zh body is
+ * never relabeled es) — audit stays honest.
  */
 export function prepareSend(payload: ComunicacionPayload, idempotencyKey: string): PreparedSend {
   if ((payload.blockers?.length ?? 0) > 0) return { ok: false, reason: 'has-blockers' }
@@ -103,7 +103,7 @@ export function resolveSendAdapter(channel: Channel): SendAdapter {
   return mockAdapter(channel)
 }
 
-/** A persisted outbox row (the audit trail for send-on-approve). */
+/** A persisted outbox row — the audit trail for one approval's send (SENT or FAILED). */
 export interface SendRecordRow {
   brand_id: string
   lane_id: string | null
@@ -114,13 +114,16 @@ export interface SendRecordRow {
   language: string
   provider_id: string | null
   status: 'SENT' | 'FAILED'
+  /** The failure reason on a FAILED send (retryable-vs-dead lives here), null on SENT. */
+  error: string | null
   mocked: boolean
 }
 
 /**
- * PURE: the outbox row for a send attempt. `draft_id` (the approved COMUNICACION) is the
- * idempotency key — a unique index on it makes an approve-retry a no-op insert rather than
- * a duplicate outbox entry. A mock send records as SENT + mocked:true.
+ * PURE: the outbox row for one approval's send. `draft_id` (the approved COMUNICACION) is the
+ * idempotency key — a UNIQUE index on it makes the ledger at-most-once PER APPROVAL: a resend
+ * is a fresh approval of a fresh (revised) draft with its own id, never a second row here. A
+ * mock send records as SENT + mocked:true; a FAILED send keeps its reason for the audit.
  */
 export function buildSendRow(
   message: OutboundMessage,
@@ -137,6 +140,46 @@ export function buildSendRow(
     language: message.language,
     provider_id: result.providerId ?? null,
     status: result.ok ? 'SENT' : 'FAILED',
+    error: result.ok ? null : (result.error ?? 'unknown send error'),
     mocked: result.mocked,
   }
+}
+
+/** The outcome of send-on-approve: the send result + the ledger row that was persisted. */
+export interface SendOnApproveOutcome {
+  result: SendResult
+  row: SendRecordRow
+}
+
+/**
+ * The post-claim orchestration, extracted so the at-most-once/non-blocking contract is
+ * UNIT-TESTABLE (the claim itself is DB, but this — send → build row → best-effort ledger —
+ * is pure over injected deps). Ordering: the caller has ALREADY won the atomic DRAFT→APPROVED
+ * claim before calling this, so the send happens exactly once. The ledger write is BEST-EFFORT:
+ * the message has already left and the draft is APPROVED, so a ledger failure must NEVER throw
+ * or unwind that — it is logged and swallowed. A unique-violation (23505) is a benign idempotent
+ * no-op; anything else (e.g. an RLS refusal) is a real error worth surfacing in the logs.
+ */
+export async function runSendOnApprove(
+  message: OutboundMessage,
+  meta: { brandId: string; laneId: string | null; draftId: string },
+  deps: {
+    send: (message: OutboundMessage) => Promise<SendResult>
+    record: (row: SendRecordRow) => Promise<{ error: unknown } | void>
+  },
+): Promise<SendOnApproveOutcome> {
+  const result = await deps.send(message)
+  const row = buildSendRow(message, result, meta)
+  try {
+    const res = await deps.record(row)
+    const err = res && typeof res === 'object' && 'error' in res ? res.error : null
+    if (err) {
+      const code = typeof err === 'object' && err !== null && 'code' in err ? (err as { code?: string }).code : undefined
+      if (code === '23505') console.warn('[torre/approve] outbox row already recorded (idempotent no-op)', message.idempotencyKey)
+      else console.error('[torre/approve] outbox write failed (non-blocking)', err)
+    }
+  } catch (e) {
+    console.error('[torre/approve] outbox write threw (non-blocking)', e)
+  }
+  return { result, row }
 }

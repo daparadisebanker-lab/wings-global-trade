@@ -4,8 +4,18 @@
 -- after the send in approveTorreDraft (lib/actions/torre-review.ts). It never holds the
 -- message body (that lives on the source ai_drafts payload, linked by draft_id) — the outbox
 -- is a ledger of what left the building, not a second copy of client-facing prose.
--- draft_id is UNIQUE: it is the idempotency key, so a re-approve can't log a second send.
--- RLS + audit per convention (mirrors tower_53 knowledge_chunks).
+-- draft_id is UNIQUE: it is the idempotency key. The ledger is at-most-once PER APPROVAL — a
+-- resend is a fresh approval of a fresh (revised) COMUNICACION with its own draft_id, its own
+-- row; there is no second row for the same draft. RLS + audit per convention (tower_53).
+--
+-- CRASH WINDOW (accepted, best-effort): the send happens just before this insert, so a process
+-- death between the two leaves a sent message with no ledger row. Append-only + no PENDING
+-- status means write-ahead isn't possible here. The reconciliation signal is: an APPROVED
+-- COMUNICACION (tower.ai_drafts) with no matching torre_sends.draft_id is a suspect send.
+--
+-- FABRICATED ROW (accepted, mirrors tower_53 doc_id): FK checks bypass RLS, so a permissioned
+-- writer could hand-craft a row for any ai_drafts id. The audit trigger captures who; a real
+-- send only ever originates from approveTorreDraft.
 set search_path to tower, public;
 
 create table if not exists tower.torre_sends (
@@ -21,8 +31,11 @@ create table if not exists tower.torre_sends (
   -- provider message id (a mock id under MOCK_CONNECTORS until a real adapter is wired)
   provider_id  text,
   status       text not null check (status in ('SENT','FAILED')),
-  -- true when a mock adapter RECORDED the send instead of performing it (MOCK_CONNECTORS)
-  mocked       boolean not null default true,
+  -- the failure reason on a FAILED send (retryable-vs-dead diagnosis); null on SENT
+  error        text,
+  -- true when a mock adapter RECORDED the send instead of performing it (MOCK_CONNECTORS). NO
+  -- default: every writer must state it, so a real send can never be silently ledgered as mocked.
+  mocked       boolean not null,
   created_at   timestamptz not null default now(),
   unique (draft_id)
 );

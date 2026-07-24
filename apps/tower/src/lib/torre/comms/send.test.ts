@@ -1,7 +1,7 @@
 // src/lib/torre/comms/send.test.ts
 import { describe, it, expect } from 'vitest'
 import type { ComunicacionPayload } from '@/lib/torre/artifacts'
-import { buildSendRow, mockAdapter, prepareSend, resolveSendAdapter, type SendResult } from './send'
+import { buildSendRow, mockAdapter, prepareSend, resolveSendAdapter, runSendOnApprove, type OutboundMessage, type SendRecordRow, type SendResult } from './send'
 
 function comunicacion(over: Partial<ComunicacionPayload> = {}): ComunicacionPayload {
   return {
@@ -88,6 +88,7 @@ describe('buildSendRow — the outbox ledger row (L2 persistence)', () => {
       language: 'es',
       provider_id: 'mock-email-draft-1',
       status: 'SENT',
+      error: null, // a SENT row carries no failure reason
       mocked: true,
     })
   })
@@ -100,17 +101,80 @@ describe('buildSendRow — the outbox ledger row (L2 persistence)', () => {
     expect(row.subject).toBeNull()
   })
 
-  it('records a FAILED attempt (no provider id) — the ledger keeps failures for retry, not just successes', async () => {
+  it('records a FAILED attempt with its reason (retryable-vs-dead lives in the ledger, not just logs)', async () => {
     const { message } = await sendVia('email')
     const failed: SendResult = { ok: false, channel: 'email', to: message.to, error: 'provider down', mocked: false }
     const row = buildSendRow(message, failed, meta)
     expect(row.status).toBe('FAILED')
     expect(row.provider_id).toBeNull()
+    expect(row.error).toBe('provider down')
     expect(row.mocked).toBe(false)
+  })
+
+  it('never leaves a FAILED row without a reason (falls back rather than storing null)', async () => {
+    const { message } = await sendVia('email')
+    const failed: SendResult = { ok: false, channel: 'email', to: message.to, mocked: true } // no error string
+    expect(buildSendRow(message, failed, meta).error).toBe('unknown send error')
   })
 
   it('does not mislabel the language (a pt/en body is logged verbatim, never coerced to es)', async () => {
     const { message, result } = await sendVia('email', { language: 'pt' })
     expect(buildSendRow(message, result, meta).language).toBe('pt')
+  })
+})
+
+describe('runSendOnApprove — the post-claim orchestration (at-most-once + non-blocking ledger)', () => {
+  const meta = { brandId: 'brand-1', laneId: 'lane-1', draftId: 'draft-1' }
+  const message = (): OutboundMessage => ({
+    channel: 'email', to: 'cliente@example.com', subject: 'Cotización', body: 'hola',
+    audience: 'client', language: 'es', idempotencyKey: 'draft-1',
+  })
+
+  it('sends EXACTLY once and records the SENT row', async () => {
+    const sends: OutboundMessage[] = []
+    const rows: SendRecordRow[] = []
+    const { result } = await runSendOnApprove(message(), meta, {
+      send: async (m) => { sends.push(m); return { ok: true, channel: 'email', to: m.to, providerId: 'p1', mocked: true } },
+      record: async (row) => { rows.push(row); return },
+    })
+    expect(sends).toHaveLength(1) // the claim winner sends once — not zero, not twice
+    expect(result.ok).toBe(true)
+    expect(rows).toHaveLength(1)
+    expect(rows[0]).toMatchObject({ draft_id: 'draft-1', status: 'SENT', provider_id: 'p1' })
+  })
+
+  it('does NOT throw or unwind when the ledger write returns a Postgres error (best-effort)', async () => {
+    const { result } = await runSendOnApprove(message(), meta, {
+      send: async (m) => ({ ok: true, channel: 'email', to: m.to, providerId: 'p1', mocked: true }),
+      record: async () => ({ error: { code: '42501', message: 'RLS' } }), // an RLS refusal
+    })
+    // the message already left; a failed ledger write must not turn a successful send into a failure
+    expect(result.ok).toBe(true)
+  })
+
+  it('treats a unique-violation (23505) as a benign idempotent no-op, still returning the send', async () => {
+    const { result } = await runSendOnApprove(message(), meta, {
+      send: async (m) => ({ ok: true, channel: 'email', to: m.to, providerId: 'p1', mocked: true }),
+      record: async () => ({ error: { code: '23505', message: 'duplicate key' } }),
+    })
+    expect(result.ok).toBe(true)
+  })
+
+  it('does NOT throw when the ledger write itself throws (network death mid-insert)', async () => {
+    const { result } = await runSendOnApprove(message(), meta, {
+      send: async (m) => ({ ok: true, channel: 'email', to: m.to, providerId: 'p1', mocked: true }),
+      record: async () => { throw new Error('connection reset') },
+    })
+    expect(result.ok).toBe(true) // swallowed — the approval + send stand
+  })
+
+  it('carries a FAILED send outcome + its reason through to the ledger row', async () => {
+    const rows: SendRecordRow[] = []
+    const { result } = await runSendOnApprove(message(), meta, {
+      send: async (m) => ({ ok: false, channel: 'email', to: m.to, error: 'invalid recipient', mocked: false }),
+      record: async (row) => { rows.push(row); return },
+    })
+    expect(result.ok).toBe(false)
+    expect(rows[0]).toMatchObject({ status: 'FAILED', error: 'invalid recipient', provider_id: null })
   })
 })
