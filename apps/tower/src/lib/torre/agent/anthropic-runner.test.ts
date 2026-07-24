@@ -78,6 +78,33 @@ describe('stepsToMessages', () => {
     ]
     expect(stepsToMessages('hola', steps)).toEqual([{ role: 'user', content: 'hola' }])
   })
+
+  it('preserves order for a multi-tool_use turn (each call answered in order)', () => {
+    const steps: AgentStep[] = [
+      {
+        turn: {
+          text: '',
+          toolCalls: [
+            { id: 'a', name: 'get_x', input: { q: '1' } },
+            { id: 'b', name: 'get_x', input: { q: '2' } },
+          ],
+        },
+        results: [
+          { id: 'a', content: 'x:1', isError: false },
+          { id: 'b', content: 'x:2', isError: false },
+        ],
+      },
+    ]
+    const [, assistant, user] = stepsToMessages('go', steps)
+    expect(assistant.content).toEqual([
+      { type: 'tool_use', id: 'a', name: 'get_x', input: { q: '1' } },
+      { type: 'tool_use', id: 'b', name: 'get_x', input: { q: '2' } },
+    ])
+    expect(user.content).toEqual([
+      { type: 'tool_result', tool_use_id: 'a', content: 'x:1', is_error: false },
+      { type: 'tool_result', tool_use_id: 'b', content: 'x:2', is_error: false },
+    ])
+  })
 })
 
 describe('parseAssistantContent', () => {
@@ -112,6 +139,15 @@ describe('parseAssistantContent', () => {
   it('drops tool calls and sets stopHint on refusal', () => {
     const turn = parseAssistantContent([{ type: 'text', text: 'no' }], 'refusal')
     expect(turn.stopHint).toBe('refusal')
+    expect(turn.toolCalls).toEqual([])
+  })
+
+  it('treats a context-window-exceeded stop as abnormal', () => {
+    const turn = parseAssistantContent(
+      [{ type: 'tool_use', id: 't1', name: 'get_x', input: {} }],
+      'model_context_window_exceeded',
+    )
+    expect(turn.stopHint).toBe('model_context_window_exceeded')
     expect(turn.toolCalls).toEqual([])
   })
 })

@@ -53,8 +53,8 @@ export interface AnthropicLike {
   }
 }
 
-/** Stop reasons that mean the turn is NOT a clean completion. */
-const ABNORMAL_STOPS = new Set(['max_tokens', 'refusal'])
+/** Stop reasons that mean the turn is NOT a clean completion (truncation/refusal). */
+const ABNORMAL_STOPS = new Set(['max_tokens', 'refusal', 'model_context_window_exceeded'])
 
 // ── Pure helpers ─────────────────────────────────────────────────────────────
 
