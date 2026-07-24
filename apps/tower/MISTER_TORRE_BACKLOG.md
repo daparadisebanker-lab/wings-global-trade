@@ -41,18 +41,30 @@ off the World-B exemption; connectors mock-first behind adapters (`MOCK_CONNECTO
   read/draft flag; `ModelTurn.stopHint` + `StopReason 'aborted'` for honest truncation;
   `AbortSignal`; maxSteps<1 + duplicate-name guards; terminal turn in transcript;
   String() armor; readonly steps. 17 tests.
-- `DONE` **B2 · tool belt** — model-callable tools (get_import · get_client · get_supplier ·
-  get_rates · get_tariff · search_knowledge · compute_landed_cost · create_artifact)
-  behind an injected `TorreToolProvider` seam (pure, fake-provider-tested — no DB/key).
-  Governance in the tools: rates/tariffs carry validity (freshness law); money ONLY via
-  the SUNAT engine; RAG framed as data-not-instructions; create_artifact is the sole
-  writer → ai_drafts DRAFT (access:'draft'), never claims a side effect happened. Plus
-  the Anthropic tool_use adapter (`anthropic-runner.ts`): pure stepsToMessages +
-  parseAssistantContent (abnormal stop → stopHint, drops truncated call) + wired
-  `makeAnthropicNextTurn` + `wrapAnthropic` (single SDK seam) + base system prompt.
-  32 tests. Fable review: pending.
-- `TODO` **B3 · profiles + router** — cotizador/operaciones/redactor/analista prompt
-  profiles on the loop + intent router.
+- `DONE` **B2 · tool belt** — model-callable tools behind an injected `TorreToolProvider`
+  seam (pure, fake-provider-tested — no DB/key), + the Anthropic tool_use adapter
+  (`anthropic-runner.ts`). Fable review: **BLOCK resolved** (6 major + minors applied):
+  · added **get_costing_config** so every compute input (IGV/percepción/seguro fractions,
+    TC, brand-default Ad Valorem) is tool-sourced — memory-sourcing is now impossible;
+  · replaced the generic create_artifact with **propose_quote** (server prices the whole
+    linked pair via the tested buildQuoteRun — the model never does arithmetic, never
+    converts to minor units, and cannot fabricate a cost sheet) + **draft_message**
+    (COMUNICACION only, no money);
+  · get_tariff emits the **exact duty fraction** (`usa 0.065`), flags **unverified** and
+    **stale-verified** (verifiedAt+365) positions; get_rates flags a **lapsed recommended**
+    rate and a **not-yet-effective** row distinctly;
+  · search_knowledge sandwiches hits as untrusted data; party tools require a criterion;
+    strict schemas everywhere; abnormal-stop set gained `model_context_window_exceeded`.
+  Tools: get_import · get_client · get_supplier · get_rates · get_tariff ·
+  get_costing_config · search_knowledge · compute_landed_cost · propose_quote ·
+  draft_message. 45 tests.
+- `DONE` **B3 · profiles + router** — four specialism profiles on the same loop
+  (`profiles.ts`): each layers a specialism prompt on TORRE_TOOL_SYSTEM and SCOPES the
+  belt (redactor denied compute/rates/tariff/propose_quote → cannot fabricate a number;
+  operaciones can't quote). `selectProfileTools`/`profileSystem`/`getProfile`. Router
+  (`router.ts`): model-first Haiku classifier + PURE keyword-stem heuristic fallback
+  (`classifyIntent`/`parseRouterResponse`/`routeIntent`) → always returns a valid
+  {profile, urgency}, never strands a run. 28 tests. Fable review: pending.
 - `TODO` **C1 · streaming** — SSE route for Torre runs (mirror api/ai/spec-extract).
 
 ### Loops
