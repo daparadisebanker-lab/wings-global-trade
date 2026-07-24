@@ -189,5 +189,7 @@ Every pure/backend item is built, tested (903), and reviewed. What's left needs 
 - **Blocked (design/provider decision — do NOT improvise):**
   L4 DB reconciler (needs the import-tracking schema: eta/docs/arrival/payment/margin — a product data-model decision) ·
   L6 embed job (needs an embedding provider; keyword retrieval works meanwhile, embeddings stay null).
-- **Pipeline task (human/CI):** apply migrations tower_48–54 to prod via the Supabase migration pipeline
-  (never manual prod SQL). Torre runtime degrades safely until then.
+- **Pipeline task — DONE (2026-07-24):** migrations tower_48–54 APPLIED to `wings-operations`
+  (pyznlglvwihosemqkhtq) via the Supabase migration pipeline; versions reconciled to the repo
+  filenames; tower_53 corrected so extensions install into the `extensions` schema. Verified:
+  tables + RLS live, demo seeds landed. Torre's persistence-backed features are now functional in prod.

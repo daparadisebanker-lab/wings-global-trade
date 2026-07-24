@@ -3,17 +3,23 @@
 -- Drive-folder sync later. Retrieval is HYBRID: pgvector cosine + keyword (tsvector) +
 -- entity filter (lib/torre/rag.ts does the ranking math). Freshness law: rates/tariffs are
 -- NEVER answered from here — this holds precedent, not prices. RLS + audit per convention.
-set search_path to tower, public;
+set search_path to tower, public, extensions;
 
-create extension if not exists vector;
-create extension if not exists unaccent;
+-- Extensions live in the dedicated `extensions` schema (Supabase convention — pgcrypto,
+-- uuid-ossp, pg_stat_statements all live there); installing into tower/public is discouraged
+-- and, for a relocatable extension, the bare `create extension` would land in the first
+-- search_path schema (tower), breaking the qualified reference below.
+create extension if not exists vector with schema extensions;
+create extension if not exists unaccent with schema extensions;
 
 -- unaccent() is only STABLE, so it can't sit directly in a generated column; wrap it in an
--- IMMUTABLE function pinned to the dictionary. This lets the keyword tsvector fold accents
--- (matching lib/torre/rag.ts's client-side norm) AND stem Spanish.
+-- IMMUTABLE function pinned to the dictionary (the two-arg form IS immutable-safe). This lets
+-- the keyword tsvector fold accents (matching lib/torre/rag.ts's client-side norm) AND stem
+-- Spanish. FULLY QUALIFIED (extensions.unaccent) so the STORED generated column re-evaluates
+-- correctly no matter what search_path the inserting session carries.
 create or replace function tower.immutable_unaccent(text)
   returns text language sql immutable parallel safe
-  as $$ select public.unaccent('public.unaccent', $1) $$;
+  as $$ select extensions.unaccent('extensions.unaccent'::regdictionary, $1) $$;
 
 create table if not exists tower.knowledge_chunks (
   id           uuid primary key default gen_random_uuid(),

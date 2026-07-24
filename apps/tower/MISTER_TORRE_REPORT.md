@@ -108,9 +108,13 @@ closed the gaps that were found:
 `tower_48` (ai_drafts kinds, incl. the L3 document kinds, pre-reserved) · `tower_49`
 (rate_tables) · `tower_50` (tariff_positions) · `tower_51` (org_rules) · `tower_52`
 (watch_signals, partial-unique active key) · `tower_53` (knowledge_chunks, pgvector) ·
-`tower_54` (torre_sends, the send outbox). These are committed as migration files; applying
-them is a pipeline concern. Until applied, the Torre runtime degrades safely (the code reads
-`{ error }` and does not crash), but persistence-backed features won't function in prod.
+`tower_54` (torre_sends, the send outbox).
+
+**APPLIED to `wings-operations` (pyznlglvwihosemqkhtq) on 2026-07-24** via the Supabase
+migration pipeline, versions reconciled to the repo filenames. tower_53 was corrected during
+apply so `vector`/`unaccent` install into this project's `extensions` schema (Supabase
+convention) with a fully-qualified `unaccent` reference — verified: tables + RLS live, demo
+seeds landed (rate_tables/tariff_positions/org_rules), accent-folding tsvector works.
 
 ---
 
