@@ -7,11 +7,22 @@
 // demand. Fully EPHEMERAL — the image is held as a data-URL in the browser and
 // nothing is persisted (a saved rep library is a queued follow-up). Same
 // compose→share pipeline as every other source.
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
+import { cn } from '@wings/trade-ui'
 import type { ProductPromo, ProductPromoSpec } from '@wings/rb-core'
 import { ProductComposePanel } from './ProductComposePanel'
 import type { ShareRecipient } from '@/lib/actions/share-recipients-logic'
+import {
+  listMyTrialProducts,
+  saveTrialProduct,
+  deleteTrialProduct,
+  createTrialImageUploadUrl,
+  getTrialImageUrl,
+} from '@/lib/actions/trial-products'
+import type { TrialProduct, TrialImageExt } from '@/lib/actions/trial-products-logic'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
+
+const MIME_EXT: Record<string, TrialImageExt> = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' }
 
 const LABEL = 'font-mono text-label uppercase tracking-[0.08em] text-ink-secondary'
 const INPUT =
@@ -38,9 +49,26 @@ export function TrialPromoComposer({
   const [specs, setSpecs] = useState<ProductPromoSpec[]>([{ label: '', value: '' }])
   const [imageHref, setImageHref] = useState<string | null>(null)
   const [imageError, setImageError] = useState<string | null>(null)
+  const [imageExt, setImageExt] = useState<TrialImageExt | null>(null)
+  const [imagePath, setImagePath] = useState<string | null>(null) // set once persisted
   const fileRef = useRef<HTMLInputElement>(null)
   // Only the latest read may commit, so two quick selections can't land out of order.
   const imageReqRef = useRef(0)
+
+  // ── Library (tower_56) — dormant-safe: unavailable until the table exists ──
+  const [libraryAvailable, setLibraryAvailable] = useState(false)
+  const [library, setLibrary] = useState<TrialProduct[]>([])
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [saveState, setSaveState] = useState<{ tone: 'ok' | 'err'; text: string } | null>(null)
+  const [isSaving, startSave] = useTransition()
+
+  useEffect(() => {
+    void listMyTrialProducts().then((res) => {
+      if (res.error) return // dormant — hide the library
+      setLibraryAvailable(true)
+      setLibrary(res.data)
+    })
+  }, [])
 
   function resetFileInput() {
     if (fileRef.current) fileRef.current.value = ''
@@ -66,6 +94,8 @@ export function TrialPromoComposer({
     reader.onload = () => {
       if (myId !== imageReqRef.current) return
       setImageHref(typeof reader.result === 'string' ? reader.result : null)
+      setImageExt(MIME_EXT[file.type] ?? null)
+      setImagePath(null) // a fresh upload isn't persisted yet
     }
     reader.onerror = () => {
       if (myId !== imageReqRef.current) return
@@ -79,6 +109,8 @@ export function TrialPromoComposer({
     imageReqRef.current++ // cancel any in-flight read
     setImageHref(null)
     setImageError(null)
+    setImageExt(null)
+    setImagePath(null)
     resetFileInput()
   }
 
@@ -96,8 +128,112 @@ export function TrialPromoComposer({
     }
   }, [ready, name, category, specs, priceNote, moq, imageHref])
 
+  function newTrial() {
+    setName('')
+    setCategory('')
+    setPriceNote('')
+    setMoq('')
+    setSpecs([{ label: '', value: '' }])
+    setEditingId(null)
+    clearImage()
+    setSaveState(null)
+  }
+
+  function saveToLibrary() {
+    const name0 = name.trim()
+    if (!name0) return
+    setSaveState(null)
+    startSave(async () => {
+      let path = imagePath
+      // Upload a fresh image (a data-URL not yet persisted) to the private bucket.
+      if (imageHref && !imagePath && imageExt) {
+        const ticket = await createTrialImageUploadUrl(imageExt)
+        if (ticket.error) {
+          setSaveState({ tone: 'err', text: ticket.error.message })
+          return
+        }
+        try {
+          const blob = await (await fetch(imageHref)).blob()
+          const put = await fetch(ticket.data.signedUrl, { method: 'PUT', headers: { 'content-type': blob.type }, body: blob })
+          if (!put.ok) throw new Error('upload')
+          path = ticket.data.path
+          setImagePath(path)
+        } catch {
+          setSaveState({ tone: 'err', text: t({ es: 'No se pudo subir la imagen', en: 'Could not upload the image' }, locale) })
+          return
+        }
+      }
+      const cleanedSpecs = specs.map((s) => ({ label: s.label.trim(), value: s.value.trim() })).filter((s) => s.label && s.value)
+      const res = await saveTrialProduct({
+        id: editingId ?? undefined,
+        name: name0,
+        category: category.trim() || null,
+        specs: cleanedSpecs,
+        priceNote: priceNote.trim() || null,
+        moq: moq.trim() || null,
+        imagePath: path,
+      })
+      if (res.error) {
+        setSaveState({ tone: 'err', text: res.error.message })
+        return
+      }
+      setEditingId(res.data.id)
+      setLibrary((prev) => [res.data, ...prev.filter((x) => x.id !== res.data.id)])
+      setSaveState({ tone: 'ok', text: t({ es: 'Guardado en tu biblioteca', en: 'Saved to your library' }, locale) })
+    })
+  }
+
+  async function loadTrial(tp: TrialProduct) {
+    setName(tp.name)
+    setCategory(tp.category ?? '')
+    setMoq(tp.moq ?? '')
+    setPriceNote(tp.priceNote ?? '')
+    setSpecs(tp.specs.length ? tp.specs.map((s) => ({ ...s })) : [{ label: '', value: '' }])
+    setEditingId(tp.id)
+    setImageError(null)
+    setSaveState(null)
+    setImageExt(null)
+    setImagePath(tp.imagePath)
+    resetFileInput()
+    const myId = ++imageReqRef.current
+    if (!tp.imagePath) {
+      setImageHref(null)
+      return
+    }
+    const res = await getTrialImageUrl(tp.imagePath)
+    if (myId !== imageReqRef.current) return // superseded by another load
+    if (res.error) {
+      setImageHref(null)
+      return
+    }
+    try {
+      const blob = await (await fetch(res.data)).blob()
+      const reader = new FileReader()
+      reader.onload = () => {
+        if (myId !== imageReqRef.current) return
+        setImageHref(typeof reader.result === 'string' ? reader.result : null)
+      }
+      reader.readAsDataURL(blob)
+    } catch {
+      if (myId === imageReqRef.current) setImageHref(null)
+    }
+  }
+
+  function deleteTrial(id: string) {
+    startSave(async () => {
+      const res = await deleteTrialProduct(id)
+      if (res.error) {
+        setSaveState({ tone: 'err', text: res.error.message })
+        return
+      }
+      setLibrary((prev) => prev.filter((x) => x.id !== id))
+      if (editingId === id) newTrial()
+    })
+  }
+
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,420px)_1fr]">
+    <div className="flex flex-col gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,420px)_1fr]">
       {/* Composer form */}
       <div className="flex flex-col gap-3">
         <p className="rounded-card border border-line bg-surface-1 p-3 font-ui text-t0 text-ink-secondary">
@@ -214,6 +350,70 @@ export function TrialPromoComposer({
           </div>
         )}
       </div>
+      </div>
+
+      {/* My trial library (tower_56) — save the current probe, reuse it later.
+          Only shown when the backend is live; Prueba is fully ephemeral without it. */}
+      {libraryAvailable ? (
+        <section className="flex flex-col gap-3 rounded-card border border-line bg-surface-1 p-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className={LABEL}>{t({ es: 'Mi biblioteca de pruebas', en: 'My trial library' }, locale)}</span>
+            <button
+              type="button"
+              onClick={saveToLibrary}
+              disabled={isSaving || !ready}
+              className="rounded-card bg-accent px-3 py-1.5 font-mono text-label uppercase tracking-[0.08em] text-surface-0 disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lane-accent"
+            >
+              {editingId ? t({ es: 'Actualizar', en: 'Update' }, locale) : t({ es: 'Guardar en biblioteca', en: 'Save to library' }, locale)}
+            </button>
+            {editingId ? (
+              <button
+                type="button"
+                onClick={newTrial}
+                className="rounded-card border border-line px-3 py-1.5 font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:border-lane-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lane-accent"
+              >
+                {t({ es: 'Nuevo', en: 'New' }, locale)}
+              </button>
+            ) : null}
+            {saveState ? (
+              <span role="status" className={cn('font-ui text-t0', saveState.tone === 'ok' ? 'text-positive' : 'text-negative')}>
+                {saveState.text}
+              </span>
+            ) : null}
+          </div>
+          {library.length ? (
+            <ul className="flex flex-col divide-y divide-line rounded-card border border-line">
+              {library.map((tp) => (
+                <li key={tp.id} className={cn('flex flex-wrap items-center justify-between gap-2 px-3 py-2', editingId === tp.id && 'bg-surface-2')}>
+                  <button
+                    type="button"
+                    onClick={() => void loadTrial(tp)}
+                    className="min-w-0 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lane-accent"
+                  >
+                    <span className="font-ui text-t0 text-ink-primary">{tp.name}</span>
+                    <span className="ml-2 font-mono text-label text-ink-secondary">
+                      {tp.category ?? '—'}
+                      {tp.imagePath ? ' · img' : ''}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => deleteTrial(tp.id)}
+                    disabled={isSaving}
+                    className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:text-negative disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lane-accent"
+                  >
+                    {t({ es: 'Eliminar', en: 'Delete' }, locale)}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="font-ui text-t0 text-ink-secondary">
+              {t({ es: 'Aún no has guardado pruebas.', en: 'You haven’t saved any trials yet.' }, locale)}
+            </p>
+          )}
+        </section>
+      ) : null}
     </div>
   )
 }
