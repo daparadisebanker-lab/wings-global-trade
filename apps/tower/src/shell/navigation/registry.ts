@@ -60,6 +60,9 @@ export interface PaletteDestination {
 
 /** Everyone-facing self destinations (shown in the palette's Módulos group). */
 export const SELF_DESTINATIONS: PaletteDestination[] = [
+  // The Morning Brief (L5 Reportar) — spec 01 §1: the `brief` command opens today's Brief.
+  // Palette-only for now; a rail slot awaits its bespoke icon (visual-QA-gated follow-up).
+  { id: 'brief', href: '/brief', label: { es: 'Brief del día', en: 'Morning Brief' }, tag: 'REP', keywords: ['brief', 'reporte', 'report', 'resumen', 'summary', 'día', 'day', 'mañana', 'morning', 'productividad', 'productivity', 'reportar', 'hoy', 'today'] },
   { id: 'perfil', href: '/perfil', label: { es: 'Mi perfil', en: 'My profile' }, tag: 'PRF', keywords: ['perfil', 'profile', 'cuenta', 'account', 'firma', 'signature'] },
 ]
 
