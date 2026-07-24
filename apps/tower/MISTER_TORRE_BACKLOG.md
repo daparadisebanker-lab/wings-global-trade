@@ -35,8 +35,10 @@ off the World-B exemption; connectors mock-first behind adapters (`MOCK_CONNECTO
   surfaced not swallowed; insert error.code diagnosis; error/stale UI states; a
   policy-scoped lane list for all read roles; a11y labels + status banner).
   **→ Foundation A COMPLETE (A1–A4, all Fable-reviewed & fixed).**
-- `TODO` **B1 · agentic loop** — `IntelligenceClient.runAgent` (tool-use loop, message
-  history, stop_reason) behind the seam; fake-client tested.
+- `DONE` **B1 · agentic loop** — pure `runToolLoop(nextTurn, tools, maxSteps)`: dispatch,
+  error capture (unknown tool / throw → recoverable result), runaway max-step guard;
+  7 tests via a scripted fake nextTurn (no key). SDK tool_use adapter lands with B2's
+  real tools. Fable review: pending.
 - `TODO` **B2 · tool belt** — typed model-callable tools (get_import/get_client/
   get_rates/get_tariff/search_knowledge) + dispatcher; mutating tools → ai_drafts.
 - `TODO` **B3 · profiles + router** — cotizador/operaciones/redactor/analista prompt
