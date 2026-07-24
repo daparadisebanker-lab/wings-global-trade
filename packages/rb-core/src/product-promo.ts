@@ -142,9 +142,15 @@ function wrapText(s: string, maxChars: number, maxLines: number): string[] {
   return lines.length ? lines : ['']
 }
 
-/** Only a data:image/... URL is embeddable — never an arbitrary href. */
+// Only a base64 raster data URL is embeddable: never an arbitrary href (no
+// external fetch), never a non-base64 data URL (whose body could carry a `"` and
+// break out of the SVG attribute), and never svg+xml (no nested markup). The
+// base64 alphabet contains no quote, so the attribute is safe unescaped.
+const IMAGE_DATA_RE = /^data:image\/(png|jpe?g|webp);base64,[A-Za-z0-9+/=]+$/i
+
+/** A safe, embeddable base64 raster data URL, or null. */
 function safeImage(href?: string): string | null {
-  return href && /^data:image\/(png|jpe?g|webp|gif|svg\+xml);/i.test(href) ? href : null
+  return href && IMAGE_DATA_RE.test(href) ? href : null
 }
 
 /**
