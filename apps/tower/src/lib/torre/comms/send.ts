@@ -102,3 +102,41 @@ export function mockAdapter(channel: Channel): SendAdapter & { sent: OutboundMes
 export function resolveSendAdapter(channel: Channel): SendAdapter {
   return mockAdapter(channel)
 }
+
+/** A persisted outbox row (the audit trail for send-on-approve). */
+export interface SendRecordRow {
+  brand_id: string
+  lane_id: string | null
+  draft_id: string
+  channel: Channel
+  to_addr: string
+  subject: string | null
+  language: string
+  provider_id: string | null
+  status: 'SENT' | 'FAILED'
+  mocked: boolean
+}
+
+/**
+ * PURE: the outbox row for a send attempt. `draft_id` (the approved COMUNICACION) is the
+ * idempotency key — a unique index on it makes an approve-retry a no-op insert rather than
+ * a duplicate outbox entry. A mock send records as SENT + mocked:true.
+ */
+export function buildSendRow(
+  message: OutboundMessage,
+  result: SendResult,
+  meta: { brandId: string; laneId: string | null; draftId: string },
+): SendRecordRow {
+  return {
+    brand_id: meta.brandId,
+    lane_id: meta.laneId,
+    draft_id: meta.draftId,
+    channel: message.channel,
+    to_addr: message.to,
+    subject: message.subject,
+    language: message.language,
+    provider_id: result.providerId ?? null,
+    status: result.ok ? 'SENT' : 'FAILED',
+    mocked: result.mocked,
+  }
+}

@@ -76,7 +76,7 @@ describe('RULE_ROLES totality', () => {
 })
 
 describe('productivity telemetry', () => {
-  it('sums minutes into hours returned + counts', () => {
+  it('sums minutes into hours returned; every non-signal event is an approved artifact', () => {
     const s = productivitySummary([
       timeSavedEvent('quote_run'), // 25
       timeSavedEvent('draft_approved'), // 8
@@ -84,7 +84,7 @@ describe('productivity telemetry', () => {
       timeSavedEvent('signal_resolved'), // 5
     ])
     expect(s.hoursReturned).toBe(0.8) // 46 min → 0.766 → 0.8
-    expect(s.draftsApproved).toBe(2)
+    expect(s.draftsApproved).toBe(3) // quote + 2 messages — NOT just the 'draft_approved' kind
     expect(s.signalsResolved).toBe(1)
   })
 
@@ -92,24 +92,63 @@ describe('productivity telemetry', () => {
     expect(productivitySummary([timeSavedEvent('quote_run', 60)]).hoursReturned).toBe(1)
   })
 
-  it('is zero for an empty period', () => {
-    expect(productivitySummary([])).toEqual({ hoursReturned: 0, draftsApproved: 0, signalsResolved: 0 })
+  it('OMITS signalsResolved when none were resolved (never a bare "0 resolved" lie)', () => {
+    const s = productivitySummary([timeSavedEvent('quote_run')])
+    expect(s.signalsResolved).toBeUndefined()
+    expect('signalsResolved' in s).toBe(false)
+  })
+
+  it('carries the per-kind basis so the Brief can footnote the methodology', () => {
+    const s = productivitySummary([timeSavedEvent('quote_run'), timeSavedEvent('quote_run'), timeSavedEvent('doc_generated')])
+    expect(s.basis).toEqual([
+      { kind: 'quote_run', count: 2, minutesSaved: 50 },
+      { kind: 'doc_generated', count: 1, minutesSaved: 12 },
+    ])
+  })
+
+  it('is zero for an empty period (no signalsResolved, no basis)', () => {
+    expect(productivitySummary([])).toEqual({ hoursReturned: 0, draftsApproved: 0 })
   })
 })
 
 describe('timeSavedEventsFromApprovals', () => {
+  const ref = (kind: string, over: Partial<{ id: string; supersedesId: string | null; hojaCostosRef: string | null }> = {}) =>
+    ({ id: over.id ?? `id-${kind}`, kind: kind as never, supersedesId: over.supersedesId ?? null, hojaCostosRef: over.hojaCostosRef ?? null })
+
   it('maps each approved artifact to one kind-appropriate event', () => {
-    const events = timeSavedEventsFromApprovals(['COTIZACION', 'ACTA', 'COMUNICACION', 'HOJA_COSTOS'])
+    const events = timeSavedEventsFromApprovals([ref('COTIZACION', { id: 'c1' }), ref('ACTA'), ref('COMUNICACION'), ref('HOJA_COSTOS', { id: 'h1' })])
+    // the HOJA is standalone (no cotización references it) → it earns its own draft_approved
     expect(events.map((e) => e.kind)).toEqual(['quote_run', 'doc_generated', 'draft_approved', 'draft_approved'])
   })
 
+  it('does NOT double-count a quote pair: a HOJA referenced by an approved COTIZACION is skipped', () => {
+    const events = timeSavedEventsFromApprovals([
+      ref('COTIZACION', { id: 'c1', hojaCostosRef: 'h1' }),
+      ref('HOJA_COSTOS', { id: 'h1' }), // the internal half of c1's quote — already in quote_run
+    ])
+    expect(events.map((e) => e.kind)).toEqual(['quote_run']) // 25m, not 25+8
+  })
+
+  it('still counts a STANDALONE hoja (nothing references it)', () => {
+    const events = timeSavedEventsFromApprovals([ref('COTIZACION', { id: 'c1', hojaCostosRef: 'h1' }), ref('HOJA_COSTOS', { id: 'h9' })])
+    expect(events.map((e) => e.kind)).toEqual(['quote_run', 'draft_approved'])
+  })
+
+  it('collapses revision lineage: a predecessor superseded by a later approval counts once', () => {
+    const events = timeSavedEventsFromApprovals([
+      ref('COTIZACION', { id: 'v1' }),
+      ref('COTIZACION', { id: 'v2', supersedesId: 'v1' }), // the approved revision of v1
+    ])
+    expect(events.map((e) => e.kind)).toEqual(['quote_run']) // one quote, not two
+  })
+
   it('rolls up into hours returned via productivitySummary', () => {
-    const s = productivitySummary(timeSavedEventsFromApprovals(['COTIZACION', 'COTIZACION', 'SOP']))
+    const s = productivitySummary(timeSavedEventsFromApprovals([ref('COTIZACION', { id: 'a' }), ref('COTIZACION', { id: 'b' }), ref('SOP')]))
     // 25 + 25 + 12 = 62 min → 1.0h
     expect(s.hoursReturned).toBe(1)
   })
 
   it('skips unknown kinds', () => {
-    expect(timeSavedEventsFromApprovals(['NOT_A_KIND' as never])).toEqual([])
+    expect(timeSavedEventsFromApprovals([ref('NOT_A_KIND')])).toEqual([])
   })
 })
