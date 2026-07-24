@@ -288,3 +288,34 @@ create policy products_update on products for update
 -- containers/purchase_orders/qc/documents → TRADE_OPS + LANE_DIRECTOR write;
 -- events → insert via service role only; selects via rollups.
 -- audit_log: insert-only via trigger; select restricted to group admin.
+
+-- ── issuing_entities (tower_55) — the group's legal issuing companies ─────────
+-- Per-LEGAL-ENTITY document identity, distinct from org_rules (per-brand policy).
+-- Group-level: read by any authed member; write via is_group_admin(). Retire via
+-- retired_at (no delete). Runtime resolution source stays lib/quotation/issuers.ts;
+-- this table persists it for the quotes.issuer_id FK + future admin.
+create table tower.issuing_entities (
+  id                   text primary key,        -- 'wgt-pe','shining-star-cl'
+  key                  text not null unique,
+  country              text not null,
+  tax_id_label         text not null,           -- RUC | RUT | NIT …
+  doc_prefix           text not null,           -- PF-{prefix}-YYYY-NNNN
+  issuer               jsonb not null,          -- CompanyInfo (header/footer)
+  exporter             jsonb not null,          -- TradeParty (Vendedor/Exportador)
+  banking              jsonb,                   -- null → doc hides "Datos bancarios"
+  terms                jsonb not null,          -- ProformaTerms defaults
+  default_incoterm     text not null,
+  tax_label            text not null,
+  tax_bps              int  not null check (tax_bps between 0 and 10000),
+  default_issue_city   text not null,
+  locale               text not null check (locale in ('es','es-en')),
+  footer_shows_address boolean not null default true,
+  serves               jsonb not null default '{}',  -- {countries:[],ports:[]}
+  retired_at           timestamptz,
+  updated_at           timestamptz not null default now(),
+  created_at           timestamptz not null default now()
+);
+-- quotes gains the explicit issuer choice (wins over resolveIssuer) + locale override:
+alter table tower.quotes
+  add column issuer_id text references tower.issuing_entities(id),
+  add column locale    text check (locale in ('es','es-en'));

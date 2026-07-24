@@ -38,7 +38,19 @@
 Each wave ends at TOWER's Definition of Done (RLS tested with a non-admin fixture · Zod on inputs · audit trigger on new mutating tables · two-archetype safe · Áladín isolation · ⌘K reachable · wholesale-lint ES/EN).
 
 ### Wave 0 — Feed the stack + persistence spine
-- **Migration `tower_48`** (`supabase/migrations/…tower_48_issuing_entities.sql`) — *merge `master` and re-check the high-water mark first (CLAUDE.md law; next free = tower_48)*:
+> **Torre reconciliation (Fable review, 2026-07-24):** master shipped the Mister
+> Torre quote-run (`tower_48–54`). Deltas folded in: (1) migration renumbers to
+> **`tower_55`** (high-water was tower_54); (2) issuer = identity axis, `org_rules`
+> = policy axis — derive `validityText` from `org_rules.validity_days` at render
+> where a brand exists, entity text is the fallback; (3) the two cotización layers
+> complement — the proforma/anexo build on the `tower.quotes` render path, never
+> Torre's `ai_drafts` cards; (4) Wave 5 drops the new shell tool — **extend
+> `QuotationsWindow` + a ⌘K action** instead; (5) Wave 2 adds the approval→issuance
+> bridge (persist `issuer_id` + `portOfDestination` when a Torre COTIZACION becomes
+> a quote); (6) Wave 4 sources freight/insurance via `resolveFreightRate` over
+> `rate_tables`, local lines from the cost sheet. **VERDICT: green light.**
+
+- **Migration `tower_55`** (`supabase/migrations/20260724160000_tower_55_issuing_entities.sql`) — *merge `master` and re-check the high-water mark first (CLAUDE.md law; verified next free = tower_55)*:
   - `tower.issuing_entities` (id text PK, key, country, tax_id_label, doc_prefix, issuer jsonb, exporter jsonb, banking jsonb null, terms jsonb, default_incoterm, tax_label, tax_bps, default_issue_city, locale, footer_shows_address, serves jsonb) + audit trigger + RLS (read: any authed group member; write: `is_group_admin()`).
   - `alter table tower.quotes add column issuer_id text references tower.issuing_entities(id)`, `add column locale text` (per-doc override).
   - Seed the two entities from `issuers.ts` (idempotent upsert).
@@ -106,4 +118,4 @@ Each wave ends at TOWER's Definition of Done (RLS tested with a non-admin fixtur
 - The anexo document exists as a working deliverable (the layout + numbers to port into Wave 4).
 
 ## 6. First concrete step
-Wave 0, task 1: merge `master`, confirm `tower_48` is free, write `tower_48_issuing_entities.sql` + the `quotes.issuer_id/locale` columns, seed from `issuers.ts`, and flip `getProformaDocument` to `issuerById(...) ?? resolveIssuer(...)`. Everything else builds on that column.
+Wave 0, task 1 (**DONE** on branch, migration awaiting prod apply): merged `master`, confirmed `tower_55` free, wrote `tower_55_issuing_entities.sql` + the `quotes.issuer_id/locale` columns, seeded from `issuers.ts`, and flipped `getProformaDocument` to `issuerById(...) ?? resolveIssuer(...)`. Everything else builds on that column.

@@ -26,6 +26,7 @@ import {
 } from '@/lib/quotation/proforma'
 import {
   DEFAULT_ISSUER,
+  issuerById,
   resolveIssuer,
   withEntityProformaTerms,
   type IssuerEntity,
@@ -60,6 +61,10 @@ interface RawQuoteRow {
   bill_to: RawBillTo | null
   terms: RawTerms | null
   observations: string[] | null
+  /** Explicit issuing entity (issuing_entities.id); wins over destination resolution. */
+  issuer_id: string | null
+  /** Per-document language override; falls back to the entity locale. */
+  locale: string | null
   /** The rep who owns the quote — the "Atendido por" issuer (auth user id). */
   created_by: string | null
 }
@@ -82,7 +87,7 @@ interface RawTerms extends Partial<ProformaTerms> {
 }
 
 const QUOTE_COLS =
-  'id,rfq_id,status,currency,lines,tax_label,tax_bps,quote_no,issued_on,valid_until,bill_to,terms,observations,created_by'
+  'id,rfq_id,status,currency,lines,tax_label,tax_bps,quote_no,issued_on,valid_until,bill_to,terms,observations,issuer_id,locale,created_by'
 
 function isEmptyBillTo(b: RawBillTo | null | undefined): boolean {
   if (!b) return true
@@ -203,7 +208,8 @@ function toDocument(
     observations,
     issuer: entity.issuer,
     issuerId: entity.id,
-    locale: entity.locale,
+    // Per-document locale override (quotes.locale) wins over the entity default.
+    locale: row.locale === 'es' || row.locale === 'es-en' ? row.locale : entity.locale,
     issuedBy,
   }
 }
@@ -226,14 +232,16 @@ export async function getProformaDocument(quoteId: string): Promise<ActionResult
     importerRaw = await deriveImporter(auth.supabase, accountId)
   }
 
-  // Which legal entity issues this — resolved from where the goods are going
-  // (the stated port of destination, else the buyer's country). Iquique/Chile →
-  // Shining Star (CL); Callao/Perú or anything unmatched → Wings (PE). When a
-  // `quotes.issuer_id` column later exists, prefer issuerById(row.issuer_id).
-  const entity = resolveIssuer({
-    port: row.terms?.portOfDestination ?? null,
-    country: importerRaw.country ?? importerRaw.city ?? null,
-  })
+  // Which legal entity issues this. Precedence: an explicit persisted choice
+  // (quotes.issuer_id) wins; otherwise resolve from where the goods are going
+  // (stated port of destination, else buyer country) — Iquique/Chile → Shining
+  // Star (CL); Callao/Perú or anything unmatched → Wings (PE).
+  const entity =
+    issuerById(row.issuer_id) ??
+    resolveIssuer({
+      port: row.terms?.portOfDestination ?? null,
+      country: importerRaw.country ?? importerRaw.city ?? null,
+    })
 
   const issuedBy = await resolveIssuedBy(auth.user.id, row.created_by)
   return ok(toDocument(row, importerRaw, issuedBy, entity))

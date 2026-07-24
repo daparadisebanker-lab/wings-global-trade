@@ -45,6 +45,29 @@ describe('issuerById', () => {
   })
 })
 
+describe('issuer_id precedence (quotes.issuer_id wins over destination)', () => {
+  // Mirrors the resolution in lib/actions/proforma.ts:
+  //   entity = issuerById(row.issuer_id) ?? resolveIssuer({ port, country })
+  const resolve = (issuerId: string | null, port: string | null, country: string | null) =>
+    issuerById(issuerId) ?? resolveIssuer({ port, country })
+
+  it('an explicit issuer_id overrides a conflicting destination', () => {
+    // Callao/Perú would resolve to WINGS_PE, but the explicit CL choice wins.
+    expect(resolve('shining-star-cl', 'Callao, Perú', 'Perú').id).toBe(SHINING_STAR_CL.id)
+    // And the reverse: an Iquique destination but an explicit PE choice.
+    expect(resolve('wgt-pe', 'Iquique, Chile', 'Bolivia').id).toBe(WINGS_PE.id)
+  })
+
+  it('falls back to destination resolution when issuer_id is null', () => {
+    expect(resolve(null, 'Iquique, Chile', null).id).toBe(SHINING_STAR_CL.id)
+    expect(resolve(null, 'Callao, Perú', null).id).toBe(WINGS_PE.id)
+  })
+
+  it('an unknown issuer_id does not crash — it falls through to resolution', () => {
+    expect(resolve('ghost-entity', 'Iquique, Chile', null).id).toBe(SHINING_STAR_CL.id)
+  })
+})
+
 describe('entity data invariants', () => {
   it('every registry entity has a unique id and key', () => {
     const ids = ISSUER_REGISTRY.map((e) => e.id)

@@ -302,3 +302,27 @@ site Vercel project Root Directory to apps/site in the same moment, and reconcil
 25a5d59 — whose monorepo port sits UNCOMMITTED in the working tree as the
 apps/site mister-logo files). Until then: the TOWER Vercel project builds from
 feature/tower-wave1 (Root Directory apps/tower); the site project keeps master.
+
+---
+
+## Multi-entity issuing + document generation · 2026-07-24
+
+### D-issuer · `tower.issuing_entities` + `quotes.issuer_id` (tower_55)
+The issuing legal ENTITY a proforma/quotation prints (legal name, RUC/RUT, address,
+banking, ports-as-text, tax posture, locale, footer policy) becomes a first-class,
+persisted concept — a **different axis** from `tower.org_rules` (per-BRAND policy:
+margin/incoterm/validity/approval). Two entities seeded: `wgt-pe` (Wings Global
+Trade S.A.C., PE, RUC, IGV 18%) and `shining-star-cl` (Import-Export Shining Star
+Ltda, CL, RUT 76029544-2, Iquique, FOB / 0-tax, es-only, no bank block).
+Resolution precedence: `issuerById(quotes.issuer_id)` (explicit) → `resolveIssuer(
+{port,country})` (destination) → `WINGS_PE` (default). The typed registry in
+`apps/tower/src/lib/quotation/issuers.ts` remains the runtime source; the table
+persists the same data for the FK + future admin editing (keep in sync).
+
+Reconciled with the Mister Torre workstream (Fable review, 2026-07-24): issuer =
+identity axis, `org_rules` = policy axis (its `ports_default` is a dead column);
+the two cotización layers — Torre `ai_drafts` COTIZACION (AI draft, blocker-gated)
+and the `tower.quotes` proforma render (entity-aware document of record) —
+**complement**, they do not supersede. Anexo freight sources from `rate_tables`
+(`resolveFreightRate`), local lines from the cost sheet. Full plan +
+wave sequence: `QUOTATION_DOCS_DEPLOYMENT_PLAN.md`. Render strategy: `@react-pdf`.
