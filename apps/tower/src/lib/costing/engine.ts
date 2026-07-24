@@ -15,7 +15,7 @@
 //  · Margen Neto de Caja is normally negative during the IGV recovery window
 //  · percent-mode marginRate and margenNetoCajaPct are deliberately unrounded
 import Decimal from 'decimal.js'
-import type { ImportInputs, ImportResult } from './types'
+import type { FuelType, ImportInputs, ImportResult } from './types'
 
 Decimal.set({ precision: 28, rounding: Decimal.ROUND_HALF_UP })
 
@@ -33,14 +33,19 @@ function n(x: Decimal): number {
 }
 
 /**
- * ISC rate from fuel + engine displacement. hybrid/diesel → 0; otherwise
- * ≤1400cc → 5%, >1400cc → 7.5%. NOTE (parity): `electric` intentionally falls
- * through to the gasoline CC rule — replicated as-coded; probable upstream
- * review item, not fixed here.
+ * ISC rate for the import. The generalization seam (D5):
+ *  · An explicit `iscRate` WINS — non-automotive lanes pass 0 (no ISC), and goods
+ *    that DO carry ISC (alcohol, tobacco, fuels) pass their statutory rate.
+ *  · Otherwise the automotive fuel/CC rule applies (parity-locked): hybrid/diesel
+ *    → 0; else ≤1400cc → 5%, >1400cc → 7.5%. NOTE (parity): `electric`
+ *    intentionally falls through to the gasoline CC rule — replicated as-coded.
+ *  · A non-automotive input with no fuel/CC and no override → 0 (no ISC).
+ * Parity is preserved because the fixtures set fuel/CC and never set `iscRate`.
  */
-export function deriveISCRate(inputs: Pick<ImportInputs, 'fuelType' | 'engineCC'>): number {
-  if (inputs.fuelType === 'hybrid') return 0
-  if (inputs.fuelType === 'diesel') return 0
+export function deriveISCRate(inputs: { fuelType?: FuelType; engineCC?: number; iscRate?: number }): number {
+  if (inputs.iscRate != null) return inputs.iscRate
+  if (inputs.fuelType === 'hybrid' || inputs.fuelType === 'diesel') return 0
+  if (inputs.fuelType == null || inputs.engineCC == null) return 0
   return inputs.engineCC <= 1400 ? 0.05 : 0.075
 }
 

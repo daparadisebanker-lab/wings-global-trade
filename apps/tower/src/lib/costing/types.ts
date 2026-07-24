@@ -16,8 +16,16 @@ export interface ImportInputs {
   productName: string
   brand: string
   model: string
+  // Automotive ISC drivers (required for the parity-locked auto path). A
+  // non-automotive lane still supplies neutral values (e.g. gasoline/0) and sets
+  // `iscRate` below to 0 — which overrides these, so they never affect its math.
   fuelType: FuelType
   engineCC: number
+  /** Explicit ISC rate (decimal fraction) — the generalization seam (D5). When
+   *  set, overrides the fuel/CC derivation: non-automotive lanes pass 0; goods
+   *  that DO carry ISC (alcohol, tobacco, fuels) pass their statutory rate. Left
+   *  undefined for vehicles so the automotive fuel/CC rule (and its parity) holds. */
+  iscRate?: number
   origin: Origin
   year: number
   incoterm: Incoterm
