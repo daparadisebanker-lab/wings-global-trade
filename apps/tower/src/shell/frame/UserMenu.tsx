@@ -15,9 +15,9 @@ import { signOut } from '@/lib/actions/session'
 // action that clears the Supabase session and returns to /login.
 //
 // Two shapes from one component:
-//  - default: a trigger button + popover (desktop — the GreetingBar strip has
-//    room to open downward). Mirrors the Notifications popover contract
-//    (material-panel + tower-fade, Escape + outside-click to close).
+//  - default: a trigger button + popover (desktop — it lives in the TopBar's right
+//    cluster and opens downward; material-panel + tower-fade, Escape + outside-click
+//    to close). This is the shell's ONE account control after the header dedup.
 //  - inline: the recap + Sign out rendered directly, no popover (the mobile
 //    Control Center lives in a scrolling drawer where an absolute popover would
 //    clip; the identity is already shown by the status row, so we skip the header).

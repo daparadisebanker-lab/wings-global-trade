@@ -50,7 +50,7 @@ function CockpitBody({ showClose, active, onClose }: { showClose: boolean; activ
           <MisterCanvas />
         </div>
         <aside className="ck-rail" aria-label={t({ es: 'Registrar y redirigir', en: 'Commit and hand-off' }, locale)}>
-          <MisterCommitRail active={active} />
+          <MisterCommitRail active={active} onClose={onClose} />
         </aside>
       </div>
     </div>

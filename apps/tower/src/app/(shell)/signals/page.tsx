@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { LanePulse, FunnelChart, ProductLeaderboard, FillWatch, SourceSplit } from '@/components/signals'
-import { OperationsBand, QuickActions, SignalsFeed } from '@/components/operations'
+import { OperationsBand, QuickActions } from '@/components/operations'
 import { getSignalDeck } from '@/lib/actions/signals'
 import { getOperationsSnapshot } from '@/lib/actions/operations'
 import { getLaneMemberships, getIsGroupAdmin, getHasRbMembership } from '@/lib/lanes/memberships'
@@ -83,7 +83,9 @@ export default async function SignalsPage({
           modules and drill-links into its owner. */}
       <QuickActions visible={visible} isGroupAdmin={isGroupAdmin} locale={locale} />
       {ops.ok ? <OperationsBand snapshot={ops.snapshot} visible={visible} locale={locale} /> : null}
-      {isGroupAdmin ? <SignalsFeed locale={locale} /> : null}
+      {/* The raw audit stream ("Actividad reciente" — UPDATE profiles / INSERT …) was
+          removed from the home: it's low-signal noise here. The full, filterable audit
+          lives in Administración › Auditoría (/admin/audit) for admins who want it. */}
 
       {/* Analytics (matview funnel) — renders only when the lane-scoped deck loads;
           an operator with no lanes still gets the operations cockpit above. */}

@@ -18,7 +18,7 @@ import { MisterReviewList } from './MisterReviewList'
 
 type RailTab = 'handoff' | 'review'
 
-export function MisterCommitRail({ active }: { active: boolean }) {
+export function MisterCommitRail({ active, onClose }: { active: boolean; onClose?: () => void }) {
   const { locale, selectedArtifact } = useMister()
   const [tab, setTab] = useState<RailTab>('handoff')
 
@@ -70,7 +70,11 @@ export function MisterCommitRail({ active }: { active: boolean }) {
           {renderer ? <span className="ck-rail-tag">{t(artifactLabel(renderer), locale)}</span> : null}
           <div className="ck-rail-links">
             {links.map((l) => (
-              <Link key={l.href} href={l.href} className="ck-rail-link">
+              // Close the overlay on hand-off — the destination page may be the SAME
+              // route the operator opened Mister from (pathname doesn't change, so the
+              // route-change effect never fires); without this the full-bleed cockpit
+              // stays up and the link looks dead.
+              <Link key={l.href} href={l.href} onClick={onClose} className="ck-rail-link">
                 {t(l.label, locale)}
                 <span aria-hidden>→</span>
               </Link>
@@ -78,7 +82,7 @@ export function MisterCommitRail({ active }: { active: boolean }) {
           </div>
         </section>
       ) : (
-        <MisterReviewList active={active} locale={locale} />
+        <MisterReviewList active={active} locale={locale} onClose={onClose} />
       )}
     </div>
   )

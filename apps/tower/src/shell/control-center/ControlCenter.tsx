@@ -63,12 +63,15 @@ export function ControlCenterGrid({
         <button
           type="button"
           onClick={onOpenMister}
-          aria-label={t({ es: 'Abrir Mister (⌘J)', en: 'Open Mister (⌘J)' }, locale)}
+          // No "(⌘J)" in the label: this grid is md:hidden (phones only), where the
+          // chord means nothing and would just be announced to AT.
+          aria-label={t({ es: 'Abrir Mister', en: 'Open Mister' }, locale)}
           className="cc-tile min-w-0 w-full text-left"
         >
           <MisterMark size={20} className="shrink-0" />
           <span className="min-w-0 truncate font-ui text-t0">Mister</span>
-          <span aria-hidden className="ml-auto shrink-0 font-mono text-label tracking-[0.1em] text-ink-secondary">
+          {/* data-kbd-hint hides the chord on coarse-pointer devices (globals.css). */}
+          <span data-kbd-hint aria-hidden className="ml-auto shrink-0 font-mono text-label tracking-[0.1em] text-ink-secondary">
             ⌘J
           </span>
         </button>
@@ -96,6 +99,13 @@ export function ControlCenterGrid({
           </Link>
         )
       })}
+      {/* Zero-module operator: keep the "ask an admin" guidance (the early-return
+          note can't fire once a Mister entry is present). */}
+      {tools.length === 0 ? (
+        <p className="px-1 pt-1 font-mono text-label uppercase tracking-[0.12em] text-ink-secondary">
+          {t({ es: 'Aún sin módulos — pídele acceso a un administrador.', en: 'No modules yet — ask an administrator for access.' }, locale)}
+        </p>
+      ) : null}
     </nav>
   )
 }

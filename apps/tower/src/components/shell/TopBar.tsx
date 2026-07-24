@@ -19,6 +19,7 @@ export function TopBar({
   isGroupAdmin,
   onOpenSearch,
   onOpenMenu,
+  hasModules = true,
   locale = DEFAULT_LOCALE,
 }: {
   userName: string | null
@@ -26,6 +27,9 @@ export function TopBar({
   isGroupAdmin: boolean
   onOpenSearch: () => void
   onOpenMenu?: () => void
+  /** When false the Dock is absent (no visible modules) — keep search on desktop
+   *  too, else a mouse user would have no search affordance at all (⌘K only). */
+  hasModules?: boolean
   locale?: Locale
 }) {
   return (
@@ -68,7 +72,7 @@ export function TopBar({
           type="button"
           onClick={onOpenSearch}
           aria-label={t({ es: 'Buscar', en: 'Search' }, locale)}
-          className="flex h-10 w-10 items-center justify-center rounded-card text-ink-secondary transition-colors hover:text-ink-primary md:hidden"
+          className={`flex h-10 w-10 items-center justify-center rounded-card text-ink-secondary transition-colors hover:text-ink-primary ${hasModules ? 'md:hidden' : ''}`}
         >
           <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.6} aria-hidden>
             <circle cx="9" cy="9" r="5" />

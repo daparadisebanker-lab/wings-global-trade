@@ -67,7 +67,7 @@ function ReviewCard({
   )
 }
 
-export function MisterReviewList({ active, locale = DEFAULT_LOCALE }: { active: boolean; locale?: Locale }) {
+export function MisterReviewList({ active, locale = DEFAULT_LOCALE, onClose }: { active: boolean; locale?: Locale; onClose?: () => void }) {
   const triage = useTriageReview(active)
   const spec = useSpecReview(active)
   const [actingId, setActingId] = useState<string | null>(null)
@@ -149,7 +149,7 @@ export function MisterReviewList({ active, locale = DEFAULT_LOCALE }: { active: 
         </>
       )}
 
-      <Link href="/intelligence/revision" className="ck-rail-link">
+      <Link href="/intelligence/revision" onClick={onClose} className="ck-rail-link">
         {t({ es: 'Ver cola completa', en: 'Open full queue' }, locale)}
         <span aria-hidden>→</span>
       </Link>

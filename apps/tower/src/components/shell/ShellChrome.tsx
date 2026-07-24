@@ -338,6 +338,7 @@ export function ShellChrome({
             isGroupAdmin={isGroupAdmin}
             onOpenSearch={() => setPaletteOpen(true)}
             onOpenMenu={() => setDrawerOpen(true)}
+            hasModules={visible.size > 0}
           />
           <Breadcrumb locale={DEFAULT_LOCALE} />
           {needsOnboarding ? <OnboardingBanner /> : null}
