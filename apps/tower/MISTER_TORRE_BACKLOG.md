@@ -76,8 +76,12 @@ off the World-B exemption; connectors mock-first behind adapters (`MOCK_CONNECTO
   review: pending.
 
 ### Loops
-- `TODO` **L1 · Cotizar polish** — PDF export (branded), inline edit, comment-to-revise
-  (versioned), semantic diffs (old→new).
+- `WIP` **L1 · Cotizar polish** — pure cores DONE: **revise.ts** (diffTorreArtifact —
+  money-aware semantic diff old→new; reviseTorreArtifact — versioned successor + schema
+  re-validate; the engine behind comment-to-revise AND inline edit) + **print.ts**
+  (cotizacionPrintModel — branded, structured, token-safe, honesty preserved → the PDF).
+  18 tests. Remaining wiring: inline-edit form, revise server action (persist successor
+  DRAFT), PDF print component + button. Fable review: pending.
 - `TODO` **L2 · Comunicar** — redactor tone/audience (client/supplier/agent, per-lang),
   email + WhatsApp send-on-approve (mocked adapters + queue), inbound thread capture.
 - `TODO` **L3 · Documentar** — artifact types reporte_estado · checklist_docs · acta ·
