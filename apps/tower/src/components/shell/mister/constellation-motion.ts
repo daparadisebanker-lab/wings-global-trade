@@ -69,3 +69,48 @@ export function confirmHalo(elapsedMs: number): { radiusScale: number; alpha: nu
     alpha: CONFIRM.haloAlpha * (1 - t),
   }
 }
+
+// ── L7 · remaining states (LISTENING · SPEAKING · ERROR) + watch-catch pulse ──
+
+/** LISTENING: a slow, calm breathing scale (the tower is attentive but still). */
+export const LISTENING = { periodMs: 2400, amplitude: 0.06 } as const // ±6% core radius
+/** SPEAKING: a faster, shallower pulse synced to output cadence. */
+export const SPEAKING = { periodMs: 900, amplitude: 0.09 } as const
+/** ERROR: a single amber shake that decays — never a loop (an error states once). */
+export const ERROR = { durationMs: 500, shakes: 3, maxOffset: 0.05 } as const // fraction of radius
+/** WATCH-CATCH: the pulse when a watch signal is caught — a single sharp ring (spec 05). */
+export const WATCH_CATCH = { pulseMs: 720, ringScale: 2.1, alpha: 0.4 } as const
+
+/** Reduced-motion collapses every animated state to a still frame (scale 1, no offset). */
+export function breathingScale(elapsedMs: number, state: 'listening' | 'speaking', reducedMotion = false): number {
+  if (reducedMotion) return 1
+  const { periodMs, amplitude } = state === 'listening' ? LISTENING : SPEAKING
+  // a smooth sine breath around 1.0
+  return 1 + amplitude * Math.sin((2 * Math.PI * elapsedMs) / periodMs)
+}
+
+/**
+ * ERROR shake offset (fraction of radius) at `elapsedMs`: a decaying sine that runs once
+ * over durationMs then settles to 0. Reduced motion → always 0 (the color still signals).
+ */
+export function errorShake(elapsedMs: number, reducedMotion = false): number {
+  if (reducedMotion || elapsedMs < 0 || elapsedMs > ERROR.durationMs) return 0
+  const t = elapsedMs / ERROR.durationMs
+  const decay = 1 - t // amplitude fades to 0 by the end
+  return ERROR.maxOffset * decay * Math.sin(2 * Math.PI * ERROR.shakes * t)
+}
+
+/**
+ * WATCH-CATCH ring at `elapsedMs` since a signal was caught: 0→1 expansion over 720ms,
+ * then null. Reduced motion → a single static frame at full ring, no expansion.
+ */
+export function watchCatchRing(elapsedMs: number, reducedMotion = false): { radiusScale: number; alpha: number } | null {
+  if (elapsedMs < 0 || elapsedMs > WATCH_CATCH.pulseMs) return null
+  if (reducedMotion) return { radiusScale: WATCH_CATCH.ringScale, alpha: WATCH_CATCH.alpha }
+  const t = elapsedMs / WATCH_CATCH.pulseMs
+  const eased = easeInOutCubic(t)
+  return {
+    radiusScale: 1 + (WATCH_CATCH.ringScale - 1) * eased,
+    alpha: WATCH_CATCH.alpha * (1 - t),
+  }
+}

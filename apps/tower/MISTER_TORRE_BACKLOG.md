@@ -134,10 +134,13 @@ off the World-B exemption; connectors mock-first behind adapters (`MOCK_CONNECTO
   context, never the live number). pgvector corpus migration (tower_53: knowledge_chunks +
   hnsw + tsvector + entity GIN + RLS, approved-only). 10 tests. Remaining: embed job +
   ingest-on-approval wiring + Q&A UI. Review: pending.
-- `TODO` **L7 · Surfaces & aesthetics** — persistent 420px side panel · inline
-  intelligence pins (cell underline, `Mister ▸` row, ghost fields) · Cmd+K verbs ·
-  remaining Constellation states (LISTENING/SPEAKING/ERROR) + the watch-catch pulse +
-  Brief masthead moments.
+- `DONE` **L7 · Surfaces & aesthetics** — pure cores: **cmdk.ts** (the Cmd+K verb registry
+  mapping the five loops + review/policy surfaces to run-profile / panel / route targets;
+  `filterVerbs` word-boundary + label-over-keyword ranking); **constellation-motion.ts**
+  extended with the remaining states — LISTENING/SPEAKING breathing, ERROR decaying shake
+  (once, never loops), and the **watch-catch ring** pulse — all reduced-motion-aware. 20
+  tests. Remaining (UI): persistent 420px side panel, inline pins, the Cmd+K component +
+  ConstellationField state wiring. Review: pending.
 
 ## Log (append per item)
 - (start) Flagship quote run + review + loading/approve motion — merged (PR #33).

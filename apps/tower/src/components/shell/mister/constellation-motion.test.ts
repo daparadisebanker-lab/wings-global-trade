@@ -5,8 +5,12 @@ import {
   condensationScatter,
   confirmHalo,
   staggerFor,
+  breathingScale,
+  errorShake,
+  watchCatchRing,
   CONDENSATION,
   CONFIRM,
+  WATCH_CATCH,
 } from './constellation-motion'
 
 describe('easeInOutCubic', () => {
@@ -61,5 +65,43 @@ describe('confirm halo', () => {
     expect(b.alpha).toBeCloseTo(0, 3)
     expect(confirmHalo(CONFIRM.haloMs + 1)).toBeNull()
     expect(confirmHalo(-1)).toBeNull()
+  })
+})
+
+describe('L7 states — LISTENING / SPEAKING breathing', () => {
+  it('breathes around 1.0 and reduced motion pins to 1', () => {
+    expect(breathingScale(0, 'listening')).toBeCloseTo(1, 5) // sin(0)=0
+    const peak = breathingScale(2400 / 4, 'listening') // quarter period → sin=1
+    expect(peak).toBeGreaterThan(1)
+    expect(breathingScale(225, 'speaking', true)).toBe(1) // reduced motion → still
+  })
+
+  it('speaking pulses faster (shorter period) than listening', () => {
+    // at the same elapsed the two states differ (different periods) — sanity, not identical
+    expect(breathingScale(450, 'speaking')).not.toBeCloseTo(breathingScale(450, 'listening'), 3)
+  })
+})
+
+describe('L7 states — ERROR shake', () => {
+  it('runs once, decays to 0, and is 0 outside its window / under reduced motion', () => {
+    expect(errorShake(0)).toBeCloseTo(0, 5) // sin(0)=0 at start
+    expect(errorShake(600)).toBe(0) // past durationMs
+    expect(errorShake(-1)).toBe(0)
+    expect(errorShake(200, true)).toBe(0) // reduced motion
+    // amplitude decays: an early peak exceeds a late one
+    const early = Math.abs(errorShake(500 / 12))
+    const late = Math.abs(errorShake((500 * 11) / 12))
+    expect(early).toBeGreaterThan(late)
+  })
+})
+
+describe('L7 states — watch-catch ring', () => {
+  it('expands 1→ringScale then ends; reduced motion shows a static ring', () => {
+    const start = watchCatchRing(0)
+    expect(start?.radiusScale).toBeCloseTo(1, 3)
+    expect(start?.alpha).toBeCloseTo(WATCH_CATCH.alpha, 3)
+    expect(watchCatchRing(WATCH_CATCH.pulseMs + 1)).toBeNull()
+    const rm = watchCatchRing(200, true)
+    expect(rm?.radiusScale).toBe(WATCH_CATCH.ringScale) // static full ring, no expansion
   })
 })
