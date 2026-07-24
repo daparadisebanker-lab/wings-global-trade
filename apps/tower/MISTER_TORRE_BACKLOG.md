@@ -117,8 +117,14 @@ off the World-B exemption; connectors mock-first behind adapters (`MOCK_CONNECTO
   new-vs-resolved diff — a standing exception never re-pings); **activeRules** kill switches;
   a seeded demurrage catch. `watch_signals` migration (tower_52, partial-unique OPEN key +
   RLS + audit). 13 tests. Remaining: DB reconciler job + signals UI. Review: pending.
-- `TODO` **L5 · Reportar** — Morning Brief (per-role screen + masthead) + Friday +
-  month-end + analista profile + productivity telemetry (time-saved, hours returned).
+- `DONE` **L5 · Reportar** — pure core (brief.ts): **buildMorningBrief** assembles the
+  Brief from watch signals + the pending-draft queue, SCOPED to the operator's role
+  (ops vs commercial vs VIEWER-sees-all), split into urgent (inmediato) / attention
+  (batched, ranked) / approvable-drafts, with a `quiet` flag (the tower's stillness) and
+  per-cadence mastheads (morning · friday · month-end). **productivitySummary** +
+  MINUTES_SAVED baseline → hours returned + counts (weekly/monthly rollup). analista
+  profile already exists (B3). 11 tests. Remaining: Brief screen UI + telemetry source
+  events. Review: pending.
 - `TODO` **L6 · RAG / memory** — pgvector migration + ingest-on-approval + hybrid
   retrieval + precedent Q&A with citations + learned-on-approval.
 - `TODO` **L7 · Surfaces & aesthetics** — persistent 420px side panel · inline
