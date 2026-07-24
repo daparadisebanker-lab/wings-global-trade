@@ -50,11 +50,14 @@ create policy knowledge_chunks_read on tower.knowledge_chunks for select using (
     then tower.has_lane_role(lane_id, array['LANE_DIRECTOR','CATALOG_EDITOR','TRADE_OPS','SALES','VIEWER'])
     else tower.has_brand_access(brand_id) end
 );
--- Ingest is an APPROVED-ONLY, service-role job: on artifact approval the pipeline embeds +
--- inserts the chunks (the approved-only law lives in that path — doc_id is free text here,
--- not FK-constrained to an approved artifact, so the ingest job is the enforcement point).
--- This interactive insert policy covers only the rare manual correction within operational
--- roles; the bulk path runs as service-role (bypasses RLS).
+-- Ingest is APPROVED-ONLY: approveTorreDraft (lib/actions/torre-review.ts) inserts the
+-- chunks in the APPROVING OPERATOR's context right after the approval claim (approved-only
+-- is enforced by that code path — doc_id is free text, not FK-constrained here). So these
+-- insert roles MUST stay a SUPERSET of the ai_drafts approve roles (tower_16 ai_drafts_update:
+-- LANE_DIRECTOR/TRADE_OPS per lane, group-admin for null lane) — otherwise an operator could
+-- approve an artifact whose ingest then fails RLS silently. If approval is ever widened
+-- (e.g. COTIZACION → SALES, per tower_51), widen this policy in lockstep. (A future nightly
+-- embed/backfill may additionally run as service-role, bypassing RLS.)
 create policy knowledge_chunks_write on tower.knowledge_chunks for insert with check (
   case when lane_id is not null
     then tower.has_lane_role(lane_id, array['LANE_DIRECTOR','TRADE_OPS'])

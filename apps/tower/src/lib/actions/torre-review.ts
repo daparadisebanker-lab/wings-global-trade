@@ -154,11 +154,19 @@ export async function approveTorreDraft(draftId: string): Promise<ActionResult<A
       brandId: record.brandId,
       laneId: record.laneId,
       docId: record.id,
-      date: record.createdAt?.slice(0, 10) ?? null,
+      // approval date = when the content became precedent (drives the recency tiebreak)
+      date: (approved.reviewedAt ?? record.createdAt)?.slice(0, 10) ?? null,
+      // link the source record so the entity-filter retrieval leg has something to match
+      entityRefs: record.refId ? [record.refId] : [],
     })
-    if (rows.length) await db.from('knowledge_chunks').insert(rows)
+    if (rows.length) {
+      // supabase-js resolves { error } on a Postgres/RLS failure — it does NOT throw, so
+      // the error MUST be read or a dead ingest (RLS/constraint drift) goes silent forever.
+      const { error: ingestError } = await db.from('knowledge_chunks').insert(rows)
+      if (ingestError) console.error('[torre/approve] corpus ingest failed (non-blocking)', ingestError)
+    }
   } catch (e) {
-    console.error('[torre/approve] corpus ingest failed (non-blocking)', e)
+    console.error('[torre/approve] corpus ingest threw (non-blocking)', e)
   }
 
   return ok({ record: approved, sideEffect: approveSideEffect(payload), sent })
