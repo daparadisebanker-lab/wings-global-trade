@@ -136,7 +136,10 @@ off the World-B exemption; connectors mock-first behind adapters (`MOCK_CONNECTO
   dead code); chunkByStructure hard-splits an oversized paragraph at sentence boundaries and
   keeps a heading-only section; rate/price terms broadened (price/cost/tariff/costará);
   topK<0 empties; tsvector is Spanish + immutable-unaccent (accent-folded, client-parity).
-  13 tests. Remaining: embed job + ingest-on-approval wiring + Q&A UI.
+  13 tests. **Ingest-on-approval DONE** (ingest.ts: artifactToCorpusDoc + corpusRowsFromArtifact
+  — pure, tested; wired best-effort into approveTorreDraft: an approved artifact becomes
+  corpus precedent, HOJA_COSTOS excluded, a DRAFT never ingested, failure non-blocking).
+  Remaining: embed job (fill the null embeddings) + Q&A UI.
 - `DONE` **L7 · Surfaces & aesthetics** — pure cores: **cmdk.ts** (the Cmd+K verb registry;
   `filterVerbs` word-boundary + label-over-keyword ranking); **constellation-motion.ts**
   extended with the remaining states. Fable review: **SHIP-WITH-FIXES applied** — the motion

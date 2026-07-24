@@ -28,6 +28,7 @@ import {
   type TorreDraftStatus,
 } from '@/lib/torre/drafts'
 import { prepareSend, resolveSendAdapter } from '@/lib/torre/comms/send'
+import { corpusRowsFromArtifact } from '@/lib/torre/ingest'
 import type { ImportInputs } from '@/lib/costing/types'
 
 const uuid = z.string().uuid()
@@ -143,6 +144,23 @@ export async function approveTorreDraft(draftId: string): Promise<ActionResult<A
       console.error('[torre/approve] send failed post-claim', result.error)
     }
   }
+
+  // Learned-on-approval (L6): the approved artifact becomes precedent in the corpus.
+  // Best-effort + mock-first — the embedding is null until the embed job runs (keyword
+  // retrieval works meanwhile), and a failure here must NEVER unwind an approval. A DRAFT
+  // is never ingested (we only reach here after the artifact is APPROVED).
+  try {
+    const rows = corpusRowsFromArtifact(payload, {
+      brandId: record.brandId,
+      laneId: record.laneId,
+      docId: record.id,
+      date: record.createdAt?.slice(0, 10) ?? null,
+    })
+    if (rows.length) await db.from('knowledge_chunks').insert(rows)
+  } catch (e) {
+    console.error('[torre/approve] corpus ingest failed (non-blocking)', e)
+  }
+
   return ok({ record: approved, sideEffect: approveSideEffect(payload), sent })
 }
 
