@@ -6,17 +6,20 @@
 // Governance (spec-torre non-negotiable 8): only `inmediato` severity earns a real-time
 // ping; everything else batches. A watch signal is a FLAG, not an action — acting on it
 // (a chase message, a status report) is still a human-approved DRAFT downstream.
-export type Severity = 'inmediato' | 'alto' | 'medio' | 'bajo'
+export const SEVERITIES = ['inmediato', 'alto', 'medio', 'bajo'] as const
+export type Severity = (typeof SEVERITIES)[number]
 
-export type WatchRuleId =
-  | 'eta-slip'
-  | 'doc-deadline'
-  | 'demurrage'
-  | 'rate-expiry'
-  | 'payment-milestone'
-  | 'quote-quiet'
-  | 'margin-drift'
-  | 'stale-import'
+export const WATCH_RULE_IDS = [
+  'eta-slip',
+  'doc-deadline',
+  'demurrage',
+  'rate-expiry',
+  'payment-milestone',
+  'quote-quiet',
+  'margin-drift',
+  'stale-import',
+] as const
+export type WatchRuleId = (typeof WATCH_RULE_IDS)[number]
 
 export interface WatchSignal {
   rule: WatchRuleId
