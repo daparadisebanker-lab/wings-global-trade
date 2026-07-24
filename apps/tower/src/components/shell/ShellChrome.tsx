@@ -25,6 +25,17 @@ import { ControlCenterGrid } from '@/shell/control-center/ControlCenter'
 import { MobileControlCenter } from '@/shell/control-center/MobileControlCenter'
 import { RepPanel } from '@/shell/rep-panel/RepPanel'
 
+/** Focusable descendants that are actually rendered — display:none elements
+ *  (`offsetParent === null`) are excluded. The aside hosts BOTH the mobile drawer
+ *  content and the desktop-only controls (the WS3 collapse « button, the RepPanel
+ *  links) under `hidden md:*`; without this filter the mobile focus trap and the
+ *  open-focus would land on those hidden controls and silently break. */
+function visibleFocusables(root: HTMLElement | null): HTMLElement[] {
+  if (!root) return []
+  const all = root.querySelectorAll<HTMLElement>('a[href],button:not([disabled])')
+  return Array.from(all).filter((el) => el.offsetParent !== null)
+}
+
 /** Location strip — TOWER › Módulo › subpágina, derived from the path so you
  *  always know where you are. Ids/numbers in the path are omitted. Ancestor
  *  crumbs are links (retrace one level); the current location stays a label. */
@@ -212,7 +223,7 @@ export function ShellChrome({
     if (drawerOpen) {
       restoreFocusRef.current = (document.activeElement as HTMLElement) ?? null
       const id = window.setTimeout(() => {
-        railRef.current?.querySelector<HTMLElement>('a[href],button:not([disabled])')?.focus()
+        visibleFocusables(railRef.current)[0]?.focus()
       }, 0)
       return () => window.clearTimeout(id)
     }
@@ -222,8 +233,8 @@ export function ShellChrome({
   // Trap Tab within the open mobile drawer.
   function onRailKeyDown(e: ReactKeyboardEvent<HTMLElement>) {
     if (!isMobile || !drawerOpen || e.key !== 'Tab') return
-    const f = railRef.current?.querySelectorAll<HTMLElement>('a[href],button:not([disabled])')
-    if (!f || f.length === 0) return
+    const f = visibleFocusables(railRef.current)
+    if (f.length === 0) return
     const first = f[0]
     const last = f[f.length - 1]
     if (e.shiftKey && document.activeElement === first) {

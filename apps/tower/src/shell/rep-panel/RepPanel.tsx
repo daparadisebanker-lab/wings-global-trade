@@ -19,9 +19,12 @@ import { signOut } from '@/lib/actions/session'
 function initialsOf(name: string | null, email: string | null): string {
   const src = (name?.trim() || email?.split('@')[0]?.trim() || '').replace(/[^\p{L}\p{N}\s]/gu, ' ')
   const parts = src.split(/\s+/).filter(Boolean)
-  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase()
+  // Spread to code points, not [0] on UTF-16 units, so an astral-plane initial
+  // (kept by \p{L}) isn't sliced into a lone surrogate / replacement glyph.
+  const head = (s: string) => [...s][0] ?? ''
+  if (parts.length >= 2) return (head(parts[0]) + head(parts[1])).toUpperCase()
   const token = parts[0] ?? ''
-  return token ? token.slice(0, 2).toUpperCase() : '—'
+  return token ? [...token].slice(0, 2).join('').toUpperCase() : '—'
 }
 
 const ROW =
@@ -44,7 +47,9 @@ export function RepPanel({
   showMarketing?: boolean
   locale?: Locale
 }) {
-  const displayName = (userName?.trim() || userEmail?.trim()) ?? '—'
+  // `||` carries the whole chain so an empty-string email (not just null) also
+  // falls through to the em-dash, matching initialsOf's own fallback.
+  const displayName = userName?.trim() || userEmail?.trim() || '—'
   const title = repTitle?.trim() || t({ es: 'Representante', en: 'Representative' }, locale)
 
   return (
