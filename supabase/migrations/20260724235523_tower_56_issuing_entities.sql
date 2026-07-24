@@ -1,4 +1,4 @@
--- TOWER · tower_55 — issuing_entities. The group's legal ISSUING COMPANIES and the
+-- TOWER · tower_56 — issuing_entities. The group's legal ISSUING COMPANIES and the
 -- per-document identity they print (legal name, tax id RUC/RUT, address, banking,
 -- ports-as-text, tax posture, locale, footer policy). This is a DIFFERENT axis from
 -- tower.org_rules (tower_51): org_rules = per-BRAND commercial policy (margin,
@@ -7,17 +7,23 @@
 -- are two entities that can both serve one brand's imports; which one issues is a
 -- function of the destination (resolveIssuer) or an explicit quotes.issuer_id.
 --
+-- Shape: uuid PK + a stable text `code` (the app slug 'wgt-pe' / 'shining-star-cl'),
+-- the house idiom (lanes/represented_brands) — the shared audit_trigger casts the
+-- row id to uuid, so a text PK would break it. `quotes.issuer_id` references the
+-- unique `code`, which is exactly the value the TS registry (issuers.ts) uses as its
+-- entity id. The runtime source of truth for resolution stays that typed registry
+-- (issuerById/resolveIssuer); this table persists the same data for the FK + future
+-- admin editing — keep the two in sync when either moves.
+--
 -- Group-level config (not brand-scoped): read by any authenticated member, written
 -- by group admins only. Retire, never delete (Directive 4 → retired_at, no delete
--- policy). Money posture is basis points (Directive 3). The runtime source of truth
--- for resolution stays the typed registry in apps/tower/src/lib/quotation/issuers.ts
--- (issuerById/resolveIssuer); this table persists the same data for the FK on
--- quotes.issuer_id and future admin editing — keep the two in sync when either moves.
+-- policy). Money posture is basis points (Directive 3).
 set search_path to tower, public;
 
 create table if not exists tower.issuing_entities (
-  id                   text primary key,               -- 'wgt-pe', 'shining-star-cl'
-  key                  text not null unique,           -- 'WGT-PE', 'SHINING-CL'
+  id                   uuid primary key default gen_random_uuid(),
+  code                 text not null unique,           -- app slug: 'wgt-pe', 'shining-star-cl'
+  key                  text not null unique,           -- display key: 'WGT-PE', 'SHINING-CL'
   country              text not null,                  -- ISO-3166 alpha-2
   tax_id_label         text not null,                  -- 'RUC' | 'RUT' | 'NIT' …
   doc_prefix           text not null,                  -- PF-{prefix}-YYYY-NNNN
@@ -63,14 +69,15 @@ create trigger set_updated_at_issuing_entities
   before update on tower.issuing_entities
   for each row execute function tower.rb_set_updated_at();
 
--- ── quotes: which entity issued (explicit choice wins over resolveIssuer) + per-doc locale ──
+-- ── quotes: which entity issued (explicit choice wins over resolveIssuer) + per-doc
+-- locale. issuer_id stores the entity `code` (the TS registry id), FK to the unique code. ──
 alter table tower.quotes
-  add column if not exists issuer_id text references tower.issuing_entities(id),
+  add column if not exists issuer_id text references tower.issuing_entities(code),
   add column if not exists locale    text check (locale in ('es', 'es-en'));
 
--- ── Seed the two entities from lib/quotation/issuers.ts (idempotent) ──────────
+-- ── Seed the two entities from lib/quotation/issuers.ts (idempotent on code) ───
 insert into tower.issuing_entities
-  (id, key, country, tax_id_label, doc_prefix, issuer, exporter, banking, terms,
+  (code, key, country, tax_id_label, doc_prefix, issuer, exporter, banking, terms,
    default_incoterm, tax_label, tax_bps, default_issue_city, locale, footer_shows_address, serves)
 values
   (
@@ -91,4 +98,4 @@ values
     'FOB (Incoterms ® 2020)', 'FOB', 0, 'Iquique', 'es', false,
     '{"countries":["chile","bolivia"],"ports":["iquique","zofri","antofagasta","arica"]}'::jsonb
   )
-on conflict (id) do nothing;
+on conflict (code) do nothing;

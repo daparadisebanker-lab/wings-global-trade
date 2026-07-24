@@ -40,7 +40,7 @@ Each wave ends at TOWER's Definition of Done (RLS tested with a non-admin fixtur
 ### Wave 0 — Feed the stack + persistence spine
 > **Torre reconciliation (Fable review, 2026-07-24):** master shipped the Mister
 > Torre quote-run (`tower_48–54`). Deltas folded in: (1) migration renumbers to
-> **`tower_55`** (high-water was tower_54); (2) issuer = identity axis, `org_rules`
+> **`tower_56`** (high-water was tower_54); (2) issuer = identity axis, `org_rules`
 > = policy axis — derive `validityText` from `org_rules.validity_days` at render
 > where a brand exists, entity text is the fallback; (3) the two cotización layers
 > complement — the proforma/anexo build on the `tower.quotes` render path, never
@@ -50,9 +50,9 @@ Each wave ends at TOWER's Definition of Done (RLS tested with a non-admin fixtur
 > a quote); (6) Wave 4 sources freight/insurance via `resolveFreightRate` over
 > `rate_tables`, local lines from the cost sheet. **VERDICT: green light.**
 
-- **Migration `tower_55`** (`supabase/migrations/20260724160000_tower_55_issuing_entities.sql`) — *merge `master` and re-check the high-water mark first (CLAUDE.md law; verified next free = tower_55)*:
-  - `tower.issuing_entities` (id text PK, key, country, tax_id_label, doc_prefix, issuer jsonb, exporter jsonb, banking jsonb null, terms jsonb, default_incoterm, tax_label, tax_bps, default_issue_city, locale, footer_shows_address, serves jsonb) + audit trigger + RLS (read: any authed group member; write: `is_group_admin()`).
-  - `alter table tower.quotes add column issuer_id text references tower.issuing_entities(id)`, `add column locale text` (per-doc override).
+- **Migration `tower_56`** (`supabase/migrations/20260724235523_tower_56_issuing_entities.sql`) — *a prod-ledger cross-check caught `tower_55`/`20260724160000` already taken by `tower_55_team_space` (a drift not yet in this branch), so this renumbered 55→56 / `20260724235523`. Applied to prod.*:
+  - `tower.issuing_entities` (uuid id PK + text code slug, key, country, tax_id_label, doc_prefix, issuer jsonb, exporter jsonb, banking jsonb null, terms jsonb, default_incoterm, tax_label, tax_bps, default_issue_city, locale, footer_shows_address, serves jsonb) + audit trigger + RLS (read: any authed group member; write: `is_group_admin()`).
+  - `alter table tower.quotes add column issuer_id text references tower.issuing_entities(code)`, `add column locale text` (per-doc override).
   - Seed the two entities from `issuers.ts` (idempotent upsert).
 - **`issuers.ts`** becomes the typed seed + fallback; `getProformaDocument` gains `issuerById(row.issuer_id) ?? resolveIssuer(...)`.
 - **Feed the knowledge base:** append `D-xx` to `programs/tower/DECISIONS.log.md`; add the schema to `programs/tower/DATABASE_SCHEMA.sql`; add backlog items to `REMAINING.md`; link `docs/quotation-intelligence.md` + this plan from `ARCHITECTURE.md`.
@@ -118,4 +118,4 @@ Each wave ends at TOWER's Definition of Done (RLS tested with a non-admin fixtur
 - The anexo document exists as a working deliverable (the layout + numbers to port into Wave 4).
 
 ## 6. First concrete step
-Wave 0, task 1 (**DONE** on branch, migration awaiting prod apply): merged `master`, confirmed `tower_55` free, wrote `tower_55_issuing_entities.sql` + the `quotes.issuer_id/locale` columns, seeded from `issuers.ts`, and flipped `getProformaDocument` to `issuerById(...) ?? resolveIssuer(...)`. Everything else builds on that column.
+Wave 0, task 1 (**DONE** on branch, migration awaiting prod apply): merged `master`, confirmed `tower_56` free, wrote `tower_56_issuing_entities.sql` + the `quotes.issuer_id/locale` columns, seeded from `issuers.ts`, and flipped `getProformaDocument` to `issuerById(...) ?? resolveIssuer(...)`. Everything else builds on that column.

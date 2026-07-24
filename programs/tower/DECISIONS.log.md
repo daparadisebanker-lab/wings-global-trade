@@ -307,7 +307,7 @@ feature/tower-wave1 (Root Directory apps/tower); the site project keeps master.
 
 ## Multi-entity issuing + document generation · 2026-07-24
 
-### D-issuer · `tower.issuing_entities` + `quotes.issuer_id` (tower_55)
+### D-issuer · `tower.issuing_entities` + `quotes.issuer_id` (tower_56)
 The issuing legal ENTITY a proforma/quotation prints (legal name, RUC/RUT, address,
 banking, ports-as-text, tax posture, locale, footer policy) becomes a first-class,
 persisted concept — a **different axis** from `tower.org_rules` (per-BRAND policy:

@@ -289,14 +289,15 @@ create policy products_update on products for update
 -- events → insert via service role only; selects via rollups.
 -- audit_log: insert-only via trigger; select restricted to group admin.
 
--- ── issuing_entities (tower_55) — the group's legal issuing companies ─────────
+-- ── issuing_entities (tower_56) — the group's legal issuing companies ─────────
 -- Per-LEGAL-ENTITY document identity, distinct from org_rules (per-brand policy).
 -- Group-level: read by any authed member; write via is_group_admin(). Retire via
 -- retired_at (no delete). Runtime resolution source stays lib/quotation/issuers.ts;
 -- this table persists it for the quotes.issuer_id FK + future admin.
 create table tower.issuing_entities (
-  id                   text primary key,        -- 'wgt-pe','shining-star-cl'
-  key                  text not null unique,
+  id                   uuid primary key default gen_random_uuid(),  -- uuid PK (audit_trigger casts id::uuid)
+  code                 text not null unique,    -- app slug 'wgt-pe','shining-star-cl' — the TS registry id; quotes.issuer_id FK target
+  key                  text not null unique,    -- display key 'WGT-PE','SHINING-CL'
   country              text not null,
   tax_id_label         text not null,           -- RUC | RUT | NIT …
   doc_prefix           text not null,           -- PF-{prefix}-YYYY-NNNN
@@ -317,5 +318,5 @@ create table tower.issuing_entities (
 );
 -- quotes gains the explicit issuer choice (wins over resolveIssuer) + locale override:
 alter table tower.quotes
-  add column issuer_id text references tower.issuing_entities(id),
+  add column issuer_id text references tower.issuing_entities(code),  -- FK to the unique code (the TS registry id)
   add column locale    text check (locale in ('es','es-en'));
