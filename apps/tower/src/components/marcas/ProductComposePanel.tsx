@@ -32,7 +32,8 @@ export function ProductComposePanel({
   locale?: Locale
 }) {
   const [variant, setVariant] = useState<Extract<PromoVariant, 'whatsapp' | 'ad'>>('whatsapp')
-  const [copied, setCopied] = useState(false)
+  const [copyState, setCopyState] = useState<'idle' | 'ok' | 'fail'>('idle')
+  const [dlError, setDlError] = useState(false)
 
   const copyText = useMemo(() => buildProductPromoCopy(promo, variant), [promo, variant])
   const svg = useMemo(() => buildProductPromoCardSvg(promo), [promo])
@@ -40,11 +41,17 @@ export function ProductComposePanel({
   async function copyToClipboard() {
     try {
       await navigator.clipboard.writeText(copyText)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1800)
+      setCopyState('ok')
     } catch {
-      setCopied(false)
+      // Clipboard blocked — surface it (the copy text is on screen to copy by hand).
+      setCopyState('fail')
     }
+    setTimeout(() => setCopyState('idle'), 1800)
+  }
+
+  function download(kind: 'png' | 'jpeg') {
+    setDlError(false)
+    downloadCardRaster(svg, baseName, kind, () => setDlError(true))
   }
 
   return (
@@ -73,8 +80,15 @@ export function ProductComposePanel({
             onClick={copyToClipboard}
             className="rounded-card border border-line px-2 py-1 font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:border-lane-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lane-accent"
           >
-            {copied ? t({ es: 'Copiado ✓', en: 'Copied ✓' }, locale) : t({ es: 'Copiar', en: 'Copy' }, locale)}
+            {t({ es: 'Copiar', en: 'Copy' }, locale)}
           </button>
+          <span role="status" aria-live="polite" className="font-mono text-label text-ink-secondary">
+            {copyState === 'ok'
+              ? t({ es: 'Copiado ✓', en: 'Copied ✓' }, locale)
+              : copyState === 'fail'
+                ? t({ es: 'No se pudo copiar', en: 'Copy failed' }, locale)
+                : ''}
+          </span>
         </div>
         <pre className="whitespace-pre-wrap rounded-card border border-line bg-surface-0 p-3 font-ui text-t0 text-ink-primary">
           {copyText}
@@ -98,21 +112,26 @@ export function ProductComposePanel({
           // buildProductPromoCardSvg is our own pure, escaped SVG string — no user HTML.
           dangerouslySetInnerHTML={{ __html: svg }}
         />
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
-            onClick={() => downloadCardRaster(svg, baseName, 'png')}
+            onClick={() => download('png')}
             className="rounded-card bg-accent px-3 py-1.5 font-mono text-label uppercase tracking-[0.1em] text-surface-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lane-accent"
           >
             {t({ es: 'Descargar PNG', en: 'Download PNG' }, locale)}
           </button>
           <button
             type="button"
-            onClick={() => downloadCardRaster(svg, baseName, 'jpeg')}
+            onClick={() => download('jpeg')}
             className="rounded-card border border-line px-3 py-1.5 font-mono text-label uppercase tracking-[0.1em] text-ink-secondary hover:border-lane-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lane-accent"
           >
             {t({ es: 'Descargar JPG', en: 'Download JPG' }, locale)}
           </button>
+          {dlError ? (
+            <span role="alert" className="font-mono text-label text-negative">
+              {t({ es: 'No se pudo generar la imagen', en: 'Could not generate the image' }, locale)}
+            </span>
+          ) : null}
         </div>
       </div>
     </div>

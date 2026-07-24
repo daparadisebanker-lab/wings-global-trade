@@ -4,7 +4,7 @@
 // published products (RLS-scoped), picks one, optionally adds a price note (there
 // is no price on a product), and the studio derives a spec-forward promo from the
 // listing data. Same compose→share pipeline as every other source.
-import { useEffect, useMemo, useState, useTransition } from 'react'
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
 import { listBrowseProducts, listBrowseCategories, type ProductRow } from '@/lib/actions/catalog'
 import { productRowToPromo } from '@/lib/marcas/product-promo-map'
 import { ProductComposePanel } from './ProductComposePanel'
@@ -34,6 +34,9 @@ export function CatalogPromoWorkbench({
   const [priceNote, setPriceNote] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, startLoad] = useTransition()
+  // Monotonic request id — only the LATEST fetch may commit, so a slow stale
+  // response can't overwrite a newer query's results (out-of-order landing).
+  const reqIdRef = useRef(0)
 
   useEffect(() => {
     void listBrowseCategories().then((res) => {
@@ -41,22 +44,28 @@ export function CatalogPromoWorkbench({
     })
   }, [])
 
-  // (Re)load the product list on filter change (server-side, RLS + PUBLISHED).
+  // (Re)load the product list on filter change (server-side, RLS + PUBLISHED),
+  // debounced so typing doesn't fire a request per keystroke.
   useEffect(() => {
-    startLoad(async () => {
-      const res = await listBrowseProducts({
-        category: category || undefined,
-        search: search.trim() || undefined,
-        limit: 40,
+    const myId = ++reqIdRef.current
+    const timer = setTimeout(() => {
+      startLoad(async () => {
+        const res = await listBrowseProducts({
+          category: category || undefined,
+          search: search.trim() || undefined,
+          limit: 40,
+        })
+        if (myId !== reqIdRef.current) return // superseded by a newer query
+        if (res.error) {
+          setError(res.error.message)
+          setRows([])
+          return
+        }
+        setError(null)
+        setRows(res.data.rows)
       })
-      if (res.error) {
-        setError(res.error.message)
-        setRows([])
-        return
-      }
-      setError(null)
-      setRows(res.data.rows)
-    })
+    }, 250)
+    return () => clearTimeout(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category, search])
 

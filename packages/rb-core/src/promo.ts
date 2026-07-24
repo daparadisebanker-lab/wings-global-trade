@@ -129,8 +129,8 @@ export function buildPromoCopy(p: ContainerPromo, variant: PromoVariant = 'whats
 
 // ── Share card (SVG string) ──────────────────────────────────────────────────
 // Brand constants, card palette, colour math, fonts and esc() now live in
-// ./card-kit (shared with the product card, so BRAND never drifts). BRAND is
-// still imported for the hatch/accent references below.
+// ./card-kit (shared with the product card, so BRAND never drifts); the accent
+// references below use CARD.gold as the fallback.
 
 // Cabinet-projection depth ratios — identical grammar to the ContainerSliceDiagram
 // organ (@wings/trade-ui) so the WhatsApp/ad card matches the on-site drawing.

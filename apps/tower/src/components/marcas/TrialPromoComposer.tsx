@@ -39,28 +39,47 @@ export function TrialPromoComposer({
   const [imageHref, setImageHref] = useState<string | null>(null)
   const [imageError, setImageError] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
+  // Only the latest read may commit, so two quick selections can't land out of order.
+  const imageReqRef = useRef(0)
+
+  function resetFileInput() {
+    if (fileRef.current) fileRef.current.value = ''
+  }
 
   function onFile(file: File | null) {
     setImageError(null)
+    const myId = ++imageReqRef.current
     if (!file) return
+    // On rejection, clear the input too so the rejected filename isn't left on
+    // screen next to the error (the previously-accepted image, if any, stays).
     if (!/^image\/(png|jpe?g|webp)$/i.test(file.type)) {
       setImageError(t({ es: 'Formato no soportado (PNG, JPG o WEBP).', en: 'Unsupported format (PNG, JPG or WEBP).' }, locale))
+      resetFileInput()
       return
     }
     if (file.size > MAX_IMAGE_BYTES) {
       setImageError(t({ es: 'La imagen supera 4 MB.', en: 'The image exceeds 4 MB.' }, locale))
+      resetFileInput()
       return
     }
     const reader = new FileReader()
-    reader.onload = () => setImageHref(typeof reader.result === 'string' ? reader.result : null)
-    reader.onerror = () => setImageError(t({ es: 'No se pudo leer la imagen.', en: 'Could not read the image.' }, locale))
+    reader.onload = () => {
+      if (myId !== imageReqRef.current) return
+      setImageHref(typeof reader.result === 'string' ? reader.result : null)
+    }
+    reader.onerror = () => {
+      if (myId !== imageReqRef.current) return
+      setImageError(t({ es: 'No se pudo leer la imagen.', en: 'Could not read the image.' }, locale))
+      resetFileInput()
+    }
     reader.readAsDataURL(file)
   }
 
   function clearImage() {
+    imageReqRef.current++ // cancel any in-flight read
     setImageHref(null)
     setImageError(null)
-    if (fileRef.current) fileRef.current.value = ''
+    resetFileInput()
   }
 
   const ready = name.trim().length > 0
@@ -149,14 +168,16 @@ export function TrialPromoComposer({
 
         {/* Image (client-side, ephemeral) */}
         <div className="flex flex-col gap-2">
-          <span className={LABEL}>{t({ es: 'Imagen (opcional)', en: 'Image (optional)' }, locale)}</span>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/png,image/jpeg,image/webp"
-            onChange={(e) => onFile(e.target.files?.[0] ?? null)}
-            className="font-mono text-label text-ink-secondary file:mr-3 file:rounded-card file:border file:border-line file:bg-surface-1 file:px-3 file:py-1.5 file:font-mono file:text-label file:uppercase file:tracking-[0.08em] file:text-ink-primary hover:file:border-lane-accent"
-          />
+          <label className="flex flex-col gap-2">
+            <span className={LABEL}>{t({ es: 'Imagen (opcional)', en: 'Image (optional)' }, locale)}</span>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              onChange={(e) => onFile(e.target.files?.[0] ?? null)}
+              className="font-mono text-label text-ink-secondary file:mr-3 file:rounded-card file:border file:border-line file:bg-surface-1 file:px-3 file:py-1.5 file:font-mono file:text-label file:uppercase file:tracking-[0.08em] file:text-ink-primary hover:file:border-lane-accent"
+            />
+          </label>
           {imageError ? (
             <span role="alert" className="font-ui text-t0 text-negative">
               {imageError}

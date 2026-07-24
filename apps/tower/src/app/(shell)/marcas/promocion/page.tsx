@@ -40,6 +40,7 @@ export default async function PromocionPage({ searchParams }: { searchParams: Pr
       </header>
       <MarketingStudio
         containerRows={containerRows}
+        containersDegraded={Boolean(result.error)}
         initialContainerId={params.c}
         recipients={recipients}
         repWhatsappE164={rep?.whatsappE164 ?? null}

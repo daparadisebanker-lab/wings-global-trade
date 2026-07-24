@@ -13,6 +13,10 @@ import type { Locale } from '@/lib/i18n'
 // Reserved ficha keys carry structured objects/arrays, not scalar spec values.
 const RESERVED_SPEC_KEYS = new Set(['highlights', 'dimensions', 'packing'])
 
+/** Max exhibited specs on a card (shared by the primitive scan and the HS append
+ *  so the two can't drift). */
+export const MAX_CARD_SPECS = 6
+
 /** "unitsPerCarton" / "peso_neto" → "units per carton" / "peso neto". */
 export function humanizeKey(k: string): string {
   return k
@@ -22,13 +26,14 @@ export function humanizeKey(k: string): string {
     .trim()
 }
 
-/** PURE: exhibit the scalar spec entries as label/value rows, capped. */
-export function primitiveSpecs(specs: Record<string, unknown> | null | undefined, cap = 6): ProductPromoSpec[] {
+/** PURE: exhibit the scalar spec entries as label/value rows, capped. Booleans
+ *  render as Spanish Sí/No (the card is client-facing) rather than "true"/"false". */
+export function primitiveSpecs(specs: Record<string, unknown> | null | undefined, cap = MAX_CARD_SPECS): ProductPromoSpec[] {
   const out: ProductPromoSpec[] = []
   for (const [k, v] of Object.entries(specs ?? {})) {
     if (RESERVED_SPEC_KEYS.has(k)) continue
     if (v == null || typeof v === 'object') continue
-    const value = String(v).trim()
+    const value = typeof v === 'boolean' ? (v ? 'Sí' : 'No') : String(v).trim()
     if (!value) continue
     out.push({ label: humanizeKey(k), value })
     if (out.length >= cap) break
@@ -44,8 +49,8 @@ export function productRowToPromo(
   extra?: { priceNote?: string; accent?: string; ownerLabel?: string },
 ): ProductPromo {
   const name = (row.name?.[locale] || row.name?.es || row.name?.en || '').trim()
-  const specs = primitiveSpecs(row.specs, 6)
-  if (row.hsCode && specs.length < 6) specs.push({ label: 'HS', value: row.hsCode })
+  const specs = primitiveSpecs(row.specs, MAX_CARD_SPECS)
+  if (row.hsCode && specs.length < MAX_CARD_SPECS) specs.push({ label: 'HS', value: row.hsCode })
   return {
     productName: name || 'Producto',
     ownerLabel: extra?.ownerLabel,

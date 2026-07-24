@@ -25,7 +25,7 @@ describe('primitiveSpecs', () => {
     const rows = primitiveSpecs(specs)
     expect(rows).toContainEqual({ label: 'potencia', value: '40 HP' })
     expect(rows).toContainEqual({ label: 'ruedas', value: '4' })
-    expect(rows).toContainEqual({ label: 'electrico', value: 'false' })
+    expect(rows).toContainEqual({ label: 'electrico', value: 'No' }) // boolean → Spanish
     expect(rows.find((r) => r.label === 'dimensions')).toBeUndefined()
     expect(rows.find((r) => r.label === 'extras')).toBeUndefined()
     expect(rows).toHaveLength(3)

@@ -50,6 +50,7 @@ const SOURCES: { source: Source; title: Localized; blurb: Localized; examples: L
 
 export function MarketingStudio({
   containerRows,
+  containersDegraded = false,
   initialContainerId,
   recipients,
   repWhatsappE164 = null,
@@ -57,6 +58,9 @@ export function MarketingStudio({
   locale = DEFAULT_LOCALE,
 }: {
   containerRows: PromotableContainerRow[]
+  /** True when the container fetch failed (vs genuinely empty) — so the empty
+   *  state doesn't assert "no containers" as fact. */
+  containersDegraded?: boolean
   initialContainerId?: string
   recipients: ShareRecipient[]
   repWhatsappE164?: string | null
@@ -64,7 +68,16 @@ export function MarketingStudio({
   locale?: Locale
 }) {
   // Deep-linked to a container? Start on that source. Otherwise the catalog.
-  const [source, setSource] = useState<Source>(initialContainerId ? 'contenedor' : 'catalogo')
+  const initial: Source = initialContainerId ? 'contenedor' : 'catalogo'
+  const [source, setSource] = useState<Source>(initial)
+  // Mount a source on first visit and KEEP it mounted (hidden when inactive), so
+  // switching sources never wipes an in-progress composition — critical for the
+  // ephemeral, unsaveable Prueba form. Lazy: Catálogo only fetches once opened.
+  const [mounted, setMounted] = useState<Set<Source>>(() => new Set<Source>([initial]))
+  function selectSource(s: Source) {
+    setSource(s)
+    setMounted((prev) => (prev.has(s) ? prev : new Set(prev).add(s)))
+  }
 
   return (
     <div className="flex flex-col gap-5">
@@ -80,7 +93,7 @@ export function MarketingStudio({
                 key={s.source}
                 type="button"
                 aria-pressed={on}
-                onClick={() => setSource(s.source)}
+                onClick={() => selectSource(s.source)}
                 className={cn(
                   'flex flex-col gap-1.5 rounded-card border p-4 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lane-accent',
                   on ? 'border-lane-accent bg-surface-2' : 'border-line bg-surface-1 hover:border-lane-accent',
@@ -97,29 +110,40 @@ export function MarketingStudio({
         </div>
       </fieldset>
 
-      {source === 'contenedor' ? (
-        <PromoWorkbench
-          initialRows={containerRows}
-          initialSelectedId={initialContainerId}
-          recipients={recipients}
-          repWhatsappE164={repWhatsappE164}
-          repWhatsappLabel={repWhatsappLabel}
-        />
-      ) : source === 'catalogo' ? (
-        <CatalogPromoWorkbench
-          recipients={recipients}
-          repWhatsappE164={repWhatsappE164}
-          repWhatsappLabel={repWhatsappLabel}
-          locale={locale}
-        />
-      ) : (
-        <TrialPromoComposer
-          recipients={recipients}
-          repWhatsappE164={repWhatsappE164}
-          repWhatsappLabel={repWhatsappLabel}
-          locale={locale}
-        />
-      )}
+      {/* Each source is kept mounted once visited (hidden when inactive) so a
+          switch never discards in-progress work. */}
+      {mounted.has('contenedor') ? (
+        <div className={source === 'contenedor' ? '' : 'hidden'}>
+          <PromoWorkbench
+            initialRows={containerRows}
+            containersDegraded={containersDegraded}
+            initialSelectedId={initialContainerId}
+            recipients={recipients}
+            repWhatsappE164={repWhatsappE164}
+            repWhatsappLabel={repWhatsappLabel}
+          />
+        </div>
+      ) : null}
+      {mounted.has('catalogo') ? (
+        <div className={source === 'catalogo' ? '' : 'hidden'}>
+          <CatalogPromoWorkbench
+            recipients={recipients}
+            repWhatsappE164={repWhatsappE164}
+            repWhatsappLabel={repWhatsappLabel}
+            locale={locale}
+          />
+        </div>
+      ) : null}
+      {mounted.has('prueba') ? (
+        <div className={source === 'prueba' ? '' : 'hidden'}>
+          <TrialPromoComposer
+            recipients={recipients}
+            repWhatsappE164={repWhatsappE164}
+            repWhatsappLabel={repWhatsappLabel}
+            locale={locale}
+          />
+        </div>
+      ) : null}
     </div>
   )
 }

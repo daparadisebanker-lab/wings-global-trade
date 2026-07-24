@@ -59,10 +59,6 @@ const END_TEXT: Record<PromoAudience, { listed: string; trial: string }> = {
   },
 }
 
-function unit(p: ProductPromo): string {
-  return p.unitLabel ?? 'unidad'
-}
-
 function specsSummary(p: ProductPromo, max = 3): string {
   const s = (p.specs ?? []).slice(0, max)
   return s.length ? s.map((x) => `${x.label}: ${x.value}`).join(' · ') : ''
@@ -113,31 +109,47 @@ export function buildProductPromoCopy(p: ProductPromo, variant: PromoVariant = '
 
 // ── Share card (SVG string) ──────────────────────────────────────────────────
 
-/** Greedy word-wrap to at most `maxLines` lines of ~`maxChars`, ellipsizing the
- *  overflow. SVG <text> doesn't wrap, so headings are wrapped here. */
+/** Word-wrap to at most `maxLines` lines of ~`maxChars`, HARD-splitting any single
+ *  token longer than the budget (a long hyphenated model name must not bleed off
+ *  the card) and ellipsizing real overflow. SVG <text> doesn't wrap. */
 function wrapText(s: string, maxChars: number, maxLines: number): string[] {
-  const words = s.split(/\s+/).filter(Boolean)
+  const clean = s.replace(/\s+/g, ' ').trim()
+  if (!clean) return ['']
+  // Tokenize, hard-splitting any token longer than one line.
+  const tokens: string[] = []
+  for (const w of clean.split(' ')) {
+    let t = w
+    while (t.length > maxChars) {
+      tokens.push(t.slice(0, maxChars))
+      t = t.slice(maxChars)
+    }
+    if (t) tokens.push(t)
+  }
   const lines: string[] = []
   let cur = ''
-  for (const w of words) {
-    const next = cur ? `${cur} ${w}` : w
+  let truncated = false
+  for (const t of tokens) {
+    const next = cur ? `${cur} ${t}` : t
     if (next.length <= maxChars) {
       cur = next
-    } else {
-      if (cur) lines.push(cur)
-      cur = w
-      if (lines.length === maxLines - 1) break
+      continue
     }
+    lines.push(cur)
+    if (lines.length === maxLines) {
+      cur = ''
+      truncated = true
+      break
+    }
+    cur = t
   }
-  if (cur && lines.length < maxLines) lines.push(cur)
-  if (lines.length === maxLines) {
-    // Ellipsize the last line if there's still text left over.
-    const used = lines.join(' ').length
-    if (used < s.length) {
-      let last = lines[maxLines - 1]
-      while (last.length > 1 && last.length > maxChars - 1) last = last.slice(0, -1)
-      lines[maxLines - 1] = `${last.replace(/[\s·]+$/, '')}…`
-    }
+  if (cur) {
+    if (lines.length < maxLines) lines.push(cur)
+    else truncated = true
+  }
+  if (truncated && lines.length) {
+    let last = lines[lines.length - 1]
+    if (last.length > maxChars - 1) last = last.slice(0, maxChars - 1)
+    lines[lines.length - 1] = `${last.replace(/[\s·]+$/, '')}…`
   }
   return lines.length ? lines : ['']
 }
@@ -223,7 +235,7 @@ export function buildProductPromoCardSvg(p: ProductPromo): string {
     : p.trial
       ? 'Al por mayor · sondeo de disponibilidad'
       : 'Compra al por mayor'
-  const moqLine = p.moq ? `Pedido mínimo: ${esc(p.moq)} ${esc(unit(p))}s` : ''
+  const moqLine = p.moq ? `Pedido mínimo: ${esc(p.moq)}` : ''
   const closeLine = p.listingUrl
     ? esc(p.listingUrl)
     : p.trial

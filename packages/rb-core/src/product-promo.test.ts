@@ -89,9 +89,26 @@ describe('buildProductPromoCardSvg', () => {
     const svg = buildProductPromoCardSvg(trial)
     expect(svg).toContain('wingsglobaltrade.com')
   })
-  it('escapes angle brackets in the product name (no injection)', () => {
-    const svg = buildProductPromoCardSvg({ ...trial, productName: 'A <script> B' })
+  it('escapes angle brackets AND quotes in the product name (no injection)', () => {
+    const svg = buildProductPromoCardSvg({ ...trial, productName: 'A <script> "B"' })
     expect(svg).not.toContain('<script>')
     expect(svg).toContain('&lt;script&gt;')
+    expect(svg).toContain('&quot;B&quot;')
+  })
+  it('renders the MOQ line without a broken plural', () => {
+    const svg = buildProductPromoCardSvg(listed)
+    expect(svg).toContain('Pedido mínimo: 2')
+    expect(svg).not.toContain('unidads') // the old broken plural
+  })
+  it('hard-wraps a very long single-token name so it cannot bleed off the card', () => {
+    const svg = buildProductPromoCardSvg({
+      ...listed,
+      productName: 'Electrobomba-Sumergible-Industrial-XL2000-Premium',
+      imageHref: 'data:image/png;base64,AAAA', // narrower headline budget
+    })
+    // Wrapped into multiple <text> lines, none longer than the budget.
+    const lines = [...svg.matchAll(/font-family="'NissanOpti'[^>]*>([^<]*)</g)].map((m) => m[1])
+    expect(lines.length).toBeGreaterThan(1)
+    for (const ln of lines) expect(ln.length).toBeLessThanOrEqual(17)
   })
 })
