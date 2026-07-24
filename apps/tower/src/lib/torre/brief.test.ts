@@ -1,6 +1,6 @@
 // src/lib/torre/brief.test.ts
 import { describe, it, expect } from 'vitest'
-import { buildMorningBrief, productivitySummary, timeSavedEvent, type BriefInput, type PendingDraft } from './brief'
+import { buildMorningBrief, productivitySummary, timeSavedEvent, timeSavedEventsFromApprovals, type BriefInput, type PendingDraft } from './brief'
 import type { WatchSignal } from './watch'
 
 function sig(rule: WatchSignal['rule'], severity: WatchSignal['severity'], importRef = 'A'): WatchSignal {
@@ -94,5 +94,22 @@ describe('productivity telemetry', () => {
 
   it('is zero for an empty period', () => {
     expect(productivitySummary([])).toEqual({ hoursReturned: 0, draftsApproved: 0, signalsResolved: 0 })
+  })
+})
+
+describe('timeSavedEventsFromApprovals', () => {
+  it('maps each approved artifact to one kind-appropriate event', () => {
+    const events = timeSavedEventsFromApprovals(['COTIZACION', 'ACTA', 'COMUNICACION', 'HOJA_COSTOS'])
+    expect(events.map((e) => e.kind)).toEqual(['quote_run', 'doc_generated', 'draft_approved', 'draft_approved'])
+  })
+
+  it('rolls up into hours returned via productivitySummary', () => {
+    const s = productivitySummary(timeSavedEventsFromApprovals(['COTIZACION', 'COTIZACION', 'SOP']))
+    // 25 + 25 + 12 = 62 min → 1.0h
+    expect(s.hoursReturned).toBe(1)
+  })
+
+  it('skips unknown kinds', () => {
+    expect(timeSavedEventsFromApprovals(['NOT_A_KIND' as never])).toEqual([])
   })
 })

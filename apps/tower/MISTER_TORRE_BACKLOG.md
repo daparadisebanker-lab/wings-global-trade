@@ -69,6 +69,9 @@ off the World-B exemption; connectors mock-first behind adapters (`MOCK_CONNECTO
   descarta→carta, prestado→estado, correspondiente→respond) + costará coverage; urgency
   trimmed to unambiguous signals; redactor must name missing figures; analista comms
   internal-only (+ test); parseRouterResponse balanced-brace (survives braces in reason).
+  **Telemetry source DONE** (L5): `timeSavedEventsFromApprovals` (pure) + `getTorreTelemetry`
+  action → reads APPROVED Torre artifacts in a window (RLS) → hours-returned rollup;
+  watch-resolutions excluded (won't credit machine auto-resolve). Remaining L5: Brief screen UI.
 - `DONE` **C1 · streaming** — the full agentic run, streamed. `runToolLoop` gained an
   `onStep` observer; `runTorreAgent` (run.ts) composes route→profile→scoped-belt→loop and
   emits typed events (route·step·final). Shared **quote-core.ts** extracted from the

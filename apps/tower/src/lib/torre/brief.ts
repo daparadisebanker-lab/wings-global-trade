@@ -4,7 +4,7 @@
 // queue, FILTERED to what the operator's role actually acts on, plus the productivity
 // telemetry (hours returned). The Brief is where non-`inmediato` signals batch (the
 // interruption budget, spec non-negotiable 8) — it is the calm daily digest, not a firehose.
-import type { TorreArtifactKind } from './artifacts'
+import { TORRE_ARTIFACT_KINDS, type TorreArtifactKind } from './artifacts'
 import { partitionByDelivery, type Severity, type WatchRuleId, type WatchSignal } from './watch'
 
 export type Role = 'LANE_DIRECTOR' | 'CATALOG_EDITOR' | 'TRADE_OPS' | 'SALES' | 'VIEWER'
@@ -139,6 +139,25 @@ export function productivitySummary(events: TimeSavedEvent[]): BriefTelemetry {
 /** PURE: a TimeSavedEvent from an event kind using the default baseline (or an override). */
 export function timeSavedEvent(kind: TimeSavedEvent['kind'], minutesSaved = MINUTES_SAVED[kind]): TimeSavedEvent {
   return { kind, minutesSaved }
+}
+
+const DOCUMENT_KINDS: ReadonlySet<TorreArtifactKind> = new Set(['REPORTE_ESTADO', 'CHECKLIST_DOCS', 'ACTA', 'SOP'])
+
+/**
+ * PURE: map APPROVED Torre artifacts (by kind) to time-saved events — one per artifact:
+ * a cotización is a quote_run (a landed-cost sheet Mister built instead of a human), a
+ * document is doc_generated, a message/cost-sheet is draft_approved. Unknown kinds are
+ * skipped. Feed the result to productivitySummary for the Friday/month-end rollup.
+ */
+export function timeSavedEventsFromApprovals(kinds: TorreArtifactKind[]): TimeSavedEvent[] {
+  const events: TimeSavedEvent[] = []
+  for (const k of kinds) {
+    if (!TORRE_ARTIFACT_KINDS.includes(k)) continue
+    if (k === 'COTIZACION') events.push(timeSavedEvent('quote_run'))
+    else if (DOCUMENT_KINDS.has(k)) events.push(timeSavedEvent('doc_generated'))
+    else events.push(timeSavedEvent('draft_approved')) // COMUNICACION, HOJA_COSTOS
+  }
+  return events
 }
 
 // re-exported for callers assembling briefs
