@@ -27,10 +27,16 @@ export async function listShareRecipients(): Promise<ActionResult<ShareRecipient
   } = await supabase.auth.getUser()
   if (!user) return fail('UNAUTHORIZED', 'Sesión requerida / Session required')
 
+  // Filter out null-WhatsApp contacts at the DB and order before the limit, so a
+  // tenant with >1000 contacts gets a deterministic, reachable-first slice (an
+  // unordered limit would drop reachable clients arbitrarily on each load). The
+  // pure toRecipients still applies the final reachability gate + display sort.
   const { data, error } = await supabase
     .schema('tower')
     .from('contacts')
     .select(SHARE_CONTACT_SELECT)
+    .not('whatsapp', 'is', null)
+    .order('full_name', { ascending: true })
     .limit(1000)
 
   if (error) return fail('VALIDATION', 'No se pudieron listar los contactos / Could not list contacts')

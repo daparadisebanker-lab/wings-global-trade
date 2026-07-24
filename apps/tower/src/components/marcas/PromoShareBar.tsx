@@ -55,10 +55,11 @@ export function PromoShareBar({
   )
   const filtered = useMemo(() => filterRecipients(recipients, query), [recipients, query])
 
-  // The client-facing text, greeted to the picked contact when there is one.
+  // The client-facing text, greeted to the picked contact when they have a name
+  // (a nameless contact — display falls back to the account — goes out ungreeted).
   function clientText(): string {
     const base = buildText('clients')
-    return selected ? personalizedShareText(base, selected.contactName, locale) : base
+    return selected ? personalizedShareText(base, selected.greetName, locale) : base
   }
 
   function shareToMarketing() {
@@ -74,8 +75,13 @@ export function PromoShareBar({
   async function shareNative() {
     try {
       await navigator.share({ text: clientText() })
-    } catch {
-      /* user cancelled the share sheet (AbortError) — nothing to do */
+    } catch (e) {
+      // A user cancel (AbortError) is expected — swallow it. Any OTHER failure
+      // (share target rejected, not-allowed) must not dead-end the button, so
+      // fall back to the wa.me path (own line / picked contact).
+      if ((e as DOMException | undefined)?.name !== 'AbortError') {
+        openWhatsApp(selected?.whatsapp ?? repWhatsappE164, clientText())
+      }
     }
   }
 
@@ -114,44 +120,50 @@ export function PromoShareBar({
               onChange={(e) => setQuery(e.target.value)}
               placeholder={t({ es: 'Buscar cliente…', en: 'Search client…' }, locale)}
               aria-label={t({ es: 'Buscar cliente', en: 'Search client' }, locale)}
-              className="rounded-card border border-line bg-surface-1 px-2 py-1.5 font-ui text-t0 text-ink-primary outline-none focus-visible:border-lane-accent"
+              className="rounded-card border border-line bg-surface-1 px-2 py-1.5 font-ui text-t0 text-ink-primary outline-none focus-visible:border-lane-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-lane-accent"
             />
-            <ul className="flex max-h-40 flex-col gap-0.5 overflow-y-auto" role="listbox" aria-label={t({ es: 'Clientes', en: 'Clients' }, locale)}>
-              {filtered.map((r) => {
-                const on = r.id === selectedId
-                return (
-                  <li key={r.id}>
-                    <button
-                      type="button"
-                      role="option"
-                      aria-selected={on}
-                      onClick={() => setSelectedId(on ? null : r.id)}
-                      className={`flex w-full flex-col items-start rounded-control px-2 py-1.5 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-lane-accent ${
-                        on ? 'bg-surface-2 text-ink-primary' : 'text-ink-secondary hover:bg-surface-1'
-                      }`}
-                    >
-                      <span className="font-ui text-t0">{r.contactName}</span>
-                      <span className="font-mono text-label text-ink-secondary">
-                        {r.accountName}
-                        {r.brandName ? ` · ${r.brandName}` : ''}
-                      </span>
-                    </button>
-                  </li>
-                )
-              })}
-              {filtered.length === 0 ? (
-                <li className="px-2 py-1.5 font-ui text-label text-ink-secondary">
-                  {t({ es: 'Sin coincidencias', en: 'No matches' }, locale)}
-                </li>
-              ) : null}
-            </ul>
+            {/* role=listbox must directly own its options — the li wrappers are
+                presentation so the option relationship isn't broken; the empty
+                message lives OUTSIDE the listbox (a non-option child is invalid). */}
+            {filtered.length > 0 ? (
+              <ul className="flex max-h-40 flex-col gap-0.5 overflow-y-auto" role="listbox" aria-label={t({ es: 'Clientes', en: 'Clients' }, locale)}>
+                {filtered.map((r) => {
+                  const on = r.id === selectedId
+                  return (
+                    <li key={r.id} role="presentation">
+                      <button
+                        type="button"
+                        role="option"
+                        aria-selected={on}
+                        onClick={() => setSelectedId(on ? null : r.id)}
+                        className={`flex w-full flex-col items-start rounded-control px-2 py-1.5 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-lane-accent ${
+                          on ? 'bg-surface-2 text-ink-primary' : 'text-ink-secondary hover:bg-surface-1'
+                        }`}
+                      >
+                        <span className="font-ui text-t0">{r.contactName}</span>
+                        <span className="font-mono text-label text-ink-secondary">
+                          {r.accountName}
+                          {r.brandName ? ` · ${r.brandName}` : ''}
+                        </span>
+                      </button>
+                    </li>
+                  )
+                })}
+              </ul>
+            ) : (
+              <p className="px-2 py-1.5 font-ui text-label text-ink-secondary">
+                {t({ es: 'Sin coincidencias', en: 'No matches' }, locale)}
+              </p>
+            )}
           </>
         ) : (
           <p className="font-mono text-label text-ink-secondary">
+            {/* Neutral wording: this branch also renders when the fetch failed, so
+                it must not assert "there are none" as a fact. */}
             {t(
               {
-                es: 'Aún no hay clientes con WhatsApp. Agrega el número en el contacto del cliente.',
-                en: 'No clients with WhatsApp yet. Add the number on the client contact.',
+                es: 'No hay clientes con WhatsApp para mostrar. Agrega el número en el contacto del cliente.',
+                en: 'No clients with WhatsApp to show. Add the number on the client contact.',
               },
               locale,
             )}
