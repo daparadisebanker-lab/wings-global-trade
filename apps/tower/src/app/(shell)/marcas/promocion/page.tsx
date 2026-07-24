@@ -3,6 +3,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { PromoWorkbench } from '@/components/marcas'
 import { listPromotableContainers } from '@/lib/actions/container-promo'
 import { getMyRepProfile } from '@/lib/actions/rep-profile'
+import { listShareRecipients } from '@/lib/actions/share-recipients'
 
 // Promoción de contenedores (container-promotion feature, root CLAUDE.md §5-bis).
 // Server-fetches the containers the user may promote (RLS: a rep sees only their
@@ -10,12 +11,15 @@ import { getMyRepProfile } from '@/lib/actions/rep-profile'
 // The signed-in rep's own WhatsApp line is fetched here too so promo shares open
 // from their own number (each rep reaches a different demographic; tower_39).
 export default async function PromocionPage({ searchParams }: { searchParams: Promise<{ c?: string }> }) {
-  const [result, repProfile, params] = await Promise.all([
+  const [result, repProfile, recipientsResult, params] = await Promise.all([
     listPromotableContainers(),
     getMyRepProfile(),
+    listShareRecipients(),
     searchParams,
   ])
   const rep = repProfile.data ?? null
+  // Reachable client contacts for the share picker; RLS-scoped, empty on error.
+  const recipients = recipientsResult.error ? [] : recipientsResult.data
 
   if (result.error) {
     return (
@@ -47,6 +51,7 @@ export default async function PromocionPage({ searchParams }: { searchParams: Pr
       <PromoWorkbench
         initialRows={result.data}
         initialSelectedId={params.c}
+        recipients={recipients}
         repWhatsappE164={rep?.whatsappE164 ?? null}
         repWhatsappLabel={rep?.whatsappLabel ?? null}
       />
