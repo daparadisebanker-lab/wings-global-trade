@@ -109,10 +109,14 @@ off the World-B exemption; connectors mock-first behind adapters (`MOCK_CONNECTO
   World-B panel), diff support (revise.ts factsFor), and **eval-tests** (schema validity +
   honesty: a missing required doc is marked and warned, a blocked document is unapprovable).
   Kinds were pre-reserved in migration tower_48 — no new migration. 16 tests. Review: pending.
-- `TODO` **L4 · Vigilar (Watch)** — `watch_signals` migration + reconciler + v1 rules
-  (ETA slip, doc deadline, demurrage, rate expiry, payment milestone, quote-quiet,
-  margin drift, stale import) + triage/severity + interruption budget + one-tap draft +
-  kill switches + a seeded demurrage catch.
+- `DONE` **L4 · Vigilar (Watch)** — pure engine (watch.ts): the **8 v1 rules** (eta-slip,
+  doc-deadline, demurrage, rate-expiry, payment-milestone, quote-quiet, margin-drift,
+  stale-import) each detecting from an import snapshot with severity + a one-tap suggested
+  draft; **triageSignals** (rank + dedup); **partitionByDelivery** (interruption budget —
+  only `inmediato` interrupts, ≤1/import, rest → Brief); **reconcileWatch** (idempotent
+  new-vs-resolved diff — a standing exception never re-pings); **activeRules** kill switches;
+  a seeded demurrage catch. `watch_signals` migration (tower_52, partial-unique OPEN key +
+  RLS + audit). 13 tests. Remaining: DB reconciler job + signals UI. Review: pending.
 - `TODO` **L5 · Reportar** — Morning Brief (per-role screen + masthead) + Friday +
   month-end + analista profile + productivity telemetry (time-saved, hours returned).
 - `TODO` **L6 · RAG / memory** — pgvector migration + ingest-on-approval + hybrid
