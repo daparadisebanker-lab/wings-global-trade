@@ -107,6 +107,11 @@ export function ShellChrome({
   // Desktop Dock pin state (default pinned; persisted). Owned here because it
   // drives the content-bottom padding; the Dock reflects it + toggles it.
   const [dockPinned, setDockPinned] = useState(true)
+  // Desktop left-rail collapse (default open; persisted). Collapsing frees the full
+  // width for the work surface — the "compact for what matters" ask. Desktop-only:
+  // on mobile the aside is the drawer (drawerOpen governs it). Content-agnostic, so
+  // it applies equally once the rail carries the rep panel instead of modules.
+  const [railCollapsed, setRailCollapsed] = useState(false)
   const railRef = useRef<HTMLElement>(null)
   const restoreFocusRef = useRef<HTMLElement | null>(null)
   // On /intelligence the cockpit is rendered inline (page mode); mounting the
@@ -141,6 +146,19 @@ export function ShellChrome({
           return n
         })
       }
+      // ⌘\ collapses / restores the desktop left rail (maximize the work surface).
+      if ((e.metaKey || e.ctrlKey) && e.key === '\\') {
+        e.preventDefault()
+        setRailCollapsed((v) => {
+          const n = !v
+          try {
+            localStorage.setItem('tower-rail', n ? 'collapsed' : 'open')
+          } catch {
+            /* private mode */
+          }
+          return n
+        })
+      }
       if (e.key === 'Escape') setDrawerOpen(false)
     }
     window.addEventListener('keydown', onKey)
@@ -165,6 +183,15 @@ export function ShellChrome({
       if (localStorage.getItem('tower-dock') === 'hidden') setDockPinned(false)
     } catch {
       /* private mode — stays pinned */
+    }
+  }, [])
+
+  // Restore the persisted rail-collapsed state (default open). Read after mount.
+  useEffect(() => {
+    try {
+      if (localStorage.getItem('tower-rail') === 'collapsed') setRailCollapsed(true)
+    } catch {
+      /* private mode — stays open */
     }
   }, [])
 
@@ -260,6 +287,18 @@ export function ShellChrome({
     })
   }
 
+  const toggleRail = () => {
+    setRailCollapsed((v) => {
+      const n = !v
+      try {
+        localStorage.setItem('tower-rail', n ? 'collapsed' : 'open')
+      } catch {
+        /* private mode */
+      }
+      return n
+    })
+  }
+
   return (
     <div
       style={rootStyle}
@@ -287,12 +326,12 @@ export function ShellChrome({
           aria-modal={isMobile && drawerOpen ? true : undefined}
           aria-label={isMobile ? t({ es: 'Menú de navegación', en: 'Navigation menu' }, DEFAULT_LOCALE) : undefined}
           className={cn(
-            'tower-rail fixed inset-y-0 left-0 z-40 flex w-[86vw] max-w-80 flex-col overflow-y-auto border-r border-line bg-surface-1 transition-transform duration-200',
-            'md:sticky md:top-0 md:z-auto md:h-screen md:max-w-none md:w-64',
+            'tower-rail fixed inset-y-0 left-0 z-40 flex w-[86vw] max-w-80 flex-col overflow-y-auto border-r border-line bg-surface-1 transition-[transform,width] duration-200',
+            'md:sticky md:top-0 md:z-auto md:h-screen md:max-w-none',
+            // Desktop collapse (⌘\ / the « button): slide the rail to zero width to give
+            // the work surface the whole viewport. Mobile is unaffected (drawer governs).
+            railCollapsed ? 'md:w-0 md:min-w-0 md:overflow-hidden md:border-r-0' : 'md:w-64',
             drawerOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
-            // Phase C: the desktop module sidebar (labeled, expandable) lives here
-            // now — kept alongside the Dock (decision: both surfaces). Below md the
-            // aside stays the off-canvas drawer, untouched.
           )}
         >
           <div className="flex items-center border-b border-line p-4">
@@ -304,6 +343,17 @@ export function ShellChrome({
                 Admin Portal
               </span>
             </div>
+            {/* Collapse the rail (desktop only; mobile uses the drawer scrim). */}
+            <button
+              type="button"
+              onClick={toggleRail}
+              aria-label={t({ es: 'Contraer panel (⌘\\)', en: 'Collapse panel (⌘\\)' }, DEFAULT_LOCALE)}
+              className="ml-auto hidden h-8 w-8 shrink-0 items-center justify-center rounded-control text-ink-secondary transition-colors hover:bg-surface-2 hover:text-ink-primary md:flex"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.6} aria-hidden>
+                <path d="M10 4l-4 4 4 4" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
           </div>
 
           <LaneSwitcher lanes={memberships} activeLaneId={activeLaneId} onSelect={setActiveLaneId} />
@@ -330,6 +380,20 @@ export function ShellChrome({
             <ControlCenterStatus userName={userName} userEmail={userEmail} active={drawerOpen} />
           </div>
         </aside>
+
+        {/* When the rail is collapsed, a slim edge tab (desktop only) brings it back. */}
+        {railCollapsed ? (
+          <button
+            type="button"
+            onClick={toggleRail}
+            aria-label={t({ es: 'Expandir panel (⌘\\)', en: 'Expand panel (⌘\\)' }, DEFAULT_LOCALE)}
+            className="fixed left-0 top-3 z-40 hidden h-9 w-6 items-center justify-center rounded-r-control border border-l-0 border-line bg-surface-1 text-ink-secondary transition-colors hover:text-ink-primary md:flex"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.6} aria-hidden>
+              <path d="M6 4l4 4-4 4" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        ) : null}
 
         <div className="flex min-h-screen min-w-0 flex-1 flex-col">
           <TopBar
