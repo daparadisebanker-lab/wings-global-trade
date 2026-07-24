@@ -5,20 +5,18 @@
 // when nothing needs the operator, the Brief earns a calm quiet state instead of an empty error.
 import Link from 'next/link'
 import { t, type Locale, type Localized } from '@/lib/i18n'
-import { formatHoursReturned } from '@/lib/torre/brief-view'
-import type { MorningBrief } from '@/lib/torre/brief'
+import { formatHoursReturned, KIND_LABEL, SEVERITY_LABEL, TIME_SAVED_KIND_LABEL } from '@/lib/torre/brief-view'
+import type { MorningBrief, PendingDraft } from '@/lib/torre/brief'
 import type { Severity, WatchSignal } from '@/lib/torre/watch'
-import type { PendingDraft } from '@/lib/torre/brief'
-import type { TorreArtifactKind } from '@/lib/torre/artifacts'
 
 const TAG: Localized = { es: 'REP · Brief', en: 'REP · Brief' }
 
-const SEVERITY_LABEL: Record<Severity, Localized> = {
-  inmediato: { es: 'Inmediato', en: 'Immediate' },
-  alto: { es: 'Alto', en: 'High' },
-  medio: { es: 'Medio', en: 'Medium' },
-  bajo: { es: 'Bajo', en: 'Low' },
-}
+// Section mapping (spec 01 §4, conscious substitution over the tested severity split): Hoy →
+// "Ahora" (urgent/inmediato) · Riesgos → "En observación" (batched) · Borradores listos (as-is)
+// · Ayer → a 7-day telemetry rollup (an aggregate, not the per-item "one line each" log — a
+// deliberate v1 substitution). "One screen, ≤90s" is honoured with a per-band cap below.
+const MAX_PER_BAND = 8
+
 // Severity carries its weight in the ink, not a decorative badge (numbers-as-brand restraint).
 const SEVERITY_INK: Record<Severity, string> = {
   inmediato: 'text-negative',
@@ -27,15 +25,9 @@ const SEVERITY_INK: Record<Severity, string> = {
   bajo: 'text-ink-secondary',
 }
 
-const KIND_LABEL: Record<TorreArtifactKind, Localized> = {
-  HOJA_COSTOS: { es: 'Hoja de costos', en: 'Cost sheet' },
-  COTIZACION: { es: 'Cotización', en: 'Quote' },
-  COMUNICACION: { es: 'Comunicación', en: 'Message' },
-  REPORTE_ESTADO: { es: 'Reporte de estado', en: 'Status report' },
-  CHECKLIST_DOCS: { es: 'Checklist de documentos', en: 'Document checklist' },
-  ACTA: { es: 'Acta', en: 'Minutes' },
-  SOP: { es: 'Procedimiento', en: 'SOP' },
-}
+// KNOWN DEBT (clickable-to-source, interaction law 3): a signal's importRef is a text ref with
+// no container FK, so it renders as a chip (a real link needs a resolver); the drafts band links
+// to the review queue, not the specific draft (no draft-deep-link param on /intelligence yet).
 
 export function MorningBriefView({ brief, locale }: { brief: MorningBrief; locale: Locale }) {
   const { urgent, attention, drafts, telemetry, quiet } = brief
@@ -81,12 +73,22 @@ function BandHeader({ title, hint, count, locale }: { title: Localized; hint: Lo
   )
 }
 
+function OverflowLine({ hidden, locale }: { hidden: number; locale: Locale }) {
+  if (hidden <= 0) return null
+  return (
+    <li className="px-1 pt-1 font-mono text-label uppercase tracking-[0.1em] text-ink-tertiary" data-numeric>
+      {t({ es: `+${hidden} más`, en: `+${hidden} more` }, locale)}
+    </li>
+  )
+}
+
 function SignalBand({ title, hint, signals, locale }: { title: Localized; hint: Localized; signals: WatchSignal[]; locale: Locale }) {
+  const shown = signals.slice(0, MAX_PER_BAND) // ≤90s / one-screen: cap the band, count the rest
   return (
     <section className="flex flex-col gap-3">
       <BandHeader title={title} hint={hint} count={signals.length} locale={locale} />
       <ul className="flex flex-col gap-2">
-        {signals.map((s, i) => (
+        {shown.map((s, i) => (
           <li
             key={`${s.rule}-${s.importRef}-${i}`}
             className="flex flex-col gap-1 rounded-card border border-line bg-surface-0 px-4 py-3"
@@ -103,12 +105,14 @@ function SignalBand({ title, hint, signals, locale }: { title: Localized; hint: 
             </span>
           </li>
         ))}
+        <OverflowLine hidden={signals.length - shown.length} locale={locale} />
       </ul>
     </section>
   )
 }
 
 function DraftsBand({ drafts, locale }: { drafts: PendingDraft[]; locale: Locale }) {
+  const shown = drafts.slice(0, MAX_PER_BAND)
   return (
     <section className="flex flex-col gap-3">
       <BandHeader
@@ -118,11 +122,13 @@ function DraftsBand({ drafts, locale }: { drafts: PendingDraft[]; locale: Locale
         locale={locale}
       />
       <ul className="flex flex-col gap-2">
-        {drafts.map((d) => (
+        {shown.map((d) => (
           <li key={d.id}>
+            {/* Links to the review queue (not the specific draft — no deep-link param yet). The
+                global :focus-visible outline is the focus affordance (no outline-none override). */}
             <Link
               href="/intelligence"
-              className="flex items-center justify-between gap-3 rounded-card border border-line bg-surface-0 px-4 py-3 outline-none transition-colors hover:bg-surface-1 focus-visible:border-lane-accent"
+              className="flex items-center justify-between gap-3 rounded-card border border-line bg-surface-0 px-4 py-3 transition-colors hover:bg-surface-1"
             >
               <span className="font-ui text-t0 text-ink-primary">{d.title}</span>
               <span className="shrink-0 font-mono text-label uppercase tracking-[0.1em] text-ink-tertiary">
@@ -131,6 +137,7 @@ function DraftsBand({ drafts, locale }: { drafts: PendingDraft[]; locale: Locale
             </Link>
           </li>
         ))}
+        <OverflowLine hidden={drafts.length - shown.length} locale={locale} />
       </ul>
     </section>
   )
@@ -154,7 +161,7 @@ function TelemetryFooter({ telemetry, locale }: { telemetry: NonNullable<Morning
       {telemetry.basis && telemetry.basis.length > 0 ? (
         <p className="font-mono text-label text-ink-tertiary">
           {telemetry.basis
-            .map((b) => `${b.count} × ${t(KIND_EVENT_LABEL[b.kind], locale)} = ${b.minutesSaved} min`)
+            .map((b) => `${b.count} × ${t(TIME_SAVED_KIND_LABEL[b.kind], locale)} = ${b.minutesSaved} min`)
             .join('  ·  ')}
         </p>
       ) : null}
@@ -171,14 +178,6 @@ function Stat({ value, label, locale, emphatic }: { value: string; label: Locali
       <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-tertiary">{t(label, locale)}</span>
     </div>
   )
-}
-
-// The telemetry basis names its time-saved event kinds (from brief.ts TimeSavedEvent['kind']).
-const KIND_EVENT_LABEL: Record<string, Localized> = {
-  quote_run: { es: 'cotización', en: 'quote' },
-  draft_approved: { es: 'borrador', en: 'draft' },
-  doc_generated: { es: 'documento', en: 'document' },
-  signal_resolved: { es: 'señal', en: 'signal' },
 }
 
 function QuietState({ locale }: { locale: Locale }) {

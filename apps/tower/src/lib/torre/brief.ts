@@ -15,7 +15,7 @@ export type BriefCadence = 'morning' | 'friday' | 'month-end'
 // so their Brief is signal-free (they still see approvable drafts + read watch_signals via
 // RLS). LANE_DIRECTOR covers all 8, so every rule reaches at least one role (see the
 // totality test). VIEWER is handled separately (sees all, read-only).
-const RULE_ROLES: Record<WatchRuleId, Role[]> = {
+export const RULE_ROLES: Record<WatchRuleId, Role[]> = {
   'eta-slip': ['LANE_DIRECTOR', 'TRADE_OPS'],
   'doc-deadline': ['LANE_DIRECTOR', 'TRADE_OPS'],
   demurrage: ['LANE_DIRECTOR', 'TRADE_OPS'],
