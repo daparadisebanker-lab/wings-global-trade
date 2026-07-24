@@ -36,11 +36,21 @@ off the World-B exemption; connectors mock-first behind adapters (`MOCK_CONNECTO
   policy-scoped lane list for all read roles; a11y labels + status banner).
   **→ Foundation A COMPLETE (A1–A4, all Fable-reviewed & fixed).**
 - `DONE` **B1 · agentic loop** — pure `runToolLoop(nextTurn, tools, maxSteps)`: dispatch,
-  error capture (unknown tool / throw → recoverable result), runaway max-step guard;
-  7 tests via a scripted fake nextTurn (no key). SDK tool_use adapter lands with B2's
-  real tools. Fable review: pending.
-- `TODO` **B2 · tool belt** — typed model-callable tools (get_import/get_client/
-  get_rates/get_tariff/search_knowledge) + dispatcher; mutating tools → ai_drafts.
+  error capture (unknown tool / throw → recoverable result), runaway max-step guard.
+  Fable review: **SHIP-WITH-FIXES applied** (2 major + 7 minor) — `AgentTool.access`
+  read/draft flag; `ModelTurn.stopHint` + `StopReason 'aborted'` for honest truncation;
+  `AbortSignal`; maxSteps<1 + duplicate-name guards; terminal turn in transcript;
+  String() armor; readonly steps. 17 tests.
+- `DONE` **B2 · tool belt** — model-callable tools (get_import · get_client · get_supplier ·
+  get_rates · get_tariff · search_knowledge · compute_landed_cost · create_artifact)
+  behind an injected `TorreToolProvider` seam (pure, fake-provider-tested — no DB/key).
+  Governance in the tools: rates/tariffs carry validity (freshness law); money ONLY via
+  the SUNAT engine; RAG framed as data-not-instructions; create_artifact is the sole
+  writer → ai_drafts DRAFT (access:'draft'), never claims a side effect happened. Plus
+  the Anthropic tool_use adapter (`anthropic-runner.ts`): pure stepsToMessages +
+  parseAssistantContent (abnormal stop → stopHint, drops truncated call) + wired
+  `makeAnthropicNextTurn` + `wrapAnthropic` (single SDK seam) + base system prompt.
+  32 tests. Fable review: pending.
 - `TODO` **B3 · profiles + router** — cotizador/operaciones/redactor/analista prompt
   profiles on the loop + intent router.
 - `TODO` **C1 · streaming** — SSE route for Torre runs (mirror api/ai/spec-extract).
