@@ -26,8 +26,10 @@ off the World-B exemption; connectors mock-first behind adapters (`MOCK_CONNECTO
 - `DONE` **A2 · tariff_positions** — HS candidate resolution (keyword-matched, accent-
   insensitive) + wired: 1 → duty, ≥2 → tariff-ambiguous blocker carrying the candidates
   (rendered on the blocker panel), 0 → brand default. Fable review: pending.
-- `TODO` **A3 · org_rules** — margin_rules + incoterm_defaults + ports_default +
-  approval_matrix; wire margin default + validity + per-artifact approver roles.
+- `DONE` **A3 · org_rules** — margin_default + per-archetype margin_rules + incoterm +
+  validity_days + approval_matrix (+ seed); pure resolveMargin/rolesForKind/canRolesApprove
+  (tested); quote run now reads margin + validity from policy (hardcoded 0.18/15 gone).
+  Approval-matrix *enforcement* wired at Ajustes time (helper ready). Fable review: pending.
 - `TODO` **A4 · Ajustes-lite** — view/edit rate tables + margin rules (host-Tower UI).
 - `TODO` **B1 · agentic loop** — `IntelligenceClient.runAgent` (tool-use loop, message
   history, stop_reason) behind the seam; fake-client tested.

@@ -32,6 +32,7 @@ import {
 import type { SourceRef, TariffCandidateRef, TorreArtifactPayload } from '@/lib/torre/artifacts'
 import { resolveFreightRate, type RateRow } from '@/lib/torre/rates'
 import { resolveTariffCandidates, toCandidate, type TariffPosition } from '@/lib/torre/tariff'
+import { resolveMarginFraction, ORG_RULES_FALLBACK, type OrgRules } from '@/lib/torre/org-rules'
 
 const uuid = z.string().uuid()
 
@@ -83,8 +84,8 @@ export async function runTorreQuote(input: RunTorreQuoteInput): Promise<ActionRe
   const db = auth.supabase
 
   // Lane → brand + code (RLS-scoped: a lane the operator can't see returns nothing).
-  const { data: lane } = await db.from('lanes').select('id,brand_id,code').eq('id', laneId).maybeSingle()
-  const laneRow = lane as { id: string; brand_id: string; code: string | null } | null
+  const { data: lane } = await db.from('lanes').select('id,brand_id,code,archetype').eq('id', laneId).maybeSingle()
+  const laneRow = lane as { id: string; brand_id: string; code: string | null; archetype: string | null } | null
   if (!laneRow?.brand_id) return fail('FORBIDDEN_LANE', 'Lane no encontrado / Lane not found')
 
   // Costing reference — rates ALWAYS from config, never the model (Directive 4).
@@ -123,6 +124,22 @@ export async function runTorreQuote(input: RunTorreQuoteInput): Promise<ActionRe
     ivaBps: r.iva_bps,
     verifiedAt: r.verified_at,
   }))
+
+  // Commercial policy (A3) — margin + validity from org_rules, not hardcoded.
+  const { data: orgRow } = await db
+    .from('org_rules')
+    .select('margin_default_bps,margin_rules,incoterm_default,validity_days,approval_matrix')
+    .eq('brand_id', laneRow.brand_id)
+    .maybeSingle()
+  const org: OrgRules = orgRow
+    ? {
+        marginDefaultBps: (orgRow as { margin_default_bps: number }).margin_default_bps,
+        marginRules: ((orgRow as { margin_rules: Record<string, number> }).margin_rules ?? {}) as Record<string, number>,
+        incotermDefault: (orgRow as { incoterm_default: string }).incoterm_default,
+        validityDays: (orgRow as { validity_days: number }).validity_days,
+        approvalMatrix: ((orgRow as { approval_matrix: Record<string, string[]> }).approval_matrix ?? {}) as Record<string, string[]>,
+      }
+    : ORG_RULES_FALLBACK
 
   // The MODEL step (only the sentence → structured spec).
   const client = getIntelligenceClient()
@@ -220,7 +237,9 @@ export async function runTorreQuote(input: RunTorreQuoteInput): Promise<ActionRe
     }
   }
 
-  // Build the context (rates from config; tariff resolved above; mocked TRM).
+  // Build the context (rates from config; tariff resolved above; margin/validity from
+  // org_rules per the lane's archetype; mocked TRM).
+  const marginDefault = resolveMarginFraction(org, laneRow.archetype)
   const ctx: QuoteRunContext = {
     laneCode: laneRow.code,
     igvRate: (c?.igv_bps ?? 1800) / 10_000,
@@ -229,12 +248,15 @@ export async function runTorreQuote(input: RunTorreQuoteInput): Promise<ActionRe
     adValoremRate,
     tariffCandidates,
     exchangeRate: 3.7, // MOCK_CONNECTORS: no live TRM feed; referential rate
-    marginDefault: 0.18,
+    marginDefault,
     freightSource,
     tariffSource,
     trmSource: { kind: 'org_rule', label: 'TC referencial 3.70 (mock)' },
-    marginSource: { kind: 'org_rule', label: `Margen por defecto ${(0.18 * 100).toFixed(0)}%` },
-    validityDays: 15,
+    marginSource: {
+      kind: 'org_rule',
+      label: `Margen ${(marginDefault * 100).toFixed(0)}% (regla de marca${laneRow.archetype ? ` · ${laneRow.archetype}` : ''})`,
+    },
+    validityDays: org.validityDays,
     today,
     defaultClientName: spec.clientName,
     defaultLanguage: spec.language ?? 'es',
