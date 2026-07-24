@@ -1,35 +1,21 @@
 'use server'
 // src/lib/actions/torre-quote.ts
-// Mister Torre — the quote-run server action (the flagship's mutation path).
+// Mister Torre — the quote-run server action (the flagship's natural-language path).
 //
-//     auth → validate → RLS-scoped lane/costing reference → MODEL parses spec →
-//     computeImportCost (engine) builds the pair → persist 3 ai_drafts (DRAFT)
+//     auth → validate → RLS-scoped lane lookup → MODEL parses spec →
+//     runQuoteFromSpec (shared core) → linked ai_drafts DRAFT trio
 //
 // Governance: the model ONLY parses the operator's sentence; every number comes
 // from the SUNAT engine (Directive 3). Nothing is sent/committed — the run ends at
 // "a reviewable linked pair exists" (Directive 7). Rates come from costing_config,
-// never the model (Directive 4). Connectors are mocked; no external I/O here.
+// never the model (Directive 4). The pricing+persist pipeline lives in quote-core.ts,
+// shared with the agentic propose_quote tool so there is ONE money path.
 import { z } from 'zod'
-import type { SupabaseClient } from '@supabase/supabase-js'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { fail, ok, type ActionResult } from './result'
 import { getIntelligenceClient } from '@/lib/ai/client'
-import { INTELLIGENCE_MODELS } from '@/lib/ai/types'
-import { resolveAdValoremRate } from '@/lib/costing/ad-valorem'
 import { extractQuoteSpec, type QuoteSpec } from '@/lib/torre/parse-spec'
-import {
-  assembleQuoteRunInput,
-  buildQuoteRun,
-  type QuoteRunContext,
-  type QuoteRunResult,
-} from '@/lib/torre/quote-run'
-import {
-  buildTorreInsert,
-  mapTorreDraftRow,
-  TORRE_DRAFT_SELECT_COLS,
-  type RawTorreDraftRow,
-} from '@/lib/torre/drafts'
-import type { SourceRef, TorreArtifactPayload } from '@/lib/torre/artifacts'
+import { runQuoteFromSpec, type QuoteCoreResult, type QuoteLaneRow } from '@/lib/torre/quote-core'
 
 const uuid = z.string().uuid()
 
@@ -46,14 +32,9 @@ const runSchema = z.object({
 })
 export type RunTorreQuoteInput = z.infer<typeof runSchema>
 
-export interface TorreQuoteResult {
-  result: QuoteRunResult
+/** The action result — the shared core result plus the model-extracted spec it used. */
+export interface TorreQuoteResult extends QuoteCoreResult {
   spec: QuoteSpec
-  /** The three persisted ai_drafts ids (null when compute-only or persistence failed). */
-  draftIds: { hojaCostos: string; cotizacion: string; comunicacion: string } | null
-  persisted: boolean
-  /** Present when compute succeeded but the DRAFT could not be saved (e.g. RLS). */
-  persistNote?: { es: string; en: string }
 }
 
 async function requireUser() {
@@ -81,25 +62,9 @@ export async function runTorreQuote(input: RunTorreQuoteInput): Promise<ActionRe
   const db = auth.supabase
 
   // Lane → brand + code (RLS-scoped: a lane the operator can't see returns nothing).
-  const { data: lane } = await db.from('lanes').select('id,brand_id,code').eq('id', laneId).maybeSingle()
-  const laneRow = lane as { id: string; brand_id: string; code: string | null } | null
+  const { data: lane } = await db.from('lanes').select('id,brand_id,code,archetype').eq('id', laneId).maybeSingle()
+  const laneRow = lane as QuoteLaneRow | null
   if (!laneRow?.brand_id) return fail('FORBIDDEN_LANE', 'Lane no encontrado / Lane not found')
-
-  // Costing reference — rates ALWAYS from config, never the model (Directive 4).
-  const { data: config } = await db
-    .from('costing_config')
-    .select('igv_bps,percepcion_bps,insurance_bps,version')
-    .eq('brand_id', laneRow.brand_id)
-    .order('version', { ascending: false })
-    .limit(1)
-    .maybeSingle()
-  const c = config as { igv_bps: number; percepcion_bps: number; insurance_bps: number } | null
-  const { data: rateRows } = await db.from('ad_valorem_rates').select('hs_prefix,bps,label').eq('brand_id', laneRow.brand_id)
-  const adValoremTable = ((rateRows ?? []) as { hs_prefix: string; bps: number; label: string | null }[]).map((r) => ({
-    hsPrefix: r.hs_prefix,
-    bps: r.bps,
-    label: r.label,
-  }))
 
   // The MODEL step (only the sentence → structured spec).
   const client = getIntelligenceClient()
@@ -120,90 +85,7 @@ export async function runTorreQuote(input: RunTorreQuoteInput): Promise<ActionRe
     )
   }
 
-  // Build the context (rates from config; brand-default Ad Valorem; mocked TRM).
-  const adValoremRate = resolveAdValoremRate(adValoremTable, '') // brand default (never null)
-  const ctx: QuoteRunContext = {
-    laneCode: laneRow.code,
-    igvRate: (c?.igv_bps ?? 1800) / 10_000,
-    percepcionRate: (c?.percepcion_bps ?? 350) / 10_000,
-    insuranceRate: (c?.insurance_bps ?? 150) / 10_000,
-    adValoremRate,
-    exchangeRate: 3.7, // MOCK_CONNECTORS: no live TRM feed; referential rate
-    marginDefault: 0.18,
-    freightSource: spec.freightInternational != null ? { kind: 'operator', label: 'Flete indicado por el operador' } : null,
-    tariffSource: {
-      kind: 'tariff_position',
-      label: `Ad Valorem ${(adValoremRate * 100).toFixed(0)}% (predeterminado de marca)`,
-    } satisfies SourceRef,
-    trmSource: { kind: 'org_rule', label: 'TC referencial 3.70 (mock)' },
-    marginSource: { kind: 'org_rule', label: `Margen por defecto ${(0.18 * 100).toFixed(0)}%` },
-    validityDays: 15,
-    today: serverToday(parsed.data.today),
-    defaultClientName: spec.clientName,
-    defaultLanguage: spec.language ?? 'es',
-  }
-
-  const runInput = assembleQuoteRunInput(spec, ctx)
-  const result = buildQuoteRun(runInput)
-
-  if (!persist) {
-    return ok({ result, spec, draftIds: null, persisted: false })
-  }
-
-  // Persist the linked pair as DRAFTs (Directive 7). Order: hoja → cotizacion → comunicacion.
-  const model = INTELLIGENCE_MODELS.reason
-  const confidence = result.approvable ? 0.85 : 0.45
-  const commonOpts = { brandId: laneRow.brand_id, laneId, confidence, model, createdBy: auth.user.id }
-
-  const hojaId = await insertOne(db, result.hojaCostos, { ...commonOpts, refTable: null, refId: null })
-  if (!hojaId) {
-    return ok({
-      result,
-      spec,
-      draftIds: null,
-      persisted: false,
-      persistNote: {
-        es: 'Cotización calculada, pero no se pudo guardar el borrador (permisos de lane).',
-        en: 'Quote computed, but the draft could not be saved (lane permissions).',
-      },
-    })
-  }
-  const cotizacionPayload = { ...result.cotizacion, hojaCostosRef: hojaId }
-  const cotizacionId = await insertOne(db, cotizacionPayload, { ...commonOpts, refTable: null, refId: null })
-  const comunicacionPayload = { ...result.comunicacion, cotizacionRef: cotizacionId }
-  const comunicacionId = cotizacionId ? await insertOne(db, comunicacionPayload, { ...commonOpts, refTable: null, refId: null }) : null
-
-  if (!cotizacionId || !comunicacionId) {
-    return ok({
-      result: { ...result, cotizacion: cotizacionPayload, comunicacion: comunicacionPayload },
-      spec,
-      draftIds: null,
-      persisted: false,
-      persistNote: {
-        es: 'Se guardó la hoja de costos, pero no el par completo. Reintenta.',
-        en: 'The cost sheet saved, but not the full pair. Retry.',
-      },
-    })
-  }
-
-  return ok({
-    result: { ...result, cotizacion: cotizacionPayload, comunicacion: comunicacionPayload },
-    spec,
-    draftIds: { hojaCostos: hojaId, cotizacion: cotizacionId, comunicacion: comunicacionId },
-    persisted: true,
-  })
-}
-
-type TowerDb = ReturnType<SupabaseClient['schema']>
-
-async function insertOne(
-  db: TowerDb,
-  payload: TorreArtifactPayload,
-  opts: { brandId: string; laneId: string; refTable: string | null; refId: string | null; confidence: number; model: string; createdBy: string | null },
-): Promise<string | null> {
-  const row = buildTorreInsert(payload, opts)
-  const { data, error } = await db.from('ai_drafts').insert(row).select(TORRE_DRAFT_SELECT_COLS).single()
-  if (error || !data) return null
-  const mapped = mapTorreDraftRow(data as unknown as RawTorreDraftRow)
-  return mapped?.id ?? null
+  const today = serverToday(parsed.data.today)
+  const core = await runQuoteFromSpec(db, laneRow, spec, { today, persist, createdBy: auth.user.id })
+  return ok({ ...core, spec })
 }

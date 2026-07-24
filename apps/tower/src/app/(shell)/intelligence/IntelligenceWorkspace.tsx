@@ -1,8 +1,9 @@
 'use client'
 
-// Intelligence module workspace (COMPONENT_TREE §5). Two review surfaces —
-// TriageQueue and SpecExtractReview — behind a keyboard-reachable segmented
-// switch. Every surface here is a review surface: the AI draft, its confidence,
+// Intelligence module workspace (COMPONENT_TREE §5). Four surfaces —
+// Torre quote review, Triage, Spec-extract, and Reglas (policy) — behind a
+// keyboard-reachable segmented switch. Every surface here is a review surface: the
+// AI draft, its confidence,
 // the diff, and explicit Approve / Reject. Nothing commits except via the
 // W4.B (RLS-scoped) actions. The module itself is ⌘K/NavRail-reachable through
 // lib/nav.ts; this switch moves between its two panels.
@@ -12,13 +13,15 @@ import { DEFAULT_LOCALE, t, type Locale, type Localized } from '@/lib/i18n'
 import { TriageQueue } from '@/components/intelligence/triage-queue'
 import { SpecExtractReview } from '@/components/intelligence/spec-extract'
 import { TorreReviewQueue } from '@/components/intelligence/torre-queue'
+import { TorrePolicyPanel } from '@/components/intelligence/torre-policy'
 
-type Panel = 'torre' | 'triage' | 'spec-extract'
+type Panel = 'torre' | 'triage' | 'spec-extract' | 'reglas'
 
 const PANELS: { id: Panel; tag: string; label: Localized }[] = [
   { id: 'torre', tag: 'COT', label: { es: 'Cotizaciones (Torre)', en: 'Quotes (Torre)' } },
   { id: 'triage', tag: 'TRI', label: { es: 'Triage', en: 'Triage' } },
   { id: 'spec-extract', tag: 'SPX', label: { es: 'Extracción de specs', en: 'Spec extraction' } },
+  { id: 'reglas', tag: 'REG', label: { es: 'Reglas y tarifas', en: 'Rules & rates' } },
 ]
 
 export function IntelligenceWorkspace({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
@@ -71,6 +74,8 @@ export function IntelligenceWorkspace({ locale = DEFAULT_LOCALE }: { locale?: Lo
           <TorreReviewQueue locale={locale} />
         ) : panel === 'triage' ? (
           <TriageQueue locale={locale} />
+        ) : panel === 'reglas' ? (
+          <TorrePolicyPanel locale={locale} />
         ) : (
           <SpecExtractReview locale={locale} />
         )}

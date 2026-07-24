@@ -124,6 +124,29 @@ describe('buildQuoteRun — honesty (Directive 4/5): never invent numbers', () =
     expect(out.cotizacion.scenarios[0].confidence).toBe('estimado')
   })
 
+  it('ambiguous tariff surfaces the candidate positions on the blocker', () => {
+    const out = buildQuoteRun(
+      catInput({
+        adValoremRate: null,
+        tariffCandidates: [
+          { hsCode: '8502.13', description: 'Genset >375kVA', dutyPct: 0.06 },
+          { hsCode: '8502.20', description: 'Piston genset', dutyPct: 0 },
+        ],
+      }),
+    )
+    const b = out.blockers.find((x) => x.id === 'tariff-ambiguous')!
+    expect(b.candidates).toHaveLength(2)
+    expect(b.reason.es).toMatch(/8502\.13/)
+    expect(b.reason.es).toMatch(/2 candidatas/)
+    expect(out.approvable).toBe(false)
+  })
+
+  it('unverified single-candidate tariff → tariff-unverified blocker, not approvable', () => {
+    const out = buildQuoteRun(catInput({ tariffUnverified: true }))
+    expect(out.blockers.some((b) => b.id === 'tariff-unverified')).toBe(true)
+    expect(out.approvable).toBe(false)
+  })
+
   it('stale tariff (lapsed validity) → tariff-stale blocker', () => {
     const out = buildQuoteRun(
       catInput({ tariffSource: { kind: 'tariff_position', label: 'HS 8429.52', validUntil: '2026-06-30' } }),

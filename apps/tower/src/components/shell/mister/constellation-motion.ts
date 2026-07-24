@@ -69,3 +69,55 @@ export function confirmHalo(elapsedMs: number): { radiusScale: number; alpha: nu
     alpha: CONFIRM.haloAlpha * (1 - t),
   }
 }
+
+// ── L7 · remaining states — VERBATIM from CONSTELLATION-SPEC §4 (measured contracts,
+//        never invented). The state table is CLOSED — no state is added here. ──────────
+
+/** LISTENING: satellites contract 8% toward the centroid over 300 ms, then residual amp 0.002. */
+export const LISTENING = { contractMs: 300, contractTo: 0.92, residualAmp: 0.002 } as const
+/** SPEAKING: core radial pulse amp 0.004 synced to token cadence, throttled ≤ 8 Hz. */
+export const SPEAKING = { amp: 0.004, maxHz: 8, settleMs: 300 } as const
+/** ERROR: field loosens (amp ×2 for 400 ms), dots 2 & 10 drop 0.02, core cools toward
+ *  Horizon. NEVER shakes, NEVER turns red (spec §4, verbatim). */
+export const ERROR = { loosenMs: 400, ampMultiplier: 2, dotDrop: 0.02 } as const
+
+/**
+ * LISTENING: the satellite-radius scale at `elapsedMs` — eases 1.0 → 0.92 (an 8% contraction
+ * toward the centroid) over 300 ms, then holds near-still (residual amp is 0.002, negligible).
+ * Reduced motion → the settled 0.92 (a still frame, not a perpetual breath).
+ */
+export function listeningSatelliteScale(elapsedMs: number, reducedMotion = false): number {
+  if (reducedMotion) return LISTENING.contractTo
+  if (elapsedMs <= 0) return 1
+  if (elapsedMs >= LISTENING.contractMs) return LISTENING.contractTo
+  return 1 - (1 - LISTENING.contractTo) * easeInOutCubic(elapsedMs / LISTENING.contractMs)
+}
+
+/**
+ * SPEAKING: the core-radius scale — a tiny pulse (amp 0.004) at the token cadence, capped at
+ * 8 Hz. Nearly still on purpose (the tower's restraint). Reduced motion → 1 (no pulse).
+ */
+export function speakingCoreScale(elapsedMs: number, tokenCadenceHz = 6, reducedMotion = false): number {
+  if (reducedMotion) return 1
+  const hz = Math.min(Math.max(0, tokenCadenceHz), SPEAKING.maxHz)
+  return 1 + SPEAKING.amp * Math.sin(2 * Math.PI * hz * (elapsedMs / 1000))
+}
+
+/**
+ * ERROR: the field's idle-amplitude MULTIPLIER — doubles at onset and eases back to 1× over
+ * 400 ms (the field "loosens"). NO shake, NO red — the core cooling toward Horizon (a blue)
+ * is a color concern handled by the field. Reduced motion → 1 (color still signals).
+ */
+export function errorAmpMultiplier(elapsedMs: number, reducedMotion = false): number {
+  if (reducedMotion || elapsedMs < 0 || elapsedMs > ERROR.loosenMs) return 1
+  return 1 + (ERROR.ampMultiplier - 1) * (1 - elapsedMs / ERROR.loosenMs)
+}
+
+/**
+ * ERROR: how far dots 2 & 10 have dropped out of formation at `elapsedMs` (0 → 0.02 → 0 over
+ * 400 ms, a gentle displacement — not a shake). Reduced motion → 0.
+ */
+export function errorDotDrop(elapsedMs: number, reducedMotion = false): number {
+  if (reducedMotion || elapsedMs < 0 || elapsedMs > ERROR.loosenMs) return 0
+  return ERROR.dotDrop * Math.sin(Math.PI * (elapsedMs / ERROR.loosenMs))
+}

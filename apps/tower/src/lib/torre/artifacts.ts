@@ -52,6 +52,14 @@ export interface SourceRef {
   validUntil?: string
 }
 
+/** A tariff (HS) candidate presented on an ambiguous-position blocker. */
+export interface TariffCandidateRef {
+  hsCode: string
+  description: string
+  /** Duty as a fraction, e.g. 0.06. */
+  dutyPct: number
+}
+
 /** An open blocker makes an artifact unapprovable until a human resolves it. */
 export interface Blocker {
   /** Stable id, e.g. 'fob-missing' or 'tariff-ambiguous'. */
@@ -62,6 +70,8 @@ export interface Blocker {
   reason: { es: string; en: string }
   /** The one-tap verification task title this blocker would create. */
   task: { es: string; en: string }
+  /** For 'tariff-ambiguous': the candidate positions the reviewer must choose between. */
+  candidates?: TariffCandidateRef[]
 }
 
 export const sourceRefSchema = z.object({
@@ -76,11 +86,23 @@ export const blockerSchema = z.object({
   field: z.string().min(1),
   reason: z.object({ es: z.string(), en: z.string() }),
   task: z.object({ es: z.string(), en: z.string() }),
+  candidates: z
+    .array(z.object({ hsCode: z.string(), description: z.string(), dutyPct: z.number() }))
+    .optional(),
 })
 
 // ── The Torre artifact kinds (join tower.ai_drafts.kind via migration tower_48) ─
 
-export const TORRE_ARTIFACT_KINDS = ['HOJA_COSTOS', 'COTIZACION', 'COMUNICACION'] as const
+export const TORRE_ARTIFACT_KINDS = [
+  'HOJA_COSTOS',
+  'COTIZACION',
+  'COMUNICACION',
+  // L3 · Documentar — the operational document family
+  'REPORTE_ESTADO',
+  'CHECKLIST_DOCS',
+  'ACTA',
+  'SOP',
+] as const
 export type TorreArtifactKind = (typeof TORRE_ARTIFACT_KINDS)[number]
 
 // ── Shared machine identity block ────────────────────────────────────────────
@@ -175,14 +197,90 @@ export const comunicacionPayloadSchema = z.object({
 })
 export type ComunicacionPayload = z.infer<typeof comunicacionPayloadSchema>
 
+// ── (4-7) L3 · Documentar — operational documents ────────────────────────────
+// Each is a schema-validated, versioned, human-approved document. They share the blocker
+// vocabulary (so isApprovable gates them identically); reporte_estado additionally carries
+// sources for provenance (the others cite in-body until a sources field is warranted).
+
+/** (4) reporte_estado — an import status report (per-import health snapshot). */
+export const reporteEstadoPayloadSchema = z.object({
+  kind: z.literal('REPORTE_ESTADO'),
+  version: z.number().int().positive().default(1),
+  title: z.string(),
+  importRef: z.string(),
+  status: z.string(),
+  asOf: z.string(), // ISO date the snapshot reflects
+  summary: z.string(),
+  milestones: z.array(z.object({ label: z.string(), date: z.string().nullable(), done: z.boolean() })),
+  risks: z.array(z.object({ severity: z.enum(['alta', 'media', 'baja']), note: z.string() })),
+  nextActions: z.array(z.string()),
+  sources: z.array(sourceRefSchema),
+  blockers: z.array(blockerSchema),
+})
+export type ReporteEstadoPayload = z.infer<typeof reporteEstadoPayloadSchema>
+
+/** (5) checklist_docs — required documents for an import stage, with presence status. */
+export const checklistDocsPayloadSchema = z.object({
+  kind: z.literal('CHECKLIST_DOCS'),
+  version: z.number().int().positive().default(1),
+  title: z.string(),
+  importRef: z.string(),
+  stage: z.string(),
+  items: z.array(
+    z.object({
+      doc: z.string(),
+      required: z.boolean(),
+      status: z.enum(['presente', 'faltante', 'vencido']),
+      note: z.string().optional(),
+    }),
+  ),
+  blockers: z.array(blockerSchema),
+})
+export type ChecklistDocsPayload = z.infer<typeof checklistDocsPayloadSchema>
+
+/** (6) acta — meeting minutes / decision record. */
+export const actaPayloadSchema = z.object({
+  kind: z.literal('ACTA'),
+  version: z.number().int().positive().default(1),
+  title: z.string(),
+  date: z.string(),
+  attendees: z.array(z.string()),
+  decisions: z.array(z.object({ topic: z.string(), decision: z.string(), owner: z.string().nullable().default(null) })),
+  actionItems: z.array(z.object({ task: z.string(), owner: z.string(), due: z.string().nullable().default(null) })),
+  blockers: z.array(blockerSchema),
+})
+export type ActaPayload = z.infer<typeof actaPayloadSchema>
+
+/** (7) sop — standard operating procedure. */
+export const sopPayloadSchema = z.object({
+  kind: z.literal('SOP'),
+  version: z.number().int().positive().default(1),
+  title: z.string(),
+  scope: z.string(),
+  steps: z.array(z.object({ n: z.number().int().positive(), action: z.string(), owner: z.string().nullable().default(null), note: z.string().optional() })),
+  blockers: z.array(blockerSchema),
+})
+export type SopPayload = z.infer<typeof sopPayloadSchema>
+
 // ── The discriminated union + approvability law ──────────────────────────────
 
-export type TorreArtifactPayload = HojaCostosPayload | CotizacionPayload | ComunicacionPayload
+export type TorreArtifactPayload =
+  | HojaCostosPayload
+  | CotizacionPayload
+  | ComunicacionPayload
+  | ReporteEstadoPayload
+  | ChecklistDocsPayload
+  | ActaPayload
+  | SopPayload
 
 export const torreArtifactPayloadSchema = z.discriminatedUnion('kind', [
   hojaCostosPayloadSchema,
   cotizacionPayloadSchema,
   comunicacionPayloadSchema,
+  reporteEstadoPayloadSchema,
+  checklistDocsPayloadSchema,
+  actaPayloadSchema,
+  sopPayloadSchema,
 ])
 
 /** Payload → its ai_drafts.kind. */
@@ -200,9 +298,34 @@ export function blockersOf(p: { blockers?: Blocker[] }): Blocker[] {
  * blocker cannot be approved. This is what makes "estimados never silently enter
  * a client-facing artifact" enforceable — a requiere_verificacion slot is emitted
  * as a blocker upstream (quote-run.ts), so it lands here as a hard stop.
+ *
+ * DERIVED blocker: a CHECKLIST_DOCS with a required document that is not `presente`
+ * is unapprovable even if its `blockers` array is empty — the missing doc IS the
+ * blocker (a checklist can't be signed off while a mandatory document is absent).
  */
-export function isApprovable(p: { blockers?: Blocker[] }): boolean {
-  return blockersOf(p).length === 0
+export function isApprovable(p: {
+  blockers?: Blocker[]
+  kind?: TorreArtifactKind
+  items?: ChecklistDocsPayload['items']
+}): boolean {
+  if (blockersOf(p).length > 0) return false
+  if (p.kind === 'CHECKLIST_DOCS' && p.items) {
+    return !p.items.some((i) => i.required && i.status !== 'presente')
+  }
+  return true
+}
+
+/** The count of effective blockers, INCLUDING the derived checklist one (for reasons/UI). */
+export function effectiveBlockerCount(p: {
+  blockers?: Blocker[]
+  kind?: TorreArtifactKind
+  items?: ChecklistDocsPayload['items']
+}): number {
+  let n = blockersOf(p).length
+  if (p.kind === 'CHECKLIST_DOCS' && p.items) {
+    n += p.items.filter((i) => i.required && i.status !== 'presente').length
+  }
+  return n
 }
 
 /** Validate an unknown JSONB payload from the DB into a typed Torre artifact. */

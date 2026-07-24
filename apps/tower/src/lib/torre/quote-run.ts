@@ -20,6 +20,7 @@ import {
   type Blocker,
   type SourceRef,
   type ConfidenceState,
+  type TariffCandidateRef,
   type HojaCostosPayload,
   type CotizacionPayload,
   type ComunicacionPayload,
@@ -59,8 +60,12 @@ export interface QuoteRunInput {
   igvRate: number
   percepcionRate: number
   insuranceRate: number
-  /** null ⇒ tariff unresolved: numbers go provisional + a tariff blocker is raised. */
+  /** null ⇒ tariff unresolved/ambiguous: numbers go provisional + a tariff blocker is raised. */
   adValoremRate: number | null
+  /** When ambiguous (adValoremRate null), the candidate positions to present on the blocker. */
+  tariffCandidates?: TariffCandidateRef[]
+  /** The resolved position exists but is not verified → raise the tariff-unverified blocker. */
+  tariffUnverified?: boolean
   /** fraction, e.g. 0.18 — org rule default or operator override. */
   marginPercent: number
   /** dated TC (PEN/USD). */
@@ -161,14 +166,32 @@ export function buildQuoteRun(inp: QuoteRunInput): QuoteRunResult {
   }
   const tariffUnresolved = inp.adValoremRate === null
   if (tariffUnresolved) {
+    const cands = inp.tariffCandidates ?? []
+    const listEs = cands.map((c) => `HS ${c.hsCode} (${(c.dutyPct * 100).toFixed(0)}%)`).join(' · ')
     blockers.push({
       id: 'tariff-ambiguous',
       field: 'hs_code',
       reason: {
-        es: 'Posición arancelaria sin resolver — Ad Valorem provisional 0%. Elegir HS antes de aprobar.',
-        en: 'Tariff position unresolved — Ad Valorem provisional 0%. Choose the HS position before approval.',
+        es: cands.length
+          ? `Partida arancelaria ambigua — ${cands.length} candidatas: ${listEs}. Ad Valorem provisional 0%. Elegir HS antes de aprobar.`
+          : 'Posición arancelaria sin resolver — Ad Valorem provisional 0%. Elegir HS antes de aprobar.',
+        en: cands.length
+          ? `Ambiguous tariff position — ${cands.length} candidates: ${listEs}. Ad Valorem provisional 0%. Choose the HS before approval.`
+          : 'Tariff position unresolved — Ad Valorem provisional 0%. Choose the HS position before approval.',
       },
       task: { es: 'Resolver partida arancelaria (HS)', en: 'Resolve the HS tariff position' },
+      candidates: cands.length ? cands : undefined,
+    })
+  }
+  if (inp.tariffUnverified) {
+    blockers.push({
+      id: 'tariff-unverified',
+      field: 'hs_code',
+      reason: {
+        es: 'Partida arancelaria sin verificar — confirmar la clasificación y el arancel antes de aprobar.',
+        en: 'Tariff position unverified — confirm the classification and duty before approval.',
+      },
+      task: { es: 'Verificar partida arancelaria (HS)', en: 'Verify the HS tariff position' },
     })
   }
   if (isPast(inp.tariffSource?.validUntil, inp.today)) {
@@ -356,6 +379,12 @@ function round2(n: number): number {
   return Math.round(n * 100) / 100
 }
 
+const INCOTERMS: readonly Incoterm[] = ['EXW', 'FOB', 'CFR', 'CIF']
+/** Validate an org-default incoterm string, falling back to FOB. */
+function incotermOf(v: string | undefined): Incoterm {
+  return v && (INCOTERMS as readonly string[]).includes(v) ? (v as Incoterm) : 'FOB'
+}
+
 // ── Assembler: a model-extracted QuoteSpec + the lane's costing reference → the
 // structured QuoteRunInput. Rates ALWAYS come from the lane config (never the
 // model); international freight is left null when unstated (a hard blocker — never
@@ -365,11 +394,17 @@ export interface QuoteRunContext {
   igvRate: number
   percepcionRate: number
   insuranceRate: number
-  /** Resolved Ad Valorem fraction, or null when the tariff is unresolved (→ blocker). */
+  /** Resolved Ad Valorem fraction, or null when the tariff is unresolved/ambiguous (→ blocker). */
   adValoremRate: number | null
+  /** Candidate positions to present when the tariff is ambiguous (adValoremRate null). */
+  tariffCandidates?: TariffCandidateRef[]
+  /** The resolved single position is unverified → raise the tariff-unverified blocker. */
+  tariffUnverified?: boolean
   exchangeRate: number
   /** Org-rule default margin (fraction) when the operator states none. */
   marginDefault: number
+  /** Org-rule default incoterm when the operator states none. */
+  incotermDefault?: string
   freightSource: SourceRef | null
   tariffSource: SourceRef | null
   trmSource: SourceRef | null
@@ -395,7 +430,7 @@ export function assembleQuoteRunInput(spec: QuoteSpec, ctx: QuoteRunContext): Qu
     language: spec.language ?? ctx.defaultLanguage,
     quantity: spec.quantity && spec.quantity > 0 ? spec.quantity : 1,
     fob: spec.fob,
-    incoterm: spec.incoterm ?? 'FOB',
+    incoterm: spec.incoterm ?? incotermOf(ctx.incotermDefault),
     scenarios: spec.scenarios,
     // A route freight rate is NEVER invented — null stays null (→ rate-missing blocker).
     freightInternational: spec.freightInternational,
@@ -403,6 +438,8 @@ export function assembleQuoteRunInput(spec: QuoteSpec, ctx: QuoteRunContext): Qu
     freightZofratacna: null,
     portExpenses: null,
     customsAgency: null,
+    tariffCandidates: ctx.tariffCandidates,
+    tariffUnverified: ctx.tariffUnverified,
     igvRate: ctx.igvRate,
     percepcionRate: ctx.percepcionRate,
     insuranceRate: ctx.insuranceRate,
