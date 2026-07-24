@@ -23,7 +23,7 @@ import { recordRecent } from '@/shell/navigation/recents'
 import { Dock } from '@/shell/dock/Dock'
 import { ControlCenterGrid } from '@/shell/control-center/ControlCenter'
 import { MobileControlCenter } from '@/shell/control-center/MobileControlCenter'
-import { NavSidebar } from '@/shell/navigation/NavSidebar'
+import { RepPanel } from '@/shell/rep-panel/RepPanel'
 
 /** Location strip — TOWER › Módulo › subpágina, derived from the path so you
  *  always know where you are. Ids/numbers in the path are omitted. Ancestor
@@ -87,6 +87,7 @@ export function ShellChrome({
   memberships,
   userName,
   userEmail,
+  repTitle = null,
   isGroupAdmin = false,
   hasRbMembership = false,
   needsOnboarding = false,
@@ -95,6 +96,8 @@ export function ShellChrome({
   memberships: LaneMembership[]
   userName: string | null
   userEmail: string | null
+  /** The rep's role/title from their profile — shown under their name in the rail. */
+  repTitle?: string | null
   isGroupAdmin?: boolean
   hasRbMembership?: boolean
   needsOnboarding?: boolean
@@ -376,10 +379,16 @@ export function ShellChrome({
               }}
             />
           </div>
-          {/* Desktop: the labeled module sidebar with expandable per-module quick
-              actions (Phase C) — the calm counterpart to the Dock's quick-launch. */}
-          <div className="hidden md:block">
-            <NavSidebar visible={visible} />
+          {/* Desktop: the operator's own rail (D1). The Dock is the SOLE module
+              navigator now, so the rail carries identity · profile · marketing ·
+              sign out — never a module list. flex-1 so Sign out pins to the foot. */}
+          <div className="hidden flex-1 flex-col md:flex">
+            <RepPanel
+              userName={userName}
+              userEmail={userEmail}
+              repTitle={repTitle}
+              showMarketing={visible.has('marcas')}
+            />
           </div>
         </aside>
 

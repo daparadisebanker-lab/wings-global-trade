@@ -29,6 +29,8 @@ export default async function ShellLayout({ children }: { children: ReactNode })
   // identity. Empty/whitespace-only names fall through to the email.
   const rawName = repProfile.error ? null : repProfile.data?.displayName ?? null
   const userName = rawName && rawName.trim() ? rawName.trim() : null
+  // The rep's role/title (rail identity, under their name). Null when unset.
+  const repTitle = repProfile.error ? null : repProfile.data?.title ?? null
 
   let userEmail: string | null = null
   const supabase = await createServerSupabase()
@@ -45,6 +47,7 @@ export default async function ShellLayout({ children }: { children: ReactNode })
         memberships={memberships}
         userName={userName}
         userEmail={userEmail}
+        repTitle={repTitle}
         isGroupAdmin={isGroupAdmin}
         hasRbMembership={hasRbMembership}
         needsOnboarding={needsOnboarding}
