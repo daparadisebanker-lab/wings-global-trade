@@ -50,6 +50,8 @@ export function MobileControlCenter({
   onClose,
   userName,
   userEmail,
+  teamSpaceEnabled = false,
+  unreadMentions = 0,
   onOpenMister,
   onOpenSearch,
   locale = DEFAULT_LOCALE,
@@ -58,6 +60,10 @@ export function MobileControlCenter({
   onClose: () => void
   userName: string | null
   userEmail: string | null
+  /** Team space live (tower_55 applied) — the Equipo tile appears only then, so
+   *  mobile users reach their mentions without a dead-end while dormant. */
+  teamSpaceEnabled?: boolean
+  unreadMentions?: number
   onOpenMister: () => void
   onOpenSearch: () => void
   locale?: Locale
@@ -122,6 +128,25 @@ export function MobileControlCenter({
               <path d="M4.5 16a5.5 5.5 0 0 1 11 0" strokeLinecap="round" />
             </svg>
           </Tile>
+          {/* Team space — only when live (tower_55 applied); shows the unread count
+              so mention notifications are reachable on mobile, not desktop-only. */}
+          {teamSpaceEnabled ? (
+            <Tile
+              label={
+                unreadMentions > 0
+                  ? `${t({ es: 'Equipo', en: 'Team' }, locale)} · ${unreadMentions > 99 ? '99+' : unreadMentions}`
+                  : t({ es: 'Equipo', en: 'Team' }, locale)
+              }
+              href="/equipo"
+              onClick={onClose}
+            >
+              <svg {...ICON} aria-hidden>
+                <circle cx="7" cy="7.5" r="2.5" />
+                <path d="M2.5 16a4.5 4.5 0 0 1 9 0" strokeLinecap="round" />
+                <path d="M13 5.2a2.4 2.4 0 0 1 0 4.6M14.5 16a4.5 4.5 0 0 0-2.3-3.9" strokeLinecap="round" />
+              </svg>
+            </Tile>
+          ) : null}
         </div>
 
         {/* Status + theme + recent activity + sign out (moved here from the drawer). */}

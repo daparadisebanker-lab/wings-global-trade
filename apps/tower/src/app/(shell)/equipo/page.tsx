@@ -2,6 +2,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { TeamSpace } from '@/components/team/TeamSpace'
 import { listTeamNotes, listMyMentions, listTeamRoster } from '@/lib/actions/team-space'
 import { createServerSupabase } from '@/lib/supabase/server'
+import { DEFAULT_LOCALE, t } from '@/lib/i18n'
 
 // Team space (WS6) — the org-wide internal note stream with @mentions raising
 // in-system notifications (D3, no email). Server-fetches the stream, the caller's
@@ -38,8 +39,10 @@ export default async function EquipoPage() {
   return (
     <div className="flex h-full flex-col gap-4 overflow-y-auto p-6">
       <header className="flex flex-col gap-1 border-b border-line pb-4">
-        <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">EQP · Espacio de equipo</span>
-        <h1 className="font-display text-t2 text-ink-primary">Equipo</h1>
+        <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
+          EQP · {t({ es: 'Espacio de equipo', en: 'Team space' }, DEFAULT_LOCALE)}
+        </span>
+        <h1 className="font-display text-t2 text-ink-primary">{t({ es: 'Equipo', en: 'Team' }, DEFAULT_LOCALE)}</h1>
       </header>
       <TeamSpace
         available={available}

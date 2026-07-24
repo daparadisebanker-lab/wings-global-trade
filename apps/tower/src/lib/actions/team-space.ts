@@ -29,9 +29,18 @@ const MENTION_COLUMNS = 'id,read_at,created_at,team_notes(id,author_name,body)'
 
 const postSchema = z.object({
   body: z.string().trim().min(1).max(2000),
-  mentionedUserIds: z.array(z.string().uuid()).max(50).optional(),
+  // Cap aligned with the pure normalizer (MAX_MENTIONS) so over-cap input is a
+  // visible validation failure, not a silent drop.
+  mentionedUserIds: z.array(z.string().uuid()).max(20).optional(),
 })
 export type PostTeamNoteInput = z.input<typeof postSchema>
+
+/** postTeamNote result — the saved note, plus a flag when one or more mentions
+ *  may NOT have been delivered (D3 has no email fallback, so the UI surfaces it). */
+export interface PostTeamNoteResult {
+  note: TeamNote
+  mentionsWarning: boolean
+}
 
 async function requireUser() {
   const supabase = await createServerSupabase()
@@ -69,8 +78,10 @@ export async function listTeamNotes(limit = 50): Promise<ActionResult<TeamNote[]
   return ok(((data ?? []) as RawNoteRow[]).map(mapNoteRow))
 }
 
-/** The caller's own mentions (notifications), newest first. RLS scopes to
- *  mentioned_user_id = auth.uid(). Error → dormant/coming-soon. */
+/** The caller's OWN mentions (notifications), newest first. The read policy also
+ *  admits mentions on notes the caller authored (for possible future read
+ *  receipts), so we filter to mentioned_user_id = self explicitly — otherwise the
+ *  list would include the teammates the caller mentioned. Error → dormant. */
 export async function listMyMentions(limit = 50): Promise<ActionResult<TeamMention[]>> {
   const gate = await requireUser()
   if (!gate.ok) return gate.error
@@ -78,6 +89,7 @@ export async function listMyMentions(limit = 50): Promise<ActionResult<TeamMenti
   const { data, error } = await gate.tower
     .from('team_note_mentions')
     .select(MENTION_COLUMNS)
+    .eq('mentioned_user_id', gate.user.id)
     .order('created_at', { ascending: false })
     .limit(cap)
   if (error) return fail('VALIDATION', 'Notificaciones no disponibles / Notifications unavailable')
@@ -97,19 +109,21 @@ export async function getMentionStatus(): Promise<{ available: boolean; unread: 
   const { count, error } = await gate.tower
     .from('team_note_mentions')
     .select('id', { count: 'exact', head: true })
+    .eq('mentioned_user_id', gate.user.id)
     .is('read_at', null)
   if (error) return { available: false, unread: 0 }
   return { available: true, unread: count ?? 0 }
 }
 
 /**
- * Post a note and notify the mentioned teammates. The note carries a denormalized
- * author_name (the caller's own profile full_name) so the stream renders without
- * cross-profile reads. Mentions are the EXPLICIT id list the composer submits
- * (never a re-parse of the body); RLS on the mentions insert re-checks authorship.
- * A rep never mentions themselves (dropped) — a self-notification is noise.
+ * Post a note and notify the mentioned teammates. author_name is stamped
+ * server-side by a trigger (tower_55) from the caller's own profile — never sent
+ * from the client — so a note can't be attributed to someone else. Mentions are
+ * the EXPLICIT id list the composer submits (never a re-parse of the body); RLS
+ * on the mentions insert re-checks authorship. A rep never mentions themselves
+ * (dropped BEFORE the cap, so the cap is spent on real recipients).
  */
-export async function postTeamNote(input: PostTeamNoteInput): Promise<ActionResult<TeamNote>> {
+export async function postTeamNote(input: PostTeamNoteInput): Promise<ActionResult<PostTeamNoteResult>> {
   const gate = await requireUser()
   if (!gate.ok) return gate.error
   const { tower, user } = gate
@@ -117,28 +131,32 @@ export async function postTeamNote(input: PostTeamNoteInput): Promise<ActionResu
   const parsed = postSchema.safeParse(input)
   if (!parsed.success) return fail('VALIDATION', 'Datos inválidos / Invalid data', parsed.error.flatten().fieldErrors)
 
-  // The caller's display name (self-read is always allowed by profiles_read).
-  const { data: profile } = await tower.from('profiles').select('full_name').eq('id', user.id).maybeSingle()
-  const authorName = ((profile as { full_name?: string } | null)?.full_name ?? '').trim() || 'Equipo'
-
+  // author_name/created_at are trigger-stamped — we send only what RLS gates on.
   const { data: noteRow, error: noteError } = await tower
     .from('team_notes')
-    .insert({ author_id: user.id, author_name: authorName, body: parsed.data.body })
+    .insert({ author_id: user.id, body: parsed.data.body })
     .select(NOTE_COLUMNS)
     .single()
   if (noteError || !noteRow) return fail('VALIDATION', 'No se pudo publicar / Could not post')
   const note = mapNoteRow(noteRow as RawNoteRow)
 
-  const mentionIds = normalizeMentionIds(parsed.data.mentionedUserIds ?? []).filter((id) => id !== user.id)
+  // Drop self BEFORE the cap so the cap is spent on real recipients.
+  const mentionIds = normalizeMentionIds((parsed.data.mentionedUserIds ?? []).filter((id) => id !== user.id))
+  let mentionsWarning = false
   if (mentionIds.length > 0) {
     const rows = mentionIds.map((mentioned_user_id) => ({ note_id: note.id, mentioned_user_id }))
-    // Best-effort: a failed mention insert must not lose the posted note. The
-    // note is already saved; a mention that references a non-existent user (FK)
-    // simply doesn't notify. Surface nothing — the post itself succeeded.
-    await tower.from('team_note_mentions').insert(rows)
+    // The note is already saved — a mention failure must not lose it. A stale
+    // roster (FK violation 23503) simply doesn't notify and is benign. Any OTHER
+    // error (transient DB/network) means the notification — the ONLY delivery
+    // channel under D3 — may not have gone out, so flag it for the UI.
+    const { error: mErr } = await tower.from('team_note_mentions').insert(rows)
+    if (mErr && mErr.code !== '23503') {
+      mentionsWarning = true
+      console.error('team-space: mention insert failed', mErr)
+    }
   }
 
-  return ok(note)
+  return ok({ note, mentionsWarning })
 }
 
 /** Mark one of the caller's own mentions read. RLS (mentioned_user_id =

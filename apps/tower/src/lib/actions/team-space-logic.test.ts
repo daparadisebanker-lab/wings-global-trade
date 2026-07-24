@@ -18,8 +18,20 @@ describe('splitBodyMentions', () => {
       { text: ' revisa esto', mention: false },
     ])
   })
-  it('treats a lone @ as text, not a mention', () => {
+  it('matches a mention at the start of the string', () => {
+    expect(splitBodyMentions('@maria hola')).toEqual([
+      { text: '@maria', mention: true },
+      { text: ' hola', mention: false },
+    ])
+  })
+  it('treats an email fragment (no boundary before @) as text', () => {
     expect(splitBodyMentions('correo a@b')).toEqual([{ text: 'correo a@b', mention: false }])
+  })
+  it('highlights only the boundary @token, not a trailing @remainder', () => {
+    expect(splitBodyMentions('@maria@gmail.com')).toEqual([
+      { text: '@maria', mention: true },
+      { text: '@gmail.com', mention: false },
+    ])
   })
   it('is empty for an empty body', () => {
     expect(splitBodyMentions('')).toEqual([])
@@ -44,6 +56,9 @@ describe('excerpt', () => {
     const out = excerpt('x'.repeat(200), 10)
     expect(out).toHaveLength(10)
     expect(out.endsWith('…')).toBe(true)
+  })
+  it('passes a body exactly at the max through untouched', () => {
+    expect(excerpt('x'.repeat(10), 10)).toBe('x'.repeat(10))
   })
 })
 

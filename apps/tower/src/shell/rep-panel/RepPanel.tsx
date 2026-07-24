@@ -109,7 +109,10 @@ export function RepPanel({
             </svg>
             <span className="font-ui text-t0">{t({ es: 'Equipo', en: 'Team' }, locale)}</span>
             {unreadMentions > 0 ? (
-              <span className="ml-auto rounded-pill bg-lane-accent px-1.5 font-mono text-label text-surface-0">
+              <span
+                className="ml-auto rounded-pill bg-lane-accent px-1.5 font-mono text-label text-surface-0"
+                aria-label={`${unreadMentions} ${t({ es: 'menciones sin leer', en: 'unread mentions' }, locale)}`}
+              >
                 {unreadMentions > 99 ? '99+' : unreadMentions}
               </span>
             ) : null}

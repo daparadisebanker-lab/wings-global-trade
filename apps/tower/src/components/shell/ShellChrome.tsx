@@ -484,6 +484,8 @@ export function ShellChrome({
         onClose={() => setControlCenterOpen(false)}
         userName={userName}
         userEmail={userEmail}
+        teamSpaceEnabled={teamSpaceEnabled}
+        unreadMentions={unreadMentions}
         onOpenMister={() => setMisterOpen(true)}
         onOpenSearch={() => setPaletteOpen(true)}
       />

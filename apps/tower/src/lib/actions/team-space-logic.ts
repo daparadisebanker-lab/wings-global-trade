@@ -35,19 +35,29 @@ export interface Teammate {
 const MAX_MENTIONS = 20
 
 // A mention token in the body: @ then letters/digits/._- (no spaces), and only
-// at a word boundary (start of string or after whitespace) so an email fragment
-// like "a@b" is NOT highlighted. Used only for HIGHLIGHTING — the authoritative
-// recipients are the explicit id list the composer submits, never a re-parse of
-// the text (names are ambiguous).
-const MENTION_RE = /(?<=^|\s)(@[\p{L}\p{N}._-]+)/u
+// at a word boundary — start of string or after whitespace (the boundary is a
+// capture, NOT a lookbehind: lookbehind would be a parse-time SyntaxError on old
+// Safari and take down the whole client bundle). So an email fragment like "a@b"
+// or a trailing "@gmail.com" is NOT highlighted. Highlighting only — the
+// authoritative recipients are the explicit id list the composer submits.
+const MENTION_RE = /(^|\s)(@[\p{L}\p{N}._-]+)/gu
 
-/** PURE: split a body into text / mention segments for rendering. */
+/** PURE: split a body into text / mention segments for rendering. A segment is a
+ *  mention iff it was the captured @token (never inferred from a leading '@'). */
 export function splitBodyMentions(body: string): { text: string; mention: boolean }[] {
   if (!body) return []
-  return body
-    .split(MENTION_RE)
-    .filter((s) => s.length > 0)
-    .map((s) => ({ text: s, mention: s.startsWith('@') && s.length > 1 }))
+  const out: { text: string; mention: boolean }[] = []
+  let last = 0
+  for (const m of body.matchAll(MENTION_RE)) {
+    const boundary = m[1] ?? ''
+    const token = m[2] ?? ''
+    const tokenStart = (m.index ?? 0) + boundary.length // keep the boundary char in the text run
+    if (tokenStart > last) out.push({ text: body.slice(last, tokenStart), mention: false })
+    out.push({ text: token, mention: true })
+    last = tokenStart + token.length
+  }
+  if (last < body.length) out.push({ text: body.slice(last), mention: false })
+  return out.filter((s) => s.text.length > 0)
 }
 
 /** PURE: normalize a submitted mention-id list — trim, drop blanks, dedupe, cap.

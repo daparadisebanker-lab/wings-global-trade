@@ -6,6 +6,7 @@
 // it to compete with the dock"). Dormant-safe: when the backend isn't available
 // yet (tower_55 unapplied) the composer is hidden behind a "coming soon" note.
 import { useMemo, useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { cn } from '@wings/trade-ui'
 import {
   postTeamNote,
@@ -15,11 +16,14 @@ import {
 import {
   splitBodyMentions,
   filterTeammates,
+  excerpt,
   type TeamNote,
   type TeamMention,
   type Teammate,
 } from '@/lib/actions/team-space-logic'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
+
+const MAX_MENTIONS = 20
 
 const LABEL = 'font-mono text-label uppercase tracking-[0.08em] text-ink-secondary'
 
@@ -60,6 +64,7 @@ export function TeamSpace({
   roster: Teammate[]
   locale?: Locale
 }) {
+  const router = useRouter()
   const [notes, setNotes] = useState(initialNotes)
   const [mentions, setMentions] = useState(initialMentions)
   const [tab, setTab] = useState<'stream' | 'mentions'>('stream')
@@ -67,6 +72,7 @@ export function TeamSpace({
   const [picked, setPicked] = useState<Teammate[]>([])
   const [query, setQuery] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [notice, setNotice] = useState<string | null>(null)
   const [isPosting, startPost] = useTransition()
 
   // Never offer to @mention yourself, and drop already-picked from the dropdown.
@@ -81,26 +87,52 @@ export function TeamSpace({
     const text = body.trim()
     if (!text) return
     setError(null)
+    setNotice(null)
     startPost(async () => {
       const res = await postTeamNote({ body: text, mentionedUserIds: picked.map((p) => p.id) })
       if (res.error) {
         setError(res.error.message)
         return
       }
-      setNotes((prev) => [res.data, ...prev])
+      setNotes((prev) => [res.data.note, ...prev])
       setBody('')
       setPicked([])
       setQuery('')
+      if (res.data.mentionsWarning) {
+        setNotice(
+          t(
+            { es: 'Nota publicada; algunas menciones podrían no haberse entregado.', en: 'Note posted; some mentions may not have been delivered.' },
+            locale,
+          ),
+        )
+      }
+      router.refresh() // re-sync the rail's unread badge (a server prop)
     })
   }
 
-  function markOne(id: string) {
-    setMentions((prev) => prev.map((m) => (m.id === id ? { ...m, read: true } : m)))
-    void markMentionRead(id)
+  async function markOne(id: string) {
+    setError(null)
+    const prev = mentions
+    setMentions((cur) => cur.map((m) => (m.id === id ? { ...m, read: true } : m)))
+    const res = await markMentionRead(id)
+    if (res.error) {
+      setMentions(prev) // revert the optimistic flip
+      setError(res.error.message)
+      return
+    }
+    router.refresh()
   }
-  function markAll() {
-    setMentions((prev) => prev.map((m) => ({ ...m, read: true })))
-    void markAllMentionsRead()
+  async function markAll() {
+    setError(null)
+    const prev = mentions
+    setMentions((cur) => cur.map((m) => ({ ...m, read: true })))
+    const res = await markAllMentionsRead()
+    if (res.error) {
+      setMentions(prev)
+      setError(res.error.message)
+      return
+    }
+    router.refresh()
   }
 
   if (!available) {
@@ -148,7 +180,7 @@ export function TeamSpace({
               ))}
             </div>
           ) : null}
-          {roster.length > 0 ? (
+          {roster.length > 0 && picked.length < MAX_MENTIONS ? (
             <>
               <input
                 value={query}
@@ -157,14 +189,14 @@ export function TeamSpace({
                 aria-label={t({ es: 'Buscar compañero', en: 'Search teammate' }, locale)}
                 className="rounded-card border border-line bg-surface-0 px-2 py-1.5 font-ui text-t0 text-ink-primary outline-none focus-visible:border-lane-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-lane-accent"
               />
+              {/* A plain labeled button list (not an ARIA listbox — that pattern
+                  needs combobox + arrow-key navigation we don't implement). */}
               {query.trim() && pickable.length > 0 ? (
-                <ul className="flex max-h-40 flex-col gap-0.5 overflow-y-auto rounded-card border border-line" role="listbox" aria-label={t({ es: 'Compañeros', en: 'Teammates' }, locale)}>
+                <ul className="flex max-h-40 flex-col gap-0.5 overflow-y-auto rounded-card border border-line" aria-label={t({ es: 'Compañeros', en: 'Teammates' }, locale)}>
                   {pickable.map((tm) => (
-                    <li key={tm.id} role="presentation">
+                    <li key={tm.id}>
                       <button
                         type="button"
-                        role="option"
-                        aria-selected={false}
                         onClick={() => {
                           setPicked((prev) => [...prev, tm])
                           setQuery('')
@@ -178,6 +210,10 @@ export function TeamSpace({
                 </ul>
               ) : null}
             </>
+          ) : picked.length >= MAX_MENTIONS ? (
+            <p className="font-mono text-label text-ink-secondary">
+              {t({ es: `Máximo ${MAX_MENTIONS} menciones`, en: `Max ${MAX_MENTIONS} mentions` }, locale)}
+            </p>
           ) : null}
         </div>
 
@@ -193,6 +229,10 @@ export function TeamSpace({
           {error ? (
             <span role="alert" className="font-ui text-t0 text-negative">
               {error}
+            </span>
+          ) : notice ? (
+            <span role="status" className="font-ui text-t0 text-ink-secondary">
+              {notice}
             </span>
           ) : null}
         </div>
@@ -215,7 +255,12 @@ export function TeamSpace({
               ? t({ es: 'Actividad', en: 'Activity' }, locale)
               : t({ es: 'Mis menciones', en: 'My mentions' }, locale)}
             {v === 'mentions' && unread > 0 ? (
-              <span className="rounded-pill bg-lane-accent px-1.5 font-mono text-label text-surface-0">{unread}</span>
+              <span
+                className="rounded-pill bg-lane-accent px-1.5 font-mono text-label text-surface-0"
+                aria-label={`${unread} ${t({ es: 'sin leer', en: 'unread' }, locale)}`}
+              >
+                {unread}
+              </span>
             ) : null}
           </button>
         ))}
@@ -277,7 +322,7 @@ export function TeamSpace({
                       </button>
                     ) : null}
                   </div>
-                  <Body text={m.body} />
+                  <Body text={excerpt(m.body, 160)} />
                 </li>
               ))}
             </ul>
