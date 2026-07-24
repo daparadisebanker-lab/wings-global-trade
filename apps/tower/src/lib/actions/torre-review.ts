@@ -27,7 +27,7 @@ import {
   type TorreDraftRecord,
   type TorreDraftStatus,
 } from '@/lib/torre/drafts'
-import { prepareSend, resolveSendAdapter } from '@/lib/torre/comms/send'
+import { prepareSend, resolveSendAdapter, buildSendRow } from '@/lib/torre/comms/send'
 import { corpusRowsFromArtifact } from '@/lib/torre/ingest'
 import type { ImportInputs } from '@/lib/costing/types'
 
@@ -136,11 +136,29 @@ export async function approveTorreDraft(draftId: string): Promise<ActionResult<A
   let sent: ApproveTorreResult['sent']
   if (preparedMessage?.ok) {
     const result = await resolveSendAdapter(preparedMessage.message.channel).send(preparedMessage.message)
+
+    // Outbox (L2): record EVERY send attempt — SENT or FAILED — for audit + retry. Best-effort
+    // and non-blocking: the draft is already APPROVED and the message already left, so a failed
+    // ledger write must NEVER unwind that (it would strand an approval with no way back). The
+    // UNIQUE(draft_id) index makes this at-most-once even if this path were somehow re-entered.
+    try {
+      const { error: outboxError } = await db.from('torre_sends').insert(
+        buildSendRow(preparedMessage.message, result, {
+          brandId: record.brandId,
+          laneId: record.laneId,
+          draftId: record.id,
+        }),
+      )
+      if (outboxError) console.error('[torre/approve] outbox write failed (non-blocking)', outboxError)
+    } catch (e) {
+      console.error('[torre/approve] outbox write threw (non-blocking)', e)
+    }
+
     if (result.ok) {
       sent = { channel: result.channel, to: result.to, providerId: result.providerId, mocked: result.mocked }
     } else {
-      // A real adapter could fail post-claim; the draft is already APPROVED. Surface it —
-      // an outbox row (later) would carry retry; the mock never reaches this branch.
+      // A real adapter could fail post-claim; the draft is already APPROVED. Surface it — the
+      // outbox row above carries the FAILED status for retry; the mock never reaches this branch.
       console.error('[torre/approve] send failed post-claim', result.error)
     }
   }
