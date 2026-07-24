@@ -20,6 +20,12 @@ function money(n: number): string {
   return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
+/** Fraction → percent for a controlled input, rounded to kill IEEE dust
+ *  (0.29 * 100 = 28.999…, which would rewrite the field under the operator). */
+function pct(frac: number): number {
+  return Math.round(frac * 1e8) / 1e6
+}
+
 function Num({ label, value, onChange, step = 'any', hint }: { label: string; value: number; onChange: (v: number) => void; step?: string; hint?: string }) {
   return (
     <label className="flex flex-col gap-1">
@@ -58,11 +64,32 @@ function Group({ title, children }: { title: string; children: React.ReactNode }
 }
 
 /** One build-up row — label · USD amount (mono, tabular). `strong` for the tiers
- *  the quote actually rests on (the quoted Incoterm base + the final offer). */
-function Row({ label, value, strong = false, accent = false }: { label: string; value: string; strong?: boolean; accent?: boolean }) {
+ *  the quote rests on; `marked` draws the "◂ this is your quoted term" cue as an
+ *  aria-hidden glyph (kept out of the accessible name). */
+function Row({
+  label,
+  value,
+  strong = false,
+  accent = false,
+  marked = false,
+}: {
+  label: string
+  value: string
+  strong?: boolean
+  accent?: boolean
+  marked?: boolean
+}) {
   return (
     <div className={`flex items-center justify-between gap-3 px-3 py-2 ${strong ? 'bg-surface-2' : ''}`}>
-      <span className={`font-mono text-label uppercase tracking-[0.08em] ${strong ? 'text-ink-primary' : 'text-ink-secondary'}`}>{label}</span>
+      <span className={`font-mono text-label uppercase tracking-[0.08em] ${strong ? 'text-ink-primary' : 'text-ink-secondary'}`}>
+        {label}
+        {marked ? (
+          <span aria-hidden className="text-lane-accent">
+            {' '}
+            ◂
+          </span>
+        ) : null}
+      </span>
       <span className={`font-mono tabular-nums ${accent ? 'text-lane-accent' : strong ? 'text-ink-primary' : 'text-ink-secondary'} ${strong ? 'text-t1' : 'text-t0'}`} data-numeric>
         {value}
       </span>
@@ -74,7 +101,7 @@ const INCOTERMS: ExportInputs['incoterm'][] = ['EXW', 'FOB', 'CFR', 'CIF']
 
 export function ExportCostCalculator({ locale = DEFAULT_LOCALE }: { locale?: Locale }) {
   const [inputs, setInputs] = useState<ExportInputs>(DEFAULT_EXPORT_INPUTS)
-  const [copied, setCopied] = useState(false)
+  const [copyState, setCopyState] = useState<'idle' | 'ok' | 'fail'>('idle')
 
   function set<K extends keyof ExportInputs>(key: K, value: ExportInputs[K]) {
     setInputs((p) => ({ ...p, [key]: value }))
@@ -103,11 +130,13 @@ export function ExportCostCalculator({ locale = DEFAULT_LOCALE }: { locale?: Loc
     ]
     try {
       await navigator.clipboard.writeText(lines.join('\n'))
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1800)
+      setCopyState('ok')
     } catch {
-      /* clipboard blocked — nothing to surface */
+      // Clipboard blocked (permissions / insecure context) — surface it instead
+      // of a dead button; the summary is still on screen to copy by hand.
+      setCopyState('fail')
     }
+    setTimeout(() => setCopyState('idle'), 1800)
   }
 
   return (
@@ -118,7 +147,7 @@ export function ExportCostCalculator({ locale = DEFAULT_LOCALE }: { locale?: Loc
           <Text label={t({ es: 'Producto', en: 'Product' }, locale)} value={inputs.productName} onChange={(v) => set('productName', v)} />
           <Text label={t({ es: 'Origen', en: 'Origin' }, locale)} value={inputs.originLabel} onChange={(v) => set('originLabel', v)} />
           <label className="flex flex-col gap-1">
-            <span className={LABEL}>Incoterm</span>
+            <span className={LABEL}>{t({ es: 'Incoterm', en: 'Incoterm' }, locale)}</span>
             <select value={inputs.incoterm} onChange={(e) => set('incoterm', e.target.value as ExportInputs['incoterm'])} className={INPUT}>
               {INCOTERMS.map((i) => (
                 <option key={i} value={i}>
@@ -142,19 +171,19 @@ export function ExportCostCalculator({ locale = DEFAULT_LOCALE }: { locale?: Loc
 
         <Group title={t({ es: 'Flete y seguro', en: 'Freight & insurance' }, locale)}>
           <Num label={t({ es: 'Flete internacional', en: 'Int’l freight' }, locale)} hint="CFR/CIF" value={inputs.internationalFreight} onChange={(v) => set('internationalFreight', v)} />
-          <Num label={t({ es: 'Seguro %', en: 'Insurance %' }, locale)} hint="CIF" value={inputs.insuranceRate * 100} onChange={(v) => set('insuranceRate', v / 100)} />
+          <Num label={t({ es: 'Seguro %', en: 'Insurance %' }, locale)} hint="CIF" value={pct(inputs.insuranceRate)} onChange={(v) => set('insuranceRate', v / 100)} />
         </Group>
 
         <Group title={t({ es: 'Margen', en: 'Margin' }, locale)}>
           <label className="flex flex-col gap-1">
             <span className={LABEL}>{t({ es: 'Modo', en: 'Mode' }, locale)}</span>
             <select value={inputs.marginMode} onChange={(e) => set('marginMode', e.target.value as ExportInputs['marginMode'])} className={INPUT}>
-              <option value="percent">percent</option>
-              <option value="target_price">target_price</option>
+              <option value="percent">{t({ es: 'Margen %', en: 'Margin %' }, locale)}</option>
+              <option value="target_price">{t({ es: 'Precio objetivo', en: 'Target price' }, locale)}</option>
             </select>
           </label>
           {inputs.marginMode === 'percent' ? (
-            <Num label={t({ es: 'Margen %', en: 'Margin %' }, locale)} value={inputs.marginPercent * 100} onChange={(v) => set('marginPercent', v / 100)} />
+            <Num label={t({ es: 'Margen %', en: 'Margin %' }, locale)} value={pct(inputs.marginPercent)} onChange={(v) => set('marginPercent', v / 100)} />
           ) : (
             <Num label={t({ es: 'Precio objetivo', en: 'Target price' }, locale)} value={inputs.targetOfferPrice} onChange={(v) => set('targetOfferPrice', v)} />
           )}
@@ -166,12 +195,13 @@ export function ExportCostCalculator({ locale = DEFAULT_LOCALE }: { locale?: Loc
         {result ? (
           <>
             <div className="flex flex-col divide-y divide-line overflow-hidden rounded-card border border-line">
-              <Row label="EXW" value={money(result.exwCost)} />
-              <Row label={`FOB${inputs.incoterm === 'FOB' ? ' ◂' : ''}`} value={money(result.fobCost)} strong={inputs.incoterm === 'FOB'} />
-              <Row label={`CFR${inputs.incoterm === 'CFR' ? ' ◂' : ''}`} value={money(result.cfrCost)} strong={inputs.incoterm === 'CFR'} />
+              {/* One rule: the marked/strong CHAIN row is your quoted Incoterm. */}
+              <Row label="EXW" value={money(result.exwCost)} strong={inputs.incoterm === 'EXW'} marked={inputs.incoterm === 'EXW'} />
+              <Row label="FOB" value={money(result.fobCost)} strong={inputs.incoterm === 'FOB'} marked={inputs.incoterm === 'FOB'} />
+              <Row label="CFR" value={money(result.cfrCost)} strong={inputs.incoterm === 'CFR'} marked={inputs.incoterm === 'CFR'} />
               <Row label={t({ es: 'Seguro', en: 'Insurance' }, locale)} value={money(result.insurance)} />
-              <Row label={`CIF${inputs.incoterm === 'CIF' ? ' ◂' : ''}`} value={money(result.cifCost)} strong={inputs.incoterm === 'CIF'} />
-              <Row label={`${t({ es: 'Base', en: 'Base' }, locale)} · ${inputs.incoterm}${inputs.incoterm === 'EXW' ? ' ◂' : ''}`} value={money(result.offerBaseCost)} strong={inputs.incoterm === 'EXW'} />
+              <Row label="CIF" value={money(result.cifCost)} strong={inputs.incoterm === 'CIF'} marked={inputs.incoterm === 'CIF'} />
+              <Row label={`${t({ es: 'Base', en: 'Base' }, locale)} · ${inputs.incoterm}`} value={money(result.offerBaseCost)} />
               <Row label={`${t({ es: 'Margen', en: 'Margin' }, locale)} · ${(result.marginRate * 100).toFixed(1)}%`} value={money(result.marginUSD)} />
               <Row label={`${t({ es: 'Oferta', en: 'Offer' }, locale)} · ${inputs.incoterm}`} value={money(result.offerPrice)} strong accent />
               <Row label={`${t({ es: 'Por', en: 'Per' }, locale)} ${inputs.unitLabel}`} value={money(result.offerPricePerUnit)} />
@@ -183,10 +213,14 @@ export function ExportCostCalculator({ locale = DEFAULT_LOCALE }: { locale?: Loc
                 onClick={copySummary}
                 className="rounded-card border border-line px-3 py-2 font-mono text-label uppercase tracking-[0.1em] text-ink-primary hover:border-lane-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lane-accent"
               >
-                {copied ? t({ es: 'Copiado ✓', en: 'Copied ✓' }, locale) : t({ es: 'Copiar resumen', en: 'Copy summary' }, locale)}
+                {t({ es: 'Copiar resumen', en: 'Copy summary' }, locale)}
               </button>
-              <span className="font-mono text-label text-ink-secondary">
-                {t({ es: 'Guardar la hoja de exportación llega pronto.', en: 'Saving the export sheet is coming soon.' }, locale)}
+              <span role="status" aria-live="polite" className="font-mono text-label text-ink-secondary">
+                {copyState === 'ok'
+                  ? t({ es: 'Copiado ✓', en: 'Copied ✓' }, locale)
+                  : copyState === 'fail'
+                    ? t({ es: 'No se pudo copiar', en: 'Copy failed' }, locale)
+                    : t({ es: 'Guardar la hoja de exportación llega pronto.', en: 'Saving the export sheet is coming soon.' }, locale)}
               </span>
             </div>
           </>

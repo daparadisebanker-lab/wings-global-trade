@@ -30,6 +30,12 @@ function money(n: number): string {
   return n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
+/** Fraction → percent for a controlled input, rounded to kill IEEE dust
+ *  (0.29 * 100 = 28.999…, which would rewrite the field under the operator). */
+function pct(frac: number): number {
+  return Math.round(frac * 1e8) / 1e6
+}
+
 function Num({
   label,
   value,
@@ -237,10 +243,10 @@ export function CostCalculator({
 
           <Group title="Tasas (%)">
             <Text label="HS code → Ad Valorem" value={hsCode} onChange={applyHsCode} />
-            <Num label="Ad Valorem" value={inputs.adValoremRate * 100} onChange={(v) => set('adValoremRate', v / 100)} />
-            <Num label="IGV" value={inputs.igvRate * 100} onChange={(v) => set('igvRate', v / 100)} />
-            <Num label="Percepción" value={inputs.percepcionRate * 100} onChange={(v) => set('percepcionRate', v / 100)} />
-            <Num label="Seguro" value={inputs.insuranceRate * 100} onChange={(v) => set('insuranceRate', v / 100)} />
+            <Num label="Ad Valorem" value={pct(inputs.adValoremRate)} onChange={(v) => set('adValoremRate', v / 100)} />
+            <Num label="IGV" value={pct(inputs.igvRate)} onChange={(v) => set('igvRate', v / 100)} />
+            <Num label="Percepción" value={pct(inputs.percepcionRate)} onChange={(v) => set('percepcionRate', v / 100)} />
+            <Num label="Seguro" value={pct(inputs.insuranceRate)} onChange={(v) => set('insuranceRate', v / 100)} />
             <Num label="Tipo de cambio" hint="PEN/USD" value={inputs.exchangeRate} onChange={(v) => set('exchangeRate', v)} />
           </Group>
 
@@ -252,12 +258,12 @@ export function CostCalculator({
                 onChange={(e) => set('marginMode', e.target.value as ImportInputs['marginMode'])}
                 className={INPUT}
               >
-                <option value="percent">percent</option>
-                <option value="target_price">target_price</option>
+                <option value="percent">Margen %</option>
+                <option value="target_price">Precio objetivo</option>
               </select>
             </label>
             {inputs.marginMode === 'percent' ? (
-              <Num label="Margen %" value={inputs.marginPercent * 100} onChange={(v) => set('marginPercent', v / 100)} />
+              <Num label="Margen %" value={pct(inputs.marginPercent)} onChange={(v) => set('marginPercent', v / 100)} />
             ) : (
               <Num label="Precio objetivo" value={inputs.targetSalePrice} onChange={(v) => set('targetSalePrice', v)} />
             )}
