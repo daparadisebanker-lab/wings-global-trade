@@ -25,6 +25,7 @@ import type { ImportInputs, ImportResult } from '@/lib/costing/types'
 import { resolveFreightRate, type RateRow } from '@/lib/torre/rates'
 import { resolveTariffCandidates, type TariffPosition } from '@/lib/torre/tariff'
 import { comunicacionPayloadSchema } from '@/lib/torre/artifacts'
+import { defaultLanguage } from '@/lib/torre/comms/tone'
 import { isRateOrPriceQuery } from '@/lib/torre/rag'
 import type { AgentTool } from './tool-loop'
 
@@ -639,7 +640,8 @@ export function buildTorreToolBelt(provider: TorreToolProvider, ctx: ToolBeltCon
           kind: 'COMUNICACION',
           channel: input.channel,
           audience: input.audience,
-          language: input.language ?? (input.audience === 'supplier' ? 'en' : 'es'),
+          // one source of truth for the per-audience default language (tone.ts), not a copy
+          language: input.language ?? defaultLanguage(input.audience),
           to: input.to ?? null,
           subject: input.subject ?? null,
           body: input.body,

@@ -14,6 +14,7 @@ import { INTELLIGENCE_MODELS } from '@/lib/ai/types'
 import type { AgentTool } from './tool-loop'
 import { TORRE_TOOL_SYSTEM } from './anthropic-runner'
 import { TORRE_TOOL_NAMES, type TorreToolName } from './tools'
+import { toneGuidanceBlock } from '@/lib/torre/comms/tone'
 
 export const TORRE_PROFILE_IDS = ['cotizador', 'operaciones', 'redactor', 'analista'] as const
 export type TorreProfileId = (typeof TORRE_PROFILE_IDS)[number]
@@ -72,7 +73,9 @@ export const TORRE_PROFILES: Record<TorreProfileId, TorreProfile> = {
     purpose: { es: 'Redacta comunicaciones por audiencia e idioma.', en: 'Drafts communications by audience and language.' },
     systemAppendix: [
       'PERFIL: REDACTOR.',
-      'Redactas comunicaciones (cliente / proveedor / agente) con el tono correcto por audiencia e idioma: cliente en su idioma, proveedor en inglés por defecto, interno en español.',
+      'Redactas comunicaciones (cliente / proveedor / agente). Ajusta el saludo, el registro y el idioma a la audiencia:',
+      // the canonical tone contract (tone.ts) — one source of truth, not hand-copied prose
+      toneGuidanceBlock('es'),
       'Usas SOLO hechos del estado y cifras que ya vienen en la solicitud o el artefacto calculado. NUNCA calculas ni inventas números, tarifas ni aranceles — no tienes esas herramientas. Si falta una cifra para escribir el mensaje, NÓMBRALA como pendiente y pide que se genere la cotización primero; no la adivines ni la tomes de un precedente. Emites la comunicación como borrador; el envío lo aprueba un humano y el control nombra el efecto exacto.',
     ].join('\n'),
     // deliberately denied compute/rates/tariff/quote — the writer cannot fabricate a number

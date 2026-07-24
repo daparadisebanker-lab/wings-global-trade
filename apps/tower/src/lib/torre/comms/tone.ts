@@ -79,3 +79,36 @@ export function toneProfile(audience: Audience, opts: { language?: CommLanguage;
     guidance: GUIDANCE[audience][language],
   }
 }
+
+// The default-language rule per audience, as a short phrase for the prompt block.
+const LANGUAGE_RULE: Record<Audience, { es: string; en: string }> = {
+  client: { es: 'en el idioma del cliente (ES por defecto)', en: "in the client's language (ES by default)" },
+  supplier: { es: 'en inglés por defecto', en: 'in English by default' },
+  agent: { es: 'en español (interno)', en: 'in Spanish (internal)' },
+}
+const AUDIENCE_LABEL: Record<Audience, { es: string; en: string }> = {
+  client: { es: 'cliente', en: 'client' },
+  supplier: { es: 'proveedor', en: 'supplier' },
+  agent: { es: 'interno/agente', en: 'internal/agent' },
+}
+
+/**
+ * PURE: the redactor's FULL tone contract for all three audiences, rendered as one prompt
+ * block — the SINGLE source of truth the draft_message prompt embeds (no hand-copied,
+ * drift-prone prose). Each line carries the audience's register, default language rule, and
+ * the per-audience guidance (incl. the wholesale-only "never retail sales language" rule for
+ * clients). `promptLang` picks the label/guidance language; the character never changes.
+ */
+export function toneGuidanceBlock(promptLang: CommLanguage = 'es'): string {
+  const order: Audience[] = ['client', 'supplier', 'agent']
+  const header =
+    promptLang === 'es'
+      ? 'TONO POR AUDIENCIA (el carácter no cambia; el registro y el idioma sí):'
+      : 'TONE BY AUDIENCE (character never changes; register and language do):'
+  const rows = order.map((a) => {
+    const label = AUDIENCE_LABEL[a][promptLang]
+    const rule = LANGUAGE_RULE[a][promptLang]
+    return `· ${label} (${REGISTER[a]}, ${rule}): ${GUIDANCE[a][promptLang]}`
+  })
+  return [header, ...rows].join('\n')
+}

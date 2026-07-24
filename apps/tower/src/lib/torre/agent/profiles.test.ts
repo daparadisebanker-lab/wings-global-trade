@@ -61,6 +61,13 @@ describe('profile registry', () => {
     expect(r).not.toContain('propose_quote')
   })
 
+  it('redactor prompt carries the canonical tone contract (per-audience + wholesale-only)', () => {
+    const appendix = TORRE_PROFILES.redactor.systemAppendix
+    expect(appendix).toMatch(/TONO POR AUDIENCIA/) // the tone.ts block is wired in, not hand-copied
+    expect(appendix).toMatch(/minorista/) // the no-retail-language client rule reaches the prompt
+    expect(appendix).toMatch(/inglés por defecto/) // supplier default language
+  })
+
   it('operaciones does not quote (no compute, no tariff, no propose_quote)', () => {
     const o = TORRE_PROFILES.operaciones.tools
     expect(o).not.toContain('compute_landed_cost')
