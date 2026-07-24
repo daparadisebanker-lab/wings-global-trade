@@ -46,6 +46,29 @@ describe('classifyIntent (pure heuristic)', () => {
     expect(d.urgency).toBe('normal')
     expect(d.reason).toMatch(/por defecto/)
   })
+
+  it('does NOT misroute on mid-word false positives (word-boundary matching)', () => {
+    // 'playa'→ya, 'descarta'→carta, 'prestado'→estado, 'correspondiente'→respond
+    // none of these should score their stem; all fall to the zero-signal default
+    expect(classifyIntent('La carga sigue en la playa de contenedores').urgency).toBe('normal') // not inmediato from 'ya'
+    expect(classifyIntent('Descarta la opción anterior por ahora').profile).not.toBe('redactor') // 'carta' inert
+    const prestado = classifyIntent('El monto prestado correspondiente')
+    expect(prestado.profile).not.toBe('operaciones') // 'estado' inert in 'prestado'
+  })
+
+  it('catches cost-verbs for cotizador ("costará")', () => {
+    expect(classifyIntent('¿Cuánto costará traerlo en contenedor?').profile).toBe('cotizador')
+  })
+
+  it('does not flag inmediato on negated/ambiguous words', () => {
+    expect(classifyIntent('Por ahora no hay apuro con esto').urgency).toBe('normal')
+    expect(classifyIntent('Si el precio no convence al cliente').urgency).toBe('normal')
+  })
+
+  it('flags inmediato only on unambiguous signals', () => {
+    expect(classifyIntent('Esto es urgente').urgency).toBe('inmediato')
+    expect(classifyIntent('Contenedor con demurrage').urgency).toBe('inmediato')
+  })
 })
 
 describe('parseRouterResponse (pure)', () => {
@@ -73,6 +96,16 @@ describe('parseRouterResponse (pure)', () => {
   it('rejects non-JSON', () => {
     expect(parseRouterResponse('no json here')).toBeNull()
     expect(parseRouterResponse('{ broken')).toBeNull()
+  })
+
+  it('tolerates braces inside the reason string (balanced scan, not last-brace)', () => {
+    const out = parseRouterResponse('{"profile":"cotizador","urgency":"normal","reason":"usa {get_tariff} primero"}')
+    expect(out).toMatchObject({ profile: 'cotizador', reason: 'usa {get_tariff} primero' })
+  })
+
+  it('extracts the FIRST balanced object when prose has stray braces around it', () => {
+    const out = parseRouterResponse('Puedo {clasificar}: {"profile":"redactor","urgency":"batch"} — listo }')
+    expect(out).toMatchObject({ profile: 'redactor', urgency: 'batch' })
   })
 })
 

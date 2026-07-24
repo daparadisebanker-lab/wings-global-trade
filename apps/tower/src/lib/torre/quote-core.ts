@@ -24,7 +24,7 @@ import {
 } from '@/lib/torre/drafts'
 import type { SourceRef, TariffCandidateRef, TorreArtifactPayload } from '@/lib/torre/artifacts'
 import { resolveFreightRate, type RateRow } from '@/lib/torre/rates'
-import { resolveTariffCandidates, toCandidate, type TariffPosition } from '@/lib/torre/tariff'
+import { resolveQuoteTariff, toCandidate, type TariffPosition } from '@/lib/torre/tariff'
 import { resolveMarginFraction, ORG_RULES_FALLBACK, type OrgRules } from '@/lib/torre/org-rules'
 
 export type TowerDb = ReturnType<SupabaseClient['schema']>
@@ -172,15 +172,14 @@ export async function runQuoteFromSpec(
   }
 
   // Tariff (A2): resolve the product to HS candidate positions. An hsCodeHint pins a
-  // position the agentic caller already chose (resolving ambiguity); otherwise keyword
-  // resolution. 1 → use its duty; ≥2 → ambiguous (blocks + presents); 0 → brand default.
-  const pinned = opts.hsCodeHint ? tariffPositions.find((p) => p.hsCode === opts.hsCodeHint) : undefined
-  const candidatePositions = pinned
-    ? [pinned]
-    : resolveTariffCandidates(
-        tariffPositions,
-        [effectiveSpec.productName, effectiveSpec.brand, effectiveSpec.model].filter(Boolean).join(' '),
-      )
+  // position ONLY when it is one of the keyword candidates (resolveQuoteTariff) — an
+  // unrelated hint is ignored, so it can never dodge the ambiguity blocker. 1 → use its
+  // duty; ≥2 → ambiguous (blocks + presents); 0 → brand default.
+  const { positions: candidatePositions, pinnedByAgent } = resolveQuoteTariff(
+    tariffPositions,
+    [effectiveSpec.productName, effectiveSpec.brand, effectiveSpec.model].filter(Boolean).join(' '),
+    opts.hsCodeHint,
+  )
   let adValoremRate: number | null
   let tariffCandidates: TariffCandidateRef[] | undefined
   let tariffUnverified = false
@@ -192,7 +191,7 @@ export async function runQuoteFromSpec(
     const verifiedUntil = p.verifiedAt ? plusDaysISO(p.verifiedAt, 365) : undefined
     tariffSource = {
       kind: 'tariff_position',
-      label: `HS ${p.hsCode} · ${p.description} (${(adValoremRate * 100).toFixed(0)}%)${tariffUnverified ? ' · sin verificar' : ''}`,
+      label: `HS ${p.hsCode} · ${p.description} (${(adValoremRate * 100).toFixed(0)}%)${tariffUnverified ? ' · sin verificar' : ''}${pinnedByAgent ? ' · elegida por el agente' : ''}`,
       ref: p.hsCode,
       validUntil: verifiedUntil,
     }

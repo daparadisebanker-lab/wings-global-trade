@@ -43,3 +43,24 @@ export function resolveTariffCandidates(positions: TariffPosition[], text: strin
 export function toCandidate(p: TariffPosition): TariffCandidate {
   return { hsCode: p.hsCode, description: p.description, dutyPct: p.dutyBps / 10_000 }
 }
+
+/**
+ * PURE: resolve the tariff positions for a quote, honoring an agent's chosen HS code
+ * ONLY when it is one of the KEYWORD candidates. This closes the pin bypass: an agent
+ * cannot pin an unrelated position (e.g. a fresh 0%-duty code) to dodge the ambiguity
+ * blocker — a hint outside the candidate set is ignored, so ≥2 candidates still block.
+ * Returns the chosen positions and whether the agent's pin actually applied.
+ */
+export function resolveQuoteTariff(
+  positions: TariffPosition[],
+  productText: string,
+  hsCodeHint?: string,
+): { positions: TariffPosition[]; pinnedByAgent: boolean } {
+  const candidates = resolveTariffCandidates(positions, productText)
+  if (hsCodeHint) {
+    const pinned = candidates.find((p) => p.hsCode === hsCodeHint)
+    if (pinned) return { positions: [pinned], pinnedByAgent: true }
+    // hint not among the keyword candidates → ignore it, keep the real candidate set
+  }
+  return { positions: candidates, pinnedByAgent: false }
+}

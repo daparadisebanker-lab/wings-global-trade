@@ -69,7 +69,9 @@ export async function POST(request: NextRequest) {
     return jsonError('FORBIDDEN_LANE', 'Lane no encontrada o sin acceso / Lane not found or no access', 403)
   }
 
-  const today = body.today ?? new Date().toISOString().slice(0, 10)
+  // `today` is a test/replay hook — NEVER honor a client-pinned date in production, where
+  // it would let a caller make a lapsed rate/stale tariff read as vigente.
+  const today = process.env.NODE_ENV !== 'production' && body.today ? body.today : new Date().toISOString().slice(0, 10)
   const sdk = wrapAnthropic(new Anthropic({ apiKey }))
   const provider = createTorreProvider(supabase, { laneRow, today, createdBy: user.id })
 
@@ -82,6 +84,9 @@ export async function POST(request: NextRequest) {
           // client aborted — ignore
         }
       }
+      // Heartbeat: a comment frame keeps intermediaries from idle-timing-out the stream
+      // during a long Sonnet turn (steps can be tens of seconds apart).
+      const heartbeat = setInterval(() => enqueue(encoder.encode(': ping\n\n')), 15000)
       try {
         await runTorreAgent({
           routerClient,
@@ -89,6 +94,7 @@ export async function POST(request: NextRequest) {
           provider,
           text: body.text,
           today,
+          maxSteps: 6, // bounded run within maxDuration (each step is a Sonnet turn)
           signal: request.signal,
           onEvent: (e) => enqueue(sse(e.type, e)),
         })
@@ -96,6 +102,7 @@ export async function POST(request: NextRequest) {
         console.error('[ai/torre]', err)
         enqueue(sse('error', { code: 'AI_ERROR', message: 'La corrida falló / The run failed' }))
       } finally {
+        clearInterval(heartbeat)
         enqueue(sse('done', {}))
         controller.close()
       }

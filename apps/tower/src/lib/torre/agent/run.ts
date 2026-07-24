@@ -94,6 +94,7 @@ export async function runTorreAgent(input: RunTorreAgentInput): Promise<TorreAge
     system: profileSystem(profile),
     tools,
     userMessage: input.text,
+    signal: input.signal, // abort the in-flight model call on client disconnect, not just between steps
   })
   const result = await runToolLoop({
     nextTurn,

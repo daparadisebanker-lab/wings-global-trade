@@ -64,16 +64,23 @@ off the World-B exemption; connectors mock-first behind adapters (`MOCK_CONNECTO
   operaciones can't quote). `selectProfileTools`/`profileSystem`/`getProfile`. Router
   (`router.ts`): model-first Haiku classifier + PURE keyword-stem heuristic fallback
   (`classifyIntent`/`parseRouterResponse`/`routeIntent`) → always returns a valid
-  {profile, urgency}, never strands a run. 28 tests. Fable review: pending.
+  {profile, urgency}, never strands a run. Fable review: **SHIP-WITH-FIXES applied** —
+  phantom create_artifact in prompts fixed; word-boundary stem matching (kills playa→ya,
+  descarta→carta, prestado→estado, correspondiente→respond) + costará coverage; urgency
+  trimmed to unambiguous signals; redactor must name missing figures; analista comms
+  internal-only (+ test); parseRouterResponse balanced-brace (survives braces in reason).
 - `DONE` **C1 · streaming** — the full agentic run, streamed. `runToolLoop` gained an
   `onStep` observer; `runTorreAgent` (run.ts) composes route→profile→scoped-belt→loop and
   emits typed events (route·step·final). Shared **quote-core.ts** extracted from the
-  flagship action so propose_quote and runTorreQuote drive ONE money pipeline (+ hsCodeHint
-  to pin an agent-chosen HS position). Real RLS **provider.ts** (orders→milestones,
-  accounts/suppliers, rates/tariff/costing, propose_quote→core, draft_message→ai_drafts;
-  search_knowledge interim until L6). SSE route **POST /api/ai/torre** mirrors
-  api/ai/spec-extract. 16 new tests (loop stream, orchestrator, provider mapping). Fable
-  review: pending.
+  flagship action so propose_quote and runTorreQuote drive ONE money pipeline. Real RLS
+  **provider.ts**; SSE route **POST /api/ai/torre**. Fable review: **SHIP-WITH-FIXES
+  applied** (B2 BLOCK fixes re-CONFIRMED) — hsCodeHint now pins ONLY among keyword
+  candidates (`resolveQuoteTariff`, tested) so it can't dodge the ambiguity blocker;
+  freight/margin overrides REMOVED from propose_quote (agent can't fabricate a
+  freight/margin number — server sources both), killing the provenance mislabel; provider
+  now calls its tested helpers; abort threaded into the SDK call; client-pinned `today`
+  gated to non-prod; get_import brand-scoped + ref round-trips; SSE heartbeat + bounded
+  maxSteps; draft_message throws on invalid (honest isError).
 
 ### Loops
 - `WIP` **L1 · Cotizar polish** — pure cores DONE: **revise.ts** (diffTorreArtifact —

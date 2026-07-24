@@ -80,7 +80,12 @@ export interface CostingConfigSummary {
   sources: { label: string; validUntil?: string }[]
 }
 
-/** The structured quote spec the model hands to the SERVER pricer (no numbers it invented). */
+/**
+ * The structured quote spec the model hands to the SERVER pricer. Deliberately carries
+ * ONLY product facts and the incoterm value — NOT freight or margin. The server sources
+ * freight from rate_tables (or blocks) and margin from org_rules, so an agent can never
+ * fabricate a freight/margin number that dodges the freshness/blocker machinery.
+ */
 export interface QuoteToolInput {
   productName: string
   brand: string
@@ -89,12 +94,9 @@ export interface QuoteToolInput {
   engineCC: number
   origin: 'china' | 'other'
   incoterm: 'EXW' | 'FOB' | 'CFR' | 'CIF'
-  /** Value at the stated incoterm, USD major units (operator-stated). */
+  /** Value at the stated incoterm, USD major units. */
   fob: number
   quantity?: number
-  /** Operator-stated overrides (optional) — server still sources the rest. */
-  freightInternational?: number
-  marginPercent?: number
   /** The HS position the model chose from get_tariff to resolve ambiguity (optional). */
   hsCode?: string
   clientName?: string
@@ -309,8 +311,6 @@ const proposeQuoteInput = z
     incoterm: z.enum(['EXW', 'FOB', 'CFR', 'CIF']),
     fob: z.number().nonnegative(),
     quantity: z.number().positive().optional(),
-    freightInternational: z.number().nonnegative().optional(),
-    marginPercent: z.number().nonnegative().optional(),
     hsCode: z.string().trim().min(1).optional(),
     clientName: z.string().trim().min(1).optional(),
     language: z.enum(['es', 'en']).optional(),
@@ -319,7 +319,7 @@ const proposeQuoteInput = z
 const proposeQuoteJson = {
   type: 'object',
   description:
-    'Price a quote and persist the linked cost sheet + client quote + cover message as DRAFTS. The SERVER computes every number (landed cost, taxes, margin, minor-unit conversion) and resolves rates/tariffs/config — you supply only product facts and the incoterm value. SENDS/COMMITS NOTHING.',
+    'Price a quote and persist the linked cost sheet + client quote + cover message as DRAFTS. The SERVER computes every number and resolves freight (rate_tables), tariff and margin (org rules) itself — you supply only product facts and the incoterm value, never a freight or margin number. SENDS/COMMITS NOTHING.',
   properties: {
     productName: { type: 'string' },
     brand: { type: 'string' },
@@ -330,8 +330,6 @@ const proposeQuoteJson = {
     incoterm: { type: 'string', enum: ['EXW', 'FOB', 'CFR', 'CIF'] },
     fob: { type: 'number', description: 'Value at the stated incoterm (USD major units).' },
     quantity: { type: 'number' },
-    freightInternational: { type: 'number', description: 'Operator-stated override (USD); else the server sources it.' },
-    marginPercent: { type: 'number', description: 'Operator-stated override as a fraction; else the org rule applies.' },
     hsCode: { type: 'string', description: 'The HS position you chose from get_tariff (to resolve ambiguity).' },
     clientName: { type: 'string' },
     language: { type: 'string', enum: ['es', 'en'] },
@@ -642,7 +640,11 @@ export function buildTorreToolBelt(provider: TorreToolProvider, ctx: ToolBeltCon
           blockers: [],
         })
         if (!payload.success) {
-          return `Mensaje inválido — ${payload.error.issues.slice(0, 3).map((i) => `${i.path.join('.')}: ${i.message}`).join('; ')}`
+          // throw → the loop records this as an ERROR result (isError:true), so a failed
+          // draft is counted honestly in the audit trail, not returned as a success.
+          throw new Error(
+            `Mensaje inválido — ${payload.error.issues.slice(0, 3).map((i) => `${i.path.join('.')}: ${i.message}`).join('; ')}`,
+          )
         }
         const { draftId } = await provider.draftMessage(input)
         return `Borrador COMUNICACIÓN creado [${draftId}] — estado DRAFT. No se envió nada. Requiere aprobación humana; el control nombrará el efecto exacto.`

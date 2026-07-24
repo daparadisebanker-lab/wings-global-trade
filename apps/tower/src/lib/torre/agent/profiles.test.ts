@@ -68,6 +68,13 @@ describe('profile registry', () => {
     expect(o).not.toContain('propose_quote')
   })
 
+  it('analista analyses but never quotes the client (no propose_quote)', () => {
+    // analista holds compute_landed_cost for INTERNAL analysis; a client quote must go
+    // through cotizador/propose_quote (with its blockers), never analista's draft_message.
+    expect(TORRE_PROFILES.analista.tools).not.toContain('propose_quote')
+    expect(TORRE_PROFILES.analista.systemAppendix).toMatch(/INTERNAS/)
+  })
+
   it('cotizador chains to redactor for the cover message', () => {
     expect(TORRE_PROFILES.cotizador.chainsTo).toContain('redactor')
   })

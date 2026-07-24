@@ -48,7 +48,12 @@ export function orderMilestones(status: string): { label: string; date: string |
   return ORDER_STAGES.map((label, i) => ({ label, date: null, done: idx >= 0 && i <= idx }))
 }
 
-/** PURE: build the structured QuoteSpec the shared core prices from the tool input. */
+/**
+ * PURE: build the structured QuoteSpec the shared core prices from the tool input. The
+ * agent supplies only product facts — freight and margin are ALWAYS null here, forcing
+ * the server to source freight (rate_tables) and margin (org_rules). This is why the
+ * quote-core's "indicado por el operador" provenance label can never lie on this path.
+ */
 export function specFromQuoteInput(input: QuoteToolInput): QuoteSpec {
   return {
     understood: true,
@@ -61,11 +66,11 @@ export function specFromQuoteInput(input: QuoteToolInput): QuoteSpec {
     incoterm: input.incoterm,
     scenarios: [input.incoterm],
     fob: input.fob,
-    freightInternational: input.freightInternational ?? null,
+    freightInternational: null, // server-sourced (rate_tables) — never agent-supplied
     quantity: input.quantity ?? null,
     clientName: input.clientName ?? null,
     language: input.language ?? null,
-    marginPercent: input.marginPercent ?? null,
+    marginPercent: null, // server-sourced (org_rules) — never agent-supplied
     note: '',
   }
 }
@@ -90,6 +95,7 @@ export function createTorreProvider(db: TowerDb, ctx: TorreProviderContext): Tor
       const { data } = await db
         .from('orders')
         .select('id,status,incoterm,accounts(name),lanes(code)')
+        .eq('brand_id', brandId) // brand-scope for parity with the other reads (RLS + brand)
         .eq('id', importId)
         .maybeSingle()
       if (!data) return null
@@ -103,7 +109,7 @@ export function createTorreProvider(db: TowerDb, ctx: TorreProviderContext): Tor
       const one = <T,>(v: T | T[] | null): T | null => (Array.isArray(v) ? (v[0] ?? null) : v)
       return {
         id: row.id,
-        ref: row.id.slice(0, 8),
+        ref: row.id, // full id so get_import(ref) round-trips (the id IS the reference)
         status: row.status,
         laneCode: one(row.lanes)?.code ?? null,
         clientName: one(row.accounts)?.name ?? null,
@@ -116,7 +122,8 @@ export function createTorreProvider(db: TowerDb, ctx: TorreProviderContext): Tor
       const table = kind === 'client' ? 'accounts' : 'suppliers'
       let q = db.from(table).select('id,name,country').eq('brand_id', brandId).limit(10)
       if (id) q = q.eq('id', id)
-      else if (query) q = q.ilike('name', `%${query}%`)
+      // strip LIKE wildcards so `query:"%"` can't smuggle a list-everything match
+      else if (query) q = q.ilike('name', `%${query.replace(/[%_]/g, '')}%`)
       const { data } = await q
       return ((data ?? []) as { id: string; name: string; country: string | null }[]).map((r) => ({
         id: r.id,
@@ -211,37 +218,13 @@ export function createTorreProvider(db: TowerDb, ctx: TorreProviderContext): Tor
     },
 
     async proposeQuote(input: QuoteToolInput): Promise<QuoteToolResult> {
-      const spec: QuoteSpec = {
-        understood: true,
-        productName: input.productName,
-        brand: input.brand,
-        model: input.model,
-        fuelType: input.fuelType,
-        engineCC: input.engineCC,
-        origin: input.origin,
-        incoterm: input.incoterm,
-        scenarios: [input.incoterm],
-        fob: input.fob,
-        freightInternational: input.freightInternational ?? null,
-        quantity: input.quantity ?? null,
-        clientName: input.clientName ?? null,
-        language: input.language ?? null,
-        marginPercent: input.marginPercent ?? null,
-        note: '',
-      }
-      const core = await runQuoteFromSpec(db, ctx.laneRow, spec, {
+      const core = await runQuoteFromSpec(db, ctx.laneRow, specFromQuoteInput(input), {
         today: ctx.today,
         persist: true,
         createdBy: ctx.createdBy,
         hsCodeHint: input.hsCode,
       })
-      return {
-        draftIds: core.draftIds,
-        approvable: core.result.approvable,
-        blockers: core.result.hojaCostos.blockers.map((b) => b.reason.es),
-        persisted: core.persisted,
-        note: core.persistNote?.es,
-      }
+      return quoteToolResultFromCore(core)
     },
 
     async draftMessage(input: MessageToolInput): Promise<{ draftId: string }> {

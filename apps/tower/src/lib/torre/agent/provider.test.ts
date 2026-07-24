@@ -34,16 +34,15 @@ describe('specFromQuoteInput', () => {
     expect(spec.understood).toBe(true)
     expect(spec.scenarios).toEqual(['FOB'])
     expect(spec.fob).toBe(10000)
-    // omitted optionals become null (the core reads null as "use the org rule / source it")
-    expect(spec.freightInternational).toBeNull()
-    expect(spec.marginPercent).toBeNull()
     expect(spec.quantity).toBeNull()
   })
 
-  it('threads operator overrides through', () => {
-    const spec = specFromQuoteInput({ ...input, freightInternational: 2000, marginPercent: 0.22, quantity: 3, clientName: 'Sur', language: 'en' })
-    expect(spec.freightInternational).toBe(2000)
-    expect(spec.marginPercent).toBe(0.22)
+  it('ALWAYS forces freight and margin to null (server-sourced, never agent-supplied)', () => {
+    // even if a caller somehow set them, the mapping drops them — the fabrication guard
+    const spec = specFromQuoteInput({ ...input, quantity: 3, clientName: 'Sur', language: 'en' })
+    expect(spec.freightInternational).toBeNull()
+    expect(spec.marginPercent).toBeNull()
+    // product facts still thread through
     expect(spec.quantity).toBe(3)
     expect(spec.clientName).toBe('Sur')
     expect(spec.language).toBe('en')

@@ -42,8 +42,8 @@ export const TORRE_PROFILES: Record<TorreProfileId, TorreProfile> = {
     purpose: { es: 'Arma cotizaciones (costo puesto + margen).', en: 'Builds quotes (landed cost + margin).' },
     systemAppendix: [
       'PERFIL: COTIZADOR.',
-      'Armas cotizaciones. Flujo: resuelve la partida arancelaria (get_tariff) y el flete (get_rates) con sus fechas de validez; calcula SIEMPRE con compute_landed_cost; aplica el margen de la regla; emite la hoja de costos y la cotización como borradores (create_artifact).',
-      'Si la partida es ambigua o la tarifa está vencida/ausente, NÓMBRALO como bloqueo — no inventes una cifra ni un arancel. Cifras estimadas nunca entran a un artefacto de cliente sin marcarse.',
+      'Armas cotizaciones. Flujo: resuelve la partida arancelaria con get_tariff (elige el HS correcto) y revisa el flete con get_rates; luego llama a propose_quote con los datos del producto. El SERVIDOR calcula todo (costo puesto, impuestos, margen) y persiste la hoja de costos + la cotización + el mensaje como borradores. Tú NO calculas dinero ni pasas cifras de flete/margen.',
+      'Si la partida es ambigua o la tarifa está vencida/ausente, el borrador saldrá con un bloqueo — no inventes una cifra ni un arancel. Cifras estimadas nunca entran a un artefacto de cliente sin marcarse.',
     ].join('\n'),
     // full quoting surface — every read it needs, the money engine, and the server pricer.
     // propose_quote persists the WHOLE linked pair (incl. the cover message), so cotizador
@@ -60,7 +60,8 @@ export const TORRE_PROFILES: Record<TorreProfileId, TorreProfile> = {
       'PERFIL: OPERACIONES.',
       'Sigues el estado de las importaciones y detectas excepciones (ETA en riesgo, documento faltante, demora, hito vencido). Propones la siguiente acción y, si corresponde, un borrador. No cotizas: si piden precio, indícalo y deriva al cotizador.',
     ].join('\n'),
-    // status + logistics reads; drafts a message when a comm is warranted; NO money, NO quote
+    // status + logistics reads (get_rates only to CHECK a freight rate's validity, not to
+    // quote); drafts a message when a comm is warranted; no compute, no tariff, no propose_quote
     tools: ['get_import', 'get_client', 'get_supplier', 'get_rates', 'search_knowledge', 'draft_message'],
     model: REASON,
     chainsTo: ['redactor'],
@@ -72,7 +73,7 @@ export const TORRE_PROFILES: Record<TorreProfileId, TorreProfile> = {
     systemAppendix: [
       'PERFIL: REDACTOR.',
       'Redactas comunicaciones (cliente / proveedor / agente) con el tono correcto por audiencia e idioma: cliente en su idioma, proveedor en inglés por defecto, interno en español.',
-      'Usas SOLO hechos del estado y de artefactos ya calculados. NUNCA calculas ni inventas números, tarifas ni aranceles — no tienes esas herramientas. Emites la comunicación como borrador; el envío lo aprueba un humano y el control nombra el efecto exacto.',
+      'Usas SOLO hechos del estado y cifras que ya vienen en la solicitud o el artefacto calculado. NUNCA calculas ni inventas números, tarifas ni aranceles — no tienes esas herramientas. Si falta una cifra para escribir el mensaje, NÓMBRALA como pendiente y pide que se genere la cotización primero; no la adivines ni la tomes de un precedente. Emites la comunicación como borrador; el envío lo aprueba un humano y el control nombra el efecto exacto.',
     ].join('\n'),
     // deliberately denied compute/rates/tariff/quote — the writer cannot fabricate a number
     tools: ['get_import', 'get_client', 'get_supplier', 'search_knowledge', 'draft_message'],
@@ -85,10 +86,12 @@ export const TORRE_PROFILES: Record<TorreProfileId, TorreProfile> = {
     purpose: { es: 'Produce reportes de márgenes, pipeline y desempeño.', en: 'Produces margin, pipeline and performance reports.' },
     systemAppendix: [
       'PERFIL: ANALISTA.',
-      'Produces reportes y análisis (márgenes, pipeline, desempeño) desde el estado. Cuando un análisis requiere recomputar un costo, usas compute_landed_cost — nunca aritmética propia. Emites el reporte como borrador y citas las fuentes.',
+      'Produces reportes y análisis (márgenes, pipeline, desempeño) desde el estado. Cuando un análisis requiere recomputar un costo, usas compute_landed_cost — nunca aritmética propia. Emites el análisis como borrador y citas las fuentes.',
+      'Tus comunicaciones (draft_message) son INTERNAS (audiencia agente/interno). Nunca pongas un precio en un mensaje al cliente: una cotización al cliente SIEMPRE pasa por el cotizador (propose_quote), que aplica los bloqueos. Tu compute_landed_cost es para análisis interno, no para cotizar al cliente.',
     ].join('\n'),
-    // reads + the money calculator for margin analysis; delivers findings as a message draft
-    // until the report artifact types land (L3). No propose_quote — analista analyses, not quotes.
+    // reads + the money calculator for INTERNAL margin analysis; delivers findings as an
+    // internal message draft until the report artifact types land (L3). No propose_quote —
+    // analista analyses, never quotes the client (that path, with its blockers, is cotizador's).
     tools: ['get_import', 'get_client', 'get_rates', 'get_tariff', 'get_costing_config', 'search_knowledge', 'compute_landed_cost', 'draft_message'],
     model: REASON,
     chainsTo: ['redactor'],

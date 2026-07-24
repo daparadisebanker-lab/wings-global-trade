@@ -32,12 +32,30 @@ function norm(s: string): string {
     .replace(/[̀-ͯ]/g, '') // strip accents
 }
 
-// Keyword banks per profile (normalized, accent-insensitive). STEMS, not full words, so
-// overlapping forms count ONCE — e.g. 'cotiz' covers cotiza/cotizar/cotización without
-// letting a single word ("cotización") score its profile twice and skew the tie-break.
+function escapeRegex(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+/**
+ * A stem matches at a WORD BOUNDARY (prefix of a token), so 'carta' does NOT fire on
+ * "descarta", 'respond' not on "corresponde", 'estado' not on "prestado", 'ya' not on
+ * "playa". Multi-word stems ('donde esta', 'fin de mes') fall back to substring.
+ */
+function stemHit(hay: string, stem: string): boolean {
+  const s = norm(stem)
+  if (s.includes(' ')) return hay.includes(s)
+  return new RegExp(`\\b${escapeRegex(s)}`).test(hay)
+}
+function anyHit(hay: string, stems: string[]): boolean {
+  return stems.some((s) => stemHit(hay, s))
+}
+
+// Keyword banks per profile (normalized, accent-insensitive). STEMS matched at word
+// boundaries (see stemHit) so overlapping forms count once and mid-word false positives
+// ('descarta'→carta) don't fire.
 const PROFILE_KEYWORDS: Record<TorreProfileId, string[]> = {
   redactor: ['redact', 'escrib', 'correo', 'email', 'mensaje', 'whatsapp', 'respond', 'contest', 'carta', 'comunica'],
-  cotizador: ['cotiz', 'precio', 'costo', 'landed', 'puesto', 'fob', 'cif', 'margen', 'arancel', 'flete'],
+  cotizador: ['cotiz', 'precio', 'costo', 'costa', 'landed', 'puesto', 'fob', 'cif', 'margen', 'arancel', 'flete'],
   operaciones: ['estado', 'donde esta', 'demora', 'demurrage', 'contenedor', 'transito', 'documento', 'embarque', 'aduana', 'naviera'],
   analista: ['reporte', 'resumen', 'analisis', 'pipeline', 'brief', 'desempeno', 'kpi', 'informe', 'margenes del mes'],
 }
@@ -45,7 +63,10 @@ const PROFILE_KEYWORDS: Record<TorreProfileId, string[]> = {
 // Fixed tie-break priority (most specialized/consequential first). Deterministic.
 const PROFILE_PRIORITY: TorreProfileId[] = ['cotizador', 'redactor', 'analista', 'operaciones']
 
-const URGENT_WORDS = ['urgente', 'urgent', 'inmediato', 'ahora', 'hoy', 'ya ', 'demurrage', 'vencido', 'vence', 'penalidad', 'deadline', 'apura']
+// Urgency: only UNAMBIGUOUS signals (a false inmediato spends the interruption budget and
+// fails the watch eval, so precision beats recall — the model router catches the rest).
+// Dropped 'hoy'/'ahora'/'ya'/'vence'/'apura' (all negatable: "por ahora no hay apuro").
+const URGENT_WORDS = ['urgente', 'urgent', 'inmediato', 'demurrage', 'vencid', 'penalidad', 'deadline']
 const BATCH_WORDS = ['reporte', 'resumen', 'brief', 'mensual', 'semanal', 'fin de mes', 'informe']
 
 /** PURE: classify with keyword heuristics. Always returns a valid decision. */
@@ -55,7 +76,7 @@ export function classifyIntent(text: string): RouterDecision {
   // Score profiles by keyword hits; tie-break by fixed priority; zero hits → default.
   const scores = new Map<TorreProfileId, number>()
   for (const id of TORRE_PROFILE_IDS) {
-    const hits = PROFILE_KEYWORDS[id].reduce((n, kw) => (hay.includes(norm(kw)) ? n + 1 : n), 0)
+    const hits = PROFILE_KEYWORDS[id].reduce((n, kw) => (stemHit(hay, kw) ? n + 1 : n), 0)
     scores.set(id, hits)
   }
   const maxScore = Math.max(...scores.values())
@@ -71,38 +92,71 @@ export function classifyIntent(text: string): RouterDecision {
 
   // Urgency: inmediato > batch > normal.
   let urgency: RouterUrgency = 'normal'
-  if (URGENT_WORDS.some((w) => hay.includes(norm(w)))) urgency = 'inmediato'
-  else if (BATCH_WORDS.some((w) => hay.includes(norm(w)))) urgency = 'batch'
+  if (anyHit(hay, URGENT_WORDS)) urgency = 'inmediato'
+  else if (anyHit(hay, BATCH_WORDS)) urgency = 'batch'
 
   return { profile, urgency, reason, source: 'heuristic' }
 }
 
 /**
- * PURE: parse the router model's reply. Tolerant of surrounding prose — extracts the
- * first {...} block. Returns null when it isn't valid JSON or carries an unknown label
- * (the caller then falls back to the heuristic).
+ * Collect every top-level BALANCED {...} object in `raw`, tracking string context so
+ * braces inside a "reason" string don't break the scan. Returns them in order, so a
+ * chatty reply like `Puedo {clasificar}: {"profile":...}` yields both and the caller can
+ * skip the prose object that fails to parse.
+ */
+function balancedObjects(raw: string): string[] {
+  const out: string[] = []
+  let depth = 0
+  let start = -1
+  let inStr = false
+  let esc = false
+  for (let i = 0; i < raw.length; i++) {
+    const ch = raw[i]
+    if (inStr) {
+      if (esc) esc = false
+      else if (ch === '\\') esc = true
+      else if (ch === '"') inStr = false
+      continue
+    }
+    if (ch === '"') inStr = true
+    else if (ch === '{') {
+      if (depth === 0) start = i
+      depth++
+    } else if (ch === '}' && depth > 0) {
+      depth--
+      if (depth === 0 && start >= 0) out.push(raw.slice(start, i + 1))
+    }
+  }
+  return out
+}
+
+/**
+ * PURE: parse the router model's reply. Tolerant of surrounding prose, braces in a reason
+ * string, and a stray prose object before the JSON — it tries each balanced object and
+ * returns the first that carries a valid {profile, urgency}. null → the caller falls back
+ * to the heuristic.
  */
 export function parseRouterResponse(raw: string): { profile: TorreProfileId; urgency: RouterUrgency; reason?: string } | null {
-  const start = raw.indexOf('{')
-  const end = raw.lastIndexOf('}')
-  if (start < 0 || end <= start) return null
-  let obj: unknown
-  try {
-    obj = JSON.parse(raw.slice(start, end + 1))
-  } catch {
-    return null
+  for (const slice of balancedObjects(raw)) {
+    let obj: unknown
+    try {
+      obj = JSON.parse(slice)
+    } catch {
+      continue // e.g. `{clasificar}` — not JSON; try the next object
+    }
+    if (typeof obj !== 'object' || obj === null) continue
+    const o = obj as Record<string, unknown>
+    const profile = o.profile
+    const urgency = o.urgency
+    if (typeof profile !== 'string' || !TORRE_PROFILE_IDS.includes(profile as TorreProfileId)) continue
+    if (typeof urgency !== 'string' || !ROUTER_URGENCIES.includes(urgency as RouterUrgency)) continue
+    return {
+      profile: profile as TorreProfileId,
+      urgency: urgency as RouterUrgency,
+      reason: typeof o.reason === 'string' ? o.reason : undefined,
+    }
   }
-  if (typeof obj !== 'object' || obj === null) return null
-  const o = obj as Record<string, unknown>
-  const profile = o.profile
-  const urgency = o.urgency
-  if (typeof profile !== 'string' || !TORRE_PROFILE_IDS.includes(profile as TorreProfileId)) return null
-  if (typeof urgency !== 'string' || !ROUTER_URGENCIES.includes(urgency as RouterUrgency)) return null
-  return {
-    profile: profile as TorreProfileId,
-    urgency: urgency as RouterUrgency,
-    reason: typeof o.reason === 'string' ? o.reason : undefined,
-  }
+  return null
 }
 
 const ROUTER_SYSTEM = [
