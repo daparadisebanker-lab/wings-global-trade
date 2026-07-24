@@ -199,7 +199,8 @@ export type ComunicacionPayload = z.infer<typeof comunicacionPayloadSchema>
 
 // ── (4-7) L3 · Documentar — operational documents ────────────────────────────
 // Each is a schema-validated, versioned, human-approved document. They share the blocker
-// vocabulary (so isApprovable gates them identically) and carry sources for provenance.
+// vocabulary (so isApprovable gates them identically); reporte_estado additionally carries
+// sources for provenance (the others cite in-body until a sources field is warranted).
 
 /** (4) reporte_estado — an import status report (per-import health snapshot). */
 export const reporteEstadoPayloadSchema = z.object({
@@ -297,9 +298,34 @@ export function blockersOf(p: { blockers?: Blocker[] }): Blocker[] {
  * blocker cannot be approved. This is what makes "estimados never silently enter
  * a client-facing artifact" enforceable — a requiere_verificacion slot is emitted
  * as a blocker upstream (quote-run.ts), so it lands here as a hard stop.
+ *
+ * DERIVED blocker: a CHECKLIST_DOCS with a required document that is not `presente`
+ * is unapprovable even if its `blockers` array is empty — the missing doc IS the
+ * blocker (a checklist can't be signed off while a mandatory document is absent).
  */
-export function isApprovable(p: { blockers?: Blocker[] }): boolean {
-  return blockersOf(p).length === 0
+export function isApprovable(p: {
+  blockers?: Blocker[]
+  kind?: TorreArtifactKind
+  items?: ChecklistDocsPayload['items']
+}): boolean {
+  if (blockersOf(p).length > 0) return false
+  if (p.kind === 'CHECKLIST_DOCS' && p.items) {
+    return !p.items.some((i) => i.required && i.status !== 'presente')
+  }
+  return true
+}
+
+/** The count of effective blockers, INCLUDING the derived checklist one (for reasons/UI). */
+export function effectiveBlockerCount(p: {
+  blockers?: Blocker[]
+  kind?: TorreArtifactKind
+  items?: ChecklistDocsPayload['items']
+}): number {
+  let n = blockersOf(p).length
+  if (p.kind === 'CHECKLIST_DOCS' && p.items) {
+    n += p.items.filter((i) => i.required && i.status !== 'presente').length
+  }
+  return n
 }
 
 /** Validate an unknown JSONB payload from the DB into a typed Torre artifact. */

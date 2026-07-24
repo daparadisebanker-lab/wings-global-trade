@@ -1,8 +1,9 @@
 // src/lib/torre/documents.test.ts
 import { describe, it, expect } from 'vitest'
 import type { ActaPayload, ChecklistDocsPayload, ReporteEstadoPayload, SopPayload } from './artifacts'
-import { torreArtifactPayloadSchema } from './artifacts'
+import { isApprovable, torreArtifactPayloadSchema } from './artifacts'
 import { actaMarkdown, checklistDocsMarkdown, documentFrame, documentMarkdown, reporteEstadoMarkdown, sopMarkdown } from './documents'
+import { diffTorreArtifact } from './revise'
 
 const reporte: ReporteEstadoPayload = {
   kind: 'REPORTE_ESTADO', version: 1, title: 'Estado WGT-2026-014', importRef: 'WGT-2026-014',
@@ -78,5 +79,62 @@ describe('markdown exporters', () => {
   it('documentMarkdown dispatches by kind and rejects non-documents', () => {
     expect(documentMarkdown(acta)).toContain('Kickoff')
     expect(() => documentMarkdown({ kind: 'COMUNICACION' } as never)).toThrow(/not a document/)
+  })
+
+  it('every exporter shows a blockers section when blocked', () => {
+    const blk = [{ id: 'x', field: 'y', reason: { es: 'documento pendiente', en: 'pending doc' }, task: { es: 'a', en: 'b' } }]
+    expect(reporteEstadoMarkdown({ ...reporte, blockers: blk })).toContain('## Bloqueos')
+    expect(checklistDocsMarkdown({ ...checklist, blockers: blk })).toContain('## Bloqueos')
+    expect(actaMarkdown({ ...acta, blockers: blk })).toContain('## Bloqueos')
+    expect(sopMarkdown({ ...sop, blockers: blk })).toContain('## Bloqueos')
+  })
+
+  it('escapes pipes/newlines so a doc name cannot forge table columns or headings', () => {
+    const md = checklistDocsMarkdown({ ...checklist, items: [{ doc: 'Certificado | Origen\n# Forjado', required: true, status: 'presente' }] })
+    expect(md).toContain('Certificado \\| Origen') // pipe escaped
+    expect(md).not.toContain('\n# Forjado') // newline collapsed — no forged heading
+  })
+})
+
+describe('checklist approvability (honesty)', () => {
+  it('a missing REQUIRED doc makes the checklist UNAPPROVABLE (derived blocker)', () => {
+    expect(isApprovable(checklist)).toBe(false) // BL required + faltante
+    expect(documentFrame(checklist).approvable).toBe(false)
+  })
+  it('an all-present checklist is approvable', () => {
+    const ok: ChecklistDocsPayload = { ...checklist, items: [{ doc: 'BL', required: true, status: 'presente' }] }
+    expect(isApprovable(ok)).toBe(true)
+    expect(documentFrame(ok).approvable).toBe(true)
+  })
+  it('a MISSING OPTIONAL doc does not block', () => {
+    const optional: ChecklistDocsPayload = { ...checklist, items: [{ doc: 'Extra', required: false, status: 'faltante' }] }
+    expect(isApprovable(optional)).toBe(true)
+  })
+})
+
+describe('document diffs (the fourth leg, tested)', () => {
+  it('a checklist status change presente→faltante shows in the diff', () => {
+    const before: ChecklistDocsPayload = { ...checklist, items: [{ doc: 'BL', required: true, status: 'presente' }] }
+    const after: ChecklistDocsPayload = { ...checklist, items: [{ doc: 'BL', required: true, status: 'faltante' }] }
+    expect(diffTorreArtifact(before, after)).toContainEqual(expect.objectContaining({ key: 'doc:BL', kind: 'changed' }))
+  })
+
+  it('a checklist NOTE-only change is visible (not silently dropped)', () => {
+    const before: ChecklistDocsPayload = { ...checklist, items: [{ doc: 'BL', required: true, status: 'presente', note: 'v1' }] }
+    const after: ChecklistDocsPayload = { ...checklist, items: [{ doc: 'BL', required: true, status: 'presente', note: 'v2' }] }
+    expect(diffTorreArtifact(before, after)).toContainEqual(expect.objectContaining({ key: 'doc:BL', kind: 'changed' }))
+  })
+
+  it('a SOP note-only change is visible', () => {
+    const before: SopPayload = { ...sop, steps: [{ n: 1, action: 'Verificar', owner: null, note: 'antes' }] }
+    const after: SopPayload = { ...sop, steps: [{ n: 1, action: 'Verificar', owner: null, note: 'después' }] }
+    expect(diffTorreArtifact(before, after)).toContainEqual(expect.objectContaining({ key: 'step.1', kind: 'changed' }))
+  })
+
+  it('duplicate milestone labels do not collapse in a reporte diff', () => {
+    const before: ReporteEstadoPayload = { ...reporte, milestones: [{ label: 'Hito', date: '2026-07-01', done: true }, { label: 'Hito', date: '2026-07-05', done: false }] }
+    const after: ReporteEstadoPayload = { ...reporte, milestones: [{ label: 'Hito', date: '2026-07-01', done: true }] }
+    const changes = diffTorreArtifact(before, after)
+    expect(changes.some((c) => c.key === 'milestone:Hito#2' && c.kind === 'removed')).toBe(true)
   })
 })

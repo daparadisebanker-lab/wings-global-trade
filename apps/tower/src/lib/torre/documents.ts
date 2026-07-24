@@ -16,6 +16,9 @@ import {
   type TorreArtifactPayload,
 } from './artifacts'
 
+/** The four operational document artifact payloads (L3). */
+export type DocumentPayload = ReporteEstadoPayload | ChecklistDocsPayload | ActaPayload | SopPayload
+
 export interface DocumentFrame {
   brand: string
   kind: TorreArtifactPayload['kind']
@@ -28,8 +31,8 @@ export interface DocumentFrame {
 
 const WINGS = 'Wings Global Trade'
 
-/** PURE: the shared branded frame for any document artifact. */
-export function documentFrame(p: Extract<TorreArtifactPayload, { title: string; version: number }>, brand = WINGS): DocumentFrame {
+/** PURE: the shared branded frame for a document artifact (the four document kinds only). */
+export function documentFrame(p: DocumentPayload, brand = WINGS): DocumentFrame {
   return {
     brand,
     kind: p.kind,
@@ -40,8 +43,21 @@ export function documentFrame(p: Extract<TorreArtifactPayload, { title: string; 
   }
 }
 
+/** Collapse newlines so a value can't forge headings / extra lines / warning text. */
+function line(s: string): string {
+  return s.replace(/[\r\n]+/g, ' ').trim()
+}
+/** Escape a Markdown TABLE cell: no pipes (column injection) and no newlines. */
+function cell(s: string): string {
+  return line(s).replace(/\|/g, '\\|')
+}
 function h(title: string): string {
-  return `# ${title}\n`
+  return `# ${line(title)}\n`
+}
+/** A shared "## Bloqueos" section so a blocked document reads as blocked in EVERY exporter. */
+function blockersSection(blockers: { reason: { es: string } }[]): string[] {
+  if (!blockers.length) return []
+  return ['', '## Bloqueos', ...blockers.map((b) => `- ⚠ ${line(b.reason.es)}`)]
 }
 
 /** PURE: reporte_estado → Markdown. */
@@ -59,11 +75,9 @@ export function reporteEstadoMarkdown(p: ReporteEstadoPayload): string {
     lines.push('', '## Riesgos', ...p.risks.map((r) => `- **${r.severity.toUpperCase()}** — ${r.note}`))
   }
   if (p.nextActions.length) {
-    lines.push('', '## Próximas acciones', ...p.nextActions.map((a) => `- ${a}`))
+    lines.push('', '## Próximas acciones', ...p.nextActions.map((a) => `- ${line(a)}`))
   }
-  if (p.blockers.length) {
-    lines.push('', '## Bloqueos', ...p.blockers.map((b) => `- ⚠ ${b.reason.es}`))
-  }
+  lines.push(...blockersSection(p.blockers))
   return lines.join('\n')
 }
 
@@ -72,16 +86,17 @@ export function checklistDocsMarkdown(p: ChecklistDocsPayload): string {
   const mark = (s: string) => (s === 'presente' ? '✓' : s === 'vencido' ? '⏳' : '✗')
   const lines = [
     h(p.title),
-    `**Import:** ${p.importRef}  ·  **Etapa:** ${p.stage}`,
+    `**Import:** ${line(p.importRef)}  ·  **Etapa:** ${line(p.stage)}`,
     '',
     '| Documento | Requerido | Estado |',
     '| --- | --- | --- |',
-    ...p.items.map((i) => `| ${i.doc} | ${i.required ? 'Sí' : 'No'} | ${mark(i.status)} ${i.status}${i.note ? ` — ${i.note}` : ''} |`),
+    ...p.items.map((i) => `| ${cell(i.doc)} | ${i.required ? 'Sí' : 'No'} | ${mark(i.status)} ${i.status}${i.note ? ` — ${cell(i.note)}` : ''} |`),
   ]
   const missingRequired = p.items.filter((i) => i.required && i.status !== 'presente')
   if (missingRequired.length) {
     lines.push('', `> **Faltan ${missingRequired.length} documento(s) obligatorio(s).**`)
   }
+  lines.push(...blockersSection(p.blockers))
   return lines.join('\n')
 }
 
@@ -89,14 +104,15 @@ export function checklistDocsMarkdown(p: ChecklistDocsPayload): string {
 export function actaMarkdown(p: ActaPayload): string {
   const lines = [
     h(p.title),
-    `**Fecha:** ${p.date}  ·  **Asistentes:** ${p.attendees.join(', ')}`,
+    `**Fecha:** ${line(p.date)}  ·  **Asistentes:** ${p.attendees.map(line).join(', ')}`,
     '',
     '## Decisiones',
-    ...p.decisions.map((d) => `- **${d.topic}:** ${d.decision}${d.owner ? ` _(${d.owner})_` : ''}`),
+    ...p.decisions.map((d) => `- **${line(d.topic)}:** ${line(d.decision)}${d.owner ? ` _(${line(d.owner)})_` : ''}`),
     '',
     '## Tareas',
-    ...p.actionItems.map((a) => `- [ ] ${a.task} — **${a.owner}**${a.due ? ` (vence ${a.due})` : ''}`),
+    ...p.actionItems.map((a) => `- [ ] ${line(a.task)} — **${line(a.owner)}**${a.due ? ` (vence ${line(a.due)})` : ''}`),
   ]
+  lines.push(...blockersSection(p.blockers))
   return lines.join('\n')
 }
 
@@ -104,13 +120,14 @@ export function actaMarkdown(p: ActaPayload): string {
 export function sopMarkdown(p: SopPayload): string {
   const lines = [
     h(p.title),
-    `**Alcance:** ${p.scope}`,
+    `**Alcance:** ${line(p.scope)}`,
     '',
     ...p.steps
       .slice()
       .sort((a, b) => a.n - b.n)
-      .map((s) => `${s.n}. ${s.action}${s.owner ? ` — _${s.owner}_` : ''}${s.note ? `\n   > ${s.note}` : ''}`),
+      .map((s) => `${s.n}. ${line(s.action)}${s.owner ? ` — _${line(s.owner)}_` : ''}${s.note ? `\n   > ${line(s.note)}` : ''}`),
   ]
+  lines.push(...blockersSection(p.blockers))
   return lines.join('\n')
 }
 

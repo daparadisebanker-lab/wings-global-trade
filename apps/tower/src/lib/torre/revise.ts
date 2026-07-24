@@ -155,7 +155,7 @@ function checklistDocsFacts(p: ChecklistDocsPayload): Fact[] {
     { key: 'importRef', label: { es: 'Import', en: 'Import' }, value: p.importRef },
     { key: 'stage', label: { es: 'Etapa', en: 'Stage' }, value: p.stage },
   ]
-  p.items.forEach((i) => f.push({ key: `doc:${i.doc}`, label: { es: 'Documento', en: 'Document' }, value: `${i.status}${i.required ? ' (req.)' : ''}` }))
+  p.items.forEach((i) => f.push({ key: `doc:${i.doc}`, label: { es: 'Documento', en: 'Document' }, value: `${i.status}${i.required ? ' (req.)' : ''}${i.note ? ` — ${i.note}` : ''}` }))
   return [...f, ...blockerFacts(p.blockers)]
 }
 
@@ -175,7 +175,7 @@ function sopFacts(p: SopPayload): Fact[] {
     { key: 'title', label: { es: 'Título', en: 'Title' }, value: p.title },
     { key: 'scope', label: { es: 'Alcance', en: 'Scope' }, value: p.scope },
   ]
-  p.steps.forEach((s) => f.push({ key: `step.${s.n}`, label: { es: `Paso ${s.n}`, en: `Step ${s.n}` }, value: `${s.action}${s.owner ? ` — ${s.owner}` : ''}` }))
+  p.steps.forEach((s) => f.push({ key: `step.${s.n}`, label: { es: `Paso ${s.n}`, en: `Step ${s.n}` }, value: `${s.action}${s.owner ? ` — ${s.owner}` : ''}${s.note ? ` (${s.note})` : ''}` }))
   return [...f, ...blockerFacts(p.blockers)]
 }
 
