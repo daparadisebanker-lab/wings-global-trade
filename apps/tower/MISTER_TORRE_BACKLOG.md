@@ -89,8 +89,13 @@ off the World-B exemption; connectors mock-first behind adapters (`MOCK_CONNECTO
   (cotizacionPrintModel — branded, structured, token-safe, honesty preserved → the PDF).
   18 tests. Remaining wiring: inline-edit form, revise server action (persist successor
   DRAFT), PDF print component + button. Fable review: pending.
-- `TODO` **L2 · Comunicar** — redactor tone/audience (client/supplier/agent, per-lang),
-  email + WhatsApp send-on-approve (mocked adapters + queue), inbound thread capture.
+- `WIP` **L2 · Comunicar** — cores DONE: **tone.ts** (toneProfile per audience×language:
+  client formal in its lang, supplier EN, agent ES); **send.ts** (prepareSend gate — an
+  unblocked, addressed, non-empty COMUNICACION only; mock-first recording adapters,
+  MOCK_CONNECTORS) wired into **approveTorreDraft** as real send-on-approve (records, never
+  performs; a non-sendable message can't be approved); **inbound.ts** (normalizeInbound →
+  thread-keyed capture for email/WhatsApp, replies group). 20 tests. Remaining: persist
+  outbox/inbound to tables + redactor tone wired into the draft_message prompt. Review: pending.
 - `TODO` **L3 · Documentar** — artifact types reporte_estado · checklist_docs · acta ·
   sop (schema+renderer+exporter+eval each) + the branded document frame.
 - `TODO` **L4 · Vigilar (Watch)** — `watch_signals` migration + reconciler + v1 rules

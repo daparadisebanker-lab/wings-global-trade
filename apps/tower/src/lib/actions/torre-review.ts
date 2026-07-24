@@ -27,6 +27,7 @@ import {
   type TorreDraftRecord,
   type TorreDraftStatus,
 } from '@/lib/torre/drafts'
+import { prepareSend, resolveSendAdapter } from '@/lib/torre/comms/send'
 import type { ImportInputs } from '@/lib/costing/types'
 
 const uuid = z.string().uuid()
@@ -72,6 +73,8 @@ export async function listTorreDrafts(input: ListTorreDraftsInput = {}): Promise
 export interface ApproveTorreResult {
   record: TorreDraftRecord
   sideEffect: Localized
+  /** Present when the approved artifact was a COMUNICACION — the (mocked) send outcome. */
+  sent?: { channel: string; to: string; providerId?: string; mocked: boolean }
 }
 
 /** Approve a Torre draft — gated by blockers; performs the named side effect. */
@@ -106,12 +109,29 @@ export async function approveTorreDraft(draftId: string): Promise<ActionResult<A
   }
   // COTIZACION: recorded on approval; issuance to tower.quotes happens from the
   // Quotations module (composeQuote/issueQuotation) — a separate human step.
-  // COMUNICACION: MOCK_CONNECTORS — the send connector is mocked in v1; approval
-  // marks it ready-to-send without performing an external send.
+  // COMUNICACION: send-on-approve (L2). The connector is MOCK_CONNECTORS — the adapter
+  // RECORDS the send instead of performing it. prepareSend re-gates (no send without a
+  // recipient / non-empty body / zero blockers); a message that can't be sent is not
+  // approved (the named side effect must be performable).
+  let sent: ApproveTorreResult['sent']
+  if (payload.kind === 'COMUNICACION') {
+    const prepared = prepareSend(payload)
+    if (!prepared.ok) {
+      const reason: Record<typeof prepared.reason, string> = {
+        'has-blockers': 'La comunicación tiene bloqueos / The message has blockers',
+        'no-recipient': 'Falta el destinatario / Missing recipient',
+        'empty-body': 'El cuerpo está vacío / The body is empty',
+      }
+      return fail('VALIDATION', reason[prepared.reason])
+    }
+    const result = await resolveSendAdapter(prepared.message.channel).send(prepared.message)
+    if (!result.ok) return fail('VALIDATION', 'No se pudo enviar / Could not send')
+    sent = { channel: result.channel, to: result.to, providerId: result.providerId, mocked: result.mocked }
+  }
 
   const approved = await markReviewed(db, record.id, 'APPROVED', auth.user.id)
   if (!approved) return fail('VALIDATION', 'No se pudo aprobar (¿ya revisado?) / Could not approve')
-  return ok({ record: approved, sideEffect: approveSideEffect(payload) })
+  return ok({ record: approved, sideEffect: approveSideEffect(payload), sent })
 }
 
 /** Reject a Torre draft (append-only: status flips, row is kept). */
