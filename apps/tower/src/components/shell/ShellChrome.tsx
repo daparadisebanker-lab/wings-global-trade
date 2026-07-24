@@ -99,6 +99,8 @@ export function ShellChrome({
   userName,
   userEmail,
   repTitle = null,
+  teamSpaceEnabled = false,
+  unreadMentions = 0,
   isGroupAdmin = false,
   hasRbMembership = false,
   needsOnboarding = false,
@@ -109,6 +111,11 @@ export function ShellChrome({
   userEmail: string | null
   /** The rep's role/title from their profile — shown under their name in the rail. */
   repTitle?: string | null
+  /** Team space live (tower_55 applied) — gates the rail's Equipo entry so it
+   *  never links to a dormant coming-soon page. */
+  teamSpaceEnabled?: boolean
+  /** Unread @mention count for the rail's Equipo badge. */
+  unreadMentions?: number
   isGroupAdmin?: boolean
   hasRbMembership?: boolean
   needsOnboarding?: boolean
@@ -399,6 +406,8 @@ export function ShellChrome({
               userEmail={userEmail}
               repTitle={repTitle}
               showMarketing={visible.has('marcas')}
+              teamSpaceEnabled={teamSpaceEnabled}
+              unreadMentions={unreadMentions}
             />
           </div>
         </aside>

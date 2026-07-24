@@ -4,6 +4,7 @@ import { TowerQueryProvider } from '@/components/shell/TowerQueryProvider'
 import { getLaneMemberships, getIsGroupAdmin, getHasRbMembership } from '@/lib/lanes/memberships'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { getMyRepProfile } from '@/lib/actions/rep-profile'
+import { getMentionStatus } from '@/lib/actions/team-space'
 
 /**
  * Server layout for every (shell) route. Fetches the current user + their lane
@@ -13,11 +14,12 @@ import { getMyRepProfile } from '@/lib/actions/rep-profile'
  * unauthenticated requests to /login before this runs.
  */
 export default async function ShellLayout({ children }: { children: ReactNode }) {
-  const [memberships, isGroupAdmin, hasRbMembership, repProfile] = await Promise.all([
+  const [memberships, isGroupAdmin, hasRbMembership, repProfile, mentionStatus] = await Promise.all([
     getLaneMemberships(),
     getIsGroupAdmin(),
     getHasRbMembership(),
     getMyRepProfile(),
+    getMentionStatus(),
   ])
 
   // A rep must onboard when they have a rep_profiles row (enrollment seeded it)
@@ -48,6 +50,8 @@ export default async function ShellLayout({ children }: { children: ReactNode })
         userName={userName}
         userEmail={userEmail}
         repTitle={repTitle}
+        teamSpaceEnabled={mentionStatus.available}
+        unreadMentions={mentionStatus.unread}
         isGroupAdmin={isGroupAdmin}
         hasRbMembership={hasRbMembership}
         needsOnboarding={needsOnboarding}

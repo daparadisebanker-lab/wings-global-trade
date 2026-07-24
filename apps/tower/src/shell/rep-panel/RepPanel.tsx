@@ -36,6 +36,8 @@ export function RepPanel({
   userEmail,
   repTitle,
   showMarketing = false,
+  teamSpaceEnabled = false,
+  unreadMentions = 0,
   locale = DEFAULT_LOCALE,
 }: {
   userName: string | null
@@ -45,6 +47,11 @@ export function RepPanel({
    *  (mirrors the Dock's module visibility) — else it would land on an empty
    *  promo workbench. Reps without brands never see a shortcut to nowhere. */
   showMarketing?: boolean
+  /** Team space live (tower_55 applied) — the Equipo entry appears only then, so
+   *  it never links to a dormant coming-soon page. */
+  teamSpaceEnabled?: boolean
+  /** Unread @mention count — a small badge on the Equipo entry. */
+  unreadMentions?: number
   locale?: Locale
 }) {
   // `||` carries the whole chain so an empty-string email (not just null) also
@@ -88,6 +95,24 @@ export function RepPanel({
               <path d="M13 8l4-2M13 12l4 2" strokeLinecap="round" />
             </svg>
             <span className="font-ui text-t0">{t({ es: 'Marketing', en: 'Marketing' }, locale)}</span>
+          </Link>
+        ) : null}
+
+        {/* Team space — only when live (tower_55 applied), so it never links to a
+            dormant page. Unread @mentions show as a small count. */}
+        {teamSpaceEnabled ? (
+          <Link href="/equipo" className={ROW}>
+            <svg {...ICON} aria-hidden className="shrink-0">
+              <circle cx="7" cy="7.5" r="2.5" />
+              <path d="M2.5 16a4.5 4.5 0 0 1 9 0" strokeLinecap="round" />
+              <path d="M13 5.2a2.4 2.4 0 0 1 0 4.6M14.5 16a4.5 4.5 0 0 0-2.3-3.9" strokeLinecap="round" />
+            </svg>
+            <span className="font-ui text-t0">{t({ es: 'Equipo', en: 'Team' }, locale)}</span>
+            {unreadMentions > 0 ? (
+              <span className="ml-auto rounded-pill bg-lane-accent px-1.5 font-mono text-label text-surface-0">
+                {unreadMentions > 99 ? '99+' : unreadMentions}
+              </span>
+            ) : null}
           </Link>
         ) : null}
       </nav>
