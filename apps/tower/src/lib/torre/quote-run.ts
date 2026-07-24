@@ -20,6 +20,7 @@ import {
   type Blocker,
   type SourceRef,
   type ConfidenceState,
+  type TariffCandidateRef,
   type HojaCostosPayload,
   type CotizacionPayload,
   type ComunicacionPayload,
@@ -59,8 +60,10 @@ export interface QuoteRunInput {
   igvRate: number
   percepcionRate: number
   insuranceRate: number
-  /** null ⇒ tariff unresolved: numbers go provisional + a tariff blocker is raised. */
+  /** null ⇒ tariff unresolved/ambiguous: numbers go provisional + a tariff blocker is raised. */
   adValoremRate: number | null
+  /** When ambiguous (adValoremRate null), the candidate positions to present on the blocker. */
+  tariffCandidates?: TariffCandidateRef[]
   /** fraction, e.g. 0.18 — org rule default or operator override. */
   marginPercent: number
   /** dated TC (PEN/USD). */
@@ -161,14 +164,21 @@ export function buildQuoteRun(inp: QuoteRunInput): QuoteRunResult {
   }
   const tariffUnresolved = inp.adValoremRate === null
   if (tariffUnresolved) {
+    const cands = inp.tariffCandidates ?? []
+    const listEs = cands.map((c) => `HS ${c.hsCode} (${(c.dutyPct * 100).toFixed(0)}%)`).join(' · ')
     blockers.push({
       id: 'tariff-ambiguous',
       field: 'hs_code',
       reason: {
-        es: 'Posición arancelaria sin resolver — Ad Valorem provisional 0%. Elegir HS antes de aprobar.',
-        en: 'Tariff position unresolved — Ad Valorem provisional 0%. Choose the HS position before approval.',
+        es: cands.length
+          ? `Partida arancelaria ambigua — ${cands.length} candidatas: ${listEs}. Ad Valorem provisional 0%. Elegir HS antes de aprobar.`
+          : 'Posición arancelaria sin resolver — Ad Valorem provisional 0%. Elegir HS antes de aprobar.',
+        en: cands.length
+          ? `Ambiguous tariff position — ${cands.length} candidates: ${listEs}. Ad Valorem provisional 0%. Choose the HS before approval.`
+          : 'Tariff position unresolved — Ad Valorem provisional 0%. Choose the HS position before approval.',
       },
       task: { es: 'Resolver partida arancelaria (HS)', en: 'Resolve the HS tariff position' },
+      candidates: cands.length ? cands : undefined,
     })
   }
   if (isPast(inp.tariffSource?.validUntil, inp.today)) {
@@ -365,8 +375,10 @@ export interface QuoteRunContext {
   igvRate: number
   percepcionRate: number
   insuranceRate: number
-  /** Resolved Ad Valorem fraction, or null when the tariff is unresolved (→ blocker). */
+  /** Resolved Ad Valorem fraction, or null when the tariff is unresolved/ambiguous (→ blocker). */
   adValoremRate: number | null
+  /** Candidate positions to present when the tariff is ambiguous (adValoremRate null). */
+  tariffCandidates?: TariffCandidateRef[]
   exchangeRate: number
   /** Org-rule default margin (fraction) when the operator states none. */
   marginDefault: number
@@ -403,6 +415,7 @@ export function assembleQuoteRunInput(spec: QuoteSpec, ctx: QuoteRunContext): Qu
     freightZofratacna: null,
     portExpenses: null,
     customsAgency: null,
+    tariffCandidates: ctx.tariffCandidates,
     igvRate: ctx.igvRate,
     percepcionRate: ctx.percepcionRate,
     insuranceRate: ctx.insuranceRate,

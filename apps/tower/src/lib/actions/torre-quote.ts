@@ -29,8 +29,9 @@ import {
   TORRE_DRAFT_SELECT_COLS,
   type RawTorreDraftRow,
 } from '@/lib/torre/drafts'
-import type { SourceRef, TorreArtifactPayload } from '@/lib/torre/artifacts'
+import type { SourceRef, TariffCandidateRef, TorreArtifactPayload } from '@/lib/torre/artifacts'
 import { resolveFreightRate, type RateRow } from '@/lib/torre/rates'
+import { resolveTariffCandidates, toCandidate, type TariffPosition } from '@/lib/torre/tariff'
 
 const uuid = z.string().uuid()
 
@@ -101,6 +102,27 @@ export async function runTorreQuote(input: RunTorreQuoteInput): Promise<ActionRe
     bps: r.bps,
     label: r.label,
   }))
+  const { data: tariffRows } = await db
+    .from('tariff_positions')
+    .select('hs_code,description,keywords,duty_bps,iva_bps,verified_at')
+    .eq('brand_id', laneRow.brand_id)
+  const tariffPositions: TariffPosition[] = (
+    (tariffRows ?? []) as Array<{
+      hs_code: string
+      description: string
+      keywords: string[] | null
+      duty_bps: number
+      iva_bps: number
+      verified_at: string | null
+    }>
+  ).map((r) => ({
+    hsCode: r.hs_code,
+    description: r.description,
+    keywords: r.keywords ?? [],
+    dutyBps: r.duty_bps,
+    ivaBps: r.iva_bps,
+    verifiedAt: r.verified_at,
+  }))
 
   // The MODEL step (only the sentence → structured spec).
   const client = getIntelligenceClient()
@@ -130,6 +152,8 @@ export async function runTorreQuote(input: RunTorreQuoteInput): Promise<ActionRe
     .from('rate_tables')
     .select('kind,route,mode,container_type,rate_minor,currency,valid_from,valid_to,source')
     .eq('brand_id', laneRow.brand_id)
+    // this lane's rates + brand-wide (lane_id null) — never a sibling lane's rates
+    .or(`lane_id.eq.${laneId},lane_id.is.null`)
   const rates: RateRow[] = (
     (freightRows ?? []) as Array<{
       kind: 'FREIGHT' | 'INSURANCE'
@@ -165,21 +189,49 @@ export async function runTorreQuote(input: RunTorreQuoteInput): Promise<ActionRe
     }
   }
 
-  // Build the context (rates from config; brand-default Ad Valorem; mocked TRM).
-  const adValoremRate = resolveAdValoremRate(adValoremTable, '') // brand default (never null)
+  // Tariff (A2): resolve the product to HS candidate positions. 1 → use its duty;
+  // ≥2 → ambiguous (adValoremRate null → the quote run blocks and PRESENTS them);
+  // 0 → fall back to the brand-default Ad Valorem. Never a model-guessed duty.
+  const candidatePositions = resolveTariffCandidates(
+    tariffPositions,
+    [effectiveSpec.productName, effectiveSpec.brand, effectiveSpec.model].filter(Boolean).join(' '),
+  )
+  let adValoremRate: number | null
+  let tariffCandidates: TariffCandidateRef[] | undefined
+  let tariffSource: SourceRef
+  if (candidatePositions.length === 1) {
+    const p = candidatePositions[0]
+    adValoremRate = p.dutyBps / 10_000
+    tariffSource = {
+      kind: 'tariff_position',
+      label: `HS ${p.hsCode} · ${p.description} (${(adValoremRate * 100).toFixed(0)}%)`,
+      ref: p.hsCode,
+    }
+  } else if (candidatePositions.length >= 2) {
+    adValoremRate = null // → tariff-ambiguous blocker, carrying the candidates
+    tariffCandidates = candidatePositions.map(toCandidate)
+    tariffSource = { kind: 'tariff_position', label: `${candidatePositions.length} partidas candidatas` }
+  } else {
+    const brandDefault = resolveAdValoremRate(adValoremTable, '')
+    adValoremRate = brandDefault
+    tariffSource = {
+      kind: 'tariff_position',
+      label: `Ad Valorem ${(brandDefault * 100).toFixed(0)}% (predeterminado de marca)`,
+    }
+  }
+
+  // Build the context (rates from config; tariff resolved above; mocked TRM).
   const ctx: QuoteRunContext = {
     laneCode: laneRow.code,
     igvRate: (c?.igv_bps ?? 1800) / 10_000,
     percepcionRate: (c?.percepcion_bps ?? 350) / 10_000,
     insuranceRate: (c?.insurance_bps ?? 150) / 10_000,
     adValoremRate,
+    tariffCandidates,
     exchangeRate: 3.7, // MOCK_CONNECTORS: no live TRM feed; referential rate
     marginDefault: 0.18,
     freightSource,
-    tariffSource: {
-      kind: 'tariff_position',
-      label: `Ad Valorem ${(adValoremRate * 100).toFixed(0)}% (predeterminado de marca)`,
-    } satisfies SourceRef,
+    tariffSource,
     trmSource: { kind: 'org_rule', label: 'TC referencial 3.70 (mock)' },
     marginSource: { kind: 'org_rule', label: `Margen por defecto ${(0.18 * 100).toFixed(0)}%` },
     validityDays: 15,

@@ -47,4 +47,30 @@ describe('resolveFreightRate', () => {
     const r = resolveFreightRate([generic, specific], { containerType: '40HC' }, '2026-07-23')!
     expect(r.rateMajor).toBe(4200)
   })
+
+  it('HARD-FILTERS by mode: a LAND rate is never used for a SEA shipment (→ null → rate-missing)', () => {
+    const land: RateRow = { ...base, mode: 'LAND', route: 'MX-VERACRUZ>CL-VALPO', containerType: '20GP' }
+    expect(resolveFreightRate([land], { mode: 'SEA' }, '2026-07-23')).toBeNull()
+  })
+
+  it('HARD-FILTERS by route when specified', () => {
+    expect(resolveFreightRate([base], { route: 'OTHER-ROUTE' }, '2026-07-23')).toBeNull()
+  })
+
+  it('rejects a non-USD rate (never treated as USD)', () => {
+    const eur: RateRow = { ...base, currency: 'EUR', rateMinor: 155000 }
+    expect(resolveFreightRate([eur], { mode: 'SEA' }, '2026-07-23')).toBeNull()
+  })
+
+  it('excludes a not-yet-effective (future-dated) rate', () => {
+    const future: RateRow = { ...base, validFrom: '2026-09-01', validTo: '2026-12-31' }
+    expect(resolveFreightRate([future], { mode: 'SEA' }, '2026-07-23')).toBeNull()
+  })
+
+  it('is deterministic on a tie: picks the cheaper rate', () => {
+    const a: RateRow = { ...base, rateMinor: 450000, source: 'A' }
+    const b: RateRow = { ...base, rateMinor: 420000, source: 'B' }
+    expect(resolveFreightRate([a, b], { mode: 'SEA' }, '2026-07-23')!.rateMajor).toBe(4200)
+    expect(resolveFreightRate([b, a], { mode: 'SEA' }, '2026-07-23')!.rateMajor).toBe(4200)
+  })
 })

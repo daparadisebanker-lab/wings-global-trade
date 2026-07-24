@@ -14,12 +14,15 @@ create table if not exists tower.rate_tables (
   mode           text not null default 'SEA' check (mode in ('SEA', 'AIR', 'LAND')),
   container_type text check (container_type in ('20GP', '40GP', '40HC', 'LCL', 'RORO')),
   rate_minor     bigint not null check (rate_minor >= 0),
-  currency       text not null default 'USD',
+  -- USD only until multi-currency freight is actually designed: the SUNAT engine
+  -- consumes USD major units, so a non-USD rate would be miscosted (money law).
+  currency       text not null default 'USD' check (currency in ('USD')),
   valid_from     date not null default current_date,
   valid_to       date,                          -- null = open-ended
   source         text,                          -- carrier / agent quote reference
   created_by     uuid references tower.profiles(id) default auth.uid(),
-  created_at     timestamptz not null default now()
+  created_at     timestamptz not null default now(),
+  unique (brand_id, kind, route, mode, container_type, valid_from)
 );
 
 create index if not exists rate_tables_brand_kind_idx on tower.rate_tables (brand_id, kind, valid_to);
@@ -38,14 +41,11 @@ create policy rate_tables_write on tower.rate_tables for insert with check (
     then tower.has_lane_role(lane_id, array['LANE_DIRECTOR','TRADE_OPS'])
     else tower.is_group_admin() end
 );
-create policy rate_tables_update on tower.rate_tables for update using (
-  case when lane_id is not null
-    then tower.has_lane_role(lane_id, array['LANE_DIRECTOR','TRADE_OPS'])
-    else tower.is_group_admin() end
-);
--- No delete policy — append-only (supersede with a new dated row).
+-- Genuinely append-only (like cost_calculations): a rate a past quote's SourceRef
+-- points at must never be rewritten in place. Supersede with a new dated row. So no
+-- update policy and no update grant.
 
-grant select, insert, update on tower.rate_tables to authenticated;
+grant select, insert on tower.rate_tables to authenticated;
 
 drop trigger if exists audit_rate_tables on tower.rate_tables;
 create trigger audit_rate_tables

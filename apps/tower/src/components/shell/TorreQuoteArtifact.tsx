@@ -79,6 +79,19 @@ function BlockerPanel({ blockers, locale }: { blockers: Blocker[]; locale: Local
           <div style={{ fontFamily: MONO, fontSize: 10.5, color: MUTED, paddingLeft: 12 }}>
             → {locale === 'en' ? b.task.en : b.task.es}
           </div>
+          {b.candidates && b.candidates.length > 0 && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, paddingLeft: 12, marginTop: 4 }}>
+              {b.candidates.map((cand) => (
+                <span
+                  key={cand.hsCode}
+                  title={cand.description}
+                  style={{ fontFamily: MONO, fontSize: 10, color: BODY, border: `1px solid ${STEEL_LINE}`, borderRadius: 999, padding: '1px 7px' }}
+                >
+                  HS {cand.hsCode} · {(cand.dutyPct * 100).toFixed(0)}%
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       ))}
     </div>

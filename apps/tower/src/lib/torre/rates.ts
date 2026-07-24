@@ -37,27 +37,40 @@ function isValidAt(r: RateRow, today: string): boolean {
 }
 
 /**
- * PURE: best FREIGHT rate for the criteria, or null when the brand has none. Scoring
- * favours (in order): currently-valid, exact container, matching route, matching mode,
- * then the most recently effective row.
+ * PURE: the best FREIGHT rate that ACTUALLY APPLIES, or null (→ the caller raises the
+ * rate-missing blocker; a rate is never invented). Criteria are HARD FILTERS, not mere
+ * preferences — a rate that doesn't match the shipment can't be used:
+ *  · currency must be USD (the engine's unit; multi-currency is not modelled yet);
+ *  · a row not yet effective (validFrom > today) is excluded — pricing on a
+ *    not-in-force rate would escape both blockers;
+ *  · mode/route must equal when the caller specifies them; containerType must be an
+ *    exact match OR a generic (null) row.
+ * Among survivors it prefers currently-valid over lapsed, then exact container, then
+ * recency, then a fully deterministic total order (cheapest, then route). A lapsed
+ * survivor keeps its PAST validUntil so the quote run raises the rate-expiry blocker.
  */
 export function resolveFreightRate(rows: RateRow[], criteria: FreightCriteria, today: string): ResolvedFreight | null {
-  const freight = rows.filter((r) => r.kind === 'FREIGHT')
-  if (freight.length === 0) return null
+  const applicable = rows.filter(
+    (r) =>
+      r.kind === 'FREIGHT' &&
+      r.currency === 'USD' &&
+      r.validFrom <= today && // exclude not-yet-effective (future) rates
+      (!criteria.mode || r.mode === criteria.mode) &&
+      (!criteria.route || r.route === criteria.route) &&
+      (!criteria.containerType || r.containerType === null || r.containerType === criteria.containerType),
+  )
+  if (applicable.length === 0) return null
 
-  function score(r: RateRow): number {
-    let s = 0
-    if (isValidAt(r, today)) s += 1000
-    if (criteria.containerType && r.containerType === criteria.containerType) s += 100
-    if (criteria.route && r.route === criteria.route) s += 50
-    if (criteria.mode && r.mode === criteria.mode) s += 10
-    return s
-  }
-
-  const best = [...freight].sort((a, b) => {
-    const d = score(b) - score(a)
-    if (d !== 0) return d
-    return b.validFrom.localeCompare(a.validFrom) // recency tiebreak
+  const best = [...applicable].sort((a, b) => {
+    const va = isValidAt(a, today) ? 1 : 0
+    const vb = isValidAt(b, today) ? 1 : 0
+    if (va !== vb) return vb - va // currently-valid before lapsed
+    const sa = criteria.containerType && a.containerType === criteria.containerType ? 1 : 0
+    const sb = criteria.containerType && b.containerType === criteria.containerType ? 1 : 0
+    if (sa !== sb) return sb - sa // exact container before generic
+    if (a.validFrom !== b.validFrom) return b.validFrom.localeCompare(a.validFrom) // recency
+    if (a.rateMinor !== b.rateMinor) return a.rateMinor - b.rateMinor // deterministic: cheaper first
+    return a.route.localeCompare(b.route) // final total order
   })[0]
 
   const label = `Flete ${best.route} ${best.mode}${best.containerType ? ` ${best.containerType}` : ''}`.trim()

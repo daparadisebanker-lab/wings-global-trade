@@ -52,6 +52,14 @@ export interface SourceRef {
   validUntil?: string
 }
 
+/** A tariff (HS) candidate presented on an ambiguous-position blocker. */
+export interface TariffCandidateRef {
+  hsCode: string
+  description: string
+  /** Duty as a fraction, e.g. 0.06. */
+  dutyPct: number
+}
+
 /** An open blocker makes an artifact unapprovable until a human resolves it. */
 export interface Blocker {
   /** Stable id, e.g. 'fob-missing' or 'tariff-ambiguous'. */
@@ -62,6 +70,8 @@ export interface Blocker {
   reason: { es: string; en: string }
   /** The one-tap verification task title this blocker would create. */
   task: { es: string; en: string }
+  /** For 'tariff-ambiguous': the candidate positions the reviewer must choose between. */
+  candidates?: TariffCandidateRef[]
 }
 
 export const sourceRefSchema = z.object({
@@ -76,6 +86,9 @@ export const blockerSchema = z.object({
   field: z.string().min(1),
   reason: z.object({ es: z.string(), en: z.string() }),
   task: z.object({ es: z.string(), en: z.string() }),
+  candidates: z
+    .array(z.object({ hsCode: z.string(), description: z.string(), dutyPct: z.number() }))
+    .optional(),
 })
 
 // ── The Torre artifact kinds (join tower.ai_drafts.kind via migration tower_48) ─

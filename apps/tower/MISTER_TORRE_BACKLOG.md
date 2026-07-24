@@ -19,11 +19,13 @@ off the World-B exemption; connectors mock-first behind adapters (`MOCK_CONNECTO
 ## Status legend: `TODO` · `WIP` · `DONE`
 
 ### Foundations
-- `DONE` **A1 · rate_tables** — freight/insurance rate tables (route/mode/container,
-  validity, source) + pure `resolveFreightRate` + wired into the quote run (freight
-  now sourced from a dated table; rate-expiry blocker is real). Fable review: pending.
-- `TODO` **A2 · tariff_positions** — real HS resolution returning candidate positions
-  (duty + IGV) so the quote run presents 2 candidates and blocks until chosen.
+- `DONE` **A1 · rate_tables** — freight/insurance rate tables + pure `resolveFreightRate`
+  + wired into the quote run. Fable review: **6 findings applied** (criteria are now
+  hard filters not preferences; USD-only; future-dated excluded; append-only migration;
+  idempotent seed; deterministic tiebreak).
+- `DONE` **A2 · tariff_positions** — HS candidate resolution (keyword-matched, accent-
+  insensitive) + wired: 1 → duty, ≥2 → tariff-ambiguous blocker carrying the candidates
+  (rendered on the blocker panel), 0 → brand default. Fable review: pending.
 - `TODO` **A3 · org_rules** — margin_rules + incoterm_defaults + ports_default +
   approval_matrix; wire margin default + validity + per-artifact approver roles.
 - `TODO` **A4 · Ajustes-lite** — view/edit rate tables + margin rules (host-Tower UI).
