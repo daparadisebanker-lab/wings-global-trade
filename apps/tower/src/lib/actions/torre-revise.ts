@@ -36,6 +36,8 @@ export interface ReviseTorreDraftResult {
   diff: ArtifactChange[]
   /** Whether the successor is approvable (no open blockers). */
   approvable: boolean
+  /** Reviewer-facing notes about automatic adjustments (e.g. a confidence downgrade). */
+  warnings: string[]
 }
 
 async function requireUser() {
@@ -100,5 +102,6 @@ export async function reviseTorreDraft(input: ReviseTorreDraftInput): Promise<Ac
     version: revision.payload.version,
     diff: revision.diff,
     approvable: isApprovable(revision.payload),
+    warnings: revision.warnings,
   })
 }

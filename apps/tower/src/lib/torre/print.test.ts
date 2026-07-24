@@ -20,24 +20,36 @@ describe('cotizacionPrintModel', () => {
   it('brands as Wings by default and carries the client + validity meta', () => {
     const m = cotizacionPrintModel(cotizacion())
     expect(m.brand).toBe('Wings Global Trade')
+    expect(m.endorsement).toBeNull() // no §5 credit when the brand IS Wings
     expect(m.meta).toContainEqual({ label: { es: 'Cliente', en: 'Client' }, value: 'Clínica Sur' })
     expect(m.meta).toContainEqual({ label: { es: 'Válida hasta', en: 'Valid until' }, value: '2026-08-15' })
   })
 
-  it('accepts an endorsed/represented brand name', () => {
-    expect(cotizacionPrintModel(cotizacion(), 'Áladín').brand).toBe('Áladín')
+  it('an endorsed brand gets the §5 "Represented by Wings" credit', () => {
+    const m = cotizacionPrintModel(cotizacion(), { brand: 'Áladín' })
+    expect(m.brand).toBe('Áladín')
+    expect(m.endorsement).toEqual({ es: 'Representado por Wings Global Trade', en: 'Represented by Wings Global Trade' })
   })
 
-  it('formats scenario money from minor units and labels confidence', () => {
+  it('carries version, issue date and approvability so a blocked draft is marked', () => {
+    const m = cotizacionPrintModel(cotizacion({ version: 3 }), { issuedAt: '2026-07-24' })
+    expect(m.version).toBe(3)
+    expect(m.issuedAt).toBe('2026-07-24')
+    expect(m.approvable).toBe(true)
+    const blocked = cotizacionPrintModel(cotizacion({ blockers: [{ id: 'x', field: 'fob', reason: { es: 'a', en: 'b' }, task: { es: 'c', en: 'd' } }] }))
+    expect(blocked.approvable).toBe(false)
+  })
+
+  it('formats scenario money and carries the confidence STATE (language-agnostic)', () => {
     const m = cotizacionPrintModel(cotizacion())
-    expect(m.scenarioRows[0]).toEqual(['FOB', '12345.00', '15000.00', 'verificado'])
+    expect(m.scenarios[0]).toEqual({ incoterm: 'FOB', landed: '12345.00', unit: '15000.00', confidence: 'verified' })
   })
 
   it('renders a blocked scenario price as em dash (never a fake number)', () => {
     const m = cotizacionPrintModel(
       cotizacion({ scenarios: [{ incoterm: 'CIF', landedCostMinor: null, unitPriceMinor: null, confidence: 'requiere_verificacion' }] }),
     )
-    expect(m.scenarioRows[0]).toEqual(['CIF', '—', '—', 'requiere verificación'])
+    expect(m.scenarios[0]).toEqual({ incoterm: 'CIF', landed: '—', unit: '—', confidence: 'requiere_verificacion' })
   })
 
   it('builds a de-duplicated confidence legend of states actually present', () => {
@@ -50,7 +62,7 @@ describe('cotizacionPrintModel', () => {
         ],
       }),
     )
-    expect(m.legend.map((l) => l.state)).toEqual(['verified', 'estimado'])
+    expect(m.legend).toEqual(['verified', 'estimado'])
   })
 
   it('carries the wholesale / not-an-invoice footnote', () => {

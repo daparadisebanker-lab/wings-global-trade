@@ -1,6 +1,6 @@
 // src/lib/torre/revise.test.ts
 import { describe, it, expect } from 'vitest'
-import type { CotizacionPayload, ComunicacionPayload, Machine } from './artifacts'
+import { isApprovable, type CotizacionPayload, type ComunicacionPayload, type Machine } from './artifacts'
 import { diffTorreArtifact, reviseTorreArtifact } from './revise'
 
 const machine: Machine = {
@@ -40,14 +40,41 @@ describe('diffTorreArtifact', () => {
     expect(landed).toMatchObject({ before: '12345.00', after: '13000.00', kind: 'changed' })
   })
 
-  it('detects added and removed terms', () => {
+  it('detects added and removed terms by CONTENT (reorder is a no-op)', () => {
     const before = cotizacion({ terms: ['50% adelanto'] })
     const after = cotizacion({ terms: ['50% adelanto', 'Entrega 60 días'] })
     const changes = diffTorreArtifact(before, after)
-    expect(changes).toContainEqual(expect.objectContaining({ key: 'term.1', kind: 'added', after: 'Entrega 60 días' }))
+    expect(changes).toContainEqual(expect.objectContaining({ key: 'term:Entrega 60 días', kind: 'added', after: 'Entrega 60 días' }))
 
     const removed = diffTorreArtifact(after, before)
-    expect(removed).toContainEqual(expect.objectContaining({ key: 'term.1', kind: 'removed', before: 'Entrega 60 días' }))
+    expect(removed).toContainEqual(expect.objectContaining({ key: 'term:Entrega 60 días', kind: 'removed' }))
+
+    // a pure reorder produces NO changes (content-keyed)
+    expect(diffTorreArtifact(cotizacion({ terms: ['a', 'b'] }), cotizacion({ terms: ['b', 'a'] }))).toEqual([])
+  })
+
+  it('surfaces a machine-block edit (silent no more)', () => {
+    const changes = diffTorreArtifact(cotizacion(), cotizacion({ machine: { ...machine, incoterm: 'CIF' } }))
+    expect(changes).toContainEqual(expect.objectContaining({ key: 'machine.incoterm', before: 'FOB', after: 'CIF', kind: 'changed' }))
+  })
+
+  it('surfaces a REMOVED source (provenance deletion is visible)', () => {
+    const withSource = cotizacion({ sources: [{ kind: 'rate_table', label: 'Flete SH→CLL' }] })
+    const changes = diffTorreArtifact(withSource, cotizacion({ sources: [] }))
+    expect(changes).toContainEqual(expect.objectContaining({ key: 'source.0', kind: 'removed' }))
+  })
+
+  it('does NOT collapse duplicate-incoterm scenarios (deletion is visible)', () => {
+    const before = cotizacion({
+      scenarios: [
+        { incoterm: 'FOB', landedCostMinor: 12345, unitPriceMinor: 1, confidence: 'verified' },
+        { incoterm: 'FOB', landedCostMinor: 99999, unitPriceMinor: 2, confidence: 'verified' },
+      ],
+    })
+    const after = cotizacion({ scenarios: [{ incoterm: 'FOB', landedCostMinor: 99999, unitPriceMinor: 2, confidence: 'verified' }] })
+    const changes = diffTorreArtifact(before, after)
+    // the second FOB.landed is a suffixed key that gets removed — not silently collapsed
+    expect(changes.some((c) => c.key === 'scenario.FOB.landed#2' && c.kind === 'removed')).toBe(true)
   })
 
   it('detects an added scenario (new incoterm)', () => {
@@ -68,6 +95,17 @@ describe('diffTorreArtifact', () => {
   it('diffs a communication body edit', () => {
     const changes = diffTorreArtifact(comunicacion, { ...comunicacion, body: 'Estimado cliente, adjunto.' })
     expect(changes).toContainEqual(expect.objectContaining({ key: 'body', kind: 'changed' }))
+  })
+
+  it('surfaces a REMOVED blocker on a communication (no blocker-laundering)', () => {
+    const blocked = { ...comunicacion, blockers: [{ id: 'to-missing', field: 'to', reason: { es: 'falta', en: 'missing' }, task: { es: 'x', en: 'y' } }] }
+    const changes = diffTorreArtifact(blocked, comunicacion) // blocker removed
+    expect(changes).toContainEqual(expect.objectContaining({ key: 'blocker.to-missing', kind: 'removed' }))
+  })
+
+  it('surfaces a sideEffect edit on a communication', () => {
+    const changes = diffTorreArtifact(comunicacion, { ...comunicacion, sideEffect: { es: 'Enviar a otro', en: 'Send elsewhere' } })
+    expect(changes).toContainEqual(expect.objectContaining({ key: 'sideEffect', kind: 'changed' }))
   })
 
   it('throws on a kind mismatch', () => {
@@ -101,5 +139,39 @@ describe('reviseTorreArtifact', () => {
     const rev = reviseTorreArtifact(cotizacion({ version: 2 }), cotizacion({ version: 2 }))
     expect(rev.diff).toEqual([])
     expect(rev.payload.version).toBe(3)
+    expect(rev.warnings).toEqual([])
+  })
+
+  it('downgrades a hand-edited verified price to estimado + adds an operator source + warns', () => {
+    const original = cotizacion({ scenarios: [{ incoterm: 'FOB', landedCostMinor: 1234500, unitPriceMinor: 1500000, confidence: 'verified' }] })
+    const edited = cotizacion({ scenarios: [{ incoterm: 'FOB', landedCostMinor: 1300000, unitPriceMinor: 1500000, confidence: 'verified' }] })
+    const rev = reviseTorreArtifact(original, edited)
+    const payload = rev.payload as typeof edited
+    expect(payload.scenarios[0].confidence).toBe('estimado') // verified can't survive a manual edit
+    expect(payload.sources.some((s) => s.kind === 'operator' && /manual/i.test(s.label))).toBe(true)
+    expect(rev.warnings.length).toBeGreaterThan(0)
+  })
+
+  it('does NOT downgrade when the price was untouched', () => {
+    const rev = reviseTorreArtifact(cotizacion(), cotizacion({ validityUntil: '2026-09-01' }))
+    const payload = rev.payload as ReturnType<typeof cotizacion>
+    expect(payload.scenarios[0].confidence).toBe('verified')
+    expect(rev.warnings).toEqual([])
+  })
+
+  it('rejects duplicate scenario incoterms', () => {
+    const dup = cotizacion({
+      scenarios: [
+        { incoterm: 'FOB', landedCostMinor: 1, unitPriceMinor: 2, confidence: 'verified' },
+        { incoterm: 'FOB', landedCostMinor: 3, unitPriceMinor: 4, confidence: 'verified' },
+      ],
+    })
+    expect(() => reviseTorreArtifact(cotizacion(), dup)).toThrow(/duplicate scenario incoterms/)
+  })
+
+  it('a revision that introduces a blocker is unapprovable', () => {
+    const edited = cotizacion({ blockers: [{ id: 'fob-missing', field: 'fob', reason: { es: 'x', en: 'y' }, task: { es: 'a', en: 'b' } }] })
+    const rev = reviseTorreArtifact(cotizacion(), edited)
+    expect(isApprovable(rev.payload)).toBe(false)
   })
 })
