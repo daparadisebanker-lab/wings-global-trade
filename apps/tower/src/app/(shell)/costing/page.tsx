@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { EmptyState } from '@/components/ui/EmptyState'
-import { CostCalculator } from '@/components/costing'
+import { CostingWorkbench } from '@/components/costing'
 import { listCostCalculations, listCostingLanes } from '@/lib/actions/costing'
 
 // Costing module (peru-costing Wave 6.2) — the Peru SUNAT landed-cost desk.
@@ -32,8 +32,8 @@ export default async function CostingPage() {
     <div className="flex h-full flex-col gap-4 overflow-y-auto p-6">
       <header className="flex flex-wrap items-end justify-between gap-4 border-b border-line pb-4">
         <div className="flex flex-col gap-1">
-          <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">CST · Costeo SUNAT</span>
-          <h1 className="font-display text-t2 text-ink-primary">Costo de importación (Perú)</h1>
+          <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">CST · Costeo</span>
+          <h1 className="font-display text-t2 text-ink-primary">Costeo por lane</h1>
         </div>
         {/* Sub-tools surfaced as clear buttons (were easy-to-miss header text links). */}
         <nav aria-label="Herramientas de costeo / Costing tools" className="flex flex-wrap items-center gap-2">
@@ -51,7 +51,7 @@ export default async function CostingPage() {
           </Link>
         </nav>
       </header>
-      <CostCalculator lanes={lanes} initialHistory={initialHistory} />
+      <CostingWorkbench lanes={lanes} initialHistory={initialHistory} />
     </div>
   )
 }
