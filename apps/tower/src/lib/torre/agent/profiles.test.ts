@@ -10,6 +10,7 @@ import {
   selectProfileTools,
   type TorreProfileId,
 } from './profiles'
+import { toneGuidanceBlock } from '@/lib/torre/comms/tone'
 
 function fakeProvider(): TorreToolProvider {
   return {
@@ -61,11 +62,12 @@ describe('profile registry', () => {
     expect(r).not.toContain('propose_quote')
   })
 
-  it('redactor prompt carries the canonical tone contract (per-audience + wholesale-only)', () => {
+  it('redactor prompt embeds the canonical tone block verbatim (not a hand-copy)', () => {
+    // structural, not substring: re-hand-copying the strings and dropping the toneGuidanceBlock
+    // call would recreate the original drift — this fails unless the actual block is embedded.
     const appendix = TORRE_PROFILES.redactor.systemAppendix
-    expect(appendix).toMatch(/TONO POR AUDIENCIA/) // the tone.ts block is wired in, not hand-copied
-    expect(appendix).toMatch(/minorista/) // the no-retail-language client rule reaches the prompt
-    expect(appendix).toMatch(/inglés por defecto/) // supplier default language
+    expect(appendix).toContain(toneGuidanceBlock('es'))
+    expect(appendix).toMatch(/minorista/) // and the no-retail-language client rule reaches the prompt
   })
 
   it('operaciones does not quote (no compute, no tariff, no propose_quote)', () => {

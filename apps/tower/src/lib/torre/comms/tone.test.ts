@@ -47,14 +47,21 @@ describe('toneProfile', () => {
 })
 
 describe('toneGuidanceBlock — the redactor prompt contract (one source of truth)', () => {
-  it('covers all three audiences with their register + default-language rule', () => {
+  it('covers all three audiences with their register (localized) + default-language rule', () => {
     const b = toneGuidanceBlock('es')
     expect(b).toMatch(/cliente \(formal/)
-    expect(b).toMatch(/proveedor \(professional/)
-    expect(b).toMatch(/interno\/agente \(operational/)
+    expect(b).toMatch(/proveedor \(profesional/) // register word localized to ES, no English token
+    expect(b).toMatch(/interno\/agente \(operativo/)
     // the default-language rule is stated per audience
     expect(b).toMatch(/inglés por defecto/) // supplier
     expect(b).toMatch(/idioma del cliente/) // client
+  })
+
+  it('does not embed English register tokens in the Spanish block, nor nested parens', () => {
+    const b = toneGuidanceBlock('es')
+    expect(b).not.toMatch(/\(professional/)
+    expect(b).not.toMatch(/\(operational/)
+    expect(b).not.toMatch(/\(\(/) // no nested opening parens in a row
   })
 
   it('carries the wholesale-only guidance into the prompt (never retail sales language)', () => {

@@ -303,10 +303,22 @@ describe('draft_message — COMUNICACION only, DRAFT, no money', () => {
     expect(out).toMatch(/No se envió nada/)
   })
 
-  it('defaults supplier audience to English', async () => {
+  it('resolves the per-audience default language from tone.ts and passes it to the provider', async () => {
+    // supplier → EN, client/agent → ES; observable AT THE PROVIDER (the value that persists),
+    // not a throwaway validation object.
+    const supplierDraft = vi.fn(async () => ({ draftId: 'm' }))
+    await tool(fakeProvider({ draftMessage: supplierDraft }), 'draft_message').run({ ...msg, audience: 'supplier', language: undefined })
+    expect(supplierDraft).toHaveBeenCalledWith(expect.objectContaining({ audience: 'supplier', language: 'en' }))
+
+    const clientDraft = vi.fn(async () => ({ draftId: 'm' }))
+    await tool(fakeProvider({ draftMessage: clientDraft }), 'draft_message').run({ ...msg, audience: 'client', language: undefined })
+    expect(clientDraft).toHaveBeenCalledWith(expect.objectContaining({ audience: 'client', language: 'es' }))
+  })
+
+  it('honors an explicit language over the default', async () => {
     const draftMessage = vi.fn(async () => ({ draftId: 'm' }))
-    await tool(fakeProvider({ draftMessage }), 'draft_message').run({ ...msg, audience: 'supplier', language: undefined })
-    expect(draftMessage).toHaveBeenCalledOnce()
+    await tool(fakeProvider({ draftMessage }), 'draft_message').run({ ...msg, audience: 'supplier', language: 'es' })
+    expect(draftMessage).toHaveBeenCalledWith(expect.objectContaining({ language: 'es' }))
   })
 
   it('rejects an empty body', async () => {

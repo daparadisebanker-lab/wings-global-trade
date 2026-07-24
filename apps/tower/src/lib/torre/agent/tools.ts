@@ -635,13 +635,15 @@ export function buildTorreToolBelt(provider: TorreToolProvider, ctx: ToolBeltCon
       inputSchema: draftMessageJson,
       run: async (raw) => {
         const input = draftMessageInput.parse(raw)
+        // Resolve the per-audience default language ONCE from tone.ts (the single source), then
+        // both validate AND persist with THAT value — so what we check is what lands in ai_drafts.
+        const language = input.language ?? defaultLanguage(input.audience)
         // Validate against the real COMUNICACION schema (defaults version/refs server-side).
         const payload = comunicacionPayloadSchema.safeParse({
           kind: 'COMUNICACION',
           channel: input.channel,
           audience: input.audience,
-          // one source of truth for the per-audience default language (tone.ts), not a copy
-          language: input.language ?? defaultLanguage(input.audience),
+          language,
           to: input.to ?? null,
           subject: input.subject ?? null,
           body: input.body,
@@ -655,7 +657,7 @@ export function buildTorreToolBelt(provider: TorreToolProvider, ctx: ToolBeltCon
             `Mensaje inválido — ${payload.error.issues.slice(0, 3).map((i) => `${i.path.join('.')}: ${i.message}`).join('; ')}`,
           )
         }
-        const { draftId } = await provider.draftMessage(input)
+        const { draftId } = await provider.draftMessage({ ...input, language })
         return `Borrador COMUNICACIÓN creado [${draftId}] — estado DRAFT. No se envió nada. Requiere aprobación humana; el control nombrará el efecto exacto.`
       },
     },

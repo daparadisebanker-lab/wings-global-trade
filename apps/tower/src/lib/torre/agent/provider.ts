@@ -15,6 +15,7 @@
 import { INTELLIGENCE_MODELS } from '@/lib/ai/types'
 import { buildTorreInsert, mapTorreDraftRow, TORRE_DRAFT_SELECT_COLS, type RawTorreDraftRow } from '@/lib/torre/drafts'
 import { comunicacionPayloadSchema } from '@/lib/torre/artifacts'
+import { defaultLanguage } from '@/lib/torre/comms/tone'
 import type { QuoteSpec } from '@/lib/torre/parse-spec'
 import { runQuoteFromSpec, type QuoteCoreResult, type QuoteLaneRow, type TowerDb } from '@/lib/torre/quote-core'
 import type { RateRow } from '@/lib/torre/rates'
@@ -232,7 +233,9 @@ export function createTorreProvider(db: TowerDb, ctx: TorreProviderContext): Tor
         kind: 'COMUNICACION',
         channel: input.channel,
         audience: input.audience,
-        language: input.language ?? (input.audience === 'supplier' ? 'en' : 'es'),
+        // one source of truth (tone.ts). The tool resolves this before calling us; this is a
+        // defensive fallback for a direct caller — either way the rule lives in ONE place.
+        language: input.language ?? defaultLanguage(input.audience),
         to: input.to ?? null,
         subject: input.subject ?? null,
         body: input.body,

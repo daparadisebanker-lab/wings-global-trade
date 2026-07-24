@@ -80,16 +80,23 @@ export function toneProfile(audience: Audience, opts: { language?: CommLanguage;
   }
 }
 
-// The default-language rule per audience, as a short phrase for the prompt block.
+// The default-language rule per audience, as a short phrase for the prompt block (no inner
+// parens — the row already wraps these in parens).
 const LANGUAGE_RULE: Record<Audience, { es: string; en: string }> = {
-  client: { es: 'en el idioma del cliente (ES por defecto)', en: "in the client's language (ES by default)" },
+  client: { es: 'en el idioma del cliente, ES por defecto', en: "in the client's language, ES by default" },
   supplier: { es: 'en inglés por defecto', en: 'in English by default' },
-  agent: { es: 'en español (interno)', en: 'in Spanish (internal)' },
+  agent: { es: 'en español', en: 'in Spanish' },
 }
 const AUDIENCE_LABEL: Record<Audience, { es: string; en: string }> = {
   client: { es: 'cliente', en: 'client' },
   supplier: { es: 'proveedor', en: 'supplier' },
   agent: { es: 'interno/agente', en: 'internal/agent' },
+}
+// The register word, localized — so a Spanish prompt block doesn't embed English tokens.
+const REGISTER_LABEL: Record<ToneProfile['register'], { es: string; en: string }> = {
+  formal: { es: 'formal', en: 'formal' },
+  professional: { es: 'profesional', en: 'professional' },
+  operational: { es: 'operativo', en: 'operational' },
 }
 
 /**
@@ -107,8 +114,9 @@ export function toneGuidanceBlock(promptLang: CommLanguage = 'es'): string {
       : 'TONE BY AUDIENCE (character never changes; register and language do):'
   const rows = order.map((a) => {
     const label = AUDIENCE_LABEL[a][promptLang]
+    const register = REGISTER_LABEL[REGISTER[a]][promptLang]
     const rule = LANGUAGE_RULE[a][promptLang]
-    return `· ${label} (${REGISTER[a]}, ${rule}): ${GUIDANCE[a][promptLang]}`
+    return `· ${label} (${register}, ${rule}): ${GUIDANCE[a][promptLang]}`
   })
   return [header, ...rows].join('\n')
 }
