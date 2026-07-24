@@ -10,7 +10,7 @@
 //   · a message with no recipient or empty body cannot be sent;
 //   · nothing sends without going through prepareSend first.
 import type { ComunicacionPayload } from '@/lib/torre/artifacts'
-import type { Audience, CommLanguage } from './tone'
+import type { Audience } from './tone'
 
 export type Channel = 'email' | 'whatsapp'
 
@@ -20,7 +20,10 @@ export interface OutboundMessage {
   subject: string | null
   body: string
   audience: Audience
-  language: CommLanguage
+  /** The message's language verbatim (es/en/pt/…) — no lossy coercion, so audit is honest. */
+  language: string
+  /** Dedupe token (the draft id) — a real adapter keys on this so an approve-retry is idempotent. */
+  idempotencyKey: string
 }
 
 export type SendRefusalReason = 'has-blockers' | 'no-recipient' | 'empty-body'
@@ -32,9 +35,11 @@ export type PreparedSend =
 /**
  * PURE: turn an approved COMUNICACION into a sendable message, or refuse. Refuses when the
  * payload still carries blockers (unapprovable → must never send), has no recipient, or
- * has an empty body. The redactor's language rides through as-is.
+ * has an empty body. `idempotencyKey` (the draft id) rides on the message so a retried
+ * approve can't send twice. The redactor's language rides through (es/en; a third language
+ * is left as-is on the payload but coerced to es for the outbound label — noted).
  */
-export function prepareSend(payload: ComunicacionPayload): PreparedSend {
+export function prepareSend(payload: ComunicacionPayload, idempotencyKey: string): PreparedSend {
   if ((payload.blockers?.length ?? 0) > 0) return { ok: false, reason: 'has-blockers' }
   const to = payload.to?.trim()
   if (!to) return { ok: false, reason: 'no-recipient' }
@@ -47,7 +52,8 @@ export function prepareSend(payload: ComunicacionPayload): PreparedSend {
       subject: payload.subject,
       body: payload.body,
       audience: payload.audience,
-      language: (payload.language === 'en' ? 'en' : 'es') as CommLanguage,
+      language: payload.language, // verbatim — a 'pt'/'zh' body is never mislabeled 'es'
+      idempotencyKey,
     },
   }
 }
@@ -82,7 +88,8 @@ export function mockAdapter(channel: Channel): SendAdapter & { sent: OutboundMes
         return { ok: false, channel, to: message.to, error: `channel mismatch (${message.channel} → ${channel})`, mocked: true }
       }
       sent.push(message)
-      return { ok: true, channel, to: message.to, providerId: `mock-${channel}-${sent.length}`, mocked: true }
+      // provider id keyed by the idempotency token — unique per message, stable on retry
+      return { ok: true, channel, to: message.to, providerId: `mock-${channel}-${message.idempotencyKey}`, mocked: true }
     },
   }
 }

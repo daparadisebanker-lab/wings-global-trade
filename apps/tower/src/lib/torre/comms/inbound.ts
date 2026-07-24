@@ -24,11 +24,10 @@ function str(v: unknown): string | null {
   return typeof v === 'string' && v.trim().length > 0 ? v.trim() : null
 }
 
-/** Strip reply/forward prefixes and normalize a subject so "Re: X" threads with "X". */
+/** Strip ALL stacked reply/forward prefixes and normalize a subject so "Re: X" threads with "X". */
 export function normalizeSubject(subject: string): string {
   return subject
-    .replace(/^\s*(re|fw|fwd|rv)\s*:\s*/gi, '') // may stack: "Re: Fwd: X"
-    .replace(/^\s*(re|fw|fwd|rv)\s*:\s*/gi, '')
+    .replace(/^\s*((re|fw|fwd|rv)\s*:\s*)+/i, '') // "Re: RE: Fwd: X" → "X" in one pass
     .trim()
     .toLowerCase()
 }
@@ -54,11 +53,15 @@ export function normalizeInbound(channel: Channel, raw: unknown): InboundMessage
     // a phone number identifies the conversation
     threadKey = `whatsapp:${from}`
   } else {
-    // email: prefer an explicit references/in-reply-to root, else the normalized subject
-    const references = str(r.references) ?? str(r.inReplyTo) ?? str(r.in_reply_to)
-    if (references) threadKey = `email:ref:${references}`
-    else if (subject) threadKey = `email:subj:${normalizeSubject(subject)}`
-    else threadKey = `email:from:${from.toLowerCase()}`
+    // email: prefer the References ROOT (globally-unique message-id → collision-free);
+    // else scope the subject key by the SENDER, so two clients with the same subject
+    // ("Cotización") never merge into one thread (a privacy leak + injection vector).
+    const referencesRaw = str(r.references) ?? str(r.inReplyTo) ?? str(r.in_reply_to)
+    const refRoot = referencesRaw ? referencesRaw.split(/\s+/)[0] : null // RFC5322: first = root
+    const sender = from.toLowerCase()
+    if (refRoot) threadKey = `email:ref:${refRoot}`
+    else if (subject) threadKey = `email:${sender}:subj:${normalizeSubject(subject)}`
+    else threadKey = `email:${sender}`
   }
 
   return { channel, from, to, subject, body, externalId, threadKey }

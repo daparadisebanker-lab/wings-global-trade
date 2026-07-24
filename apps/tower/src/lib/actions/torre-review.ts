@@ -109,28 +109,40 @@ export async function approveTorreDraft(draftId: string): Promise<ActionResult<A
   }
   // COTIZACION: recorded on approval; issuance to tower.quotes happens from the
   // Quotations module (composeQuote/issueQuotation) — a separate human step.
-  // COMUNICACION: send-on-approve (L2). The connector is MOCK_CONNECTORS — the adapter
-  // RECORDS the send instead of performing it. prepareSend re-gates (no send without a
-  // recipient / non-empty body / zero blockers); a message that can't be sent is not
-  // approved (the named side effect must be performable).
-  let sent: ApproveTorreResult['sent']
+
+  // COMUNICACION: send-on-approve (L2). Order matters for the SACRED side effect:
+  //   pre-validate sendability (read-only) → CLAIM the draft (the atomic DRAFT→APPROVED
+  //   lock) → send ONLY after claiming. So a concurrent second approve fails the claim
+  //   and never sends twice, and a reject that wins the race means the claim fails and
+  //   nothing is sent. The connector is MOCK_CONNECTORS — the adapter RECORDS the send.
+  let preparedMessage: ReturnType<typeof prepareSend> | null = null
   if (payload.kind === 'COMUNICACION') {
-    const prepared = prepareSend(payload)
-    if (!prepared.ok) {
-      const reason: Record<typeof prepared.reason, string> = {
+    preparedMessage = prepareSend(payload, record.id)
+    if (!preparedMessage.ok) {
+      const reason: Record<typeof preparedMessage.reason, string> = {
         'has-blockers': 'La comunicación tiene bloqueos / The message has blockers',
         'no-recipient': 'Falta el destinatario / Missing recipient',
         'empty-body': 'El cuerpo está vacío / The body is empty',
       }
-      return fail('VALIDATION', reason[prepared.reason])
+      return fail('VALIDATION', reason[preparedMessage.reason])
     }
-    const result = await resolveSendAdapter(prepared.message.channel).send(prepared.message)
-    if (!result.ok) return fail('VALIDATION', 'No se pudo enviar / Could not send')
-    sent = { channel: result.channel, to: result.to, providerId: result.providerId, mocked: result.mocked }
   }
 
   const approved = await markReviewed(db, record.id, 'APPROVED', auth.user.id)
   if (!approved) return fail('VALIDATION', 'No se pudo aprobar (¿ya revisado?) / Could not approve')
+
+  // Now that WE own the approval, perform the send (only the claim winner reaches here).
+  let sent: ApproveTorreResult['sent']
+  if (preparedMessage?.ok) {
+    const result = await resolveSendAdapter(preparedMessage.message.channel).send(preparedMessage.message)
+    if (result.ok) {
+      sent = { channel: result.channel, to: result.to, providerId: result.providerId, mocked: result.mocked }
+    } else {
+      // A real adapter could fail post-claim; the draft is already APPROVED. Surface it —
+      // an outbox row (later) would carry retry; the mock never reaches this branch.
+      console.error('[torre/approve] send failed post-claim', result.error)
+    }
+  }
   return ok({ record: approved, sideEffect: approveSideEffect(payload), sent })
 }
 

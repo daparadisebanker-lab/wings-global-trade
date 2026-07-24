@@ -95,7 +95,12 @@ off the World-B exemption; connectors mock-first behind adapters (`MOCK_CONNECTO
   MOCK_CONNECTORS) wired into **approveTorreDraft** as real send-on-approve (records, never
   performs; a non-sendable message can't be approved); **inbound.ts** (normalizeInbound →
   thread-keyed capture for email/WhatsApp, replies group). 20 tests. Remaining: persist
-  outbox/inbound to tables + redactor tone wired into the draft_message prompt. Review: pending.
+  outbox/inbound to tables + redactor tone wired into the draft_message prompt. Fable review:
+  **SHIP-WITH-FIXES applied** — send-on-approve now CLAIMS the draft (atomic DRAFT→APPROVED
+  lock) BEFORE sending, so a concurrent approve/reject can't double-send or send a rejected
+  message; OutboundMessage carries an idempotency key (draft id) + mock providerId keyed on
+  it; email thread keys scoped by sender + use the References ROOT (no cross-client collision
+  / injection); subject strip is fixpoint; language passed verbatim (no third-language mislabel).
 - `DONE` **L3 · Documentar** — four operational document artifact types added to the
   ai_drafts union: **reporte_estado · checklist_docs · acta · sop**. Each has its zod
   schema (artifacts.ts, wired through parseTorreArtifact/drafts/review-logic exhaustive
