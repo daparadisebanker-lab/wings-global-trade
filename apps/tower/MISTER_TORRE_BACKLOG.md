@@ -30,7 +30,9 @@ off the World-B exemption; connectors mock-first behind adapters (`MOCK_CONNECTO
   validity_days + approval_matrix (+ seed); pure resolveMargin/rolesForKind/canRolesApprove
   (tested); quote run now reads margin + validity from policy (hardcoded 0.18/15 gone).
   Approval-matrix *enforcement* wired at Ajustes time (helper ready). Fable review: pending.
-- `TODO` **A4 · Ajustes-lite** — view/edit rate tables + margin rules (host-Tower UI).
+- `DONE` **A4 · Ajustes-lite** — getTorrePolicy read + addFreightRate write actions +
+  a "Reglas y tarifas" panel (lane picker, org-rules summary, rate tables + add-rate
+  form, tariff positions) in the Intelligence workspace. Fable review: pending.
 - `TODO` **B1 · agentic loop** — `IntelligenceClient.runAgent` (tool-use loop, message
   history, stop_reason) behind the seam; fake-client tested.
 - `TODO` **B2 · tool belt** — typed model-callable tools (get_import/get_client/
