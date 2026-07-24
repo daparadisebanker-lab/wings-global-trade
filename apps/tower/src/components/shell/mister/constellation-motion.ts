@@ -70,47 +70,54 @@ export function confirmHalo(elapsedMs: number): { radiusScale: number; alpha: nu
   }
 }
 
-// ── L7 · remaining states (LISTENING · SPEAKING · ERROR) + watch-catch pulse ──
+// ── L7 · remaining states — VERBATIM from CONSTELLATION-SPEC §4 (measured contracts,
+//        never invented). The state table is CLOSED — no state is added here. ──────────
 
-/** LISTENING: a slow, calm breathing scale (the tower is attentive but still). */
-export const LISTENING = { periodMs: 2400, amplitude: 0.06 } as const // ±6% core radius
-/** SPEAKING: a faster, shallower pulse synced to output cadence. */
-export const SPEAKING = { periodMs: 900, amplitude: 0.09 } as const
-/** ERROR: a single amber shake that decays — never a loop (an error states once). */
-export const ERROR = { durationMs: 500, shakes: 3, maxOffset: 0.05 } as const // fraction of radius
-/** WATCH-CATCH: the pulse when a watch signal is caught — a single sharp ring (spec 05). */
-export const WATCH_CATCH = { pulseMs: 720, ringScale: 2.1, alpha: 0.4 } as const
+/** LISTENING: satellites contract 8% toward the centroid over 300 ms, then residual amp 0.002. */
+export const LISTENING = { contractMs: 300, contractTo: 0.92, residualAmp: 0.002 } as const
+/** SPEAKING: core radial pulse amp 0.004 synced to token cadence, throttled ≤ 8 Hz. */
+export const SPEAKING = { amp: 0.004, maxHz: 8, settleMs: 300 } as const
+/** ERROR: field loosens (amp ×2 for 400 ms), dots 2 & 10 drop 0.02, core cools toward
+ *  Horizon. NEVER shakes, NEVER turns red (spec §4, verbatim). */
+export const ERROR = { loosenMs: 400, ampMultiplier: 2, dotDrop: 0.02 } as const
 
-/** Reduced-motion collapses every animated state to a still frame (scale 1, no offset). */
-export function breathingScale(elapsedMs: number, state: 'listening' | 'speaking', reducedMotion = false): number {
+/**
+ * LISTENING: the satellite-radius scale at `elapsedMs` — eases 1.0 → 0.92 (an 8% contraction
+ * toward the centroid) over 300 ms, then holds near-still (residual amp is 0.002, negligible).
+ * Reduced motion → the settled 0.92 (a still frame, not a perpetual breath).
+ */
+export function listeningSatelliteScale(elapsedMs: number, reducedMotion = false): number {
+  if (reducedMotion) return LISTENING.contractTo
+  if (elapsedMs <= 0) return 1
+  if (elapsedMs >= LISTENING.contractMs) return LISTENING.contractTo
+  return 1 - (1 - LISTENING.contractTo) * easeInOutCubic(elapsedMs / LISTENING.contractMs)
+}
+
+/**
+ * SPEAKING: the core-radius scale — a tiny pulse (amp 0.004) at the token cadence, capped at
+ * 8 Hz. Nearly still on purpose (the tower's restraint). Reduced motion → 1 (no pulse).
+ */
+export function speakingCoreScale(elapsedMs: number, tokenCadenceHz = 6, reducedMotion = false): number {
   if (reducedMotion) return 1
-  const { periodMs, amplitude } = state === 'listening' ? LISTENING : SPEAKING
-  // a smooth sine breath around 1.0
-  return 1 + amplitude * Math.sin((2 * Math.PI * elapsedMs) / periodMs)
+  const hz = Math.min(Math.max(0, tokenCadenceHz), SPEAKING.maxHz)
+  return 1 + SPEAKING.amp * Math.sin(2 * Math.PI * hz * (elapsedMs / 1000))
 }
 
 /**
- * ERROR shake offset (fraction of radius) at `elapsedMs`: a decaying sine that runs once
- * over durationMs then settles to 0. Reduced motion → always 0 (the color still signals).
+ * ERROR: the field's idle-amplitude MULTIPLIER — doubles at onset and eases back to 1× over
+ * 400 ms (the field "loosens"). NO shake, NO red — the core cooling toward Horizon (a blue)
+ * is a color concern handled by the field. Reduced motion → 1 (color still signals).
  */
-export function errorShake(elapsedMs: number, reducedMotion = false): number {
-  if (reducedMotion || elapsedMs < 0 || elapsedMs > ERROR.durationMs) return 0
-  const t = elapsedMs / ERROR.durationMs
-  const decay = 1 - t // amplitude fades to 0 by the end
-  return ERROR.maxOffset * decay * Math.sin(2 * Math.PI * ERROR.shakes * t)
+export function errorAmpMultiplier(elapsedMs: number, reducedMotion = false): number {
+  if (reducedMotion || elapsedMs < 0 || elapsedMs > ERROR.loosenMs) return 1
+  return 1 + (ERROR.ampMultiplier - 1) * (1 - elapsedMs / ERROR.loosenMs)
 }
 
 /**
- * WATCH-CATCH ring at `elapsedMs` since a signal was caught: 0→1 expansion over 720ms,
- * then null. Reduced motion → a single static frame at full ring, no expansion.
+ * ERROR: how far dots 2 & 10 have dropped out of formation at `elapsedMs` (0 → 0.02 → 0 over
+ * 400 ms, a gentle displacement — not a shake). Reduced motion → 0.
  */
-export function watchCatchRing(elapsedMs: number, reducedMotion = false): { radiusScale: number; alpha: number } | null {
-  if (elapsedMs < 0 || elapsedMs > WATCH_CATCH.pulseMs) return null
-  if (reducedMotion) return { radiusScale: WATCH_CATCH.ringScale, alpha: WATCH_CATCH.alpha }
-  const t = elapsedMs / WATCH_CATCH.pulseMs
-  const eased = easeInOutCubic(t)
-  return {
-    radiusScale: 1 + (WATCH_CATCH.ringScale - 1) * eased,
-    alpha: WATCH_CATCH.alpha * (1 - t),
-  }
+export function errorDotDrop(elapsedMs: number, reducedMotion = false): number {
+  if (reducedMotion || elapsedMs < 0 || elapsedMs > ERROR.loosenMs) return 0
+  return ERROR.dotDrop * Math.sin(Math.PI * (elapsedMs / ERROR.loosenMs))
 }

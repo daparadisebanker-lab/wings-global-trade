@@ -25,6 +25,7 @@ import type { ImportInputs, ImportResult } from '@/lib/costing/types'
 import { resolveFreightRate, type RateRow } from '@/lib/torre/rates'
 import { resolveTariffCandidates, type TariffPosition } from '@/lib/torre/tariff'
 import { comunicacionPayloadSchema } from '@/lib/torre/artifacts'
+import { isRateOrPriceQuery } from '@/lib/torre/rag'
 import type { AgentTool } from './tool-loop'
 
 // ── Provider seam (the injected data layer) ──────────────────────────────────
@@ -594,7 +595,13 @@ export function buildTorreToolBelt(provider: TorreToolProvider, ctx: ToolBeltCon
       run: async (raw) => {
         const input = searchKnowledgeInput.parse(raw)
         const hits = await provider.searchKnowledge(input)
-        return fmtKnowledge(hits)
+        const body = fmtKnowledge(hits)
+        // Freshness law ENFORCED here: a rate/price question can't be answered from the
+        // corpus — prepend the redirect so a stale precedent price is never taken as live.
+        if (isRateOrPriceQuery(input.query)) {
+          return `⚠ Consulta de tarifa/precio: los precedentes NO dan el número vigente — usa get_rates / get_tariff para la tarifa o arancel actual. Lo siguiente es SOLO contexto histórico:\n${body}`
+        }
+        return body
       },
     },
     {

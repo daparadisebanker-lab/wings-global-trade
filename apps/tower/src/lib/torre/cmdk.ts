@@ -1,9 +1,10 @@
 // src/lib/torre/cmdk.ts
 // Mister Torre — the Cmd+K verb registry (Loop L7, Surfaces). PURE + unit-tested. The
-// command palette's verbs map to the five loops (cotizar · comunicar · vigilar ·
-// documentar · reportar) + the review/policy surfaces. Each verb declares WHERE it goes
-// (start a run with a profile, open a panel, or navigate) so the palette component is a
-// thin renderer over this data — no routing logic hidden in JSX.
+// command palette's verbs cover the loops that have a reachable surface today (cotizar ·
+// comunicar via the redactor · reportar/analizar · plus the review/policy/triage panels).
+// Vigilar and Documentar get their own verbs once their surfaces land (their UIs are the
+// remaining L4/L3 wiring). Each verb declares WHERE it goes (start a run with a profile,
+// open a panel, or navigate) so the palette component is a thin renderer over this data.
 import type { TorreProfileId } from './agent/profiles'
 
 export type VerbTarget =
@@ -40,7 +41,7 @@ export const TORRE_VERBS: TorreVerb[] = [
     label: { es: 'Estado de importación', en: 'Import status' },
     hint: { es: 'Seguir estado, excepciones y documentos', en: 'Track status, exceptions and documents' },
     target: { kind: 'run', profile: 'operaciones' },
-    keywords: ['estado', 'eta', 'contenedor', 'demora', 'documento', 'aduana', 'operaciones'],
+    keywords: ['estado', 'eta', 'contenedor', 'demora', 'documento', 'aduana', 'operaciones', 'customs', 'status'],
   },
   {
     id: 'analizar',
@@ -61,14 +62,21 @@ export const TORRE_VERBS: TorreVerb[] = [
     label: { es: 'Cola de revisión', en: 'Review queue' },
     hint: { es: 'Aprobar o rechazar borradores', en: 'Approve or reject drafts' },
     target: { kind: 'panel', panel: 'torre' },
-    keywords: ['revisar', 'aprobar', 'borradores', 'cola', 'queue'],
+    keywords: ['revisar', 'aprobar', 'borradores', 'cola', 'queue', 'review'],
+  },
+  {
+    id: 'triage',
+    label: { es: 'Triage de solicitudes', en: 'RFQ triage' },
+    hint: { es: 'Clasificar solicitudes entrantes', en: 'Classify inbound requests' },
+    target: { kind: 'panel', panel: 'triage' },
+    keywords: ['triage', 'rfq', 'entrante', 'clasificar', 'lead', 'inbound'],
   },
   {
     id: 'reglas',
     label: { es: 'Reglas y tarifas', en: 'Rules & rates' },
     hint: { es: 'Márgenes, incoterms, tarifas de flete', en: 'Margins, incoterms, freight rates' },
     target: { kind: 'panel', panel: 'reglas' },
-    keywords: ['reglas', 'tarifas', 'flete', 'margen', 'incoterm', 'ajustes', 'config'],
+    keywords: ['reglas', 'tarifas', 'flete', 'margen', 'incoterm', 'ajustes', 'config', 'freight', 'duty', 'rates'],
   },
 ]
 

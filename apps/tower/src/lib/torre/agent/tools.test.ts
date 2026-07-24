@@ -214,6 +214,19 @@ describe('search_knowledge — cited data, sandwiched as untrusted', () => {
     expect(out).toMatch(/Sin precedentes/)
   })
 
+  it('ENFORCES the freshness law: a rate/price query is redirected to the dated tools', async () => {
+    const out = (await tool(fakeProvider({ searchKnowledge: vi.fn(async () => hits) }), 'search_knowledge').run({
+      query: '¿cuál fue la tarifa de flete a Callao?',
+    })) as string
+    expect(out).toMatch(/get_rates \/ get_tariff/)
+    expect(out).toMatch(/SOLO contexto histórico/)
+    // a non-price precedent query is NOT prefixed with the caution
+    const factual = (await tool(fakeProvider({ searchKnowledge: vi.fn(async () => hits) }), 'search_knowledge').run({
+      query: '¿qué términos de entrega acordamos?',
+    })) as string
+    expect(factual).not.toMatch(/get_rates \/ get_tariff/)
+  })
+
   it('rejects a non-integer topK', async () => {
     await expect((tool(fakeProvider(), 'search_knowledge').run as (i: unknown) => Promise<string>)({ query: 'x', topK: 8.5 })).rejects.toBeTruthy()
   })

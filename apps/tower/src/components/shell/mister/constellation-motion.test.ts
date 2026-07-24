@@ -5,12 +5,15 @@ import {
   condensationScatter,
   confirmHalo,
   staggerFor,
-  breathingScale,
-  errorShake,
-  watchCatchRing,
+  listeningSatelliteScale,
+  speakingCoreScale,
+  errorAmpMultiplier,
+  errorDotDrop,
+  LISTENING,
+  SPEAKING,
+  ERROR,
   CONDENSATION,
   CONFIRM,
-  WATCH_CATCH,
 } from './constellation-motion'
 
 describe('easeInOutCubic', () => {
@@ -68,40 +71,43 @@ describe('confirm halo', () => {
   })
 })
 
-describe('L7 states — LISTENING / SPEAKING breathing', () => {
-  it('breathes around 1.0 and reduced motion pins to 1', () => {
-    expect(breathingScale(0, 'listening')).toBeCloseTo(1, 5) // sin(0)=0
-    const peak = breathingScale(2400 / 4, 'listening') // quarter period → sin=1
-    expect(peak).toBeGreaterThan(1)
-    expect(breathingScale(225, 'speaking', true)).toBe(1) // reduced motion → still
+describe('LISTENING (spec §4: contract 8% over 300ms, then near-still)', () => {
+  it('eases 1.0 → 0.92 across 300ms', () => {
+    expect(listeningSatelliteScale(0)).toBe(1)
+    expect(listeningSatelliteScale(150)).toBeCloseTo(0.96, 2) // mid-contraction (eased)
+    expect(listeningSatelliteScale(LISTENING.contractMs)).toBeCloseTo(0.92, 5)
+    expect(listeningSatelliteScale(1000)).toBeCloseTo(0.92, 5) // holds after contraction
   })
-
-  it('speaking pulses faster (shorter period) than listening', () => {
-    // at the same elapsed the two states differ (different periods) — sanity, not identical
-    expect(breathingScale(450, 'speaking')).not.toBeCloseTo(breathingScale(450, 'listening'), 3)
+  it('reduced motion → the settled scale (still frame, not a perpetual breath)', () => {
+    expect(listeningSatelliteScale(150, true)).toBe(LISTENING.contractTo)
   })
 })
 
-describe('L7 states — ERROR shake', () => {
-  it('runs once, decays to 0, and is 0 outside its window / under reduced motion', () => {
-    expect(errorShake(0)).toBeCloseTo(0, 5) // sin(0)=0 at start
-    expect(errorShake(600)).toBe(0) // past durationMs
-    expect(errorShake(-1)).toBe(0)
-    expect(errorShake(200, true)).toBe(0) // reduced motion
-    // amplitude decays: an early peak exceeds a late one
-    const early = Math.abs(errorShake(500 / 12))
-    const late = Math.abs(errorShake((500 * 11) / 12))
-    expect(early).toBeGreaterThan(late)
+describe('SPEAKING (spec §4: core pulse amp 0.004, ≤8Hz)', () => {
+  it('pulses within ±0.004 of 1.0 and caps the frequency at 8Hz', () => {
+    const s = speakingCoreScale(50, 6)
+    expect(Math.abs(s - 1)).toBeLessThanOrEqual(SPEAKING.amp + 1e-9)
+    // a runaway cadence is throttled to 8Hz (no faster pulse than the spec cap)
+    expect(speakingCoreScale(31.25, 100)).toBeCloseTo(speakingCoreScale(31.25, 8), 9)
+  })
+  it('reduced motion → still (no pulse)', () => {
+    expect(speakingCoreScale(50, 6, true)).toBe(1)
   })
 })
 
-describe('L7 states — watch-catch ring', () => {
-  it('expands 1→ringScale then ends; reduced motion shows a static ring', () => {
-    const start = watchCatchRing(0)
-    expect(start?.radiusScale).toBeCloseTo(1, 3)
-    expect(start?.alpha).toBeCloseTo(WATCH_CATCH.alpha, 3)
-    expect(watchCatchRing(WATCH_CATCH.pulseMs + 1)).toBeNull()
-    const rm = watchCatchRing(200, true)
-    expect(rm?.radiusScale).toBe(WATCH_CATCH.ringScale) // static full ring, no expansion
+describe('ERROR (spec §4: loosen amp ×2 for 400ms, dots drop — NEVER shakes/red)', () => {
+  it('amp multiplier is 2× at onset and eases to 1× by 400ms', () => {
+    expect(errorAmpMultiplier(0)).toBeCloseTo(ERROR.ampMultiplier, 5)
+    expect(errorAmpMultiplier(ERROR.loosenMs)).toBe(1)
+    expect(errorAmpMultiplier(401)).toBe(1) // past the window
+    expect(errorAmpMultiplier(200, true)).toBe(1) // reduced motion
+  })
+  it('dots 2 & 10 drop up to 0.02 then return (a displacement, not a shake — never negative)', () => {
+    expect(errorDotDrop(0)).toBeCloseTo(0, 5)
+    expect(errorDotDrop(ERROR.loosenMs / 2)).toBeCloseTo(ERROR.dotDrop, 5) // peak at mid
+    expect(errorDotDrop(ERROR.loosenMs)).toBeCloseTo(0, 5)
+    // the displacement is monotone non-negative (no oscillating shake)
+    for (let t = 0; t <= ERROR.loosenMs; t += 40) expect(errorDotDrop(t)).toBeGreaterThanOrEqual(0)
+    expect(errorDotDrop(200, true)).toBe(0)
   })
 })

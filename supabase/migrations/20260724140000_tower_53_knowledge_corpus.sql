@@ -6,6 +6,14 @@
 set search_path to tower, public;
 
 create extension if not exists vector;
+create extension if not exists unaccent;
+
+-- unaccent() is only STABLE, so it can't sit directly in a generated column; wrap it in an
+-- IMMUTABLE function pinned to the dictionary. This lets the keyword tsvector fold accents
+-- (matching lib/torre/rag.ts's client-side norm) AND stem Spanish.
+create or replace function tower.immutable_unaccent(text)
+  returns text language sql immutable parallel safe
+  as $$ select public.unaccent('public.unaccent', $1) $$;
 
 create table if not exists tower.knowledge_chunks (
   id           uuid primary key default gen_random_uuid(),
@@ -22,8 +30,9 @@ create table if not exists tower.knowledge_chunks (
   doc_date     date,
   -- embedding is nullable until the embed job runs (MOCK_CONNECTORS: no embed provider yet)
   embedding    vector(1536),
-  -- generated keyword vector for the hybrid keyword leg (Spanish + unaccent-friendly)
-  content_tsv  tsvector generated always as (to_tsvector('simple', coalesce(heading,'') || ' ' || content)) stored,
+  -- generated keyword vector: Spanish stemming + accent folding, so 'cotización' matches a
+  -- query normalized to 'cotizacion' (parity with rag.ts's accent-stripping)
+  content_tsv  tsvector generated always as (to_tsvector('spanish', tower.immutable_unaccent(coalesce(heading,'') || ' ' || content))) stored,
   created_at   timestamptz not null default now(),
   unique (brand_id, doc_id, chunk_ord)
 );
@@ -41,15 +50,19 @@ create policy knowledge_chunks_read on tower.knowledge_chunks for select using (
     then tower.has_lane_role(lane_id, array['LANE_DIRECTOR','CATALOG_EDITOR','TRADE_OPS','SALES','VIEWER'])
     else tower.has_brand_access(brand_id) end
 );
--- Ingest happens on approval via a privileged path; interactive write mirrors the
--- operational roles that can approve the source artifact.
+-- Ingest is an APPROVED-ONLY, service-role job: on artifact approval the pipeline embeds +
+-- inserts the chunks (the approved-only law lives in that path — doc_id is free text here,
+-- not FK-constrained to an approved artifact, so the ingest job is the enforcement point).
+-- This interactive insert policy covers only the rare manual correction within operational
+-- roles; the bulk path runs as service-role (bypasses RLS).
 create policy knowledge_chunks_write on tower.knowledge_chunks for insert with check (
   case when lane_id is not null
     then tower.has_lane_role(lane_id, array['LANE_DIRECTOR','TRADE_OPS'])
     else tower.is_group_admin() end
 );
--- Corpus is append-only in spirit (a precedent a citation points at must not mutate);
--- re-ingest supersedes by (brand_id, doc_id, chunk_ord). No update policy/grant.
+-- Append-only in spirit (a precedent a citation points at must not mutate). Re-ingest
+-- supersedes by (brand_id, doc_id, chunk_ord) via the service-role job (which can delete +
+-- reinsert, clearing stale trailing chunks); no interactive update/delete policy or grant.
 
 grant select, insert on tower.knowledge_chunks to authenticated;
 

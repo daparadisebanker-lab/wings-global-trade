@@ -131,16 +131,21 @@ off the World-B exemption; connectors mock-first behind adapters (`MOCK_CONNECTO
   deterministic recency tiebreak, top-k); **citationsFor** (deduped clickable sources —
   every answer cites); **isRateOrPriceQuery** + **precedentAnswer** enforcing the freshness
   law (a price/rate ask is guarded, redirected to get_rates/get_tariff — precedent is
-  context, never the live number). pgvector corpus migration (tower_53: knowledge_chunks +
-  hnsw + tsvector + entity GIN + RLS, approved-only). 10 tests. Remaining: embed job +
-  ingest-on-approval wiring + Q&A UI. Review: pending.
-- `DONE` **L7 · Surfaces & aesthetics** — pure cores: **cmdk.ts** (the Cmd+K verb registry
-  mapping the five loops + review/policy surfaces to run-profile / panel / route targets;
+  context, never the live number). pgvector corpus migration (tower_53). Fable review:
+  **SHIP-WITH-FIXES applied** — the freshness guard is now WIRED into search_knowledge (was
+  dead code); chunkByStructure hard-splits an oversized paragraph at sentence boundaries and
+  keeps a heading-only section; rate/price terms broadened (price/cost/tariff/costará);
+  topK<0 empties; tsvector is Spanish + immutable-unaccent (accent-folded, client-parity).
+  13 tests. Remaining: embed job + ingest-on-approval wiring + Q&A UI.
+- `DONE` **L7 · Surfaces & aesthetics** — pure cores: **cmdk.ts** (the Cmd+K verb registry;
   `filterVerbs` word-boundary + label-over-keyword ranking); **constellation-motion.ts**
-  extended with the remaining states — LISTENING/SPEAKING breathing, ERROR decaying shake
-  (once, never loops), and the **watch-catch ring** pulse — all reduced-motion-aware. 20
-  tests. Remaining (UI): persistent 420px side panel, inline pins, the Cmd+K component +
-  ConstellationField state wiring. Review: pending.
+  extended with the remaining states. Fable review: **SHIP-WITH-FIXES applied** — the motion
+  states were rewritten to CONSTELLATION-SPEC §4 VERBATIM (they had contradicted it): ERROR
+  is now a field-loosen (amp×2/400ms) + dot-drop, NEVER a shake and NEVER red; LISTENING is
+  the 300ms 8%-contraction (not a perpetual breath); SPEAKING is the amp-0.004 ≤8Hz core
+  pulse; the invented watch-catch state was DELETED (not in the closed §4 table). cmdk gained
+  a reachable triage verb + English keywords + honest header. 23 tests. Remaining (UI): side
+  panel, inline pins, the Cmd+K component + ConstellationField state wiring.
 
 ## Log (append per item)
 - (start) Flagship quote run + review + loading/approve motion — merged (PR #33).

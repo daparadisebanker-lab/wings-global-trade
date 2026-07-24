@@ -43,6 +43,19 @@ describe('chunkByStructure', () => {
     expect(chunks).toHaveLength(1)
     expect(chunks[0].heading).toBeNull()
   })
+
+  it('hard-splits an oversized paragraph at sentence boundaries (no chunk exceeds maxChars)', () => {
+    const long = Array.from({ length: 40 }, (_, i) => `Oración número ${i} sobre el flete.`).join(' ')
+    const chunks = chunkByStructure({ ...doc, text: long }, { maxChars: 200 })
+    expect(chunks.length).toBeGreaterThan(1)
+    expect(chunks.every((c) => c.text.length <= 200)).toBe(true)
+  })
+
+  it('does not drop a heading that has no body', () => {
+    const chunks = chunkByStructure({ ...doc, text: '# Términos\n## Anexos\nContenido.' })
+    // 'Términos' has no body but must survive as its own chunk
+    expect(chunks.some((c) => c.heading === 'Términos')).toBe(true)
+  })
 })
 
 function cand(docId: string, over: Partial<Chunk> & { vectorScore: number; keywordScore: number }): RetrievalCandidate {
@@ -76,9 +89,10 @@ describe('hybridRank', () => {
     expect(hits[0].entityMatch).toBe(true)
   })
 
-  it('respects topK', () => {
+  it('respects topK and empties on a negative topK (never slices from the end)', () => {
     const many = Array.from({ length: 20 }, (_, i) => cand(`d${i}`, { vectorScore: i / 20, keywordScore: 0 }))
     expect(hybridRank(many, { topK: 5 })).toHaveLength(5)
+    expect(hybridRank(many, { topK: -1 })).toEqual([])
   })
 
   it('is deterministic on a score tie (recency then docId)', () => {
@@ -102,9 +116,12 @@ describe('citationsFor', () => {
 })
 
 describe('freshness guard', () => {
-  it('flags rate/price queries', () => {
+  it('flags rate/price queries (ES + EN, incl. costará and tariff)', () => {
     expect(isRateOrPriceQuery('¿Cuál fue la tarifa de flete a Callao?')).toBe(true)
     expect(isRateOrPriceQuery('What duty applied to the genset?')).toBe(true)
+    expect(isRateOrPriceQuery('What was the price on that quote?')).toBe(true) // 'price'
+    expect(isRateOrPriceQuery('Which tariff applied?')).toBe(true) // 'tariff'
+    expect(isRateOrPriceQuery('¿Cuánto costará el envío?')).toBe(true) // 'costa' stem
     expect(isRateOrPriceQuery('¿Qué acordamos sobre la entrega?')).toBe(false)
   })
 

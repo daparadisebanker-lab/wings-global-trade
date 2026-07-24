@@ -45,7 +45,8 @@ function splitSections(text: string): Section[] {
   let body: string[] = []
   const flush = () => {
     const joined = body.join('\n').trim()
-    if (joined) sections.push({ heading, body: joined })
+    // keep a heading-only section too, so a heading with no body is never silently lost
+    if (joined || heading !== null) sections.push({ heading, body: joined })
     body = []
   }
   for (const line of lines) {
@@ -61,9 +62,42 @@ function splitSections(text: string): Section[] {
   return sections
 }
 
+/** Hard-split an oversized paragraph at sentence boundaries (then wrap a giant sentence). */
+function splitLongParagraph(p: string, maxChars: number): string[] {
+  if (p.length <= maxChars) return [p]
+  const sentences = p.match(/[^.!?]+[.!?]+(?:\s|$)|[^.!?]+$/g) ?? [p]
+  const out: string[] = []
+  let cur = ''
+  for (const raw of sentences) {
+    let piece = raw.trim()
+    if (!piece) continue
+    // a single sentence longer than maxChars → hard-wrap it
+    while (piece.length > maxChars) {
+      if (cur) {
+        out.push(cur)
+        cur = ''
+      }
+      out.push(piece.slice(0, maxChars))
+      piece = piece.slice(maxChars)
+    }
+    if (!cur) cur = piece
+    else if (cur.length + 1 + piece.length <= maxChars) cur = `${cur} ${piece}`
+    else {
+      out.push(cur)
+      cur = piece
+    }
+  }
+  if (cur) out.push(cur)
+  return out
+}
+
 /** Pack a section body's paragraphs greedily into chunks no larger than maxChars. */
 function packParagraphs(body: string, maxChars: number): string[] {
-  const paras = body.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)
+  const paras = body
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .flatMap((p) => splitLongParagraph(p, maxChars)) // no chunk exceeds maxChars, ever
   const out: string[] = []
   let cur = ''
   for (const p of paras) {
@@ -88,7 +122,10 @@ export function chunkByStructure(doc: CorpusDoc, opts: { maxChars?: number } = {
   const chunks: Chunk[] = []
   let ord = 0
   for (const section of splitSections(doc.text)) {
-    for (const text of packParagraphs(section.body, maxChars)) {
+    const packed = packParagraphs(section.body, maxChars)
+    // a heading with no body still yields a chunk (the heading text) — never dropped
+    const texts = packed.length ? packed : section.heading ? [section.heading] : []
+    for (const text of texts) {
       chunks.push({
         docId: doc.id,
         title: doc.title,
@@ -152,7 +189,7 @@ export function hybridRank(candidates: RetrievalCandidate[], opts: HybridOptions
       a.chunk.docId.localeCompare(b.chunk.docId) ||
       a.chunk.ord - b.chunk.ord,
   )
-  return scored.slice(0, topK)
+  return scored.slice(0, Math.max(0, topK)) // a negative topK must empty, not slice from the end
 }
 
 // ── Citations + the freshness guard ──────────────────────────────────────────
@@ -182,7 +219,12 @@ function norm(s: string): string {
   return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
 }
 
-const RATE_PRICE_TERMS = ['tarifa', 'flete', 'arancel', 'precio', 'costo', 'rate', 'duty', 'freight', 'landed']
+const RATE_PRICE_TERMS = [
+  // ES (stems: 'costa' catches costo/costará; 'cotiz' left OUT — a quote-precedent lookup is legit)
+  'tarifa', 'flete', 'arancel', 'precio', 'costo', 'costa',
+  // EN
+  'rate', 'duty', 'freight', 'landed', 'price', 'cost', 'tariff',
+]
 
 /**
  * PURE: does the query ask for a rate/price? RAG must NOT answer these from memory — the
