@@ -53,6 +53,25 @@ async function requireUser() {
   return { ok: true as const, supabase: supabase.schema('tower'), user }
 }
 
+export interface PolicyLane {
+  id: string
+  code: string
+  name: string
+}
+
+/**
+ * Lanes for the policy picker — ANY read role (VIEWER/CATALOG_EDITOR included), via
+ * the lanes_read RLS, so the picker matches the rate_tables read policy (listCostingLanes
+ * narrows to operational roles, which would hide the read surface from a VIEWER).
+ */
+export async function listPolicyLanes(): Promise<ActionResult<PolicyLane[]>> {
+  const auth = await requireUser()
+  if (!auth.ok) return auth.error
+  const { data, error } = await auth.supabase.from('lanes').select('id,code,name').order('code')
+  if (error) return fail('FORBIDDEN_LANE', 'No se pudieron listar los lanes / Could not list lanes')
+  return ok(((data ?? []) as Array<{ id: string; code: string; name: string }>).map((l) => ({ id: l.id, code: l.code, name: l.name })))
+}
+
 /** Read the policy for a lane (rate tables + tariff positions + org rules). */
 export async function getTorrePolicy(laneId: string): Promise<ActionResult<TorrePolicy>> {
   const parsed = uuid.safeParse(laneId)
@@ -65,22 +84,25 @@ export async function getTorrePolicy(laneId: string): Promise<ActionResult<Torre
   const laneRow = lane as { id: string; brand_id: string; code: string | null } | null
   if (!laneRow?.brand_id) return fail('FORBIDDEN_LANE', 'Lane no encontrado / Lane not found')
 
-  const { data: rates } = await db
+  const { data: rates, error: ratesErr } = await db
     .from('rate_tables')
     .select('id,kind,route,mode,container_type,rate_minor,currency,valid_from,valid_to,source')
     .eq('brand_id', laneRow.brand_id)
     .or(`lane_id.eq.${parsed.data},lane_id.is.null`)
     .order('valid_from', { ascending: false })
-  const { data: tariffs } = await db
+  const { data: tariffs, error: tariffsErr } = await db
     .from('tariff_positions')
     .select('hs_code,description,duty_bps,iva_bps,verified_at')
     .eq('brand_id', laneRow.brand_id)
     .order('hs_code')
-  const { data: orgRow } = await db
+  const { data: orgRow, error: orgErr } = await db
     .from('org_rules')
     .select('margin_default_bps,margin_rules,incoterm_default,validity_days,approval_matrix')
     .eq('brand_id', laneRow.brand_id)
     .maybeSingle()
+  // A failed read must NOT masquerade as an empty policy — this surface's whole job is
+  // to show the operator the real policy. Surface the error instead.
+  if (ratesErr || tariffsErr || orgErr) return fail('FORBIDDEN_LANE', 'No se pudo leer la política / Could not read the policy')
 
   const rateTables: RateTableRow[] = (
     (rates ?? []) as Array<{
@@ -138,6 +160,9 @@ const addFreightSchema = z.object({
     .regex(/^\d{4}-\d{2}-\d{2}$/)
     .nullish(),
   source: z.string().trim().max(200).nullish(),
+}).refine((v) => !v.validTo || v.validTo >= v.validFrom, {
+  message: 'validTo must be on or after validFrom',
+  path: ['validTo'],
 })
 export type AddFreightRateInput = z.input<typeof addFreightSchema>
 
@@ -170,7 +195,13 @@ export async function addFreightRate(input: AddFreightRateInput): Promise<Action
     })
     .select('id,kind,route,mode,container_type,rate_minor,currency,valid_from,valid_to,source')
     .single()
-  if (error || !data) return fail('FORBIDDEN_LANE', 'No se pudo guardar (permisos) / Could not save (permissions)')
+  if (error || !data) {
+    const code = (error as { code?: string } | null)?.code
+    if (code === '23505')
+      return fail('VALIDATION', 'Ya existe una tarifa con esa ruta/modo/fecha — usa una nueva vigencia / A rate with that route/mode/date already exists — use a new valid_from')
+    if (code === '22007' || code === '22008') return fail('VALIDATION', 'Fecha inválida / Invalid date')
+    return fail('FORBIDDEN_LANE', 'No se pudo guardar (permisos) / Could not save (permissions)')
+  }
   const r = data as {
     id: string
     kind: 'FREIGHT' | 'INSURANCE'

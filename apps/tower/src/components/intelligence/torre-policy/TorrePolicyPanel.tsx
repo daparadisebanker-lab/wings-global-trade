@@ -35,7 +35,17 @@ export function TorrePolicyPanel({ locale = DEFAULT_LOCALE }: { locale?: Locale 
   const [form, setForm] = useState({ route: '', mode: 'SEA', containerType: '40HC', rate: '', validFrom: '', validTo: '' })
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setForm((f) => ({ ...f, [k]: e.target.value }))
 
-  const canSubmit = useMemo(() => laneId && form.route.trim() && Number(form.rate) > 0 && /^\d{4}-\d{2}-\d{2}$/.test(form.validFrom), [laneId, form])
+  const canSubmit = useMemo(
+    () =>
+      !!laneId &&
+      !!form.route.trim() &&
+      Number(form.rate) > 0 &&
+      /^\d{4}-\d{2}-\d{2}$/.test(form.validFrom) &&
+      // a typed-but-malformed validTo is rejected, never silently dropped (would make an
+      // open-ended rate that the expiry blocker can never fire on)
+      (form.validTo.trim() === '' || (/^\d{4}-\d{2}-\d{2}$/.test(form.validTo) && form.validTo >= form.validFrom)),
+    [laneId, form],
+  )
 
   function submit() {
     if (!laneId || !canSubmit) return
@@ -61,10 +71,14 @@ export function TorrePolicyPanel({ locale = DEFAULT_LOCALE }: { locale?: Locale 
   }
 
   if (lanes.isLoading) return <p className="font-ui text-t0 text-ink-secondary">{t({ es: 'Cargando…', en: 'Loading…' }, locale)}</p>
+  if (lanes.isError) return <p className="font-ui text-t0 text-negative">{lanes.error?.message}</p>
   if (lanes.data && lanes.data.length === 0)
     return <p className="font-ui text-t0 text-ink-secondary">{t({ es: 'Sin lanes accesibles.', en: 'No accessible lanes.' }, locale)}</p>
 
   const p = policy.data
+  // Showing the previous lane's policy while the new one loads → dim so numbers are
+  // never mistaken for the selected lane's.
+  const stale = policy.isPlaceholderData && policy.isFetching
 
   return (
     <div className="flex flex-col gap-5">
@@ -82,11 +96,14 @@ export function TorrePolicyPanel({ locale = DEFAULT_LOCALE }: { locale?: Locale 
             </option>
           ))}
         </select>
+        <span aria-hidden className="font-mono text-label text-ink-tertiary">{stale ? '…' : ''}</span>
       </label>
+
+      {policy.isError && <p className="font-ui text-t0 text-negative">{policy.error?.message}</p>}
 
       {/* Org rules summary */}
       {p?.orgRules && (
-        <section className="rounded-card-lg border border-line bg-surface-1 p-4">
+        <section className={cn('rounded-card-lg border border-line bg-surface-1 p-4', stale && 'opacity-60 transition-opacity')}>
           <h3 className="mb-2 font-mono text-label uppercase tracking-[0.1em] text-lane-accent">{t({ es: 'Reglas comerciales', en: 'Commercial rules' }, locale)}</h3>
           <div className="grid grid-cols-2 gap-x-6 gap-y-1 font-mono text-label text-ink-primary sm:grid-cols-4">
             <div>
@@ -107,15 +124,15 @@ export function TorrePolicyPanel({ locale = DEFAULT_LOCALE }: { locale?: Locale 
       )}
 
       {/* Rate tables */}
-      <section className="rounded-card-lg border border-line bg-surface-1 p-4">
+      <section className={cn('rounded-card-lg border border-line bg-surface-1 p-4', stale && 'opacity-60 transition-opacity')}>
         <h3 className="mb-2 font-mono text-label uppercase tracking-[0.1em] text-lane-accent">{t({ es: 'Tarifas (flete/seguro)', en: 'Rates (freight/insurance)' }, locale)}</h3>
         <div className="overflow-x-auto">
           <table className="w-full border-collapse">
             <thead>
               <tr className="border-b border-line">
                 <th className={TH}>{t({ es: 'Ruta', en: 'Route' }, locale)}</th>
-                <th className={TH}>Modo</th>
-                <th className={TH}>Cont.</th>
+                <th className={TH}>{t({ es: 'Modo', en: 'Mode' }, locale)}</th>
+                <th className={TH}>{t({ es: 'Cont.', en: 'Cont.' }, locale)}</th>
                 <th className={cn(TH, 'text-right')}>{t({ es: 'Tarifa', en: 'Rate' }, locale)}</th>
                 <th className={TH}>{t({ es: 'Vigencia', en: 'Validity' }, locale)}</th>
               </tr>
@@ -145,13 +162,13 @@ export function TorrePolicyPanel({ locale = DEFAULT_LOCALE }: { locale?: Locale 
 
         {/* add freight rate */}
         <div className="mt-3 flex flex-wrap items-end gap-2">
-          <input value={form.route} onChange={set('route')} placeholder={t({ es: 'Ruta p.ej. CN-SHANGHAI>PE-CALLAO', en: 'Route e.g. CN-SHANGHAI>PE-CALLAO' }, locale)} className="min-w-[180px] flex-1 rounded-control border border-line bg-surface-0 px-2 py-1 font-mono text-label text-ink-primary outline-none focus-visible:border-lane-accent" />
-          <select value={form.mode} onChange={set('mode')} className="rounded-control border border-line bg-surface-0 px-2 py-1 font-mono text-label text-ink-primary">
+          <input aria-label={t({ es: 'Ruta', en: 'Route' }, locale)} value={form.route} onChange={set('route')} placeholder={t({ es: 'Ruta p.ej. CN-SHANGHAI>PE-CALLAO', en: 'Route e.g. CN-SHANGHAI>PE-CALLAO' }, locale)} className="min-w-[180px] flex-1 rounded-control border border-line bg-surface-0 px-2 py-1 font-mono text-label text-ink-primary outline-none focus-visible:border-lane-accent" />
+          <select aria-label={t({ es: 'Modo', en: 'Mode' }, locale)} value={form.mode} onChange={set('mode')} className="rounded-control border border-line bg-surface-0 px-2 py-1 font-mono text-label text-ink-primary">
             <option>SEA</option>
             <option>AIR</option>
             <option>LAND</option>
           </select>
-          <select value={form.containerType} onChange={set('containerType')} className="rounded-control border border-line bg-surface-0 px-2 py-1 font-mono text-label text-ink-primary">
+          <select aria-label={t({ es: 'Contenedor', en: 'Container' }, locale)} value={form.containerType} onChange={set('containerType')} className="rounded-control border border-line bg-surface-0 px-2 py-1 font-mono text-label text-ink-primary">
             <option value="">—</option>
             <option>20GP</option>
             <option>40GP</option>
@@ -159,9 +176,9 @@ export function TorrePolicyPanel({ locale = DEFAULT_LOCALE }: { locale?: Locale 
             <option>LCL</option>
             <option>RORO</option>
           </select>
-          <input value={form.rate} onChange={set('rate')} inputMode="decimal" placeholder="USD" className="w-24 rounded-control border border-line bg-surface-0 px-2 py-1 font-mono text-label text-ink-primary outline-none focus-visible:border-lane-accent" />
-          <input value={form.validFrom} onChange={set('validFrom')} placeholder="desde AAAA-MM-DD" className="w-36 rounded-control border border-line bg-surface-0 px-2 py-1 font-mono text-label text-ink-primary" />
-          <input value={form.validTo} onChange={set('validTo')} placeholder="hasta AAAA-MM-DD" className="w-36 rounded-control border border-line bg-surface-0 px-2 py-1 font-mono text-label text-ink-primary" />
+          <input aria-label={t({ es: 'Tarifa USD', en: 'Rate USD' }, locale)} value={form.rate} onChange={set('rate')} inputMode="decimal" placeholder="USD" className="w-24 rounded-control border border-line bg-surface-0 px-2 py-1 font-mono text-label text-ink-primary outline-none focus-visible:border-lane-accent" />
+          <input aria-label={t({ es: 'Vigente desde', en: 'Valid from' }, locale)} value={form.validFrom} onChange={set('validFrom')} placeholder={t({ es: 'desde AAAA-MM-DD', en: 'from YYYY-MM-DD' }, locale)} className="w-36 rounded-control border border-line bg-surface-0 px-2 py-1 font-mono text-label text-ink-primary outline-none focus-visible:border-lane-accent" />
+          <input aria-label={t({ es: 'Vigente hasta', en: 'Valid to' }, locale)} value={form.validTo} onChange={set('validTo')} placeholder={t({ es: 'hasta AAAA-MM-DD', en: 'to YYYY-MM-DD' }, locale)} className="w-36 rounded-control border border-line bg-surface-0 px-2 py-1 font-mono text-label text-ink-primary outline-none focus-visible:border-lane-accent" />
           <button
             type="button"
             disabled={!canSubmit || pending}
@@ -171,11 +188,15 @@ export function TorrePolicyPanel({ locale = DEFAULT_LOCALE }: { locale?: Locale 
             {t({ es: 'Agregar tarifa', en: 'Add rate' }, locale)}
           </button>
         </div>
-        {banner && <div className={cn('mt-2 font-ui text-t0', banner.tone === 'ok' ? 'text-positive' : 'text-negative')}>{banner.text}</div>}
+        {banner && (
+          <div role="status" aria-live="polite" className={cn('mt-2 font-ui text-t0', banner.tone === 'ok' ? 'text-positive' : 'text-negative')}>
+            {banner.text}
+          </div>
+        )}
       </section>
 
       {/* Tariff positions */}
-      <section className="rounded-card-lg border border-line bg-surface-1 p-4">
+      <section className={cn('rounded-card-lg border border-line bg-surface-1 p-4', stale && 'opacity-60 transition-opacity')}>
         <h3 className="mb-2 font-mono text-label uppercase tracking-[0.1em] text-lane-accent">{t({ es: 'Partidas arancelarias (HS)', en: 'Tariff positions (HS)' }, locale)}</h3>
         <div className="overflow-x-auto">
           <table className="w-full border-collapse">

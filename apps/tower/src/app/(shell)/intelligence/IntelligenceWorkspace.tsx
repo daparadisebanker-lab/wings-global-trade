@@ -1,8 +1,9 @@
 'use client'
 
-// Intelligence module workspace (COMPONENT_TREE §5). Two review surfaces —
-// TriageQueue and SpecExtractReview — behind a keyboard-reachable segmented
-// switch. Every surface here is a review surface: the AI draft, its confidence,
+// Intelligence module workspace (COMPONENT_TREE §5). Four surfaces —
+// Torre quote review, Triage, Spec-extract, and Reglas (policy) — behind a
+// keyboard-reachable segmented switch. Every surface here is a review surface: the
+// AI draft, its confidence,
 // the diff, and explicit Approve / Reject. Nothing commits except via the
 // W4.B (RLS-scoped) actions. The module itself is ⌘K/NavRail-reachable through
 // lib/nav.ts; this switch moves between its two panels.
