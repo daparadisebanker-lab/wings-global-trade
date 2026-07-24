@@ -21,7 +21,8 @@ import { useActiveTool } from '@/shell/navigation/useActiveTool'
 import { resolveActiveTool } from '@/shell/navigation/registry'
 import { recordRecent } from '@/shell/navigation/recents'
 import { Dock } from '@/shell/dock/Dock'
-import { ControlCenterGrid, ControlCenterStatus } from '@/shell/control-center/ControlCenter'
+import { ControlCenterGrid } from '@/shell/control-center/ControlCenter'
+import { MobileControlCenter } from '@/shell/control-center/MobileControlCenter'
 import { NavSidebar } from '@/shell/navigation/NavSidebar'
 
 /** Location strip — TOWER › Módulo › subpágina, derived from the path so you
@@ -103,6 +104,8 @@ export function ShellChrome({
   const [paletteOpen, setPaletteOpen] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [misterOpen, setMisterOpen] = useState(false)
+  // Mobile iOS-style Control Center shade (top-right pill → slides down). Mobile-only.
+  const [controlCenterOpen, setControlCenterOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   // Desktop Dock pin state (default pinned; persisted). Owned here because it
   // drives the content-bottom padding; the Dock reflects it + toggles it.
@@ -265,9 +268,11 @@ export function ShellChrome({
   // behind it; without dismissing the cockpit the destination stays hidden under the
   // z-60 overlay and the link looks dead (the top "buttons don't work" report). Close
   // it on every route change — its conversation/draft state lives in MisterProvider and
-  // survives navigation, so nothing is lost.
+  // survives navigation, so nothing is lost. The mobile Control Center shade closes on
+  // navigation too (its links go to real routes).
   useEffect(() => {
     setMisterOpen(false)
+    setControlCenterOpen(false)
   }, [pathname])
 
   const activeLane = memberships.find((m) => m.laneId === activeLaneId) ?? null
@@ -376,9 +381,6 @@ export function ShellChrome({
           <div className="hidden md:block">
             <NavSidebar visible={visible} />
           </div>
-          <div className="mt-auto md:hidden">
-            <ControlCenterStatus userName={userName} userEmail={userEmail} active={drawerOpen} />
-          </div>
         </aside>
 
         {/* When the rail is collapsed, a slim edge tab (desktop only) brings it back. */}
@@ -402,6 +404,7 @@ export function ShellChrome({
             isGroupAdmin={isGroupAdmin}
             onOpenSearch={() => setPaletteOpen(true)}
             onOpenMenu={() => setDrawerOpen(true)}
+            onOpenControlCenter={() => setControlCenterOpen(true)}
             hasModules={visible.size > 0}
           />
           <Breadcrumb locale={DEFAULT_LOCALE} />
@@ -443,6 +446,17 @@ export function ShellChrome({
         lanes={memberships}
         activeLaneId={activeLaneId}
         onSelectLane={setActiveLaneId}
+      />
+
+      {/* Mobile Control Center — the iOS-style top shade (opened by the TopBar pill).
+          Owns quick actions + settings + status/sign-out; the drawer stays modules. */}
+      <MobileControlCenter
+        open={controlCenterOpen}
+        onClose={() => setControlCenterOpen(false)}
+        userName={userName}
+        userEmail={userEmail}
+        onOpenMister={() => setMisterOpen(true)}
+        onOpenSearch={() => setPaletteOpen(true)}
       />
 
       {/* Mister — the full-width production cockpit (World B) + its floating door.

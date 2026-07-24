@@ -19,6 +19,7 @@ export function TopBar({
   isGroupAdmin,
   onOpenSearch,
   onOpenMenu,
+  onOpenControlCenter,
   hasModules = true,
   locale = DEFAULT_LOCALE,
 }: {
@@ -27,6 +28,8 @@ export function TopBar({
   isGroupAdmin: boolean
   onOpenSearch: () => void
   onOpenMenu?: () => void
+  /** Opens the mobile iOS Control Center shade (mobile only). */
+  onOpenControlCenter?: () => void
   /** When false the Dock is absent (no visible modules) — keep search on desktop
    *  too, else a mouse user would have no search affordance at all (⌘K only). */
   hasModules?: boolean
@@ -79,10 +82,27 @@ export function TopBar({
             <path d="M13.5 13.5 17 17" strokeLinecap="round" />
           </svg>
         </button>
-        <ThemeToggle locale={locale} />
+        {/* Control Center — MOBILE ONLY (md:hidden). The iOS-style top shade: quick
+            actions + theme + status + sign out. Desktop keeps theme + the account menu. */}
+        <button
+          type="button"
+          onClick={onOpenControlCenter}
+          aria-label={t({ es: 'Centro de control', en: 'Control center' }, locale)}
+          className="flex h-10 w-10 items-center justify-center rounded-card text-ink-secondary transition-colors hover:text-ink-primary md:hidden"
+        >
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.6} aria-hidden>
+            <path d="M3 6.5h7M14 6.5h3M3 13.5h3M10 13.5h7" strokeLinecap="round" />
+            <circle cx="12" cy="6.5" r="1.7" />
+            <circle cx="8" cy="13.5" r="1.7" />
+          </svg>
+        </button>
+        {/* Theme — desktop only; on mobile it lives in the Control Center shade. */}
+        <div className="hidden md:block">
+          <ThemeToggle locale={locale} />
+        </div>
         {/* The account menu — identity + recent activity + sign out, in ONE control
             (folded up from the removed GreetingBar). Desktop only; on mobile the
-            Control Center drawer carries the same identity + recap + sign out. */}
+            Control Center shade carries the same identity + recap + sign out. */}
         <div className="hidden md:block">
           <UserMenu name={userName} email={userEmail} locale={locale} />
         </div>
