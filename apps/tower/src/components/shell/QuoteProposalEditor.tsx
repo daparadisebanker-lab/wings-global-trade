@@ -236,7 +236,15 @@ export function QuoteProposalEditor({ result, locale = DEFAULT_LOCALE, seq }: { 
         </span>
       ) : null}
 
-      <QuoteSavePanel lines={saveLines} hasGaps={hasGaps} locale={locale} draftKey={`${seq}:commit`} />
+      <QuoteSavePanel
+        lines={saveLines}
+        hasGaps={hasGaps}
+        locale={locale}
+        draftKey={`${seq}:commit`}
+        destinationCountry={data.destinationCountry}
+        destinationPort={data.destinationPort}
+        currency={data.currency}
+      />
     </div>
   )
 }

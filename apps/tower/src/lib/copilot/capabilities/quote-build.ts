@@ -44,6 +44,10 @@ export interface QuoteProposalData {
   incoterm: Incoterm | null
   /** The client/account the operator named — carried for the composer handoff. */
   clientHint: string | null
+  /** Destination country the operator named (drives issuer resolution); null if unstated. */
+  destinationCountry: string | null
+  /** Destination port/free-zone the operator named; null if unstated. Never invented. */
+  destinationPort: string | null
   lines: QuoteProposalLine[]
   /** Σ line totals; null when any line is a gap (an honest subtotal or none). */
   subtotalMinor: number | null
@@ -168,6 +172,10 @@ export function buildQuoteProposal(raw: string): QuoteProposalData | null {
     currency,
     incoterm,
     clientHint: str(obj.clientHint),
+    // Destination signals — extracted only, never invented (absent → null). These
+    // drive issuer resolution downstream (resolveIssuer) at save time.
+    destinationCountry: str(obj.destinationCountry),
+    destinationPort: str(obj.destinationPort),
     lines,
     subtotalMinor,
     hasGaps,
@@ -186,6 +194,8 @@ REGLAS FIRMES:
   · ninguno de los dos: déjalos en null (el sistema lo marca "por cotizar").
 - Tono mayorista. Prohibido vocabulario retail (carrito, comprar, oferta por tiempo limitado).
 - Extrae el cliente/cuenta si lo nombran (clientHint), la moneda y el incoterm.
+- Extrae el DESTINO si lo mencionan: país de destino (destinationCountry) y puerto o zona franca
+  (destinationPort, p.ej. "Iquique", "ZOFRI", "Callao"). NUNCA inventes el destino — si no lo dicen, null.
 
 Responde SOLO con un objeto JSON, sin texto alrededor, con esta forma exacta:
 {
@@ -193,6 +203,8 @@ Responde SOLO con un objeto JSON, sin texto alrededor, con esta forma exacta:
   "clientHint": string|null,
   "currency": string|null,          // p.ej. "USD"; null → USD
   "incoterm": "EXW"|"FOB"|"CFR"|"CIF"|null,
+  "destinationCountry": string|null, // país de destino si lo nombran (ej. "Bolivia", "Chile")
+  "destinationPort": string|null,    // puerto/zona franca si lo nombran (ej. "Iquique", "ZOFRI")
   "lines": [
     {
       "description": string,
