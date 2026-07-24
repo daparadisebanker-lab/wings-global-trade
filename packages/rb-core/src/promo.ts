@@ -8,6 +8,7 @@
 // technical and direct.
 
 import { wingsLogo } from './wings-logo'
+import { CARD, FONT_DISPLAY, FONT_BODY, FONT_LABEL, accentText, onFill, esc } from './card-kit'
 
 export interface ContainerPromoSpec {
   label: string
@@ -127,77 +128,14 @@ export function buildPromoCopy(p: ContainerPromo, variant: PromoVariant = 'whats
 }
 
 // ── Share card (SVG string) ──────────────────────────────────────────────────
-
-// ── Colour math (so the palette is derived, never invented) ──────────────────
-function hxToRgb(h: string): [number, number, number] {
-  const s = h.replace('#', '')
-  return [0, 2, 4].map((i) => parseInt(s.slice(i, i + 2), 16)) as [number, number, number]
-}
-function rgbToHex(rgb: number[]): string {
-  return '#' + rgb.map((v) => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, '0')).join('')
-}
-/** Flatten `fg` at alpha `a` over opaque `bg` — a provably in-family tint. */
-function mix(fg: string, bg: string, a: number): string {
-  const F = hxToRgb(fg)
-  const B = hxToRgb(bg)
-  return rgbToHex(F.map((v, i) => B[i] * (1 - a) + v * a))
-}
-function _lin(c: number): number {
-  const x = c / 255
-  return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4
-}
-function luminance(h: string): number {
-  const [r, g, b] = hxToRgb(h)
-  return 0.2126 * _lin(r) + 0.7152 * _lin(g) + 0.0722 * _lin(b)
-}
-/** WCAG contrast ratio between two solid hex colours. */
-function contrast(a: string, b: string): number {
-  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x)
-  return (hi + 0.05) / (lo + 0.05)
-}
-
-// The three brand constants — a mirror of packages/liveries/wings/livery.css
-// (--livery-warm-white / --livery-navy / --livery-gold). resvg can't read CSS
-// custom properties, so these are the single source the card derives from; keep
-// them in sync with the livery. Every other card colour is DERIVED from these.
-const BRAND = { warmWhite: '#F8F6F0', navy: '#001E50', gold: '#C4933F' }
-
-const CARD = {
-  size: 1080,
-  bg: BRAND.warmWhite,
-  ink: BRAND.navy, // edges, labels, headline
-  gold: BRAND.gold, // default container fill
-  sub: mix(BRAND.navy, BRAND.warmWhite, 0.55), // secondary text = site's muted rgba(0,30,80,.55), flattened
-  line: mix(BRAND.navy, BRAND.warmWhite, 0.2), // hairline divider — a faint navy tint
-  tint: mix(BRAND.gold, BRAND.warmWhite, 0.08), // open-bay top face — faint warm paper
-}
-
-/** Accent is safe as text only if it clears 4.5:1 on the ground (livery Phase-2
- *  law); otherwise fall back to navy ink. */
-function accentText(accent: string): string {
-  return contrast(accent, CARD.bg) >= 4.5 ? accent : CARD.ink
-}
-/** Highest-contrast label colour for text sitting ON a filled shape. */
-function onFill(fill: string): string {
-  return contrast('#ffffff', fill) >= contrast(CARD.ink, fill) ? '#ffffff' : CARD.ink
-}
-
-// Wings brand type system (apps/site/public/fonts, self-hosted): NissanOpti =
-// display, Flexo = body, Teko = labels + numerals. Family names match both the
-// font files' internal names (for resvg) and the @font-face declarations (for
-// the browser preview/canvas). Arial is only the last-ditch fallback.
-const FONT_DISPLAY = "'NissanOpti', Arial, sans-serif"
-const FONT_BODY = "'Flexo', Arial, sans-serif"
-const FONT_LABEL = "'Teko', 'Arial Narrow', Arial, sans-serif"
+// Brand constants, card palette, colour math, fonts and esc() now live in
+// ./card-kit (shared with the product card, so BRAND never drifts). BRAND is
+// still imported for the hatch/accent references below.
 
 // Cabinet-projection depth ratios — identical grammar to the ContainerSliceDiagram
 // organ (@wings/trade-ui) so the WhatsApp/ad card matches the on-site drawing.
 const DX = 40
 const DY = 22
-
-function esc(s: string): string {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-}
 
 interface Split {
   committed: number
