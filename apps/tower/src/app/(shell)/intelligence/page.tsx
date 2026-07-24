@@ -1,9 +1,11 @@
-import { IntelligenceWorkspace } from './IntelligenceWorkspace'
+import { MisterCockpit } from '@/components/shell/mister/MisterCockpit'
 
-// Intelligence — Wave 4 (COMPONENT_TREE §5). Replaces the Wave-1 placeholder.
-// Two review surfaces (TriageQueue · SpecExtractReview) where the AI proposes
-// and the operator disposes. RLS is the permission system — these surfaces show
-// only what the (RLS-scoped) W4.B actions return; the UI never enforces access.
-export default function IntelligencePage() {
-  return <IntelligenceWorkspace />
+// Intelligence → Mister (Phase E). The module route now renders the full-width
+// Mister cockpit inline: command spine · composition canvas · commit rail. The
+// AI-proposes/human-disposes review queue moved to /intelligence/revision and is
+// reachable from the cockpit's commit rail. The cockpit reads the shared Mister
+// conversation from the MisterProvider mounted in ShellChrome, so a draft started
+// via ⌘J anywhere is still here.
+export default function MisterPage() {
+  return <MisterCockpit mode="page" />
 }

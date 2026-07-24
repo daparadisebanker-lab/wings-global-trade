@@ -110,7 +110,7 @@ export function DocumentUploader({ locale }: { locale: Locale }) {
   const canUpload = Boolean(brandId) && Boolean(file) && !busy
 
   return (
-    <div className="flex w-full max-w-md flex-col gap-3 rounded-card border border-line bg-surface-1 p-4">
+    <div className="tower-settle flex w-full max-w-md flex-col gap-3 rounded-card-lg border border-line bg-surface-1 p-4 shadow-elevation-2">
       <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
         {t({ es: 'Nuevo documento', en: 'New document' }, locale)}
       </span>
@@ -151,7 +151,7 @@ export function DocumentUploader({ locale }: { locale: Locale }) {
       <input
         type="file"
         onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-        className="font-ui text-body-sm text-ink-secondary file:mr-3 file:rounded-card file:border file:border-line file:bg-surface-0 file:px-3 file:py-1.5 file:font-mono file:text-label file:uppercase file:tracking-[0.1em] file:text-ink-secondary"
+        className="font-ui text-t0 text-ink-secondary file:mr-3 file:rounded-card file:border file:border-line file:bg-surface-0 file:px-3 file:py-1.5 file:font-mono file:text-label file:uppercase file:tracking-[0.1em] file:text-ink-secondary"
       />
 
       {error ? <p className="font-ui text-t0 text-negative">{error}</p> : null}

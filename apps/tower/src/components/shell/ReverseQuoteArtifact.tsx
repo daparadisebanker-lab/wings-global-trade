@@ -55,6 +55,14 @@ export function ReverseQuoteArtifact({
         {t({ es: 'Precio de venta', en: 'Sale price' }, locale)} · {kindLabel} {pct(result.targetPct)}
       </div>
 
+      {/* Provenance (Scenario Ledger) — inherited from a prior canvas. */}
+      {result.seededFrom ? (
+        <div style={{ fontFamily: MONO, fontSize: 10, letterSpacing: '0.04em', color: GOLD }}>
+          {t({ es: 'Heredado del lienzo', en: 'Inherited from canvas' }, locale)} #{result.seededFrom.seq}:{' '}
+          {result.seededFrom.fields.map((f) => t(f, locale)).join(' · ')}
+        </div>
+      ) : null}
+
       {/* The headline: the sale price that hits the target. Fluid so a large
           number never overflows a narrow phone. */}
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap', minWidth: 0 }}>
@@ -109,6 +117,17 @@ export function ReverseQuoteArtifact({
           value={pct(result.targetPct)}
         />
       </div>
+
+      {/* Assumptions exhibited (not hidden) so an inherited TC / Ad Valorem / freight
+          / fuel shows on the sale-price surface. Freight only when the engine uses it
+          (EXW/FOB); under CFR/CIF it's already inside the stated value. */}
+      {result.input ? (
+        <div style={{ fontFamily: MONO, fontSize: 10.5, color: MUTED }}>
+          TC {result.input.exchangeRate} · Ad Val {(result.input.adValoremRate * 100).toFixed(1)}%
+          {result.incoterm === 'EXW' || result.incoterm === 'FOB' ? ` · Flete ${money(result.input.freightInternational)}` : ''} ·{' '}
+          {result.input.fuelType}
+        </div>
+      ) : null}
     </div>
   )
 }

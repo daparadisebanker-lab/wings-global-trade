@@ -7,7 +7,7 @@ import { INTELLIGENCE_MODELS } from '@/lib/ai/types'
 import { extractJsonObject } from '@/lib/ai/parse'
 import type { IntelligenceClient } from '@/lib/ai/client'
 import { CAPABILITIES } from './registry'
-import { textResult, type Attachment, type CopilotResult } from './types'
+import { textResult, type Attachment, type CanvasContext, type CopilotResult } from './types'
 
 function routerSystem(): string {
   const list = CAPABILITIES.map(
@@ -34,22 +34,39 @@ export async function routeAndRun(
   client: IntelligenceClient,
   text: string,
   attachment?: Attachment,
+  context?: CanvasContext,
 ): Promise<CopilotResult> {
   if (attachment) {
     const visionCap = CAPABILITIES.find((c) => c.acceptsImage)
-    if (visionCap) return visionCap.run(client, text, attachment)
+    if (visionCap) return visionCap.run(client, text, attachment, context)
     // No image capability registered — fall through to text routing on the caption.
   }
 
+  // Canvas-aware routing: a terse follow-up ("¿y si sube el TC?") carries none of
+  // the vocabulary the classifier keys on, so tell it an edited artifact is open —
+  // a short message is usually a follow-up about that artifact.
+  const hint = context
+    ? `[Contexto: el operador tiene abierto y editado un artefacto de ${
+        context.kind === 'fit' ? 'cubicaje / contenedor' : 'costo de importación / precio de venta'
+      } en el lienzo; una pregunta breve suele ser un seguimiento sobre ese artefacto.]\n`
+    : ''
   const raw = await client.complete({
     model: INTELLIGENCE_MODELS.classify,
     system: routerSystem(),
-    user: text,
+    user: hint + text,
     maxTokens: 60,
   })
   const obj = extractJsonObject(raw)
   const id = typeof obj?.capability === 'string' ? obj.capability : 'none'
-  const cap = CAPABILITIES.find((c) => c.id === id)
+  let cap = CAPABILITIES.find((c) => c.id === id)
+
+  // Deterministic backstop: if the classifier still bails but the operator is on a
+  // fit canvas, a short follow-up is a container-fit follow-up (unambiguous — only
+  // one capability produces 'fit'). The 'costing' kind is left to the hint above
+  // since it maps to two capabilities.
+  if (!cap && context?.kind === 'fit') {
+    cap = CAPABILITIES.find((c) => c.id === 'container-fit')
+  }
 
   if (!cap) {
     const menu = CAPABILITIES.map((c) => `• ${c.router.description}`).join('\n')
@@ -57,5 +74,5 @@ export async function routeAndRun(
       `Puedo ayudarte con: / I can help with:\n${menu}`,
     )
   }
-  return cap.run(client, text)
+  return cap.run(client, text, undefined, context)
 }

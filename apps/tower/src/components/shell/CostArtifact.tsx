@@ -130,6 +130,14 @@ export function CostArtifact({
         </span>
       </div>
 
+      {/* Provenance (Scenario Ledger) — the numbers inherited from a prior canvas. */}
+      {r.seededFrom ? (
+        <p style={{ margin: '0 0 8px', fontFamily: MONO, fontSize: 10, letterSpacing: '0.04em', color: ACCENT }}>
+          {t({ es: 'Heredado del lienzo', en: 'Inherited from canvas' }, locale)} #{r.seededFrom.seq}:{' '}
+          {r.seededFrom.fields.map((f) => t(f, locale)).join(' · ')}
+        </p>
+      ) : null}
+
       {/* SUNAT chain */}
       <Row label="CIF" value={r.cif} currency={c} />
       <Row label={t({ es: 'Ad Valorem', en: 'Ad Valorem' }, locale)} value={r.adValorem} currency={c} />
@@ -174,22 +182,27 @@ export function CostArtifact({
         />
       </div>
 
-      <p
-        style={{
-          margin: '8px 0 0',
-          fontSize: 10.5,
-          lineHeight: 1.4,
-          color: MUTED,
-        }}
-      >
-        {t(
-          {
-            es: 'Cadena SUNAT con tasas estándar; ajusta cualquier tasa en la calculadora de costos.',
-            en: 'SUNAT chain at standard rates; fine-tune any rate in the cost calculator.',
-          },
-          locale,
-        )}
-      </p>
+      {/* Assumptions strip — the SUNAT rates behind these numbers, exhibited (not
+          hidden) so a canvas-inherited or tuned rate never reads as "standard". */}
+      {r.input ? (
+        <p style={{ margin: '8px 0 0', fontFamily: MONO, fontSize: 10.5, lineHeight: 1.4, color: MUTED }}>
+          TC {r.input.exchangeRate} · Ad Val {(r.input.adValoremRate * 100).toFixed(1)}%
+          {r.incoterm === 'EXW' || r.incoterm === 'FOB'
+            ? ` · ${t({ es: 'Flete', en: 'Freight' }, locale)} ${money(r.input.freightInternational)}`
+            : ''}{' '}
+          · {r.input.fuelType}
+        </p>
+      ) : (
+        <p style={{ margin: '8px 0 0', fontSize: 10.5, lineHeight: 1.4, color: MUTED }}>
+          {t(
+            {
+              es: 'Cadena SUNAT con tasas estándar; ajusta cualquier tasa en la calculadora de costos.',
+              en: 'SUNAT chain at standard rates; fine-tune any rate in the cost calculator.',
+            },
+            locale,
+          )}
+        </p>
+      )}
     </div>
   )
 }

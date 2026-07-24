@@ -12,9 +12,48 @@
 // writes an ai_draft (CLAUDE.md Directive 7 — propose, then dispose).
 
 import type { IntelligenceClient, ImageInput } from '@/lib/ai/client'
+import type { ImportInputs } from '@/lib/costing/types'
+import type { Localized } from '@/lib/i18n'
+import type { ContainerFitInput } from './container-fit'
 
 /** An attachment the operator sends with a message — currently a pasted/added image. */
 export type Attachment = ImageInput
+
+/**
+ * Canvas working memory, fed back into a CHAINED ask (Phase E round 3 / Part B).
+ * When the operator has an artifact open on the canvas and types a follow-up
+ * ("y si el flete sube a 2,500?"), the currently-mounted editor's normalized
+ * inputs travel with the message so the capability seeds from what the operator
+ * already tuned instead of engine defaults. Plain JSON (crosses the server-action
+ * boundary). The costing capabilities (landed-cost, reverse-quote) share
+ * ImportInputs, so one 'costing' kind covers both.
+ */
+export type CanvasContext =
+  | { kind: 'costing'; inputs: ImportInputs; sourceSeq?: number; baseline?: LineageBaseline }
+  | { kind: 'fit'; input: ContainerFitInput; sourceSeq?: number; baseline?: LineageBaseline }
+
+/** The PARENT artifact's headline figures captured AT CHAIN TIME — i.e. the state
+ *  the child actually inherited (the parent editor may have tuned it past its
+ *  original stored payload). The lineage deltas (Scenario Ledger Stage 2) compare
+ *  the child against THIS, not the parent's stale first render, so the exhibited
+ *  Δ is the effect of the follow-up alone. `marginKind` travels for reverse-quote
+ *  so a gross↔net-cash switch never subtracts one measure from the other. */
+export type LineageBaseline =
+  | { renderer: 'landed-cost'; landedCost: number; salePriceFinal: number }
+  | { renderer: 'reverse-quote'; salePrice: number; achievedPct: number; marginKind: 'bruto' | 'neto_caja' }
+  | { renderer: 'fit'; units: number; cbmUsedPct: number }
+
+/** Provenance for a chained artifact (Scenario Ledger Stage 1): which prior canvas
+ *  artifact its inherited numbers came from, and the fields inherited — each a
+ *  localized descriptor (e.g. { es: 'Flete 2,500', en: 'Freight 2,500' }) so the
+ *  header matches the ES/EN parity of every other string on the artifact. Rendered
+ *  as one line: `fields.map(f => t(f, locale)).join(' · ')`. `baseline` (Stage 2)
+ *  carries the parent's headline the child was compared against. */
+export interface SeededFrom {
+  seq: number
+  fields: Localized[]
+  baseline?: LineageBaseline
+}
 
 /** The result a capability returns; the dock renders it via `renderer`. */
 export interface CopilotResult {
@@ -39,9 +78,12 @@ export interface Capability {
   /**
    * Parse the message and produce a result. Throws only on a transport error
    * from the client; an unparseable message should return a `text` result. The
-   * optional attachment is present only for image-accepting capabilities.
+   * optional attachment is present only for image-accepting capabilities. The
+   * optional `context` is the canvas working memory of the artifact the operator
+   * had open — a capability may seed unspecified fields from it (Part B); ignoring
+   * it is fine (a fewer-param run still satisfies this contract).
    */
-  run(client: IntelligenceClient, text: string, attachment?: Attachment): Promise<CopilotResult>
+  run(client: IntelligenceClient, text: string, attachment?: Attachment, context?: CanvasContext): Promise<CopilotResult>
 }
 
 /** A plain-text result — the graceful fallback every capability can return. */

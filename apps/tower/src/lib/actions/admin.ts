@@ -232,10 +232,11 @@ export async function listBrands(): Promise<ActionResult<BrandRow[]>> {
 
 const emailSchema = z.string().trim().email().max(254)
 
-/** Invite a new user by email (magic-link / Google, per ARCHITECTURE auth).
- * Creates the auth.users record via the admin API and ensures a matching
- * tower.profiles row (full_name seeded from the email local part, group-admin
- * false — elevation is a separate, deliberate act). */
+/** Add a new user by email. Creates a CONFIRMED auth.users record directly — no
+ * invite email is sent, because sign-in is the shared-passcode email flow, not a
+ * magic link (auth/email-signin/route.ts). Ensures a matching tower.profiles row
+ * (full_name seeded from the email local part, group-admin false — elevation to
+ * full access is the separate, deliberate "Hacer admin de grupo" toggle). */
 export async function inviteUser(email: string): Promise<ActionResult<{ userId: string; email: string | null }>> {
   const gate = await requireGroupAdmin()
   if (!gate.ok) return gate.error
@@ -244,13 +245,13 @@ export async function inviteUser(email: string): Promise<ActionResult<{ userId: 
   const parsed = emailSchema.safeParse(email)
   if (!parsed.success) return fail('VALIDATION', 'Email inválido / Invalid email', parsed.error.flatten().formErrors.length ? { email: parsed.error.flatten().formErrors } : undefined)
 
-  const { data, error } = await service.auth.admin.inviteUserByEmail(parsed.data)
+  const { data, error } = await service.auth.admin.createUser({ email: parsed.data, email_confirm: true })
   if (error || !data?.user) {
     // Most common: the address is already a user. Log the raw provider error
     // server-side; never surface it to the client (no raw errors rendered).
-    if (error) console.error('[inviteUser] invite failed', error)
-    return fail('VALIDATION', 'No se pudo invitar (¿ya existe?) / Could not invite (already a user?)', {
-      email: ['invite_failed'],
+    if (error) console.error('[inviteUser] createUser failed', error)
+    return fail('VALIDATION', 'No se pudo agregar (¿ya existe?) / Could not add (already a user?)', {
+      email: ['add_failed'],
     })
   }
 

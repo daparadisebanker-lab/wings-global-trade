@@ -37,7 +37,7 @@ export const TOOLS: TowerTool[] = [
   { id: 'costing', href: '/costing', label: { es: 'Costeo', en: 'Costing' }, tag: 'CST', group: 'operate', icon: 'costing', section: core, order: 5, keywords: ['costeo', 'costing', 'sunat', 'landed', 'arancel', 'margen', 'import cost'] },
   { id: 'marcas', href: '/marcas', label: { es: 'Marcas', en: 'Brands' }, tag: 'MRC', group: 'intel', icon: 'marcas', section: core, order: 6, keywords: ['marcas', 'brands', 'representadas', 'represented', 'rb', 'allocation', 'slots'] },
   { id: 'signals', href: '/signals', label: { es: 'Señales', en: 'Signals' }, tag: 'SIG', group: 'intel', icon: 'signals', section: core, order: 7, keywords: ['señales', 'signals', 'analítica', 'analytics', 'métricas', 'metrics', 'dashboard'] },
-  { id: 'intelligence', href: '/intelligence', label: { es: 'Inteligencia', en: 'Intelligence' }, tag: 'INT', group: 'intel', icon: 'intelligence', section: core, order: 8, keywords: ['inteligencia', 'intelligence', 'ia', 'ai', 'triage', 'spec extract', 'revisión'] },
+  { id: 'intelligence', href: '/intelligence', label: { es: 'Mister', en: 'Mister' }, tag: 'INT', group: 'intel', icon: 'intelligence', section: core, order: 8, keywords: ['mister', 'inteligencia', 'intelligence', 'ia', 'ai', 'copiloto', 'copilot', 'cotización', 'contenedor', 'triage', 'spec extract', 'revisión'] },
   { id: 'documents', href: '/documents', label: { es: 'Documentos', en: 'Documents' }, tag: 'DOC', group: 'intel', icon: 'documents', section: core, order: 9, keywords: ['documentos', 'documents', 'drive', 'archivos', 'files', 'certificados'] },
   { id: 'admin', href: '/admin', label: { es: 'Administración', en: 'Admin' }, tag: 'ADM', group: 'system', icon: 'admin', section: utility, order: 10, keywords: ['administración', 'admin', 'usuarios', 'users', 'lanes', 'auditoría', 'webhooks'] },
 ]
@@ -60,6 +60,9 @@ export interface PaletteDestination {
 
 /** Everyone-facing self destinations (shown in the palette's Módulos group). */
 export const SELF_DESTINATIONS: PaletteDestination[] = [
+  // The Morning Brief (L5 Reportar) — spec 01 §1: the `brief` command opens today's Brief.
+  // Palette-only for now; a rail slot awaits its bespoke icon (visual-QA-gated follow-up).
+  { id: 'brief', href: '/brief', label: { es: 'Brief del día', en: 'Morning Brief' }, tag: 'REP', keywords: ['brief', 'reporte', 'report', 'resumen', 'summary', 'día', 'day', 'mañana', 'morning', 'productividad', 'productivity', 'reportar', 'hoy', 'today'] },
   { id: 'perfil', href: '/perfil', label: { es: 'Mi perfil', en: 'My profile' }, tag: 'PRF', keywords: ['perfil', 'profile', 'cuenta', 'account', 'firma', 'signature'] },
 ]
 

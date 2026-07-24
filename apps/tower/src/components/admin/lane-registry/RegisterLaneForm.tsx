@@ -73,7 +73,7 @@ export function RegisterLaneForm({
   const labelClass = 'font-mono text-label uppercase tracking-[0.1em] text-ink-secondary'
 
   return (
-    <section className="flex flex-col gap-4 rounded-card border border-line bg-surface-1 p-4">
+    <section className="flex flex-col gap-4 rounded-card-lg border border-line bg-surface-1 p-4 shadow-elevation-2">
       <span className={labelClass}>Registrar lane / Register lane</span>
 
       <div className="grid gap-4 md:grid-cols-2">

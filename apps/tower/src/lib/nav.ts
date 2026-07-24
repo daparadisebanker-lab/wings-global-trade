@@ -18,17 +18,10 @@ export type ModuleId =
   | 'documents'
   | 'admin'
 
-/** IA groups — the rail renders these as labelled sections (in this order). */
+/** IA group of a module — kept as the `NavModule.group` field + the registry's
+ *  section derivation. (The old grouped rail that rendered NAV_GROUPS as labelled
+ *  sections was retired at P4b/P5; the const + interface were deleted in P8a.) */
 export type NavGroupId = 'operate' | 'intel' | 'system'
-export interface NavGroup {
-  id: NavGroupId
-  label: Localized
-}
-export const NAV_GROUPS: NavGroup[] = [
-  { id: 'operate', label: { es: 'Operación', en: 'Operations' } },
-  { id: 'intel', label: { es: 'Marca e inteligencia', en: 'Brand & Intelligence' } },
-  { id: 'system', label: { es: 'Sistema', en: 'System' } },
-]
 
 /** Icon key — resolved to an SVG in nav-icons.tsx (kept out of this data file). */
 export type NavIconId = ModuleId

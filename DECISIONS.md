@@ -1,5 +1,34 @@
 # DECISIONS.md — WINGS Homepage Build
 
+## Mister Torre adopted — 2026-07-23 (internal AI operator, flagship quote run)
+
+- **Decision:** the `mister-tower-scope` package is adopted as an **experience/
+  productivity layer over the EXISTING internal Mister** (the `MisterCockpit` +
+  `lib/copilot/` engine), not a new bot. Docs land at
+  `spec/contributions/mister-torre/`. This entry is the explicit instruction that
+  authorizes building from it (root law otherwise treats `programs/` as queued).
+- **Docked onto (never forked):** `tower.ai_drafts` (kind vocabulary extended
+  additively in `tower_48`), the SUNAT costing engine (`lib/costing/engine.ts`
+  `computeImportCost` — the ONLY place money math happens), the RLS role matrix,
+  the hash-chained audit log, and the DB status-transition guards (which already
+  enforce the "no autonomous side effects" constitution). New code lives under
+  `apps/tower/src/lib/torre/*` + `apps/tower/evals/*`.
+- **Flagship shipped this pass:** the quote run — a pure, unit-tested builder
+  (`lib/torre/quote-run.ts`) that produces the linked **hoja_costos + cotización**
+  artifact pair (with typed confidence `verified|estimado|requiere_verificación`,
+  blockers that make an artifact unapprovable, ±flete/±TRM sensitivity, dated
+  sources) plus a cover **comunicación** — reproducing the engine **to the cent**.
+  Eval suites `evals/quoting.jsonl` (≥90%) + `evals/honesty.jsonl` (100%,
+  never invents a rate/tariff) gate it.
+- **Where the scope was corrected to repo law:** no parallel "Constellation" visual
+  system (merges into the existing Mister expressive layer + the ratified World-B
+  navy artifact exemption); DDP dropped (engine models EXW/FOB/CFR/CIF only);
+  Peru-first tax model (IGV/percepción/ISC), not Colombia/TRM.
+- **Owner-authorized deviation:** the Tower UI/display/mono font is swapped from
+  **Inter → Space Grotesk** (self-hosted, OFL; `--font-ui/--font-display/--font-mono`
+  repointed with tabular figures on). This touches all host chrome, not just Mister
+  — a deliberate, one-token-repoint choice recorded here for reversibility.
+
 ## macOS material adoption — ratified 2026-07-22 (ecosystem-wide)
 
 - **Decision:** the frozen-skeleton refusals of rounded radii and soft/gradient

@@ -177,7 +177,7 @@ export function PipelineBoard({ lanes, initialLaneId }: { lanes: EditableLane[];
         <div
           role="group"
           aria-label="Nuevo RFQ / New RFQ"
-          className="tower-settle flex flex-wrap items-end gap-3 rounded-card border border-line bg-surface-1 p-4"
+          className="tower-settle flex flex-wrap items-end gap-3 rounded-card-lg border border-line bg-surface-1 p-4 shadow-elevation-2"
         >
           <label className="flex w-full flex-col gap-1 sm:w-auto">
             <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">Cuenta / Account</span>

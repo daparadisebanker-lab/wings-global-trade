@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mister — UI Primitives · Referencia de implementación</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --silver:#E1E8F0; --sky:#92C5FC; --blue:#3B82F6; --horizon:#1384AD; --mirage:#0F182A;
+  --depth-0:#0A101D; --depth-2:#16233C; --depth-3:#1E2F4F;
+  --paper:#E1E8F0; --paper-2:#EAF0F7; --ink:#0F182A;
+  --text-2:rgba(225,232,240,.64); --text-3:rgba(225,232,240,.40);
+  --line-soft:rgba(225,232,240,.08); --line-strong:rgba(225,232,240,.16);
+  --glow:rgba(146,197,252,.35);
+  --positive:#2FBF9B; --caution:#E8B93E; --critical:#E86A5E;
+  --r-c:8px; --r-card:12px; --r-panel:16px; --r-dock:20px;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Space Grotesk',-apple-system,sans-serif;background:var(--mirage);color:var(--silver);line-height:1.5;padding-bottom:96px}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.045;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E")}
+.wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:0 24px}
+.mono{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3)}
+.tok{font-size:11px;color:var(--horizon);letter-spacing:.02em}
+
+header.page{padding:56px 0 8px;border-bottom:1px solid var(--line-soft);margin-bottom:8px}
+header.page h1{font-size:clamp(28px,4.5vw,44px);font-weight:500;letter-spacing:-.02em;line-height:1.05;margin:10px 0 8px}
+header.page p{color:var(--text-2);max-width:64ch;font-size:14.5px}
+
+section{padding:44px 0 8px}
+section>h2{font-size:21px;font-weight:500;letter-spacing:-.01em;margin:6px 0 4px}
+section>.law{color:var(--text-2);font-size:13.5px;max-width:70ch;margin-bottom:22px}
+section>.law b{color:var(--silver);font-weight:500}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.cell{background:var(--depth-2);border:1px solid var(--line-soft);border-radius:var(--r-panel);padding:20px}
+.cell h3{font-size:13px;font-weight:500;margin-bottom:2px}
+.cell .use{font-size:12px;color:var(--text-2);margin-bottom:14px}
+.demo{display:flex;align-items:center;gap:14px;flex-wrap:wrap;min-height:56px}
+.note{margin-top:12px;padding-top:10px;border-top:1px solid var(--line-soft);font-size:11.5px;color:var(--text-3)}
+
+/* ══ 1. Color distribution ══ */
+.distbar{display:flex;height:56px;border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line-soft);margin-bottom:10px}
+.distbar div{display:flex;align-items:flex-end;padding:8px 10px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.legend{display:flex;flex-wrap:wrap;gap:14px 22px;margin-top:14px}
+.legend .it{display:flex;gap:9px;align-items:center;font-size:12px;color:var(--text-2)}
+.sw{width:14px;height:14px;border-radius:4px;border:1px solid var(--line-strong)}
+
+/* ══ 2. Materiality ══ */
+.mat{position:relative;height:120px;border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line-soft);display:grid;place-items:center}
+.mat .cap{position:absolute;left:12px;bottom:10px}
+.mat.water{background:radial-gradient(120% 130% at 18% -10%, rgba(19,132,173,.5), rgba(15,24,42,0) 55%), linear-gradient(160deg,#13223E, var(--depth-0))}
+.mat.surface{background:var(--depth-2)}
+.mat.surface .step{width:72%;height:56px;background:var(--depth-3);border:1px solid var(--line-strong);border-radius:var(--r-c)}
+.mat.paper{background:var(--paper);color:var(--ink)}
+.mat.paper .cap{color:rgba(15,24,42,.45)}
+.mat.paper table{font-size:12px;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.mat.paper td{padding:4px 14px;border-top:1px solid rgba(15,24,42,.1)}
+.mat.paper td:last-child{text-align:right;font-weight:500}
+.mat.glowm{background:var(--depth-2)}
+.mat.glowm .g{width:120px;text-align:center;font-size:13px;padding:10px;border-radius:var(--r-c);background:rgba(59,130,246,.14);color:var(--sky);box-shadow:0 0 22px var(--glow)}
+
+/* ══ 3. Hierarchy ══ */
+.hier{background:var(--depth-2);border:1px solid var(--line-soft);border-radius:var(--r-panel);padding:28px}
+.hier .lvl{display:grid;grid-template-columns:150px 1fr;gap:18px;align-items:baseline;padding:13px 0;border-bottom:1px solid var(--line-soft)}
+.hier .lvl:last-child{border-bottom:none}
+.h-display{font-size:34px;font-weight:500;letter-spacing:-.02em;line-height:1.05}
+.h-num{font-size:28px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.h-num em{font-style:normal;font-size:12px;color:var(--text-3);letter-spacing:.06em;margin-left:6px;text-transform:uppercase}
+.h-body{font-size:15px}
+.h-sec{font-size:13px;color:var(--text-2)}
+.h-mono{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3)}
+.est{color:var(--horizon);border-bottom:1px dotted var(--horizon)}
+.ver{color:var(--silver)}
+
+/* ══ 4. Buttons ══ */
+.btn{font-family:inherit;font-size:13.5px;font-weight:500;border-radius:var(--r-c);cursor:pointer;transition:all .15s var(--ease);display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 18px;border:none}
+.btn.lg{height:48px;padding:0 24px;font-size:14.5px}
+.btn-pri{color:#fff;background:linear-gradient(135deg,var(--sky) -40%,var(--blue) 45%,var(--horizon) 130%)}
+.btn-pri:hover{transform:scale(1.02);box-shadow:0 0 20px var(--glow)}
+.btn-pri:active{transform:scale(.99);filter:brightness(.9)}
+.btn-sec{color:var(--silver);background:transparent;border:1px solid var(--line-strong)}
+.btn-sec:hover{border-color:var(--sky);color:var(--sky)}
+.btn-ghost{color:var(--text-2);background:transparent;padding:0 6px;position:relative}
+.btn-ghost::after{content:"";position:absolute;left:6px;right:100%;bottom:6px;height:1px;background:var(--sky);transition:right .18s var(--ease)}
+.btn-ghost:hover{color:var(--sky)}
+.btn-ghost:hover::after{right:6px}
+.btn-crit{color:var(--critical);background:transparent;border:1px solid rgba(232,106,94,.4)}
+.btn-crit:hover{border-color:var(--critical);background:rgba(232,106,94,.08)}
+.btn[disabled]{opacity:.4;pointer-events:none}
+.btn .dots{display:inline-flex;gap:4px}
+.btn .dots i{width:5px;height:5px;border-radius:99px;background:#fff;animation:th 1.2s ease-in-out infinite}
+.btn .dots i:nth-child(2){animation-delay:.15s}.btn .dots i:nth-child(3){animation-delay:.3s}
+@keyframes th{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+.btn:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+.kbd{font-size:10px;border:1px solid rgba(255,255,255,.28);border-radius:4px;padding:1px 5px;opacity:.8}
+.chipbtn{font-family:inherit;font-size:12px;color:var(--text-2);background:transparent;border:1px solid var(--line-strong);border-radius:999px;padding:8px 14px;cursor:pointer;transition:all .15s var(--ease)}
+.chipbtn:hover{color:var(--sky);border-color:var(--sky)}
+.chipbtn:active{transform:scale(.97)}
+
+/* ══ 5. Loading ══ */
+.load-hair{position:relative;height:2px;background:var(--line-soft);border-radius:2px;overflow:hidden;width:100%}
+.load-hair::after{content:"";position:absolute;top:0;bottom:0;left:-30%;width:30%;border-radius:2px;background:linear-gradient(90deg,transparent,var(--sky),transparent);animation:sweep 1.6s var(--ease) infinite}
+@keyframes sweep{to{left:100%}}
+.skel{display:flex;flex-direction:column;gap:8px;width:100%}
+.skel i{height:10px;border-radius:5px;background:rgba(225,232,240,.07);animation:skp 1.8s ease-in-out infinite}
+.skel i:nth-child(2){width:80%;animation-delay:.2s}.skel i:nth-child(3){width:55%;animation-delay:.4s}
+@keyframes skp{0%,100%{opacity:.5}50%{opacity:1}}
+canvas.cload{width:72px;height:72px}
+.streamdemo{font-size:13.5px;max-width:34ch}
+.streamdemo span{opacity:0;animation:tok .4s var(--ease) forwards}
+
+/* ══ 6. Icons ══ */
+.icogrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:10px}
+.icocell{background:var(--depth-2);border:1px solid var(--line-soft);border-radius:var(--r-card);aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;transition:border-color .15s var(--ease)}
+.icocell:hover{border-color:var(--line-strong)}
+.icocell span{font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-3)}
+svg.bic{width:24px;height:24px;fill:none;stroke:var(--silver);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+svg.bic circle.t{fill:var(--sky);stroke:none}
+
+/* ══ 7. CTA hierarchy demo ══ */
+.ctademo{background:var(--depth-2);border:1px solid var(--line-soft);border-radius:var(--r-panel);padding:24px;display:flex;flex-direction:column;gap:18px}
+.ctademo .rowd{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.dont{border:1px solid rgba(232,106,94,.35)}
+.tag-ok,.tag-no{font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:999px;align-self:flex-start}
+.tag-ok{color:var(--positive);border:1px solid rgba(47,191,155,.4)}
+.tag-no{color:var(--critical);border:1px solid rgba(232,106,94,.4)}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="page">
+  <span class="mono">Mister · Wings Global Trade · Referencia de implementación UI</span>
+  <h1>Los activos, convertidos en sistema.</h1>
+  <p>Cada regla de esta hoja se deriva directamente del kit de marca: los 5 colores, Space Grotesk, el isotipo molecular, el tramado y los fondos de agua profunda. Esto no es inspiración — es la implicación práctica de cada activo en botones, cargas, iconos, CTAs y jerarquía.</p>
+  <p style="margin-top:10px;font-size:12px;color:var(--horizon)"><b>Alcance:</b> este sistema aplica ÚNICAMENTE a las superficies de Mister (panel, avatar, artefactos, estados de carga, marcadores de presencia). El resto del Tower conserva su identidad propia — Mister nunca re-estiliza la aplicación anfitriona.</p>
+</header>
+
+<!-- ═══════════ 1. COLOR DISTRIBUTION ═══════════ -->
+<section>
+  <h2>1 · Distribución de color</h2>
+  <p class="law">La proporción ES la marca. El fondo de agua profunda enseña la regla: <b>el azul interactivo es un recurso escaso</b> — significa "puedes actuar" o "Mister está pensando". Si una pantalla tiene más de ~5% de azul, dejó de significar algo.</p>
+  <div class="distbar">
+    <div style="width:58%;background:var(--mirage);color:var(--text-3)">Mirage 58%</div>
+    <div style="width:22%;background:var(--depth-2);color:var(--text-3)">Superficies 22%</div>
+    <div style="width:12%;background:var(--silver);color:var(--mirage)">Silver 12%</div>
+    <div style="width:5%;background:var(--blue);color:#fff">5%</div>
+    <div style="width:2%;background:var(--horizon)"></div>
+    <div style="width:1%;background:var(--sky)"></div>
+  </div>
+  <div class="legend">
+    <span class="it"><span class="sw" style="background:var(--mirage)"></span> Mirage #0F182A — el mundo, nunca "un fondo gris"</span>
+    <span class="it"><span class="sw" style="background:var(--depth-2)"></span> Depth 2/3 — elevación sin sombras</span>
+    <span class="it"><span class="sw" style="background:var(--silver)"></span> Silver #E1E8F0 — texto y papel</span>
+    <span class="it"><span class="sw" style="background:var(--blue)"></span> Blue #3B82F6 — SOLO interacción</span>
+    <span class="it"><span class="sw" style="background:var(--horizon)"></span> Horizon #1384AD — datos y estimados</span>
+    <span class="it"><span class="sw" style="background:var(--sky)"></span> Sky #92C5FC — glow, foco, presencia de Mister</span>
+  </div>
+</section>
+
+<!-- ═══════════ 2. MATERIALITY ═══════════ -->
+<section>
+  <h2>2 · Materialidad</h2>
+  <p class="law">Cuatro materiales, cada uno heredado de un activo. <b>La elevación nunca usa sombras</b> — usa un paso de superficie + línea de 1px, como las capas del fondo degradado. La sombra solo existe en overlays.</p>
+  <div class="grid g2">
+    <div>
+      <div class="mat water"><span class="cap mono">Agua — background_01</span></div>
+      <div class="note">Entornos: marco de la app, marketing, estados vacíos. Gradiente radial Horizon→Mirage + grano 4–6%. Nunca enviar el PNG de 4.6MB: se recrea en CSS. <span class="tok">--grad-depth + noise.svg</span></div>
+    </div>
+    <div>
+      <div class="mat surface"><div class="step"></div><span class="cap mono">Superficie — elevación por paso</span></div>
+      <div class="note">Panel sobre panel: <span class="tok">--depth-2 → --depth-3 + hairline --line-soft</span>. Radios fijos: control 8 · card 12 · panel 16 · dock 20.</div>
+    </div>
+    <div>
+      <div class="mat paper">
+        <table><tr><td>FOB</td><td>41,200</td></tr><tr><td>Flete 40HC</td><td>3,800</td></tr><tr><td>IGV + percepción</td><td>2,620</td></tr></table>
+        <span class="cap mono">Papel — datos y documentos</span>
+      </div>
+      <div class="note">Los números viven mejor en papel: tablas, artefactos, fichas. Silver como superficie, Mirage como tinta. El umbral oscuro→papel es el drama visual del Tower.</div>
+    </div>
+    <div>
+      <div class="mat glowm"><div class="g">Inteligencia</div><span class="cap mono">Luz — el glow significa Mister</span></div>
+      <div class="note">El halo <span class="tok">--glow (sky 35%)</span> está RESERVADO: presencia de Mister, etapa activa del journey, foco de teclado. Si todo brilla, nada es inteligente.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 3. HIERARCHY ═══════════ -->
+<section>
+  <h2>3 · Jerarquía práctica</h2>
+  <p class="law">Regla de tensión: en cada vista, <b>una sola cosa habla fuerte</b> (display o cifra) y todo lo demás susurra en mono-data. Los tamaños medios son el enemigo — o protagonista o etiqueta.</p>
+  <div class="hier">
+    <div class="lvl"><span class="tok">display / 500 / -0.02em</span><span class="h-display">El mar, en claro.</span></div>
+    <div class="lvl"><span class="tok">numeral / tabular</span><span class="h-num">USD 47,930 <em>CIF Callao</em></span></div>
+    <div class="lvl"><span class="tok">body / 400 / 15px</span><span class="h-body">Texto de conversación y párrafos. Mister habla aquí, en Silver directo sobre el agua.</span></div>
+    <div class="lvl"><span class="tok">secondary / silver 64%</span><span class="h-sec">Metadatos, subtítulos, contexto que acompaña sin competir.</span></div>
+    <div class="lvl"><span class="tok">mono-data / 11px / caps</span><span class="h-mono">BL COSU-88231 · TC 3.72 · VÁLIDA 7 DÍAS</span></div>
+    <div class="lvl"><span class="tok">confianza tipada</span><span class="h-body">Cifra verificada en <span class="ver"><b>Silver</b></span> · estimada en <span class="est">Horizon punteado</span> — la incertidumbre se VE, nunca se esconde.</span></div>
+  </div>
+</section>
+
+<!-- ═══════════ 4. BUTTONS & CTA ═══════════ -->
+<section>
+  <h2>4 · Botones y CTAs</h2>
+  <p class="law">El degradado del isotipo (<b>Sky→Blue→Horizon, 135°</b>) es exclusivo del CTA primario — por eso un botón primario ya se siente "de Mister" sin logo. <b>Un primario por vista, máximo.</b></p>
+  <div class="grid g2">
+    <div class="cell">
+      <h3>Primario — la acción de la vista</h3>
+      <p class="use">Confirmar cotización, Aprobar, Habla con Mister. Hover: scale 1.02 + glow (el único botón con halo).</p>
+      <div class="demo">
+        <button class="btn btn-pri lg">Habla con Mister</button>
+        <button class="btn btn-pri">Aprobar <span class="kbd">⌘↵</span></button>
+      </div>
+      <div class="note">48px marketing · 40px app · radio <span class="tok">--r-c 8px</span> · texto blanco 500</div>
+    </div>
+    <div class="cell">
+      <h3>Estados del primario</h3>
+      <p class="use">Cargando = 3 puntos del isotipo (nunca spinner). Disabled = 40% sin interacción.</p>
+      <div class="demo">
+        <button class="btn btn-pri"><span class="dots"><i></i><i></i><i></i></span></button>
+        <button class="btn btn-pri" disabled>Confirmar</button>
+        <button class="btn btn-pri" style="outline:2px solid var(--sky);outline-offset:2px">Foco teclado</button>
+      </div>
+      <div class="note">El "cargando" es marca: los puntos son la molécula esperando formarse.</div>
+    </div>
+    <div class="cell">
+      <h3>Secundario y terciario</h3>
+      <p class="use">Secundario: hairline. Terciario/ghost: el subrayado se dibuja al hover (izq→der, 180ms).</p>
+      <div class="demo">
+        <button class="btn btn-sec">Ver cómo funciona</button>
+        <button class="btn btn-ghost">Descargar PDF</button>
+      </div>
+      <div class="note">Nunca dos estilos de énfasis juntos en el mismo grupo de acciones.</div>
+    </div>
+    <div class="cell">
+      <h3>Destructivo y chips</h3>
+      <p class="use">Destructivo: SOLO hairline coral — jamás relleno rojo (rompe el agua). Chips: sugerencias de Mister, máx. 3.</p>
+      <div class="demo">
+        <button class="btn btn-crit">Descartar borrador</button>
+        <button class="chipbtn">¿Dónde está mi contenedor?</button>
+      </div>
+      <div class="note">Chip activo: relleno blue 16% + texto sky. Press: scale .97.</div>
+    </div>
+  </div>
+
+  <h2 style="margin-top:36px">Jerarquía de CTA en contexto</h2>
+  <div class="grid g2" style="margin-top:16px">
+    <div class="ctademo">
+      <span class="tag-ok">Correcto</span>
+      <div class="rowd">
+        <button class="btn btn-pri">Confirmar cotización</button>
+        <button class="btn btn-sec">Editar</button>
+        <button class="btn btn-ghost">Ver historial</button>
+      </div>
+      <div class="note" style="border:none;padding:0">Una decisión clara: 1 primario + apoyo silencioso. El ojo sabe qué hacer en 300ms.</div>
+    </div>
+    <div class="ctademo dont">
+      <span class="tag-no">Nunca</span>
+      <div class="rowd">
+        <button class="btn btn-pri">Confirmar</button>
+        <button class="btn btn-pri">Exportar</button>
+        <button class="btn btn-pri">Enviar</button>
+      </div>
+      <div class="note" style="border:none;padding:0">Tres primarios = cero jerarquía. El degradado deja de significar "la acción".</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 5. LOADING ═══════════ -->
+<section>
+  <h2>5 · Estados de carga — el tramado es el lenguaje</h2>
+  <p class="law">El activo <b>isotipo-tramado</b> (la marca disuelta en grano) define TODA la espera: <b>cargar = materia formándose</b>. Por eso este producto no tiene spinners — tiene condensación.</p>
+  <div class="grid g3">
+    <div class="cell">
+      <h3>Condensación</h3>
+      <p class="use">Carga de página, panel o artefacto: el grano se condensa en la M y se disuelve de nuevo.</p>
+      <div class="demo" style="justify-content:center"><canvas class="cload" id="cload" width="144" height="144"></canvas></div>
+      <div class="note">Canvas 2D · 60 partículas · ciclo 3.2s · reduced-motion: M estática</div>
+    </div>
+    <div class="cell">
+      <h3>Tres puntos</h3>
+      <p class="use">Espera corta en línea: Mister pensando, botón trabajando.</p>
+      <div class="demo" style="justify-content:center"><span class="dots" style="display:inline-flex;gap:5px"><i style="width:7px;height:7px;border-radius:99px;background:var(--sky);animation:th 1.2s ease-in-out infinite"></i><i style="width:7px;height:7px;border-radius:99px;background:var(--sky);animation:th 1.2s ease-in-out .15s infinite"></i><i style="width:7px;height:7px;border-radius:99px;background:var(--sky);animation:th 1.2s ease-in-out .3s infinite"></i></span></div>
+      <div class="note">Los 3 tamaños de punto del isotipo. Cadencia 1.2s — calma, nunca ansiedad.</div>
+    </div>
+    <div class="cell">
+      <h3>Barrido de línea</h3>
+      <p class="use">Progreso indeterminado en toasts, headers de stream, envíos.</p>
+      <div class="demo"><div class="load-hair"></div></div>
+      <div class="note">1–2px, luz sky cruzando el hairline. Jamás barras gruesas.</div>
+    </div>
+    <div class="cell">
+      <h3>Esqueleto de datos</h3>
+      <p class="use">Filas dentro de cards mientras llegan datos reales.</p>
+      <div class="demo"><div class="skel"><i></i><i></i><i></i></div></div>
+      <div class="note">Pulso de opacidad 4–7%. <b>Shimmer prohibido</b> — es lenguaje de template.</div>
+    </div>
+    <div class="cell" style="grid-column:span 2;min-width:230px">
+      <h3>Texto en streaming</h3>
+      <p class="use">Las respuestas de Mister aparecen por fade de tokens (120ms) — sin caret parpadeante, sin máquina de escribir.</p>
+      <div class="demo"><p class="streamdemo" id="streamd">Tu contenedor zarpó anoche. ETA Callao: 12 de septiembre.</p></div>
+      <div class="note">La cadencia la lleva el avatar (pulso), no el texto. Reintento conserva el prompt.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ 6. ICONS ═══════════ -->
+<section>
+  <h2>6 · Iconografía — geometría del isotipo</h2>
+  <p class="law">Los iconos heredan la anatomía de la molécula: <b>trazo 1.5px, terminales redondas, y el detalle firma — un punto sky en un extremo</b>. Un set genérico se vuelve propio con una sola regla.</p>
+  <div class="icogrid">
+    <div class="icocell"><svg class="bic" viewBox="0 0 24 24"><path d="M4 18V9l4 5 4-8 4 8 4-5v9"/><circle class="t" cx="4" cy="18" r="1.8"/></svg><span>mister</span></div>
+    <div class="icocell"><svg class="bic" viewBox="0 0 24 24"><path d="M3 16h13l4-5-4-5H3z"/><circle class="t" cx="20" cy="11" r="1.8"/></svg><span>embarque</span></div>
+    <div class="icocell"><svg class="bic" viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="12" rx="2"/><path d="M4 11h16"/><circle class="t" cx="8" cy="15" r="1.8"/></svg><span>contenedor</span></div>
+    <div class="icocell"><svg class="bic" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/><circle class="t" cx="10" cy="14" r="1.8"/></svg><span>documento</span></div>
+    <div class="icocell"><svg class="bic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 3"/><circle class="t" cx="12" cy="12" r="1.8"/></svg><span>eta</span></div>
+    <div class="icocell"><svg class="bic" viewBox="0 0 24 24"><path d="M4 20 20 4M4 4h6M4 4v6"/><circle class="t" cx="20" cy="4" r="1.8"/></svg><span>enviar</span></div>
+    <div class="icocell"><svg class="bic" viewBox="0 0 24 24"><path d="M5 12l5 5L19 8"/><circle class="t" cx="19" cy="8" r="1.8"/></svg><span>aprobado</span></div>
+    <div class="icocell"><svg class="bic" viewBox="0 0 24 24"><path d="M12 4v10m0 0-4-4m4 4 4-4M5 20h14"/><circle class="t" cx="19" cy="20" r="1.8"/></svg><span>exportar</span></div>
+    <div class="icocell"><svg class="bic" viewBox="0 0 24 24"><path d="M12 20a8 8 0 1 1 8-8"/><circle class="t" cx="20" cy="12" r="1.8"/><path d="M12 8v4l2.5 2.5"/></svg><span>vigilancia</span></div>
+    <div class="icocell"><svg class="bic" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h13"/><circle class="t" cx="18" cy="12" r="1.8"/></svg><span>cola</span></div>
+  </div>
+  <div class="note" style="border:none;margin-top:12px">Caja 24px · escala 16/20/24 · el punto sky marca el "extremo inteligente" del gesto. En estados: punto positivo <span style="color:var(--positive)">●</span> caution <span style="color:var(--caution)">●</span> critical <span style="color:var(--critical)">●</span> — el icono no cambia, el punto sí.</div>
+</section>
+
+<!-- ═══════════ 7. QUICK LAWS ═══════════ -->
+<section>
+  <h2>7 · Leyes rápidas de uso</h2>
+  <div class="grid g2">
+    <div class="cell"><h3>El degradado</h3><p class="use">Solo 3 usos: CTA primario · avatar/isotipo · cifra protagonista de una cotización. Un cuarto uso lo devalúa.</p></div>
+    <div class="cell"><h3>El glow</h3><p class="use">Solo 3 usos: presencia de Mister · etapa activa · foco de teclado. El glow es atención, no decoración.</p></div>
+    <div class="cell"><h3>Horizon</h3><p class="use">El color del dato: cifras estimadas, fuentes, gráficas. Nunca es un botón — Horizon informa, Blue actúa.</p></div>
+    <div class="cell"><h3>El grano</h3><p class="use">4–6% sobre agua, nunca sobre papel. El papel es preciso; el agua es atmósfera.</p></div>
+    <div class="cell"><h3>Bordes</h3><p class="use">Hairline soft (8%) por defecto; strong (16%) para hover/cards importantes. Nunca bordes de 2px salvo foco.</p></div>
+    <div class="cell"><h3>Radios</h3><p class="use">8 control · 12 card · 16 panel · 20 dock · 999 puntos y pills. No existe otro radio.</p></div>
+  </div>
+</section>
+
+</div>
+
+<script>
+/* Condensation loader: grain → M → grain (cycle) */
+(function(){
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const c = document.getElementById('cload'), x = c.getContext('2d');
+  const W = c.width, H = c.height;
+  const M = [
+    [.30,.62],[.30,.44],[.38,.36],[.46,.46],[.50,.56],[.54,.46],[.62,.36],[.70,.44],[.70,.62],
+    [.50,.16],[.18,.30],[.82,.30],[.10,.50],[.90,.50],[.28,.78],[.72,.78],[.50,.88]
+  ];
+  const N = 60;
+  const parts = Array.from({length:N},(_,i)=>{
+    const home = M[i % M.length];
+    return {
+      hx: home[0]*W, hy: home[1]*H,
+      sx: Math.random()*W, sy: Math.random()*H,
+      r: (i%M.length<9? 4.6:2.6) * (W/144),
+      ph: Math.random()*6.28
+    };
+  });
+  function col(t){const a=[146,197,252],b=[19,132,173];return `rgb(${a.map((v,i)=>Math.round(v+(b[i]-v)*t)).join(',')})`}
+  const ease = t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+  let t0=performance.now();
+  function frame(now){
+    const cycle = 3.2, t = ((now-t0)/1000)%cycle;
+    // 0-1.1 condense · 1.1-2.1 hold · 2.1-3.2 dissolve
+    let k;
+    if(t<1.1) k = ease(t/1.1);
+    else if(t<2.1) k = 1;
+    else k = 1-ease((t-2.1)/1.1);
+    if(reduced) k = 1;
+    x.clearRect(0,0,W,H);
+    parts.forEach(p=>{
+      const jx = reduced?0:Math.sin(now/900+p.ph)*1.2*(1-k*.7);
+      const jy = reduced?0:Math.cos(now/700+p.ph)*1.2*(1-k*.7);
+      const px = p.sx+(p.hx-p.sx)*k+jx, py = p.sy+(p.hy-p.sy)*k+jy;
+      x.globalAlpha = .35+.65*k;
+      x.fillStyle = col((p.hx/W+p.hy/H)/2);
+      x.beginPath();x.arc(px,py,p.r*(.6+.4*k),0,6.283);x.fill();
+    });
+    x.globalAlpha=1;
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  /* streaming text demo: re-run fade every 4s */
+  const el = document.getElementById('streamd');
+  const text = el.textContent; el.textContent='';
+  const words = text.split(' ');
+  el.innerHTML = words.map((w,i)=>`<span style="animation-delay:${i*90}ms">${w}</span>`).join(' ');
+  const style = document.createElement('style');
+  style.textContent = '@keyframes tok{to{opacity:1}}';
+  document.head.appendChild(style);
+  if(!reduced) setInterval(()=>{
+    el.querySelectorAll('span').forEach((s,i)=>{s.style.animation='none';void s.offsetWidth;s.style.animation=`tok .4s cubic-bezier(.22,1,.36,1) ${i*90}ms forwards`;});
+  },4200);
+})();
+</script>
+</body>
+</html>

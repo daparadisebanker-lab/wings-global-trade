@@ -3,12 +3,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties, KeyboardEvent as ReactKeyboardEvent, ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
+import Link from 'next/link'
 import { cn } from '@wings/trade-ui'
 import { CommandPalette } from './CommandPalette'
 import { toggleTheme } from './theme'
 import { LaneSwitcher } from './LaneSwitcher'
-import { MisterDock } from './MisterDock'
 import { MisterMark } from './MisterMark'
+import { MisterProvider } from './mister/MisterProvider'
+import { MisterCockpit } from './mister/MisterCockpit'
 import { OnboardingBanner } from './OnboardingBanner'
 import { RouteProgress } from './RouteProgress'
 import { TopBar } from './TopBar'
@@ -18,30 +20,52 @@ import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import { useActiveTool } from '@/shell/navigation/useActiveTool'
 import { resolveActiveTool } from '@/shell/navigation/registry'
 import { recordRecent } from '@/shell/navigation/recents'
-import { GreetingBar } from '@/shell/frame/GreetingBar'
 import { Dock } from '@/shell/dock/Dock'
 import { ControlCenterGrid, ControlCenterStatus } from '@/shell/control-center/ControlCenter'
+import { NavSidebar } from '@/shell/navigation/NavSidebar'
 
 /** Location strip — TOWER › Módulo › subpágina, derived from the path so you
- *  always know where you are. Ids/numbers in the path are omitted. */
+ *  always know where you are. Ids/numbers in the path are omitted. Ancestor
+ *  crumbs are links (retrace one level); the current location stays a label. */
+const CRUMB_LINK =
+  'rounded-sm underline-offset-2 hover:text-ink-primary hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lane-accent'
+
 function Breadcrumb({ locale }: { locale: Locale }) {
   const pathname = usePathname()
   const mod = useActiveTool()
   const sub = pathname.split('/').filter(Boolean)[1]
   const isId = !!sub && (/^[0-9a-f-]{8,}$/i.test(sub) || /^\d+$/.test(sub))
+  const hasSub = !!sub && !isId
   return (
     <div className="flex items-center gap-2 border-b border-line bg-surface-1 px-4 py-2.5 font-mono text-label uppercase tracking-[0.14em] text-ink-secondary">
-      <span className="text-gold">TOWER</span>
+      {/* TOWER → home cockpit; a link whenever it is an ancestor (a module is active). */}
+      {mod ? (
+        <Link href="/signals" className={`text-gold ${CRUMB_LINK}`}>
+          TOWER
+        </Link>
+      ) : (
+        <span className="text-gold" aria-current="page">
+          TOWER
+        </span>
+      )}
       {mod ? (
         <>
           <span aria-hidden>›</span>
-          <span className="text-ink-primary">{t(mod.label, locale)}</span>
+          {hasSub ? (
+            <Link href={mod.href} className={`text-ink-primary ${CRUMB_LINK}`}>
+              {t(mod.label, locale)}
+            </Link>
+          ) : (
+            <span className="text-ink-primary" aria-current="page">
+              {t(mod.label, locale)}
+            </span>
+          )}
         </>
       ) : null}
-      {sub && !isId ? (
+      {hasSub ? (
         <>
           <span aria-hidden>›</span>
-          <span>{sub.replace(/-/g, ' ')}</span>
+          <span aria-current="page">{sub.replace(/-/g, ' ')}</span>
         </>
       ) : null}
     </div>
@@ -60,6 +84,7 @@ function Breadcrumb({ locale }: { locale: Locale }) {
  */
 export function ShellChrome({
   memberships,
+  userName,
   userEmail,
   isGroupAdmin = false,
   hasRbMembership = false,
@@ -67,6 +92,7 @@ export function ShellChrome({
   children,
 }: {
   memberships: LaneMembership[]
+  userName: string | null
   userEmail: string | null
   isGroupAdmin?: boolean
   hasRbMembership?: boolean
@@ -75,7 +101,6 @@ export function ShellChrome({
 }) {
   const [activeLaneId, setActiveLaneId] = useState<string | null>(memberships[0]?.laneId ?? null)
   const [paletteOpen, setPaletteOpen] = useState(false)
-  const [collapsed, setCollapsed] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [misterOpen, setMisterOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
@@ -84,6 +109,11 @@ export function ShellChrome({
   const [dockPinned, setDockPinned] = useState(true)
   const railRef = useRef<HTMLElement>(null)
   const restoreFocusRef = useRef<HTMLElement | null>(null)
+  // On /intelligence the cockpit is rendered inline (page mode); mounting the
+  // overlay cockpit there too would put TWO editor hosts on one artifact seq and
+  // corrupt the canvas working memory. This ref lets the (mount-once) key handler
+  // read the current route so ⌘J is a no-op on that page.
+  const onCockpitPageRef = useRef(false)
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -91,10 +121,12 @@ export function ShellChrome({
         e.preventDefault()
         setPaletteOpen((v) => !v)
       }
-      // ⌘J / Ctrl-J summons Mister — the copilot dock (the palette is ⌘K).
+      // ⌘J / Ctrl-J summons Mister — the copilot cockpit overlay (the palette is
+      // ⌘K). On /intelligence the cockpit is already the page, so ⌘J is a no-op
+      // there (opening the overlay too would double-mount the editors).
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'j') {
         e.preventDefault()
-        setMisterOpen((v) => !v)
+        if (!onCockpitPageRef.current) setMisterOpen((v) => !v)
       }
       // ⌘. toggles the desktop Dock between pinned and auto-hidden.
       if ((e.metaKey || e.ctrlKey) && e.key === '.') {
@@ -172,6 +204,10 @@ export function ShellChrome({
 
   // Drives the page-transition replay (keys <main>) — the frame's route change.
   const pathname = usePathname()
+  // /intelligence renders the cockpit inline (page mode) — never mount the overlay
+  // cockpit there too (one editor host per artifact seq; see onCockpitPageRef).
+  const onCockpitPage = pathname === '/intelligence'
+  onCockpitPageRef.current = onCockpitPage
   const roles = useMemo(() => memberships.map((m) => m.role) as Role[], [memberships])
   const visible = useMemo(
     () => visibleModules(roles, isGroupAdmin, hasRbMembership),
@@ -198,6 +234,15 @@ export function ShellChrome({
     })
   }, [pathname])
 
+  // A hand-off / nav link INSIDE the full-bleed Mister overlay navigates the page
+  // behind it; without dismissing the cockpit the destination stays hidden under the
+  // z-60 overlay and the link looks dead (the top "buttons don't work" report). Close
+  // it on every route change — its conversation/draft state lives in MisterProvider and
+  // survives navigation, so nothing is lost.
+  useEffect(() => {
+    setMisterOpen(false)
+  }, [pathname])
+
   const activeLane = memberships.find((m) => m.laneId === activeLaneId) ?? null
   const rootStyle = activeLane?.accent
     ? ({ '--lane-accent': activeLane.accent } as CSSProperties)
@@ -221,6 +266,7 @@ export function ShellChrome({
       data-dock-pinned={dockPinned}
       className="tower-premium-ground min-h-screen bg-surface-0 text-ink-primary"
     >
+     <MisterProvider locale={DEFAULT_LOCALE}>
       <RouteProgress />
       <div className="flex min-h-screen">
         {/* Mobile drawer backdrop */}
@@ -242,100 +288,58 @@ export function ShellChrome({
           aria-label={isMobile ? t({ es: 'Menú de navegación', en: 'Navigation menu' }, DEFAULT_LOCALE) : undefined}
           className={cn(
             'tower-rail fixed inset-y-0 left-0 z-40 flex w-[86vw] max-w-80 flex-col overflow-y-auto border-r border-line bg-surface-1 transition-transform duration-200',
-            'md:sticky md:top-0 md:z-auto md:h-screen md:max-w-none',
-            collapsed ? 'md:w-16' : 'md:w-64',
+            'md:sticky md:top-0 md:z-auto md:h-screen md:max-w-none md:w-64',
             drawerOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
-            // P4b: the Dock is the desktop nav → retire the rail on desktop. Kept
-            // for a zero-module operator (their designed empty note lives here).
-            // Below md the aside stays the off-canvas drawer, untouched.
-            visible.size > 0 && 'md:hidden',
+            // Phase C: the desktop module sidebar (labeled, expandable) lives here
+            // now — kept alongside the Dock (decision: both surfaces). Below md the
+            // aside stays the off-canvas drawer, untouched.
           )}
         >
           <div className="flex items-center border-b border-line p-4">
-            {collapsed ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src="/brand/wings-isotipo.webp" alt="Wings Global Trade" className="mx-auto h-7 w-7" />
-            ) : (
-              <div className="flex flex-col gap-2.5">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/brand/wings-imagotipo.svg" alt="Wings Global Trade" className="h-8 w-auto" />
-                <span className="flex items-center gap-2 font-mono text-label uppercase tracking-[0.18em] text-ink-secondary">
-                  <span aria-hidden className="inline-block h-1.5 w-1.5 bg-gold" />
-                  Admin Portal
-                </span>
-              </div>
-            )}
+            <div className="flex flex-col gap-2.5">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brand/wings-imagotipo.svg" alt="Wings Global Trade" className="h-8 w-auto" />
+              <span className="flex items-center gap-2 font-mono text-label uppercase tracking-[0.18em] text-ink-secondary">
+                <span aria-hidden className="inline-block h-1.5 w-1.5 bg-gold" />
+                Admin Portal
+              </span>
+            </div>
           </div>
 
-          {!collapsed ? (
-            <LaneSwitcher lanes={memberships} activeLaneId={activeLaneId} onSelect={setActiveLaneId} />
-          ) : null}
+          <LaneSwitcher lanes={memberships} activeLaneId={activeLaneId} onSelect={setActiveLaneId} />
 
-          {/* Mobile Control Center: the module grid (registry-driven) + a
-              quick-status row (greeting/identity + theme toggle). This is the
-              mobile nav now — the aside is mobile-only after P4b. The `md:hidden`
-              gate keeps the zero-module empty note reachable on desktop. */}
-          <div className={visible.size > 0 ? 'md:hidden' : undefined}>
-            <ControlCenterGrid visible={visible} onNavigate={() => setDrawerOpen(false)} />
-          </div>
+          {/* Mobile: the Control Center module grid (registry-driven) + a dedicated
+              Mister entry that opens the immersive overlay (the copilot), so
+              "selecting Mister" here matches the desktop floating door / ⌘J. */}
           <div className="md:hidden">
-            <ControlCenterStatus userEmail={userEmail} />
-          </div>
-
-          {/* Footer — Mister entry (drawer-only; on desktop the floating launcher
-              + ⌘J cover it). Collapse is gone (module list moved to the Dock). */}
-          <div className="mt-auto flex flex-col md:hidden">
-            {/* Mister — a persistent rail entry (the dock is also ⌘J + the floating
-                door). Its own mark, so it reads as the copilot, not a module. */}
-            <button
-              type="button"
-              onClick={() => {
+            <ControlCenterGrid
+              visible={visible}
+              onNavigate={() => setDrawerOpen(false)}
+              onOpenMister={() => {
                 setMisterOpen(true)
                 setDrawerOpen(false)
               }}
-              aria-label={t({ es: 'Abrir Mister (⌘J)', en: 'Open Mister (⌘J)' }, DEFAULT_LOCALE)}
-              className={cn(
-                'group flex items-center gap-3 border-t border-line px-4 py-3 text-ink-secondary transition-colors hover:text-ink-primary',
-                collapsed && 'justify-center px-0',
-              )}
-            >
-              <MisterMark size={20} className="shrink-0" />
-              {!collapsed ? (
-                <>
-                  <span className="font-mono text-label uppercase tracking-[0.12em]">Mister</span>
-                  <span
-                    data-kbd-hint
-                    className="ml-auto font-mono text-label tracking-[0.1em] text-ink-secondary group-hover:text-ink-primary"
-                  >
-                    ⌘J
-                  </span>
-                </>
-              ) : null}
-            </button>
-            <button
-              type="button"
-              onClick={() => setCollapsed((v) => !v)}
-              aria-label={
-                collapsed
-                  ? t({ es: 'Expandir menú', en: 'Expand menu' }, DEFAULT_LOCALE)
-                  : t({ es: 'Colapsar menú', en: 'Collapse menu' }, DEFAULT_LOCALE)
-              }
-              className="hidden items-center gap-2 border-t border-line px-4 py-3 font-mono text-label uppercase tracking-[0.12em] text-ink-secondary transition-colors hover:text-ink-primary md:flex"
-            >
-              <span aria-hidden>{collapsed ? '»' : '«'}</span>
-              {!collapsed ? <span>{t({ es: 'Colapsar', en: 'Collapse' }, DEFAULT_LOCALE)}</span> : null}
-            </button>
+            />
+          </div>
+          {/* Desktop: the labeled module sidebar with expandable per-module quick
+              actions (Phase C) — the calm counterpart to the Dock's quick-launch. */}
+          <div className="hidden md:block">
+            <NavSidebar visible={visible} />
+          </div>
+          <div className="mt-auto md:hidden">
+            <ControlCenterStatus userName={userName} userEmail={userEmail} active={drawerOpen} />
           </div>
         </aside>
 
         <div className="flex min-h-screen min-w-0 flex-1 flex-col">
           <TopBar
+            userName={userName}
             userEmail={userEmail}
             isGroupAdmin={isGroupAdmin}
             onOpenSearch={() => setPaletteOpen(true)}
             onOpenMenu={() => setDrawerOpen(true)}
+            hasModules={visible.size > 0}
           />
-          <GreetingBar userEmail={userEmail} />
           <Breadcrumb locale={DEFAULT_LOCALE} />
           {needsOnboarding ? <OnboardingBanner /> : null}
           {/* overflow-x-clip: a mobile safety net — no page-wide horizontal
@@ -377,9 +381,11 @@ export function ShellChrome({
         onSelectLane={setActiveLaneId}
       />
 
-      {/* Mister — the copilot dock (World B) + its floating door. The launcher
-          hides while the dock is open so they never overlap. */}
-      {!misterOpen && !drawerOpen ? (
+      {/* Mister — the full-width production cockpit (World B) + its floating door.
+          The launcher hides while the cockpit is open so they never overlap, and
+          on /intelligence (where the cockpit IS the page) both are suppressed so
+          only one editor host exists per artifact. */}
+      {!misterOpen && !drawerOpen && !onCockpitPage ? (
         <button
           type="button"
           onClick={() => setMisterOpen(true)}
@@ -390,7 +396,8 @@ export function ShellChrome({
           <MisterMark size={26} />
         </button>
       ) : null}
-      <MisterDock open={misterOpen} onClose={() => setMisterOpen(false)} />
+      {!onCockpitPage ? <MisterCockpit mode="overlay" open={misterOpen} onClose={() => setMisterOpen(false)} /> : null}
+     </MisterProvider>
     </div>
   )
 }

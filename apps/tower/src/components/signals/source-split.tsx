@@ -11,7 +11,7 @@ import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import type { SourceSlice } from '@/lib/actions/signals'
 import { formatInt } from './format'
 
-const AXIS_TICK = { fill: 'var(--ink-secondary)', fontFamily: 'var(--font-mono)', fontSize: 11 } as const
+const AXIS_TICK = { fill: 'var(--ink-secondary)', fontFamily: 'var(--font-mono)', fontSize: 'var(--type-label)' } as const
 
 // Token colours by source key — amber/green carry it, ink-secondary is neutral.
 const FILL_BY_KEY: Record<string, string> = {
@@ -47,7 +47,7 @@ export function SourceSplit({
                   border: '1px solid var(--line)',
                   borderRadius: 0,
                   fontFamily: 'var(--font-mono)',
-                  fontSize: 11,
+                  fontSize: 'var(--type-label)',
                   color: 'var(--ink-primary)',
                 }}
                 formatter={(value: number) => [formatInt(value, locale), t({ es: 'Solicitudes', en: 'Requests' }, locale)]}

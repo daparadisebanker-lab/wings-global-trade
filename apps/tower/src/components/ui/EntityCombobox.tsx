@@ -125,7 +125,7 @@ export function EntityCombobox({
     <div ref={rootRef} className={cn('relative', className)}>
       <div
         className={cn(
-          'flex items-center rounded-card border bg-surface-0',
+          'flex items-center rounded-control border bg-surface-0',
           disabled ? 'border-line opacity-50' : 'border-line focus-within:border-lane-accent',
         )}
       >
@@ -171,7 +171,7 @@ export function EntityCombobox({
         <ul
           id={listId}
           role="listbox"
-          className="tower-fade absolute z-20 mt-1 max-h-64 w-full overflow-y-auto border border-line bg-surface-1"
+          className="material-panel tower-fade absolute z-20 mt-1 max-h-64 w-full overflow-y-auto rounded-card-lg"
         >
           {loading ? (
             <li role="presentation" className="px-3 py-2 font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">

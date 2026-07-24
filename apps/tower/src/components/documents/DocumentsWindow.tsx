@@ -37,12 +37,12 @@ export function DocumentsWindow({ items, locale }: { items: DocumentListItem[]; 
           {TAG}
         </span>
         <div className="flex items-baseline justify-between gap-4">
-          <h1 className="text-h2 font-semibold">{t(TITLE, locale)}</h1>
+          <h1 className="font-display text-t3 text-ink-primary">{t(TITLE, locale)}</h1>
           <span className="font-mono text-label text-ink-secondary" data-numeric>
             {items.length}
           </span>
         </div>
-        <p className="max-w-prose text-body-sm text-ink-secondary">
+        <p className="max-w-prose text-t0 text-ink-secondary">
           {t(
             {
               es: 'El drive de cada marca y lane: fichas técnicas, docs de proveedor, certificados y cotizaciones. Mister podrá consultarlos.',
@@ -57,7 +57,7 @@ export function DocumentsWindow({ items, locale }: { items: DocumentListItem[]; 
       </header>
 
       {items.length === 0 ? (
-        <div className="rounded-card border border-hairline bg-surface-1 p-8 text-center text-body-sm text-ink-secondary">
+        <div className="rounded-card border border-line-hairline bg-surface-1 p-8 text-center text-t0 text-ink-secondary">
           {t(
             { es: 'Todavía no hay documentos. Sube el primero.', en: 'No documents yet. Upload the first one.' },
             locale,
@@ -68,7 +68,7 @@ export function DocumentsWindow({ items, locale }: { items: DocumentListItem[]; 
           {/* Mobile: one card per document. */}
           <ul className="flex flex-col gap-3 md:hidden">
             {items.map((d) => (
-              <li key={d.id} className="flex flex-col gap-2 rounded-card border border-hairline bg-surface-1 p-4">
+              <li key={d.id} className="flex flex-col gap-2 rounded-card border border-line-hairline bg-surface-1 p-4">
                 <div className="flex items-start justify-between gap-3">
                   <span className="truncate font-medium text-ink-primary">{d.title}</span>
                   <span className="shrink-0 font-mono text-label uppercase tracking-[0.08em] text-accent">
@@ -81,7 +81,7 @@ export function DocumentsWindow({ items, locale }: { items: DocumentListItem[]; 
                   <span data-numeric>{formatBytes(d.sizeBytes)}</span>
                   <span data-numeric>{d.createdAt.slice(0, 10)}</span>
                 </div>
-                <div className="border-t border-hairline pt-2">
+                <div className="border-t border-line-hairline pt-2">
                   <DocumentActions id={d.id} locale={locale} />
                 </div>
               </li>
@@ -89,10 +89,10 @@ export function DocumentsWindow({ items, locale }: { items: DocumentListItem[]; 
           </ul>
 
           {/* Desktop: the table. */}
-          <div className="hidden overflow-x-auto rounded-card border border-hairline md:block">
-            <table className="w-full border-collapse text-body-sm">
+          <div className="hidden overflow-x-auto rounded-card border border-line-hairline md:block">
+            <table className="w-full border-collapse text-t0">
               <thead>
-                <tr className="border-b border-hairline text-left font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
+                <tr className="border-b border-line-hairline text-left font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
                   <Cell>{t({ es: 'Título', en: 'Title' }, locale)}</Cell>
                   <Cell>{t({ es: 'Tipo', en: 'Kind' }, locale)}</Cell>
                   <Cell>{t({ es: 'Marca', en: 'Brand' }, locale)}</Cell>
@@ -104,7 +104,7 @@ export function DocumentsWindow({ items, locale }: { items: DocumentListItem[]; 
               </thead>
               <tbody>
                 {items.map((d) => (
-                  <tr key={d.id} className="border-b border-hairline last:border-0 hover:bg-surface-2">
+                  <tr key={d.id} className="border-b border-line-hairline last:border-0 hover:bg-surface-2">
                     <Cell className="font-medium text-ink-primary">{d.title}</Cell>
                     <Cell className="font-mono uppercase text-ink-secondary">{t(KIND_LABEL[d.kind], locale)}</Cell>
                     <Cell className="font-mono text-ink-secondary">{d.brandName ?? '—'}</Cell>

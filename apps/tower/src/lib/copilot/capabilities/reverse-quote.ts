@@ -15,102 +15,18 @@
 import { INTELLIGENCE_MODELS } from '@/lib/ai/types'
 import { extractJsonObject } from '@/lib/ai/parse'
 import type { IntelligenceClient } from '@/lib/ai/client'
-import { computeImportCost, DEFAULT_INPUTS } from '@/lib/costing/engine'
-import type { FuelType, ImportInputs, ImportResult, Incoterm } from '@/lib/costing/types'
-import { textResult, type Capability, type CopilotResult } from '../types'
+import { DEFAULT_INPUTS } from '@/lib/costing/engine'
+import type { FuelType, ImportInputs, Incoterm } from '@/lib/costing/types'
+import { solveReverseQuote, type MarginKind } from '../reverse-quote-solve'
+import { inheritedCostingLabels, safeSeq } from '../canvas-seed'
+import { textResult, type Capability, type CanvasContext, type CopilotResult } from '../types'
 
-// ── Solver (PURE — no model, no SDK: unit-tested in reverse-quote.test.ts) ────
-
-/** Which margin the operator is targeting. */
-export type MarginKind = 'bruto' | 'neto_caja'
-
-/** Convergence band for the numeric solve: 0.1 percentage points. */
-export const MARGIN_TOLERANCE = 0.001
-
-/** The solved answer — the price plus the margin the engine actually achieves at it. */
-export interface ReverseQuoteSolution {
-  /** Final sale price incl. IGV ventas, USD — the number quoted to the buyer. */
-  salePrice: number
-  /** Margin the engine achieves at `salePrice`, as a decimal fraction. */
-  achievedPct: number
-  /** The full engine result at the solved price (landed, cash outlay, taxes…). */
-  result: ImportResult
-}
-
-/** Read the requested margin off an engine result as a decimal fraction. */
-function readMargin(result: ImportResult, kind: MarginKind): number {
-  return kind === 'bruto' ? result.margenBrutoPct : result.margenNetoCajaPct
-}
-
-/**
- * Solve for the sale price that hits `targetPct` (decimal fraction) of the given
- * margin kind, against `baseInputs` (whose margin fields are overwritten here).
- * Gross → direct engine input; net-cash → bisection. Always returns the engine's
- * own achieved margin at the solved price, so the caller can show honestly how
- * close it landed (the net-cash band, or the gross floor, can bind).
- */
-export function solveSalePriceForMargin(
-  baseInputs: ImportInputs,
-  marginKind: MarginKind,
-  targetPct: number,
-): ReverseQuoteSolution {
-  // Gross margin is a native engine input → solve in one shot.
-  if (marginKind === 'bruto') {
-    const result = computeImportCost({
-      ...baseInputs,
-      marginMode: 'percent',
-      marginPercent: targetPct,
-    })
-    return { salePrice: result.salePriceFinal, achievedPct: result.margenBrutoPct, result }
-  }
-
-  // Net-cash margin is only an engine OUTPUT → bisection on the final sale price.
-  // landedCost is independent of the sale price, so one probe bounds the search.
-  const landed = computeImportCost({
-    ...baseInputs,
-    marginMode: 'target_price',
-    targetSalePrice: baseInputs.fob,
-  }).landedCost
-
-  let lo = landed
-  let hi = landed * 5
-  let result = computeImportCost({
-    ...baseInputs,
-    marginMode: 'target_price',
-    targetSalePrice: hi,
-  })
-
-  for (let i = 0; i < 40; i++) {
-    const mid = (lo + hi) / 2
-    result = computeImportCost({ ...baseInputs, marginMode: 'target_price', targetSalePrice: mid })
-    const achieved = readMargin(result, marginKind)
-    if (Math.abs(achieved - targetPct) <= MARGIN_TOLERANCE) break
-    // Margin rises monotonically with the sale price.
-    if (achieved < targetPct) lo = mid
-    else hi = mid
-  }
-
-  return { salePrice: result.salePriceFinal, achievedPct: readMargin(result, marginKind), result }
-}
-
-// ── Renderer payload ─────────────────────────────────────────────────────────
-
-/** What the 'reverse-quote' renderer draws — exported so the renderer casts to it. */
-export interface ReverseQuoteData {
-  marginKind: MarginKind
-  /** Target margin, decimal fraction (e.g. 0.22). */
-  targetPct: number
-  /** Achieved margin at the solved price, decimal fraction. */
-  achievedPct: number
-  /** Whether the engine landed within 0.1pp of target (net-cash can be capped). */
-  onTarget: boolean
-  /** Final sale price incl. IGV ventas, USD. */
-  salePrice: number
-  landedCost: number
-  cashOutlay: number
-  fob: number
-  incoterm: Incoterm
-}
+// The solver + payload types live in a pure, CLIENT-SAFE module so the canvas
+// editor can import them without pulling this capability's LLM graph into the
+// browser bundle (Fable review finding 7). Re-exported here so tests + renderers
+// import from the capability unchanged.
+export { MARGIN_TOLERANCE, solveSalePriceForMargin, solveReverseQuote } from '../reverse-quote-solve'
+export type { MarginKind, ReverseQuoteSolution, ReverseQuoteData } from '../reverse-quote-solve'
 
 // ── Extraction (model → params) ──────────────────────────────────────────────
 
@@ -122,17 +38,19 @@ el sistema resuelve la aritmética con el motor de costos SUNAT.
 Responde SOLO con un objeto JSON, sin texto alrededor, con esta forma exacta:
 {
   "understood": boolean,
-  "marginPct": number|null,             // el margen objetivo tal como lo dijo el operador (ej. 22 para 22%)
-  "marginKind": "bruto"|"neto_caja",    // "bruto"=margen bruto; "neto_caja"=margen neto de caja. Si no lo aclara, usa "bruto".
+  "marginPct": number|null,             // el margen objetivo tal como lo dijo el operador (ej. 22 para 22%); null si no lo repite
+  "marginKind": "bruto"|"neto_caja"|null, // null si el operador no lo aclara (se hereda del lienzo, o "bruto" por defecto)
   "fob": number|null,                    // el costo base declarado (FOB, o el valor CFR/CIF/EXW). null si no lo dieron.
-  "incoterm": "EXW"|"FOB"|"CFR"|"CIF",  // el incoterm del valor dado; usa "FOB" si no se especifica.
-  "fuelType": "gasoline"|"diesel"|"hybrid"|"electric",  // para el ISC; usa "gasoline" si no se dice.
+  "incoterm": "EXW"|"FOB"|"CFR"|"CIF"|null, // null si el operador no lo menciona
+  "fuelType": "gasoline"|"diesel"|"hybrid"|"electric"|null,  // null si el operador no lo menciona
   "engineCC": number|null,               // cilindrada del motor para el ISC; null si no aplica.
-  "note": string                         // nota breve en español.
+  "note": string                         // nota breve EN EL IDIOMA de la frase del operador (español o inglés).
 }
 
 Reglas: "margen neto", "neto de caja", "net cash", "net margin" → "neto_caja".
 "margen bruto", "bruto", "gross" → "bruto". Interpreta separadores de miles (78,400 → 78400).
+En una PREGUNTA DE SEGUIMIENTO el operador puede cambiar UN SOLO campo ("¿y con 25%?", "¿y sobre un
+FOB de 50,000?"); deja en null todo lo que NO repita — el sistema hereda el resto del lienzo.
 Si la frase NO pide un precio de venta para un margen objetivo, devuelve understood=false con una "note" breve en español.`
 
 const FUELS: readonly FuelType[] = ['gasoline', 'diesel', 'hybrid', 'electric']
@@ -141,18 +59,21 @@ const INCOTERMS: readonly Incoterm[] = ['EXW', 'FOB', 'CFR', 'CIF']
 function num(v: unknown): number | null {
   return typeof v === 'number' && Number.isFinite(v) ? v : null
 }
-/** Normalize a stated margin to a decimal fraction: 22 → 0.22, 0.22 → 0.22. */
+/** Normalize a stated margin to a decimal fraction by MAGNITUDE: 22 → 0.22,
+ *  0.22 → 0.22, −5 → −0.05 (a negative net-cash target is legitimate). */
 function normalizePct(raw: number): number {
-  return raw > 1 ? raw / 100 : raw
+  return Math.abs(raw) > 1 ? raw / 100 : raw
 }
-function fuelOf(v: unknown): FuelType {
-  return FUELS.includes(v as FuelType) ? (v as FuelType) : DEFAULT_INPUTS.fuelType
+// Nullable so run() can tell "operator stated it" from "operator left it unset"
+// (and inherit the canvas value on a follow-up) rather than force a default.
+function fuelOf(v: unknown): FuelType | null {
+  return FUELS.includes(v as FuelType) ? (v as FuelType) : null
 }
-function incotermOf(v: unknown): Incoterm {
-  return INCOTERMS.includes(v as Incoterm) ? (v as Incoterm) : 'FOB'
+function incotermOf(v: unknown): Incoterm | null {
+  return INCOTERMS.includes(v as Incoterm) ? (v as Incoterm) : null
 }
-function marginKindOf(v: unknown): MarginKind {
-  return v === 'neto_caja' ? 'neto_caja' : 'bruto'
+function marginKindOf(v: unknown): MarginKind | null {
+  return v === 'neto_caja' ? 'neto_caja' : v === 'bruto' ? 'bruto' : null
 }
 
 export const reverseQuoteCapability: Capability = {
@@ -166,7 +87,7 @@ export const reverseQuoteCapability: Capability = {
       'What sale price hits a 25% gross margin on a $40,000 CIF?',
     ],
   },
-  async run(client: IntelligenceClient, text: string): Promise<CopilotResult> {
+  async run(client: IntelligenceClient, text: string, _attachment, context?: CanvasContext): Promise<CopilotResult> {
     const raw = await client.complete({
       model: INTELLIGENCE_MODELS.reason,
       system: SYSTEM,
@@ -183,44 +104,61 @@ export const reverseQuoteCapability: Capability = {
       )
     }
 
-    const fob = num(obj.fob)
-    if (fob === null || fob <= 0) {
+    // Chained ask: inherit the canvas's tuned base from the artifact the operator
+    // was on, else the app SUNAT defaults. Resolve BEFORE the guards so a follow-up
+    // that keeps the price or the margin need not restate it.
+    const ctxBase = context?.kind === 'costing' ? context.inputs : null
+
+    const statedFob = num(obj.fob)
+    const effFob = statedFob !== null && statedFob > 0 ? statedFob : ctxBase && ctxBase.fob > 0 ? ctxBase.fob : null
+    if (effFob === null) {
       return textResult(
         'Necesito el costo base (FOB, o el valor CIF/CFR). / I need the cost basis (FOB, or the CIF/CFR value).',
       )
     }
 
-    const marginRaw = num(obj.marginPct)
-    if (marginRaw === null || marginRaw === 0) {
+    const statedMargin = num(obj.marginPct)
+    // Inherit a gross target from the canvas (net-cash pins a price, not a %, so it
+    // is not inheritable as a margin — the operator restates it).
+    const ctxTargetPct = ctxBase && ctxBase.marginMode === 'percent' && ctxBase.marginPercent > 0 ? ctxBase.marginPercent : null
+    const targetPct = statedMargin !== null && statedMargin !== 0 ? normalizePct(statedMargin) : ctxTargetPct
+    if (targetPct === null || targetPct === 0) {
       return textResult(
         '¿Qué margen objetivo? Dame el % (bruto o neto de caja). / What target margin? Give me the % (gross or net-cash).',
       )
     }
 
-    const marginKind = marginKindOf(obj.marginKind)
-    const targetPct = normalizePct(marginRaw)
-    const incoterm = incotermOf(obj.incoterm)
+    // Merge context OVER defaults so a partial/hostile context can never leave a
+    // required field undefined reaching the engine.
+    const base = ctxBase ? { ...DEFAULT_INPUTS, ...ctxBase } : DEFAULT_INPUTS
+    // Inherit incoterm / fuel / margin-kind when the follow-up doesn't restate them.
+    const marginKind: MarginKind =
+      marginKindOf(obj.marginKind) ?? (ctxBase?.marginMode === 'target_price' ? 'neto_caja' : 'bruto')
+    const incoterm = incotermOf(obj.incoterm) ?? base.incoterm
+    const fuelType = fuelOf(obj.fuelType) ?? base.fuelType
 
     const baseInputs: ImportInputs = {
-      ...DEFAULT_INPUTS,
-      fob,
+      ...base,
+      fob: effFob,
       incoterm,
-      fuelType: fuelOf(obj.fuelType),
-      engineCC: num(obj.engineCC) ?? DEFAULT_INPUTS.engineCC,
+      fuelType,
+      engineCC: num(obj.engineCC) ?? base.engineCC,
     }
 
-    const solution = solveSalePriceForMargin(baseInputs, marginKind, targetPct)
+    // One source of truth for the payload (and the commit inputs the editor uses),
+    // so the displayed price and any saved cost sheet can never drift.
+    const { data } = solveReverseQuote(baseInputs, marginKind, targetPct)
 
-    const data: ReverseQuoteData = {
-      marginKind,
-      targetPct,
-      achievedPct: solution.achievedPct,
-      onTarget: Math.abs(solution.achievedPct - targetPct) <= MARGIN_TOLERANCE,
-      salePrice: solution.salePrice,
-      landedCost: solution.result.landedCost,
-      cashOutlay: solution.result.cashOutlay,
-      fob,
-      incoterm,
+    // Provenance: which cost inputs were inherited from the canvas this ask chained off.
+    const stated = new Set<string>()
+    if (statedFob !== null && statedFob > 0) stated.add('fob')
+    if (incotermOf(obj.incoterm) !== null) stated.add('incoterm')
+    if (fuelOf(obj.fuelType) !== null) stated.add('fuelType')
+    if (num(obj.engineCC) !== null) stated.add('engineCC')
+    const seq = safeSeq(context?.sourceSeq)
+    if (ctxBase && seq !== undefined && data.input) {
+      const fields = inheritedCostingLabels(data.input, DEFAULT_INPUTS, stated)
+      if (fields.length) data.seededFrom = { seq, fields, baseline: context?.baseline }
     }
 
     return { renderer: 'reverse-quote', note, data }

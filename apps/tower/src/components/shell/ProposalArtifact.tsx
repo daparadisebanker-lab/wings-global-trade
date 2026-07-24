@@ -13,7 +13,7 @@ import { MISTER_ARTIFACT } from './mister-theme'
  * language toggle state.
  */
 
-const { text: TEXT, muted: MUTED, gold: GOLD, panelBg: PANEL_BG, border: BORDER, mono: MONO } = MISTER_ARTIFACT
+const { text: TEXT, body: BODY, muted: MUTED, gold: GOLD, ink: INK, panelBg: PANEL_BG, border: BORDER, mono: MONO } = MISTER_ARTIFACT
 
 const CHANNEL_LABEL: Record<string, string> = {
   whatsapp: 'WhatsApp',
@@ -96,7 +96,7 @@ export function ProposalArtifact({
         style={{
           fontSize: 13.5,
           lineHeight: 1.5,
-          color: '#dbe6f3',
+          color: BODY,
           whiteSpace: 'pre-wrap',
           borderTop: BORDER,
           paddingTop: 10,
@@ -114,7 +114,7 @@ export function ProposalArtifact({
           fontSize: 11,
           letterSpacing: '0.06em',
           textTransform: 'uppercase',
-          color: copied ? '#00112e' : GOLD,
+          color: copied ? INK : GOLD,
           background: copied ? GOLD : 'transparent',
           border: `1px solid ${GOLD}`,
           borderRadius: 6,

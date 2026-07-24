@@ -79,7 +79,7 @@ export function CatalogBrowse({ categories }: { categories: string[] }) {
         <span className="font-mono text-label uppercase tracking-[0.15em] text-lane-accent" data-numeric>
           CAT · Explorar catálogo / Browse
         </span>
-        <h1 className="font-display text-t2 text-ink-primary">Catálogo publicado / Published catalog</h1>
+        <h1 className="font-display text-t3 text-ink-primary">Catálogo publicado / Published catalog</h1>
         <p className="font-ui text-t0 text-ink-secondary">
           Solo lectura, en todas las categorías. / Read-only, across every category.
         </p>

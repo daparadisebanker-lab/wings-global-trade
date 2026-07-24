@@ -69,7 +69,7 @@ export function OpenContainerForm({
     <div
       role="group"
       aria-label="Abrir contenedor / Open container"
-      className="tower-settle flex flex-col gap-3 rounded-card border border-line bg-surface-1 p-4"
+      className="tower-settle flex flex-col gap-3 rounded-card-lg border border-line bg-surface-1 p-4 shadow-elevation-2"
     >
       <div className="flex items-center justify-between">
         <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">

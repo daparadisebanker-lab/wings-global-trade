@@ -127,7 +127,9 @@ export function resolveLine(raw: RawLine, quoteIncoterm: Incoterm): QuoteProposa
     })
     unitPriceMinor = toMinor(result.salePriceFinal)
     basis = 'costed'
-    basisNote = `costo puesto + ${Math.round(targetPct * 100)}% margen`
+    // "tasas estándar": quote-build costs from engine defaults, not the canvas the
+    // operator may have tuned — say so, so the note never implies otherwise.
+    basisNote = `costo puesto (tasas estándar) + ${Math.round(targetPct * 100)}% margen`
   }
 
   return {
