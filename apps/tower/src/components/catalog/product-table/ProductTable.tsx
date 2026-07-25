@@ -19,6 +19,7 @@ import { retireProduct, type EditableLane, type ProductRow } from '@/lib/actions
 import type { ProductStatus } from '@/lib/actions/catalog-logic'
 import { productColumns } from './columns'
 import { useProductsQuery } from './useProductsQuery'
+import { ProductCard } from '../ProductCard'
 
 const ROW_HEIGHT = 40 // DESIGN_SYSTEM operational density (compact toggle = 32)
 const STATUS_OPTIONS: (ProductStatus | 'ALL')[] = ['ALL', 'DRAFT', 'IN_REVIEW', 'PUBLISHED', 'RETIRED']
@@ -148,7 +149,7 @@ export function ProductTable({
   const newHref = laneId ? `/catalog/new?lane=${laneId}` : lanes[0] ? `/catalog/new?lane=${lanes[0].laneId}` : '/catalog/new'
 
   return (
-    <div className="flex h-full flex-col gap-4 p-6">
+    <div className="flex flex-col gap-4 p-6 md:h-full">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-wrap items-end gap-3">
           <label className="flex flex-col gap-1">
@@ -285,7 +286,21 @@ export function ProductTable({
         </p>
       ) : null}
 
-      <div ref={parentRef} className="flex-1 overflow-auto rounded-card border border-line">
+      {/* Mobile: one card per product (a 7-column table can't fit 390px without
+          sideways scroll + a header that desyncs from the virtualized body). */}
+      <ul className="flex flex-col gap-3 md:hidden">
+        {rows.map((row) => (
+          <ProductCard key={row.id} row={row} selected={selected.has(row.id)} onToggleSelected={toggleSelected} />
+        ))}
+      </ul>
+      {!query.isLoading && rows.length === 0 ? (
+        <p className="py-10 text-center font-ui text-t0 text-ink-secondary md:hidden">
+          Sin productos con estos filtros / No products match these filters.
+        </p>
+      ) : null}
+
+      {/* Desktop: the virtualized manifest table (its own bounded scroll area). */}
+      <div ref={parentRef} className="hidden flex-1 overflow-auto rounded-card border border-line md:block">
         <table className="w-full border-collapse">
           <thead className="sticky top-0 z-10 bg-surface-1">
             {table.getHeaderGroups().map((hg) => (

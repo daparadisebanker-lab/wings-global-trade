@@ -18,6 +18,7 @@ import { useVirtualizer } from '@tanstack/react-virtual'
 import type { ProductRow } from '@/lib/actions/catalog'
 import { browseColumns } from './columns'
 import { useBrowseQuery } from './useBrowseQuery'
+import { ProductCard } from '../ProductCard'
 
 const ROW_HEIGHT = 40 // DESIGN_SYSTEM operational density
 
@@ -74,7 +75,7 @@ export function CatalogBrowse({ categories }: { categories: string[] }) {
   }
 
   return (
-    <div className="flex h-full flex-col gap-4 p-6">
+    <div className="flex flex-col gap-4 p-6 md:h-full">
       <div className="flex flex-col gap-1">
         <span className="font-mono text-label uppercase tracking-[0.15em] text-lane-accent" data-numeric>
           CAT · Explorar catálogo / Browse
@@ -164,7 +165,20 @@ export function CatalogBrowse({ categories }: { categories: string[] }) {
         </p>
       ) : null}
 
-      <div ref={parentRef} className="flex-1 overflow-auto rounded-card border border-line">
+      {/* Mobile: one card per product (the desktop table scrolls sideways at 390px). */}
+      <ul className="flex flex-col gap-3 md:hidden">
+        {rows.map((row) => (
+          <ProductCard key={row.id} row={row} />
+        ))}
+      </ul>
+      {!query.isLoading && rows.length === 0 ? (
+        <p className="py-10 text-center font-ui text-t0 text-ink-secondary md:hidden">
+          Sin productos con estos filtros / No products match these filters.
+        </p>
+      ) : null}
+
+      {/* Desktop: the virtualized manifest table (its own bounded scroll area). */}
+      <div ref={parentRef} className="hidden flex-1 overflow-auto rounded-card border border-line md:block">
         <table className="w-full border-collapse">
           <thead className="sticky top-0 z-10 bg-surface-1">
             {table.getHeaderGroups().map((hg) => (
