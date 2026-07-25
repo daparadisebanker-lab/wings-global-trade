@@ -7,6 +7,32 @@
 > `programs/tower/CLAUDE.md` (RLS, integer money, append-only migrations,
 > archetype-agnostic, propose-then-dispose, wholesale lint).
 
+## ✅ Build log — five stages shipped (2026-07-24/25, branch `claude/branded-proforma-pricing-0jyzbx`)
+
+Built via a Fable(review/sequence)→Opus(build) loop. Each stage was independently
+verified (tsc clean · full suite green, 957/957 · byte-identical for default paths ·
+fixture-rendered for visual proof) before the next was ordered. **Re-sequenced from
+the plan's 0→1→…→6 to `0 → 2 → 3 → 1 → 4`** (parity and capture before the grid,
+grid before the anexo that consumes it) — ratified by Fable at each gate.
+
+| Stage | Wave | Commit | What landed |
+|---|---|---|---|
+| 1 | **Wave 0** — persistence spine | `490d48c` | `tower_56_issuing_entities` (uuid id PK + text `code` slug; quotes gain `issuer_id`/`locale`) **applied to prod, entities seeded**; `getProformaDocument` → `issuerById(...) ?? resolveIssuer(...)`; knowledge base fed (DECISIONS.log, DATABASE_SCHEMA, docs). |
+| 2 | **Wave 2** — issuer parity | `1a58265` | cotización/ficha/RB made entity-aware off the same `issuers.ts` seam (tax/banking/terms/locale/issue-city); default path stays byte-identical. |
+| 3 | **Wave 3** — Mister captures destination | `9836fa5` | `quote-build`/`mister-quote`/`pipeline.composeQuote` thread `{issuerId, destinationPort/Country, currency}`; `QuoteSavePanel` issuer chip + override, frozen into the snapshot. |
+| 4 | **Wave 1** — shared document grid | `ff33109` | `lib/quotation/grid.ts` (`DOC_GRID` tokens, tested) + `document-grid.css` (one `@page`, 29.5pt margin via padding-inset) composed into all four roots; money on the 565.6pt rail. |
+| 5 | **Wave 4** — the anexo (costing-derived) | `1a1fad0` | `lib/quotation/anexo.ts` (compute-not-copy: grand = Σ included lines + quote total) + `lib/actions/anexo.ts` (freight via `resolveFreightRate` over `rate_tables`) + renderer/route + "Abrir anexo" deep-link. |
+
+**Ratified deviations** (logged in `DECISIONS.log.md`): (1) **tower_56, not tower_55** —
+a prod-ledger cross-check caught `tower_55_team_space`/`20260724160000` already taken
+by an un-committed drift, so `issuing_entities` renumbered 55→56 / `20260724235523`;
+(2) **uuid id PK + unique text `code`** — the shared `audit_trigger()` casts
+`(v_src->>'id')::uuid`, so the slug (`wgt-pe`/`shining-star-cl`) lives in `code` and
+`quotes.issuer_id` references `code`; no app-code change (the in-code registry is the
+runtime source). Deferred follow-ups (Wave 5 window/editors, Torre `parse-spec`
+mouth, Wave 6 @react-pdf + distribution, interior column snap, `tower_55` drift,
+`org_rules.ports_default`/`validityText`) are tracked in `REMAINING.md`.
+
 ## 0. Where we are (the seams, verified)
 
 | Piece | State today | File(s) |

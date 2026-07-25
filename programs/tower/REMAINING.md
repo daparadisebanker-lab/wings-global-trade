@@ -197,6 +197,43 @@ Deferred (not blocking Wave 4):
 - **@react-pdf StyleSheet.** Wave 6 canonical PDF reads the same `docGridCssVars()`
   object so both renderers stay in lockstep.
 
+## Quotation-document intelligence — deferred follow-ups (Waves 0–4 + Anexo shipped)
+
+The five-stage intelligence layer landed on `claude/branded-proforma-pricing-0jyzbx`
+(spine → issuer parity → capture bridge → shared grid → anexo). Persistence is
+`tower_56` (`issuing_entities`, applied to prod, entities seeded). What remains,
+each pointing at the pattern it copies:
+
+- **(a) Wave 5 — document window + editors.** A `QuotationsWindow` (⌘K "Generar
+  documento" affordance) listing quotes and deep-linking their four document
+  routes, plus per-document `saveDocumentDetails` editors exposing the intelligence
+  variables (issuer/entity override, destination port/country, banking toggle,
+  locale) the way `QuoteSavePanel` already does for the copilot proposal. Pattern
+  to copy: `components/shell/QuoteSavePanel.tsx` (issuer chip/override + snapshot
+  freeze) and the Stage-2 entity-aware actions.
+- **(b) Torre `parse-spec` destination mouth.** Wire the Torre spec-parse capture
+  so an extracted destination (port/country) flows into `composeQuote({issuerId,
+  portOfDestination})` exactly as the Mister capture path does. Mirror Stage 3
+  (`lib/actions/mister-quote.ts` → `composeQuote`); no new resolution logic, just
+  a second mouth onto the same bridge. Approved earlier as a later stage.
+- **(c) Wave 6 — canonical @react-pdf server route + distribution.** A server PDF
+  renderer that consumes the same `lib/quotation/grid.ts` `docGridCssVars()` tokens
+  so browser-print and server-PDF stay in lockstep, plus n8n/WhatsApp distribution.
+  Biggest remaining lift (new dependency + renderer); deliberately NOT bolted onto
+  this branch.
+- **(d) Proforma interior column snap + live-route print pass.** Pin the proforma
+  line-item interior edges to `grid.ts` `extras.proforma` (313.1 / 397.8 / 535.5)
+  and do a browser `window.print()` smoke of all four routes once the app is up.
+  (Also tracked under "Document grid — conformance follow-up" above.)
+- **(e) Prod drift: `tower_55_team_space`.** Applied to prod, file absent from
+  `supabase/migrations/` — must be reconciled before `tower_57` is written (see
+  the dedicated drift section below).
+- **(f) `org_rules.ports_default` wiring + entity `validityText` from
+  `validity_days`.** The a-ruling: derive an issuer's default destination ports
+  from `tower.org_rules.ports_default` and compute `validityText` from the entity's
+  `validity_days` rather than a stored string, so policy and identity stay their
+  separate axes.
+
 ## Drift: tower_55_team_space applied to prod, file absent from repo
 Prod ledger carries `tower_55_team_space` (version `20260724160000`) with no
 matching file in `supabase/migrations/`. Recover it into the repo before the next
