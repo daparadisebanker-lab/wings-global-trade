@@ -196,3 +196,10 @@ Deferred (not blocking Wave 4):
   Do a browser `window.print()` smoke of all four routes once the app is up.
 - **@react-pdf StyleSheet.** Wave 6 canonical PDF reads the same `docGridCssVars()`
   object so both renderers stay in lockstep.
+
+## Drift: tower_55_team_space applied to prod, file absent from repo
+Prod ledger carries `tower_55_team_space` (version `20260724160000`) with no
+matching file in `supabase/migrations/`. Recover it into the repo before the next
+migration (tower_57+), or a `db push` diverges and numbers risk colliding (this is
+what forced issuing_entities to renumber 55→56). Cross-check `list_migrations`
+against `ls supabase/migrations` when writing the next migration.
