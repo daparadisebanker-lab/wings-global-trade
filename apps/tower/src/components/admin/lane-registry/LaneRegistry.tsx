@@ -69,7 +69,54 @@ export function LaneRegistry({ brands }: { brands: BrandRow[] }) {
         </p>
       ) : null}
 
-      <div className="overflow-x-auto rounded-card border border-line">
+      {/* Mobile: one card per lane (a 6-column registry scrolls sideways at 390px). */}
+      <ul className="flex flex-col gap-3 md:hidden">
+        {lanes.map((lane) => (
+          <li key={lane.id} className="flex flex-col gap-3 rounded-card border border-line bg-surface-1 p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex min-w-0 flex-col gap-0.5">
+                <span className="flex items-center gap-2">
+                  <span className="font-mono text-t0 text-ink-primary" data-numeric>
+                    {lane.code}
+                  </span>
+                  <span className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary">
+                    {lane.archetype}
+                  </span>
+                </span>
+                <span className="font-ui text-t0 text-ink-primary">{lane.name}</span>
+                <span className="font-mono text-label text-ink-secondary">
+                  {lane.brandName} · {lane.slug}
+                </span>
+              </div>
+              <LaneStatusChip status={lane.status} />
+            </div>
+            <div className="flex flex-wrap gap-2 border-t border-line pt-3">
+              {nextLaneStatuses(lane.status).map((to) => (
+                <button
+                  key={to}
+                  type="button"
+                  onClick={() => flip(lane.id, to)}
+                  disabled={pendingId === lane.id}
+                  className="rounded-control border border-line px-3 py-2 font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:text-ink-primary disabled:opacity-40"
+                >
+                  → {to}
+                </button>
+              ))}
+              {nextLaneStatuses(lane.status).length === 0 ? (
+                <span className="font-mono text-label text-ink-secondary">—</span>
+              ) : null}
+            </div>
+          </li>
+        ))}
+      </ul>
+      {!lanesQuery.isLoading && lanes.length === 0 ? (
+        <p className="py-6 text-center font-ui text-t0 text-ink-secondary md:hidden">
+          Sin lanes registradas todavía / No lanes registered yet.
+        </p>
+      ) : null}
+
+      {/* Desktop: the full append-only registry table. */}
+      <div className="hidden overflow-x-auto rounded-card border border-line md:block">
         <table className="w-full border-collapse">
           <thead className="bg-surface-1">
             <tr className="border-b border-line">

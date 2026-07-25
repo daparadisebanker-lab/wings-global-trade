@@ -115,7 +115,39 @@ export function BrandManager() {
         </p>
       ) : null}
 
-      <div className="overflow-x-auto rounded-card border border-line">
+      {/* Mobile: one card per brand. */}
+      <ul className="flex flex-col gap-3 md:hidden">
+        {brands.map((brand) => {
+          const target: BrandStatus = brand.status === 'ACTIVE' ? 'RETIRED' : 'ACTIVE'
+          return (
+            <li key={brand.id} className="flex flex-col gap-3 rounded-card border border-line bg-surface-1 p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex min-w-0 flex-col gap-0.5">
+                  <span className="font-ui text-t0 text-ink-primary">{brand.name}</span>
+                  <span className="font-mono text-label text-ink-secondary">{brand.slug}</span>
+                </div>
+                <BrandStatusChip status={brand.status} />
+              </div>
+              <div className="border-t border-line pt-3">
+                <button
+                  type="button"
+                  onClick={() => flipStatus(brand.id, target)}
+                  disabled={pendingId === brand.id}
+                  className="rounded-control border border-line px-3 py-2 font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:text-ink-primary disabled:opacity-40"
+                >
+                  {target === 'RETIRED' ? 'Retirar / Retire' : 'Reactivar / Reinstate'}
+                </button>
+              </div>
+            </li>
+          )
+        })}
+      </ul>
+      {!brandsQuery.isLoading && brands.length === 0 ? (
+        <p className="py-6 text-center font-ui text-t0 text-ink-secondary md:hidden">Sin marcas todavía / No brands yet.</p>
+      ) : null}
+
+      {/* Desktop: the full tenants table. */}
+      <div className="hidden overflow-x-auto rounded-card border border-line md:block">
         <table className="w-full border-collapse">
           <thead className="bg-surface-1">
             <tr className="border-b border-line">
