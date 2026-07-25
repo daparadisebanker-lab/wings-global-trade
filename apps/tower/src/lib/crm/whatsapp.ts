@@ -7,20 +7,22 @@
 
 import type { BuyerArchetype } from '@/lib/actions/clients-logic'
 
-const LTR = '‎' // left-to-right mark WhatsApp prefixes some lines with
+// Bidi/direction control marks WhatsApp sprinkles in — at line start (before the
+// timestamp on media/call lines) and inside bodies. Stripped so both the header
+// match and the cleaned body are noise-free.
+const BIDI = /[‎‏‪-‮⁦-⁩]/g
+const BIDI_LEAD = /^[‎‏‪-‮⁦-⁩]+/
 
-// A new message starts with a timestamp header. iOS: "[2/7/26, 2:30:15 p. m.] X: …"
+// A new message starts with a timestamp header. iOS: "[15/07/26, 23:03:35] X: …"
 // Android: "2/7/26, 14:30 - X: …". Anything else is a continuation of the previous.
-const IOS = new RegExp(`^\\[[^\\]]+\\]\\s*${LTR}?([^:]+):\\s?(.*)$`)
-const ANDROID = new RegExp(
-  `^${LTR}?\\d{1,2}[/.]\\d{1,2}[/.]\\d{2,4},?\\s+\\d{1,2}:\\d{2}(?::\\d{2})?(?:\\s*[ap]\\.?\\s*m\\.?)?\\s*[-–]\\s*([^:]+):\\s?(.*)$`,
-  'i',
-)
+const IOS = /^\[[^\]]+\]\s*([^:]+):\s?(.*)$/
+const ANDROID =
+  /^\d{1,2}[/.]\d{1,2}[/.]\d{2,4},?\s+\d{1,2}:\d{2}(?::\d{2})?(?:\s*[ap]\.?\s*m\.?)?\s*[-–]\s*([^:]+):\s?(.*)$/i
 
 const SYSTEM_LINE =
-  /end-to-end encrypted|cifrados de extremo a extremo|los mensajes y las llamadas|created group|añadió a|changed the subject|cambió el asunto|your security code/i
+  /end-to-end encrypted|cifrados de extremo a extremo|los mensajes y las llamadas|created group|añadió a|changed the subject|cambió el asunto|your security code|es un contacto|sin respuesta|llamada perdida|missed (?:voice|video) call/i
 const MEDIA_LINE =
-  /<media omitted>|<multimedia omitido>|imagen omitida|image omitted|video omitted|audio omitted|sticker omitted|gif omitted|documento omitido|<attached:|\.(?:jpg|jpeg|png|opus|mp4|webp|pdf) \(file attached\)/i
+  /<media omitted>|<multimedia omitido>|imagen omitida|image omitted|video omitted|audio omitted|sticker omitted|gif omitted|documento omitido|<attached:|<adjunto:|\.(?:jpg|jpeg|png|opus|mp4|webp|pdf) \(file attached\)/i
 
 const MAX_TRANSCRIPT = 14000
 
@@ -44,17 +46,19 @@ export function parseWhatsappExport(raw: string): WhatsappParse {
   if (typeof raw !== 'string' || !raw.trim()) return empty
 
   const messages: { sender: string; body: string }[] = []
-  for (const line of raw.split(/\r?\n/)) {
+  for (const rawLine of raw.split(/\r?\n/)) {
+    // Strip a leading bidi mark so "‎[16/07/26 …]" still matches the header.
+    const line = rawLine.replace(BIDI_LEAD, '')
     const m = IOS.exec(line) ?? ANDROID.exec(line)
     if (m) {
-      const sender = m[1].trim()
-      let body = m[2] ?? ''
-      if (SYSTEM_LINE.test(body)) continue // drop the encryption/system notices
+      const sender = m[1].replace(BIDI, '').trim()
+      let body = (m[2] ?? '').replace(BIDI, '').trim()
+      if (SYSTEM_LINE.test(body)) continue // drop encryption/contact/call notices
       if (MEDIA_LINE.test(body)) body = '[media]'
-      messages.push({ sender, body: body.trim() })
+      messages.push({ sender, body })
     } else if (messages.length > 0 && line.trim()) {
       // Continuation of a multi-line message.
-      messages[messages.length - 1].body += `\n${line.trim()}`
+      messages[messages.length - 1].body += `\n${line.replace(BIDI, '').trim()}`
     }
   }
 
