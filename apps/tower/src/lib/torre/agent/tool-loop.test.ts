@@ -58,6 +58,22 @@ describe('runToolLoop', () => {
     expect(r.finalText).toBe('ya tengo la tarifa')
   })
 
+  it('does not promote prior narration to the answer on an abnormal terminal stop', async () => {
+    // turn 0 narrates + calls a tool; turn 1 truncates (max_tokens) with no tool calls
+    // and empty text — parseAssistantContent would set stopHint and drop the calls.
+    // finalText must be this turn's (empty) text, NOT the stale prior narration.
+    const r = await runToolLoop({
+      nextTurn: scripted([
+        { text: 'consultando tarifas', toolCalls: [{ id: 't1', name: 'echo', input: { v: 'x' } }] },
+        { text: '', toolCalls: [], stopHint: 'max_tokens' },
+      ]),
+      tools: [echoTool],
+    })
+    expect(r.stopReason).toBe('stop')
+    expect(r.stopHint).toBe('max_tokens')
+    expect(r.finalText).toBe('') // stale 'consultando tarifas' must not surface as the answer
+  })
+
   it('captures an unknown tool as an error result (no crash)', async () => {
     const r = await runToolLoop({
       nextTurn: scripted([

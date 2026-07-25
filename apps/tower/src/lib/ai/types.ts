@@ -13,23 +13,30 @@ import type { Localized } from '@/lib/i18n'
 // ── Models (TOWER stack; current IDs — do not downgrade) ────────────────────
 // haiku = classify / score (fast, cheap, thinking off); opus = extract / brief
 // (deepest reasoning). NOTE: adaptive thinking is ON by default on the reason
-// model — the client (lib/ai/client.ts) disables it for these one-shot JSON
-// extractions so the small max_tokens budget isn't spent thinking (which would
-// truncate the answer to empty). See THINKS_BY_DEFAULT there.
+// model — both model seams disable it for these one-shot / tool-loop JSON calls
+// so the small max_tokens budget isn't spent thinking (which would truncate the
+// answer to empty). See THINKING_ON_BY_DEFAULT below.
 export const INTELLIGENCE_MODELS = {
   classify: 'claude-haiku-4-5-20251001',
   reason: 'claude-opus-5',
 } as const
 export type IntelligenceModel = (typeof INTELLIGENCE_MODELS)[keyof typeof INTELLIGENCE_MODELS]
 
-/** Models where ADAPTIVE THINKING is ON by default — every caller disables it.
- *  Two independent failure modes make thinking-on wrong for TOWER's calls:
+/** The models TOWER's seams explicitly send `thinking: { type: 'disabled' }` to.
+ *  Two independent failure modes make thinking-on wrong for these calls:
  *    (a) one-shot extraction (lib/ai/client.ts) — a tight max_tokens spent thinking
  *        truncates the JSON answer to EMPTY, so Mister silently fails;
  *    (b) multi-step tool use (lib/torre/agent/anthropic-runner.ts) — thinking blocks
  *        in a tool_use turn must be replayed verbatim on the next turn, which the
  *        transcript rebuild does not do; leaving thinking on breaks turn 2.
- *  Both seams import this ONE list. Haiku is thinking-off by default, so it's absent. */
+ *  Sending an explicit disable is a no-op on a model that is already thinking-off, so
+ *  this list can safely include the whole Opus/Sonnet 5-era set rather than only the
+ *  thinking-on-by-default members. Haiku is thinking-off by default, so it's absent.
+ *  DRIFT WARNING: membership is a byte-exact string match. Do NOT route the always-on
+ *  thinking models (e.g. claude-fable-5) through these seams as-is — an explicit
+ *  disable is rejected there; the correct move for such a model is to OMIT the param
+ *  (which reintroduces the tool-loop replay bug, so it needs stepsToMessages to
+ *  replay thinking blocks first). Neither seam's model is one of those today. */
 export const THINKING_ON_BY_DEFAULT: ReadonlySet<string> = new Set([
   'claude-opus-5',
   'claude-opus-4-8',

@@ -95,13 +95,18 @@ export function QuotationsWindow({ items, locale }: { items: QuotationListItem[]
                   </span>
                 </div>
                 <div className="flex items-center gap-6 border-t border-line-hairline pt-3">
-                  {q.status === 'DRAFT' ? <IssueButton quoteId={q.id} locale={locale} /> : null}
-                  <Link
-                    href={`/proforma/${q.id}/document`}
-                    className="font-mono text-label uppercase tracking-[0.1em] text-accent"
-                  >
-                    {t({ es: 'Proforma', en: 'Proforma' }, locale)}
-                  </Link>
+                  {q.status === 'DRAFT' ? (
+                    // A draft has no issued proforma yet — offer the issue action, not a
+                    // Proforma link that dead-ends on the "no se pudo cargar" page.
+                    <IssueButton quoteId={q.id} locale={locale} />
+                  ) : (
+                    <Link
+                      href={`/proforma/${q.id}/document`}
+                      className="font-mono text-label uppercase tracking-[0.1em] text-accent"
+                    >
+                      {t({ es: 'Proforma', en: 'Proforma' }, locale)}
+                    </Link>
+                  )}
                 </div>
               </li>
             ))}
@@ -142,13 +147,17 @@ export function QuotationsWindow({ items, locale }: { items: QuotationListItem[]
                   </Cell>
                   <Cell className="text-right">
                     <div className="flex items-center justify-end gap-4">
-                      {q.status === 'DRAFT' ? <IssueButton quoteId={q.id} locale={locale} /> : null}
-                      <Link
-                        href={`/proforma/${q.id}/document`}
-                        className="font-mono text-label uppercase tracking-[0.1em] text-accent hover:underline"
-                      >
-                        {t({ es: 'Proforma', en: 'Proforma' }, locale)}
-                      </Link>
+                      {q.status === 'DRAFT' ? (
+                        // Draft → issue action only; the Proforma document exists once issued.
+                        <IssueButton quoteId={q.id} locale={locale} />
+                      ) : (
+                        <Link
+                          href={`/proforma/${q.id}/document`}
+                          className="font-mono text-label uppercase tracking-[0.1em] text-accent hover:underline"
+                        >
+                          {t({ es: 'Proforma', en: 'Proforma' }, locale)}
+                        </Link>
+                      )}
                     </div>
                   </Cell>
                 </tr>

@@ -25,7 +25,10 @@ function withThinkingOff<T extends object>(params: T, model: string): T {
  *  thrown error instead of inheriting the SDK's ~10-minute default — which would
  *  hang the caller (e.g. the Mister dock's server action) with no recovery. Kept
  *  under the dock's 45s client-side watchdog so the server surfaces a typed error
- *  before the UI gives up. */
+ *  before the UI gives up. The SDK is built with maxRetries: 0 (see below) so this
+ *  IS the worst-case wall clock — with the SDK's default 2 retries a timed-out call
+ *  would be re-tried up to 3× (~120s), blowing straight past the 45s watchdog and
+ *  making this invariant false in exactly the hang it guards against. */
 const REQUEST_TIMEOUT_MS = 40_000
 
 /** A base64 image attached to a completion — the supplier-screenshot vision path. */
@@ -57,7 +60,10 @@ export interface IntelligenceClient {
   stream(req: CompletionRequest): AsyncIterable<string>
 }
 
-class AnthropicIntelligenceClient implements IntelligenceClient {
+// Exported for a focused unit test (a stub SDK asserts the request shape — that
+// thinking is disabled for a thinking-on model and absent otherwise); production
+// still constructs it only through getIntelligenceClient() below.
+export class AnthropicIntelligenceClient implements IntelligenceClient {
   constructor(private readonly sdk: Anthropic) {}
 
   async complete(req: CompletionRequest): Promise<string> {
@@ -127,7 +133,10 @@ export function getIntelligenceClient(): IntelligenceClient | null {
   if (cached) return cached
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) return null
-  cached = new AnthropicIntelligenceClient(new Anthropic({ apiKey }))
+  // maxRetries: 0 — a timeout must fail once, not be silently re-tried 3× past the
+  // dock's 45s watchdog (see REQUEST_TIMEOUT_MS). A transient failure surfaces as a
+  // typed AI error the caller degrades gracefully, which is what we want here.
+  cached = new AnthropicIntelligenceClient(new Anthropic({ apiKey, maxRetries: 0 }))
   return cached
 }
 
