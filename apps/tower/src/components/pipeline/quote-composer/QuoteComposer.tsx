@@ -207,56 +207,61 @@ export function QuoteComposer({
           </button>
         </div>
 
+        {/* Draft line: description on its own full-width row on phones, with
+            qty/unit/price sharing the next row; the fixed-width desktop layout
+            returns at sm (the inputs no longer refuse to grow on a phone). */}
         {drafts.map((d) => (
-          <div key={d.key} className="flex flex-wrap items-end gap-2">
-            <label className="flex flex-col gap-1">
+          <div key={d.key} className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-end">
+            <label className="flex flex-col gap-1 sm:flex-none">
               <span className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary">Descripción / Description</span>
               <input
                 value={d.description}
                 onChange={(e) => updateDraft(d.key, { description: e.target.value })}
-                className="w-52 rounded-card border border-line bg-surface-0 px-2 py-1.5 font-ui text-t0 text-ink-primary outline-none focus-visible:border-lane-accent"
+                className="w-full rounded-card border border-line bg-surface-0 px-2 py-1.5 font-ui text-t0 text-ink-primary outline-none focus-visible:border-lane-accent sm:w-52"
               />
             </label>
-            <label className="flex flex-col gap-1">
-              <span className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary">Cant. / Qty</span>
-              <input
-                type="number"
-                min={0}
-                step="any"
-                value={d.quantity}
-                onChange={(e) => updateDraft(d.key, { quantity: e.target.value })}
-                data-numeric
-                className="w-24 rounded-card border border-line bg-surface-0 px-2 py-1.5 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent"
-              />
-            </label>
-            <label className="flex flex-col gap-1">
-              <span className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary">Unidad / Unit</span>
-              <select
-                value={d.unitId}
-                onChange={(e) => updateDraft(d.key, { unitId: e.target.value })}
-                className="rounded-card border border-line bg-surface-0 px-2 py-1.5 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent"
-              >
-                {units.map((u) => (
-                  <option key={u.id} value={u.id}>
-                    {u.abbr}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="flex flex-col gap-1">
-              <span className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary">
-                Precio unitario ({currency}) / Unit price
-              </span>
-              <input
-                type="number"
-                min={0}
-                step="0.01"
-                value={d.unitPriceMajor}
-                onChange={(e) => updateDraft(d.key, { unitPriceMajor: e.target.value })}
-                data-numeric
-                className="w-28 rounded-card border border-line bg-surface-0 px-2 py-1.5 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent"
-              />
-            </label>
+            <div className="flex items-end gap-2">
+              <label className="flex min-w-0 flex-1 flex-col gap-1 sm:flex-none">
+                <span className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary">Cant. / Qty</span>
+                <input
+                  type="number"
+                  min={0}
+                  step="any"
+                  value={d.quantity}
+                  onChange={(e) => updateDraft(d.key, { quantity: e.target.value })}
+                  data-numeric
+                  className="w-full rounded-card border border-line bg-surface-0 px-2 py-1.5 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent sm:w-24"
+                />
+              </label>
+              <label className="flex flex-col gap-1">
+                <span className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary">Unidad / Unit</span>
+                <select
+                  value={d.unitId}
+                  onChange={(e) => updateDraft(d.key, { unitId: e.target.value })}
+                  className="rounded-card border border-line bg-surface-0 px-2 py-1.5 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent"
+                >
+                  {units.map((u) => (
+                    <option key={u.id} value={u.id}>
+                      {u.abbr}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="flex min-w-0 flex-1 flex-col gap-1 sm:flex-none">
+                <span className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary">
+                  Precio unitario ({currency}) / Unit price
+                </span>
+                <input
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  value={d.unitPriceMajor}
+                  onChange={(e) => updateDraft(d.key, { unitPriceMajor: e.target.value })}
+                  data-numeric
+                  className="w-full rounded-card border border-line bg-surface-0 px-2 py-1.5 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent sm:w-28"
+                />
+              </label>
+            </div>
           </div>
         ))}
 
@@ -313,7 +318,7 @@ export function QuoteComposer({
               </div>
 
               {i === 0 ? (
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   {capabilities.canSendQuote ? (
                     <>
                       <button

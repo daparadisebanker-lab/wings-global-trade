@@ -80,7 +80,8 @@ function Group({ title, children }: { title: string; children: React.ReactNode }
   return (
     <fieldset className="flex flex-col gap-2 rounded-card border border-line bg-surface-1 p-3">
       <legend className="px-1 font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">{title}</legend>
-      <div className="grid grid-cols-2 gap-2">{children}</div>
+      {/* Stack to one full-width column on phones; pair up only when there is room. */}
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">{children}</div>
     </fieldset>
   )
 }

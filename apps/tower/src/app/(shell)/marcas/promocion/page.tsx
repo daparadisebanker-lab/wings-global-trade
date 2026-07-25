@@ -25,7 +25,7 @@ export default async function PromocionPage({ searchParams }: { searchParams: Pr
   const containerRows = result.error ? [] : result.data
 
   return (
-    <div className="flex h-full flex-col gap-4 overflow-y-auto p-6">
+    <div className="flex h-full flex-col gap-4 overflow-y-auto p-4 sm:p-6">
       <header className="flex flex-wrap items-end justify-between gap-3 border-b border-line pb-4">
         <div className="flex flex-col gap-1">
           <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">MRC · Estudio de marketing</span>

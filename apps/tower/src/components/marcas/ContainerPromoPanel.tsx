@@ -226,7 +226,7 @@ export function ContainerPromoPanel({
             <span className={LABEL}>Titular (opcional — por defecto el producto)</span>
             <input value={headline} onChange={(e) => setHeadline(e.target.value)} placeholder={detail.productName} className={INPUT} />
           </label>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="flex flex-col gap-1">
               <span className={LABEL}>Nota de precio</span>
               <input value={priceNote} onChange={(e) => setPriceNote(e.target.value)} placeholder="precio de campaña" className={INPUT} />

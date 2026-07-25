@@ -277,7 +277,7 @@ export function TrialPromoComposer({
           <span className={LABEL}>{t({ es: 'Producto', en: 'Product' }, locale)}</span>
           <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t({ es: 'nombre del producto', en: 'product name' }, locale)} className={INPUT} />
         </label>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <label className="flex flex-col gap-1">
             <span className={LABEL}>{t({ es: 'Categoría', en: 'Category' }, locale)}</span>
             <input value={category} onChange={(e) => setCategory(e.target.value)} className={INPUT} />

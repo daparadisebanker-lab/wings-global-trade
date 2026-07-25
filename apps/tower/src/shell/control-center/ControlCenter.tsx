@@ -56,24 +56,23 @@ export function ControlCenterGrid({
   }
 
   return (
-    <nav aria-label={t({ es: 'Módulos', en: 'Modules' }, locale)} className="grid grid-cols-1 gap-3 p-3">
+    // 2-column vertical tiles — mirrors the sibling Control Center shade so the
+    // drawer reads as designed chrome, not a stack of list rows (icon on top,
+    // label below; the tile truncates safely at half-width).
+    <nav aria-label={t({ es: 'Módulos', en: 'Modules' }, locale)} className="grid grid-cols-2 gap-2 p-3">
       {/* Mister — the copilot, opening the immersive overlay (not a route). Same
           entry the desktop floating door provides; first so it reads as primary. */}
       {onOpenMister ? (
         <button
           type="button"
           onClick={onOpenMister}
-          // No "(⌘J)" in the label: this grid is md:hidden (phones only), where the
-          // chord means nothing and would just be announced to AT.
+          // No "(⌘J)" chord: this grid is md:hidden (phones only), where it means
+          // nothing and would just be announced to AT.
           aria-label={t({ es: 'Abrir Mister', en: 'Open Mister' }, locale)}
-          className="cc-tile min-w-0 w-full text-left"
+          className="cc-tile min-w-0 w-full flex-col items-start gap-2 text-left"
         >
           <MisterMark size={20} className="shrink-0" />
           <span className="min-w-0 truncate font-ui text-t0">Mister</span>
-          {/* data-kbd-hint hides the chord on coarse-pointer devices (globals.css). */}
-          <span data-kbd-hint aria-hidden className="ml-auto shrink-0 font-mono text-label tracking-[0.1em] text-ink-secondary">
-            ⌘J
-          </span>
         </button>
       ) : null}
       {tools.map((tl) => {
@@ -86,23 +85,17 @@ export function ControlCenterGrid({
             onClick={onNavigate}
             data-active={on}
             aria-current={on ? 'page' : undefined}
-            // min-w-0 lets the tile shrink to its grid column instead of forcing
-            // the whole row wider than the drawer; the label then truncates and
-            // the tag stays intact (shrink-0) — no more right-column overflow.
-            className="cc-tile min-w-0"
+            className="cc-tile min-w-0 w-full flex-col items-start gap-2 text-left"
           >
             <Icon className={cn('shrink-0', on ? 'text-gold' : 'text-ink-secondary')} />
             <span className="min-w-0 truncate font-ui text-t0">{t(tl.label, locale)}</span>
-            <span aria-hidden className="ml-auto shrink-0 font-mono text-label tracking-[0.1em] text-ink-secondary">
-              {tl.tag}
-            </span>
           </Link>
         )
       })}
       {/* Zero-module operator: keep the "ask an admin" guidance (the early-return
-          note can't fire once a Mister entry is present). */}
+          note can't fire once a Mister entry is present). Spans the full grid. */}
       {tools.length === 0 ? (
-        <p className="px-1 pt-1 font-mono text-label uppercase tracking-[0.12em] text-ink-secondary">
+        <p className="col-span-2 px-1 pt-1 font-mono text-label uppercase tracking-[0.12em] text-ink-secondary">
           {t({ es: 'Aún sin módulos — pídele acceso a un administrador.', en: 'No modules yet — ask an administrator for access.' }, locale)}
         </p>
       ) : null}
