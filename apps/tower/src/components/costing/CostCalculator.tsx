@@ -19,6 +19,13 @@ import {
   type CostingReference,
 } from '@/lib/actions/costing'
 import { resolveAdValoremRate } from '@/lib/costing/ad-valorem'
+import {
+  GOODS_PROFILES,
+  GOODS_PROFILE_ORDER,
+  defaultProfileForArchetype,
+  inferProfileFromInputs,
+  type GoodsProfileId,
+} from '@/lib/costing/profiles'
 import { exportCostSheetXlsx } from './export'
 import { CostWaterfall } from './CostWaterfall'
 
@@ -93,7 +100,17 @@ export function CostCalculator({
   lanes: CostingLane[]
   initialHistory: CostCalculationRow[]
 }) {
-  const [inputs, setInputs] = useState<ImportInputs>(DEFAULT_INPUTS)
+  // Goods-type profile — the lane-logic layer. Defaults from the first lane's
+  // archetype (never vehicles unless explicitly picked); the operator overrides
+  // per calculation. It decides which driver fields show + how ISC is set.
+  const initialProfile = defaultProfileForArchetype(lanes[0]?.archetype)
+  const [profileId, setProfileId] = useState<GoodsProfileId>(initialProfile)
+  const [inputs, setInputs] = useState<ImportInputs>(() => ({
+    ...DEFAULT_INPUTS,
+    // Non-vehicle profiles carry an explicit ISC (0) so the preview + saved sheet
+    // agree; vehicles leave it unset so the fuel/CC rule (and its parity) runs.
+    iscRate: GOODS_PROFILES[initialProfile].isc === 'auto_fuel_cc' ? undefined : 0,
+  }))
   const [laneId, setLaneId] = useState(lanes[0]?.id ?? '')
   const [label, setLabel] = useState('')
   const [hsCode, setHsCode] = useState('')
@@ -112,6 +129,14 @@ export function CostCalculator({
   useEffect(() => {
     if (!laneId) return
     let active = true
+    // Re-default the goods profile from the lane's archetype (operator can override).
+    const lane = lanes.find((l) => l.id === laneId)
+    const pid = defaultProfileForArchetype(lane?.archetype)
+    setProfileId(pid)
+    setInputs((p) => ({
+      ...p,
+      iscRate: GOODS_PROFILES[pid].isc === 'auto_fuel_cc' ? undefined : (p.iscRate ?? 0),
+    }))
     getCostingReference(laneId).then((res) => {
       if (!active || res.error) return
       setReference(res.data)
@@ -135,10 +160,26 @@ export function CostCalculator({
 
   function reopen(row: CostCalculationRow) {
     setInputs(row.inputs)
+    setProfileId(inferProfileFromInputs(row.inputs))
     setLabel(row.label ?? '')
     setSaved(null)
     if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' })
   }
+
+  // Switch the goods profile: reconcile ISC to the profile's rule — vehicles hand
+  // ISC back to the fuel/CC derivation (unset it); others keep an explicit rate
+  // (preserve the entered value, default 0). Driver fields never carried by the
+  // engine simply stop rendering; their stored values are inert.
+  function applyProfile(id: GoodsProfileId) {
+    setProfileId(id)
+    setInputs((p) => ({
+      ...p,
+      iscRate: GOODS_PROFILES[id].isc === 'auto_fuel_cc' ? undefined : (p.iscRate ?? 0),
+    }))
+    setSaved(null)
+  }
+
+  const profile = GOODS_PROFILES[profileId]
 
   function applyHsCode(code: string) {
     setHsCode(code)
@@ -186,24 +227,48 @@ export function CostCalculator({
         {/* Inputs */}
         <div className="flex flex-col gap-3">
           <Group title="Identidad">
-            <Text label="Producto" value={inputs.productName} onChange={(v) => set('productName', v)} />
-            <Text label="Marca" value={inputs.brand} onChange={(v) => set('brand', v)} />
-            <Text label="Modelo" value={inputs.model} onChange={(v) => set('model', v)} />
-            <label className="flex flex-col gap-1">
-              <span className={LABEL}>Combustible</span>
+            {/* Goods type — filters the form to this kind of cargo's cost drivers. */}
+            <label className="flex flex-col gap-1 sm:col-span-2">
+              <span className={LABEL}>
+                Tipo de mercancía
+                <span className="ml-1 lowercase text-ink-secondary">· {profile.hintEs}</span>
+              </span>
               <select
-                value={inputs.fuelType}
-                onChange={(e) => set('fuelType', e.target.value as ImportInputs['fuelType'])}
+                value={profileId}
+                onChange={(e) => applyProfile(e.target.value as GoodsProfileId)}
                 className={INPUT}
               >
-                <option value="gasoline">gasoline</option>
-                <option value="diesel">diesel</option>
-                <option value="hybrid">hybrid</option>
-                <option value="electric">electric</option>
+                {GOODS_PROFILE_ORDER.map((id) => (
+                  <option key={id} value={id}>
+                    {GOODS_PROFILES[id].labelEs}
+                  </option>
+                ))}
               </select>
             </label>
-            <Num label="Cilindrada CC" value={inputs.engineCC} onChange={(v) => set('engineCC', v)} step="1" />
-            <Num label="Año" value={inputs.year} onChange={(v) => set('year', v)} step="1" />
+
+            {profile.identity.map((f) => (
+              <Text key={f.key} label={f.labelEs} value={inputs[f.key]} onChange={(v) => set(f.key, v)} />
+            ))}
+
+            {profile.vehicleDrivers ? (
+              <>
+                <label className="flex flex-col gap-1">
+                  <span className={LABEL}>Combustible</span>
+                  <select
+                    value={inputs.fuelType}
+                    onChange={(e) => set('fuelType', e.target.value as ImportInputs['fuelType'])}
+                    className={INPUT}
+                  >
+                    <option value="gasoline">gasoline</option>
+                    <option value="diesel">diesel</option>
+                    <option value="hybrid">hybrid</option>
+                    <option value="electric">electric</option>
+                  </select>
+                </label>
+                <Num label="Cilindrada CC" value={inputs.engineCC} onChange={(v) => set('engineCC', v)} step="1" />
+                <Num label="Año" value={inputs.year} onChange={(v) => set('year', v)} step="1" />
+              </>
+            ) : null}
           </Group>
 
           <Group title="Valores">
@@ -245,6 +310,18 @@ export function CostCalculator({
           <Group title="Tasas (%)">
             <Text label="HS code → Ad Valorem" value={hsCode} onChange={applyHsCode} />
             <Num label="Ad Valorem" value={pct(inputs.adValoremRate)} onChange={(v) => set('adValoremRate', v / 100)} />
+            {profile.isc === 'zero_editable' ? (
+              <Num label="ISC" value={pct(inputs.iscRate ?? 0)} onChange={(v) => set('iscRate', v / 100)} />
+            ) : (
+              <label className="flex flex-col gap-1">
+                <span className={LABEL}>
+                  ISC<span className="ml-1 lowercase text-ink-secondary">· combustible/cc</span>
+                </span>
+                <div className={`${INPUT} text-ink-secondary`} data-numeric>
+                  {pct(preview?.iscRate ?? 0)}
+                </div>
+              </label>
+            )}
             <Num label="IGV" value={pct(inputs.igvRate)} onChange={(v) => set('igvRate', v / 100)} />
             <Num label="Percepción" value={pct(inputs.percepcionRate)} onChange={(v) => set('percepcionRate', v / 100)} />
             <Num label="Seguro" value={pct(inputs.insuranceRate)} onChange={(v) => set('insuranceRate', v / 100)} />
