@@ -42,8 +42,7 @@ export interface ClientFormInitial {
   contactRole?: string
 }
 
-/** Build the form's starting values from an existing client (edit) — the caller
- *  passes this, or a WhatsApp draft, or {} for a blank create. */
+/** Build the form's starting values from an existing client (edit). */
 export function initialFromClient(c: ClientListItem): ClientFormInitial {
   return {
     id: c.id,
@@ -70,25 +69,25 @@ export function initialFromClient(c: ClientListItem): ClientFormInitial {
 /**
  * The client create/edit form. Create (no initial.id) → createClient; edit
  * (initial.id) → updateClient. Also the review surface for a WhatsApp-extracted
- * draft (the draft is passed as `initial`; nothing persists until the human saves
- * — Directive 7). Brands + roster come from the parent (no self-fetch).
+ * draft: `aiFilled` names the fields Mister populated, so each is badged "IA" and
+ * a banner surfaces what's still blank (Directive 7 — the human reviews + saves).
  */
 export function ClientForm({
   locale,
   brands,
   roster,
   initial = {},
+  aiFilled,
   onDone,
   onCancel,
-  brandLocked = false,
 }: {
   locale: Locale
   brands: ClientBrandOption[]
   roster: ClientOwnerOption[]
   initial?: ClientFormInitial
+  aiFilled?: Set<string>
   onDone: (item: ClientListItem) => void
   onCancel: () => void
-  brandLocked?: boolean
 }) {
   const isEdit = Boolean(initial.id)
   const [error, setError] = useState<string | null>(null)
@@ -136,9 +135,7 @@ export function ClientForm({
         contactEmail: contactEmail.trim() || null,
         contactRole: contactRole.trim() || null,
       }
-      const res = isEdit
-        ? await updateClient({ id: initial.id!, ...payload })
-        : await createClient(payload)
+      const res = isEdit ? await updateClient({ id: initial.id!, ...payload }) : await createClient(payload)
       if (res.error) {
         setError(res.error.message)
         return
@@ -153,11 +150,24 @@ export function ClientForm({
   const legend = 'font-mono text-label uppercase tracking-[0.12em] text-lane-accent'
   const canSave = Boolean(brandId) && name.trim().length > 0 && !saving
   const L = (o: { es: string; en: string }) => (locale === 'es' ? o.es : o.en)
+  const ai = (k: string) => Boolean(aiFilled?.has(k))
 
-  function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  // Live "still to complete" list — the important fields Mister can't fill (brand)
+  // or didn't find, shown so the reviewer sees the gaps at a glance.
+  const missing: string[] = []
+  if (!brandId) missing.push(t({ es: 'Marca (obligatoria)', en: 'Brand (required)' }, locale))
+  if (!country.trim()) missing.push(t({ es: 'País', en: 'Country' }, locale))
+  if (!category.trim()) missing.push(t({ es: 'Categoría', en: 'Category' }, locale))
+  if (!demand.trim()) missing.push(t({ es: 'Demanda', en: 'Demand' }, locale))
+  if (!contactName.trim()) missing.push(t({ es: 'Contacto', en: 'Contact' }, locale))
+
+  function Field({ label, k, children }: { label: string; k?: string; children: React.ReactNode }) {
     return (
       <label className="flex flex-col gap-1">
-        <span className={lbl}>{label}</span>
+        <span className={`flex items-center gap-1.5 ${lbl}`}>
+          {label}
+          {k && ai(k) ? <IaChip locale={locale} /> : null}
+        </span>
         {children}
       </label>
     )
@@ -165,16 +175,40 @@ export function ClientForm({
 
   return (
     <div className="flex w-full flex-col gap-4">
+      {aiFilled ? (
+        <div className="flex flex-col gap-1 rounded-card border border-lane-accent bg-surface-2 p-3">
+          <span className="font-mono text-label uppercase tracking-[0.1em] text-lane-accent">
+            ✨ {t({ es: 'Perfil extraído por Mister', en: 'Profile extracted by Mister' }, locale)}
+          </span>
+          <span className="font-ui text-label text-ink-secondary">
+            {t(
+              {
+                es: `Completó ${aiFilled.size} campos (marcados IA). Revísalos y completa lo que falte.`,
+                en: `Filled ${aiFilled.size} fields (marked AI). Review them and complete the rest.`,
+              },
+              locale,
+            )}
+          </span>
+          {missing.length ? (
+            <span className="font-ui text-label text-ink-secondary">
+              <span className="text-negative">
+                {t({ es: 'Falta por completar', en: 'Still to complete' }, locale)}:
+              </span>{' '}
+              {missing.join(' · ')}
+            </span>
+          ) : null}
+        </div>
+      ) : null}
+
       {/* Identity & origin */}
       <div className="flex flex-col gap-2">
         <span className={legend}>{t({ es: 'Identidad y origen', en: 'Identity & origin' }, locale)}</span>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label={t({ es: 'Marca', en: 'Brand' }, locale)}>
             <select
-              className={field}
+              className={`${field} ${aiFilled && !brandId ? 'border-negative' : ''}`}
               value={brandId}
               onChange={(e) => setBrandId(e.target.value)}
-              disabled={brandLocked}
             >
               <option value="">{t({ es: '— Marca —', en: '— Brand —' }, locale)}</option>
               {brands.map((b) => (
@@ -184,10 +218,10 @@ export function ClientForm({
               ))}
             </select>
           </Field>
-          <Field label={t({ es: 'Nombre o razón social', en: 'Name / company' }, locale)}>
+          <Field label={t({ es: 'Nombre o razón social', en: 'Name / company' }, locale)} k="name">
             <input className={field} value={name} onChange={(e) => setName(e.target.value)} />
           </Field>
-          <Field label={t({ es: 'Origen del lead', en: 'Lead source' }, locale)}>
+          <Field label={t({ es: 'Origen del lead', en: 'Lead source' }, locale)} k="source">
             <select className={field} value={source} onChange={(e) => setSource(e.target.value as ClientSource | '')}>
               <option value="">{t({ es: '— Origen —', en: '— Source —' }, locale)}</option>
               {SOURCE_OPTIONS.map((o) => (
@@ -198,13 +232,13 @@ export function ClientForm({
             </select>
           </Field>
           <div className="grid grid-cols-3 gap-2">
-            <Field label={t({ es: 'País', en: 'Country' }, locale)}>
+            <Field label={t({ es: 'País', en: 'Country' }, locale)} k="country">
               <input className={field} value={country} onChange={(e) => setCountry(e.target.value)} />
             </Field>
-            <Field label={t({ es: 'Región', en: 'Region' }, locale)}>
+            <Field label={t({ es: 'Región', en: 'Region' }, locale)} k="region">
               <input className={field} value={region} onChange={(e) => setRegion(e.target.value)} />
             </Field>
-            <Field label={t({ es: 'Ciudad', en: 'City' }, locale)}>
+            <Field label={t({ es: 'Ciudad', en: 'City' }, locale)} k="city">
               <input className={field} value={city} onChange={(e) => setCity(e.target.value)} />
             </Field>
           </div>
@@ -215,7 +249,7 @@ export function ClientForm({
       <div className="flex flex-col gap-2">
         <span className={legend}>{t({ es: 'Qué compra', en: 'What they buy' }, locale)}</span>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <Field label={t({ es: 'Perfil de compra', en: 'Buyer archetype' }, locale)}>
+          <Field label={t({ es: 'Perfil de compra', en: 'Buyer archetype' }, locale)} k="archetype">
             <select
               className={field}
               value={archetype}
@@ -229,11 +263,14 @@ export function ClientForm({
               ))}
             </select>
           </Field>
-          <Field label={t({ es: 'Categoría de interés', en: 'Category of interest' }, locale)}>
+          <Field label={t({ es: 'Categoría de interés', en: 'Category of interest' }, locale)} k="category">
             <input className={field} value={category} onChange={(e) => setCategory(e.target.value)} />
           </Field>
           <label className="flex flex-col gap-1 sm:col-span-2">
-            <span className={lbl}>{t({ es: 'Demanda', en: 'Demand' }, locale)}</span>
+            <span className={`flex items-center gap-1.5 ${lbl}`}>
+              {t({ es: 'Demanda', en: 'Demand' }, locale)}
+              {ai('demand') ? <IaChip locale={locale} /> : null}
+            </span>
             <textarea
               className={`${field} min-h-[64px] resize-y`}
               value={demand}
@@ -244,7 +281,7 @@ export function ClientForm({
               )}
             />
           </label>
-          <Field label={t({ es: 'Moneda', en: 'Currency' }, locale)}>
+          <Field label={t({ es: 'Moneda', en: 'Currency' }, locale)} k="currency">
             <select className={field} value={currency} onChange={(e) => setCurrency(e.target.value)}>
               {CURRENCIES.map((c) => (
                 <option key={c} value={c}>
@@ -293,7 +330,10 @@ export function ClientForm({
           </Field>
         </div>
         <label className="flex flex-col gap-1">
-          <span className={lbl}>{t({ es: 'Notas', en: 'Notes' }, locale)}</span>
+          <span className={`flex items-center gap-1.5 ${lbl}`}>
+            {t({ es: 'Notas', en: 'Notes' }, locale)}
+            {ai('notes') ? <IaChip locale={locale} /> : null}
+          </span>
           <textarea
             className={`${field} min-h-[56px] resize-y`}
             value={notes}
@@ -306,16 +346,16 @@ export function ClientForm({
       <div className="flex flex-col gap-2">
         <span className={legend}>{t({ es: 'Contacto principal', en: 'Primary contact' }, locale)}</span>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <Field label={t({ es: 'Nombre', en: 'Name' }, locale)}>
+          <Field label={t({ es: 'Nombre', en: 'Name' }, locale)} k="contactName">
             <input className={field} value={contactName} onChange={(e) => setContactName(e.target.value)} />
           </Field>
-          <Field label={t({ es: 'Cargo', en: 'Role' }, locale)}>
+          <Field label={t({ es: 'Cargo', en: 'Role' }, locale)} k="contactRole">
             <input className={field} value={contactRole} onChange={(e) => setContactRole(e.target.value)} />
           </Field>
-          <Field label="WhatsApp">
+          <Field label="WhatsApp" k="contactWhatsapp">
             <input className={field} value={contactWhatsapp} onChange={(e) => setContactWhatsapp(e.target.value)} />
           </Field>
-          <Field label="Email">
+          <Field label="Email" k="contactEmail">
             <input className={field} value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} />
           </Field>
         </div>
@@ -345,5 +385,17 @@ export function ClientForm({
         </button>
       </div>
     </div>
+  )
+}
+
+/** A small "IA" badge marking a field Mister auto-filled from the chat. */
+function IaChip({ locale }: { locale: Locale }) {
+  return (
+    <span
+      className="rounded-pill border border-lane-accent px-1 font-mono text-[10px] leading-tight tracking-[0.08em] text-lane-accent"
+      title={locale === 'es' ? 'Completado por Mister' : 'Filled by Mister'}
+    >
+      IA
+    </span>
   )
 }
