@@ -19,6 +19,7 @@ import {
   TORRE_ARTIFACT_KINDS,
   parseTorreArtifact,
 } from '@/lib/torre/artifacts'
+import { cotizacionPrintModel, type CotizacionPrintModel } from '@/lib/torre/print'
 import { canApproveTorre, approveSideEffect, blockedReason, type Localized } from '@/lib/torre/review-logic'
 import {
   mapTorreDraftRow,
@@ -69,6 +70,31 @@ export async function listTorreDrafts(input: ListTorreDraftsInput = {}): Promise
   if (error) return fail('FORBIDDEN_LANE', 'No se pudo listar / Could not list')
   const rows = ((data ?? []) as unknown as RawTorreDraftRow[]).map(mapTorreDraftRow).filter((r): r is TorreDraftRecord => r !== null)
   return ok(rows)
+}
+
+/**
+ * Read-only: the branded PRINT MODEL for a Torre cotización draft, RLS-scoped by
+ * id. Backs the `/torre/cotizacion/[id]/document` print page (L1). The model is
+ * assembled by the tested pure `cotizacionPrintModel` — this action only loads +
+ * validates the artifact and hands it over; it prices/computes nothing. A blocked
+ * payload still renders (the component marks it "no aprobable" — honesty), and a
+ * non-COTIZACION artifact is refused.
+ */
+export async function getTorreCotizacionPrint(draftId: string): Promise<ActionResult<CotizacionPrintModel>> {
+  const parsed = uuid.safeParse(draftId)
+  if (!parsed.success) return fail('VALIDATION', 'ID inválido / Invalid id')
+  const auth = await requireUser()
+  if (!auth.ok) return auth.error
+
+  const { data: raw } = await auth.supabase.from('ai_drafts').select(TORRE_DRAFT_SELECT_COLS).eq('id', parsed.data).maybeSingle()
+  if (!raw) return fail('FORBIDDEN_LANE', 'Cotización no encontrada / Quotation not found')
+  const record = mapTorreDraftRow(raw as unknown as RawTorreDraftRow)
+  if (!record) return fail('VALIDATION', 'No es un artefacto Torre / Not a Torre artifact')
+
+  const payload = parseTorreArtifact(record.payload)
+  if (!payload || payload.kind !== 'COTIZACION') return fail('VALIDATION', 'No es una cotización / Not a quotation')
+
+  return ok(cotizacionPrintModel(payload, { issuedAt: record.createdAt }))
 }
 
 export interface ApproveTorreResult {

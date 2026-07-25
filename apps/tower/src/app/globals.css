@@ -622,7 +622,8 @@
 .qdoc-page,
 .fdoc-page,
 .csheet-page,
-.rbqdoc-page {
+.rbqdoc-page,
+.tcot-page {
   color-scheme: light;
 }
 

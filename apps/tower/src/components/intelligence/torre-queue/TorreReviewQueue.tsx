@@ -227,13 +227,25 @@ export function TorreReviewQueue({ locale = DEFAULT_LOCALE }: { locale?: Locale 
               </button>
 
               {selected.payload.kind === 'COTIZACION' && (
-                <button
-                  type="button"
-                  onClick={() => void exportCotizacionXlsx(selected.payload as CotizacionPayload, locale === 'en' ? 'en' : 'es')}
-                  className="rounded-control border border-line px-3 py-2 font-mono text-label uppercase tracking-[0.08em] text-ink-secondary outline-none hover:text-ink-primary focus-visible:border-lane-accent"
-                >
-                  XLSX
-                </button>
+                <>
+                  <button
+                    type="button"
+                    onClick={() => void exportCotizacionXlsx(selected.payload as CotizacionPayload, locale === 'en' ? 'en' : 'es')}
+                    className="rounded-control border border-line px-3 py-2 font-mono text-label uppercase tracking-[0.08em] text-ink-secondary outline-none hover:text-ink-primary focus-visible:border-lane-accent"
+                  >
+                    XLSX
+                  </button>
+                  {/* Branded PDF — opens the standalone A4 cotización document (L1),
+                      print-to-PDF for the client. New tab so the queue stays put. */}
+                  <a
+                    href={`/torre/cotizacion/${selected.id}/document${locale === 'en' ? '?lang=en' : ''}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-control border border-line px-3 py-2 font-mono text-label uppercase tracking-[0.08em] text-ink-secondary outline-none hover:text-ink-primary focus-visible:border-lane-accent"
+                  >
+                    PDF
+                  </a>
+                </>
               )}
               {selected.payload.kind === 'HOJA_COSTOS' && (
                 <button

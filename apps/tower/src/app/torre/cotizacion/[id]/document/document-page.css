@@ -1,0 +1,236 @@
+/* Page frame for the Mister Torre cotización document. Like the pipeline quote
+   doc, it forces a light ground over TOWER's dark root <body>, centers an A4
+   sheet, and prints clean (toolbar hidden). Self-scoped hardcoded palette — the
+   document exemption from the token system (QA gate 2); no livery token is used
+   here, so it never inverts under [data-theme='dark']. */
+
+.tcot-page {
+  min-height: 100vh;
+  background: #52555a; /* neutral desk behind the white sheet */
+  padding: 32px 16px 64px;
+  color: #0f1216;
+}
+
+/* Print / save-PDF toolbar */
+.tcot-toolbar {
+  max-width: 820px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 14px;
+  background: #001121; /* Wings navy */
+  border: 1px solid #0b2c60;
+  color: #e8eaed;
+  font-family: var(--font-ui, system-ui, sans-serif);
+}
+.tcot-toolbar-label {
+  font-family: var(--font-mono, monospace);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.tcot-toolbar-btn {
+  padding: 8px 14px;
+  background: #c4933f; /* Wings gold */
+  color: #001121;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.tcot-toolbar-btn:hover {
+  background: #d8a94e;
+}
+
+/* The A4 sheet */
+.tcot {
+  max-width: 820px;
+  margin: 0 auto;
+  background: #ffffff;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.35);
+  padding: 48px 56px;
+  font-family: var(--font-ui, system-ui, sans-serif);
+  font-size: 14px;
+  line-height: 1.5;
+  color: #0f1216;
+}
+
+.tcot-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  border-bottom: 2px solid #001121;
+  padding-bottom: 16px;
+}
+.tcot-brand {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #001121;
+}
+.tcot-title {
+  margin-top: 2px;
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #5b6578;
+}
+.tcot-ver {
+  text-align: right;
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  color: #5b6578;
+}
+
+/* Honesty banner — a blocked draft can never masquerade as a clean client doc */
+.tcot-banner {
+  margin-top: 16px;
+  padding: 10px 14px;
+  background: #fbeaea;
+  border: 1px solid #d8b3b3;
+  color: #8a1f1f;
+  font-size: 13px;
+}
+
+.tcot-section {
+  margin-top: 24px;
+}
+.tcot-section-h {
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #5b6578;
+  margin-bottom: 8px;
+}
+
+.tcot-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 32px;
+}
+.tcot-meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid #eceef1;
+  padding-bottom: 4px;
+}
+.tcot-meta-k {
+  color: #5b6578;
+}
+.tcot-meta-v {
+  font-family: var(--font-mono, monospace);
+  color: #0f1216;
+}
+
+.tcot-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.tcot-table th {
+  text-align: left;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #5b6578;
+  border-bottom: 1px solid #001121;
+  padding: 6px 8px;
+}
+.tcot-table td {
+  padding: 8px;
+  border-bottom: 1px solid #eceef1;
+  font-family: var(--font-mono, monospace);
+}
+.tcot-table .tcot-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.tcot-list {
+  margin: 0;
+  padding-left: 18px;
+}
+.tcot-list li {
+  margin-bottom: 4px;
+}
+
+.tcot-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  font-size: 12px;
+  color: #5b6578;
+}
+
+.tcot-foot {
+  margin-top: 32px;
+  border-top: 1px solid #eceef1;
+  padding-top: 12px;
+  font-size: 11px;
+  color: #6b7280;
+}
+.tcot-endorse {
+  margin-top: 6px;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: #001121;
+}
+
+.tcot-error {
+  max-width: 820px;
+  margin: 80px auto;
+  padding: 40px;
+  background: #ffffff;
+  text-align: center;
+  font-family: var(--font-ui, system-ui, sans-serif);
+}
+.tcot-error-sub {
+  margin-top: 8px;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+/* Narrow viewport: shrink the desk margin, tighten the sheet, wrap the toolbar. */
+@media (max-width: 640px) {
+  .tcot-page {
+    padding: 16px 10px 48px;
+  }
+  .tcot {
+    padding: 28px 20px;
+  }
+  .tcot-meta {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .tcot-toolbar {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .tcot-toolbar-btn {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+}
+
+@media print {
+  .tcot-page {
+    background: #ffffff;
+    padding: 0;
+  }
+  .tcot {
+    box-shadow: none;
+    max-width: none;
+    padding: 0;
+  }
+  [data-print-hidden] {
+    display: none !important;
+  }
+}
