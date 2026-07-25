@@ -17,7 +17,7 @@ import { WhatsappImport } from './WhatsappImport'
 const TAG = 'CLI · Clientes'
 const TITLE = { es: 'Clientes', en: 'Clients' }
 
-type Panel = { initial: ClientFormInitial } | null
+type Panel = { initial: ClientFormInitial; aiFilled?: Set<string> } | null
 
 /** A WhatsApp-extracted draft → the form's starting values (source pinned to
  *  WhatsApp; summary → notes). The operator picks the brand and reviews before saving. */
@@ -36,6 +36,27 @@ function draftToInitial(d: ClientExtractDraft): ClientFormInitial {
     contactWhatsapp: d.contactWhatsapp ?? '',
     contactRole: d.contactRole ?? '',
   }
+}
+
+/** Which form fields the extraction populated — for the "IA" badges + the
+ *  still-to-complete banner. `source` is always set (pinned to WhatsApp). */
+function aiFilledFromDraft(d: ClientExtractDraft): Set<string> {
+  const s = new Set<string>(['source'])
+  const add = (k: string, v: unknown) => {
+    if (v) s.add(k)
+  }
+  add('name', d.name)
+  add('country', d.country)
+  add('city', d.city)
+  add('archetype', d.archetype)
+  add('category', d.category)
+  add('demand', d.demand)
+  add('currency', d.currency)
+  add('notes', d.summary)
+  add('contactName', d.contactName)
+  add('contactWhatsapp', d.contactWhatsapp)
+  add('contactRole', d.contactRole)
+  return s
 }
 
 /**
@@ -151,7 +172,7 @@ export function ClientsView({
           onCancel={() => setImporting(false)}
           onDraft={(d) => {
             setImporting(false)
-            setPanel({ initial: draftToInitial(d) })
+            setPanel({ initial: draftToInitial(d), aiFilled: aiFilledFromDraft(d) })
           }}
         />
       ) : null}
@@ -167,13 +188,16 @@ export function ClientsView({
           <span className="mb-3 block font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
             {panel.initial.id
               ? t({ es: 'Editar cliente', en: 'Edit client' }, locale)
-              : t({ es: 'Nuevo cliente', en: 'New client' }, locale)}
+              : panel.aiFilled
+                ? t({ es: 'Revisar perfil de WhatsApp', en: 'Review WhatsApp profile' }, locale)
+                : t({ es: 'Nuevo cliente', en: 'New client' }, locale)}
           </span>
           <ClientForm
             locale={locale}
             brands={brands}
             roster={roster}
             initial={panel.initial}
+            aiFilled={panel.aiFilled}
             onDone={upsert}
             onCancel={() => setPanel(null)}
           />
