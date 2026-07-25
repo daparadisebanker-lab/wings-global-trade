@@ -35,8 +35,12 @@ export function TopBar({
   hasModules?: boolean
   locale?: Locale
 }) {
+  // z-[25]: as sticky app chrome the header sits ABOVE in-page popovers (the
+  // z-20 EntityCombobox dropdown, the z-20 bottom PublishBar) yet BELOW the mobile
+  // drawer backdrop (z-30) that must cover it. Desktop reverts to normal-flow
+  // relative z-10 (the rail/Dock already persist there).
   return (
-    <header className="tower-bar sticky top-0 z-20 flex min-w-0 items-center justify-between gap-2 border-b border-line bg-surface-1 px-3 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:gap-4 sm:px-4 md:relative md:z-10 md:pt-3">
+    <header className="tower-bar sticky top-0 z-[25] flex min-w-0 items-center justify-between gap-2 border-b border-line bg-surface-1 px-3 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:gap-4 sm:px-4 md:relative md:z-10 md:pt-3">
       <div className="flex min-w-0 items-center gap-2 sm:gap-3">
         {/* Hamburger — opens the module drawer on mobile only */}
         <button

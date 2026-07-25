@@ -505,15 +505,26 @@
 /* — Materials (the depth system). M1 blurs the ground; @supports guards the
    fallback so unsupported browsers get a 94%-opaque chrome instead. — */
 .material-chrome {
-  /* Opaque fallback FIRST (progressive enhancement): an engine old enough to
-     lack backdrop-filter also lacks color-mix(), so both color-mix lines below
-     would be dropped — this solid declaration guarantees a background survives.
-     Modern engines override it with the translucent one. (Fixes review F1.) */
+  /* Opaque, always-readable base. This is the fallback for any engine where the
+     blur will not render — critically Safari/iOS ≤17, which support color-mix()
+     but NOT unprefixed backdrop-filter, and whose -webkit- prefix autoprefixer
+     strips from the build (no browserslist → unprefixed-only target). Keeping the
+     translucent fill OUT of this base means those engines never get the
+     translucent-without-blur state (72% fill + no blur = page content bleeding
+     through the shade's text). Gate the glass on real backdrop-filter support. */
   background: var(--surface-raised);
-  background: color-mix(in srgb, var(--surface-raised) 72%, transparent);
-  -webkit-backdrop-filter: blur(24px) saturate(1.6);
-  backdrop-filter: blur(24px) saturate(1.6);
   border: 1px solid var(--line-hairline);
+}
+/* Only where the blur actually renders do we go translucent. The condition is
+   unprefixed on purpose: it must be FALSE on the ≤17 band (whose -webkit-only
+   declaration the build drops), so they stay on the opaque base above — matching
+   the surface they had before this became the mobile Control Center material. */
+@supports (backdrop-filter: blur(1px)) {
+  .material-chrome {
+    background: color-mix(in srgb, var(--surface-raised) 72%, transparent);
+    -webkit-backdrop-filter: blur(24px) saturate(1.6);
+    backdrop-filter: blur(24px) saturate(1.6);
+  }
 }
 .material-panel {
   background: var(--surface-raised);
