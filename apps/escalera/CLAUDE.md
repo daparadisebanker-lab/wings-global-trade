@@ -48,8 +48,9 @@ One wrong carton count in front of a buyer ends the tool's credibility, so:
   trade a pallet carries one SKU.
 - **The container meter measures WEIGHT, not volume.** Tiles fill a container by
   weight before volume; that note prints beside every fill bar and in every
-  export. Payloads come from `@wings/trade-ui` `CONTAINER_KINDS` — this app never
-  keeps its own copy.
+  export. Payloads come from `@wings/trade-ui/containers` `CONTAINER_KINDS` — this
+  app never keeps its own copy, and imports the subpath rather than the barrel
+  (see §4).
 - `PACKING_CONSTANTS_VERSION` is stamped on every export. Bump it when any
   constant or rule changes.
 - `pnpm test` must stay green. It is the only thing standing between a buyer and
@@ -73,7 +74,52 @@ Fields the catalogs do not state (material, PEI, slip rating, water absorption,
 shade variation) are `undefined` and render as "pendiente". Do not fill them in
 from a photograph.
 
-## 4 · Data
+## 4 · The motion system (Rung 1 is a feel, not a feature)
+
+**THE ONE THING:** *a card carries the velocity of the throw all the way off
+screen, and the stack behind rises to meet the thumb before it lands.* A card
+that exits on a fixed tween is a div sliding; a card that leaves at the speed it
+was thrown is a fired ceramic chip. Everything below serves that difference,
+because at this rung the feel **is** the product.
+
+Four files, four jobs — do not smear them together:
+
+| File | Owns |
+|---|---|
+| `lib/motion.ts` | every tunable number + `judgeThrow`, the commit rule. **No component may hold a motion constant.** |
+| `lib/spring.ts` | the integrator (damped harmonic, fixed 1/240s substep) and the shared rAF loop |
+| `components/Deck.tsx` | wiring only — gesture in, transforms out |
+| `globals.css` | the decorative motion (entrance, counter tick, toast). CSS needs no runtime |
+
+Rules that are not preferences:
+
+- **@use-gesture owns the pointer.** It reports velocity in px/ms, direction and
+  tap-vs-drag; a `drag` prop cannot. Never set `pointer: { touch: true }` — that
+  switches to touch events *instead of* pointer events and silently kills mouse
+  dragging on desktop. No unit test catches it; only a real browser does.
+- **Release velocity is injected into the spring.** `judgeThrow` returns signed
+  px/s and it goes straight into `Spring.to(target, velocity)`. Never re-animate
+  a committed card from rest.
+- **Zero React renders during a drag.** The gesture writes to springs; one rAF
+  loop writes `transform` onto elements. React renders when the card *changes*,
+  never while it moves. Do not introduce state that updates per frame.
+- **Transform and opacity only.** No animated shadow, filter, width or colour on
+  the deck — they force paint mid-drag.
+- **The commit rule is unit-tested, not browser-tested.** Synthetic pointer
+  events cannot reach real flick speeds (a CDP-driven mouse tops out near the
+  threshold), so `judgeThrow` is a pure function with its own tests. Keep it that
+  way: if you move the rule back into the component, it becomes unprovable.
+- **The deck route ships no animation library.** framer-motion stays on the
+  muestrario side for `Reorder`. Importing it — or importing the
+  `@wings/trade-ui` **barrel**, which re-exports organs that depend on it — puts
+  ~76 kB back on the swipe surface. Use the `@wings/trade-ui/containers` subpath.
+- **Reduced motion collapses to a crossfade** (Tier-1 law): no flight, no
+  rotation, no tick. Not "a shorter animation".
+
+Budget: first load **134 kB gz** on the deck, **167 kB** on the muestrario —
+both inside the spec's <200 kB. Re-check on every dependency change.
+
+## 5 · Data
 
 - `src/data/tiles.ts` is **generated** — never hand-edit.
 - Rebuild: `python infrastructure/escalera/build_catalog.py --data-only` (regenerates
@@ -82,12 +128,20 @@ from a photograph.
 - Tile faces are cropped from the catalog sheets by a recursive XY-cut and served
   from `public/tiles/` (card) and `public/tiles/thumb/` (row).
 
-## 5 · Stack & conventions
+## 6 · Stack & conventions
 
 Next.js 15 App Router · TypeScript · Tailwind reading CSS custom properties ·
-framer-motion (gesture springs) · `decimal.js` · `idb` · `@react-pdf/renderer`
-(**dynamically imported** — it must never enter the deck's bundle) · `wa.me`
-composer. **Zero WebGL, zero backend, no accounts.**
+`@use-gesture/react` (pointer kinematics) + this app's own spring integrator
+(`lib/spring.ts`) on the deck · framer-motion on the muestrario only (`Reorder`) ·
+`decimal.js` · `idb` · `@react-pdf/renderer` (**dynamically imported** — it must
+never enter a first load) · `wa.me` composer.
+**Zero WebGL, zero backend, no accounts.**
+
+Deliberately NOT in the stack, and why — the vision leads, the stack follows:
+GSAP/ScrollTrigger/Lenis are scroll-narrative instruments and the deck has no
+scroll; Three.js/R3F/OGL are Rung 5's problem and Rungs 1–3 are explicitly zero
+WebGL; Tone.js because a phone in a warehouse is held, not listened to — the
+tactile channel here is haptics, and audio on every swipe is an irritant.
 
 - Absolute imports via `@/` (resolves within `apps/escalera/src`).
 - Tokens: Tier-1 `@wings/trade-ui` `tokens/skeleton.css` (frozen) + this app's

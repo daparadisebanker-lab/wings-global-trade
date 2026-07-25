@@ -118,6 +118,112 @@
 }
 
 @layer components {
+  /* ── The deck's decorative motion ──────────────────────────────────────
+     Everything here is CSS on purpose. The card's own transform belongs to the
+     frame loop (lib/spring.ts); these are the moments around it — the entrance,
+     the counter tick, the toast — and none of them needs a runtime.
+     Reduced motion collapses each one to a crossfade (Tier-1 law).          */
+
+  /* A card in the real world pivots about the hand holding it, not about its
+     own middle. The origin below the bottom edge is what makes the tilt read
+     as physical rather than as a rotating rectangle. */
+  .card-pivot {
+    transform-origin: 50% 140%;
+    backface-visibility: hidden;
+  }
+
+  /* The first three seconds: the pile assembles from the bottom up, so the deck
+     declares itself as a physical stack before the buyer touches anything. */
+  @keyframes deck-enter {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 34px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .deck-enter {
+    animation: deck-enter 620ms var(--spring-settle) both;
+  }
+  .deck-enter-1 {
+    animation-delay: 70ms;
+  }
+  .deck-enter-2 {
+    animation-delay: 140ms;
+  }
+
+  /* The collect tick. It overshoots, because a keep should feel earned. */
+  @keyframes counter-tick {
+    0% {
+      transform: scale(1.42);
+    }
+    60% {
+      transform: scale(0.96);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  .counter-tick {
+    animation: counter-tick 420ms var(--spring-snappy) both;
+  }
+
+  @keyframes toast-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 60px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes toast-out {
+    to {
+      opacity: 0;
+      transform: translate3d(0, 60px, 0);
+    }
+  }
+  .toast-enter {
+    animation: toast-in 260ms var(--spring-settle) both;
+  }
+  .toast-exit {
+    animation: toast-out 180ms var(--ease-exit) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    @keyframes deck-enter {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+    .counter-tick {
+      animation: none;
+    }
+    .toast-enter,
+    .toast-exit {
+      animation-duration: 100ms;
+    }
+    @keyframes toast-in {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+    @keyframes toast-out {
+      to {
+        opacity: 0;
+      }
+    }
+  }
+
   /* The stamped micro-label used on chips, column heads and the booth counter. */
   .stamp {
     font-family: var(--font-mono);

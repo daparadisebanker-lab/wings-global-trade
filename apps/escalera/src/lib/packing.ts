@@ -13,7 +13,11 @@
 //      Assumed values are surfaced in the UI and in every export — never hidden.
 
 import Decimal from 'decimal.js'
-import { CONTAINER_KINDS, type ContainerKindSpec } from '@wings/trade-ui'
+// Imported through the package's `/containers` subpath, not its barrel: the
+// barrel re-exports every organ, several of which pull in framer-motion, and
+// that would put an animation library on the deck route for the sake of two
+// numbers. Same shared source of truth, none of the weight.
+import { CONTAINER_KINDS, type ContainerKindSpec } from '@wings/trade-ui/containers'
 
 /**
  * Bump when any packing constant or rule below changes. Stamped onto every

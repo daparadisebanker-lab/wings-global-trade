@@ -7,7 +7,6 @@
 // things a buyer needs to read at arm's length — name, format, finish, status.
 // One tap flips to the spec side. One flip, no navigation.
 
-import { motion } from 'framer-motion'
 import { formatChip, type Tile } from '@/types/tile'
 import { fmtM2 } from '@/lib/packing'
 
@@ -69,11 +68,9 @@ export function TileCard({ tile, flipped, onFlip, kept, priority }: TileCardProp
   return (
     <div className="relative h-full w-full overflow-hidden rounded-panel bg-deck-1 shadow-elevation-3">
       {/* ── photo face ─────────────────────────────────────────────────── */}
-      <motion.div
-        className="absolute inset-0"
-        animate={{ opacity: flipped ? 0 : 1 }}
-        transition={{ duration: 0.18 }}
-        style={{ pointerEvents: flipped ? 'none' : 'auto' }}
+      <div
+        className="absolute inset-0 transition-opacity duration-200 ease-settle"
+        style={{ opacity: flipped ? 0 : 1, pointerEvents: flipped ? 'none' : 'auto' }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -113,14 +110,12 @@ export function TileCard({ tile, flipped, onFlip, kept, priority }: TileCardProp
             <span className="stamp text-gold-ink">En el muestrario</span>
           </div>
         )}
-      </motion.div>
+      </div>
 
       {/* ── spec face ──────────────────────────────────────────────────── */}
-      <motion.div
-        className="absolute inset-0 overflow-y-auto bg-deck-1 px-5 py-6"
-        animate={{ opacity: flipped ? 1 : 0 }}
-        transition={{ duration: 0.18 }}
-        style={{ pointerEvents: flipped ? 'auto' : 'none' }}
+      <div
+        className="absolute inset-0 overflow-y-auto bg-deck-1 px-5 py-6 transition-opacity duration-200 ease-settle"
+        style={{ opacity: flipped ? 1 : 0, pointerEvents: flipped ? 'auto' : 'none' }}
         aria-hidden={!flipped}
       >
         <p className="stamp text-deck-ink-dim">Ficha técnica</p>
@@ -163,7 +158,7 @@ export function TileCard({ tile, flipped, onFlip, kept, priority }: TileCardProp
         >
           Volver a la foto
         </button>
-      </motion.div>
+      </div>
     </div>
   )
 }

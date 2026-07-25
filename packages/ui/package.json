@@ -7,6 +7,7 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
+    "./containers": "./src/organs/diagrams/containerSpecs.ts",
     "./tokens/skeleton.css": "./tokens/skeleton.css"
   },
   "peerDependencies": {
