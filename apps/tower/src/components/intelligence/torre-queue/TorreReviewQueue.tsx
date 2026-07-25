@@ -18,9 +18,9 @@ import { approveTorreDraft, rejectTorreDraft } from '@/lib/actions/torre-review'
 import { approveSideEffect, canApproveTorre } from '@/lib/torre/review-logic'
 import { exportCotizacionXlsx, exportHojaCostosXlsx } from '@/lib/torre/export'
 import { CotizacionCard, HojaCostosCard, ComunicacionCard } from '@/components/shell/TorreQuoteArtifact'
+import { TorreDocumentArtifact } from '@/components/shell/TorreDocumentArtifact'
 import type { TorreDraftRecord } from '@/lib/torre/drafts'
 import type { CotizacionPayload, HojaCostosPayload } from '@/lib/torre/artifacts'
-import { documentMarkdown } from '@/lib/torre/documents'
 
 const KIND_TAG: Record<string, string> = {
   COTIZACION: 'COT', HOJA_COSTOS: 'HOJ', COMUNICACION: 'MSG',
@@ -176,12 +176,9 @@ export function TorreReviewQueue({ locale = DEFAULT_LOCALE }: { locale?: Locale 
               {selected.payload.kind === 'HOJA_COSTOS' && <HojaCostosCard payload={selected.payload} locale={locale} sweep={justApproved} />}
               {selected.payload.kind === 'COMUNICACION' && <ComunicacionCard payload={selected.payload} locale={locale} sweep={justApproved} />}
               {DOCUMENT_KINDS.has(selected.payload.kind) && (
-                <pre
-                  className="max-h-[60vh] overflow-auto whitespace-pre-wrap rounded-panel p-6 font-mono text-t0 leading-relaxed"
-                  style={{ background: MISTER_ARTIFACT.panelBg, color: MISTER_ARTIFACT.body, border: MISTER_ARTIFACT.border }}
-                >
-                  {documentMarkdown(selected.payload)}
-                </pre>
+                <div className="max-h-[60vh] overflow-auto">
+                  <TorreDocumentArtifact payload={selected.payload} locale={locale} />
+                </div>
               )}
             </div>
 
