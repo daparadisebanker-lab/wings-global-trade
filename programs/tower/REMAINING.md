@@ -225,18 +225,29 @@ each pointing at the pattern it copies:
   line-item interior edges to `grid.ts` `extras.proforma` (313.1 / 397.8 / 535.5)
   and do a browser `window.print()` smoke of all four routes once the app is up.
   (Also tracked under "Document grid — conformance follow-up" above.)
-- **(e) Prod drift: `tower_55_team_space`.** Applied to prod, file absent from
-  `supabase/migrations/` — must be reconciled before `tower_57` is written (see
-  the dedicated drift section below).
+- **(e) ~~Prod drift: `tower_55_team_space`~~ — RESOLVED.** Recovered verbatim
+  into `supabase/migrations/20260724160000_tower_55_team_space.sql`
+  (byte-identical to prod). One follow-up remains: a forward migration to add the
+  missing `audit_trigger()` on its two tables (see the drift section below).
 - **(f) `org_rules.ports_default` wiring + entity `validityText` from
   `validity_days`.** The a-ruling: derive an issuer's default destination ports
   from `tower.org_rules.ports_default` and compute `validityText` from the entity's
   `validity_days` rather than a stored string, so policy and identity stay their
   separate axes.
 
-## Drift: tower_55_team_space applied to prod, file absent from repo
-Prod ledger carries `tower_55_team_space` (version `20260724160000`) with no
-matching file in `supabase/migrations/`. Recover it into the repo before the next
-migration (tower_57+), or a `db push` diverges and numbers risk colliding (this is
-what forced issuing_entities to renumber 55→56). Cross-check `list_migrations`
-against `ls supabase/migrations` when writing the next migration.
+## ~~Drift: tower_55_team_space applied to prod, file absent from repo~~ — RESOLVED
+Recovered `supabase/migrations/20260724160000_tower_55_team_space.sql` verbatim
+from the prod ledger (`supabase_migrations.schema_migrations.statements[1]`) —
+verified **byte-identical** to what prod applied (ledger md5
+`026a3e7cf572c438132f2bbe2023e469`, 3385 bytes; the committed file adds only the
+required trailing newline). The repo and prod are now in sync; `tower_57` is safe
+to write. General law still stands: cross-check `list_migrations` against
+`ls supabase/migrations` before every new migration.
+
+**Follow-up (Directive 4 gap, do NOT hot-patch prod):** the recovered migration
+does not attach `audit_trigger()` to its two new mutating tables
+(`tower.team_notes`, `tower.team_note_mentions`) — it was applied that way before
+the file existed. The file was recovered *as applied* (recovery must not diverge
+from prod). Close the gap forward with a separate migration (`tower_57+`) that
+adds the audit triggers, never by editing this recovered file or hand-patching
+prod.
