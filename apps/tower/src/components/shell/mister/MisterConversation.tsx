@@ -53,6 +53,7 @@ export function MisterConversation() {
     setDraft,
     setPending,
     send,
+    stop,
     selectedArtifact,
     selectedSeq,
     hasCanvasContext,
@@ -174,6 +175,10 @@ export function MisterConversation() {
               <span className="dot" />
               <span className="dot" />
               <span className="dot" />
+              <span className="mister-working-label">{t({ es: 'Mister está trabajando', en: 'Mister is working' }, locale)}</span>
+              <button type="button" className="mister-stop" onClick={stop}>
+                {t({ es: 'Detener', en: 'Stop' }, locale)}
+              </button>
             </div>
           </div>
         ) : null}

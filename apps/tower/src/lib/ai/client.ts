@@ -30,6 +30,13 @@ function withThinkingOff<T extends object>(params: T, model: string): T {
   return params
 }
 
+/** Per-request ceiling so a hung or slow Anthropic call fails fast with a clean
+ *  thrown error instead of inheriting the SDK's ~10-minute default — which would
+ *  hang the caller (e.g. the Mister dock's server action) with no recovery. Kept
+ *  under the dock's 45s client-side watchdog so the server surfaces a typed error
+ *  before the UI gives up. */
+const REQUEST_TIMEOUT_MS = 40_000
+
 /** A base64 image attached to a completion — the supplier-screenshot vision path. */
 export interface ImageInput {
   /** e.g. 'image/png', 'image/jpeg', 'image/webp', 'image/gif'. */
@@ -88,6 +95,7 @@ class AnthropicIntelligenceClient implements IntelligenceClient {
         },
         req.model,
       ),
+      { timeout: REQUEST_TIMEOUT_MS },
     )
     let text = ''
     for (const block of res.content) {
@@ -107,6 +115,7 @@ class AnthropicIntelligenceClient implements IntelligenceClient {
         },
         req.model,
       ),
+      { timeout: REQUEST_TIMEOUT_MS },
     )
     for await (const event of stream) {
       if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {

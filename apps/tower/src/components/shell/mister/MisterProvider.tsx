@@ -33,6 +33,22 @@ const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : use
 /** One turn in the thread — the operator's message, or Mister's result. */
 export type MisterMsg = { who: 'op'; text: string; image?: string } | { who: 'mi'; result: CopilotResult }
 
+/** Watchdog for a single ask. A server action can't be aborted from the client, so
+ *  if the model hangs we stop waiting after this and free the dock (the in-flight
+ *  call is abandoned; the server-side timeout in lib/ai/client.ts bounds its cost). */
+const MISTER_TIMEOUT_MS = 45_000
+
+/** Never render a blank Mister bubble: an empty/whitespace text result becomes an
+ *  explicit "try again" message (the silent-empty-answer failure class). */
+function coerceResult(result: CopilotResult, locale: Locale): CopilotResult {
+  if (result.renderer === 'text' && !(result.text ?? '').trim()) {
+    return textResult(
+      t({ es: 'No pude generar una respuesta. Reformula la pregunta.', en: 'I could not produce an answer — try rephrasing.' }, locale),
+    )
+  }
+  return result
+}
+
 /** A screenshot staged for the next turn — base64 for the wire, dataURL for preview. */
 export type Pending = { mediaType: string; dataBase64: string; preview: string }
 
@@ -54,6 +70,8 @@ interface MisterContextValue {
   setDraft: (value: string) => void
   setPending: (value: Pending | null) => void
   send: () => Promise<void>
+  /** Bail out of the in-flight ask and free the dock (a live "Detener" control). */
+  stop: () => void
   /** Every renderable artifact produced this session, in order — the canvas switcher. */
   artifacts: ArtifactEntry[]
   /** The seq currently held on the canvas (the newest, unless the operator flipped back). */
@@ -105,6 +123,9 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
   const [getterVersion, setGetterVersion] = useState(0)
   // One-shot: the operator ✕'d the context chip, so the NEXT send skips inheritance.
   const [skipCanvasContext, setSkipCanvasContext] = useState(false)
+  // The current ask's resolver (set while a send is in flight) so `stop()` and the
+  // watchdog can settle the turn from outside the send() closure.
+  const activeFinish = useRef<((result: CopilotResult) => void) | null>(null)
 
   const send = useCallback(async () => {
     const text = draft.trim()
@@ -118,22 +139,43 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
     const seq = selectedSeqRef.current
     const context = skipCanvasContext ? undefined : (seq != null ? canvasGetters.current.get(seq)?.() : null) ?? undefined
     if (skipCanvasContext) setSkipCanvasContext(false) // one-shot
+
+    // The turn resolves EXACTLY once — whichever of the model result, an error, or
+    // the watchdog lands first — and always clears `busy`. This is the safety net
+    // for the "frozen Mister" failure: a hung model can no longer strand the dock.
+    let settled = false
+    const finish = (result: CopilotResult) => {
+      if (settled) return
+      settled = true
+      activeFinish.current = null
+      setThread((prev) => [...prev, { who: 'mi', result }])
+      setBusy(false)
+    }
+    activeFinish.current = finish
+    const watchdog = setTimeout(
+      () => finish(textResult(t({ es: 'Mister tardó demasiado. Intenta de nuevo.', en: 'Mister took too long — try again.' }, locale))),
+      MISTER_TIMEOUT_MS,
+    )
     try {
       const result = await askMister(
         text,
         attachment ? { mediaType: attachment.mediaType, dataBase64: attachment.dataBase64 } : undefined,
         context,
       )
-      setThread((prev) => [...prev, { who: 'mi', result: result.error ? textResult(result.error.message) : result.data }])
+      clearTimeout(watchdog)
+      finish(coerceResult(result.error ? textResult(result.error.message) : result.data, locale))
     } catch {
-      setThread((prev) => [
-        ...prev,
-        { who: 'mi', result: textResult(t({ es: 'No pude procesarlo ahora.', en: 'Could not process that.' }, locale)) },
-      ])
-    } finally {
-      setBusy(false)
+      clearTimeout(watchdog)
+      finish(textResult(t({ es: 'No pude procesarlo ahora.', en: 'Could not process that.' }, locale)))
     }
   }, [draft, pending, busy, locale, skipCanvasContext])
+
+  /** Bail out of the current ask (a live "Detener" control). Server-side the call
+   *  keeps running (a server action can't be client-aborted), but the dock frees
+   *  immediately so the operator is never stuck waiting — key for a live demo. */
+  const stop = useCallback(() => {
+    activeFinish.current?.(textResult(t({ es: 'Cancelado.', en: 'Cancelled.' }, locale)))
+  }, [locale])
 
   // Every renderable artifact (never the plain 'text' bubble), with a stable
   // per-session seq assigned by arrival order — the canvas switcher's model.
@@ -229,6 +271,7 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
       setDraft,
       setPending,
       send,
+      stop,
       artifacts,
       selectedSeq,
       selectArtifact,
@@ -248,6 +291,7 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
       pending,
       draft,
       send,
+      stop,
       artifacts,
       selectedSeq,
       selectArtifact,
