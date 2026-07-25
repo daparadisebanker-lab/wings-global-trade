@@ -52,6 +52,7 @@ export function MobileControlCenter({
   userEmail,
   teamSpaceEnabled = false,
   unreadMentions = 0,
+  showMarketing = false,
   onOpenMister,
   onOpenSearch,
   locale = DEFAULT_LOCALE,
@@ -64,6 +65,9 @@ export function MobileControlCenter({
    *  mobile users reach their mentions without a dead-end while dormant. */
   teamSpaceEnabled?: boolean
   unreadMentions?: number
+  /** Marketing Studio access (visible.has('marcas')) — mirrors the desktop rep
+   *  panel's Marketing link so mobile reps keep the one-tap path. */
+  showMarketing?: boolean
   onOpenMister: () => void
   onOpenSearch: () => void
   locale?: Locale
@@ -129,6 +133,17 @@ export function MobileControlCenter({
               <path d="M7 8h6M7 11h6" strokeLinecap="round" />
             </svg>
           </Tile>
+          {/* Marketing Studio — mirrors the desktop rep panel so the one-tap path
+              isn't desktop-only (visible.has('marcas') gates it). */}
+          {showMarketing ? (
+            <Tile label={t({ es: 'Marketing', en: 'Marketing' }, locale)} href="/marcas/promocion" onClick={onClose}>
+              <svg {...ICON} aria-hidden>
+                <path d="M4 8v4l9 4V4L4 8z" strokeLinejoin="round" />
+                <path d="M4 8H3.5A1.5 1.5 0 0 0 2 9.5v1A1.5 1.5 0 0 0 3.5 12H4" />
+                <path d="M13 8l4-2M13 12l4 2" strokeLinecap="round" />
+              </svg>
+            </Tile>
+          ) : null}
           <Tile label={t({ es: 'Mi perfil', en: 'My profile' }, locale)} href="/perfil" onClick={onClose}>
             <svg {...ICON} aria-hidden>
               <circle cx="10" cy="7" r="3" />

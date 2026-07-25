@@ -494,6 +494,7 @@ export function ShellChrome({
         userEmail={userEmail}
         teamSpaceEnabled={teamSpaceEnabled}
         unreadMentions={unreadMentions}
+        showMarketing={visible.has('marcas')}
         onOpenMister={() => setMisterOpen(true)}
         onOpenSearch={() => setPaletteOpen(true)}
       />
