@@ -5,6 +5,7 @@
 // this component only formats what it's handed. Styling is scoped in
 // quotation-document.css (a light, print-first surface).
 import { formatAmount, type QuotationDocument } from '@/lib/quotation/document'
+import '../document-grid.css'
 import './quotation-document.css'
 
 function formatDate(iso: string | null): string {
@@ -32,7 +33,7 @@ export function QuotationDocument({ doc }: { doc: QuotationDocument }) {
   const currencyTag = `(${doc.currency})`
 
   return (
-    <article className="qdoc">
+    <article className="qdoc doc-grid">
       {/* Header */}
       <header className="qdoc-header">
         <div>

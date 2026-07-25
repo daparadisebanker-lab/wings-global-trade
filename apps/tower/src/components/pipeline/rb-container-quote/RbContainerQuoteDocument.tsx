@@ -10,6 +10,7 @@
 // an un-priced quote reads as "Por cotizar", an RFQ posture, not a listing.
 // Bilingual: ES primary, EN secondary. Styling scoped in rb-container-quote.css.
 import type { RbContainerQuoteDocument as RbDoc } from '@/lib/quotation/rb-container'
+import '../document-grid.css'
 import './rb-container-quote.css'
 
 /** Display only (es-PE grouping, no symbol — the column header carries the code).
@@ -53,7 +54,7 @@ export function RbContainerQuoteDocument({ doc }: { doc: RbDoc }) {
   const currencyTag = `(${doc.currency})`
 
   return (
-    <article className="rbq">
+    <article className="rbq doc-grid">
       {/* Header */}
       <header className="rbq-header">
         <div>

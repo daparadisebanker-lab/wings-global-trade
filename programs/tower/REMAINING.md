@@ -175,3 +175,24 @@ Beyond the three tracks above, these were always queued (not regressions):
 
 _Migrations `tower_26–29` are reserved-but-unbuilt per
 `programs/represented-brands-console/SPEC.md`._
+
+## Document grid — conformance follow-up (Wave 1 / Stage 4)
+
+The shared pt grid landed: `lib/quotation/grid.ts` (token source, tested),
+`components/pipeline/document-grid.css` (the one `@page`, 29.5pt margin via
+padding-inset — deterministic across browser print + headless PDF), composed
+into all four document roots (`.pdoc/.qdoc/.fdoc/.rbq` + `doc-grid`). Verified by
+fixture render of the proforma (full tagline, 29.5pt margins, money figures
+stacked on the 565.6pt right rail).
+
+Deferred (not blocking Wave 4):
+- **Interior column snap.** The proforma line-item columns (Cant. / Precio unit. /
+  Precio total) are right-aligned and the last column lands on the 565.6pt rail,
+  but the exact interior edges (`grid.ts` `extras.proforma` = 313.1 / 397.8 /
+  535.5) are not yet pinned; cotización/ficha/RB interior tables likewise use
+  their existing widths. Snap each to the grid lines.
+- **Live-route visual pass.** The composition was verified via a static fixture
+  (the TOWER `/proforma/[id]/document` route needs a running app + data to render).
+  Do a browser `window.print()` smoke of all four routes once the app is up.
+- **@react-pdf StyleSheet.** Wave 6 canonical PDF reads the same `docGridCssVars()`
+  object so both renderers stay in lockstep.
