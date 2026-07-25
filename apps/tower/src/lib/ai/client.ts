@@ -10,6 +10,26 @@
 import Anthropic from '@anthropic-ai/sdk'
 import type { IntelligenceModel } from './types'
 
+/** Models where ADAPTIVE THINKING is ON by default. Left on, a one-shot JSON
+ *  extraction with a tight max_tokens (our capabilities pass 500–1100) can spend
+ *  the whole budget thinking and return an EMPTY answer — Mister then silently
+ *  fails. These calls are deterministic extraction/classification, not reasoning,
+ *  so we disable thinking and hand the full budget to the structured answer.
+ *  (Haiku is thinking-off by default, so it's absent here.) */
+const THINKS_BY_DEFAULT: ReadonlySet<string> = new Set([
+  'claude-opus-5',
+  'claude-opus-4-8',
+  'claude-opus-4-7',
+  'claude-sonnet-5',
+])
+
+/** Attach `thinking: { disabled }` for a thinking-on-by-default model, in a shape
+ *  the pinned SDK's params type predates (runtime-only key; sent on the wire). */
+function withThinkingOff<T extends object>(params: T, model: string): T {
+  if (THINKS_BY_DEFAULT.has(model)) (params as Record<string, unknown>).thinking = { type: 'disabled' }
+  return params
+}
+
 /** A base64 image attached to a completion — the supplier-screenshot vision path. */
 export interface ImageInput {
   /** e.g. 'image/png', 'image/jpeg', 'image/webp', 'image/gif'. */
@@ -58,12 +78,17 @@ class AnthropicIntelligenceClient implements IntelligenceClient {
           { type: 'text' as const, text: req.user },
         ])
       : req.user
-    const res = await this.sdk.messages.create({
-      model: req.model,
-      max_tokens: req.maxTokens,
-      system: req.system,
-      messages: [{ role: 'user', content }],
-    })
+    const res = await this.sdk.messages.create(
+      withThinkingOff(
+        {
+          model: req.model,
+          max_tokens: req.maxTokens,
+          system: req.system,
+          messages: [{ role: 'user', content }],
+        },
+        req.model,
+      ),
+    )
     let text = ''
     for (const block of res.content) {
       if (block.type === 'text') text += block.text
@@ -72,12 +97,17 @@ class AnthropicIntelligenceClient implements IntelligenceClient {
   }
 
   async *stream(req: CompletionRequest): AsyncIterable<string> {
-    const stream = this.sdk.messages.stream({
-      model: req.model,
-      max_tokens: req.maxTokens,
-      system: req.system,
-      messages: [{ role: 'user', content: req.user }],
-    })
+    const stream = this.sdk.messages.stream(
+      withThinkingOff(
+        {
+          model: req.model,
+          max_tokens: req.maxTokens,
+          system: req.system,
+          messages: [{ role: 'user', content: req.user }],
+        },
+        req.model,
+      ),
+    )
     for await (const event of stream) {
       if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
         yield event.delta.text

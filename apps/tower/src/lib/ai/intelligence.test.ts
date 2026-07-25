@@ -197,7 +197,7 @@ describe('runSpecExtract (fake streaming client)', () => {
       documentText: 'datasheet…',
       sourcePath: 'brand/lane/doc.pdf',
     })
-    expect(draft.model).toBe('claude-sonnet-5')
+    expect(draft.model).toBe('claude-opus-5') // reason model — Mister/spec-extract
     expect(draft.draft.laneId).toBe('lane-uuid-1')
     expect(draft.draft.sourcePath).toBe('brand/lane/doc.pdf')
     expect(draft.draft.specs).toEqual({ model: 'P1' })
