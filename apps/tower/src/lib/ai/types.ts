@@ -11,10 +11,14 @@ import type { Archetype } from '@/lib/archetypes'
 import type { Localized } from '@/lib/i18n'
 
 // ── Models (TOWER stack; current IDs — do not downgrade) ────────────────────
-// haiku = classify / score (fast, cheap); sonnet = extract / brief (deeper).
+// haiku = classify / score (fast, cheap, thinking off); opus = extract / brief
+// (deepest reasoning). NOTE: adaptive thinking is ON by default on the reason
+// model — the client (lib/ai/client.ts) disables it for these one-shot JSON
+// extractions so the small max_tokens budget isn't spent thinking (which would
+// truncate the answer to empty). See THINKS_BY_DEFAULT there.
 export const INTELLIGENCE_MODELS = {
   classify: 'claude-haiku-4-5-20251001',
-  reason: 'claude-sonnet-5',
+  reason: 'claude-opus-5',
 } as const
 export type IntelligenceModel = (typeof INTELLIGENCE_MODELS)[keyof typeof INTELLIGENCE_MODELS]
 
