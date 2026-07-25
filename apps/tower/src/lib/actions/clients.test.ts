@@ -1,48 +1,112 @@
 import { describe, it, expect } from 'vitest'
-import { mapClientRow } from './clients-logic'
+import {
+  mapClientRow,
+  pickPrimaryContact,
+  sourceLabel,
+  stageLabel,
+  archetypeLabel,
+  type RawClientRow,
+} from './clients-logic'
+
+const base: RawClientRow = {
+  id: 'a1',
+  name: 'Distribuidora Lima',
+  country: 'PE',
+  region: 'Lima',
+  city: 'Lima',
+  source: 'referral',
+  category: 'Molduras',
+  archetype_profile: 'PROJECT',
+  demand: '2 contenedores/mes',
+  stage: 'negotiating',
+  currency: 'USD',
+  owner_id: 'u9',
+  notes: null,
+  score: 72,
+  created_at: '2026-07-21T00:00:00Z',
+  brands: { name: 'Wings' },
+  contacts: [{ full_name: 'Renata Revol', whatsapp: '+591 68173247', email: null, role: 'Compras', is_primary: true }],
+}
 
 describe('mapClientRow', () => {
-  it('flattens the brand join and keeps client fields', () => {
-    const item = mapClientRow({
-      id: 'a1',
-      name: 'Distribuidora Lima',
-      country: 'PE',
-      region: 'Lima',
-      score: 72,
-      created_at: '2026-07-21T00:00:00Z',
-      brands: { name: 'Wings' },
-    })
+  it('flattens brand + primary contact and keeps the CRM profile', () => {
+    const item = mapClientRow(base)
     expect(item.name).toBe('Distribuidora Lima')
     expect(item.brandName).toBe('Wings')
-    expect(item.country).toBe('PE')
+    expect(item.source).toBe('referral')
+    expect(item.category).toBe('Molduras')
+    expect(item.archetype).toBe('PROJECT')
+    expect(item.stage).toBe('negotiating')
+    expect(item.city).toBe('Lima')
+    expect(item.currency).toBe('USD')
+    expect(item.ownerId).toBe('u9')
     expect(item.score).toBe(72)
+    expect(item.primaryContact).toEqual({
+      name: 'Renata Revol',
+      whatsapp: '+591 68173247',
+      email: null,
+      role: 'Compras',
+    })
   })
 
-  it('handles an array-shaped brand join and a string score', () => {
+  it('array-shaped brand join, string score, and picks the primary among many contacts', () => {
     const item = mapClientRow({
-      id: 'a2',
-      name: 'Andes Corp',
-      country: null,
-      region: null,
+      ...base,
       score: '40',
-      created_at: '2026-07-20T00:00:00Z',
       brands: [{ name: 'Wings' }],
+      contacts: [
+        { full_name: 'Assistant', whatsapp: null, email: null, role: null, is_primary: false },
+        { full_name: 'Jefe', whatsapp: '+1', email: 'j@x.co', role: 'CEO', is_primary: true },
+      ],
     })
     expect(item.brandName).toBe('Wings')
     expect(item.score).toBe(40)
+    expect(item.primaryContact?.name).toBe('Jefe')
   })
 
-  it('defaults score to 0 and brand to null when missing', () => {
+  it('defaults: score 0, stage lead, currency USD, brand/contact null; invalid enums drop to null', () => {
     const item = mapClientRow({
-      id: 'a3',
-      name: 'No Brand SA',
-      country: null,
-      region: null,
+      ...base,
       score: null,
-      created_at: '2026-07-19T00:00:00Z',
+      stage: null,
+      currency: null,
+      source: 'garbage',
+      archetype_profile: 'NOPE',
       brands: null,
+      contacts: null,
     })
-    expect(item.brandName).toBeNull()
     expect(item.score).toBe(0)
+    expect(item.stage).toBe('lead')
+    expect(item.currency).toBe('USD')
+    expect(item.source).toBeNull()
+    expect(item.archetype).toBeNull()
+    expect(item.brandName).toBeNull()
+    expect(item.primaryContact).toBeNull()
+  })
+})
+
+describe('pickPrimaryContact', () => {
+  it('returns null when there is no primary or no contacts', () => {
+    expect(pickPrimaryContact(null)).toBeNull()
+    expect(pickPrimaryContact([])).toBeNull()
+    expect(
+      pickPrimaryContact([{ full_name: 'X', whatsapp: null, email: null, role: null, is_primary: false }]),
+    ).toBeNull()
+  })
+  it('accepts a single (non-array) primary object', () => {
+    expect(
+      pickPrimaryContact({ full_name: 'Solo', whatsapp: null, email: null, role: null, is_primary: true }),
+    ).toEqual({ name: 'Solo', whatsapp: null, email: null, role: null })
+  })
+})
+
+describe('label helpers', () => {
+  it('resolve ES/EN and fall back to the raw id for unknowns', () => {
+    expect(sourceLabel('trade_fair', 'es')).toBe('Feria')
+    expect(sourceLabel('trade_fair', 'en')).toBe('Trade fair')
+    expect(stageLabel('won', 'es')).toBe('Ganado')
+    expect(archetypeLabel('ALLOCATION', 'es')).toBe('Asignación')
+    expect(sourceLabel(null, 'es')).toBeNull()
+    expect(stageLabel('mystery', 'en')).toBe('mystery')
   })
 })

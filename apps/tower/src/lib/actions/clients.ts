@@ -1,9 +1,10 @@
 'use server'
 
-// The Clients window's data layer — every client (account) the caller can see,
-// RLS-scoped on tower.accounts (read = has_brand_access), joined to its brand.
-// This is the management home for the accounts Mister's save-draft creates.
-// Pure mapping + types live in clients-logic.ts ('use server' exports only async).
+// The Clients CRM data layer — every client (account) the caller can see,
+// RLS-scoped on tower.accounts (read = has_brand_access), joined to its brand and
+// primary contact. The single account-insert path (shared with Mister's
+// save-draft) now carries the full CRM profile. Pure mapping + vocabularies live
+// in clients-logic.ts ('use server' exports only async).
 
 import { z } from 'zod'
 import { createServerSupabase } from '@/lib/supabase/server'
@@ -15,19 +16,30 @@ export interface ClientBrandOption {
   name: string
 }
 
+export interface ClientOwnerOption {
+  id: string
+  name: string
+}
+
+async function requireUser() {
+  const supabase = await createServerSupabase()
+  if (!supabase) return { ok: false as const, error: fail('UNAUTHORIZED', 'Sesión requerida / Session required') }
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return { ok: false as const, error: fail('UNAUTHORIZED', 'Sesión requerida / Session required') }
+  return { ok: true as const, supabase, user }
+}
+
 /**
  * List clients the caller can see, A→Z. RLS on tower.accounts is the scope
  * boundary — this never widens it.
  */
 export async function listClients(): Promise<ActionResult<ClientListItem[]>> {
-  const supabase = await createServerSupabase()
-  if (!supabase) return fail('UNAUTHORIZED', 'Sesión requerida / Session required')
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return fail('UNAUTHORIZED', 'Sesión requerida / Session required')
+  const auth = await requireUser()
+  if (!auth.ok) return auth.error
 
-  const { data, error } = await supabase
+  const { data, error } = await auth.supabase
     .schema('tower')
     .from('accounts')
     .select(CLIENT_SELECT)
@@ -41,14 +53,10 @@ export async function listClients(): Promise<ActionResult<ClientListItem[]>> {
 
 /** The brands the caller can file a client under (RLS read = has_brand_access). */
 export async function listClientBrands(): Promise<ActionResult<ClientBrandOption[]>> {
-  const supabase = await createServerSupabase()
-  if (!supabase) return fail('UNAUTHORIZED', 'Sesión requerida / Session required')
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return fail('UNAUTHORIZED', 'Sesión requerida / Session required')
+  const auth = await requireUser()
+  if (!auth.ok) return auth.error
 
-  const { data, error } = await supabase
+  const { data, error } = await auth.supabase
     .schema('tower')
     .from('brands')
     .select('id,name')
@@ -58,42 +66,108 @@ export async function listClientBrands(): Promise<ActionResult<ClientBrandOption
   return ok((data ?? []) as ClientBrandOption[])
 }
 
+/** Team roster for the account-owner picker (tower.team_roster — id + full_name,
+ *  readable by any authed member; profiles_read itself is self/admin-only). */
+export async function listTeamRoster(): Promise<ActionResult<ClientOwnerOption[]>> {
+  const auth = await requireUser()
+  if (!auth.ok) return auth.error
+
+  const { data, error } = await auth.supabase.schema('tower').rpc('team_roster')
+  if (error) return fail('VALIDATION', 'No se pudo leer el equipo / Could not read team')
+  return ok(
+    ((data ?? []) as { id: string; full_name: string | null }[]).map((r) => ({
+      id: r.id,
+      name: r.full_name ?? '—',
+    })),
+  )
+}
+
+const SOURCE_IDS = ['mister', 'whatsapp', 'referral', 'web', 'trade_fair', 'cold_outreach', 'network', 'other'] as const
+const STAGE_IDS = ['lead', 'qualified', 'quoted', 'negotiating', 'won', 'dormant'] as const
+const ARCHETYPE_IDS = ['EQUIPMENT', 'PROJECT', 'COMMODITY', 'PROGRAM', 'CREDENTIAL', 'ORIGIN', 'ALLOCATION'] as const
+
+const nz = (max: number) => z.string().trim().max(max).nullish()
+
 const createClientSchema = z.object({
   brandId: z.string().uuid(),
   name: z.string().trim().min(1).max(200),
-  country: z.string().trim().max(100).nullable().optional(),
-  region: z.string().trim().max(100).nullable().optional(),
+  source: z.enum(SOURCE_IDS).nullish(),
+  category: nz(120),
+  archetype: z.enum(ARCHETYPE_IDS).nullish(),
+  demand: nz(2000),
+  stage: z.enum(STAGE_IDS).default('lead'),
+  country: nz(100),
+  region: nz(100),
+  city: nz(120),
+  currency: z
+    .string()
+    .trim()
+    .regex(/^[A-Za-z]{3}$/)
+    .transform((s) => s.toUpperCase())
+    .default('USD'),
+  ownerId: z.string().uuid().nullish(),
+  score: z.number().int().min(0).max(100).default(0),
+  notes: nz(4000),
+  // Primary contact (optional — created only when a name is given).
+  contactName: nz(200),
+  contactWhatsapp: nz(40),
+  contactEmail: nz(200),
+  contactRole: nz(120),
 })
 export type CreateClientInput = z.input<typeof createClientSchema>
 
 /**
- * Create a client (account) under a brand. The single account-insert path —
- * shared by the Clients window's "+ Nuevo cliente" form and Mister's save-draft.
- * RLS gates the write (accounts_ins = has_brand_role LANE_DIRECTOR/SALES).
+ * Create a client (account) with its CRM profile + an optional primary contact.
+ * The single account-insert path — shared by the Clients window's form and
+ * Mister's save-draft. RLS gates both writes (accounts_ins / contacts_ins =
+ * has_brand_role LANE_DIRECTOR/SALES). Owner defaults to the creator.
  */
 export async function createClient(input: CreateClientInput): Promise<ActionResult<ClientListItem>> {
   const parsed = createClientSchema.safeParse(input)
   if (!parsed.success) return fail('VALIDATION', 'Datos inválidos / Invalid data')
+  const d = parsed.data
 
-  const supabase = await createServerSupabase()
-  if (!supabase) return fail('UNAUTHORIZED', 'Sesión requerida / Session required')
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) return fail('UNAUTHORIZED', 'Sesión requerida / Session required')
+  const auth = await requireUser()
+  if (!auth.ok) return auth.error
+  const db = auth.supabase.schema('tower')
 
-  const { data, error } = await supabase
-    .schema('tower')
+  const { data: acct, error } = await db
     .from('accounts')
     .insert({
-      brand_id: parsed.data.brandId,
-      name: parsed.data.name,
-      country: parsed.data.country ?? null,
-      region: parsed.data.region ?? null,
+      brand_id: d.brandId,
+      name: d.name,
+      source: d.source ?? null,
+      category: d.category ?? null,
+      archetype_profile: d.archetype ?? null,
+      demand: d.demand ?? null,
+      stage: d.stage,
+      country: d.country ?? null,
+      region: d.region ?? null,
+      city: d.city ?? null,
+      currency: d.currency,
+      owner_id: d.ownerId ?? auth.user.id,
+      score: d.score,
+      notes: d.notes ?? null,
     })
-    .select(CLIENT_SELECT)
+    .select('id')
     .single()
 
-  if (error || !data) return fail('FORBIDDEN_LANE', 'No se pudo crear el cliente / Could not create the client')
-  return ok(mapClientRow(data as unknown as RawClientRow))
+  if (error || !acct) return fail('FORBIDDEN_LANE', 'No se pudo crear el cliente / Could not create the client')
+  const accountId = (acct as { id: string }).id
+
+  // Primary contact (best-effort: the account stands even if this is rejected).
+  if (d.contactName && d.contactName.length > 0) {
+    await db.from('contacts').insert({
+      account_id: accountId,
+      full_name: d.contactName,
+      whatsapp: d.contactWhatsapp ?? null,
+      email: d.contactEmail ?? null,
+      role: d.contactRole ?? null,
+      is_primary: true,
+    })
+  }
+
+  const { data: row, error: readErr } = await db.from('accounts').select(CLIENT_SELECT).eq('id', accountId).single()
+  if (readErr || !row) return fail('VALIDATION', 'Cliente creado; no se pudo releer / Created; could not re-read')
+  return ok(mapClientRow(row as unknown as RawClientRow))
 }

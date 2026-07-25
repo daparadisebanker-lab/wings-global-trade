@@ -1,6 +1,6 @@
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ClientsWindow } from '@/components/clients'
-import { listClients } from '@/lib/actions/clients'
+import { listClients, listTeamRoster } from '@/lib/actions/clients'
 import { DEFAULT_LOCALE } from '@/lib/i18n'
 
 // Clients window — the per-lane clients database over tower.accounts (RLS-scoped
@@ -12,7 +12,11 @@ const TAG = 'CLI · Clientes'
 const TITLE = { es: 'Clientes', en: 'Clients' }
 
 export default async function ClientsPage() {
-  const result = await listClients()
+  const [result, rosterRes] = await Promise.all([listClients(), listTeamRoster()])
+
+  const owners: Record<string, string> = rosterRes.error
+    ? {}
+    : Object.fromEntries(rosterRes.data.map((o) => [o.id, o.name]))
 
   if (result.error) {
     return (
@@ -27,5 +31,5 @@ export default async function ClientsPage() {
     )
   }
 
-  return <ClientsWindow items={result.data} locale={DEFAULT_LOCALE} />
+  return <ClientsWindow items={result.data} locale={DEFAULT_LOCALE} owners={owners} />
 }
