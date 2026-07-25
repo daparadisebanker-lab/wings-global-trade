@@ -52,6 +52,10 @@ const importInputsSchema = z.object({
   customsAgency: z.number().min(0),
   handlingStowage: z.number().min(0),
   adValoremRate: z.number().min(0).max(1),
+  // ISC seam (D5): non-automotive goods persist an explicit rate (default 0) so the
+  // authoritative server recompute matches the form; vehicles omit it and the
+  // engine's fuel/CC rule runs (parity-locked). Optional — legacy rows have none.
+  iscRate: z.number().min(0).max(1).optional(),
   igvRate: z.number().min(0).max(1),
   percepcionRate: z.number().min(0).max(1),
   insuranceRate: z.number().min(0).max(1),
