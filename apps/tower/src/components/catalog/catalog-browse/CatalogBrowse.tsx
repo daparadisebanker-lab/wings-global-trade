@@ -19,6 +19,7 @@ import type { ProductRow } from '@/lib/actions/catalog'
 import { browseColumns } from './columns'
 import { useBrowseQuery } from './useBrowseQuery'
 import { ProductCard } from '../ProductCard'
+import { ListSkeleton } from '@/components/ui/ListSkeleton'
 
 const ROW_HEIGHT = 40 // DESIGN_SYSTEM operational density
 
@@ -171,6 +172,7 @@ export function CatalogBrowse({ categories }: { categories: string[] }) {
           <ProductCard key={row.id} row={row} href={`/catalog/browse/${row.id}`} showHs />
         ))}
       </ul>
+      {query.isLoading && rows.length === 0 ? <ListSkeleton className="md:hidden" /> : null}
       {!query.isLoading && rows.length === 0 ? (
         <p className="py-10 text-center font-ui text-t0 text-ink-secondary md:hidden">
           Sin productos con estos filtros / No products match these filters.

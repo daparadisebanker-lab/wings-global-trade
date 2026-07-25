@@ -266,6 +266,20 @@ export function AuditExplorer({ facets, locale = DEFAULT_LOCALE }: { facets: Aud
             and the 45% detail column collapses to ~150px of unreadable JSON at
             390px). Selecting a card opens the detail as a bottom sheet below. */}
         <ul className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto md:hidden">
+          {query.isLoading && rows.length === 0 ? (
+            <>
+              <li role="status" className="sr-only">
+                {t({ es: 'Cargando…', en: 'Loading…' }, locale)}
+              </li>
+              {Array.from({ length: 6 }).map((_, i) => (
+                <li
+                  key={`sk-${i}`}
+                  aria-hidden
+                  className="h-16 shrink-0 animate-pulse rounded-card border border-line bg-surface-1 motion-reduce:animate-none"
+                />
+              ))}
+            </>
+          ) : null}
           {rows.map((row) => {
             const isSelected = selected?.id === row.id
             return (

@@ -20,6 +20,7 @@ import type { ProductStatus } from '@/lib/actions/catalog-logic'
 import { productColumns } from './columns'
 import { useProductsQuery } from './useProductsQuery'
 import { ProductCard } from '../ProductCard'
+import { ListSkeleton } from '@/components/ui/ListSkeleton'
 
 const ROW_HEIGHT = 40 // DESIGN_SYSTEM operational density (compact toggle = 32)
 const STATUS_OPTIONS: (ProductStatus | 'ALL')[] = ['ALL', 'DRAFT', 'IN_REVIEW', 'PUBLISHED', 'RETIRED']
@@ -299,6 +300,7 @@ export function ProductTable({
           />
         ))}
       </ul>
+      {query.isLoading && rows.length === 0 ? <ListSkeleton className="md:hidden" /> : null}
       {!query.isLoading && rows.length === 0 ? (
         <p className="py-10 text-center font-ui text-t0 text-ink-secondary md:hidden">
           Sin productos con estos filtros / No products match these filters.
