@@ -133,7 +133,7 @@ export function BrandManager() {
                   type="button"
                   onClick={() => flipStatus(brand.id, target)}
                   disabled={pendingId === brand.id}
-                  className="rounded-control border border-line px-3 py-2 font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:text-ink-primary disabled:opacity-40"
+                  className="inline-flex min-h-11 items-center rounded-control border border-line px-3 py-2 font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:text-ink-primary disabled:opacity-40"
                 >
                   {target === 'RETIRED' ? 'Retirar / Retire' : 'Reactivar / Reinstate'}
                 </button>

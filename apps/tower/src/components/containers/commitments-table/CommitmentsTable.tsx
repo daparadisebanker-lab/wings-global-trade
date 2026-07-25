@@ -180,13 +180,13 @@ export function CommitmentsTable({
               </span>
             </div>
             <div className="flex flex-wrap items-center gap-x-6 gap-y-1 font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
-              <span>
+              <span className="shrink-0">
                 CBM <span data-numeric className="text-ink-primary">{c.cbm.toFixed(2)}</span>
               </span>
-              <span>
-                Orden <span className="text-ink-primary">{c.orderId ?? '—'}</span>
+              <span className="flex min-w-0 items-center gap-1">
+                Orden <span className="min-w-0 truncate text-ink-primary">{c.orderId ?? '—'}</span>
               </span>
-              <span className="ml-auto font-mono normal-case text-ink-secondary" data-numeric>
+              <span className="ml-auto shrink-0 font-mono normal-case text-ink-secondary" data-numeric>
                 {new Date(c.createdAt).toLocaleDateString()}
               </span>
             </div>

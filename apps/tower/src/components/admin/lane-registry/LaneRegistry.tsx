@@ -97,7 +97,7 @@ export function LaneRegistry({ brands }: { brands: BrandRow[] }) {
                   type="button"
                   onClick={() => flip(lane.id, to)}
                   disabled={pendingId === lane.id}
-                  className="rounded-control border border-line px-3 py-2 font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:text-ink-primary disabled:opacity-40"
+                  className="inline-flex min-h-11 items-center rounded-control border border-line px-3 py-2 font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:text-ink-primary disabled:opacity-40"
                 >
                   → {to}
                 </button>
