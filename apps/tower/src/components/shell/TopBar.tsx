@@ -36,14 +36,14 @@ export function TopBar({
   locale?: Locale
 }) {
   return (
-    <header className="tower-bar relative z-10 flex min-w-0 items-center justify-between gap-2 border-b border-line bg-surface-1 px-3 py-3 sm:gap-4 sm:px-4">
+    <header className="tower-bar sticky top-0 z-20 flex min-w-0 items-center justify-between gap-2 border-b border-line bg-surface-1 px-3 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:gap-4 sm:px-4 md:relative md:z-10 md:pt-3">
       <div className="flex min-w-0 items-center gap-2 sm:gap-3">
         {/* Hamburger — opens the module drawer on mobile only */}
         <button
           type="button"
           onClick={onOpenMenu}
           aria-label={t({ es: 'Abrir menú', en: 'Open menu' }, locale)}
-          className="-ml-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-card text-ink-secondary hover:text-ink-primary md:hidden"
+          className="-ml-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-control text-ink-secondary hover:text-ink-primary md:hidden"
         >
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" aria-hidden>
             <path d="M3 6h14M3 10h14M3 14h14" />
@@ -75,7 +75,7 @@ export function TopBar({
           type="button"
           onClick={onOpenSearch}
           aria-label={t({ es: 'Buscar', en: 'Search' }, locale)}
-          className={`flex h-10 w-10 items-center justify-center rounded-card text-ink-secondary transition-colors hover:text-ink-primary ${hasModules ? 'md:hidden' : ''}`}
+          className={`flex h-11 w-11 items-center justify-center rounded-control text-ink-secondary transition-colors hover:text-ink-primary ${hasModules ? 'md:hidden' : ''}`}
         >
           <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.6} aria-hidden>
             <circle cx="9" cy="9" r="5" />
@@ -88,7 +88,7 @@ export function TopBar({
           type="button"
           onClick={onOpenControlCenter}
           aria-label={t({ es: 'Centro de control', en: 'Control center' }, locale)}
-          className="flex h-10 w-10 items-center justify-center rounded-card text-ink-secondary transition-colors hover:text-ink-primary md:hidden"
+          className="flex h-11 w-11 items-center justify-center rounded-control text-ink-secondary transition-colors hover:text-ink-primary md:hidden"
         >
           <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.6} aria-hidden>
             <path d="M3 6.5h7M14 6.5h3M3 13.5h3M10 13.5h7" strokeLinecap="round" />

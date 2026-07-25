@@ -88,7 +88,7 @@ export function MobileControlCenter({
           type="button"
           aria-label={t({ es: 'Cerrar centro de control', en: 'Close control center' }, locale)}
           onClick={onClose}
-          className="fixed inset-0 z-[55]"
+          className="fixed inset-0 z-[55] backdrop-blur"
           style={{ backgroundColor: 'var(--scrim)' }}
         />
       ) : null}
@@ -99,7 +99,14 @@ export function MobileControlCenter({
         aria-modal={open}
         aria-label={t({ es: 'Centro de control', en: 'Control center' }, locale)}
         className={cn(
-          'material-panel fixed inset-x-0 top-0 z-[56] flex max-h-[90vh] flex-col gap-4 overflow-y-auto rounded-b-panel border-b border-line p-4 transition-transform duration-300',
+          // material-chrome = the translucent backdrop-blur glass the desktop Dock
+          // uses (ships an opaque fallback for engines without backdrop-filter), so
+          // the "iOS Control Center" shade finally reads as the frosted material its
+          // own comment promised — with elevation for depth. Top padding clears the
+          // notch/status-bar via the safe-area inset (viewport-fit:cover, layout.tsx).
+          'material-chrome fixed inset-x-0 top-0 z-[56] flex max-h-[90vh] flex-col gap-4 overflow-y-auto rounded-b-panel px-4 pb-4 pt-[max(1rem,env(safe-area-inset-top))] shadow-elevation-3',
+          // macOS spring on the slide; reduced-motion drops the travel (crossfade).
+          'transition-transform duration-300 ease-spring-settle motion-reduce:transition-none',
           open ? 'translate-y-0' : '-translate-y-full',
         )}
       >

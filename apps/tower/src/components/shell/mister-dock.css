@@ -524,11 +524,14 @@
   outline-offset: 2px;
 }
 
-/* floating launcher — the door into World B, present across the shell */
+/* floating launcher — the door into World B, present across the shell. The offset
+   folds in the safe-area insets so on a notched phone the door clears the home
+   indicator / rounded corner instead of sitting under the gesture zone (both
+   resolve to 0 on desktop, where the pinned-dock override sets bottom explicitly). */
 .mister-launch {
   position: fixed;
-  right: 20px;
-  bottom: 20px;
+  right: calc(20px + env(safe-area-inset-right));
+  bottom: calc(20px + env(safe-area-inset-bottom));
   z-index: 45;
   width: 52px;
   height: 52px;

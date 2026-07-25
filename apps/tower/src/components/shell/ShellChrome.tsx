@@ -340,7 +340,7 @@ export function ShellChrome({
             type="button"
             aria-label={t({ es: 'Cerrar menú', en: 'Close menu' }, DEFAULT_LOCALE)}
             onClick={() => setDrawerOpen(false)}
-            className="fixed inset-0 z-30 md:hidden"
+            className="fixed inset-0 z-30 backdrop-blur md:hidden"
             style={{ backgroundColor: 'var(--scrim)' }}
           />
         ) : null}
@@ -352,7 +352,11 @@ export function ShellChrome({
           aria-modal={isMobile && drawerOpen ? true : undefined}
           aria-label={isMobile ? t({ es: 'Menú de navegación', en: 'Navigation menu' }, DEFAULT_LOCALE) : undefined}
           className={cn(
-            'tower-rail fixed inset-y-0 left-0 z-40 flex w-[86vw] max-w-80 flex-col overflow-y-auto border-r border-line bg-surface-1 transition-[transform,width] duration-200',
+            // Safe-area insets: the logo (top) clears the notch and the sign-out
+            // (foot) clears the home indicator on a notched phone (viewport-fit:cover);
+            // both resolve to 0 on desktop. macOS spring on open/close; reduced-motion
+            // drops the slide (the drawer just appears) per the motion law.
+            'tower-rail fixed inset-y-0 left-0 z-40 flex w-[86vw] max-w-80 flex-col overflow-y-auto border-r border-line bg-surface-1 pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)] transition-[transform,width] duration-200 ease-spring-settle motion-reduce:transition-none',
             'md:sticky md:top-0 md:z-auto md:h-screen md:max-w-none',
             // Desktop collapse (⌘\ / the « button): slide the rail to zero width to give
             // the work surface the whole viewport. Mobile is unaffected (drawer governs).
@@ -446,8 +450,12 @@ export function ShellChrome({
             key={pathname}
             data-lane={activeLane?.laneSlug}
             className={cn(
-              'mac-page min-w-0 flex-1 overflow-x-clip',
-              // Content clearance for the desktop Dock (mobile has no Dock → no change).
+              // Mobile bottom clearance: reserve a band (+ the home-indicator inset)
+              // so the last row never hides under the Mister FAB (bottom-right, ~72px).
+              // Desktop has no FAB-over-content problem — the md: rules below take over
+              // and size the clearance to the Dock instead.
+              'mac-page min-w-0 flex-1 overflow-x-clip pb-[calc(5rem+env(safe-area-inset-bottom))]',
+              // Content clearance for the desktop Dock.
               dockPinned ? 'md:pb-24' : 'md:pb-6',
             )}
           >
