@@ -236,13 +236,15 @@ each pointing at the pattern it copies:
   separate axes.
 
 ## ~~Drift: tower_55_team_space applied to prod, file absent from repo~~ — RESOLVED
-Recovered `supabase/migrations/20260724160000_tower_55_team_space.sql` verbatim
-from the prod ledger (`supabase_migrations.schema_migrations.statements[1]`) —
-verified **byte-identical** to what prod applied (ledger md5
-`026a3e7cf572c438132f2bbe2023e469`, 3385 bytes; the committed file adds only the
-required trailing newline). The repo and prod are now in sync; `tower_57` is safe
-to write. General law still stands: cross-check `list_migrations` against
-`ls supabase/migrations` before every new migration.
+This branch recovered `supabase/migrations/20260724160000_tower_55_team_space.sql`
+verbatim from the prod ledger (`schema_migrations.statements[1]`, ledger md5
+`026a3e7cf572c438132f2bbe2023e469`). Independently, **`master` also recovered the
+same migration** (the WS8 workstream) with the same version and identical DDL but
+richer inline comments — an add/add conflict reconciled in the PR #35 merge by
+**taking master's documented version** (DDL is the same schema prod already has;
+comments are additive, and version `20260724160000` is already in the ledger so it
+never re-runs). Repo and prod are in sync. General law still stands: cross-check
+`list_migrations` against `ls supabase/migrations` before every new migration.
 
 **~~Follow-up (Directive 4 gap)~~ — CLOSED (`tower_57`).** The recovered migration
 did not attach `audit_trigger()` to its two mutating tables (`tower.team_notes`,

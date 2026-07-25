@@ -13,6 +13,7 @@ import {
   type ContainerPromoDetail,
   type PromotableContainerRow,
 } from '@/lib/actions/container-promo'
+import type { ShareRecipient } from '@/lib/actions/share-recipients-logic'
 import { ContainerPromoPanel } from './ContainerPromoPanel'
 
 const LABEL = 'font-mono text-label uppercase tracking-[0.08em] text-ink-secondary'
@@ -20,12 +21,20 @@ const LABEL = 'font-mono text-label uppercase tracking-[0.08em] text-ink-seconda
 export function PromoWorkbench({
   initialRows,
   initialSelectedId,
+  containersDegraded = false,
+  recipients = [],
   repWhatsappE164 = null,
   repWhatsappLabel = null,
 }: {
   initialRows: PromotableContainerRow[]
   /** Deep-link target — a container id from `?c=`, so its promo opens directly. */
   initialSelectedId?: string
+  /** The container fetch failed (vs genuinely empty) — keep the empty state from
+   *  asserting "no containers" as fact. */
+  containersDegraded?: boolean
+  /** Client contacts the rep can reach on WhatsApp (RLS-scoped) — the share
+   *  target picker in the promo panel. */
+  recipients?: ShareRecipient[]
   /** The signed-in rep's own WhatsApp Business line — threaded to the share panel
    *  so each rep's promo deep-links open from their own number (tower_39). */
   repWhatsappE164?: string | null
@@ -102,7 +111,9 @@ export function PromoWorkbench({
         })}
         {rows.length === 0 ? (
           <p className="px-3 py-6 text-center font-ui text-t0 text-ink-secondary">
-            Sin contenedores abiertos / No open containers.
+            {containersDegraded
+              ? 'No se pudieron cargar los contenedores / Could not load containers.'
+              : 'Sin contenedores abiertos / No open containers.'}
           </p>
         ) : null}
       </aside>
@@ -119,6 +130,7 @@ export function PromoWorkbench({
             key={detail.id}
             initial={detail}
             onChanged={refreshRows}
+            recipients={recipients}
             repWhatsappE164={repWhatsappE164}
             repWhatsappLabel={repWhatsappLabel}
           />

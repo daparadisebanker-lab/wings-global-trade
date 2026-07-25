@@ -26,40 +26,48 @@ function RecapAndSignOut({
   recents,
   locale,
   onNavigate,
+  showRecents = true,
 }: {
   recents: RecentEntry[]
   locale: Locale
   onNavigate?: () => void
+  /** The "Actividad reciente" recap. Off on mobile (the Control Center shade) — it
+   *  reads as clutter there; Sign out is what the shade needs. Desktop keeps it. */
+  showRecents?: boolean
 }) {
   return (
     <>
-      <p className="px-1 pb-1.5 font-mono text-label uppercase tracking-[0.12em] text-ink-secondary">
-        {t({ es: 'Actividad reciente', en: 'Recent activity' }, locale)}
-      </p>
-      {recents.length > 0 ? (
-        <ul className="flex flex-col">
-          {recents.slice(0, 5).map((r) => (
-            <li key={r.href}>
-              <Link
-                href={r.href}
-                onClick={onNavigate}
-                className="flex items-center gap-2 rounded-card px-1 py-1.5 text-ink-secondary transition-colors hover:bg-surface-2 hover:text-ink-primary"
-              >
-                <span className="shrink-0 font-mono text-label uppercase tracking-[0.1em] text-lane-accent">
-                  {r.tag}
-                </span>
-                <span className="truncate font-ui text-t0">{r.label}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="px-1 py-1 font-ui text-t0 text-ink-secondary">
-          {t({ es: 'Aún no has abierto registros.', en: 'You haven’t opened any records yet.' }, locale)}
-        </p>
-      )}
+      {showRecents ? (
+        <>
+          <p className="px-1 pb-1.5 font-mono text-label uppercase tracking-[0.12em] text-ink-secondary">
+            {t({ es: 'Actividad reciente', en: 'Recent activity' }, locale)}
+          </p>
+          {recents.length > 0 ? (
+            <ul className="flex flex-col">
+              {recents.slice(0, 5).map((r) => (
+                <li key={r.href}>
+                  <Link
+                    href={r.href}
+                    onClick={onNavigate}
+                    className="flex items-center gap-2 rounded-card px-1 py-1.5 text-ink-secondary transition-colors hover:bg-surface-2 hover:text-ink-primary"
+                  >
+                    <span className="shrink-0 font-mono text-label uppercase tracking-[0.1em] text-lane-accent">
+                      {r.tag}
+                    </span>
+                    <span className="truncate font-ui text-t0">{r.label}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="px-1 py-1 font-ui text-t0 text-ink-secondary">
+              {t({ es: 'Aún no has abierto registros.', en: 'You haven’t opened any records yet.' }, locale)}
+            </p>
+          )}
 
-      <div className="my-2 border-t border-line-hairline" />
+          <div className="my-2 border-t border-line-hairline" />
+        </>
+      ) : null}
 
       <form action={signOut}>
         <button
@@ -133,7 +141,7 @@ export function UserMenu({
   if (inline) {
     return (
       <div className="flex flex-col">
-        <RecapAndSignOut recents={recents} locale={locale} />
+        <RecapAndSignOut recents={recents} locale={locale} showRecents={false} />
       </div>
     )
   }

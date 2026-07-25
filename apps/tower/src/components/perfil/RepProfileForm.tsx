@@ -131,7 +131,7 @@ export function RepProfileForm({
   const labelClass = 'font-mono text-label uppercase tracking-[0.1em] text-ink-secondary'
 
   return (
-    <div className="flex h-full flex-col gap-6 p-6">
+    <div className="flex h-full flex-col gap-6 p-4 sm:p-6">
       <header className="flex flex-col gap-1">
         <span className="font-mono text-label uppercase tracking-[0.15em] text-lane-accent">PERFIL · Profile</span>
         <h1 className="font-display text-t3 text-ink-primary">Tu perfil de rep / Your rep profile</h1>

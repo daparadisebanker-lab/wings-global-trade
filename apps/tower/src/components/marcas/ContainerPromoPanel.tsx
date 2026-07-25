@@ -7,7 +7,6 @@
 // download) — all from the one @wings/rb-core library so the site, WhatsApp and
 // ads stay identical. Activation + copy persist through RLS-gated server actions
 // (setContainerPromoActive / saveContainerPromoCopy); the DB is the gate.
-import Link from 'next/link'
 import { useMemo, useRef, useState, useTransition } from 'react'
 import {
   buildPromoCopy,
@@ -23,17 +22,14 @@ import {
   setContainerShippingPhase,
   type ContainerPromoDetail,
 } from '@/lib/actions/container-promo'
-import { SHIPPING_PHASES, waMeUrl } from '@/lib/actions/container-promo-logic'
+import { SHIPPING_PHASES } from '@/lib/actions/container-promo-logic'
 import type { PromoCopy } from '@/lib/actions/container-promo-logic'
+import type { ShareRecipient } from '@/lib/actions/share-recipients-logic'
+import { PromoShareBar } from './PromoShareBar'
 
 const LABEL = 'font-mono text-label uppercase tracking-[0.08em] text-ink-secondary'
 const INPUT =
   'rounded-card border border-line bg-surface-0 px-2 py-1.5 font-ui text-t0 text-ink-primary outline-none focus-visible:border-lane-accent'
-
-// Where a rep sets their own WhatsApp Business line (rep-identity foundation,
-// tower_39). Kept as one constant so the profile route can be re-pointed in a
-// single place if onboarding lands it elsewhere.
-const REP_PROFILE_PATH = '/perfil'
 
 interface SpecRow {
   label: string
@@ -43,11 +39,15 @@ interface SpecRow {
 export function ContainerPromoPanel({
   initial,
   onChanged,
+  recipients = [],
   repWhatsappE164 = null,
   repWhatsappLabel = null,
 }: {
   initial: ContainerPromoDetail
   onChanged?: () => void
+  /** Client contacts the rep can reach on WhatsApp (RLS-scoped) — the share
+   *  target picker. Empty is fine; the picker degrades to the own-line share. */
+  recipients?: ShareRecipient[]
   /** The current rep's own WhatsApp Business number (E.164) — the share deep-link
    *  is addressed to it so each rep shares from their own line. Null → fall back
    *  to the generic WhatsApp chooser and surface the profile hint. */
@@ -145,18 +145,6 @@ export function ContainerPromoPanel({
     })
   }
 
-  // Two-audience share: the same ad-script body, an audience-specific end-text,
-  // opened as a WhatsApp share deep-link. Marketing = internal ad-production
-  // handoff; clients = client-facing wholesale CTA (buildPromoCopy owns the copy).
-  // The link is addressed to the rep's OWN WhatsApp Business number (each rep
-  // reaches a different demographic); with no number on file it falls back to the
-  // generic chooser and the hint below points the rep to their profile.
-  function shareToAudience(audience: 'marketing' | 'clients') {
-    const text = buildPromoCopy(promo, audience)
-    const url = waMeUrl(repWhatsappE164, text)
-    window.open(url, '_blank', 'noopener,noreferrer')
-  }
-
   async function copyToClipboard() {
     try {
       await navigator.clipboard.writeText(copyText)
@@ -238,7 +226,7 @@ export function ContainerPromoPanel({
             <span className={LABEL}>Titular (opcional — por defecto el producto)</span>
             <input value={headline} onChange={(e) => setHeadline(e.target.value)} placeholder={detail.productName} className={INPUT} />
           </label>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="flex flex-col gap-1">
               <span className={LABEL}>Nota de precio</span>
               <input value={priceNote} onChange={(e) => setPriceNote(e.target.value)} placeholder="precio de campaña" className={INPUT} />
@@ -362,43 +350,15 @@ export function ContainerPromoPanel({
             <pre className="whitespace-pre-wrap rounded-card border border-line bg-surface-0 p-3 font-ui text-t0 text-ink-primary">
               {copyText}
             </pre>
-            {/* Two-audience share: same ad-script body, audience-specific end-text. */}
-            <div className="flex flex-col gap-2">
-              <span className={LABEL}>Compartir el guion por audiencia</span>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={() => shareToAudience('marketing')}
-                  className="rounded-card border border-line px-3 py-1.5 font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:border-lane-accent"
-                >
-                  Compartir con equipo de marketing
-                </button>
-                <button
-                  type="button"
-                  onClick={() => shareToAudience('clients')}
-                  className="rounded-card bg-accent px-3 py-1.5 font-mono text-label uppercase tracking-[0.08em] text-surface-0"
-                >
-                  Compartir con leads y clientes
-                </button>
-              </div>
-              {/* Sender context: the share opens from the rep's OWN WhatsApp line.
-                  No number on file → generic chooser + a subtle profile hint. */}
-              {repWhatsappE164 ? (
-                <p className="font-mono text-label text-ink-secondary">
-                  Se comparte desde tu WhatsApp{repWhatsappLabel ? ` · ${repWhatsappLabel}` : ''} ({repWhatsappE164}) / Shared from your WhatsApp
-                </p>
-              ) : (
-                <p className="font-mono text-label text-ink-secondary">
-                  Se comparte desde la línea general.{' '}
-                  <Link
-                    href={REP_PROFILE_PATH}
-                    className="text-lane-accent underline underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lane-accent"
-                  >
-                    Configura tu WhatsApp en tu perfil / Set up your WhatsApp in your profile
-                  </Link>
-                </p>
-              )}
-            </div>
+            {/* Share the script — to marketing, to a picked client (wa.me), or the
+                OS share sheet. The client target is the WS5 addition; reuses the
+                existing button + copy (D2, no Meta API). */}
+            <PromoShareBar
+              recipients={recipients}
+              repWhatsappE164={repWhatsappE164}
+              repWhatsappLabel={repWhatsappLabel}
+              buildText={(audience) => buildPromoCopy(promo, audience)}
+            />
           </div>
 
           {/* Card preview + downloads */}

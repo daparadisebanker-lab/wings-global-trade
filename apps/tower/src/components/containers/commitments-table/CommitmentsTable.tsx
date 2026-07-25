@@ -167,7 +167,38 @@ export function CommitmentsTable({
         </p>
       ) : null}
 
-      <div className="overflow-x-auto rounded-card border border-line">
+      {/* Mobile: one card per commitment (a 5-column table scrolls sideways at 390px). */}
+      <ul className="flex flex-col gap-3 md:hidden">
+        {(query.data ?? []).map((c) => (
+          <li key={c.id} className="flex flex-col gap-2 rounded-card border border-line bg-surface-1 p-4">
+            <div className="flex items-start justify-between gap-3">
+              <span className="min-w-0 truncate font-ui text-t0 text-ink-primary">
+                {c.accountName ?? c.accountId ?? '—'}
+              </span>
+              <span className={`shrink-0 font-mono text-label uppercase tracking-[0.08em] ${STATUS_STYLE[c.status]}`}>
+                {c.status}
+              </span>
+            </div>
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-1 font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
+              <span className="shrink-0">
+                CBM <span data-numeric className="text-ink-primary">{c.cbm.toFixed(2)}</span>
+              </span>
+              <span className="flex min-w-0 items-center gap-1">
+                Orden <span className="min-w-0 truncate text-ink-primary">{c.orderId ?? '—'}</span>
+              </span>
+              <span className="ml-auto shrink-0 font-mono normal-case text-ink-secondary" data-numeric>
+                {new Date(c.createdAt).toLocaleDateString()}
+              </span>
+            </div>
+          </li>
+        ))}
+      </ul>
+      {!query.isLoading && (query.data ?? []).length === 0 ? (
+        <p className="py-6 text-center font-ui text-t0 text-ink-secondary md:hidden">Sin compromisos / No commitments yet</p>
+      ) : null}
+
+      {/* Desktop: the full commitments table. */}
+      <div className="hidden overflow-x-auto rounded-card border border-line md:block">
         <table className="w-full border-collapse">
           <thead>
             <tr className="border-b border-line">

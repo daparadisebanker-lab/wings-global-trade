@@ -10,7 +10,7 @@
 // Like the other TOWER tables, this styles raw elements against DESIGN_SYSTEM
 // tokens rather than @wings/trade-ui primitives (those carry the public site's
 // gold/navy brand, not TOWER's graphite control-room tokens).
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import type { AuditFacets, AuditLogRow, ListAuditInput } from '@/lib/actions/audit'
@@ -80,12 +80,26 @@ export function AuditExplorer({ facets, locale = DEFAULT_LOCALE }: { facets: Aud
   const actorName = useMemo(() => new Map(facets.actors.map((a) => [a.id, a.name])), [facets.actors])
 
   const parentRef = useRef<HTMLDivElement>(null)
+  const sheetRef = useRef<HTMLDivElement>(null)
   const virtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => ROW_HEIGHT,
     overscan: 12,
   })
+
+  // The mobile detail is a modal bottom sheet: when it opens, move focus into it
+  // and let Escape close it (the desktop detail is inline, non-modal). Guarded on
+  // visibility so it only fires for the md:hidden sheet, never the display:none one.
+  useEffect(() => {
+    if (!selected) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSelected(null)
+    }
+    window.addEventListener('keydown', onKey)
+    if (sheetRef.current?.offsetParent) sheetRef.current.focus()
+    return () => window.removeEventListener('keydown', onKey)
+  }, [selected])
 
   function resetPaging() {
     setCursor(undefined)
@@ -115,7 +129,7 @@ export function AuditExplorer({ facets, locale = DEFAULT_LOCALE }: { facets: Aud
   }
 
   return (
-    <div className="flex h-full flex-col gap-4 p-6">
+    <div className="flex h-full flex-col gap-4 p-4 sm:p-6">
       <header className="flex flex-col gap-1">
         <span className="font-mono text-label uppercase tracking-[0.15em] text-lane-accent" data-numeric>
           ADM · Audit
@@ -247,9 +261,67 @@ export function AuditExplorer({ facets, locale = DEFAULT_LOCALE }: { facets: Aud
         </p>
       ) : null}
 
-      <div className="flex min-h-0 flex-1 gap-4">
-        {/* Virtualized log */}
-        <div ref={parentRef} className="min-w-0 flex-1 overflow-auto rounded-card border border-line">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 md:flex-row">
+        {/* Mobile: one card per entry (the desktop row is 600px+ of fixed columns
+            and the 45% detail column collapses to ~150px of unreadable JSON at
+            390px). Selecting a card opens the detail as a bottom sheet below. */}
+        {/* Loading announcer kept OUT of the <ul> so the list never owns a
+            non-listitem child (the skeleton <li>s are aria-hidden). */}
+        {query.isLoading && rows.length === 0 ? (
+          <div role="status" className="sr-only md:hidden">
+            {t({ es: 'Cargando…', en: 'Loading…' }, locale)}
+          </div>
+        ) : null}
+        <ul className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto md:hidden">
+          {query.isLoading && rows.length === 0
+            ? Array.from({ length: 6 }).map((_, i) => (
+                <li
+                  key={`sk-${i}`}
+                  aria-hidden
+                  className="h-16 shrink-0 animate-pulse rounded-card border border-line bg-surface-1 motion-reduce:animate-none"
+                />
+              ))
+            : null}
+          {rows.map((row) => {
+            const isSelected = selected?.id === row.id
+            return (
+              <li key={row.id}>
+                <button
+                  type="button"
+                  onClick={() => setSelected(row)}
+                  aria-pressed={isSelected}
+                  className={`flex w-full flex-col gap-1.5 rounded-card border bg-surface-1 p-3 text-left ${
+                    isSelected ? 'border-lane-accent' : 'border-line'
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <ActionStamp action={row.action} />
+                    <span className="shrink-0 font-mono text-label text-ink-secondary" data-numeric>
+                      {formatTimestamp(row.at, locale)}
+                    </span>
+                  </div>
+                  <span className="truncate font-mono text-label text-ink-primary">
+                    {row.tableName}{' '}
+                    <span className="text-ink-secondary" data-numeric>
+                      · {row.rowId ?? '—'}
+                    </span>
+                  </span>
+                  <span className="truncate font-mono text-label text-ink-secondary">
+                    {row.actor ? (actorName.get(row.actor) ?? row.actor) : t({ es: 'sistema', en: 'system' }, locale)}
+                  </span>
+                </button>
+              </li>
+            )
+          })}
+          {!query.isLoading && rows.length === 0 ? (
+            <li className="py-10 text-center font-ui text-t0 text-ink-secondary">
+              {t({ es: 'Sin registros con estos filtros.', en: 'No entries match these filters.' }, locale)}
+            </li>
+          ) : null}
+        </ul>
+
+        {/* Desktop: the virtualized fixed-column log. */}
+        <div ref={parentRef} className="hidden min-w-0 flex-1 overflow-auto rounded-card border border-line md:block">
           <div className="sticky top-0 z-10 flex items-center gap-3 border-b border-line bg-surface-1 px-3 py-2">
             <span className={`${FIELD_LABEL} w-44 flex-none`}>{t({ es: 'Fecha', en: 'When' }, locale)}</span>
             <span className={`${FIELD_LABEL} w-28 flex-none`}>{t({ es: 'Acción', en: 'Action' }, locale)}</span>
@@ -300,13 +372,37 @@ export function AuditExplorer({ facets, locale = DEFAULT_LOCALE }: { facets: Aud
           ) : null}
         </div>
 
-        {/* Detail */}
+        {/* Desktop: detail as a side column. */}
         {selected ? (
-          <div className="w-[28rem] max-w-[45%] flex-none">
+          <div className="hidden w-[28rem] max-w-[45%] flex-none md:block">
             <AuditRowDetail row={selected} onClose={() => setSelected(null)} locale={locale} />
           </div>
         ) : null}
       </div>
+
+      {/* Mobile: detail as a full-width bottom sheet (the side column would be
+          ~150px). Scrim closes it; the sheet keeps AuditRowDetail's own close. */}
+      {selected ? (
+        <div className="fixed inset-0 z-50 flex flex-col justify-end md:hidden">
+          <button
+            type="button"
+            aria-label={t({ es: 'Cerrar detalle', en: 'Close detail' }, locale)}
+            onClick={() => setSelected(null)}
+            className="absolute inset-0 backdrop-blur"
+            style={{ backgroundColor: 'var(--scrim)' }}
+          />
+          <div
+            ref={sheetRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label={t({ es: 'Detalle de auditoría', en: 'Audit detail' }, locale)}
+            tabIndex={-1}
+            className="material-panel relative max-h-[85vh] overflow-y-auto overscroll-contain rounded-t-panel p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] outline-none"
+          >
+            <AuditRowDetail row={selected} onClose={() => setSelected(null)} locale={locale} />
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }

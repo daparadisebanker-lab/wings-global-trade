@@ -78,7 +78,50 @@ export function MembershipMatrix({
         ) : null}
       </div>
 
-      <div className="overflow-x-auto rounded-card border border-line">
+      {/* Mobile: per-lane block with full-width role rows. A 6-column lane×role
+          matrix can't fit 390px, and 16px checkboxes in scrolling cells are an
+          unusable tap target — each role here is a ≥44px labelled toggle. */}
+      <div className="flex flex-col gap-3 md:hidden">
+        {lanes.map((lane) => (
+          <div key={lane.id} className="flex flex-col rounded-card border border-line bg-surface-1">
+            <div className="flex flex-wrap items-center gap-2 border-b border-line px-4 py-3">
+              <span className="font-mono text-t0 text-ink-primary">{lane.code}</span>
+              <span className="font-ui text-t0 text-ink-secondary">{lane.name}</span>
+              <LaneStatusChip status={lane.status} />
+            </div>
+            <div className="flex flex-col divide-y divide-line">
+              {LANE_ROLES.map((role) => {
+                const key = cellKey(lane.id, role)
+                return (
+                  <label
+                    key={role}
+                    className="flex min-h-11 cursor-pointer items-center justify-between gap-3 px-4 py-2"
+                  >
+                    <span className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary">
+                      {role.replace('_', ' ')}
+                    </span>
+                    <input
+                      type="checkbox"
+                      aria-label={`${lane.code} · ${role} · ${user.fullName}`}
+                      checked={selected.has(key)}
+                      onChange={() => toggle(lane.id, role)}
+                      className="h-5 w-5 accent-[color:var(--accent)]"
+                    />
+                  </label>
+                )
+              })}
+            </div>
+          </div>
+        ))}
+        {lanes.length === 0 ? (
+          <div className="rounded-card border border-line px-3 py-6 text-center font-ui text-t0 text-ink-secondary">
+            No hay lanes registradas todavía / No lanes registered yet.
+          </div>
+        ) : null}
+      </div>
+
+      {/* Desktop: the full lane×role matrix. */}
+      <div className="hidden overflow-x-auto rounded-card border border-line md:block">
         <table className="w-full border-collapse">
           <thead className="bg-surface-1">
             <tr className="border-b border-line">

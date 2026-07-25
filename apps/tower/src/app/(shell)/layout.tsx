@@ -4,6 +4,7 @@ import { TowerQueryProvider } from '@/components/shell/TowerQueryProvider'
 import { getLaneMemberships, getIsGroupAdmin, getHasRbMembership } from '@/lib/lanes/memberships'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { getMyRepProfile } from '@/lib/actions/rep-profile'
+import { getMentionStatus } from '@/lib/actions/team-space'
 
 /**
  * Server layout for every (shell) route. Fetches the current user + their lane
@@ -13,11 +14,12 @@ import { getMyRepProfile } from '@/lib/actions/rep-profile'
  * unauthenticated requests to /login before this runs.
  */
 export default async function ShellLayout({ children }: { children: ReactNode }) {
-  const [memberships, isGroupAdmin, hasRbMembership, repProfile] = await Promise.all([
+  const [memberships, isGroupAdmin, hasRbMembership, repProfile, mentionStatus] = await Promise.all([
     getLaneMemberships(),
     getIsGroupAdmin(),
     getHasRbMembership(),
     getMyRepProfile(),
+    getMentionStatus(),
   ])
 
   // A rep must onboard when they have a rep_profiles row (enrollment seeded it)
@@ -29,6 +31,8 @@ export default async function ShellLayout({ children }: { children: ReactNode })
   // identity. Empty/whitespace-only names fall through to the email.
   const rawName = repProfile.error ? null : repProfile.data?.displayName ?? null
   const userName = rawName && rawName.trim() ? rawName.trim() : null
+  // The rep's role/title (rail identity, under their name). Null when unset.
+  const repTitle = repProfile.error ? null : repProfile.data?.title ?? null
 
   let userEmail: string | null = null
   const supabase = await createServerSupabase()
@@ -45,6 +49,9 @@ export default async function ShellLayout({ children }: { children: ReactNode })
         memberships={memberships}
         userName={userName}
         userEmail={userEmail}
+        repTitle={repTitle}
+        teamSpaceEnabled={mentionStatus.available}
+        unreadMentions={mentionStatus.unread}
         isGroupAdmin={isGroupAdmin}
         hasRbMembership={hasRbMembership}
         needsOnboarding={needsOnboarding}

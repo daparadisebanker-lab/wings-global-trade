@@ -60,7 +60,39 @@ export function WebhookHealth({
         <h2 className="mb-3 font-mono text-label uppercase tracking-[0.15em] text-ink-secondary">
           {t({ es: 'Salud por fuente', en: 'Per-source health' }, locale)}
         </h2>
-        <div className="overflow-x-auto border border-line">
+        {/* Mobile: one card per source (a 6-column health table scrolls sideways). */}
+        <ul className="flex flex-col gap-3 md:hidden">
+          {summary.sources.length === 0 ? (
+            <li className="rounded-card border border-line px-3 py-6 text-center font-ui text-t0 text-ink-secondary">
+              {t({ es: 'Sin entregas en el periodo.', en: 'No deliveries in this window.' }, locale)}
+            </li>
+          ) : (
+            summary.sources.map((s) => (
+              <li key={s.source} className="flex flex-col gap-2 rounded-card border border-line bg-surface-1 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 flex-col gap-0.5">
+                    <span className="font-mono text-t0 text-ink-primary">{t(sourceLabel(s.source), locale)}</span>
+                    <span className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary">{s.direction}</span>
+                  </div>
+                  {s.lastStatus ? <StatusChip status={s.lastStatus} /> : <span className="font-mono text-label text-ink-secondary">—</span>}
+                </div>
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-1 font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
+                  <span>
+                    OK <span data-numeric className="text-ink-primary">{s.ok}</span>
+                  </span>
+                  <span>
+                    {t({ es: 'Fallidas', en: 'Failed' }, locale)}{' '}
+                    <span data-numeric className={s.failed > 0 ? 'text-negative' : 'text-ink-primary'}>{s.failed}</span>
+                  </span>
+                  <span className="ml-auto normal-case" data-numeric>{formatTimestamp(s.lastSeen, locale)}</span>
+                </div>
+              </li>
+            ))
+          )}
+        </ul>
+
+        {/* Desktop: the per-source health table. */}
+        <div className="hidden overflow-x-auto border border-line md:block">
           <table className="w-full border-collapse text-left">
             <thead>
               <tr className="border-b border-line bg-surface-1">
@@ -103,7 +135,35 @@ export function WebhookHealth({
         <h2 className="mb-3 font-mono text-label uppercase tracking-[0.15em] text-ink-secondary">
           {t({ es: 'Entregas recientes', en: 'Recent deliveries' }, locale)}
         </h2>
-        <div className="overflow-x-auto border border-line">
+        {/* Mobile: one card per delivery (a 5-column log scrolls sideways at 390px). */}
+        <ul className="flex flex-col gap-3 md:hidden">
+          {summary.recent.length === 0 ? (
+            <li className="rounded-card border border-line px-3 py-6 text-center font-ui text-t0 text-ink-secondary">
+              {t({ es: 'Sin entregas en el periodo.', en: 'No deliveries in this window.' }, locale)}
+            </li>
+          ) : (
+            summary.recent.map((d) => (
+              <li key={d.id} className="flex flex-col gap-2 rounded-card border border-line bg-surface-1 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 flex-col gap-0.5">
+                    <span className="font-mono text-t0 text-ink-primary">{t(sourceLabel(d.source), locale)}</span>
+                    <span className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary">{d.direction}</span>
+                  </div>
+                  <StatusChip status={d.status} />
+                </div>
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-1 font-mono text-label text-ink-secondary">
+                  <span data-numeric>{formatTimestamp(d.occurredAt, locale)}</span>
+                  <span className="ml-auto" data-numeric>
+                    {d.reference ?? '—'}
+                  </span>
+                </div>
+              </li>
+            ))
+          )}
+        </ul>
+
+        {/* Desktop: the recent-deliveries log table. */}
+        <div className="hidden overflow-x-auto border border-line md:block">
           <table className="w-full border-collapse text-left">
             <thead>
               <tr className="border-b border-line bg-surface-1">

@@ -62,11 +62,13 @@ export function MorningBriefView({ brief, locale }: { brief: MorningBrief; local
 function BandHeader({ title, hint, count, locale }: { title: Localized; hint: Localized; count: number; locale: Locale }) {
   return (
     <div className="flex items-baseline justify-between gap-4 border-b border-line pb-2">
-      <div className="flex items-baseline gap-3">
+      {/* Title + hint stack on phones (the 22px title + a long hint overflow ~342px
+          and wrap raggedly); they sit inline once there is room. */}
+      <div className="flex min-w-0 flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-3">
         <h2 className="font-display text-t1 text-ink-primary">{t(title, locale)}</h2>
         <span className="font-mono text-label uppercase tracking-[0.12em] text-ink-tertiary">{t(hint, locale)}</span>
       </div>
-      <span className="font-mono text-label text-ink-tertiary" data-numeric>
+      <span className="shrink-0 font-mono text-label text-ink-tertiary" data-numeric>
         {count}
       </span>
     </div>

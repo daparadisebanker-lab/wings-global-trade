@@ -3,6 +3,8 @@
 // apps/tower. Later waves add tech-sheet section builders here (SPEC R6/R18).
 export * from './packing'
 export * from './promo'
+export * from './product-promo'
+export * from './card-kit'
 export * from './tech-sheet'
 export * from './diagram'
 export * from './wings-logo'

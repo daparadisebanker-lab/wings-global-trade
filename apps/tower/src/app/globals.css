@@ -422,6 +422,21 @@
   }
 }
 
+/* Mobile display-type scale. The decision-grade desktop floor (type-3..5 =
+   30/38/48px) is one step above the frozen family for fast reads on wide data
+   screens — but at 390px those hero sizes overflow and eat the viewport, the
+   classic "desktop type shrunk onto a phone" tell. Step the three DISPLAY tokens
+   down here (body/control tokens type-0/1/2 stay put so density and the 16px
+   input floor above are untouched). Token-level, so every component adapts with
+   zero JSX churn — tokens-only philosophy. Ordering stays strict (24<26<31<38). */
+@media (max-width: 767px) {
+  [data-app='tower'] {
+    --type-3: 26px;
+    --type-4: 31px;
+    --type-5: 38px;
+  }
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    TOWER-REDESIGN · P1 — macOS material token layer  (ratified 2026-07-22)
    Additive. Introduces the macOS-grade token set (TOWER-REDESIGN.md §2) as a
@@ -490,15 +505,26 @@
 /* — Materials (the depth system). M1 blurs the ground; @supports guards the
    fallback so unsupported browsers get a 94%-opaque chrome instead. — */
 .material-chrome {
-  /* Opaque fallback FIRST (progressive enhancement): an engine old enough to
-     lack backdrop-filter also lacks color-mix(), so both color-mix lines below
-     would be dropped — this solid declaration guarantees a background survives.
-     Modern engines override it with the translucent one. (Fixes review F1.) */
+  /* Opaque, always-readable base. This is the fallback for any engine where the
+     blur will not render — critically Safari/iOS ≤17, which support color-mix()
+     but NOT unprefixed backdrop-filter, and whose -webkit- prefix autoprefixer
+     strips from the build (no browserslist → unprefixed-only target). Keeping the
+     translucent fill OUT of this base means those engines never get the
+     translucent-without-blur state (72% fill + no blur = page content bleeding
+     through the shade's text). Gate the glass on real backdrop-filter support. */
   background: var(--surface-raised);
-  background: color-mix(in srgb, var(--surface-raised) 72%, transparent);
-  -webkit-backdrop-filter: blur(24px) saturate(1.6);
-  backdrop-filter: blur(24px) saturate(1.6);
   border: 1px solid var(--line-hairline);
+}
+/* Only where the blur actually renders do we go translucent. The condition is
+   unprefixed on purpose: it must be FALSE on the ≤17 band (whose -webkit-only
+   declaration the build drops), so they stay on the opaque base above — matching
+   the surface they had before this became the mobile Control Center material. */
+@supports (backdrop-filter: blur(1px)) {
+  .material-chrome {
+    background: color-mix(in srgb, var(--surface-raised) 72%, transparent);
+    -webkit-backdrop-filter: blur(24px) saturate(1.6);
+    backdrop-filter: blur(24px) saturate(1.6);
+  }
 }
 .material-panel {
   background: var(--surface-raised);
@@ -772,25 +798,31 @@
 }
 
 /* WINGS Control Center tiles (P5, tap-first) — the mobile module grid inside the
-   drawer. ≥56px touch targets; active tile gets the gold edge (livery active). */
-.cc-tile {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-height: 72px;
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-panel);
-  background: var(--surface-1);
-  color: var(--ink-secondary);
-}
-.cc-tile[data-active='true'] {
-  border-color: var(--gold);
-  color: var(--ink-primary);
-}
-.cc-tile:focus-visible {
-  outline: 2px solid var(--gold);
-  outline-offset: 2px;
+   drawer + the Control Center shade. ≥56px touch targets; active tile gets the
+   gold edge (livery active). Declared in @layer components so per-tile Tailwind
+   utilities (flex-col / items-start / gap-2 / text-left) actually win — unlayered,
+   this base sits AFTER @tailwind utilities and its align-items/gap silently beat
+   them, leaving the tiles centered instead of the intended top-icon/left layout. */
+@layer components {
+  .cc-tile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 72px;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-panel);
+    background: var(--surface-1);
+    color: var(--ink-secondary);
+  }
+  .cc-tile[data-active='true'] {
+    border-color: var(--gold);
+    color: var(--ink-primary);
+  }
+  .cc-tile:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+  }
 }
 
 /* WINGS charts (recharts) — cross-engine token pinning for the data layer.

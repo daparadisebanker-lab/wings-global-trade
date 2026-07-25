@@ -18,6 +18,8 @@ import { useVirtualizer } from '@tanstack/react-virtual'
 import type { ProductRow } from '@/lib/actions/catalog'
 import { browseColumns } from './columns'
 import { useBrowseQuery } from './useBrowseQuery'
+import { ProductCard } from '../ProductCard'
+import { ListSkeleton } from '@/components/ui/ListSkeleton'
 
 const ROW_HEIGHT = 40 // DESIGN_SYSTEM operational density
 
@@ -74,7 +76,7 @@ export function CatalogBrowse({ categories }: { categories: string[] }) {
   }
 
   return (
-    <div className="flex h-full flex-col gap-4 p-6">
+    <div className="flex flex-col gap-4 p-6 md:h-full">
       <div className="flex flex-col gap-1">
         <span className="font-mono text-label uppercase tracking-[0.15em] text-lane-accent" data-numeric>
           CAT · Explorar catálogo / Browse
@@ -85,7 +87,8 @@ export function CatalogBrowse({ categories }: { categories: string[] }) {
         </p>
       </div>
 
-      <div className="flex flex-wrap items-end gap-3">
+      {/* Filters: a full-width stack on phones, the inline toolbar at sm+. */}
+      <div className="grid grid-cols-1 gap-3 sm:flex sm:flex-wrap sm:items-end">
         <label className="flex flex-col gap-1">
           <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">Buscar / Search</span>
           <input
@@ -95,7 +98,7 @@ export function CatalogBrowse({ categories }: { categories: string[] }) {
               resetPaging()
             }}
             placeholder="Nombre ES/EN…"
-            className="w-56 rounded-card border border-line bg-surface-1 px-3 py-2 font-ui text-t0 text-ink-primary outline-none placeholder:text-ink-secondary focus-visible:border-lane-accent"
+            className="w-full rounded-card border border-line bg-surface-1 px-3 py-2 font-ui text-t0 text-ink-primary outline-none placeholder:text-ink-secondary focus-visible:border-lane-accent sm:w-56"
           />
         </label>
 
@@ -109,7 +112,7 @@ export function CatalogBrowse({ categories }: { categories: string[] }) {
               setCategory(e.target.value)
               resetPaging()
             }}
-            className="rounded-card border border-line bg-surface-1 px-3 py-2 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent"
+            className="w-full rounded-card border border-line bg-surface-1 px-3 py-2 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent sm:w-auto"
           >
             <option value="">Todas / All</option>
             {categories.map((c) => (
@@ -128,7 +131,7 @@ export function CatalogBrowse({ categories }: { categories: string[] }) {
               setLimit(Number(e.target.value))
               resetPaging()
             }}
-            className="rounded-card border border-line bg-surface-1 px-3 py-2 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent"
+            className="w-full rounded-card border border-line bg-surface-1 px-3 py-2 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent sm:w-auto"
           >
             {[50, 100, 200].map((n) => (
               <option key={n} value={n}>
@@ -164,7 +167,25 @@ export function CatalogBrowse({ categories }: { categories: string[] }) {
         </p>
       ) : null}
 
-      <div ref={parentRef} className="flex-1 overflow-auto rounded-card border border-line">
+      {/* Mobile: one card per product (the desktop table scrolls sideways at 390px).
+          Rendered only when there are rows so the empty list's gap doesn't stack
+          above the loading skeleton / empty note. */}
+      {rows.length > 0 ? (
+        <ul className="flex flex-col gap-3 md:hidden">
+          {rows.map((row) => (
+            <ProductCard key={row.id} row={row} href={`/catalog/browse/${row.id}`} showHs />
+          ))}
+        </ul>
+      ) : null}
+      {query.isLoading && rows.length === 0 ? <ListSkeleton className="md:hidden" /> : null}
+      {!query.isLoading && rows.length === 0 ? (
+        <p className="py-10 text-center font-ui text-t0 text-ink-secondary md:hidden">
+          Sin productos con estos filtros / No products match these filters.
+        </p>
+      ) : null}
+
+      {/* Desktop: the virtualized manifest table (its own bounded scroll area). */}
+      <div ref={parentRef} className="hidden flex-1 overflow-auto rounded-card border border-line md:block">
         <table className="w-full border-collapse">
           <thead className="sticky top-0 z-10 bg-surface-1">
             {table.getHeaderGroups().map((hg) => (

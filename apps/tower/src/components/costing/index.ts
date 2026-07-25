@@ -1,4 +1,6 @@
 export { CostCalculator } from './CostCalculator'
+export { CostingWorkbench } from './CostingWorkbench'
+export { ExportCostCalculator } from './ExportCostCalculator'
 export { CostWaterfall } from './CostWaterfall'
 export { BulkCostImport } from './BulkCostImport'
 export { CostSheetDocument } from './CostSheetDocument'

@@ -21,8 +21,20 @@ import { useActiveTool } from '@/shell/navigation/useActiveTool'
 import { resolveActiveTool } from '@/shell/navigation/registry'
 import { recordRecent } from '@/shell/navigation/recents'
 import { Dock } from '@/shell/dock/Dock'
-import { ControlCenterGrid, ControlCenterStatus } from '@/shell/control-center/ControlCenter'
-import { NavSidebar } from '@/shell/navigation/NavSidebar'
+import { ControlCenterGrid } from '@/shell/control-center/ControlCenter'
+import { MobileControlCenter } from '@/shell/control-center/MobileControlCenter'
+import { RepPanel } from '@/shell/rep-panel/RepPanel'
+
+/** Focusable descendants that are actually rendered — display:none elements
+ *  (`offsetParent === null`) are excluded. The aside hosts BOTH the mobile drawer
+ *  content and the desktop-only controls (the WS3 collapse « button, the RepPanel
+ *  links) under `hidden md:*`; without this filter the mobile focus trap and the
+ *  open-focus would land on those hidden controls and silently break. */
+function visibleFocusables(root: HTMLElement | null): HTMLElement[] {
+  if (!root) return []
+  const all = root.querySelectorAll<HTMLElement>('a[href],button:not([disabled])')
+  return Array.from(all).filter((el) => el.offsetParent !== null)
+}
 
 /** Location strip — TOWER › Módulo › subpágina, derived from the path so you
  *  always know where you are. Ids/numbers in the path are omitted. Ancestor
@@ -86,6 +98,9 @@ export function ShellChrome({
   memberships,
   userName,
   userEmail,
+  repTitle = null,
+  teamSpaceEnabled = false,
+  unreadMentions = 0,
   isGroupAdmin = false,
   hasRbMembership = false,
   needsOnboarding = false,
@@ -94,6 +109,13 @@ export function ShellChrome({
   memberships: LaneMembership[]
   userName: string | null
   userEmail: string | null
+  /** The rep's role/title from their profile — shown under their name in the rail. */
+  repTitle?: string | null
+  /** Team space live (tower_55 applied) — gates the rail's Equipo entry so it
+   *  never links to a dormant coming-soon page. */
+  teamSpaceEnabled?: boolean
+  /** Unread @mention count for the rail's Equipo badge. */
+  unreadMentions?: number
   isGroupAdmin?: boolean
   hasRbMembership?: boolean
   needsOnboarding?: boolean
@@ -103,10 +125,17 @@ export function ShellChrome({
   const [paletteOpen, setPaletteOpen] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [misterOpen, setMisterOpen] = useState(false)
+  // Mobile iOS-style Control Center shade (top-right pill → slides down). Mobile-only.
+  const [controlCenterOpen, setControlCenterOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   // Desktop Dock pin state (default pinned; persisted). Owned here because it
   // drives the content-bottom padding; the Dock reflects it + toggles it.
   const [dockPinned, setDockPinned] = useState(true)
+  // Desktop left-rail collapse (default open; persisted). Collapsing frees the full
+  // width for the work surface — the "compact for what matters" ask. Desktop-only:
+  // on mobile the aside is the drawer (drawerOpen governs it). Content-agnostic, so
+  // it applies equally once the rail carries the rep panel instead of modules.
+  const [railCollapsed, setRailCollapsed] = useState(false)
   const railRef = useRef<HTMLElement>(null)
   const restoreFocusRef = useRef<HTMLElement | null>(null)
   // On /intelligence the cockpit is rendered inline (page mode); mounting the
@@ -141,6 +170,19 @@ export function ShellChrome({
           return n
         })
       }
+      // ⌘\ collapses / restores the desktop left rail (maximize the work surface).
+      if ((e.metaKey || e.ctrlKey) && e.key === '\\') {
+        e.preventDefault()
+        setRailCollapsed((v) => {
+          const n = !v
+          try {
+            localStorage.setItem('tower-rail', n ? 'collapsed' : 'open')
+          } catch {
+            /* private mode */
+          }
+          return n
+        })
+      }
       if (e.key === 'Escape') setDrawerOpen(false)
     }
     window.addEventListener('keydown', onKey)
@@ -168,6 +210,15 @@ export function ShellChrome({
     }
   }, [])
 
+  // Restore the persisted rail-collapsed state (default open). Read after mount.
+  useEffect(() => {
+    try {
+      if (localStorage.getItem('tower-rail') === 'collapsed') setRailCollapsed(true)
+    } catch {
+      /* private mode — stays open */
+    }
+  }, [])
+
   // The off-screen mobile drawer must not be reachable by keyboard / AT.
   useEffect(() => {
     if (railRef.current) railRef.current.inert = isMobile && !drawerOpen
@@ -179,7 +230,7 @@ export function ShellChrome({
     if (drawerOpen) {
       restoreFocusRef.current = (document.activeElement as HTMLElement) ?? null
       const id = window.setTimeout(() => {
-        railRef.current?.querySelector<HTMLElement>('a[href],button:not([disabled])')?.focus()
+        visibleFocusables(railRef.current)[0]?.focus()
       }, 0)
       return () => window.clearTimeout(id)
     }
@@ -189,8 +240,8 @@ export function ShellChrome({
   // Trap Tab within the open mobile drawer.
   function onRailKeyDown(e: ReactKeyboardEvent<HTMLElement>) {
     if (!isMobile || !drawerOpen || e.key !== 'Tab') return
-    const f = railRef.current?.querySelectorAll<HTMLElement>('a[href],button:not([disabled])')
-    if (!f || f.length === 0) return
+    const f = visibleFocusables(railRef.current)
+    if (f.length === 0) return
     const first = f[0]
     const last = f[f.length - 1]
     if (e.shiftKey && document.activeElement === first) {
@@ -238,9 +289,11 @@ export function ShellChrome({
   // behind it; without dismissing the cockpit the destination stays hidden under the
   // z-60 overlay and the link looks dead (the top "buttons don't work" report). Close
   // it on every route change — its conversation/draft state lives in MisterProvider and
-  // survives navigation, so nothing is lost.
+  // survives navigation, so nothing is lost. The mobile Control Center shade closes on
+  // navigation too (its links go to real routes).
   useEffect(() => {
     setMisterOpen(false)
+    setControlCenterOpen(false)
   }, [pathname])
 
   const activeLane = memberships.find((m) => m.laneId === activeLaneId) ?? null
@@ -253,6 +306,18 @@ export function ShellChrome({
       const n = !v
       try {
         localStorage.setItem('tower-dock', n ? 'pinned' : 'hidden')
+      } catch {
+        /* private mode */
+      }
+      return n
+    })
+  }
+
+  const toggleRail = () => {
+    setRailCollapsed((v) => {
+      const n = !v
+      try {
+        localStorage.setItem('tower-rail', n ? 'collapsed' : 'open')
       } catch {
         /* private mode */
       }
@@ -275,7 +340,7 @@ export function ShellChrome({
             type="button"
             aria-label={t({ es: 'Cerrar menú', en: 'Close menu' }, DEFAULT_LOCALE)}
             onClick={() => setDrawerOpen(false)}
-            className="fixed inset-0 z-30 md:hidden"
+            className="fixed inset-0 z-30 backdrop-blur md:hidden"
             style={{ backgroundColor: 'var(--scrim)' }}
           />
         ) : null}
@@ -287,12 +352,16 @@ export function ShellChrome({
           aria-modal={isMobile && drawerOpen ? true : undefined}
           aria-label={isMobile ? t({ es: 'Menú de navegación', en: 'Navigation menu' }, DEFAULT_LOCALE) : undefined}
           className={cn(
-            'tower-rail fixed inset-y-0 left-0 z-40 flex w-[86vw] max-w-80 flex-col overflow-y-auto border-r border-line bg-surface-1 transition-transform duration-200',
-            'md:sticky md:top-0 md:z-auto md:h-screen md:max-w-none md:w-64',
+            // Safe-area insets: the logo (top) clears the notch and the sign-out
+            // (foot) clears the home indicator on a notched phone (viewport-fit:cover);
+            // both resolve to 0 on desktop. macOS spring on open/close; reduced-motion
+            // drops the slide (the drawer just appears) per the motion law.
+            'tower-rail fixed inset-y-0 left-0 z-40 flex w-[86vw] max-w-80 flex-col overflow-y-auto border-r border-line bg-surface-1 pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)] transition-[transform,width] duration-200 ease-spring-settle motion-reduce:transition-none',
+            'md:sticky md:top-0 md:z-auto md:h-screen md:max-w-none',
+            // Desktop collapse (⌘\ / the « button): slide the rail to zero width to give
+            // the work surface the whole viewport. Mobile is unaffected (drawer governs).
+            railCollapsed ? 'md:w-0 md:min-w-0 md:overflow-hidden md:border-r-0' : 'md:w-64',
             drawerOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
-            // Phase C: the desktop module sidebar (labeled, expandable) lives here
-            // now — kept alongside the Dock (decision: both surfaces). Below md the
-            // aside stays the off-canvas drawer, untouched.
           )}
         >
           <div className="flex items-center border-b border-line p-4">
@@ -304,6 +373,17 @@ export function ShellChrome({
                 Admin Portal
               </span>
             </div>
+            {/* Collapse the rail (desktop only; mobile uses the drawer scrim). */}
+            <button
+              type="button"
+              onClick={toggleRail}
+              aria-label={t({ es: 'Contraer panel (⌘\\)', en: 'Collapse panel (⌘\\)' }, DEFAULT_LOCALE)}
+              className="ml-auto hidden h-8 w-8 shrink-0 items-center justify-center rounded-control text-ink-secondary transition-colors hover:bg-surface-2 hover:text-ink-primary md:flex"
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.6} aria-hidden>
+                <path d="M10 4l-4 4 4 4" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
           </div>
 
           <LaneSwitcher lanes={memberships} activeLaneId={activeLaneId} onSelect={setActiveLaneId} />
@@ -321,15 +401,34 @@ export function ShellChrome({
               }}
             />
           </div>
-          {/* Desktop: the labeled module sidebar with expandable per-module quick
-              actions (Phase C) — the calm counterpart to the Dock's quick-launch. */}
-          <div className="hidden md:block">
-            <NavSidebar visible={visible} />
-          </div>
-          <div className="mt-auto md:hidden">
-            <ControlCenterStatus userName={userName} userEmail={userEmail} active={drawerOpen} />
+          {/* Desktop: the operator's own rail (D1). The Dock is the SOLE module
+              navigator now, so the rail carries identity · profile · marketing ·
+              sign out — never a module list. flex-1 so Sign out pins to the foot. */}
+          <div className="hidden flex-1 flex-col md:flex">
+            <RepPanel
+              userName={userName}
+              userEmail={userEmail}
+              repTitle={repTitle}
+              showMarketing={visible.has('marcas')}
+              teamSpaceEnabled={teamSpaceEnabled}
+              unreadMentions={unreadMentions}
+            />
           </div>
         </aside>
+
+        {/* When the rail is collapsed, a slim edge tab (desktop only) brings it back. */}
+        {railCollapsed ? (
+          <button
+            type="button"
+            onClick={toggleRail}
+            aria-label={t({ es: 'Expandir panel (⌘\\)', en: 'Expand panel (⌘\\)' }, DEFAULT_LOCALE)}
+            className="fixed left-0 top-3 z-40 hidden h-9 w-6 items-center justify-center rounded-r-control border border-l-0 border-line bg-surface-1 text-ink-secondary transition-colors hover:text-ink-primary md:flex"
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.6} aria-hidden>
+              <path d="M6 4l4 4-4 4" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        ) : null}
 
         <div className="flex min-h-screen min-w-0 flex-1 flex-col">
           <TopBar
@@ -338,6 +437,7 @@ export function ShellChrome({
             isGroupAdmin={isGroupAdmin}
             onOpenSearch={() => setPaletteOpen(true)}
             onOpenMenu={() => setDrawerOpen(true)}
+            onOpenControlCenter={() => setControlCenterOpen(true)}
             hasModules={visible.size > 0}
           />
           <Breadcrumb locale={DEFAULT_LOCALE} />
@@ -350,8 +450,12 @@ export function ShellChrome({
             key={pathname}
             data-lane={activeLane?.laneSlug}
             className={cn(
-              'mac-page min-w-0 flex-1 overflow-x-clip',
-              // Content clearance for the desktop Dock (mobile has no Dock → no change).
+              // Mobile bottom clearance: reserve a band (+ the home-indicator inset)
+              // so the last row never hides under the Mister FAB (bottom-right, ~72px).
+              // Desktop has no FAB-over-content problem — the md: rules below take over
+              // and size the clearance to the Dock instead.
+              'mac-page min-w-0 flex-1 overflow-x-clip pb-[calc(5rem+env(safe-area-inset-bottom))]',
+              // Content clearance for the desktop Dock.
               dockPinned ? 'md:pb-24' : 'md:pb-6',
             )}
           >
@@ -379,6 +483,20 @@ export function ShellChrome({
         lanes={memberships}
         activeLaneId={activeLaneId}
         onSelectLane={setActiveLaneId}
+      />
+
+      {/* Mobile Control Center — the iOS-style top shade (opened by the TopBar pill).
+          Owns quick actions + settings + status/sign-out; the drawer stays modules. */}
+      <MobileControlCenter
+        open={controlCenterOpen}
+        onClose={() => setControlCenterOpen(false)}
+        userName={userName}
+        userEmail={userEmail}
+        teamSpaceEnabled={teamSpaceEnabled}
+        unreadMentions={unreadMentions}
+        showMarketing={visible.has('marcas')}
+        onOpenMister={() => setMisterOpen(true)}
+        onOpenSearch={() => setPaletteOpen(true)}
       />
 
       {/* Mister — the full-width production cockpit (World B) + its floating door.
