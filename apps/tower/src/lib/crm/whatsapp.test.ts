@@ -39,6 +39,27 @@ describe('parseWhatsappExport', () => {
     expect(parseWhatsappExport('not a chat at all').hasContent).toBe(false)
     expect(parseWhatsappExport('[2/7/26, 2:30 p. m.] X: sola').hasContent).toBe(false)
   })
+
+  it('handles a real iOS es export: 24h DD/MM/YY, CRLF, leading-bidi <adjunto:>, contact/call noise', () => {
+    const real = [
+      '[15/07/26, 23:03:35] Jheferson Cliente Bolivia: ‎Los mensajes y las llamadas están cifrados de extremo a extremo.',
+      '[15/07/26, 23:03:35] Jheferson Cliente Bolivia: ‎Jheferson Cliente Bolivia es un contacto.',
+      '[15/07/26, 21:57:11] Jheferson Cliente Bolivia: Quiero importar desde china a bolivia',
+      '[16/07/26, 12:05:52] Jheferson Cliente Bolivia: Una retroexcavadora',
+      '[16/07/26, 12:59:45] Wings Global Trade Chile: ‎Llamada, ‎Sin respuesta',
+      '‎[16/07/26, 13:00:46] Wings Global Trade Chile: ‎<adjunto: 00000024-AUDIO.opus>',
+      '[16/07/26, 14:07:41] Jheferson Cliente Bolivia: Lo quiero para BOLIVIA',
+    ].join('\r\n')
+    const p = parseWhatsappExport(real)
+    expect(p.senders).toEqual(['Jheferson Cliente Bolivia', 'Wings Global Trade Chile'])
+    // encryption + "es un contacto" + "Sin respuesta" dropped; the rest kept (media folded).
+    expect(p.messageCount).toBe(4)
+    expect(p.transcript).toContain('Una retroexcavadora')
+    expect(p.transcript).toContain('[media]')
+    expect(p.transcript).not.toMatch(/es un contacto|sin respuesta|cifrados|<adjunto:|\[1[0-9]\/07\/26/i)
+    // no leaked bidi marks
+    expect(p.transcript).not.toMatch(/[‎‏]/)
+  })
 })
 
 describe('parseClientExtract', () => {
