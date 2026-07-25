@@ -10,7 +10,7 @@ import { computeImportCost, DEFAULT_INPUTS } from './engine'
 
 describe('goods profiles — registry', () => {
   it('every ordered id resolves to a profile with matching id', () => {
-    expect(GOODS_PROFILE_ORDER).toHaveLength(6)
+    expect(GOODS_PROFILE_ORDER).toHaveLength(7)
     for (const id of GOODS_PROFILE_ORDER) {
       const p = GOODS_PROFILES[id]
       expect(p).toBeDefined()
@@ -46,7 +46,7 @@ describe('goods profiles — archetype default', () => {
       ['EQUIPMENT', 'maquinaria'],
       ['COMMODITY', 'insumos'],
       ['PROGRAM', 'linea_blanca'],
-      ['PROJECT', 'generico'],
+      ['PROJECT', 'materiales_construccion'],
       ['CREDENTIAL', 'generico'],
       ['ORIGIN', 'insumos'],
       ['ALLOCATION', 'generico'],

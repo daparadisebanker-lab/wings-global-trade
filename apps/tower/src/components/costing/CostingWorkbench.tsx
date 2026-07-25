@@ -33,8 +33,8 @@ const MODES: ModeCard[] = [
       en: 'Landed cost with SUNAT taxes (CIF → duties → IGV → margin).',
     },
     examples: {
-      es: 'Maquinaria · vehículos · línea blanca · químicos · insumos',
-      en: 'Machinery · vehicles · appliances · chemicals · inputs',
+      es: 'Maquinaria · vehículos · línea blanca · materiales de construcción · textiles · insumos',
+      en: 'Machinery · vehicles · appliances · construction materials · textiles · inputs',
     },
   },
   {

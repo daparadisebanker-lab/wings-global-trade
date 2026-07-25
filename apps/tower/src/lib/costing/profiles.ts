@@ -10,7 +10,14 @@
 // lanes, brought to the costing form: pick the goods, the form filters itself.
 // Pure + unit-tested; the component reads it, the engine stays untouched.
 
-export type GoodsProfileId = 'vehiculos' | 'maquinaria' | 'linea_blanca' | 'quimicos' | 'insumos' | 'generico'
+export type GoodsProfileId =
+  | 'vehiculos'
+  | 'maquinaria'
+  | 'linea_blanca'
+  | 'materiales_construccion'
+  | 'textiles'
+  | 'insumos'
+  | 'generico'
 
 /** An identity text input, bound to one of the engine's free-text fields but
  *  RELABELLED per goods (a vehicle's "Marca/Modelo" is a chemical's
@@ -46,7 +53,8 @@ export const GOODS_PROFILE_ORDER: GoodsProfileId[] = [
   'vehiculos',
   'maquinaria',
   'linea_blanca',
-  'quimicos',
+  'materiales_construccion',
+  'textiles',
   'insumos',
   'generico',
 ]
@@ -91,15 +99,28 @@ export const GOODS_PROFILES: Record<GoodsProfileId, GoodsProfile> = {
     vehicleDrivers: false,
     isc: 'zero_editable',
   },
-  quimicos: {
-    id: 'quimicos',
-    labelEs: 'Químicos',
-    labelEn: 'Chemicals',
-    hintEs: 'Ad Valorem por HS · grado/concentración',
+  materiales_construccion: {
+    id: 'materiales_construccion',
+    labelEs: 'Materiales de construcción',
+    labelEn: 'Construction materials',
+    hintEs: 'Ad Valorem por HS · sin ISC',
     identity: [
       { key: 'productName', labelEs: 'Producto', labelEn: 'Product' },
-      { key: 'brand', labelEs: 'Fabricante', labelEn: 'Manufacturer' },
-      { key: 'model', labelEs: 'Grado / concentración', labelEn: 'Grade / concentration' },
+      { key: 'brand', labelEs: 'Marca / Fabricante', labelEn: 'Brand / Manufacturer' },
+      { key: 'model', labelEs: 'Formato / medida', labelEn: 'Format / size' },
+    ],
+    vehicleDrivers: false,
+    isc: 'zero_editable',
+  },
+  textiles: {
+    id: 'textiles',
+    labelEs: 'Textiles',
+    labelEn: 'Textiles',
+    hintEs: 'Ad Valorem por HS · sin ISC',
+    identity: [
+      { key: 'productName', labelEs: 'Producto', labelEn: 'Product' },
+      { key: 'brand', labelEs: 'Marca / Fabricante', labelEn: 'Brand / Manufacturer' },
+      { key: 'model', labelEs: 'Composición / calidad', labelEn: 'Composition / quality' },
     ],
     vehicleDrivers: false,
     isc: 'zero_editable',
@@ -142,7 +163,7 @@ const ARCHETYPE_DEFAULT: Record<string, GoodsProfileId> = {
   EQUIPMENT: 'maquinaria',
   COMMODITY: 'insumos',
   PROGRAM: 'linea_blanca',
-  PROJECT: 'generico',
+  PROJECT: 'materiales_construccion', // Interiors buys building / finishing materials
   CREDENTIAL: 'generico',
   ORIGIN: 'insumos',
   ALLOCATION: 'generico',
