@@ -168,7 +168,7 @@ export function CatalogBrowse({ categories }: { categories: string[] }) {
       {/* Mobile: one card per product (the desktop table scrolls sideways at 390px). */}
       <ul className="flex flex-col gap-3 md:hidden">
         {rows.map((row) => (
-          <ProductCard key={row.id} row={row} />
+          <ProductCard key={row.id} row={row} href={`/catalog/browse/${row.id}`} showHs />
         ))}
       </ul>
       {!query.isLoading && rows.length === 0 ? (

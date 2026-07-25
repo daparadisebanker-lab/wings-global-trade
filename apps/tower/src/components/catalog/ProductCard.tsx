@@ -31,13 +31,21 @@ function Metric({ label, value }: { label: string; value: string | number | null
 
 export function ProductCard({
   row,
+  href,
   selected,
   onToggleSelected,
+  showHs = false,
 }: {
   row: ProductRow
+  /** Destination for the name link — MUST match the surface's desktop table:
+   *  the editable catalog uses `/catalog/{id}` (editor), the read-only browse
+   *  uses `/catalog/browse/{id}` (spec view). Same row, same page, either width. */
+  href: string
   /** Selection state — present only on the editable surface (ProductTable). */
   selected?: boolean
   onToggleSelected?: (id: string) => void
+  /** Exhibit the HS code (the browse table shows it; the editor table doesn't). */
+  showHs?: boolean
 }) {
   const name = t(row.name, DEFAULT_LOCALE)
   const category = row.categoryPath.join(' / ')
@@ -59,7 +67,7 @@ export function ProductCard({
           ) : null}
           <div className="flex min-w-0 flex-col gap-0.5">
             <Link
-              href={`/catalog/${row.id}`}
+              href={href}
               className="truncate font-ui text-t0 text-ink-primary underline-offset-2 hover:text-lane-accent hover:underline"
             >
               {name}
@@ -73,6 +81,7 @@ export function ProductCard({
       {category ? <p className="font-ui text-t0 text-ink-secondary">{category}</p> : null}
 
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-line pt-3">
+        {showHs ? <Metric label="HS" value={row.hsCode} /> : null}
         <Metric label="CBM" value={row.cbmPerUnit} />
         <Metric label="MOQ" value={row.moq} />
         <span className="ml-auto font-mono text-label text-ink-secondary" data-numeric>

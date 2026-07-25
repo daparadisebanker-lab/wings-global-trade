@@ -290,7 +290,13 @@ export function ProductTable({
           sideways scroll + a header that desyncs from the virtualized body). */}
       <ul className="flex flex-col gap-3 md:hidden">
         {rows.map((row) => (
-          <ProductCard key={row.id} row={row} selected={selected.has(row.id)} onToggleSelected={toggleSelected} />
+          <ProductCard
+            key={row.id}
+            row={row}
+            href={`/catalog/${row.id}`}
+            selected={selected.has(row.id)}
+            onToggleSelected={toggleSelected}
+          />
         ))}
       </ul>
       {!query.isLoading && rows.length === 0 ? (
