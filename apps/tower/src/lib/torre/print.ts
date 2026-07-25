@@ -30,6 +30,11 @@ export interface CotizacionPrintModel {
   version: number
   /** ISO issue date, if the caller supplies one. */
   issuedAt: string | null
+  /** The draft lifecycle status (DRAFT/APPROVED/REJECTED…) when the caller supplies
+   *  it. The component marks anything that is not APPROVED — a draft or a rejected
+   *  artifact must never print as a clean final client document (spec law: nothing
+   *  leaves the tower without human approval). Null when the caller omits it. */
+  status: string | null
   /** false when the payload still has open blockers — the component marks it clearly. */
   approvable: boolean
   title: { es: string; en: string }
@@ -60,7 +65,7 @@ function fmtMinor(m: number | null): string {
  */
 export function cotizacionPrintModel(
   p: CotizacionPayload,
-  opts: { brand?: string; issuedAt?: string } = {},
+  opts: { brand?: string; issuedAt?: string; status?: string } = {},
 ): CotizacionPrintModel {
   const brand = opts.brand ?? WINGS
   const meta: PrintRow[] = [
@@ -92,6 +97,7 @@ export function cotizacionPrintModel(
     brand,
     version: p.version,
     issuedAt: opts.issuedAt ?? null,
+    status: opts.status ?? null,
     approvable: isApprovable(p),
     title: { es: 'Cotización', en: 'Quotation' },
     meta,

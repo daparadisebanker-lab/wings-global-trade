@@ -31,7 +31,7 @@ export default async function CotizacionTorreDocumentPage({
 
   if (result.error) {
     return (
-      <div className="tcot-page">
+      <div className="tcot-page" lang={locale}>
         <div className="tcot-error">
           <p>{t({ es: 'No se pudo cargar la cotización.', en: 'Could not load the quotation.' }, locale)}</p>
           <p className="tcot-error-sub">

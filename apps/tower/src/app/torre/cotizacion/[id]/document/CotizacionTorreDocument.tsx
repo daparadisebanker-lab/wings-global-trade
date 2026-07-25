@@ -21,7 +21,7 @@ function fmtDate(iso: string | null, locale: Locale): string | null {
 export function CotizacionTorreDocument({ model, locale }: { model: CotizacionPrintModel; locale: Locale }) {
   const issued = fmtDate(model.issuedAt, locale)
   return (
-    <article className="tcot">
+    <article className="tcot" lang={locale}>
       <header className="tcot-head">
         <div>
           <div className="tcot-brand">{model.brand}</div>
@@ -32,6 +32,20 @@ export function CotizacionTorreDocument({ model, locale }: { model: CotizacionPr
           {issued ? <div>{issued}</div> : null}
         </div>
       </header>
+
+      {/* Lifecycle honesty — nothing leaves the tower as a final document without
+          human approval. Anything not APPROVED prints marked (draft or rejected). */}
+      {model.status && model.status !== 'APPROVED' ? (
+        <div className="tcot-banner">
+          {model.status === 'REJECTED'
+            ? locale === 'es'
+              ? 'Rechazada — no es un documento válido.'
+              : 'Rejected — not a valid document.'
+            : locale === 'es'
+              ? 'Borrador — pendiente de aprobación. No es un documento final.'
+              : 'Draft — pending approval. Not a final document.'}
+        </div>
+      ) : null}
 
       {!model.approvable ? (
         <div className="tcot-banner">

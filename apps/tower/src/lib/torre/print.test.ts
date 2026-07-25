@@ -69,4 +69,11 @@ describe('cotizacionPrintModel', () => {
     const m = cotizacionPrintModel(cotizacion())
     expect(m.footnotes.some((f) => /No constituye una factura/.test(f.es))).toBe(true)
   })
+
+  it('carries the draft lifecycle status so a non-approved artifact prints marked', () => {
+    expect(cotizacionPrintModel(cotizacion()).status).toBeNull() // omitted → null
+    expect(cotizacionPrintModel(cotizacion(), { status: 'DRAFT' }).status).toBe('DRAFT')
+    expect(cotizacionPrintModel(cotizacion(), { status: 'APPROVED' }).status).toBe('APPROVED')
+    expect(cotizacionPrintModel(cotizacion(), { status: 'REJECTED' }).status).toBe('REJECTED')
+  })
 })

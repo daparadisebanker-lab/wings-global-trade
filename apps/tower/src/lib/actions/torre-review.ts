@@ -94,7 +94,7 @@ export async function getTorreCotizacionPrint(draftId: string): Promise<ActionRe
   const payload = parseTorreArtifact(record.payload)
   if (!payload || payload.kind !== 'COTIZACION') return fail('VALIDATION', 'No es una cotización / Not a quotation')
 
-  return ok(cotizacionPrintModel(payload, { issuedAt: record.createdAt }))
+  return ok(cotizacionPrintModel(payload, { issuedAt: record.createdAt, status: record.status }))
 }
 
 export interface ApproveTorreResult {
