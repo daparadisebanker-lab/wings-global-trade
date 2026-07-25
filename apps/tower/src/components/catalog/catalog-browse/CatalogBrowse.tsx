@@ -166,12 +166,16 @@ export function CatalogBrowse({ categories }: { categories: string[] }) {
         </p>
       ) : null}
 
-      {/* Mobile: one card per product (the desktop table scrolls sideways at 390px). */}
-      <ul className="flex flex-col gap-3 md:hidden">
-        {rows.map((row) => (
-          <ProductCard key={row.id} row={row} href={`/catalog/browse/${row.id}`} showHs />
-        ))}
-      </ul>
+      {/* Mobile: one card per product (the desktop table scrolls sideways at 390px).
+          Rendered only when there are rows so the empty list's gap doesn't stack
+          above the loading skeleton / empty note. */}
+      {rows.length > 0 ? (
+        <ul className="flex flex-col gap-3 md:hidden">
+          {rows.map((row) => (
+            <ProductCard key={row.id} row={row} href={`/catalog/browse/${row.id}`} showHs />
+          ))}
+        </ul>
+      ) : null}
       {query.isLoading && rows.length === 0 ? <ListSkeleton className="md:hidden" /> : null}
       {!query.isLoading && rows.length === 0 ? (
         <p className="py-10 text-center font-ui text-t0 text-ink-secondary md:hidden">

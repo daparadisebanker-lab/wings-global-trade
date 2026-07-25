@@ -265,21 +265,23 @@ export function AuditExplorer({ facets, locale = DEFAULT_LOCALE }: { facets: Aud
         {/* Mobile: one card per entry (the desktop row is 600px+ of fixed columns
             and the 45% detail column collapses to ~150px of unreadable JSON at
             390px). Selecting a card opens the detail as a bottom sheet below. */}
+        {/* Loading announcer kept OUT of the <ul> so the list never owns a
+            non-listitem child (the skeleton <li>s are aria-hidden). */}
+        {query.isLoading && rows.length === 0 ? (
+          <div role="status" className="sr-only md:hidden">
+            {t({ es: 'Cargando…', en: 'Loading…' }, locale)}
+          </div>
+        ) : null}
         <ul className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto md:hidden">
-          {query.isLoading && rows.length === 0 ? (
-            <>
-              <li role="status" className="sr-only">
-                {t({ es: 'Cargando…', en: 'Loading…' }, locale)}
-              </li>
-              {Array.from({ length: 6 }).map((_, i) => (
+          {query.isLoading && rows.length === 0
+            ? Array.from({ length: 6 }).map((_, i) => (
                 <li
                   key={`sk-${i}`}
                   aria-hidden
                   className="h-16 shrink-0 animate-pulse rounded-card border border-line bg-surface-1 motion-reduce:animate-none"
                 />
-              ))}
-            </>
-          ) : null}
+              ))
+            : null}
           {rows.map((row) => {
             const isSelected = selected?.id === row.id
             return (

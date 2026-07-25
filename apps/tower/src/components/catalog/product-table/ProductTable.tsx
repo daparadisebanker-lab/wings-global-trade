@@ -288,18 +288,22 @@ export function ProductTable({
       ) : null}
 
       {/* Mobile: one card per product (a 7-column table can't fit 390px without
-          sideways scroll + a header that desyncs from the virtualized body). */}
-      <ul className="flex flex-col gap-3 md:hidden">
-        {rows.map((row) => (
-          <ProductCard
-            key={row.id}
-            row={row}
-            href={`/catalog/${row.id}`}
-            selected={selected.has(row.id)}
-            onToggleSelected={toggleSelected}
-          />
-        ))}
-      </ul>
+          sideways scroll + a header that desyncs from the virtualized body).
+          Rendered only when there are rows so the empty list's gap doesn't stack
+          above the loading skeleton / empty note. */}
+      {rows.length > 0 ? (
+        <ul className="flex flex-col gap-3 md:hidden">
+          {rows.map((row) => (
+            <ProductCard
+              key={row.id}
+              row={row}
+              href={`/catalog/${row.id}`}
+              selected={selected.has(row.id)}
+              onToggleSelected={toggleSelected}
+            />
+          ))}
+        </ul>
+      ) : null}
       {query.isLoading && rows.length === 0 ? <ListSkeleton className="md:hidden" /> : null}
       {!query.isLoading && rows.length === 0 ? (
         <p className="py-10 text-center font-ui text-t0 text-ink-secondary md:hidden">
