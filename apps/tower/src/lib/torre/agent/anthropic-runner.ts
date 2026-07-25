@@ -13,6 +13,7 @@
 // ModelTurn.stopHint AND drops any partial tool call — a truncated run stops honestly
 // instead of dispatching half a tool_use or being reported as a clean completion.
 import type Anthropic from '@anthropic-ai/sdk'
+import { THINKING_ON_BY_DEFAULT } from '@/lib/ai/types'
 import type { AgentStep, AgentTool, ModelTurn, NextTurn, ToolCall } from './tool-loop'
 
 // ── Minimal structural shapes (so tests need no SDK, no key) ─────────────────
@@ -50,6 +51,9 @@ export interface AnthropicLike {
         system?: string
         messages: TurnMessage[]
         tools?: ToolSchema[]
+        /** Runtime-only key (predates the pinned SDK's params type) — set to disable
+         *  adaptive thinking for a thinking-on-by-default model (see makeAnthropicNextTurn). */
+        thinking?: { type: 'disabled' }
       },
       options?: { signal?: AbortSignal },
     ): Promise<{ content: RawBlock[]; stop_reason?: string | null }>
@@ -144,6 +148,13 @@ export interface AnthropicRunnerConfig {
 export function makeAnthropicNextTurn(cfg: AnthropicRunnerConfig): NextTurn {
   const tools = cfg.tools.map(toolToAnthropicSchema)
   const maxTokens = cfg.maxTokens ?? 4096
+  // Disable adaptive thinking on a thinking-on-by-default model. Two failures it
+  // avoids: the per-turn budget spent thinking instead of on the tool call/answer,
+  // and — decisive for a loop — thinking blocks that would have to be replayed
+  // verbatim on the next turn, which stepsToMessages does not do (it replays only
+  // text + tool_use). With thinking off, no thinking blocks are ever produced, so
+  // the transcript rebuild stays correct across turns.
+  const thinking = THINKING_ON_BY_DEFAULT.has(cfg.model) ? ({ type: 'disabled' } as const) : undefined
   return async (steps) => {
     const res = await cfg.sdk.messages.create(
       {
@@ -152,6 +163,7 @@ export function makeAnthropicNextTurn(cfg: AnthropicRunnerConfig): NextTurn {
         system: cfg.system,
         messages: stepsToMessages(cfg.userMessage, steps),
         tools,
+        ...(thinking ? { thinking } : {}),
       },
       cfg.signal ? { signal: cfg.signal } : undefined,
     )

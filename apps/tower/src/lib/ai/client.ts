@@ -8,25 +8,16 @@
 // lib/supabase/server.ts, which guards with a comment rather than a `server-only`
 // dependency this workspace does not carry.
 import Anthropic from '@anthropic-ai/sdk'
-import type { IntelligenceModel } from './types'
-
-/** Models where ADAPTIVE THINKING is ON by default. Left on, a one-shot JSON
- *  extraction with a tight max_tokens (our capabilities pass 500–1100) can spend
- *  the whole budget thinking and return an EMPTY answer — Mister then silently
- *  fails. These calls are deterministic extraction/classification, not reasoning,
- *  so we disable thinking and hand the full budget to the structured answer.
- *  (Haiku is thinking-off by default, so it's absent here.) */
-const THINKS_BY_DEFAULT: ReadonlySet<string> = new Set([
-  'claude-opus-5',
-  'claude-opus-4-8',
-  'claude-opus-4-7',
-  'claude-sonnet-5',
-])
+import { THINKING_ON_BY_DEFAULT, type IntelligenceModel } from './types'
 
 /** Attach `thinking: { disabled }` for a thinking-on-by-default model, in a shape
- *  the pinned SDK's params type predates (runtime-only key; sent on the wire). */
+ *  the pinned SDK's params type predates (runtime-only key; sent on the wire). Left
+ *  on, a one-shot JSON extraction with a tight max_tokens (our capabilities pass
+ *  500–1100) can spend the whole budget thinking and return an EMPTY answer — Mister
+ *  then silently fails. These calls are deterministic extraction/classification, so
+ *  the full budget goes to the structured answer. (Model list: THINKING_ON_BY_DEFAULT.) */
 function withThinkingOff<T extends object>(params: T, model: string): T {
-  if (THINKS_BY_DEFAULT.has(model)) (params as Record<string, unknown>).thinking = { type: 'disabled' }
+  if (THINKING_ON_BY_DEFAULT.has(model)) (params as Record<string, unknown>).thinking = { type: 'disabled' }
   return params
 }
 

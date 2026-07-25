@@ -22,6 +22,21 @@ export const INTELLIGENCE_MODELS = {
 } as const
 export type IntelligenceModel = (typeof INTELLIGENCE_MODELS)[keyof typeof INTELLIGENCE_MODELS]
 
+/** Models where ADAPTIVE THINKING is ON by default — every caller disables it.
+ *  Two independent failure modes make thinking-on wrong for TOWER's calls:
+ *    (a) one-shot extraction (lib/ai/client.ts) — a tight max_tokens spent thinking
+ *        truncates the JSON answer to EMPTY, so Mister silently fails;
+ *    (b) multi-step tool use (lib/torre/agent/anthropic-runner.ts) — thinking blocks
+ *        in a tool_use turn must be replayed verbatim on the next turn, which the
+ *        transcript rebuild does not do; leaving thinking on breaks turn 2.
+ *  Both seams import this ONE list. Haiku is thinking-off by default, so it's absent. */
+export const THINKING_ON_BY_DEFAULT: ReadonlySet<string> = new Set([
+  'claude-opus-5',
+  'claude-opus-4-8',
+  'claude-opus-4-7',
+  'claude-sonnet-5',
+])
+
 // ── Draft taxonomy ───────────────────────────────────────────────────────────
 export const DRAFT_KINDS = ['TRIAGE', 'LEAD_SCORE', 'SPEC_EXTRACT', 'WEEKLY_BRIEF'] as const
 export type DraftKind = (typeof DRAFT_KINDS)[number]

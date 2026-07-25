@@ -127,7 +127,10 @@ export async function runToolLoop({ nextTurn, tools, maxSteps = 8, signal, onSte
       const step: AgentStep = { turn, results: [] }
       steps.push(step)
       await emit(step, steps.length - 1)
-      return { finalText: turn.text, steps, toolCallCount, stopReason: 'stop', stopHint: turn.stopHint }
+      // `lastText` already folded in this turn's text (`turn.text || lastText`), so
+      // when the model stops with an EMPTY final turn it falls back to its last
+      // narration instead of surfacing a blank answer.
+      return { finalText: lastText, steps, toolCallCount, stopReason: 'stop', stopHint: turn.stopHint }
     }
     const results: ToolResult[] = []
     for (const call of turn.toolCalls) {

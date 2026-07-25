@@ -44,6 +44,20 @@ describe('runToolLoop', () => {
     expect(r.steps[1].turn.text).toBe('final')
   })
 
+  it('falls back to prior narration when the terminal stop turn is empty', async () => {
+    // The model narrates on the tool turn, then stops with EMPTY final text — the
+    // answer should be the last narration, never a blank finalText.
+    const r = await runToolLoop({
+      nextTurn: scripted([
+        { text: 'ya tengo la tarifa', toolCalls: [{ id: 't1', name: 'echo', input: { v: 'x' } }] },
+        { text: '', toolCalls: [] },
+      ]),
+      tools: [echoTool],
+    })
+    expect(r.stopReason).toBe('stop')
+    expect(r.finalText).toBe('ya tengo la tarifa')
+  })
+
   it('captures an unknown tool as an error result (no crash)', async () => {
     const r = await runToolLoop({
       nextTurn: scripted([

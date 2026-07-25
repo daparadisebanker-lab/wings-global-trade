@@ -204,4 +204,21 @@ describe('makeAnthropicNextTurn + runToolLoop (scripted fake SDK)', () => {
     expect(create.mock.calls[0][0].max_tokens).toBe(4096)
     expect(create.mock.calls[0][0].system).toBe('SYS')
   })
+
+  it('disables adaptive thinking for a thinking-on-by-default model (loop replay safety)', async () => {
+    const create = vi.fn(async (_body: CreateBody) => ({ content: [{ type: 'text', text: 'ok' }] as RawBlock[], stop_reason: 'end_turn' }))
+    const sdk: AnthropicLike = { messages: { create } }
+    // opus-5 is thinking-on by default → the body must carry thinking: { disabled }.
+    const nextTurn = makeAnthropicNextTurn({ sdk, model: 'claude-opus-5', system: 'S', tools: [], userMessage: 'hi' })
+    await runToolLoop({ nextTurn, tools: [] })
+    expect(create.mock.calls[0][0].thinking).toEqual({ type: 'disabled' })
+  })
+
+  it('leaves thinking unset for a thinking-off model (no needless key on the wire)', async () => {
+    const create = vi.fn(async (_body: CreateBody) => ({ content: [{ type: 'text', text: 'ok' }] as RawBlock[], stop_reason: 'end_turn' }))
+    const sdk: AnthropicLike = { messages: { create } }
+    const nextTurn = makeAnthropicNextTurn({ sdk, model: 'claude-haiku-4-5-20251001', system: 'S', tools: [], userMessage: 'hi' })
+    await runToolLoop({ nextTurn, tools: [] })
+    expect(create.mock.calls[0][0].thinking).toBeUndefined()
+  })
 })
