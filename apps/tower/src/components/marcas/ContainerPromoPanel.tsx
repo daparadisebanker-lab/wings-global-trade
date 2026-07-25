@@ -113,7 +113,7 @@ export function ContainerPromoPanel({
         return
       }
       setDetail(res.data)
-      setBanner({ tone: 'positive', text: 'Texto guardado / Copy saved ✓' })
+      setBanner({ tone: 'positive', text: 'Texto guardado ✓' })
       onChanged?.()
     })
   }
@@ -151,7 +151,7 @@ export function ContainerPromoPanel({
       setCopied(true)
       setTimeout(() => setCopied(false), 1800)
     } catch {
-      setBanner({ tone: 'negative', text: 'No se pudo copiar / Could not copy' })
+      setBanner({ tone: 'negative', text: 'No se pudo copiar' })
     }
   }
 
@@ -221,7 +221,10 @@ export function ContainerPromoPanel({
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* ── Editor ── */}
-        <div className="flex flex-col gap-3">
+        {/* min-w-0: a grid item defaults to min-width:auto, so unbreakable content
+            (the long listing URL in the copy preview) would force the column — and
+            the whole page — wider than the mobile viewport. */}
+        <div className="flex min-w-0 flex-col gap-3">
           <label className="flex flex-col gap-1">
             <span className={LABEL}>Titular (opcional — por defecto el producto)</span>
             <input value={headline} onChange={(e) => setHeadline(e.target.value)} placeholder={detail.productName} className={INPUT} />
@@ -310,7 +313,7 @@ export function ContainerPromoPanel({
             disabled={isSaving}
             className="w-fit rounded-card bg-accent px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-surface-0 disabled:opacity-40"
           >
-            Guardar texto / Save copy
+            Guardar texto
           </button>
           {banner ? (
             <p role="status" className={`font-ui text-t0 ${banner.tone === 'positive' ? 'text-positive' : 'text-negative'}`}>
@@ -320,7 +323,7 @@ export function ContainerPromoPanel({
         </div>
 
         {/* ── Preview ── */}
-        <div className="flex flex-col gap-4">
+        <div className="flex min-w-0 flex-col gap-4">
           {/* Copy preview */}
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
@@ -347,7 +350,9 @@ export function ContainerPromoPanel({
                 {copied ? 'Copiado ✓' : 'Copiar'}
               </button>
             </div>
-            <pre className="whitespace-pre-wrap rounded-card border border-line bg-surface-0 p-3 font-ui text-t0 text-ink-primary">
+            {/* overflow-wrap:anywhere breaks the long listing URL so it wraps inside
+                the box instead of forcing horizontal page scroll on mobile. */}
+            <pre className="whitespace-pre-wrap [overflow-wrap:anywhere] rounded-card border border-line bg-surface-0 p-3 font-ui text-t0 text-ink-primary">
               {copyText}
             </pre>
             {/* Share the script — to marketing, to a picked client (wa.me), or the
