@@ -171,3 +171,94 @@ export async function createClient(input: CreateClientInput): Promise<ActionResu
   if (readErr || !row) return fail('VALIDATION', 'Cliente creado; no se pudo releer / Created; could not re-read')
   return ok(mapClientRow(row as unknown as RawClientRow))
 }
+
+const updateClientSchema = createClientSchema.extend({ id: z.string().uuid() })
+export type UpdateClientInput = z.input<typeof updateClientSchema>
+
+/**
+ * Update a client's CRM profile + primary contact (RLS gates the write via
+ * accounts_upd / contacts_upd = has_brand_role LANE_DIRECTOR/SALES). The primary
+ * contact is upserted: an existing primary row is updated, else a new one is
+ * inserted when a name is given. Brand is not re-parented here (identity stays).
+ */
+export async function updateClient(input: UpdateClientInput): Promise<ActionResult<ClientListItem>> {
+  const parsed = updateClientSchema.safeParse(input)
+  if (!parsed.success) return fail('VALIDATION', 'Datos inválidos / Invalid data')
+  const d = parsed.data
+
+  const auth = await requireUser()
+  if (!auth.ok) return auth.error
+  const db = auth.supabase.schema('tower')
+
+  const { data: updated, error } = await db
+    .from('accounts')
+    .update({
+      name: d.name,
+      source: d.source ?? null,
+      category: d.category ?? null,
+      archetype_profile: d.archetype ?? null,
+      demand: d.demand ?? null,
+      stage: d.stage,
+      country: d.country ?? null,
+      region: d.region ?? null,
+      city: d.city ?? null,
+      currency: d.currency,
+      owner_id: d.ownerId ?? auth.user.id,
+      score: d.score,
+      notes: d.notes ?? null,
+    })
+    .eq('id', d.id)
+    .select('id')
+    .single()
+
+  if (error || !updated) return fail('FORBIDDEN_LANE', 'No se pudo actualizar / Could not update')
+
+  // Upsert the primary contact.
+  if (d.contactName && d.contactName.length > 0) {
+    const { data: existing } = await db
+      .from('contacts')
+      .select('id')
+      .eq('account_id', d.id)
+      .eq('is_primary', true)
+      .maybeSingle()
+    const patch = {
+      full_name: d.contactName,
+      whatsapp: d.contactWhatsapp ?? null,
+      email: d.contactEmail ?? null,
+      role: d.contactRole ?? null,
+    }
+    if (existing) {
+      await db.from('contacts').update(patch).eq('id', (existing as { id: string }).id)
+    } else {
+      await db.from('contacts').insert({ account_id: d.id, ...patch, is_primary: true })
+    }
+  }
+
+  const { data: row, error: readErr } = await db.from('accounts').select(CLIENT_SELECT).eq('id', d.id).single()
+  if (readErr || !row) return fail('VALIDATION', 'Actualizado; no se pudo releer / Updated; could not re-read')
+  return ok(mapClientRow(row as unknown as RawClientRow))
+}
+
+const stageOnlySchema = z.object({
+  id: z.string().uuid(),
+  stage: z.enum(STAGE_IDS),
+})
+export type MoveClientStageInput = z.input<typeof stageOnlySchema>
+
+/** Move a client to a pipeline stage (the board's drop / select). RLS-gated. */
+export async function moveClientStage(input: MoveClientStageInput): Promise<ActionResult<{ id: string; stage: string }>> {
+  const parsed = stageOnlySchema.safeParse(input)
+  if (!parsed.success) return fail('VALIDATION', 'Datos inválidos / Invalid data')
+  const auth = await requireUser()
+  if (!auth.ok) return auth.error
+
+  const { data, error } = await auth.supabase
+    .schema('tower')
+    .from('accounts')
+    .update({ stage: parsed.data.stage })
+    .eq('id', parsed.data.id)
+    .select('id,stage')
+    .single()
+  if (error || !data) return fail('FORBIDDEN_LANE', 'No se pudo mover / Could not move')
+  return ok(data as { id: string; stage: string })
+}

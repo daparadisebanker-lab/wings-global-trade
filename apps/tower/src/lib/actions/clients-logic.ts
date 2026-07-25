@@ -182,3 +182,18 @@ export function mapClientRow(row: RawClientRow): ClientListItem {
 
 export const CLIENT_SELECT =
   'id,name,country,region,city,source,category,archetype_profile,demand,stage,currency,owner_id,notes,score,created_at,brands(name),contacts(full_name,whatsapp,email,role,is_primary)'
+
+// ── Pipeline board grouping ──────────────────────────────────────────────────
+export interface StageColumn {
+  stage: ClientStage
+  items: ClientListItem[]
+}
+
+/** PURE: bucket clients into the fixed stage order (empty columns kept), so the
+ *  board always shows every lane of the pipeline. Within a column, input order is
+ *  preserved (the caller sorts — e.g. score desc). */
+export function groupClientsByStage(items: ClientListItem[]): StageColumn[] {
+  const buckets = new Map<ClientStage, ClientListItem[]>(STAGE_OPTIONS.map((s) => [s.id, []]))
+  for (const c of items) (buckets.get(c.stage) ?? buckets.get('lead'))!.push(c)
+  return STAGE_OPTIONS.map((s) => ({ stage: s.id, items: buckets.get(s.id) ?? [] }))
+}

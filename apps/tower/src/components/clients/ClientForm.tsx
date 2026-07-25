@@ -1,12 +1,10 @@
 'use client'
 
-import { useEffect, useState, useTransition } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useTransition } from 'react'
 import { t, type Locale } from '@/lib/i18n'
 import {
   createClient,
-  listClientBrands,
-  listTeamRoster,
+  updateClient,
   type ClientBrandOption,
   type ClientOwnerOption,
 } from '@/lib/actions/clients'
@@ -14,6 +12,7 @@ import {
   SOURCE_OPTIONS,
   STAGE_OPTIONS,
   ARCHETYPE_OPTIONS,
+  type ClientListItem,
   type ClientSource,
   type ClientStage,
   type BuyerArchetype,
@@ -21,84 +20,103 @@ import {
 
 const CURRENCIES = ['USD', 'PEN', 'EUR', 'CNY']
 
+export interface ClientFormInitial {
+  id?: string
+  brandId?: string
+  name?: string
+  source?: ClientSource | ''
+  country?: string
+  region?: string
+  city?: string
+  archetype?: BuyerArchetype | ''
+  category?: string
+  demand?: string
+  currency?: string
+  stage?: ClientStage
+  ownerId?: string
+  score?: number
+  notes?: string
+  contactName?: string
+  contactWhatsapp?: string
+  contactEmail?: string
+  contactRole?: string
+}
+
+/** Build the form's starting values from an existing client (edit) — the caller
+ *  passes this, or a WhatsApp draft, or {} for a blank create. */
+export function initialFromClient(c: ClientListItem): ClientFormInitial {
+  return {
+    id: c.id,
+    name: c.name,
+    source: c.source ?? '',
+    country: c.country ?? '',
+    region: c.region ?? '',
+    city: c.city ?? '',
+    archetype: c.archetype ?? '',
+    category: c.category ?? '',
+    demand: c.demand ?? '',
+    currency: c.currency,
+    stage: c.stage,
+    ownerId: c.ownerId ?? '',
+    score: c.score,
+    notes: c.notes ?? '',
+    contactName: c.primaryContact?.name ?? '',
+    contactWhatsapp: c.primaryContact?.whatsapp ?? '',
+    contactEmail: c.primaryContact?.email ?? '',
+    contactRole: c.primaryContact?.role ?? '',
+  }
+}
+
 /**
- * "+ Nuevo cliente" — the manual create path for the Clients CRM (the other path
- * is Mister's save-draft). A toggled inline form capturing the full profile:
- * identity + origin, what they buy (archetype/category/demand), relationship
- * (stage/owner/score) and a primary contact. RLS gates the write.
+ * The client create/edit form. Create (no initial.id) → createClient; edit
+ * (initial.id) → updateClient. Also the review surface for a WhatsApp-extracted
+ * draft (the draft is passed as `initial`; nothing persists until the human saves
+ * — Directive 7). Brands + roster come from the parent (no self-fetch).
  */
-export function NewClient({ locale }: { locale: Locale }) {
-  const router = useRouter()
-  const [open, setOpen] = useState(false)
-  const [brands, setBrands] = useState<ClientBrandOption[]>([])
-  const [roster, setRoster] = useState<ClientOwnerOption[]>([])
+export function ClientForm({
+  locale,
+  brands,
+  roster,
+  initial = {},
+  onDone,
+  onCancel,
+  brandLocked = false,
+}: {
+  locale: Locale
+  brands: ClientBrandOption[]
+  roster: ClientOwnerOption[]
+  initial?: ClientFormInitial
+  onDone: (item: ClientListItem) => void
+  onCancel: () => void
+  brandLocked?: boolean
+}) {
+  const isEdit = Boolean(initial.id)
   const [error, setError] = useState<string | null>(null)
   const [saving, startSave] = useTransition()
 
-  // Identity & origin
-  const [brandId, setBrandId] = useState('')
-  const [name, setName] = useState('')
-  const [source, setSource] = useState<ClientSource | ''>('')
-  const [country, setCountry] = useState('')
-  const [region, setRegion] = useState('')
-  const [city, setCity] = useState('')
-  // What they buy
-  const [archetype, setArchetype] = useState<BuyerArchetype | ''>('')
-  const [category, setCategory] = useState('')
-  const [demand, setDemand] = useState('')
-  const [currency, setCurrency] = useState('USD')
-  // Relationship
-  const [stage, setStage] = useState<ClientStage>('lead')
-  const [ownerId, setOwnerId] = useState('')
-  const [score, setScore] = useState(0)
-  const [notes, setNotes] = useState('')
-  // Primary contact
-  const [contactName, setContactName] = useState('')
-  const [contactWhatsapp, setContactWhatsapp] = useState('')
-  const [contactEmail, setContactEmail] = useState('')
-  const [contactRole, setContactRole] = useState('')
-
-  useEffect(() => {
-    if (!open) return
-    let live = true
-    listClientBrands().then((res) => {
-      if (!live || res.error) return
-      setBrands(res.data)
-      if (res.data.length === 1) setBrandId(res.data[0].id)
-    })
-    listTeamRoster().then((res) => {
-      if (live && !res.error) setRoster(res.data)
-    })
-    return () => {
-      live = false
-    }
-  }, [open])
-
-  function reset() {
-    setName('')
-    setSource('')
-    setCountry('')
-    setRegion('')
-    setCity('')
-    setArchetype('')
-    setCategory('')
-    setDemand('')
-    setCurrency('USD')
-    setStage('lead')
-    setOwnerId('')
-    setScore(0)
-    setNotes('')
-    setContactName('')
-    setContactWhatsapp('')
-    setContactEmail('')
-    setContactRole('')
-    setError(null)
-  }
+  const [brandId, setBrandId] = useState(initial.brandId ?? (brands.length === 1 ? brands[0].id : ''))
+  const [name, setName] = useState(initial.name ?? '')
+  const [source, setSource] = useState<ClientSource | ''>(initial.source ?? '')
+  const [country, setCountry] = useState(initial.country ?? '')
+  const [region, setRegion] = useState(initial.region ?? '')
+  const [city, setCity] = useState(initial.city ?? '')
+  const [archetype, setArchetype] = useState<BuyerArchetype | ''>(initial.archetype ?? '')
+  const [category, setCategory] = useState(initial.category ?? '')
+  const [demand, setDemand] = useState(initial.demand ?? '')
+  const [currency, setCurrency] = useState(initial.currency ?? 'USD')
+  const [stage, setStage] = useState<ClientStage>(initial.stage ?? 'lead')
+  const [ownerId, setOwnerId] = useState(initial.ownerId ?? '')
+  const [score, setScore] = useState(initial.score ?? 0)
+  const [notes, setNotes] = useState(initial.notes ?? '')
+  const [contactName, setContactName] = useState(initial.contactName ?? '')
+  const [contactWhatsapp, setContactWhatsapp] = useState(initial.contactWhatsapp ?? '')
+  const [contactEmail, setContactEmail] = useState(initial.contactEmail ?? '')
+  const [contactRole, setContactRole] = useState(initial.contactRole ?? '')
 
   function onSave() {
     setError(null)
     startSave(async () => {
-      const res = await createClient({
+      const payload = {
         brandId,
         name: name.trim(),
         source: source || null,
@@ -117,14 +135,15 @@ export function NewClient({ locale }: { locale: Locale }) {
         contactWhatsapp: contactWhatsapp.trim() || null,
         contactEmail: contactEmail.trim() || null,
         contactRole: contactRole.trim() || null,
-      })
+      }
+      const res = isEdit
+        ? await updateClient({ id: initial.id!, ...payload })
+        : await createClient(payload)
       if (res.error) {
         setError(res.error.message)
         return
       }
-      reset()
-      setOpen(false)
-      router.refresh()
+      onDone(res.data)
     })
   }
 
@@ -132,19 +151,6 @@ export function NewClient({ locale }: { locale: Locale }) {
     'rounded-card border border-line bg-surface-0 px-3 py-2 font-ui text-t0 text-ink-primary outline-none focus-visible:border-lane-accent placeholder:text-ink-secondary'
   const lbl = 'font-mono text-label uppercase tracking-[0.08em] text-ink-secondary'
   const legend = 'font-mono text-label uppercase tracking-[0.12em] text-lane-accent'
-
-  if (!open) {
-    return (
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="rounded-card bg-accent px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-surface-0"
-      >
-        {t({ es: '+ Nuevo cliente', en: '+ New client' }, locale)}
-      </button>
-    )
-  }
-
   const canSave = Boolean(brandId) && name.trim().length > 0 && !saving
   const L = (o: { es: string; en: string }) => (locale === 'es' ? o.es : o.en)
 
@@ -158,17 +164,18 @@ export function NewClient({ locale }: { locale: Locale }) {
   }
 
   return (
-    <div className="flex w-full max-w-2xl flex-col gap-4 rounded-card-lg border border-line bg-surface-1 p-4 shadow-elevation-2">
-      <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
-        {t({ es: 'Nuevo cliente', en: 'New client' }, locale)}
-      </span>
-
+    <div className="flex w-full flex-col gap-4">
       {/* Identity & origin */}
       <div className="flex flex-col gap-2">
         <span className={legend}>{t({ es: 'Identidad y origen', en: 'Identity & origin' }, locale)}</span>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label={t({ es: 'Marca', en: 'Brand' }, locale)}>
-            <select className={field} value={brandId} onChange={(e) => setBrandId(e.target.value)}>
+            <select
+              className={field}
+              value={brandId}
+              onChange={(e) => setBrandId(e.target.value)}
+              disabled={brandLocked}
+            >
               <option value="">{t({ es: '— Marca —', en: '— Brand —' }, locale)}</option>
               {brands.map((b) => (
                 <option key={b.id} value={b.id}>
@@ -323,14 +330,15 @@ export function NewClient({ locale }: { locale: Locale }) {
           disabled={!canSave}
           className="rounded-card bg-accent px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-surface-0 disabled:opacity-50"
         >
-          {saving ? t({ es: 'Guardando…', en: 'Saving…' }, locale) : t({ es: 'Guardar', en: 'Save' }, locale)}
+          {saving
+            ? t({ es: 'Guardando…', en: 'Saving…' }, locale)
+            : isEdit
+              ? t({ es: 'Guardar cambios', en: 'Save changes' }, locale)
+              : t({ es: 'Guardar', en: 'Save' }, locale)}
         </button>
         <button
           type="button"
-          onClick={() => {
-            reset()
-            setOpen(false)
-          }}
+          onClick={onCancel}
           className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary hover:text-ink-primary"
         >
           {t({ es: 'Cancelar', en: 'Cancel' }, locale)}

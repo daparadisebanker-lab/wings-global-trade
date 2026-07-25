@@ -5,6 +5,8 @@ import {
   sourceLabel,
   stageLabel,
   archetypeLabel,
+  groupClientsByStage,
+  type ClientListItem,
   type RawClientRow,
 } from './clients-logic'
 
@@ -108,5 +110,35 @@ describe('label helpers', () => {
     expect(archetypeLabel('ALLOCATION', 'es')).toBe('Asignación')
     expect(sourceLabel(null, 'es')).toBeNull()
     expect(stageLabel('mystery', 'en')).toBe('mystery')
+  })
+})
+
+describe('groupClientsByStage', () => {
+  const mk = (id: string, stage: ClientListItem['stage']): ClientListItem => ({
+    id,
+    name: id,
+    brandName: null,
+    source: null,
+    category: null,
+    archetype: null,
+    demand: null,
+    stage,
+    country: null,
+    region: null,
+    city: null,
+    currency: 'USD',
+    ownerId: null,
+    notes: null,
+    score: 0,
+    primaryContact: null,
+    createdAt: '2026-07-25T00:00:00Z',
+  })
+
+  it('returns all 6 stage columns in fixed order, even when empty', () => {
+    const cols = groupClientsByStage([mk('a', 'lead'), mk('b', 'won'), mk('c', 'lead')])
+    expect(cols.map((c) => c.stage)).toEqual(['lead', 'qualified', 'quoted', 'negotiating', 'won', 'dormant'])
+    expect(cols[0].items.map((i) => i.id)).toEqual(['a', 'c'])
+    expect(cols[4].items.map((i) => i.id)).toEqual(['b'])
+    expect(cols[1].items).toEqual([])
   })
 })
