@@ -226,9 +226,9 @@ each pointing at the pattern it copies:
   and do a browser `window.print()` smoke of all four routes once the app is up.
   (Also tracked under "Document grid — conformance follow-up" above.)
 - **(e) ~~Prod drift: `tower_55_team_space`~~ — RESOLVED.** Recovered verbatim
-  into `supabase/migrations/20260724160000_tower_55_team_space.sql`
-  (byte-identical to prod). One follow-up remains: a forward migration to add the
-  missing `audit_trigger()` on its two tables (see the drift section below).
+  into `supabase/migrations/20260724160000_tower_55_team_space.sql` (byte-identical
+  to prod); the missing `audit_trigger()` on its two tables was then closed forward
+  by `tower_57` (applied to prod, triggers verified live). See the drift section.
 - **(f) `org_rules.ports_default` wiring + entity `validityText` from
   `validity_days`.** The a-ruling: derive an issuer's default destination ports
   from `tower.org_rules.ports_default` and compute `validityText` from the entity's
@@ -244,10 +244,11 @@ required trailing newline). The repo and prod are now in sync; `tower_57` is saf
 to write. General law still stands: cross-check `list_migrations` against
 `ls supabase/migrations` before every new migration.
 
-**Follow-up (Directive 4 gap, do NOT hot-patch prod):** the recovered migration
-does not attach `audit_trigger()` to its two new mutating tables
-(`tower.team_notes`, `tower.team_note_mentions`) — it was applied that way before
-the file existed. The file was recovered *as applied* (recovery must not diverge
-from prod). Close the gap forward with a separate migration (`tower_57+`) that
-adds the audit triggers, never by editing this recovered file or hand-patching
-prod.
+**~~Follow-up (Directive 4 gap)~~ — CLOSED (`tower_57`).** The recovered migration
+did not attach `audit_trigger()` to its two mutating tables (`tower.team_notes`,
+`tower.team_note_mentions`) — it was applied that way before the file existed, and
+was recovered *as applied* (recovery must not diverge from prod). Closed **forward**
+by `supabase/migrations/20260725120000_tower_57_team_space_audit.sql` (attaches the
+shared generic trigger to both tables; idempotent), **applied to prod** — ledger
+recorded at the exact version `20260725120000`; both triggers verified live
+(`AFTER INSERT/UPDATE/DELETE`). The recovered `tower_55` file was left untouched.
