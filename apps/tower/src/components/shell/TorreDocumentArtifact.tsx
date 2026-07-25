@@ -28,6 +28,19 @@ const KIND_LABEL: Record<DocPayload['kind'], { es: string; en: string }> = {
   SOP: { es: 'Procedimiento (SOP)', en: 'Procedure (SOP)' },
 }
 
+// Bilingual labels for the closed enums, so the EN variant reads in English (the
+// raw schema tokens are Spanish). Fall back to the raw token if a value is unmapped.
+const SEVERITY_LABEL: Record<string, { es: string; en: string }> = {
+  alta: { es: 'Alta', en: 'High' },
+  media: { es: 'Media', en: 'Medium' },
+  baja: { es: 'Baja', en: 'Low' },
+}
+const STATUS_LABEL: Record<string, { es: string; en: string }> = {
+  presente: { es: 'Presente', en: 'Present' },
+  vencido: { es: 'Vencido', en: 'Expired' },
+  faltante: { es: 'Faltante', en: 'Missing' },
+}
+
 function Kicker({ children }: { children: React.ReactNode }) {
   return <span style={{ fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', color: MUTED }}>{children}</span>
 }
@@ -75,7 +88,7 @@ function Shell({ payload, locale, children }: { payload: DocPayload; locale: Loc
   )
 }
 
-const SEV_COLOR: Record<string, string> = { alto: ERR, alta: ERR, medio: ACCENT, media: ACCENT, bajo: STEEL, baja: STEEL }
+const SEV_COLOR: Record<string, string> = { alta: ERR, media: ACCENT, baja: STEEL }
 
 function ReporteEstado({ p, locale }: { p: ReporteEstadoPayload; locale: Locale }) {
   return (
@@ -100,7 +113,9 @@ function ReporteEstado({ p, locale }: { p: ReporteEstadoPayload; locale: Locale 
           <SectionH>{t({ es: 'Riesgos', en: 'Risks' }, locale)}</SectionH>
           {p.risks.map((r, i) => (
             <div key={i} style={{ fontSize: 12.5, color: BODY, lineHeight: 1.5 }}>
-              <span style={{ fontFamily: MONO, fontSize: 10, textTransform: 'uppercase', color: SEV_COLOR[r.severity.toLowerCase()] ?? ACCENT }}>{r.severity}</span> — {r.note}
+              <span style={{ fontFamily: MONO, fontSize: 10, textTransform: 'uppercase', color: SEV_COLOR[r.severity.toLowerCase()] ?? ACCENT }}>
+                {SEVERITY_LABEL[r.severity.toLowerCase()]?.[locale] ?? r.severity}
+              </span> — {r.note}
             </div>
           ))}
         </>
@@ -139,7 +154,9 @@ function ChecklistDocs({ p, locale }: { p: ChecklistDocsPayload; locale: Locale 
               {i.note ? <span style={{ color: MUTED }}> — {i.note}</span> : null}
             </span>
             <span style={{ fontFamily: MONO, fontSize: 11, color: MUTED }}>{i.required ? t({ es: 'Sí', en: 'Yes' }, locale) : 'No'}</span>
-            <span style={{ fontFamily: MONO, fontSize: 11.5, color: markColor(i.status), whiteSpace: 'nowrap' }}>{mark(i.status)} {i.status}</span>
+            <span style={{ fontFamily: MONO, fontSize: 11.5, color: markColor(i.status), whiteSpace: 'nowrap' }}>
+              {mark(i.status)} {STATUS_LABEL[i.status]?.[locale] ?? i.status}
+            </span>
           </div>
         ))}
       </div>
@@ -192,8 +209,8 @@ function Sop({ p, locale }: { p: SopPayload; locale: Locale }) {
         {t({ es: 'Alcance', en: 'Scope' }, locale)}: {p.scope}
       </MetaLine>
       <div style={{ marginTop: 8 }}>
-        {steps.map((s) => (
-          <div key={s.n} style={{ fontSize: 12.5, color: BODY, lineHeight: 1.5, marginBottom: 6 }}>
+        {steps.map((s, i) => (
+          <div key={`${s.n}-${i}`} style={{ fontSize: 12.5, color: BODY, lineHeight: 1.5, marginBottom: 6 }}>
             <span style={{ fontFamily: MONO, color: ACCENT }}>{s.n}.</span> {s.action}
             {s.owner ? <span style={{ color: MUTED }}> — {s.owner}</span> : null}
             {s.note ? <div style={{ fontSize: 11.5, color: MUTED, paddingLeft: 16 }}>› {s.note}</div> : null}
