@@ -8,14 +8,35 @@ import {
   type ClientOwnerOption,
 } from '@/lib/actions/clients'
 import type { ClientListItem, ClientStage } from '@/lib/actions/clients-logic'
+import type { ClientExtractDraft } from '@/lib/crm/whatsapp'
 import { ClientForm, initialFromClient, type ClientFormInitial } from './ClientForm'
 import { ClientList } from './ClientList'
 import { ClientBoard } from './ClientBoard'
+import { WhatsappImport } from './WhatsappImport'
 
 const TAG = 'CLI · Clientes'
 const TITLE = { es: 'Clientes', en: 'Clients' }
 
 type Panel = { initial: ClientFormInitial } | null
+
+/** A WhatsApp-extracted draft → the form's starting values (source pinned to
+ *  WhatsApp; summary → notes). The operator picks the brand and reviews before saving. */
+function draftToInitial(d: ClientExtractDraft): ClientFormInitial {
+  return {
+    name: d.name ?? '',
+    source: 'whatsapp',
+    country: d.country ?? '',
+    city: d.city ?? '',
+    archetype: d.archetype ?? '',
+    category: d.category ?? '',
+    demand: d.demand ?? '',
+    currency: d.currency ?? 'USD',
+    notes: d.summary ?? '',
+    contactName: d.contactName ?? '',
+    contactWhatsapp: d.contactWhatsapp ?? '',
+    contactRole: d.contactRole ?? '',
+  }
+}
 
 /**
  * The Clients CRM shell — owns the live item list so create/edit/move update in
@@ -38,6 +59,7 @@ export function ClientsView({
   const [items, setItems] = useState<ClientListItem[]>(initialItems)
   const [view, setView] = useState<'list' | 'board'>('list')
   const [panel, setPanel] = useState<Panel>(null)
+  const [importing, setImporting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const byName = useMemo(() => [...items].sort((a, b) => a.name.localeCompare(b.name)), [items])
@@ -101,7 +123,20 @@ export function ClientsView({
           <div className="ml-auto flex items-center gap-2">
             <button
               type="button"
-              onClick={() => setPanel({ initial: {} })}
+              onClick={() => {
+                setImporting(true)
+                setPanel(null)
+              }}
+              className="rounded-card border border-line px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-ink-primary hover:border-lane-accent"
+            >
+              {t({ es: 'Importar WhatsApp', en: 'Import WhatsApp' }, locale)}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setPanel({ initial: {} })
+                setImporting(false)
+              }}
               className="rounded-card bg-accent px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-surface-0"
             >
               {t({ es: '+ Nuevo cliente', en: '+ New client' }, locale)}
@@ -109,6 +144,17 @@ export function ClientsView({
           </div>
         </div>
       </header>
+
+      {importing ? (
+        <WhatsappImport
+          locale={locale}
+          onCancel={() => setImporting(false)}
+          onDraft={(d) => {
+            setImporting(false)
+            setPanel({ initial: draftToInitial(d) })
+          }}
+        />
+      ) : null}
 
       {error ? (
         <p role="alert" className="font-ui text-t0 text-negative">
