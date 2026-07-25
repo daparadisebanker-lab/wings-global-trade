@@ -1,1 +1,1 @@
-export { ClientsWindow } from './ClientsWindow'
+export { ClientsView } from './ClientsView'

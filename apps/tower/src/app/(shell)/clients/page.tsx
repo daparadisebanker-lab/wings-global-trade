@@ -1,22 +1,22 @@
 import { EmptyState } from '@/components/ui/EmptyState'
-import { ClientsWindow } from '@/components/clients'
-import { listClients, listTeamRoster } from '@/lib/actions/clients'
+import { ClientsView } from '@/components/clients'
+import { listClients, listClientBrands, listTeamRoster } from '@/lib/actions/clients'
 import { DEFAULT_LOCALE } from '@/lib/i18n'
 
-// Clients window — the per-lane clients database over tower.accounts (RLS-scoped
-// via listClients). Server-rendered; mirrors the Quotations/Signals force-dynamic
-// pattern.
+// Clients CRM — the per-brand client database over tower.accounts (RLS-scoped via
+// listClients). Server-rendered initial data; the interactive shell (ClientsView)
+// owns create/edit/board. Mirrors the Quotations/Signals force-dynamic pattern.
 export const dynamic = 'force-dynamic'
 
 const TAG = 'CLI · Clientes'
 const TITLE = { es: 'Clientes', en: 'Clients' }
 
 export default async function ClientsPage() {
-  const [result, rosterRes] = await Promise.all([listClients(), listTeamRoster()])
-
-  const owners: Record<string, string> = rosterRes.error
-    ? {}
-    : Object.fromEntries(rosterRes.data.map((o) => [o.id, o.name]))
+  const [result, brandsRes, rosterRes] = await Promise.all([
+    listClients(),
+    listClientBrands(),
+    listTeamRoster(),
+  ])
 
   if (result.error) {
     return (
@@ -31,5 +31,16 @@ export default async function ClientsPage() {
     )
   }
 
-  return <ClientsWindow items={result.data} locale={DEFAULT_LOCALE} owners={owners} />
+  const roster = rosterRes.error ? [] : rosterRes.data
+  const owners: Record<string, string> = Object.fromEntries(roster.map((o) => [o.id, o.name]))
+
+  return (
+    <ClientsView
+      initialItems={result.data}
+      brands={brandsRes.error ? [] : brandsRes.data}
+      roster={roster}
+      owners={owners}
+      locale={DEFAULT_LOCALE}
+    />
+  )
 }
