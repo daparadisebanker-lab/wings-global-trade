@@ -152,7 +152,9 @@ export function ProductTable({
   return (
     <div className="flex flex-col gap-4 p-6 md:h-full">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="flex flex-wrap items-end gap-3">
+        {/* Filters: a full-width stack on phones (no ragged half-width wrap),
+            the inline toolbar at sm+. */}
+        <div className="grid grid-cols-1 gap-3 sm:flex sm:flex-wrap sm:items-end">
           <label className="flex flex-col gap-1">
             <span className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
               Buscar / Search
@@ -164,7 +166,7 @@ export function ProductTable({
                 resetPaging()
               }}
               placeholder="Nombre ES/EN…"
-              className="w-56 rounded-card border border-line bg-surface-1 px-3 py-2 font-ui text-t0 text-ink-primary outline-none placeholder:text-ink-secondary focus-visible:border-lane-accent"
+              className="w-full rounded-card border border-line bg-surface-1 px-3 py-2 font-ui text-t0 text-ink-primary outline-none placeholder:text-ink-secondary focus-visible:border-lane-accent sm:w-56"
             />
           </label>
 
@@ -176,7 +178,7 @@ export function ProductTable({
                 setStatus(e.target.value as ProductStatus | 'ALL')
                 resetPaging()
               }}
-              className="rounded-card border border-line bg-surface-1 px-3 py-2 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent"
+              className="w-full rounded-card border border-line bg-surface-1 px-3 py-2 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent sm:w-auto"
             >
               {STATUS_OPTIONS.map((s) => (
                 <option key={s} value={s}>
@@ -195,7 +197,7 @@ export function ProductTable({
                   setLaneId(e.target.value || undefined)
                   resetPaging()
                 }}
-                className="rounded-card border border-line bg-surface-1 px-3 py-2 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent"
+                className="w-full rounded-card border border-line bg-surface-1 px-3 py-2 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent sm:w-auto"
               >
                 <option value="">Todas / All</option>
                 {lanes.map((l) => (
@@ -215,7 +217,7 @@ export function ProductTable({
                 setLimit(Number(e.target.value))
                 resetPaging()
               }}
-              className="rounded-card border border-line bg-surface-1 px-3 py-2 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent"
+              className="w-full rounded-card border border-line bg-surface-1 px-3 py-2 font-mono text-t0 text-ink-primary outline-none focus-visible:border-lane-accent sm:w-auto"
             >
               {[50, 100, 200].map((n) => (
                 <option key={n} value={n}>
