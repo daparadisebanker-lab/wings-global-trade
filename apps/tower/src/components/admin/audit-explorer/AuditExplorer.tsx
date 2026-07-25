@@ -10,7 +10,7 @@
 // Like the other TOWER tables, this styles raw elements against DESIGN_SYSTEM
 // tokens rather than @wings/trade-ui primitives (those carry the public site's
 // gold/navy brand, not TOWER's graphite control-room tokens).
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import type { AuditFacets, AuditLogRow, ListAuditInput } from '@/lib/actions/audit'
@@ -80,12 +80,26 @@ export function AuditExplorer({ facets, locale = DEFAULT_LOCALE }: { facets: Aud
   const actorName = useMemo(() => new Map(facets.actors.map((a) => [a.id, a.name])), [facets.actors])
 
   const parentRef = useRef<HTMLDivElement>(null)
+  const sheetRef = useRef<HTMLDivElement>(null)
   const virtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => ROW_HEIGHT,
     overscan: 12,
   })
+
+  // The mobile detail is a modal bottom sheet: when it opens, move focus into it
+  // and let Escape close it (the desktop detail is inline, non-modal). Guarded on
+  // visibility so it only fires for the md:hidden sheet, never the display:none one.
+  useEffect(() => {
+    if (!selected) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSelected(null)
+    }
+    window.addEventListener('keydown', onKey)
+    if (sheetRef.current?.offsetParent) sheetRef.current.focus()
+    return () => window.removeEventListener('keydown', onKey)
+  }, [selected])
 
   function resetPaging() {
     setCursor(undefined)
@@ -361,7 +375,14 @@ export function AuditExplorer({ facets, locale = DEFAULT_LOCALE }: { facets: Aud
             className="absolute inset-0 backdrop-blur"
             style={{ backgroundColor: 'var(--scrim)' }}
           />
-          <div className="material-panel relative max-h-[85vh] overflow-y-auto rounded-t-panel p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+          <div
+            ref={sheetRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label={t({ es: 'Detalle de auditoría', en: 'Audit detail' }, locale)}
+            tabIndex={-1}
+            className="material-panel relative max-h-[85vh] overflow-y-auto overscroll-contain rounded-t-panel p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] outline-none"
+          >
             <AuditRowDetail row={selected} onClose={() => setSelected(null)} locale={locale} />
           </div>
         </div>
