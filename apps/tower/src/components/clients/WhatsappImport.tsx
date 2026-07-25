@@ -4,6 +4,8 @@ import { useEffect, useRef, useState, useTransition } from 'react'
 import { t, type Locale } from '@/lib/i18n'
 import { extractClientFromWhatsapp } from '@/lib/actions/whatsapp-import'
 import type { ClientExtractDraft } from '@/lib/crm/whatsapp'
+import { unzip, findChatEntry, mediaEntries, baseName } from '@/lib/crm/unzip'
+import type { ImportMedia } from './ClientForm'
 
 const STEPS = [
   { es: 'Leyendo la conversación…', en: 'Reading the conversation…' },
@@ -11,11 +13,35 @@ const STEPS = [
   { es: 'Extrayendo el perfil…', en: 'Extracting the profile…' },
 ]
 
+const MIME: Record<string, string> = {
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+  webp: 'image/webp',
+  gif: 'image/gif',
+  opus: 'audio/ogg',
+  ogg: 'audio/ogg',
+  mp3: 'audio/mpeg',
+  m4a: 'audio/mp4',
+  aac: 'audio/aac',
+  wav: 'audio/wav',
+  mp4: 'video/mp4',
+}
+
+interface MediaPreview {
+  name: string
+  kind: 'image' | 'audio'
+  ext: string
+  blob: Blob
+  url: string
+}
+
 /**
- * Import a client from an exported WhatsApp chat. Drop (or browse to) the `.txt`
- * WhatsApp produces, or paste the text; Mister reads it and returns a DRAFT
- * profile the operator reviews + saves in the form (Directive 7 — nothing
- * auto-commits). A staged loader covers the ~2s model read.
+ * Import a client from an exported WhatsApp chat. Phones export a **.zip**
+ * (_chat.txt + media), so the drop zone takes the zip directly — it finds the
+ * transcript and surfaces the images/audio inside — or a bare .txt, or pasted
+ * text. Mister reads the transcript and returns a DRAFT the operator reviews +
+ * saves (Directive 7). A staged loader covers the ~2s model read.
  */
 export function WhatsappImport({
   locale,
@@ -23,18 +49,23 @@ export function WhatsappImport({
   onCancel,
 }: {
   locale: Locale
-  onDraft: (draft: ClientExtractDraft) => void
+  onDraft: (draft: ClientExtractDraft, media: ImportMedia[]) => void
   onCancel: () => void
 }) {
   const [text, setText] = useState('')
   const [fileName, setFileName] = useState<string | null>(null)
+  const [media, setMedia] = useState<MediaPreview[]>([])
   const [error, setError] = useState<string | null>(null)
   const [drag, setDrag] = useState(false)
   const [step, setStep] = useState(0)
   const [reading, startRead] = useTransition()
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // Advance the staged loader text while the model reads (perceived progress).
+  // Free object URLs when the previews change or on unmount.
+  useEffect(() => {
+    return () => media.forEach((m) => URL.revokeObjectURL(m.url))
+  }, [media])
+
   useEffect(() => {
     if (!reading) {
       setStep(0)
@@ -46,14 +77,35 @@ export function WhatsappImport({
 
   async function ingest(file: File | undefined) {
     if (!file) return
-    if (!/\.txt$/i.test(file.name) && file.type && file.type !== 'text/plain') {
-      setError(t({ es: 'Sube el .txt exportado del chat', en: 'Upload the exported chat .txt' }, locale))
-      return
-    }
-    setFileName(file.name)
     setError(null)
+    setFileName(file.name)
+    const isZip = /\.zip$/i.test(file.name) || file.type === 'application/zip' || file.type === 'application/x-zip-compressed'
+    const isTxt = /\.txt$/i.test(file.name) || file.type === 'text/plain'
+
     try {
-      setText(await file.text())
+      if (isZip) {
+        const entries = await unzip(new Uint8Array(await file.arrayBuffer()))
+        const chat = findChatEntry(entries)
+        if (!chat) {
+          setError(t({ es: 'El .zip no contiene un chat (_chat.txt)', en: 'The .zip has no chat (_chat.txt)' }, locale))
+          return
+        }
+        setText(new TextDecoder().decode(chat.data))
+        setMedia(
+          mediaEntries(entries)
+            .filter((m) => m.kind === 'image' || m.kind === 'audio')
+            .map(({ entry, kind }) => {
+              const ext = entry.name.slice(entry.name.lastIndexOf('.') + 1).toLowerCase()
+              const blob = new Blob([entry.data as BlobPart], { type: MIME[ext] ?? 'application/octet-stream' })
+              return { name: baseName(entry.name), kind: kind as 'image' | 'audio', ext, blob, url: URL.createObjectURL(blob) }
+            }),
+        )
+      } else if (isTxt) {
+        setText(await file.text())
+        setMedia([])
+      } else {
+        setError(t({ es: 'Sube el .zip o el .txt del chat', en: 'Upload the chat .zip or .txt' }, locale))
+      }
     } catch {
       setError(t({ es: 'No se pudo leer el archivo', en: 'Could not read the file' }, locale))
     }
@@ -67,7 +119,10 @@ export function WhatsappImport({
         setError(res.error.message)
         return
       }
-      onDraft(res.data)
+      onDraft(
+        res.data,
+        media.map(({ name, kind, ext, blob }) => ({ name, kind, ext, blob })),
+      )
     })
   }
 
@@ -81,7 +136,6 @@ export function WhatsappImport({
       </span>
 
       {reading ? (
-        /* ── Extraction in progress ── */
         <div className="flex flex-col items-center gap-3 rounded-card border border-line bg-surface-0 px-4 py-8 text-center">
           <span className="flex gap-1.5" aria-hidden>
             <span className="h-2 w-2 rounded-pill bg-lane-accent motion-safe:animate-pulse" />
@@ -91,23 +145,20 @@ export function WhatsappImport({
           <span role="status" aria-live="polite" className="font-ui text-t0 text-ink-primary">
             {t(STEPS[step], locale)}
           </span>
-          <span className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary">
-            {t({ es: 'Mister', en: 'Mister' }, locale)}
-          </span>
+          <span className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary">Mister</span>
         </div>
       ) : (
         <>
           <p className="max-w-prose font-ui text-label text-ink-secondary">
             {t(
               {
-                es: 'Exporta la conversación en WhatsApp (sin archivos) y suéltala aquí o pégala. Mister arma un borrador de perfil que revisas antes de guardar.',
-                en: 'Export the chat in WhatsApp (without media) and drop it here or paste it. Mister builds a draft profile you review before saving.',
+                es: 'Exporta la conversación en WhatsApp y suelta el .zip aquí (Mister encuentra el chat y sus adjuntos). También acepta el .txt o texto pegado.',
+                en: 'Export the chat in WhatsApp and drop the .zip here (Mister finds the transcript and its attachments). A .txt or pasted text works too.',
               },
               locale,
             )}
           </p>
 
-          {/* ── Drop zone (also click / keyboard to browse) ── */}
           <div
             role="button"
             tabIndex={0}
@@ -136,20 +187,52 @@ export function WhatsappImport({
               {fileName ? (
                 <span className="font-mono text-label text-ink-primary">{fileName}</span>
               ) : (
-                t({ es: 'Suelta el .txt aquí', en: 'Drop the .txt here' }, locale)
+                t({ es: 'Suelta el .zip aquí', en: 'Drop the .zip here' }, locale)
               )}
             </span>
             <span className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary">
-              {t({ es: 'o haz clic para elegir', en: 'or click to choose' }, locale)}
+              {t({ es: 'o haz clic para elegir (.zip / .txt)', en: 'or click to choose (.zip / .txt)' }, locale)}
             </span>
             <input
               ref={inputRef}
               type="file"
-              accept=".txt,text/plain"
+              accept=".zip,.txt,application/zip,text/plain"
               className="hidden"
               onChange={(e) => void ingest(e.target.files?.[0])}
             />
           </div>
+
+          {media.length ? (
+            <div className="flex flex-col gap-2">
+              <span className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary">
+                {t({ es: 'Adjuntos en el chat', en: 'Attachments in the chat' }, locale)} ({media.length})
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {media.map((m, i) =>
+                  m.kind === 'image' ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      key={i}
+                      src={m.url}
+                      alt={m.name}
+                      title={m.name}
+                      className="h-16 w-16 rounded-card border border-line object-cover"
+                    />
+                  ) : m.kind === 'audio' ? (
+                    <audio key={i} controls src={m.url} className="h-9" title={m.name} />
+                  ) : (
+                    <span
+                      key={i}
+                      className="rounded-card border border-line px-2 py-1 font-mono text-label text-ink-secondary"
+                      title={m.name}
+                    >
+                      {m.name}
+                    </span>
+                  ),
+                )}
+              </div>
+            </div>
+          ) : null}
 
           <details className="group">
             <summary className="cursor-pointer font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:text-ink-primary">

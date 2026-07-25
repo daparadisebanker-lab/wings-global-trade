@@ -25,6 +25,7 @@ const base: RawClientRow = {
   owner_id: 'u9',
   notes: null,
   score: 72,
+  media: [{ path: 'u1/f1.jpg', kind: 'image', name: 'foto.jpg' }],
   created_at: '2026-07-21T00:00:00Z',
   brands: { name: 'Wings' },
   contacts: [{ full_name: 'Renata Revol', whatsapp: '+591 68173247', email: null, role: 'Compras', is_primary: true }],
@@ -49,6 +50,7 @@ describe('mapClientRow', () => {
       email: null,
       role: 'Compras',
     })
+    expect(item.media).toEqual([{ path: 'u1/f1.jpg', kind: 'image', name: 'foto.jpg' }])
   })
 
   it('array-shaped brand join, string score, and picks the primary among many contacts', () => {
@@ -131,6 +133,7 @@ describe('groupClientsByStage', () => {
     notes: null,
     score: 0,
     primaryContact: null,
+    media: [],
     createdAt: '2026-07-25T00:00:00Z',
   })
 

@@ -10,6 +10,7 @@ import { z } from 'zod'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { ok, fail, type ActionResult } from './result'
 import { mapClientRow, CLIENT_SELECT, type ClientListItem, type RawClientRow } from './clients-logic'
+import { isOwnClientMediaPath, parseMediaArray } from './client-media-logic'
 
 export interface ClientBrandOption {
   id: string
@@ -88,6 +89,12 @@ const ARCHETYPE_IDS = ['EQUIPMENT', 'PROJECT', 'COMMODITY', 'PROGRAM', 'CREDENTI
 
 const nz = (max: number) => z.string().trim().max(max).nullish()
 
+const mediaItemSchema = z.object({
+  path: z.string().max(300),
+  kind: z.enum(['image', 'audio']),
+  name: z.string().max(200),
+})
+
 const createClientSchema = z.object({
   brandId: z.string().uuid(),
   name: z.string().trim().min(1).max(200),
@@ -113,6 +120,8 @@ const createClientSchema = z.object({
   contactWhatsapp: nz(40),
   contactEmail: nz(200),
   contactRole: nz(120),
+  // WhatsApp-import attachments (image/audio) already uploaded to client-media.
+  media: z.array(mediaItemSchema).max(30).optional(),
 })
 export type CreateClientInput = z.input<typeof createClientSchema>
 
@@ -131,6 +140,12 @@ export async function createClient(input: CreateClientInput): Promise<ActionResu
   if (!auth.ok) return auth.error
   const db = auth.supabase.schema('tower')
 
+  // Every attachment must be the caller's own uploaded object (defense-in-depth
+  // beyond the signed-upload own-prefix).
+  const media = d.media ?? []
+  if (!media.every((m) => isOwnClientMediaPath(auth.user.id, m.path)))
+    return fail('FORBIDDEN_LANE', 'Adjunto fuera de tu espacio / Attachment outside your space')
+
   const { data: acct, error } = await db
     .from('accounts')
     .insert({
@@ -148,6 +163,7 @@ export async function createClient(input: CreateClientInput): Promise<ActionResu
       owner_id: d.ownerId ?? auth.user.id,
       score: d.score,
       notes: d.notes ?? null,
+      media,
     })
     .select('id')
     .single()
@@ -190,6 +206,14 @@ export async function updateClient(input: UpdateClientInput): Promise<ActionResu
   if (!auth.ok) return auth.error
   const db = auth.supabase.schema('tower')
 
+  // Media may be the caller's own new uploads OR already-present items (a
+  // teammate's attachments stay valid) — never an arbitrary foreign path.
+  const submitted = d.media ?? []
+  const { data: cur } = await db.from('accounts').select('media').eq('id', d.id).maybeSingle()
+  const existingPaths = new Set(parseMediaArray((cur as { media?: unknown } | null)?.media).map((m) => m.path))
+  if (!submitted.every((m) => isOwnClientMediaPath(auth.user.id, m.path) || existingPaths.has(m.path)))
+    return fail('FORBIDDEN_LANE', 'Adjunto fuera de tu alcance / Attachment outside your scope')
+
   const { data: updated, error } = await db
     .from('accounts')
     .update({
@@ -206,6 +230,7 @@ export async function updateClient(input: UpdateClientInput): Promise<ActionResu
       owner_id: d.ownerId ?? auth.user.id,
       score: d.score,
       notes: d.notes ?? null,
+      media: submitted,
     })
     .eq('id', d.id)
     .select('id')

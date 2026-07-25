@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import { t, type Locale } from '@/lib/i18n'
 import {
   createClient,
@@ -8,17 +8,27 @@ import {
   type ClientBrandOption,
   type ClientOwnerOption,
 } from '@/lib/actions/clients'
+import { createClientMediaUploadUrl, getClientMediaUrl } from '@/lib/actions/client-media'
 import {
   SOURCE_OPTIONS,
   STAGE_OPTIONS,
   ARCHETYPE_OPTIONS,
   type ClientListItem,
+  type ClientMediaItem,
   type ClientSource,
   type ClientStage,
   type BuyerArchetype,
 } from '@/lib/actions/clients-logic'
 
 const CURRENCIES = ['USD', 'PEN', 'EUR', 'CNY']
+
+/** An attachment pulled from a WhatsApp zip, pending upload on save. */
+export interface ImportMedia {
+  name: string
+  kind: 'image' | 'audio'
+  ext: string
+  blob: Blob
+}
 
 export interface ClientFormInitial {
   id?: string
@@ -40,6 +50,7 @@ export interface ClientFormInitial {
   contactWhatsapp?: string
   contactEmail?: string
   contactRole?: string
+  media?: ClientMediaItem[]
 }
 
 /** Build the form's starting values from an existing client (edit). */
@@ -63,14 +74,18 @@ export function initialFromClient(c: ClientListItem): ClientFormInitial {
     contactWhatsapp: c.primaryContact?.whatsapp ?? '',
     contactEmail: c.primaryContact?.email ?? '',
     contactRole: c.primaryContact?.role ?? '',
+    media: c.media,
   }
 }
+
+type KeptMedia = ClientMediaItem & { url?: string }
+type PendingMedia = ImportMedia & { url: string }
 
 /**
  * The client create/edit form. Create (no initial.id) → createClient; edit
  * (initial.id) → updateClient. Also the review surface for a WhatsApp-extracted
- * draft: `aiFilled` names the fields Mister populated, so each is badged "IA" and
- * a banner surfaces what's still blank (Directive 7 — the human reviews + saves).
+ * draft: `aiFilled` badges the fields Mister populated, and `pendingMedia` are the
+ * zip's attachments uploaded to client-media on save (Directive 7 — human saves).
  */
 export function ClientForm({
   locale,
@@ -78,6 +93,7 @@ export function ClientForm({
   roster,
   initial = {},
   aiFilled,
+  pendingMedia,
   onDone,
   onCancel,
 }: {
@@ -86,6 +102,7 @@ export function ClientForm({
   roster: ClientOwnerOption[]
   initial?: ClientFormInitial
   aiFilled?: Set<string>
+  pendingMedia?: ImportMedia[]
   onDone: (item: ClientListItem) => void
   onCancel: () => void
 }) {
@@ -112,9 +129,61 @@ export function ClientForm({
   const [contactEmail, setContactEmail] = useState(initial.contactEmail ?? '')
   const [contactRole, setContactRole] = useState(initial.contactRole ?? '')
 
+  // Media: existing (edit) resolve to signed URLs; pending (from a zip) preview
+  // from a local object URL and upload on save.
+  const [kept, setKept] = useState<KeptMedia[]>(() => (initial.media ?? []).map((m) => ({ ...m })))
+  const [pending, setPending] = useState<PendingMedia[]>(() =>
+    (pendingMedia ?? []).map((m) => ({ ...m, url: URL.createObjectURL(m.blob) })),
+  )
+
+  useEffect(() => {
+    let live = true
+    for (const m of initial.media ?? []) {
+      getClientMediaUrl(m.path).then((res) => {
+        if (live && !res.error) setKept((xs) => xs.map((x) => (x.path === m.path ? { ...x, url: res.data } : x)))
+      })
+    }
+    return () => {
+      live = false
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Free the pending object URLs on unmount.
+  useEffect(() => () => pending.forEach((p) => URL.revokeObjectURL(p.url)), []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  function removePending(i: number) {
+    setPending((xs) => {
+      const p = xs[i]
+      if (p) URL.revokeObjectURL(p.url)
+      return xs.filter((_, j) => j !== i)
+    })
+  }
+
   function onSave() {
     setError(null)
     startSave(async () => {
+      // Upload the pending attachments first; a failure aborts the save.
+      const uploaded: ClientMediaItem[] = []
+      for (const p of pending) {
+        const ticket = await createClientMediaUploadUrl(p.ext)
+        if (ticket.error) {
+          setError(ticket.error.message)
+          return
+        }
+        const put = await fetch(ticket.data.signedUrl, {
+          method: 'PUT',
+          headers: { 'content-type': ticket.data.mime },
+          body: p.blob,
+        })
+        if (!put.ok) {
+          setError(t({ es: 'No se pudo subir un adjunto', en: 'Could not upload an attachment' }, locale))
+          return
+        }
+        uploaded.push({ path: ticket.data.path, kind: p.kind, name: p.name })
+      }
+      const media: ClientMediaItem[] = [...kept.map(({ path, kind, name }) => ({ path, kind, name })), ...uploaded]
+
       const payload = {
         brandId,
         name: name.trim(),
@@ -134,6 +203,7 @@ export function ClientForm({
         contactWhatsapp: contactWhatsapp.trim() || null,
         contactEmail: contactEmail.trim() || null,
         contactRole: contactRole.trim() || null,
+        media,
       }
       const res = isEdit ? await updateClient({ id: initial.id!, ...payload }) : await createClient(payload)
       if (res.error) {
@@ -151,9 +221,8 @@ export function ClientForm({
   const canSave = Boolean(brandId) && name.trim().length > 0 && !saving
   const L = (o: { es: string; en: string }) => (locale === 'es' ? o.es : o.en)
   const ai = (k: string) => Boolean(aiFilled?.has(k))
+  const mediaCount = kept.length + pending.length
 
-  // Live "still to complete" list — the important fields Mister can't fill (brand)
-  // or didn't find, shown so the reviewer sees the gaps at a glance.
   const missing: string[] = []
   if (!brandId) missing.push(t({ es: 'Marca (obligatoria)', en: 'Brand (required)' }, locale))
   if (!country.trim()) missing.push(t({ es: 'País', en: 'Country' }, locale))
@@ -361,6 +430,29 @@ export function ClientForm({
         </div>
       </div>
 
+      {/* Attachments */}
+      {mediaCount > 0 ? (
+        <div className="flex flex-col gap-2">
+          <span className={legend}>
+            {t({ es: 'Adjuntos', en: 'Attachments' }, locale)} ({mediaCount})
+          </span>
+          <div className="flex flex-wrap gap-2">
+            {kept.map((m, i) => (
+              <MediaTile
+                key={`k-${m.path}`}
+                kind={m.kind}
+                url={m.url}
+                name={m.name}
+                onRemove={() => setKept((xs) => xs.filter((_, j) => j !== i))}
+              />
+            ))}
+            {pending.map((p, i) => (
+              <MediaTile key={`p-${i}`} kind={p.kind} url={p.url} name={p.name} onRemove={() => removePending(i)} isNew />
+            ))}
+          </div>
+        </div>
+      ) : null}
+
       {error ? <p className="font-ui text-t0 text-negative">{error}</p> : null}
 
       <div className="flex items-center gap-3">
@@ -397,5 +489,51 @@ function IaChip({ locale }: { locale: Locale }) {
     >
       IA
     </span>
+  )
+}
+
+function MediaTile({
+  kind,
+  url,
+  name,
+  onRemove,
+  isNew = false,
+}: {
+  kind: 'image' | 'audio'
+  url?: string
+  name: string
+  onRemove: () => void
+  isNew?: boolean
+}) {
+  return (
+    <div className="relative flex flex-col items-center gap-1" title={name}>
+      <button
+        type="button"
+        onClick={onRemove}
+        aria-label="Quitar"
+        className="absolute -right-1 -top-1 z-10 grid h-4 w-4 place-items-center rounded-pill border border-line bg-surface-1 font-mono text-[10px] text-ink-secondary hover:text-negative"
+      >
+        ×
+      </button>
+      {kind === 'image' ? (
+        url ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={url} alt={name} className="h-16 w-16 rounded-card border border-line object-cover" />
+        ) : (
+          <span className="grid h-16 w-16 place-items-center rounded-card border border-line font-mono text-label text-ink-secondary">
+            …
+          </span>
+        )
+      ) : url ? (
+        <audio controls src={url} className="h-9 w-40" />
+      ) : (
+        <span className="grid h-9 w-40 place-items-center rounded-card border border-line font-mono text-label text-ink-secondary">
+          ♪
+        </span>
+      )}
+      {isNew ? (
+        <span className="rounded-pill border border-lane-accent px-1 font-mono text-[10px] text-lane-accent">nuevo</span>
+      ) : null}
+    </div>
   )
 }
