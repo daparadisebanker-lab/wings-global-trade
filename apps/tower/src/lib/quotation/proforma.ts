@@ -78,6 +78,10 @@ export interface ProformaDocument {
   banking: BankingDetails
   observations: string[]
   issuer: CompanyInfo
+  /** Resolved issuing-entity id (see issuers.ts) — which legal entity issued this. */
+  issuerId?: string
+  /** Document language posture inherited from the resolved entity. */
+  locale?: 'es' | 'es-en'
   /** The issuing rep ("Atendido por"), or null → fall back to the company block. */
   issuedBy: IssuedByRep | null
 }

@@ -21,7 +21,7 @@ import { z } from 'zod'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { fail, ok, type ActionResult } from './result'
 import { computeSlotBreakdown, routeLabelOf } from './container-promo-logic'
-import { WINGS_ISSUER } from '@/lib/quotation/company'
+import { DEFAULT_ISSUER } from '@/lib/quotation/issuers'
 import { withDefaultTerms } from '@/lib/quotation/document'
 import {
   buildRbSlotLine,
@@ -416,7 +416,9 @@ export async function getRbContainerQuoteByCode(
     diagram,
     terms: withDefaultTerms(DEFAULT_RB_TERMS),
     observations: DEFAULT_RB_OBSERVATIONS,
-    issuer: WINGS_ISSUER,
+    // RB container quotes carry no destination signal (buyer fields only) → the
+    // default entity (Wings PE). Routes through the registry, not a hardcoded const.
+    issuer: DEFAULT_ISSUER.issuer,
   }
 
   return ok(doc)

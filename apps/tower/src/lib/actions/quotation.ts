@@ -17,12 +17,9 @@ import { addMinor } from '@/lib/money'
 import { fail, ok, type ActionResult } from './result'
 import type { QuoteLineComputed } from './pipeline-logic'
 import { getMyRepProfile, getRepProfile, getRepSignatureUrl } from './rep-profile'
-import { WINGS_ISSUER } from '@/lib/quotation/company'
 import {
   buildIssuedByRep,
   DEFAULT_OBSERVATIONS,
-  DEFAULT_TAX_BPS,
-  DEFAULT_TAX_LABEL,
   itemNo,
   withDefaultTerms,
   type BillTo,
@@ -31,6 +28,14 @@ import {
   type QuotationDocument,
   type QuotationLine,
 } from '@/lib/quotation/document'
+import {
+  DEFAULT_ISSUER,
+  entityTaxPosture,
+  issuerById,
+  resolveIssuer,
+  withEntityCommercialTerms,
+  type IssuerEntity,
+} from '@/lib/quotation/issuers'
 
 const uuidSchema = z.string().uuid()
 
@@ -63,14 +68,18 @@ interface RawQuoteDocRow {
   issued_on: string | null
   valid_until: string | null
   bill_to: Partial<BillTo> | null
-  terms: Partial<CommercialTerms> | null
+  terms: (Partial<CommercialTerms> & { portOfDestination?: string | null }) | null
   observations: string[] | null
+  /** Explicit issuing entity (issuing_entities.id); wins over destination resolution. */
+  issuer_id: string | null
+  /** Per-document language override; falls back to the entity locale. */
+  locale: string | null
   /** The rep who owns the quote — the "Atendido por" issuer (auth user id). */
   created_by: string | null
 }
 
 const QUOTE_DOC_COLS =
-  'id,rfq_id,status,currency,lines,total_minor,subtotal_minor,tax_label,tax_bps,tax_minor,quote_no,issued_on,valid_until,bill_to,terms,observations,created_by'
+  'id,rfq_id,status,currency,lines,total_minor,subtotal_minor,tax_label,tax_bps,tax_minor,quote_no,issued_on,valid_until,bill_to,terms,observations,issuer_id,locale,created_by'
 
 function num(v: number | string | null | undefined): number {
   if (v === null || v === undefined) return 0
@@ -87,6 +96,21 @@ function subtotalFromLines(lines: QuoteLineComputed[], currency: string): number
 function taxFromBps(subtotalMinor: number, bps: number): number {
   return Math.round((subtotalMinor * bps) / 10_000)
 }
+
+// ── Issuing entity (mirrors lib/actions/proforma.ts) ─────────────────────────
+// Which legal entity issues this cotización. Precedence: an explicit persisted
+// choice (quotes.issuer_id) wins; else resolve from the stated port of
+// destination in the shared terms jsonb; else the default (WINGS_PE). The
+// cotización has no port/country column of its own — the composeQuote bridge
+// (and future UI) writes issuer_id + terms.portOfDestination; absent both, this
+// returns DEFAULT_ISSUER and the document is byte-identical to before.
+function resolveQuoteEntity(row: RawQuoteDocRow): IssuerEntity {
+  return (
+    issuerById(row.issuer_id) ??
+    resolveIssuer({ port: row.terms?.portOfDestination ?? null, country: null })
+  )
+}
+
 
 /** Bill-to snapshot from the RFQ's account + first contact. */
 async function deriveBillTo(supabase: TowerClient, accountId: string | null): Promise<BillTo> {
@@ -146,13 +170,13 @@ function toDocument(
   row: RawQuoteDocRow,
   accountBillTo: BillTo | null,
   issuedBy: IssuedByRep | null,
+  entity: IssuerEntity,
 ): QuotationDocument {
   const currency = row.currency || 'USD'
   const lines: QuoteLineComputed[] = Array.isArray(row.lines) ? row.lines : []
 
   const subtotalMinor = subtotalFromLines(lines, currency)
-  const taxLabel = row.tax_label ?? DEFAULT_TAX_LABEL
-  const taxBps = row.tax_bps ?? DEFAULT_TAX_BPS
+  const { taxLabel, taxBps } = entityTaxPosture(entity, row.tax_label, row.tax_bps)
   const taxMinor = taxFromBps(subtotalMinor, taxBps)
 
   const storedBillTo = isEmptyBillTo(row.bill_to) ? accountBillTo : (row.bill_to as BillTo)
@@ -172,6 +196,11 @@ function toDocument(
 
   const validDays = daysBetween(row.issued_on, row.valid_until)
 
+  // Default entity → the historical term defaults (byte-identical, incl. the
+  // "ocurre" spelling in DEFAULT_TERMS); a matched entity → its own defaults.
+  const terms =
+    entity.id === DEFAULT_ISSUER.id ? withDefaultTerms(row.terms) : withEntityCommercialTerms(row.terms, entity)
+
   return {
     quoteId: row.id,
     quoteNo: row.quote_no,
@@ -183,9 +212,11 @@ function toDocument(
     billTo,
     lines: docLines,
     totals: { subtotalMinor, taxLabel, taxBps, taxMinor, totalMinor: subtotalMinor + taxMinor },
-    terms: withDefaultTerms(row.terms),
+    terms,
     observations,
-    issuer: WINGS_ISSUER,
+    issuer: entity.issuer,
+    issuerId: entity.id,
+    locale: row.locale === 'es' || row.locale === 'es-en' ? row.locale : entity.locale,
     issuedBy,
   }
 }
@@ -217,7 +248,7 @@ export async function getQuotationDocument(quoteId: string): Promise<ActionResul
     ? await deriveBillTo(auth.supabase, loaded.accountId)
     : null
   const issuedBy = await resolveIssuedBy(auth.user.id, loaded.row.created_by)
-  return ok(toDocument(loaded.row, accountBillTo, issuedBy))
+  return ok(toDocument(loaded.row, accountBillTo, issuedBy, resolveQuoteEntity(loaded.row)))
 }
 
 // ── Issue (mint number + freeze the split) ───────────────────────────────────
@@ -241,12 +272,16 @@ export async function issueQuotation(quoteId: string): Promise<ActionResult<Quot
   const currency = row.currency || 'USD'
   const lines: QuoteLineComputed[] = Array.isArray(row.lines) ? row.lines : []
   const subtotalMinor = subtotalFromLines(lines, currency)
-  const taxBps = row.tax_bps ?? DEFAULT_TAX_BPS
+  // Persist the entity-consistent split so the frozen number matches the render.
+  const entity = resolveQuoteEntity(row)
+  const { taxLabel, taxBps } = entityTaxPosture(entity, row.tax_label, row.tax_bps)
   const taxMinor = taxFromBps(subtotalMinor, taxBps)
 
   const now = new Date()
   const patch: Record<string, unknown> = {
     subtotal_minor: subtotalMinor,
+    tax_label: taxLabel,
+    tax_bps: taxBps,
     tax_minor: taxMinor,
     total_minor: subtotalMinor + taxMinor,
     issued_on: row.issued_on ?? now.toISOString().slice(0, 10),
@@ -319,16 +354,23 @@ export async function saveQuotationDetails(
   const currency = row.currency || 'USD'
   const lines: QuoteLineComputed[] = Array.isArray(row.lines) ? row.lines : []
   const subtotalMinor = subtotalFromLines(lines, currency)
-  const taxBps = parsed.data.taxBps ?? row.tax_bps ?? DEFAULT_TAX_BPS
+  // Entity posture is authoritative: an operator's explicit tax edit is honored
+  // only for the default entity; a matched entity (e.g. CL/FOB) keeps its own.
+  const entity = resolveQuoteEntity(row)
+  const { taxLabel, taxBps } = entityTaxPosture(
+    entity,
+    parsed.data.taxLabel ?? row.tax_label,
+    parsed.data.taxBps ?? row.tax_bps,
+  )
   const taxMinor = taxFromBps(subtotalMinor, taxBps)
 
   const patch: Record<string, unknown> = {
     subtotal_minor: subtotalMinor,
+    tax_label: taxLabel,
     tax_bps: taxBps,
     tax_minor: taxMinor,
     total_minor: subtotalMinor + taxMinor,
   }
-  if (parsed.data.taxLabel !== undefined) patch.tax_label = parsed.data.taxLabel
   if (parsed.data.billTo !== undefined) patch.bill_to = parsed.data.billTo
   if (parsed.data.terms !== undefined) patch.terms = parsed.data.terms
   if (parsed.data.observations !== undefined) patch.observations = parsed.data.observations

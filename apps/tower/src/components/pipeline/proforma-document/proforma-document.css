@@ -12,10 +12,7 @@
   --pd-tint: #f7f8f9;
 
   box-sizing: border-box;
-  width: 100%;
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 48px 56px 40px;
+  /* Frame (width / margins / @page) comes from the shared .doc-grid layer. */
   background: #ffffff;
   color: var(--pd-ink);
   font-family: var(--font-ui, system-ui, sans-serif);
@@ -366,16 +363,6 @@
   }
 }
 
-/* ── Print ──────────────────────────────────────────────────────────────── */
-@media print {
-  @page {
-    size: A4 portrait;
-    margin: 12mm;
-  }
-  .pdoc {
-    max-width: none;
-    padding: 0;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-}
+/* ── Print ──────────────────────────────────────────────────────────────────
+   The A4 @page + margin + padding reset now live in the shared document-grid.css
+   (composed via the `doc-grid` class on the root). No per-document @page. */

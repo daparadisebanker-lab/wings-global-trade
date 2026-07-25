@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { resolveLine, buildQuoteProposal } from './quote-build'
+import { resolveIssuer } from '@/lib/quotation/issuers'
 
 describe('resolveLine', () => {
   it('transcribes a stated unit price into integer minor units', () => {
@@ -73,5 +74,30 @@ describe('buildQuoteProposal', () => {
     expect(buildQuoteProposal(JSON.stringify({ understood: false, lines: [] }))).toBeNull()
     expect(buildQuoteProposal(JSON.stringify({ understood: true, lines: [] }))).toBeNull()
     expect(buildQuoteProposal('not json')).toBeNull()
+  })
+
+  it('captures destination (country + port) and resolves the Chilean entity', () => {
+    const raw = JSON.stringify({
+      understood: true,
+      clientHint: 'Renata Revol',
+      destinationCountry: 'Bolivia',
+      destinationPort: 'Iquique',
+      lines: [{ description: 'Molduras', quantity: 100, statedUnitPrice: 0.4 }],
+    })
+    const d = buildQuoteProposal(raw)!
+    expect(d.destinationCountry).toBe('Bolivia')
+    expect(d.destinationPort).toBe('Iquique')
+    expect(resolveIssuer({ port: d.destinationPort, country: d.destinationCountry }).id).toBe('shining-star-cl')
+  })
+
+  it('leaves destination null when unstated → resolves to the default entity', () => {
+    const raw = JSON.stringify({
+      understood: true,
+      lines: [{ description: 'A', quantity: 1, statedUnitPrice: 100 }],
+    })
+    const d = buildQuoteProposal(raw)!
+    expect(d.destinationCountry).toBeNull()
+    expect(d.destinationPort).toBeNull()
+    expect(resolveIssuer({ port: d.destinationPort, country: d.destinationCountry }).id).toBe('wgt-pe')
   })
 })

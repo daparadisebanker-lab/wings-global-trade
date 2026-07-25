@@ -6,6 +6,7 @@
 // Bilingual: ES primary, EN secondary. Styling scoped in ficha-document.css
 // (the same self-contained light print surface as the Cotización document).
 import { buildLogisticsExhibits, formatNumber, type FichaDocument } from '@/lib/quotation/ficha'
+import '../document-grid.css'
 import './ficha-document.css'
 
 function DimensionCell({ label, value }: { label: string; value: number | null }) {
@@ -22,7 +23,7 @@ export function FichaTecnicaDocument({ doc }: { doc: FichaDocument }) {
   const exhibits = buildLogisticsExhibits(logistics)
 
   return (
-    <article className="fdoc">
+    <article className="fdoc doc-grid">
       {/* Header */}
       <header className="fdoc-header">
         <div>

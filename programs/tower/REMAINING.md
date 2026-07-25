@@ -175,3 +175,82 @@ Beyond the three tracks above, these were always queued (not regressions):
 
 _Migrations `tower_26–29` are reserved-but-unbuilt per
 `programs/represented-brands-console/SPEC.md`._
+
+## Document grid — conformance follow-up (Wave 1 / Stage 4)
+
+The shared pt grid landed: `lib/quotation/grid.ts` (token source, tested),
+`components/pipeline/document-grid.css` (the one `@page`, 29.5pt margin via
+padding-inset — deterministic across browser print + headless PDF), composed
+into all four document roots (`.pdoc/.qdoc/.fdoc/.rbq` + `doc-grid`). Verified by
+fixture render of the proforma (full tagline, 29.5pt margins, money figures
+stacked on the 565.6pt right rail).
+
+Deferred (not blocking Wave 4):
+- **Interior column snap.** The proforma line-item columns (Cant. / Precio unit. /
+  Precio total) are right-aligned and the last column lands on the 565.6pt rail,
+  but the exact interior edges (`grid.ts` `extras.proforma` = 313.1 / 397.8 /
+  535.5) are not yet pinned; cotización/ficha/RB interior tables likewise use
+  their existing widths. Snap each to the grid lines.
+- **Live-route visual pass.** The composition was verified via a static fixture
+  (the TOWER `/proforma/[id]/document` route needs a running app + data to render).
+  Do a browser `window.print()` smoke of all four routes once the app is up.
+- **@react-pdf StyleSheet.** Wave 6 canonical PDF reads the same `docGridCssVars()`
+  object so both renderers stay in lockstep.
+
+## Quotation-document intelligence — deferred follow-ups (Waves 0–4 + Anexo shipped)
+
+The five-stage intelligence layer landed on `claude/branded-proforma-pricing-0jyzbx`
+(spine → issuer parity → capture bridge → shared grid → anexo). Persistence is
+`tower_56` (`issuing_entities`, applied to prod, entities seeded). What remains,
+each pointing at the pattern it copies:
+
+- **(a) Wave 5 — document window + editors.** A `QuotationsWindow` (⌘K "Generar
+  documento" affordance) listing quotes and deep-linking their four document
+  routes, plus per-document `saveDocumentDetails` editors exposing the intelligence
+  variables (issuer/entity override, destination port/country, banking toggle,
+  locale) the way `QuoteSavePanel` already does for the copilot proposal. Pattern
+  to copy: `components/shell/QuoteSavePanel.tsx` (issuer chip/override + snapshot
+  freeze) and the Stage-2 entity-aware actions.
+- **(b) Torre `parse-spec` destination mouth.** Wire the Torre spec-parse capture
+  so an extracted destination (port/country) flows into `composeQuote({issuerId,
+  portOfDestination})` exactly as the Mister capture path does. Mirror Stage 3
+  (`lib/actions/mister-quote.ts` → `composeQuote`); no new resolution logic, just
+  a second mouth onto the same bridge. Approved earlier as a later stage.
+- **(c) Wave 6 — canonical @react-pdf server route + distribution.** A server PDF
+  renderer that consumes the same `lib/quotation/grid.ts` `docGridCssVars()` tokens
+  so browser-print and server-PDF stay in lockstep, plus n8n/WhatsApp distribution.
+  Biggest remaining lift (new dependency + renderer); deliberately NOT bolted onto
+  this branch.
+- **(d) Proforma interior column snap + live-route print pass.** Pin the proforma
+  line-item interior edges to `grid.ts` `extras.proforma` (313.1 / 397.8 / 535.5)
+  and do a browser `window.print()` smoke of all four routes once the app is up.
+  (Also tracked under "Document grid — conformance follow-up" above.)
+- **(e) ~~Prod drift: `tower_55_team_space`~~ — RESOLVED.** Recovered verbatim
+  into `supabase/migrations/20260724160000_tower_55_team_space.sql` (byte-identical
+  to prod); the missing `audit_trigger()` on its two tables was then closed forward
+  by `tower_57` (applied to prod, triggers verified live). See the drift section.
+- **(f) `org_rules.ports_default` wiring + entity `validityText` from
+  `validity_days`.** The a-ruling: derive an issuer's default destination ports
+  from `tower.org_rules.ports_default` and compute `validityText` from the entity's
+  `validity_days` rather than a stored string, so policy and identity stay their
+  separate axes.
+
+## ~~Drift: tower_55_team_space applied to prod, file absent from repo~~ — RESOLVED
+This branch recovered `supabase/migrations/20260724160000_tower_55_team_space.sql`
+verbatim from the prod ledger (`schema_migrations.statements[1]`, ledger md5
+`026a3e7cf572c438132f2bbe2023e469`). Independently, **`master` also recovered the
+same migration** (the WS8 workstream) with the same version and identical DDL but
+richer inline comments — an add/add conflict reconciled in the PR #35 merge by
+**taking master's documented version** (DDL is the same schema prod already has;
+comments are additive, and version `20260724160000` is already in the ledger so it
+never re-runs). Repo and prod are in sync. General law still stands: cross-check
+`list_migrations` against `ls supabase/migrations` before every new migration.
+
+**~~Follow-up (Directive 4 gap)~~ — CLOSED (`tower_57`).** The recovered migration
+did not attach `audit_trigger()` to its two mutating tables (`tower.team_notes`,
+`tower.team_note_mentions`) — it was applied that way before the file existed, and
+was recovered *as applied* (recovery must not diverge from prod). Closed **forward**
+by `supabase/migrations/20260725120000_tower_57_team_space_audit.sql` (attaches the
+shared generic trigger to both tables; idempotent), **applied to prod** — ledger
+recorded at the exact version `20260725120000`; both triggers verified live
+(`AFTER INSERT/UPDATE/DELETE`). The recovered `tower_55` file was left untouched.

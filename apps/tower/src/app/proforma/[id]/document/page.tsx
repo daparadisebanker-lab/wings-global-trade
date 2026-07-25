@@ -34,7 +34,7 @@ export default async function ProformaDocumentPage({ params }: { params: Promise
 
   return (
     <div className="pdoc-page">
-      <PrintBar proformaNo={result.data.proformaNo} />
+      <PrintBar proformaNo={result.data.proformaNo} quoteId={id} />
       <ProformaDocument doc={result.data} />
     </div>
   )

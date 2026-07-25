@@ -129,6 +129,9 @@ export function QuoteProposalArtifact({
         lines={r.lines.map((l) => ({ description: l.description, quantity: l.quantity, unitPriceMinor: l.unitPriceMinor }))}
         hasGaps={r.hasGaps}
         locale={locale}
+        destinationCountry={r.destinationCountry}
+        destinationPort={r.destinationPort}
+        currency={r.currency}
       />
     </div>
   )

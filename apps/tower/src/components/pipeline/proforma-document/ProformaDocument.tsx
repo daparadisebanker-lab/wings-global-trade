@@ -6,6 +6,8 @@
 // DISPLAY-formatted es-PE here (never re-computed from these strings). Styling
 // scoped in proforma-document.css. Bilingual: ES primary, EN secondary.
 import type { ProformaDocument } from '@/lib/quotation/proforma'
+import { hasBankingDetails } from '@/lib/quotation/issuers'
+import '../document-grid.css'
 import './proforma-document.css'
 
 /** Display only (es-PE grouping, no symbol — the column header carries (USD)).
@@ -100,7 +102,7 @@ export function ProformaDocument({ doc }: { doc: ProformaDocument }) {
   const currencyTag = `(${doc.currency})`
 
   return (
-    <article className="pdoc">
+    <article className="pdoc doc-grid">
       {/* Header */}
       <header className="pdoc-header">
         <div>
@@ -151,8 +153,8 @@ export function ProformaDocument({ doc }: { doc: ProformaDocument }) {
               <td className="pd-item">{line.itemNo}</td>
               <td className="pd-desc">{line.description}</td>
               <td className="pd-cell-num">{line.quantity}</td>
-              <td className="pd-cell-num">{formatEsPe(line.unitPriceMinor)}</td>
-              <td className="pd-cell-num">{formatEsPe(line.lineTotalMinor)}</td>
+              <td className="pd-cell-num doc-money">{formatEsPe(line.unitPriceMinor)}</td>
+              <td className="pd-cell-num doc-money">{formatEsPe(line.lineTotalMinor)}</td>
             </tr>
           ))}
         </tbody>
@@ -162,17 +164,17 @@ export function ProformaDocument({ doc }: { doc: ProformaDocument }) {
       <div className="pdoc-totals">
         <div className="pdoc-total-row">
           <span className="pd-total-label">Sub total</span>
-          <span className="pd-total-value">{formatEsPe(totals.subtotalMinor)}</span>
+          <span className="pd-total-value doc-money">{formatEsPe(totals.subtotalMinor)}</span>
         </div>
         {totals.taxMinor > 0 ? (
           <div className="pdoc-total-row">
             <span className="pd-total-label">Impuestos ({totals.taxLabel})</span>
-            <span className="pd-total-value">{formatEsPe(totals.taxMinor)}</span>
+            <span className="pd-total-value doc-money">{formatEsPe(totals.taxMinor)}</span>
           </div>
         ) : null}
         <div className="pdoc-total-row" data-emphasis="true">
           <span className="pd-total-label">Total</span>
-          <span className="pd-total-value">{formatEsPe(totals.totalMinor)}</span>
+          <span className="pd-total-value doc-money">{formatEsPe(totals.totalMinor)}</span>
         </div>
       </div>
 
@@ -189,17 +191,21 @@ export function ProformaDocument({ doc }: { doc: ProformaDocument }) {
         <TermRow label="Garantía" labelEn="Warranty" value={terms.warranty} />
       </div>
 
-      {/* Banking */}
-      <div className="pdoc-section-bar">
-        Datos bancarios<span className="pdoc-section-en"> · Bank details</span>
-      </div>
-      <div className="pdoc-terms">
-        <TermRow label="Banco" labelEn="Bank" value={banking.bank} />
-        <TermRow label="Nombre" labelEn="Account name" value={banking.accountName} />
-        <TermRow label="Cuenta USD" labelEn="USD account" value={banking.accountUsd} />
-        <TermRow label="Código SWIFT" labelEn="SWIFT" value={banking.swift} />
-        <TermRow label="CCI" labelEn="CCI" value={banking.cci} />
-      </div>
+      {/* Banking — omitted entirely for entities that issue without a bank block. */}
+      {hasBankingDetails(banking) ? (
+        <>
+          <div className="pdoc-section-bar">
+            Datos bancarios<span className="pdoc-section-en"> · Bank details</span>
+          </div>
+          <div className="pdoc-terms">
+            <TermRow label="Banco" labelEn="Bank" value={banking.bank} />
+            <TermRow label="Nombre" labelEn="Account name" value={banking.accountName} />
+            <TermRow label="Cuenta USD" labelEn="USD account" value={banking.accountUsd} />
+            <TermRow label="Código SWIFT" labelEn="SWIFT" value={banking.swift} />
+            <TermRow label="CCI" labelEn="CCI" value={banking.cci} />
+          </div>
+        </>
+      ) : null}
 
       {/* Notes */}
       {doc.observations.length > 0 ? (

@@ -4,7 +4,7 @@
 // document itself stays a pure server-rendered artifact. Hidden when printing
 // (the toolbar must never appear on the PDF).
 
-export function PrintBar({ proformaNo }: { proformaNo: string | null }) {
+export function PrintBar({ proformaNo, quoteId }: { proformaNo: string | null; quoteId?: string }) {
   // Deferred to the next tick so the tap's click has fully settled before the
   // print dialog steals focus — iOS Safari otherwise intermittently drops a
   // print() invoked inline in the handler. Guarded because a handful of in-app
@@ -17,9 +17,19 @@ export function PrintBar({ proformaNo }: { proformaNo: string | null }) {
   return (
     <div className="pdoc-toolbar" data-print-hidden>
       <span className="pdoc-toolbar-label">{proformaNo ?? 'Proforma · borrador'}</span>
-      <button type="button" className="pdoc-toolbar-btn" onClick={handlePrint}>
-        Imprimir / Guardar PDF
-      </button>
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+        {quoteId ? (
+          <a
+            href={`/anexo/${quoteId}/document`}
+            style={{ color: '#e8eaed', fontSize: 12, letterSpacing: '0.04em', textTransform: 'uppercase', textDecoration: 'underline' }}
+          >
+            Abrir anexo
+          </a>
+        ) : null}
+        <button type="button" className="pdoc-toolbar-btn" onClick={handlePrint}>
+          Imprimir / Guardar PDF
+        </button>
+      </div>
     </div>
   )
 }

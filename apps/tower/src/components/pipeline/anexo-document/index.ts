@@ -1,0 +1,1 @@
+export { AnexoDocument } from './AnexoDocument'

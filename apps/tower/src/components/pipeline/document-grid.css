@@ -1,0 +1,62 @@
+/* Shared Wings document grid — the one print frame every document composes.
+   pt values are the single source in lib/quotation/grid.ts (from GRID_SYSTEM.md):
+   A4 595.28×841.89, margin 29.5pt, baseline 19.9pt, gutter 17.4pt, the ten
+   vertical lines, and the money right-rail at 565.6pt (field D left 440.2pt).
+
+   Composition: a document root carries BOTH its own class (typography/colours)
+   AND `.doc-grid` (this frame). On screen the sheet is A4-width with 29.5pt
+   padding (content = 536.3pt); in print the single @page owns the margin and the
+   sheet padding collapses to 0. Because it is one shared @page, no document ships
+   its own. */
+
+.doc-grid {
+  --doc-page-w: 595.28pt;
+  --doc-page-h: 841.89pt;
+  --doc-margin: 29.5pt;
+  --doc-baseline: 19.9pt;
+  --doc-gutter: 17.4pt;
+  --doc-rail-gutter: 13.9pt;
+  /* Shared vertical grid lines (pt). */
+  --doc-line-1: 29.3pt;
+  --doc-line-2: 70.7pt;
+  --doc-line-3: 84.6pt;
+  --doc-line-4: 154.6pt;
+  --doc-line-5: 172.1pt;
+  --doc-line-6: 288.7pt;
+  --doc-line-7: 306.1pt;
+  --doc-line-8: 422.8pt;
+  --doc-line-9: 440.2pt;
+  --doc-line-10: 565.6pt;
+  /* Alignment law: every currency figure right-aligns on line 10. */
+  --doc-money-rail: 565.6pt;
+  --doc-field-d-left: 440.2pt;
+
+  box-sizing: border-box;
+  width: var(--doc-page-w);
+  max-width: 100%;
+  margin: 0 auto;
+  padding: var(--doc-margin);
+}
+
+/* Currency cells: right-aligned on the shared rail, tabular figures. */
+.doc-money {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+@media print {
+  /* @page has no margin; the sheet itself provides the 29.5pt inset via padding.
+     Deterministic across browser print + headless PDF (no reliance on @page
+     margin honoring, which varies). The sheet is exactly one A4 wide. */
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+  .doc-grid {
+    width: var(--doc-page-w);
+    max-width: none;
+    padding: var(--doc-margin);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

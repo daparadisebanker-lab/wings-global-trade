@@ -1,0 +1,239 @@
+/* Anexo (landed-cost annex) — a light client-facing A4 surface, scoped under
+   .adoc. Frame (width / margins / @page) comes from the shared .doc-grid layer;
+   this file owns only the annex's own type, table, totals and footer. Money is
+   tabular mono; the Monto column + totals values right-align on the 565.6pt rail
+   (via .doc-money). Mirrors the proforma livery. */
+
+.adoc {
+  --ad-ink: #0f1216;
+  --ad-muted: #6b7280;
+  --ad-line: #d1d5db;
+  --ad-bar: #ececec;
+
+  box-sizing: border-box;
+  background: #ffffff;
+  color: var(--ad-ink);
+  font-family: var(--font-ui, system-ui, sans-serif);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.adoc *,
+.adoc *::before,
+.adoc *::after {
+  box-sizing: border-box;
+}
+
+/* Header */
+.adoc-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+.adoc-kicker {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ad-muted);
+  margin-bottom: 6px;
+}
+.adoc-title {
+  margin: 0;
+  font-size: 44px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 0.95;
+}
+.adoc-number {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--ad-ink);
+}
+.adoc-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.adoc-logo {
+  height: 52px;
+  width: auto;
+  filter: brightness(0);
+}
+.adoc-tagline {
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: var(--ad-muted);
+  text-transform: uppercase;
+}
+
+.adoc-rule {
+  position: relative;
+  height: 3px;
+  margin: 14px 0 20px;
+  background: var(--ad-line);
+}
+.adoc-rule::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 168px;
+  background: var(--ad-ink);
+}
+
+/* Dateline */
+.adoc-dateline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin-bottom: 24px;
+  font-size: 12px;
+  color: var(--ad-muted);
+}
+.adoc-dateline span:not(:last-child)::after {
+  content: '|';
+  margin-left: 16px;
+  color: var(--ad-line);
+}
+
+/* Section bar */
+.adoc-section-bar {
+  background: var(--ad-bar);
+  padding: 8px 12px;
+  margin: 8px 0 14px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Cost table */
+.adoc-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.adoc-table thead th {
+  background: var(--ad-bar);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 10px 10px;
+  border: 1px solid var(--ad-line);
+}
+.adoc-table th.ad-col-desc {
+  width: 70%;
+  text-align: left;
+}
+.adoc-table th.ad-col-monto {
+  text-align: right;
+}
+.adoc-table tbody td {
+  border: 1px solid var(--ad-line);
+  padding: 10px 10px;
+  vertical-align: middle;
+  font-size: 12px;
+}
+.ad-desc {
+  text-align: left;
+}
+.ad-cell-num {
+  font-family: var(--font-mono, monospace);
+}
+.ad-muted {
+  text-align: right;
+  color: var(--ad-muted);
+  font-style: italic;
+}
+.ad-flag {
+  color: #9a6a00;
+  font-style: italic;
+}
+.ad-row-emph td {
+  font-weight: 700;
+  background: #fafafa;
+}
+
+/* Totals */
+.adoc-totals {
+  margin: 14px 0 8px auto;
+  width: 380px;
+  max-width: 100%;
+}
+.adoc-total-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 9px 6px;
+  border-top: 1px solid var(--ad-line);
+}
+.adoc-total-row .ad-total-label {
+  font-weight: 600;
+}
+.adoc-total-row .ad-total-value {
+  font-family: var(--font-mono, monospace);
+}
+.adoc-total-row[data-emphasis='true'] {
+  border-top: 2px solid var(--ad-ink);
+}
+.adoc-total-row[data-emphasis='true'] .ad-total-label,
+.adoc-total-row[data-emphasis='true'] .ad-total-value {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* Observations */
+.adoc-observations {
+  margin: 0;
+  padding: 0 4px;
+  list-style: none;
+  font-size: 12px;
+}
+.adoc-observations li {
+  position: relative;
+  padding-left: 18px;
+  margin-bottom: 4px;
+}
+.adoc-observations li::before {
+  content: '•';
+  position: absolute;
+  left: 4px;
+}
+
+/* Footer */
+.adoc-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 28px;
+  padding-top: 14px;
+  border-top: 1px solid var(--ad-line);
+  color: var(--ad-muted);
+  font-size: 12px;
+  break-inside: avoid;
+}
+.adoc-footer .ad-foot-right {
+  text-align: right;
+}
+
+@media (max-width: 640px) {
+  .adoc-title {
+    font-size: 34px;
+  }
+  .adoc-totals {
+    width: 100%;
+  }
+  .adoc-footer {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .adoc-footer .ad-foot-right {
+    text-align: left;
+  }
+}

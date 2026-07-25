@@ -12,6 +12,7 @@ import { useEffect, useState, useTransition } from 'react'
 import { t, type Locale } from '@/lib/i18n'
 import { listPipelineLanes, listAccountsForBrand, type AccountOption } from '@/lib/actions/pipeline'
 import { saveMisterQuoteDraft } from '@/lib/actions/mister-quote'
+import { ISSUER_REGISTRY, resolveIssuer } from '@/lib/quotation/issuers'
 import type { EditableLane } from '@/lib/actions/catalog'
 import { usePersistOnUnmount } from './mister/editor-kit'
 import { useArtifactDraft } from './mister/MisterProvider'
@@ -23,6 +24,8 @@ type QSPSnap = {
   laneId: string
   clientChoice: string
   newClientName: string
+  /** The issuing entity frozen at save time (resolved default or override). */
+  issuerChoice: string
   saved: { quoteId: string } | null
   savedFingerprint: string | null
 }
@@ -83,11 +86,19 @@ export function QuoteSavePanel({
   hasGaps,
   locale,
   draftKey,
+  destinationCountry,
+  destinationPort,
+  currency,
 }: {
   lines: SaveLine[]
   hasGaps: boolean
   locale: Locale
   draftKey?: string
+  /** Destination Mister captured — suggests the issuing entity (resolveIssuer). */
+  destinationCountry?: string | null
+  destinationPort?: string | null
+  /** Proposal currency; defaults to USD server-side when absent. */
+  currency?: string
 }) {
   const { draft: d, persist } = useArtifactDraft<QSPSnap>(draftKey)
   const [lanes, setLanes] = useState<EditableLane[] | null>(null)
@@ -95,12 +106,15 @@ export function QuoteSavePanel({
   const [accounts, setAccounts] = useState<AccountOption[]>([])
   const [clientChoice, setClientChoice] = useState(d?.clientChoice ?? '') // '' = none, uuid = existing, '__new__' = new
   const [newClientName, setNewClientName] = useState(d?.newClientName ?? '')
+  // Which legal entity issues this — suggested from the destination, overridable.
+  const suggestedIssuer = resolveIssuer({ port: destinationPort ?? null, country: destinationCountry ?? null })
+  const [issuerChoice, setIssuerChoice] = useState(d?.issuerChoice ?? suggestedIssuer.id)
   const [saved, setSaved] = useState<{ quoteId: string } | null>(d?.saved ?? null)
   const [savedFingerprint, setSavedFingerprint] = useState<string | null>(d?.savedFingerprint ?? null)
   const [error, setError] = useState<string | null>(null)
   const [saving, startSave] = useTransition()
 
-  usePersistOnUnmount<QSPSnap>({ laneId, clientChoice, newClientName, saved, savedFingerprint }, persist)
+  usePersistOnUnmount<QSPSnap>({ laneId, clientChoice, newClientName, issuerChoice, saved, savedFingerprint }, persist)
 
   // Retract the "saved ✓" only when the quote lines have actually changed since
   // the save — a bare remount that rehydrates a still-valid draft keeps its link.
@@ -149,6 +163,11 @@ export function QuoteSavePanel({
         laneId,
         accountId: clientChoice && clientChoice !== '__new__' ? clientChoice : null,
         newClientName: clientChoice === '__new__' ? newClientName.trim() || null : null,
+        // Freeze the issuing entity the operator saw/chose + the destination signal.
+        issuerId: issuerChoice,
+        destinationCountry: destinationCountry ?? null,
+        destinationPort: destinationPort ?? null,
+        currency,
         lines: lines.map((l) => ({
           description: l.description,
           quantity: l.quantity,
@@ -228,6 +247,16 @@ export function QuoteSavePanel({
               placeholder={t({ es: 'Nombre del cliente', en: 'Client name' }, locale)}
             />
           ) : null}
+
+          <label style={labelStyle}>{t({ es: 'Entidad emisora', en: 'Issuing entity' }, locale)}</label>
+          <select style={selectStyle} value={issuerChoice} onChange={(e) => setIssuerChoice(e.target.value)}>
+            {ISSUER_REGISTRY.map((ent) => (
+              <option key={ent.id} value={ent.id}>
+                {ent.exporter.name} · {ent.country}
+                {ent.id === suggestedIssuer.id ? t({ es: ' (sugerido)', en: ' (suggested)' }, locale) : ''}
+              </option>
+            ))}
+          </select>
 
           {error ? <span style={{ fontSize: 11, color: ERROR }}>{error}</span> : null}
 

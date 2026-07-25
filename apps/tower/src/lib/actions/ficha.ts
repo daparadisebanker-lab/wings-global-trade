@@ -10,7 +10,7 @@
 import { z } from 'zod'
 import { createServerSupabase } from '@/lib/supabase/server'
 import { fail, ok, type ActionResult } from './result'
-import { WINGS_ISSUER } from '@/lib/quotation/company'
+import { DEFAULT_ISSUER } from '@/lib/quotation/issuers'
 import {
   type FichaDimensions,
   type FichaDocument,
@@ -146,7 +146,9 @@ function toDocument(row: RawProductRow, fichaNo: string | null): FichaDocument {
     highlights: extractHighlights(row.specs),
     logistics,
     dimensions: extractDimensions(row.specs),
-    issuer: WINGS_ISSUER,
+    // A ficha técnica has no backing quote / destination signal → the default
+    // entity (Wings PE). Routes through the registry rather than a hardcoded const.
+    issuer: DEFAULT_ISSUER.issuer,
   }
 }
 
