@@ -102,7 +102,7 @@ describe('buildPromoCardSvg', () => {
     const svg = buildPromoCardSvg({ ...promo, phase: 'ARRIBADO' })
     expect(svg).toContain('ARRIBADO')
   })
-  it('draws the container as slotsTotal numbered bays with three states + legend', () => {
+  it('draws the container as slotsTotal bays with three states + legend', () => {
     const svg = buildPromoCardSvg(promo)
     const bays = (svg.match(/data-slot="/g) ?? []).length
     expect(bays).toBe(20)

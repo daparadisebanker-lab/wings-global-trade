@@ -157,9 +157,9 @@ function splitSlots(p: ContainerPromo): Split {
 }
 
 /**
- * The container drawn as a technical object, sliced into numbered bays — a
- * cabinet projection with three states (vendido solid · reservado hatched ·
- * disponible outline). Pure SVG string; `hatchId` refs a <pattern> in <defs>.
+ * The container drawn as a technical object, sliced into bays — a cabinet
+ * projection with three states (vendido solid · reservado hatched · disponible
+ * outline). Pure SVG string; `hatchId` refs a <pattern> in <defs>.
  */
 function isoContainer(p: ContainerPromo, x0: number, yTop: number, frontW: number, H: number, hatchId: string): string {
   const accent = p.accent && /^#[0-9a-fA-F]{6}$/.test(p.accent) ? p.accent : CARD.gold
@@ -179,8 +179,7 @@ function isoContainer(p: ContainerPromo, x0: number, yTop: number, frontW: numbe
     const s = stateOf(i)
     slices +=
       `<rect data-slot="${s}" x="${sx.toFixed(1)}" y="${yTop}" width="${sliceW.toFixed(1)}" height="${H}" fill="${frontFill(s)}" stroke="${CARD.ink}" stroke-width="1.2"/>` +
-      `<polygon points="${sx.toFixed(1)},${yTop} ${(sx + DX).toFixed(1)},${yTop - DY} ${(sx + sliceW + DX).toFixed(1)},${yTop - DY} ${(sx + sliceW).toFixed(1)},${yTop}" fill="${topFill(s)}" stroke="${CARD.ink}" stroke-width="0.9" opacity="0.95"/>` +
-      `<text x="${(sx + sliceW / 2).toFixed(1)}" y="${yBot - 16}" text-anchor="middle" font-family="${FONT_LABEL}" font-size="28" font-weight="600" fill="${s === 'committed' ? onFill(accent) : CARD.ink}">${i + 1}</text>`
+      `<polygon points="${sx.toFixed(1)},${yTop} ${(sx + DX).toFixed(1)},${yTop - DY} ${(sx + sliceW + DX).toFixed(1)},${yTop - DY} ${(sx + sliceW).toFixed(1)},${yTop}" fill="${topFill(s)}" stroke="${CARD.ink}" stroke-width="0.9" opacity="0.95"/>`
   }
   // Right end cap (receding face) so it reads as a solid box.
   const cap = `<polygon points="${(x0 + frontW).toFixed(1)},${yTop} ${(x0 + frontW + DX).toFixed(1)},${yTop - DY} ${(x0 + frontW + DX).toFixed(1)},${(yTop - DY + H).toFixed(1)} ${(x0 + frontW).toFixed(1)},${yBot}" fill="${CARD.tint}" stroke="${CARD.ink}" stroke-width="1.2"/>`
