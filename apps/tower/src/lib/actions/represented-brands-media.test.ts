@@ -20,10 +20,36 @@ describe('createRbAssetDownloadUrl · public-path passthrough', () => {
     expect(res.error?.code).toBe('VALIDATION')
   })
 
-  it('never echoes a protocol-relative //host path through the passthrough', async () => {
-    // '//evil.example/x' starts with '/' but is excluded by the `!startsWith("//")`
-    // guard, so it is NOT returned verbatim (it falls through to the authz gate).
-    const res = await createRbAssetDownloadUrl(BRAND_ID, { path: '//evil.example/x.svg' })
-    expect(res.data?.signedUrl).not.toBe('//evil.example/x.svg')
+  it('accepts the seeded logo + hero asset paths', async () => {
+    for (const p of [
+      '/brands/aladin/isologo.svg',
+      '/brands/aladin/positivo.svg',
+      '/brands/aladin/hero-rolls.jpeg',
+      '/brands/aladin/hero-bamboo.jpeg',
+    ]) {
+      const res = await createRbAssetDownloadUrl(BRAND_ID, { path: p })
+      expect(res.data?.signedUrl).toBe(p)
+    }
+  })
+
+  it('never echoes an off-origin or malformed path through the passthrough', async () => {
+    // Each of these would resolve off-origin (or is otherwise unsafe) and MUST NOT be
+    // returned verbatim — the strict /brands/{slug}/{file.ext} allowlist rejects them,
+    // so they fall through to the gated storage path (which returns something else).
+    const bypasses = [
+      '//evil.example/x.svg', //            protocol-relative authority
+      '/\\evil.example/x.svg', //           backslash → parser treats as //
+      '/\t/evil.example/x.svg', //          tab is stripped by the URL parser
+      '/brands/aladin/../../etc/passwd', // traversal, no image ext
+      '/brands/aladin/logo.svg?x=1', //     query string
+      '/brands/aladin/logo.svg#f', //       fragment
+      '/other/aladin/logo.svg', //          wrong prefix
+      '/brands/aladin/logo.txt', //         disallowed extension
+      'https://evil.example/x.svg', //      absolute URL
+    ]
+    for (const p of bypasses) {
+      const res = await createRbAssetDownloadUrl(BRAND_ID, { path: p })
+      expect(res.data?.signedUrl, `must not echo ${JSON.stringify(p)}`).not.toBe(p)
+    }
   })
 })

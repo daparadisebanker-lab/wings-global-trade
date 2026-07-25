@@ -116,6 +116,17 @@ const downloadInputSchema = z.object({
 })
 
 /**
+ * A same-origin PUBLIC brand asset: exactly /brands/{slug}/{file.ext} with a safe
+ * charset and a known image extension. A strict allowlist — NOT a leading-slash
+ * heuristic — because the WHATWG URL parser treats `\` as `/` and strips ASCII
+ * tab/newline before parsing, so `/\evil/x` or `/\t/evil/x` would otherwise resolve
+ * off-origin and turn this into an <img src> pixel/IP leak. The single `{file}`
+ * segment (no `/`, no whitespace, no `\`, no `?#`) also forecloses `../` traversal
+ * and a second authority slash.
+ */
+const PUBLIC_BRAND_ASSET = /^\/brands\/[a-z0-9-]+\/[A-Za-z0-9._-]+\.(?:svg|png|jpe?g|webp|gif|avif)$/
+
+/**
  * Short-lived signed download URL so the panel can preview an already-saved
  * asset (freshly uploaded ones preview from the local File). The path must sit
  * under this brand's own `rb/{slug}/` prefix — a caller can never point it at
@@ -130,13 +141,14 @@ export async function createRbAssetDownloadUrl(
   const parsed = downloadInputSchema.safeParse(input)
   if (!parsed.success) return fail('VALIDATION', 'Datos inválidos / Invalid data')
 
-  // Same-origin public asset (a leading-slash web path like /brands/aladin/isologo.svg):
-  // a PUBLIC brand lockup served straight from apps/tower/public — never a private
-  // brand-kits object. Return it unchanged: no bucket, no signing, no manager gate
-  // (public assets need no authorization to preview). Only a `/`-relative path is
-  // passed through — a scheme/host is never echoed, so this can't become an
-  // open-image proxy. Private storage paths (rb/{slug}/…) fall through to signing.
-  if (parsed.data.path.startsWith('/') && !parsed.data.path.startsWith('//')) {
+  // Same-origin public brand asset (/brands/{slug}/{file.ext}): a PUBLIC lockup
+  // served straight from apps/tower/public — never a private brand-kits object.
+  // Return it unchanged (no bucket, no signing, no manager gate — public files need
+  // no authorization to preview). The allowlist regex is what makes this safe: a
+  // scheme, host, backslash, whitespace, or traversal can never be echoed, so it
+  // cannot become an off-origin image proxy. Private storage paths (rb/{slug}/…)
+  // fall through to the gated signing below.
+  if (PUBLIC_BRAND_ASSET.test(parsed.data.path)) {
     return ok({ signedUrl: parsed.data.path })
   }
 
