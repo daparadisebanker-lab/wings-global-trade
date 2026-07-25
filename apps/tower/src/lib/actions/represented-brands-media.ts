@@ -130,6 +130,16 @@ export async function createRbAssetDownloadUrl(
   const parsed = downloadInputSchema.safeParse(input)
   if (!parsed.success) return fail('VALIDATION', 'Datos inválidos / Invalid data')
 
+  // Same-origin public asset (a leading-slash web path like /brands/aladin/isologo.svg):
+  // a PUBLIC brand lockup served straight from apps/tower/public — never a private
+  // brand-kits object. Return it unchanged: no bucket, no signing, no manager gate
+  // (public assets need no authorization to preview). Only a `/`-relative path is
+  // passed through — a scheme/host is never echoed, so this can't become an
+  // open-image proxy. Private storage paths (rb/{slug}/…) fall through to signing.
+  if (parsed.data.path.startsWith('/') && !parsed.data.path.startsWith('//')) {
+    return ok({ signedUrl: parsed.data.path })
+  }
+
   const gate = await requireBrandManager(idParsed.data)
   if (gate.error) return gate
 
