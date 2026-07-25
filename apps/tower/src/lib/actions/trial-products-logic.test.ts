@@ -9,10 +9,19 @@ import {
 
 const UID = '11111111-1111-1111-1111-111111111111'
 const IMG = '22222222-2222-2222-2222-222222222222'
+const OTHER = '99999999-9999-9999-9999-999999999999'
 
 describe('trialProductSchema', () => {
   it('accepts a minimal valid trial (name only)', () => {
     expect(trialProductSchema.safeParse({ name: 'Bomba' }).success).toBe(true)
+  })
+  it('accepts a well-formed imagePath but rejects a malformed / traversal one', () => {
+    expect(trialProductSchema.safeParse({ name: 'x', imagePath: `${UID}/${IMG}.png` }).success).toBe(true)
+    expect(trialProductSchema.safeParse({ name: 'x', imagePath: `${UID}/../${OTHER}/x.png` }).success).toBe(false)
+    expect(trialProductSchema.safeParse({ name: 'x', imagePath: 'anything/else.txt' }).success).toBe(false)
+  })
+  it('rejects a non-uuid id', () => {
+    expect(trialProductSchema.safeParse({ id: 'not-a-uuid', name: 'x' }).success).toBe(false)
   })
   it('rejects an empty name and over-long / too-many specs', () => {
     expect(trialProductSchema.safeParse({ name: '' }).success).toBe(false)
@@ -71,9 +80,15 @@ describe('buildTrialImagePath', () => {
 })
 
 describe('isOwnTrialImagePath', () => {
-  it('is true only under the caller own uuid prefix', () => {
+  it('is true only for a well-formed key under the caller own uuid', () => {
     expect(isOwnTrialImagePath(UID, `${UID}/${IMG}.png`)).toBe(true)
-    expect(isOwnTrialImagePath(UID, `99999999-9999-9999-9999-999999999999/${IMG}.png`)).toBe(false)
+    expect(isOwnTrialImagePath(UID, `${OTHER}/${IMG}.png`)).toBe(false)
     expect(isOwnTrialImagePath('not-a-uuid', `not-a-uuid/x.png`)).toBe(false)
+  })
+  it('rejects path traversal that would escape the prefix or the bucket', () => {
+    expect(isOwnTrialImagePath(UID, `${UID}/../${OTHER}/${IMG}.png`)).toBe(false)
+    expect(isOwnTrialImagePath(UID, `${UID}/../../rep-assets/rep/${OTHER}/signature.png`)).toBe(false)
+    expect(isOwnTrialImagePath(UID, `${UID}/${IMG}.png/../x.png`)).toBe(false)
+    expect(isOwnTrialImagePath(UID, `${UID}/${IMG}.txt`)).toBe(false) // wrong ext
   })
 })

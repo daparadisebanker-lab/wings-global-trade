@@ -13,6 +13,14 @@ export const REP_TEST_BUCKET = 'rep-test-assets'
 export type TrialImageExt = 'png' | 'jpg' | 'webp'
 const uuidSchema = z.string().uuid()
 
+const UUID_RE = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+/** The ONLY valid trial-image key shape: `<owner-uuid>/<image-uuid>.<ext>` — no
+ *  path traversal, no extra segments, no bucket escape. Both the save schema and
+ *  the own-path gate enforce it, because Supabase's storage client does NOT
+ *  normalize keys (a `..` collapses in URL parsing and can escape the prefix AND
+ *  the bucket when a service-role signs it). */
+export const TRIAL_IMAGE_PATH_RE = new RegExp(`^${UUID_RE}/${UUID_RE}\\.(png|jpg|webp)$`, 'i')
+
 /** A saved trial product as the app consumes it (camelCase over the snake row). */
 export interface TrialProduct {
   id: string
@@ -54,7 +62,8 @@ export const trialProductSchema = z.object({
   specs: z.array(specSchema).max(6).optional(),
   priceNote: z.string().trim().max(80).nullable().optional(),
   moq: z.string().trim().max(40).nullable().optional(),
-  imagePath: z.string().trim().max(300).nullable().optional(),
+  // Shape-validated (not just length) so a traversal string can never be stored.
+  imagePath: z.string().trim().regex(TRIAL_IMAGE_PATH_RE, 'Ruta de imagen inválida / Invalid image path').nullable().optional(),
 })
 export type TrialProductInput = z.input<typeof trialProductSchema>
 
@@ -99,8 +108,12 @@ export function buildTrialImagePath(userId: string, imageId: string, ext: TrialI
   return `${userId}/${imageId}.${ext}`
 }
 
-/** PURE: is this stored path under the caller's own prefix? The gate for signing a
- *  READ url (defense-in-depth alongside the DB CHECK). */
+/** PURE: is this a well-formed trial-image key owned by `userId`? Gate for signing
+ *  a READ url. Full-SHAPE match (not a prefix test): the key must be exactly
+ *  `<userId>/<image-uuid>.<ext>` — so `../` traversal, extra segments, or a bucket
+ *  escape can never pass, even though the storage client won't normalize the key. */
 export function isOwnTrialImagePath(userId: string, path: string): boolean {
-  return uuidSchema.safeParse(userId).success && path.startsWith(`${userId}/`)
+  if (!uuidSchema.safeParse(userId).success) return false
+  if (!TRIAL_IMAGE_PATH_RE.test(path)) return false
+  return path.startsWith(`${userId}/`)
 }

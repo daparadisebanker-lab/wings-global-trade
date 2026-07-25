@@ -8,9 +8,9 @@
 // carries the image; every signed URL is minted with the SERVICE ROLE, but ONLY
 // after the caller is authorized to their own object here.
 //
-// Dormant-safe: until tower_56 is applied every query errors, so reads return a
-// typed failure and getTrialLibraryStatus reports unavailable — the composer then
-// hides the library and Prueba stays purely ephemeral.
+// Dormant-safe: until tower_56 is applied every query errors, so the list read
+// returns a typed failure (SCHEMA_MISMATCH for the missing table) — the composer
+// then hides the library and Prueba stays purely ephemeral.
 import { randomUUID } from 'node:crypto'
 import { createServerSupabase, createServiceClient } from '@/lib/supabase/server'
 import { ok, fail, type ActionResult } from './result'
@@ -39,25 +39,22 @@ async function requireUser() {
   return { ok: true as const, tower: supabase.schema('tower'), user }
 }
 
-/** The caller's saved trials, newest first (RLS: own-row). Error → dormant. */
+/** The caller's saved trials, newest first (RLS + explicit own-row). Error →
+ *  dormant: SCHEMA_MISMATCH when the table isn't there yet, VALIDATION otherwise. */
 export async function listMyTrialProducts(): Promise<ActionResult<TrialProduct[]>> {
   const gate = await requireUser()
   if (!gate.ok) return gate.error
   const { data, error } = await gate.tower
     .from('rep_test_products')
     .select(TRIAL_ROW_COLUMNS)
+    .eq('owner_id', gate.user.id)
     .order('updated_at', { ascending: false })
     .limit(100)
-  if (error) return fail('VALIDATION', 'Biblioteca no disponible / Library unavailable')
+  if (error) {
+    const code = (error as { code?: string }).code
+    return fail(code === '42P01' ? 'SCHEMA_MISMATCH' : 'VALIDATION', 'Biblioteca no disponible / Library unavailable')
+  }
   return ok((data ?? []).map((r) => mapTrialRow(r as never)))
-}
-
-/** Library availability for the composer's gate — never throws (probe). */
-export async function getTrialLibraryStatus(): Promise<{ available: boolean }> {
-  const gate = await requireUser()
-  if (!gate.ok) return { available: false }
-  const { error } = await gate.tower.from('rep_test_products').select('id', { head: true, count: 'exact' }).limit(1)
-  return { available: !error }
 }
 
 /**
@@ -109,14 +106,32 @@ export async function saveTrialProduct(input: TrialProductInput): Promise<Action
   return ok(mapTrialRow(data as never))
 }
 
-/** Delete one of the caller's own trials (RLS own-row). */
+/** Delete one of the caller's own trials (RLS own-row) and clean up its image
+ *  object so it doesn't orphan in the bucket. Fetch-first so a stale / not-yours
+ *  id is a real failure, not a false success (RLS filters it to zero rows). */
 export async function deleteTrialProduct(id: string): Promise<ActionResult<true>> {
   const gate = await requireUser()
   if (!gate.ok) return gate.error
   const idParsed = z.string().uuid().safeParse(id)
   if (!idParsed.success) return fail('VALIDATION', 'ID inválido / Invalid id')
+
+  const { data: row } = await gate.tower
+    .from('rep_test_products')
+    .select('id,image_path')
+    .eq('id', idParsed.data)
+    .eq('owner_id', gate.user.id)
+    .maybeSingle()
+  if (!row) return fail('VALIDATION', 'No se pudo eliminar / Could not delete')
+  const imagePath = (row as { image_path: string | null }).image_path
+
   const { error } = await gate.tower.from('rep_test_products').delete().eq('id', idParsed.data).eq('owner_id', gate.user.id)
   if (error) return fail('VALIDATION', 'No se pudo eliminar / Could not delete')
+
+  // Best-effort image cleanup — own-prefix already proven by the fetched row.
+  if (imagePath && isOwnTrialImagePath(gate.user.id, imagePath)) {
+    const service = createServiceClient()
+    if (service) await service.storage.from(REP_TEST_BUCKET).remove([imagePath])
+  }
   return ok(true)
 }
 

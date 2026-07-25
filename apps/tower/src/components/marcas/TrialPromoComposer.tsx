@@ -4,9 +4,10 @@
 // listings: name, category, a few specs, an optional price note + MOQ, and an
 // optional image dropped in from their device. It produces a Wings-branded card
 // stamped as a MUESTRA (never a live listing) and shares it to a few leads to test
-// demand. Fully EPHEMERAL — the image is held as a data-URL in the browser and
-// nothing is persisted (a saved rep library is a queued follow-up). Same
-// compose→share pipeline as every other source.
+// demand — nothing is ever published to the site. When the library (tower_56) is
+// live the rep may SAVE a trial to their own private library (image persisted to a
+// private bucket) and reuse it; when it isn't, the compose stays purely ephemeral
+// (image only a browser data-URL). Same compose→share pipeline as every source.
 import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
 import { cn } from '@wings/trade-ui'
 import type { ProductPromo, ProductPromoSpec } from '@wings/rb-core'
@@ -63,11 +64,15 @@ export function TrialPromoComposer({
   const [isSaving, startSave] = useTransition()
 
   useEffect(() => {
-    void listMyTrialProducts().then((res) => {
-      if (res.error) return // dormant — hide the library
-      setLibraryAvailable(true)
-      setLibrary(res.data)
-    })
+    listMyTrialProducts()
+      .then((res) => {
+        if (res.error) return // dormant (or transient) — hide the library
+        setLibraryAvailable(true)
+        setLibrary(res.data)
+      })
+      .catch(() => {
+        /* transport failure — leave the library hidden, Prueba stays ephemeral */
+      })
   }, [])
 
   function resetFileInput() {
@@ -78,9 +83,12 @@ export function TrialPromoComposer({
     setImageError(null)
     const myId = ++imageReqRef.current
     if (!file) return
-    // On rejection, clear the input too so the rejected filename isn't left on
-    // screen next to the error (the previously-accepted image, if any, stays).
-    if (!/^image\/(png|jpe?g|webp)$/i.test(file.type)) {
+    // Derive the ext from the SAME map the upload uses, so the accept set and the
+    // persistable set can never disagree (else an image previews but silently
+    // isn't saved). On rejection, clear the input so the rejected filename isn't
+    // left beside the error (the previously-accepted image, if any, stays).
+    const ext = MIME_EXT[file.type.toLowerCase()]
+    if (!ext) {
       setImageError(t({ es: 'Formato no soportado (PNG, JPG o WEBP).', en: 'Unsupported format (PNG, JPG or WEBP).' }, locale))
       resetFileInput()
       return
@@ -94,7 +102,7 @@ export function TrialPromoComposer({
     reader.onload = () => {
       if (myId !== imageReqRef.current) return
       setImageHref(typeof reader.result === 'string' ? reader.result : null)
-      setImageExt(MIME_EXT[file.type] ?? null)
+      setImageExt(ext)
       setImagePath(null) // a fresh upload isn't persisted yet
     }
     reader.onerror = () => {
@@ -144,6 +152,7 @@ export function TrialPromoComposer({
     if (!name0) return
     setSaveState(null)
     startSave(async () => {
+     try {
       let path = imagePath
       // Upload a fresh image (a data-URL not yet persisted) to the private bucket.
       if (imageHref && !imagePath && imageExt) {
@@ -180,6 +189,9 @@ export function TrialPromoComposer({
       setEditingId(res.data.id)
       setLibrary((prev) => [res.data, ...prev.filter((x) => x.id !== res.data.id)])
       setSaveState({ tone: 'ok', text: t({ es: 'Guardado en tu biblioteca', en: 'Saved to your library' }, locale) })
+     } catch {
+       setSaveState({ tone: 'err', text: t({ es: 'Error inesperado al guardar.', en: 'Unexpected error while saving.' }, locale) })
+     }
     })
   }
 
@@ -200,34 +212,42 @@ export function TrialPromoComposer({
       setImageHref(null)
       return
     }
-    const res = await getTrialImageUrl(tp.imagePath)
-    if (myId !== imageReqRef.current) return // superseded by another load
-    if (res.error) {
+    const failImage = () => {
+      if (myId !== imageReqRef.current) return
       setImageHref(null)
-      return
+      setImageError(t({ es: 'No se pudo cargar la imagen guardada.', en: 'Could not load the saved image.' }, locale))
     }
     try {
+      const res = await getTrialImageUrl(tp.imagePath)
+      if (myId !== imageReqRef.current) return // superseded by another load
+      if (res.error) return failImage()
       const blob = await (await fetch(res.data)).blob()
+      if (myId !== imageReqRef.current) return
       const reader = new FileReader()
       reader.onload = () => {
         if (myId !== imageReqRef.current) return
         setImageHref(typeof reader.result === 'string' ? reader.result : null)
       }
+      reader.onerror = failImage
       reader.readAsDataURL(blob)
     } catch {
-      if (myId === imageReqRef.current) setImageHref(null)
+      failImage()
     }
   }
 
   function deleteTrial(id: string) {
     startSave(async () => {
-      const res = await deleteTrialProduct(id)
-      if (res.error) {
-        setSaveState({ tone: 'err', text: res.error.message })
-        return
+      try {
+        const res = await deleteTrialProduct(id)
+        if (res.error) {
+          setSaveState({ tone: 'err', text: res.error.message })
+          return
+        }
+        setLibrary((prev) => prev.filter((x) => x.id !== id))
+        if (editingId === id) newTrial()
+      } catch {
+        setSaveState({ tone: 'err', text: t({ es: 'No se pudo eliminar.', en: 'Could not delete.' }, locale) })
       }
-      setLibrary((prev) => prev.filter((x) => x.id !== id))
-      if (editingId === id) newTrial()
     })
   }
 
@@ -237,13 +257,21 @@ export function TrialPromoComposer({
       {/* Composer form */}
       <div className="flex flex-col gap-3">
         <p className="rounded-card border border-line bg-surface-1 p-3 font-ui text-t0 text-ink-secondary">
-          {t(
-            {
-              es: 'Sondeo de mercado: comparte un producto que aún no está en el catálogo para medir interés. La tarjeta se marca como muestra; no se publica ni se guarda.',
-              en: 'Market probe: share a product not yet on the catalog to gauge interest. The card is stamped as a sample; nothing is published or saved.',
-            },
-            locale,
-          )}
+          {libraryAvailable
+            ? t(
+                {
+                  es: 'Sondeo de mercado: comparte un producto que aún no está en el catálogo para medir interés. La tarjeta se marca como muestra y nunca se publica en el sitio; puedes guardarla en tu biblioteca privada abajo.',
+                  en: 'Market probe: share a product not yet on the catalog to gauge interest. The card is stamped as a sample and never published to the site; you can save it to your private library below.',
+                },
+                locale,
+              )
+            : t(
+                {
+                  es: 'Sondeo de mercado: comparte un producto que aún no está en el catálogo para medir interés. La tarjeta se marca como muestra; no se publica ni se guarda.',
+                  en: 'Market probe: share a product not yet on the catalog to gauge interest. The card is stamped as a sample; nothing is published or saved.',
+                },
+                locale,
+              )}
         </p>
         <label className="flex flex-col gap-1">
           <span className={LABEL}>{t({ es: 'Producto', en: 'Product' }, locale)}</span>
@@ -393,13 +421,14 @@ export function TrialPromoComposer({
                     <span className="font-ui text-t0 text-ink-primary">{tp.name}</span>
                     <span className="ml-2 font-mono text-label text-ink-secondary">
                       {tp.category ?? '—'}
-                      {tp.imagePath ? ' · img' : ''}
+                      {tp.imagePath ? ` · ${t({ es: 'imagen', en: 'image' }, locale)}` : ''}
                     </span>
                   </button>
                   <button
                     type="button"
                     onClick={() => deleteTrial(tp.id)}
                     disabled={isSaving}
+                    aria-label={`${t({ es: 'Eliminar', en: 'Delete' }, locale)} ${tp.name}`}
                     className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:text-negative disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lane-accent"
                   >
                     {t({ es: 'Eliminar', en: 'Delete' }, locale)}

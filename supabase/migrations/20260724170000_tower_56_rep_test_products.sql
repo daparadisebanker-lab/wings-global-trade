@@ -1,10 +1,8 @@
--- TOWER migration 56 · Rep test-product library (WS8, QUEUED — NOT YET APPLIED)
--- The "Prueba" marketing source ships EPHEMERAL (composed + shared in-session,
--- image held in the browser, nothing stored). This migration is the designed,
--- ready-to-activate foundation for the LATER rep-private library: saved trial
--- products a rep can reuse and track. It is committed but intentionally UNAPPLIED
--- until approved via the migration pipeline; the app's ephemeral Prueba flow does
--- not read these tables, so applying (or not) changes nothing today.
+-- TOWER migration 56 · Rep test-product library (WS8)
+-- Backs the "Prueba" marketing source's private saved library: trial products a
+-- rep can save, reuse and delete. When this is applied the app's "Mi biblioteca"
+-- panel activates; when it isn't, the library reads error and the panel stays
+-- hidden (the Prueba compose is dormant-safe and purely ephemeral).
 --
 -- Mutation/RLS law mirrors tower.rep_profiles (tower_39): a rep only ever touches
 -- their OWN rows; a private storage bucket holds the trial image.
@@ -21,10 +19,12 @@ create table tower.rep_test_products (
   image_path   text,                          -- private-bucket path, resolved to a signed URL on read
   created_at   timestamptz not null default now(),
   updated_at   timestamptz not null default now(),
-  -- The image must live under the owner's own prefix — so a rep can't point their
-  -- row at another rep's object and have the read action sign a URL for it (IDOR).
+  -- The image key must be EXACTLY `<owner-uuid>/<image-uuid>.<ext>` — a full-shape
+  -- match, not a prefix (a `../` traversal would escape the prefix AND the bucket
+  -- when a service role signs it). Blocks the cross-rep signed-read IDOR at the DB.
   constraint rep_test_products_image_owned
-    check (image_path is null or image_path like owner_id::text || '/%')
+    check (image_path is null or
+           image_path ~ ('^' || owner_id::text || '/[0-9a-f-]{36}\.(png|jpg|webp)$'))
 );
 
 create index rep_test_products_owner_idx on tower.rep_test_products (owner_id, updated_at desc);
@@ -73,4 +73,7 @@ create trigger rep_test_products_before_update_trg
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values ('rep-test-assets', 'rep-test-assets', false, 4194304,
         array['image/png','image/jpeg','image/webp'])
-on conflict (id) do nothing;
+on conflict (id) do update set
+  public = excluded.public,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
