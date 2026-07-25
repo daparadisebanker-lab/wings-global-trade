@@ -4,7 +4,8 @@ import { useEffect, useRef, useState, useTransition } from 'react'
 import { t, type Locale } from '@/lib/i18n'
 import { extractClientFromWhatsapp } from '@/lib/actions/whatsapp-import'
 import type { ClientExtractDraft } from '@/lib/crm/whatsapp'
-import { unzip, findChatEntry, mediaEntries, baseName, type MediaKind } from '@/lib/crm/unzip'
+import { unzip, findChatEntry, mediaEntries, baseName } from '@/lib/crm/unzip'
+import type { ImportMedia } from './ClientForm'
 
 const STEPS = [
   { es: 'Leyendo la conversación…', en: 'Reading the conversation…' },
@@ -29,7 +30,9 @@ const MIME: Record<string, string> = {
 
 interface MediaPreview {
   name: string
-  kind: MediaKind
+  kind: 'image' | 'audio'
+  ext: string
+  blob: Blob
   url: string
 }
 
@@ -46,7 +49,7 @@ export function WhatsappImport({
   onCancel,
 }: {
   locale: Locale
-  onDraft: (draft: ClientExtractDraft) => void
+  onDraft: (draft: ClientExtractDraft, media: ImportMedia[]) => void
   onCancel: () => void
 }) {
   const [text, setText] = useState('')
@@ -89,11 +92,13 @@ export function WhatsappImport({
         }
         setText(new TextDecoder().decode(chat.data))
         setMedia(
-          mediaEntries(entries).map(({ entry, kind }) => {
-            const ext = entry.name.slice(entry.name.lastIndexOf('.') + 1).toLowerCase()
-            const url = URL.createObjectURL(new Blob([entry.data as BlobPart], { type: MIME[ext] ?? 'application/octet-stream' }))
-            return { name: baseName(entry.name), kind, url }
-          }),
+          mediaEntries(entries)
+            .filter((m) => m.kind === 'image' || m.kind === 'audio')
+            .map(({ entry, kind }) => {
+              const ext = entry.name.slice(entry.name.lastIndexOf('.') + 1).toLowerCase()
+              const blob = new Blob([entry.data as BlobPart], { type: MIME[ext] ?? 'application/octet-stream' })
+              return { name: baseName(entry.name), kind: kind as 'image' | 'audio', ext, blob, url: URL.createObjectURL(blob) }
+            }),
         )
       } else if (isTxt) {
         setText(await file.text())
@@ -114,7 +119,10 @@ export function WhatsappImport({
         setError(res.error.message)
         return
       }
-      onDraft(res.data)
+      onDraft(
+        res.data,
+        media.map(({ name, kind, ext, blob }) => ({ name, kind, ext, blob })),
+      )
     })
   }
 

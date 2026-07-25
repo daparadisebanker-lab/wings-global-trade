@@ -3,6 +3,9 @@
 // Split from clients.ts because a 'use server' file may only export async
 // functions (mirrors pipeline.ts / quotations.ts). Unit-tested.
 
+import { parseMediaArray, type ClientMediaItem } from './client-media-logic'
+export type { ClientMediaItem } from './client-media-logic'
+
 export type ClientSource =
   | 'mister'
   | 'whatsapp'
@@ -50,6 +53,8 @@ export interface ClientListItem {
   /** CRM lead score 0–100. */
   score: number
   primaryContact: ClientContact | null
+  /** Attachments from a WhatsApp import (images/audio), stored in client-media. */
+  media: ClientMediaItem[]
   createdAt: string
 }
 
@@ -124,6 +129,7 @@ export interface RawClientRow {
   owner_id: string | null
   notes: string | null
   score: number | string | null
+  media: unknown
   created_at: string
   brands: Nested<RawBrandJoin>
   contacts: RawContactJoin[] | RawContactJoin | null
@@ -176,12 +182,13 @@ export function mapClientRow(row: RawClientRow): ClientListItem {
     notes: row.notes,
     score: Number.isFinite(score) ? (score as number) : 0,
     primaryContact: pickPrimaryContact(row.contacts),
+    media: parseMediaArray(row.media),
     createdAt: row.created_at,
   }
 }
 
 export const CLIENT_SELECT =
-  'id,name,country,region,city,source,category,archetype_profile,demand,stage,currency,owner_id,notes,score,created_at,brands(name),contacts(full_name,whatsapp,email,role,is_primary)'
+  'id,name,country,region,city,source,category,archetype_profile,demand,stage,currency,owner_id,notes,score,media,created_at,brands(name),contacts(full_name,whatsapp,email,role,is_primary)'
 
 // ── Pipeline board grouping ──────────────────────────────────────────────────
 export interface StageColumn {

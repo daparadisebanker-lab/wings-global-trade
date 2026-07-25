@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { t, type Locale } from '@/lib/i18n'
 import {
   moveClientStage,
@@ -9,7 +9,7 @@ import {
 } from '@/lib/actions/clients'
 import type { ClientListItem, ClientStage } from '@/lib/actions/clients-logic'
 import type { ClientExtractDraft } from '@/lib/crm/whatsapp'
-import { ClientForm, initialFromClient, type ClientFormInitial } from './ClientForm'
+import { ClientForm, initialFromClient, type ClientFormInitial, type ImportMedia } from './ClientForm'
 import { ClientList } from './ClientList'
 import { ClientBoard } from './ClientBoard'
 import { WhatsappImport } from './WhatsappImport'
@@ -17,7 +17,7 @@ import { WhatsappImport } from './WhatsappImport'
 const TAG = 'CLI · Clientes'
 const TITLE = { es: 'Clientes', en: 'Clients' }
 
-type Panel = { initial: ClientFormInitial; aiFilled?: Set<string> } | null
+type Panel = { initial: ClientFormInitial; aiFilled?: Set<string>; pendingMedia?: ImportMedia[]; nonce: number } | null
 
 /** A WhatsApp-extracted draft → the form's starting values (source pinned to
  *  WhatsApp; summary → notes). The operator picks the brand and reviews before saving. */
@@ -82,6 +82,14 @@ export function ClientsView({
   const [panel, setPanel] = useState<Panel>(null)
   const [importing, setImporting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const openSeq = useRef(0)
+
+  // Open the create/edit panel with a fresh nonce so ClientForm remounts (its
+  // field + media state resets between different clients / a new draft).
+  function openPanel(p: Omit<NonNullable<Panel>, 'nonce'>) {
+    setImporting(false)
+    setPanel({ ...p, nonce: ++openSeq.current })
+  }
 
   const byName = useMemo(() => [...items].sort((a, b) => a.name.localeCompare(b.name)), [items])
 
@@ -154,10 +162,7 @@ export function ClientsView({
             </button>
             <button
               type="button"
-              onClick={() => {
-                setPanel({ initial: {} })
-                setImporting(false)
-              }}
+              onClick={() => openPanel({ initial: {} })}
               className="rounded-card bg-accent px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-surface-0"
             >
               {t({ es: '+ Nuevo cliente', en: '+ New client' }, locale)}
@@ -170,10 +175,9 @@ export function ClientsView({
         <WhatsappImport
           locale={locale}
           onCancel={() => setImporting(false)}
-          onDraft={(d) => {
-            setImporting(false)
-            setPanel({ initial: draftToInitial(d), aiFilled: aiFilledFromDraft(d) })
-          }}
+          onDraft={(d, media) =>
+            openPanel({ initial: draftToInitial(d), aiFilled: aiFilledFromDraft(d), pendingMedia: media })
+          }
         />
       ) : null}
 
@@ -193,11 +197,13 @@ export function ClientsView({
                 : t({ es: 'Nuevo cliente', en: 'New client' }, locale)}
           </span>
           <ClientForm
+            key={panel.nonce}
             locale={locale}
             brands={brands}
             roster={roster}
             initial={panel.initial}
             aiFilled={panel.aiFilled}
+            pendingMedia={panel.pendingMedia}
             onDone={upsert}
             onCancel={() => setPanel(null)}
           />
@@ -215,12 +221,12 @@ export function ClientsView({
           )}
         </div>
       ) : view === 'list' ? (
-        <ClientList items={byName} locale={locale} owners={owners} onEdit={(c) => setPanel({ initial: initialFromClient(c) })} />
+        <ClientList items={byName} locale={locale} owners={owners} onEdit={(c) => openPanel({ initial: initialFromClient(c) })} />
       ) : (
         <ClientBoard
           items={items}
           locale={locale}
-          onEdit={(c) => setPanel({ initial: initialFromClient(c) })}
+          onEdit={(c) => openPanel({ initial: initialFromClient(c) })}
           onMove={onMove}
         />
       )}
