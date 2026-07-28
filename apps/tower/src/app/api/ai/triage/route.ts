@@ -1,6 +1,6 @@
 // POST /api/intelligence/triage  (API_MAP: POST /api/ai/triage)
 // Classify an inbound RFQ enquiry → proposed lane + archetype + stage DRAFT
-// (haiku). Auth'd; the draft lands in tower.ai_drafts — never applied here.
+// (classify tier). Auth'd; the draft lands in tower.ai_drafts — never applied here.
 import type { NextRequest } from 'next/server'
 import { z, ZodError } from 'zod'
 import { getIntelligenceClient, runTriage, type TriageLane } from '@/lib/ai'

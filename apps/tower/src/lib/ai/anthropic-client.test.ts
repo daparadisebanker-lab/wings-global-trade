@@ -7,6 +7,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import type Anthropic from '@anthropic-ai/sdk'
 import { AnthropicIntelligenceClient } from './client'
+import type { IntelligenceModel } from './types'
 
 type CreateBody = { model: string; messages: unknown[]; thinking?: unknown; system?: string; max_tokens?: number }
 
@@ -41,7 +42,13 @@ describe('AnthropicIntelligenceClient request shape', () => {
   it('leaves thinking unset for a thinking-off model', async () => {
     const cap: { create?: CreateBody } = {}
     const client = new AnthropicIntelligenceClient(stubSdk(cap))
-    await client.complete({ model: 'claude-haiku-4-5-20251001', system: 'S', user: 'hi', maxTokens: 60 })
+    // Both INTELLIGENCE_MODELS tiers are Opus 5 today, so IntelligenceModel is a
+    // one-member union and no in-use model exercises this branch. The branch is
+    // still live — re-pointing a tier at a cheap thinking-off model must not start
+    // sending it an explicit disable — so the cast keeps it covered rather than
+    // deleting the only test of the negative case.
+    const thinkingOff = 'claude-haiku-4-5-20251001' as unknown as IntelligenceModel
+    await client.complete({ model: thinkingOff, system: 'S', user: 'hi', maxTokens: 60 })
     expect(cap.create?.thinking).toBeUndefined()
   })
 

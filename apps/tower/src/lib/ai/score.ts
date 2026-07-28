@@ -1,6 +1,6 @@
 // src/lib/ai/score.ts
 // (2) Lead-score orchestrator: account signals → 0–100 draft score by archetype
-// behaviour, with the factors behind it. haiku (classify tier). The score lands
+// behaviour, with the factors behind it. The classify tier. The score lands
 // as a draft; it never writes accounts.score directly — approveLeadScore does,
 // as a human action.
 import { INTELLIGENCE_MODELS, type AiDraft, type LeadScorePayload } from './types'

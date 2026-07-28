@@ -11,13 +11,24 @@ import type { Archetype } from '@/lib/archetypes'
 import type { Localized } from '@/lib/i18n'
 
 // ── Models (TOWER stack; current IDs — do not downgrade) ────────────────────
-// haiku = classify / score (fast, cheap, thinking off); opus = extract / brief
-// (deepest reasoning). NOTE: adaptive thinking is ON by default on the reason
-// model — both model seams disable it for these one-shot / tool-loop JSON calls
-// so the small max_tokens budget isn't spent thinking (which would truncate the
-// answer to empty). See THINKING_ON_BY_DEFAULT below.
+// Opus 5 on BOTH tiers (ratified 2026-07-28): TOWER no longer runs Haiku
+// anywhere. The two keys stay because the ROLES stay — `classify` is the
+// routing/scoring tier (short structured decisions), `reason` is extraction and
+// drafting — so either can be re-pointed without touching a call site.
+//
+// Why the tiers merged: routing is not the cheap part of Mister, it is the part
+// that decides whether the operator gets an answer at all. A misroute costs a
+// whole turn and reads as "Mister ignored me"; the classify call is ~15 output
+// tokens on a match, so the quality is worth far more than the tokens saved.
+//
+// NOTE: adaptive thinking is ON by default on Opus 5 — both model seams
+// (lib/ai/client.ts, lib/torre/agent/anthropic-runner.ts) disable it for these
+// one-shot / tool-loop JSON calls so the small max_tokens budget isn't spent
+// thinking (which would truncate the answer to EMPTY). Every classify call site
+// runs 150–1024 max_tokens, so this guard is what makes the tier safe on a
+// thinking-on model. See THINKING_ON_BY_DEFAULT below.
 export const INTELLIGENCE_MODELS = {
-  classify: 'claude-haiku-4-5-20251001',
+  classify: 'claude-opus-5',
   reason: 'claude-opus-5',
 } as const
 export type IntelligenceModel = (typeof INTELLIGENCE_MODELS)[keyof typeof INTELLIGENCE_MODELS]
@@ -31,7 +42,10 @@ export type IntelligenceModel = (typeof INTELLIGENCE_MODELS)[keyof typeof INTELL
  *        transcript rebuild does not do; leaving thinking on breaks turn 2.
  *  Sending an explicit disable is a no-op on a model that is already thinking-off, so
  *  this list can safely include the whole Opus/Sonnet 5-era set rather than only the
- *  thinking-on-by-default members. Haiku is thinking-off by default, so it's absent.
+ *  thinking-on-by-default members. Haiku is thinking-off by default, so it's absent —
+ *  and since both tiers now run Opus 5, EVERY TOWER model call depends on this set
+ *  matching. A model added to INTELLIGENCE_MODELS that is thinking-on and missing
+ *  here fails silently with an empty answer, not loudly.
  *  DRIFT WARNING: membership is a byte-exact string match. Do NOT route the always-on
  *  thinking models (e.g. claude-fable-5) through these seams as-is — an explicit
  *  disable is rejected there; the correct move for such a model is to OMIT the param
