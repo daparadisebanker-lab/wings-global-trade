@@ -22,6 +22,7 @@ import {
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import { askMister } from '@/lib/actions/mister-copilot'
 import { textResult, type CanvasContext, type CopilotResult, type SeededFrom } from '@/lib/copilot/types'
+import { artifactDigest, MAX_HISTORY_TURNS, type Turn } from '@/lib/copilot/history'
 import { MISTER_RENDERERS } from '../mister-renderers'
 import { deriveParentSeq } from './lineage'
 
@@ -47,6 +48,22 @@ function coerceResult(result: CopilotResult, locale: Locale): CopilotResult {
     )
   }
   return result
+}
+
+/** Compact the thread into the conversation the server routes against. The dock
+ *  owns the thread, so without this the server saw only the current message and a
+ *  follow-up ("El precio es 25,000") classified as off-topic. An artifact turn
+ *  travels as its digest — the headline facts a follow-up refers to, not the whole
+ *  payload. The preview dataURL of a pasted screenshot never travels. */
+export function threadToHistory(thread: MisterMsg[]): Turn[] {
+  return thread.slice(-MAX_HISTORY_TURNS).map((m) => {
+    if (m.who === 'op') return { who: 'op' as const, text: m.text || (m.image ? '[captura adjunta]' : '') }
+    const r = m.result
+    return {
+      who: 'mi' as const,
+      text: r.renderer === 'text' ? (r.text ?? '') : artifactDigest(r.renderer, r.note, r.data),
+    }
+  })
 }
 
 /** A screenshot staged for the next turn — base64 for the wire, dataURL for preview. */
@@ -131,6 +148,9 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
     const text = draft.trim()
     const attachment = pending
     if ((!text && !attachment) || busy) return
+    // Snapshot the conversation BEFORE this message joins it — the ask carries the
+    // turns that precede it, and `text` travels on its own.
+    const history = threadToHistory(thread)
     setThread((prev) => [...prev, { who: 'op', text, image: attachment?.preview }])
     setDraft('')
     setPending(null)
@@ -161,6 +181,7 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
         text,
         attachment ? { mediaType: attachment.mediaType, dataBase64: attachment.dataBase64 } : undefined,
         context,
+        history,
       )
       clearTimeout(watchdog)
       finish(coerceResult(result.error ? textResult(result.error.message) : result.data, locale))
@@ -168,7 +189,7 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
       clearTimeout(watchdog)
       finish(textResult(t({ es: 'No pude procesarlo ahora.', en: 'Could not process that.' }, locale)))
     }
-  }, [draft, pending, busy, locale, skipCanvasContext])
+  }, [draft, pending, busy, locale, skipCanvasContext, thread])
 
   /** Bail out of the current ask (a live "Detener" control). Server-side the call
    *  keeps running (a server action can't be client-aborted), but the dock frees

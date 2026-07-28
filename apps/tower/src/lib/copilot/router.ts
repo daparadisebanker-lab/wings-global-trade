@@ -2,12 +2,19 @@
 // that capability does its own extraction + compute. Two calls total (classify →
 // capability), which keeps each capability fully self-contained (its own prompt)
 // so they can be built in parallel.
+//
+// The classify call is CONVERSATION-AWARE (see history.ts): a follow-up carries
+// none of the vocabulary the classifier keys on, so the recent transcript travels
+// with it. Without that, answering a question Mister itself asked routed to
+// 'none'.
 
 import { INTELLIGENCE_MODELS } from '@/lib/ai/types'
 import { extractJsonObject } from '@/lib/ai/parse'
 import type { IntelligenceClient } from '@/lib/ai/client'
 import { CAPABILITIES } from './registry'
-import { textResult, type Attachment, type CanvasContext, type CopilotResult } from './types'
+import { converse } from './converse'
+import { renderTranscript, type Turn } from './history'
+import { type Attachment, type CanvasContext, type CopilotResult } from './types'
 
 function routerSystem(): string {
   const list = CAPABILITIES.map(
@@ -19,12 +26,24 @@ operador, elige la ÚNICA capacidad más adecuada de la lista, o "none" si ningu
 Capacidades:
 ${list}
 
+CONVERSACIÓN: si hay conversación previa, el mensaje a clasificar casi siempre la CONTINÚA.
+- Si Mister pidió un dato y el operador lo entrega ("el precio es 25,000", "MOQ una unidad",
+  "sí, diésel"), clasifica según la TAREA que ese dato desbloquea, no según las palabras del
+  mensaje suelto.
+- Una corrección seguida de una petición ("El MOQ es una unidad. Ayúdame a crear una
+  cotización") se clasifica por la PETICIÓN.
+- Un mensaje breve sin verbo ("¿y a 22%?", "en 40HC") continúa la última tarea.
+
+Usa "none" SOLO si el mensaje es realmente ajeno al comercio mayorista o es puramente social.
+Ante la duda entre "none" y una capacidad plausible, elige la capacidad.
+
 Responde SOLO con JSON, sin texto alrededor: {"capability": "<id>" | "none"}`
 }
 
 /**
  * Route a message to a capability and run it. Throws only on a transport error;
- * an off-topic message returns a helpful menu of what Mister can do.
+ * a message no capability fits gets a conversational reply (converse.ts), not a
+ * dead-end menu.
  *
  * An image attachment short-circuits the text classifier: an image is an
  * unambiguous signal for the (single) image-accepting capability, so we route
@@ -35,10 +54,11 @@ export async function routeAndRun(
   text: string,
   attachment?: Attachment,
   context?: CanvasContext,
+  history?: Turn[],
 ): Promise<CopilotResult> {
   if (attachment) {
     const visionCap = CAPABILITIES.find((c) => c.acceptsImage)
-    if (visionCap) return visionCap.run(client, text, attachment, context)
+    if (visionCap) return visionCap.run(client, text, attachment, context, history)
     // No image capability registered — fall through to text routing on the caption.
   }
 
@@ -53,7 +73,7 @@ export async function routeAndRun(
   const raw = await client.complete({
     model: INTELLIGENCE_MODELS.classify,
     system: routerSystem(),
-    user: hint + text,
+    user: renderTranscript(history) + hint + `MENSAJE A CLASIFICAR:\n${text}`,
     maxTokens: 60,
   })
   const obj = extractJsonObject(raw)
@@ -68,11 +88,6 @@ export async function routeAndRun(
     cap = CAPABILITIES.find((c) => c.id === 'container-fit')
   }
 
-  if (!cap) {
-    const menu = CAPABILITIES.map((c) => `• ${c.router.description}`).join('\n')
-    return textResult(
-      `Puedo ayudarte con: / I can help with:\n${menu}`,
-    )
-  }
-  return cap.run(client, text, undefined, context)
+  if (!cap) return converse(client, text, history)
+  return cap.run(client, text, undefined, context, history)
 }

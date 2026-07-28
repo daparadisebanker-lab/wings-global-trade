@@ -20,6 +20,7 @@ import type { FuelType, ImportInputs, Incoterm } from '@/lib/costing/types'
 import { solveReverseQuote, type MarginKind } from '../reverse-quote-solve'
 import { inheritedCostingLabels, safeSeq } from '../canvas-seed'
 import { textResult, type Capability, type CanvasContext, type CopilotResult } from '../types'
+import { withHistory, type Turn } from '../history'
 
 // The solver + payload types live in a pure, CLIENT-SAFE module so the canvas
 // editor can import them without pulling this capability's LLM graph into the
@@ -85,13 +86,15 @@ export const reverseQuoteCapability: Capability = {
       '¿Qué precio de venta me da 22% de margen neto a este costo?',
       'Precio para 30% de margen bruto sobre un FOB de $78,400',
       'What sale price hits a 25% gross margin on a $40,000 CIF?',
+      // Continuation over the last costing.
+      '¿Y a 22% de margen?',
     ],
   },
-  async run(client: IntelligenceClient, text: string, _attachment, context?: CanvasContext): Promise<CopilotResult> {
+  async run(client: IntelligenceClient, text: string, _attachment, context?: CanvasContext, history?: Turn[]): Promise<CopilotResult> {
     const raw = await client.complete({
       model: INTELLIGENCE_MODELS.reason,
       system: SYSTEM,
-      user: text,
+      user: withHistory(text, history),
       maxTokens: 500,
     })
     const obj = extractJsonObject(raw)

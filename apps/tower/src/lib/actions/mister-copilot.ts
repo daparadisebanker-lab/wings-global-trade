@@ -10,6 +10,7 @@ import { createServerSupabase } from '@/lib/supabase/server'
 import { getIntelligenceClient } from '@/lib/ai/client'
 import { routeAndRun } from '@/lib/copilot/router'
 import { sanitizeCanvasContext } from '@/lib/copilot/context-guard'
+import { sanitizeHistory, type Turn } from '@/lib/copilot/history'
 import { textResult, type Attachment, type CanvasContext, type CopilotResult } from '@/lib/copilot/types'
 import { ok, fail, type ActionResult } from './result'
 
@@ -22,6 +23,7 @@ export async function askMister(
   text: string,
   attachment?: Attachment,
   context?: CanvasContext,
+  history?: Turn[],
 ): Promise<ActionResult<CopilotResult>> {
   const trimmed = (text ?? '').trim()
   // With an image, text is optional (the screenshot is the payload).
@@ -58,8 +60,12 @@ export async function askMister(
   }
 
   try {
-    // Client-supplied context: validate at the trust boundary before it seeds a compute.
-    return ok(await routeAndRun(client, trimmed, attachment, sanitizeCanvasContext(context)))
+    // Client-supplied context + conversation: validate at the trust boundary. The
+    // context seeds a compute (numeric guards); the history only ever lands in a
+    // prompt, so it is capped in shape and size (sanitizeHistory).
+    return ok(
+      await routeAndRun(client, trimmed, attachment, sanitizeCanvasContext(context), sanitizeHistory(history)),
+    )
   } catch (err) {
     console.error('[mister:askMister]', err)
     return ok(textResult('No pude procesarlo ahora — intenta de nuevo. / Could not process that — try again.'))

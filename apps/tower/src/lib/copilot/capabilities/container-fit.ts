@@ -9,6 +9,7 @@ import { CONTAINER_KINDS, type ContainerKind } from '@/lib/actions/containers-ty
 import { computeContainerFit, type ContainerFitInput, type ContainerFitResult } from '../container-fit'
 import { inheritedFitLabels, safeSeq } from '../canvas-seed'
 import { textResult, type Capability, type CanvasContext, type CopilotResult, type SeededFrom } from '../types'
+import { withHistory, type Turn } from '../history'
 
 /** The 'fit' renderer payload: the computed fit plus the input that produced it,
  *  so the canvas editor can seed its controls and recompute (read-only renderer
@@ -50,13 +51,15 @@ export const containerFitCapability: Capability = {
       '¿Cuántas cajas de 2.1×1.4×1.6 m entran en un 40HC?',
       'Encaje de 200 unidades de 30kg en un contenedor de 20 pies',
       'How many pallets fit in a reefer?',
+      // Continuation over the last box/container.
+      '¿Y en un 40HC?',
     ],
   },
-  async run(client: IntelligenceClient, text: string, _attachment, context?: CanvasContext): Promise<CopilotResult> {
+  async run(client: IntelligenceClient, text: string, _attachment, context?: CanvasContext, history?: Turn[]): Promise<CopilotResult> {
     const raw = await client.complete({
       model: INTELLIGENCE_MODELS.reason,
       system: SYSTEM,
-      user: text,
+      user: withHistory(text, history),
       maxTokens: 500,
     })
     const obj = extractJsonObject(raw)
