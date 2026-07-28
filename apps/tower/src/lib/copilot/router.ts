@@ -42,29 +42,26 @@ ${fallbackReplyRules()}
 Responde SOLO con JSON, sin texto alrededor: {"capability": "<id>" | "none", "reply": "<texto>"}`
 }
 
+/** What the classify call decided: the capability to run (null = nothing routed),
+ *  and the reply it drafted for that fall-through. */
+export interface RouteDecision {
+  capabilityId: string | null
+  /** Non-empty only when `capabilityId` is null — the 'none' branch's answer. */
+  reply: string
+}
+
 /**
- * Route a message to a capability and run it. Throws only on a transport error;
- * a message no capability fits gets a conversational reply — drafted by this same
- * classify call (converse.ts owns its rules), so the fall-through costs no extra
- * round-trip — instead of a dead-end menu.
- *
- * An image attachment short-circuits the text classifier: an image is an
- * unambiguous signal for the (single) image-accepting capability, so we route
- * straight there and skip the classify call.
+ * The classify step alone. Exported so routing quality can be scored against the
+ * REAL model (evals/routing.jsonl) without paying for the capability run behind
+ * it — classification is the probabilistic half of Mister, and it is the half
+ * that produced the reported failure.
  */
-export async function routeAndRun(
+export async function classify(
   client: IntelligenceClient,
   text: string,
-  attachment?: Attachment,
   context?: CanvasContext,
   history?: Turn[],
-): Promise<CopilotResult> {
-  if (attachment) {
-    const visionCap = CAPABILITIES.find((c) => c.acceptsImage)
-    if (visionCap) return visionCap.run(client, text, attachment, context, history)
-    // No image capability registered — fall through to text routing on the caption.
-  }
-
+): Promise<RouteDecision> {
   // Canvas-aware routing: a terse follow-up ("¿y si sube el TC?") carries none of
   // the vocabulary the classifier keys on, so tell it an edited artifact is open —
   // a short message is usually a follow-up about that artifact.
@@ -94,11 +91,40 @@ export async function routeAndRun(
     cap = CAPABILITIES.find((c) => c.id === 'container-fit')
   }
 
+  return {
+    capabilityId: cap?.id ?? null,
+    reply: cap ? '' : typeof obj?.reply === 'string' ? obj.reply.trim() : '',
+  }
+}
+
+/**
+ * Route a message to a capability and run it. Throws only on a transport error;
+ * a message no capability fits gets a conversational reply — drafted by this same
+ * classify call (converse.ts owns its rules), so the fall-through costs no extra
+ * round-trip — instead of a dead-end menu.
+ *
+ * An image attachment short-circuits the text classifier: an image is an
+ * unambiguous signal for the (single) image-accepting capability, so we route
+ * straight there and skip the classify call.
+ */
+export async function routeAndRun(
+  client: IntelligenceClient,
+  text: string,
+  attachment?: Attachment,
+  context?: CanvasContext,
+  history?: Turn[],
+): Promise<CopilotResult> {
+  if (attachment) {
+    const visionCap = CAPABILITIES.find((c) => c.acceptsImage)
+    if (visionCap) return visionCap.run(client, text, attachment, context, history)
+    // No image capability registered — fall through to text routing on the caption.
+  }
+
+  const { capabilityId, reply } = await classify(client, text, context, history)
+  const cap = capabilityId ? CAPABILITIES.find((c) => c.id === capabilityId) : undefined
+
   // Nothing routed: answer with the reply the classifier drafted in the same call,
   // and only fall back to the deterministic menu when it gave none.
-  if (!cap) {
-    const reply = typeof obj?.reply === 'string' ? obj.reply.trim() : ''
-    return textResult(reply || capabilityMenu())
-  }
+  if (!cap) return textResult(reply || capabilityMenu())
   return cap.run(client, text, undefined, context, history)
 }
