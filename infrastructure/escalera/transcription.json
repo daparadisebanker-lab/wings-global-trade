@@ -2533,6 +2533,22 @@
    },
    {
     "n": 15,
+    "code": "PM3538",
+    "series": "Mixed Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "6 Patterns"
+   },
+   {
+    "n": 16,
+    "code": "PM3557",
+    "series": "Mixed Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "6 Patterns"
+   },
+   {
+    "n": 17,
     "code": "PM3573",
     "series": "Mixed Series",
     "label_kind": "per_tile",
@@ -2540,7 +2556,7 @@
     "note": "5 Patterns"
    },
    {
-    "n": 16,
+    "n": 18,
     "code": "XPM3582",
     "series": "Mixed Series",
     "label_kind": "per_tile",
@@ -2548,7 +2564,7 @@
     "note": "5 Patterns"
    },
    {
-    "n": 17,
+    "n": 19,
     "code": "PM3657",
     "series": "Mixed Series",
     "label_kind": "per_tile",
@@ -2556,12 +2572,20 @@
     "note": "5 Patterns"
    },
    {
-    "n": 18,
+    "n": 20,
     "code": "PM3655",
     "series": "Mixed Series",
     "label_kind": "per_tile",
     "finish": "Flat, Matte Surface",
     "note": "5 Patterns"
+   },
+   {
+    "n": 21,
+    "code": "XPM3003",
+    "series": "Mixed Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "12 Patterns"
    }
   ],
   "issues": [
@@ -2570,7 +2594,8 @@
    "Finish text is printed as '(Flat, Matte Surface)' using a Chinese ideographic comma between 'Flat' and 'Matte'; transcribed as 'Flat, Matte Surface' with the punctuation normalised to an ASCII comma. No other Chinese characters appear on the sheet.",
    "Code n=7 'PM31483' has FIVE digits, unlike every other PM code on the sheet which has four. Verified at 3x magnification on the clean page - the printed text is unambiguously PM31483, not PM3148 or PM31843. Flagging because it is an outlier pattern that a downstream validator may wrongly 'correct'.",
    "The large kitchen lifestyle photograph occupying the middle-left of the sheet is not a tile swatch and correctly received no number.",
-   "Only ONE series banner exists on this sheet ('Mixed Series', 300X300X8.8MM, 15 PCS/CTN, 25 KGS/CTN); it governs all swatches including the three unnumbered ones. The sheet prints the weight as '25 KGS /CTN' with a space before '/CTN'."
+   "Only ONE series banner exists on this sheet ('Mixed Series', 300X300X8.8MM, 15 PCS/CTN, 25 KGS/CTN); it governs all swatches including the three unnumbered ones. The sheet prints the weight as '25 KGS /CTN' with a space before '/CTN'.",
+   "v2 re-extraction: grid recovery added the three swatches the first detector truncated (PM3538, PM3557, XPM3003). Sheet is now exhaustive at 21; numbering re-mapped accordingly."
   ]
  }
 }

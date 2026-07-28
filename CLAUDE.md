@@ -12,7 +12,7 @@ The repo-to-monorepo migration is **complete** (waves M0–M4, 2026-07). Where t
 - **`apps/site`** is the live Wings Global Trade site — it is **NOT yet split into lanes**. It has its own `apps/site/CLAUDE.md` (site-specific law) that extends this file. Deeper file overrides root; it never restates.
 - **`apps/tower`** (TOWER: internal CRM/ERP/PIM/analytics) is **unblocked but not built** — see `programs/tower/`.
 - **`packages/`** exist and are consumed by `apps/site`: `@wings/trade-ui` (skeleton organs + primitives + Tier-1 tokens), `@wings/mister` (Mister client contract + SSE hook), `packages/liveries/wings` (Tier-2 livery). Two organs remain deliberately app-local (`QuotationForm`, the `MisterDock` shell) — see `programs/ecosystem/MIGRATION_DECISIONS.md` D-10/D-11.
-- **`apps/escalera`** is **La Escalera** — the tile catalog rebuilt as a swipe deck whose pile becomes a local-first record and then a priceable quote (cartons · kilos · pallets · container fill). Rungs 1–3 of its five-rung spec are built and shippable; rungs 4–5 are deliberately **not** built and are gated on real usage. Its `apps/escalera/CLAUDE.md` carries those gates. Wholesale-only law holds: it quotes quantities, never prices.
+- **`apps/escalera`** is **El Pasillo** — the supplier tile catalogue rebuilt as an aisle of series (booths), with a local-first muestrario and a Trade Desk that states m², cartons, kilos and container fill. Built to `apps/escalera/EL-PASILLO-UI.md` (P1); Mosaico and the facet rail are P2, gated on pattern-family tagging. **Its interface is deliberately achromatic and its ground colour-neutral** — when the product is colour, a Wings-gold accent would vanish on some tiles and falsify others; this is the same exception §5-bis already grants the `(brands)` route group. Wholesale-only law holds: it states quantities, never prices.
 - **`programs/`** are still QUEUED specs, not active law: TOWER, Network, shared-container. Never build from them unless explicitly told to start that program.
 
 ### Repository Map
@@ -20,8 +20,8 @@ The repo-to-monorepo migration is **complete** (waves M0–M4, 2026-07). Where t
 ```
 apps/site/          The live site (Next.js App Router). Its @/ alias resolves within apps/site/src.
 apps/tower/         TOWER app (queued; not built).
-apps/escalera/      La Escalera — the tile catalog as a swipe deck → muestrario → quantity quote.
-                    Rungs 1–3 built; rungs 4–5 (aisle, 3D Pasillo) are gated, see its CLAUDE.md.
+apps/escalera/      El Pasillo — the supplier tile catalogue as an aisle: Lane → sheet-dock →
+                    muestrario → Trade Desk. Spec: apps/escalera/EL-PASILLO-UI.md.
 packages/ui/        @wings/trade-ui — frozen organs + primitives; tokens/skeleton.css (Tier 1, frozen).
 packages/liveries/  {slug}/ livery.css + lane.config.ts; registry.md (append-only hue registry).
 packages/mister/    @wings/mister — Mister client surface (types/contract + useMisterStream). Server/guardrails stay in apps/site.

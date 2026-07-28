@@ -1,6 +1,14 @@
+'use client'
+
 import { Muestrario } from '@/components/Muestrario'
-import { TILES } from '@/data/tiles'
+import { SheetDock, useSheet } from '@/components/PasilloShell'
 
 export default function MuestrarioPage() {
-  return <Muestrario tiles={TILES} />
+  const sheet = useSheet()
+  return (
+    <>
+      <Muestrario onOpenSku={sheet.open} />
+      <SheetDock sku={sheet.sku} onClose={sheet.close} onOpenSku={sheet.open} />
+    </>
+  )
 }

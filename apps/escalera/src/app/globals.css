@@ -1,106 +1,107 @@
-/* La Escalera — token layer.
+/* El Pasillo — token layer.
    Tier 1 (frozen, family-wide) is imported from @wings/trade-ui. Everything
-   declared below is Tier 2: this tool's own semantics, mapped onto the Wings
-   palette. No component may hardcode a colour, radius or easing.            */
+   below is Tier 2: this tool's own semantics.
+
+   THE COLOUR DOCTRINE, and why it overrides the Wings livery here:
+   when the product IS colour, the interface is achromatic. Every accent hue
+   available to us already exists in this catalogue — Massed Glaze is
+   overwhelmingly cobalt, Flower Sea carries hot pink, sage and terracotta,
+   Colored Geometric carries earthy yellow and zirconium red. A gold "collected"
+   mark would vanish on some tiles and clash with others. So collected state is
+   carried by FORM and VALUE, never by hue.
+
+   The ground is neutral for the same reason, and it is a measurement decision
+   rather than a mood: a warm ground shifts perceived hue, and buyers reject
+   shipments over colour variance. `HJ-F1551 White Gray` beside `HJ-F1552 Blue
+   Green` on warm paper reads warmer and greener than the fired tile does.
+   The ecosystem already carries this precedent — the (brands) route group takes
+   a pure-white ground so partner palettes are not tinted by the Wings warm cast
+   (root CLAUDE.md §5-bis). Same argument, same exception. */
 @import '../../../../packages/ui/tokens/skeleton.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  /* ── Type ───────────────────────────────────────────────────────────────
-     Tier 1 fixes the 1.25 scale; --type-label is the sub-t0 mono micro-label
-     (same value TOWER uses). The faces are wired through variables so the
-     self-hosted Wings faces can replace them without touching a component. */
-  --type-label: 12px;
-  --font-ui: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
-
-  /* ── macOS material layer (ecosystem §2, ratified 2026-07-22) ───────────
-     Values byte-identical to apps/tower — one ecosystem, one material scale. */
-  --radius-control: 8px;
-  --radius-card-lg: 12px;
-  --radius-panel: 16px;
-  --radius-dock: 20px;
-  --radius-pill: 999px;
-
-  --spring-snappy: cubic-bezier(0.32, 0.72, 0, 1);
-  --spring-settle: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
-
-  --elevation-1: 0 1px 2px rgba(0, 0, 0, 0.06);
-  --elevation-2: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --elevation-3: 0 12px 32px rgba(0, 0, 0, 0.14);
-
-  /* ── Palette ────────────────────────────────────────────────────────────
-     Declared as space-separated sRGB channels so Tailwind's `<alpha-value>`
-     works on every token (text-deck-ink/60, border-line/40 …). Components then
-     never need a raw rgba() to express a translucent rule or scrim.
-     Use rgb(var(--token)) when reaching for one from plain CSS.            */
-
-  /* Deck ground — "the product is a photograph": the deck recedes to
-     near-black so the tile face is the only colour on the screen. */
-  --deck-0: 14 15 18;
-  --deck-1: 22 24 28;
-  --deck-2: 33 36 41;
-  --deck-ink: 242 241 236;
-  --deck-ink-dim: 154 157 164;
-
-  /* Record ground — the muestrario is a document, printed on Wings warm-white. */
-  --sheet-0: 248 246 240;
-  --sheet-1: 255 255 255;
-  --sheet-ink: 0 30 80;
-  --sheet-ink-dim: 90 99 115;
-
-  --line: 0 30 80;
-  --line-strong: 0 30 80;
-
-  /* Wings */
-  --accent: 0 30 80; /* navy */
-  --accent-ink: 248 246 240; /* what sits ON navy */
-  --gold: 196 147 63; /* the collect signal — a FILL, or ink on dark ground */
-  --gold-ink: 0 30 80; /* what sits ON gold */
-  /* Gold is only 2.6:1 on warm-white — this is its text-safe pair for the sheet. */
-  --gold-deep: 138 100 32;
-
-  --positive: 47 111 79;
-  --caution: 138 100 32;
-  --negative: 140 47 47;
+/* Self-hosted, so the interface never waits on a CDN and never leaks a request.
+   Archivo carries display and body from one variable file; Geist Mono carries
+   every number, code and spec value. */
+@font-face {
+  font-family: 'Archivo';
+  src: url('/fonts/archivo-var.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Geist Mono';
+  src: url('/fonts/geist-mono.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  :root {
-    --spring-snappy: linear;
-    --spring-settle: linear;
-    --ease-exit: linear;
-  }
+:root {
+  /* ── Ground — colour-neutral by requirement, not preference ───────────── */
+  --surface: 240 239 238; /* record ground */
+  --surface-2: 230 229 228; /* grid gap, inset wells */
+  --ink: 20 20 20; /* rules, type, spec bars, collected mark */
+  --lane-ground: 13 13 13; /* the aisle, recedes */
+
+  /* No chromatic accent exists. Interactive state = value + form. */
+
+  /* Status only — 8px dots on the record ground, never on a tile face. */
+  --lamp-avail: 20 160 90;
+  --lamp-made: 224 138 0;
+
+  /* ── State ladder — one type size, four levels (REF-B) ────────────────── */
+  --lit: 1;
+  --resting: 0.62;
+  --dimmed: 0.34;
+
+  /* ── Geometry — hard record, soft chrome ──────────────────────────────── */
+  --radius-record: 0px; /* every record surface, every tile */
+  /* The spec draws chrome at 24px; the ecosystem's Tier-1 radius scale tops out
+     at dock 20px, so chrome resolves to 20px here. Same principle — the surfaces
+     a thumb touches are soft, the surfaces that carry data are hard — held
+     inside the frozen scale rather than 4px outside it. */
+  --radius-chrome: 20px;
+
+  --type-label: 11px;
+  --font-display: 'Archivo', ui-sans-serif, system-ui, sans-serif;
+  --font-ui: 'Archivo', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --dur-light: 240ms; /* lane relight — nothing moves, only value changes */
+  --dur-cross: 180ms; /* sheet contents cross-fade; the frame never moves */
+  --ease-settle: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
 }
 
 @layer base {
   html {
-    /* The deck is a one-handed, thumb-driven surface: never rubber-band the page. */
     overscroll-behavior: none;
     -webkit-text-size-adjust: 100%;
   }
 
   body {
-    background: rgb(var(--sheet-0));
-    color: rgb(var(--sheet-ink));
+    background: rgb(var(--surface));
+    color: rgb(var(--ink));
     font-family: var(--font-ui);
-    font-size: var(--type-0);
+    font-size: 15px;
+    line-height: 1.45;
     -webkit-font-smoothing: antialiased;
   }
 
-  /* Tier 1: every numeral in this tool is tabular. Cartons, kilos and pallets
-     are brand assets and must not shift width as they tick. */
-  .tabular,
+  /* Every numeral in this tool is tabular. A SKU code is a part number and
+     should look like one; a coverage figure is a measurement. */
+  .mono,
   input[type='number'],
   .font-mono {
-    font-variant-numeric: var(--numeric-variant);
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
   }
 
-  /* A number input that still looks like a number, not a spinner. */
   input[type='number']::-webkit-outer-spin-button,
   input[type='number']::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -110,126 +111,70 @@
     -moz-appearance: textfield;
   }
 
-  /* Keyboard parity is a launch gate (§QA-5), so the ring is never removed. */
   :focus-visible {
-    outline: 2px solid rgb(var(--gold));
+    outline: 2px solid rgb(var(--ink));
     outline-offset: 2px;
   }
 }
 
 @layer components {
-  /* ── The deck's decorative motion ──────────────────────────────────────
-     Everything here is CSS on purpose. The card's own transform belongs to the
-     frame loop (lib/spring.ts); these are the moments around it — the entrance,
-     the counter tick, the toast — and none of them needs a runtime.
-     Reduced motion collapses each one to a crossfade (Tier-1 law).          */
-
-  /* A card in the real world pivots about the hand holding it, not about its
-     own middle. The origin below the bottom edge is what makes the tilt read
-     as physical rather than as a rotating rectangle. */
-  .card-pivot {
-    transform-origin: 50% 140%;
-    backface-visibility: hidden;
-  }
-
-  /* The first three seconds: the pile assembles from the bottom up, so the deck
-     declares itself as a physical stack before the buyer touches anything. */
-  @keyframes deck-enter {
-    from {
-      opacity: 0;
-      transform: translate3d(0, 34px, 0);
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-  .deck-enter {
-    animation: deck-enter 620ms var(--spring-settle) both;
-  }
-  .deck-enter-1 {
-    animation-delay: 70ms;
-  }
-  .deck-enter-2 {
-    animation-delay: 140ms;
-  }
-
-  /* The collect tick. It overshoots, because a keep should feel earned. */
-  @keyframes counter-tick {
-    0% {
-      transform: scale(1.42);
-    }
-    60% {
-      transform: scale(0.96);
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
-  .counter-tick {
-    animation: counter-tick 420ms var(--spring-snappy) both;
-  }
-
-  @keyframes toast-in {
-    from {
-      opacity: 0;
-      transform: translate3d(0, 60px, 0);
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-  @keyframes toast-out {
-    to {
-      opacity: 0;
-      transform: translate3d(0, 60px, 0);
-    }
-  }
-  .toast-enter {
-    animation: toast-in 260ms var(--spring-settle) both;
-  }
-  .toast-exit {
-    animation: toast-out 180ms var(--ease-exit) both;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    @keyframes deck-enter {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
-    .counter-tick {
-      animation: none;
-    }
-    .toast-enter,
-    .toast-exit {
-      animation-duration: 100ms;
-    }
-    @keyframes toast-in {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
-    @keyframes toast-out {
-      to {
-        opacity: 0;
-      }
-    }
-  }
-
-  /* The stamped micro-label used on chips, column heads and the booth counter. */
+  /* The mono micro-label: eyebrows, column heads, spec-bar values. */
   .stamp {
     font-family: var(--font-mono);
     font-size: var(--type-label);
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    font-variant-numeric: var(--numeric-variant);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── The collected mark (§5) ────────────────────────────────────────────
+     Achromatic by requirement: a 2px inset double-stroke, paper then ink, plus
+     a filled ink corner triangle carrying a paper check. It reads identically
+     on a white tile, a navy tile and a pink one — which no hue does. */
+  .collected-mark {
+    box-shadow:
+      inset 0 0 0 2px rgb(var(--surface)),
+      inset 0 0 0 4px rgb(var(--ink));
+  }
+  .collected-corner {
+    position: absolute;
+    inset: auto auto 0 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 0 28px 28px;
+    border-color: transparent transparent rgb(var(--ink)) transparent;
+  }
+
+  /* The inverted spec bar — REF-D's best component, adopted almost unchanged.
+     Series truth stated once on ink ground, never repeated on a tile. */
+  .spec-bar {
+    background: rgb(var(--ink));
+    color: rgb(var(--surface));
+  }
+
+  /* Hairline rules do a card's work for one pixel. */
+  .rule {
+    border-color: rgb(var(--ink) / 0.14);
+  }
+  .rule-hard {
+    border-color: rgb(var(--ink));
+  }
+
+  /* The 3×3 repeat. A single face cannot tell a buyer what a floor looks like;
+     this is one CSS property and it is the difference between a catalogue and a
+     sourcing tool. */
+  .repeat-field {
+    background-repeat: repeat;
+    image-rendering: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-light: 0ms;
+    --dur-cross: 0ms;
+    --ease-settle: linear;
+    --ease-exit: linear;
   }
 }

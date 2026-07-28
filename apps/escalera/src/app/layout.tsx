@@ -3,15 +3,14 @@ import { RecordProvider } from '@/lib/record'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'La Escalera — Catálogo de azulejos',
+  title: 'El Pasillo — catálogo de azulejos',
   description:
-    'Catálogo de azulejos por gestos: desliza, guarda tu muestrario y envía la solicitud con las cajas, los kilos y los pallets ya calculados.',
+    'El catálogo del proveedor como un pasillo: recorre las series, guarda las que sirven y sal con un muestrario que ya sabe cuántas cajas, cuántos kilos y cuánto contenedor.',
 }
 
 export const viewport: Viewport = {
-  // The deck is a thumb surface: no accidental zoom mid-swipe, and the browser
-  // chrome takes the deck's ground so the card reads edge-to-edge.
-  themeColor: '#0e0f12',
+  // The lane recedes; the browser chrome takes its ground.
+  themeColor: '#0d0d0d',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,

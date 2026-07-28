@@ -1,155 +1,135 @@
-// La Escalera · the carton rules under test.
-// Spec §RUNG 3: "ceil rules unit-tested … One wrong carton count in front of a
-// buyer ends the tool's credibility."
+// El Pasillo — the volume math under test.
+// These figures reach a supplier. A wrong carton count ends the tool's
+// credibility faster than any visual defect.
 
 import { describe, expect, it } from 'vitest'
 import {
-  cartonsFor,
-  cartonsPerPallet,
+  CONTAINERS,
+  cartonsForM2,
   containerFill,
   lineTotals,
-  m2PerCarton,
-  normalizeWastePct,
   sumTotals,
-  tileAreaM2,
-  type TilePacking,
+  type Quantity,
 } from './packing'
+import type { Series } from '@/types/catalogue'
 
-const provenance: TilePacking['provenance'] = {
-  pcs_per_carton: 'catalog',
-  m2_per_carton: 'derived',
-  kg_per_carton: 'catalog',
-  cartons_per_pallet: 'assumed',
+const base = {
+  supplier: 'HUAZHUAN',
+  status: 'available' as const,
+  pages: ['B02'],
+  sku_count: 10,
 }
 
-/** 300×300 catalog series: 15 pcs/ctn, 25 kg/ctn → 1.35 m²/ctn */
-const T300: TilePacking = {
-  pcs_per_carton: 15,
-  m2_per_carton: 1.35,
-  kg_per_carton: 25,
-  cartons_per_pallet: 48,
-  provenance,
+/** 300×300, 15 pcs/ctn, 25 kg/ctn → 1.35 m²/ctn (Flower Sea, Mixed, Black & White) */
+const S300: Series = {
+  ...base,
+  series_uid: 'S300',
+  name_raw: '300 series',
+  format_mm: [300, 300],
+  thickness_mm: 8.8,
+  pcs_per_ctn: 15,
+  kgs_per_ctn: 25,
+  m2_per_ctn: 1.35,
 }
 
-/** 150×150 catalog series: 44 pcs/ctn, 19 kg/ctn → 0.99 m²/ctn */
-const T150: TilePacking = {
-  pcs_per_carton: 44,
-  m2_per_carton: 0.99,
-  kg_per_carton: 19,
-  cartons_per_pallet: 63,
-  provenance,
+/** 150×150, 44 pcs/ctn, 19 kg/ctn → 0.99 m²/ctn (Flat And Matte) */
+const S150: Series = {
+  ...base,
+  series_uid: 'S150',
+  name_raw: '150 series',
+  format_mm: [150, 150],
+  thickness_mm: 9,
+  pcs_per_ctn: 44,
+  kgs_per_ctn: 19,
+  m2_per_ctn: 0.99,
 }
 
-describe('m² per carton is derived exactly from the format', () => {
-  it('300×300 × 15 pcs = 1.35 m²', () => {
-    expect(m2PerCarton([300, 300], 15)).toBe(1.35)
+const m2 = (value: number): Quantity => ({ value, basis: 'm2' })
+
+describe('cartonsForM2 — always rounds up', () => {
+  it('rounds a partial carton up: a fraction of a carton cannot be bought', () => {
+    expect(cartonsForM2(100, 1.35)).toBe(75) // 74.07…
   })
-  it('150×150 × 44 pcs = 0.99 m²', () => {
-    expect(m2PerCarton([150, 150], 44)).toBe(0.99)
+
+  it('does NOT round up an exact fit — the float trap, on a real carton', () => {
+    // 48 whole cartons of the 150×150 series is exactly 47.52 m², but in
+    // IEEE-754 doubles 47.52 / 0.99 === 48.00000000000001, so a naive ceil
+    // sells the buyer a 49th carton they do not need.
+    expect(47.52 / 0.99).toBeGreaterThan(48)
+    expect(Math.ceil(47.52 / 0.99)).toBe(49)
+    expect(cartonsForM2(47.52, 0.99)).toBe(48)
   })
-  it('600×600 × 4 pcs = 1.44 m² (the spec’s illustrative carton)', () => {
-    expect(m2PerCarton([600, 600], 4)).toBe(1.44)
+
+  it('one square metre over a boundary costs a whole carton', () => {
+    expect(cartonsForM2(1.35, 1.35)).toBe(1)
+    expect(cartonsForM2(1.36, 1.35)).toBe(2)
   })
-  it('handles a rectangular format', () => {
-    expect(m2PerCarton([200, 100], 20)).toBe(0.4)
-    expect(tileAreaM2([200, 100]).toNumber()).toBe(0.02)
+
+  it('treats nothing as nothing', () => {
+    expect(cartonsForM2(0, 1.35)).toBe(0)
+    expect(cartonsForM2(-50, 1.35)).toBe(0)
+    expect(cartonsForM2(Number.NaN, 1.35)).toBe(0)
+    expect(cartonsForM2(100, 0)).toBe(0)
   })
 })
 
-describe('cartonsFor — always rounds up', () => {
-  it('rounds a partial carton up: you cannot buy 11.4 cartons', () => {
-    // 100 m² + 10% = 110 → 110 / 1.35 = 81.48… → 82
-    expect(cartonsFor(100, 10, 1.35)).toBe(82)
+describe('lineTotals — every basis resolves to whole cartons first', () => {
+  it('m² basis', () => {
+    const t = lineTotals(m2(56.7), S300)
+    expect(t.cartons).toBe(42) // 56.7 / 1.35 = 42 exactly
+    expect(t.m2).toBe(56.7)
+    expect(t.pcs).toBe(630)
+    expect(t.kg).toBe(1050)
   })
 
-  it('does NOT round up an exact fit — the float trap, on a real catalog carton', () => {
-    // The 150×150 series ships 0.99 m²/carton. 48 whole cartons is exactly
-    // 47.52 m², but in IEEE-754 doubles 47.52 / 0.99 === 48.00000000000001,
-    // so a naive Math.ceil sells the buyer a 49th carton they do not need.
-    expect(47.52 / 0.99).toBeGreaterThan(48) // documents the trap
-    expect(Math.ceil(47.52 / 0.99)).toBe(49) // what the naive version would quote
-    expect(cartonsFor(47.52, 0, 0.99)).toBe(48) // Decimal gets it right
+  it('carton basis is taken literally', () => {
+    const t = lineTotals({ value: 42, basis: 'ctn' }, S300)
+    expect(t.cartons).toBe(42)
+    expect(t.m2).toBe(56.7)
   })
 
-  it('does not round up an exact fit after waste is applied', () => {
-    // 5.4 m² + 10% = 5.94 m² = exactly 6 cartons of 0.99 — and (5.4 × 1.1) / 0.99
-    // overshoots in float too.
-    expect((5.4 * 1.1) / 0.99).toBeGreaterThan(6)
-    expect(cartonsFor(5.4, 10, 0.99)).toBe(6)
-    expect(cartonsFor(100, 35, 1.35)).toBe(100)
+  it('a fractional carton entry still ships whole cartons', () => {
+    expect(lineTotals({ value: 41.2, basis: 'ctn' }, S300).cartons).toBe(42)
   })
 
-  it('a single square metre over a carton boundary costs a whole carton', () => {
-    expect(cartonsFor(1.35, 0, 1.35)).toBe(1)
-    expect(cartonsFor(1.36, 0, 1.35)).toBe(2)
+  it('piece basis rounds up to the carton that contains them', () => {
+    // 16 pieces of a 15-piece carton is two cartons, not 1.07
+    expect(lineTotals({ value: 16, basis: 'pcs' }, S300).cartons).toBe(2)
+    expect(lineTotals({ value: 15, basis: 'pcs' }, S300).cartons).toBe(1)
   })
 
-  it('treats zero, negative and non-finite area as nothing to order', () => {
-    expect(cartonsFor(0, 10, 1.35)).toBe(0)
-    expect(cartonsFor(-50, 10, 1.35)).toBe(0)
-    expect(cartonsFor(Number.NaN, 10, 1.35)).toBe(0)
-  })
-
-  it('refuses to divide by a missing or zero carton size', () => {
-    expect(cartonsFor(100, 10, 0)).toBe(0)
-    expect(cartonsFor(100, 10, Number.NaN)).toBe(0)
-  })
-})
-
-describe('waste', () => {
-  it('clamps out-of-range percentages instead of producing absurd cartons', () => {
-    expect(normalizeWastePct(-5).toNumber()).toBe(0)
-    expect(normalizeWastePct(250).toNumber()).toBe(100)
-    expect(normalizeWastePct(Number.NaN).toNumber()).toBe(10)
-  })
-
-  it('15% diagonal costs more cartons than 10% straight', () => {
-    expect(cartonsFor(340, 15, 1.35)).toBeGreaterThan(cartonsFor(340, 10, 1.35))
-  })
-})
-
-describe('lineTotals', () => {
-  it('reports supplied m², surplus, weight and pallets off the ceiled cartons', () => {
-    const t = lineTotals(T300, { areaM2: 340, wastePct: 10 })
-    // 340 × 1.10 = 374 m² → 374 / 1.35 = 277.03… → 278 cartons
-    expect(t.withWasteM2).toBe(374)
-    expect(t.cartons).toBe(278)
-    expect(t.suppliedM2).toBe(375.3) // 278 × 1.35
-    expect(t.surplusM2).toBe(1.3)
-    expect(t.kg).toBe(6950) // 278 × 25
-    expect(t.pallets).toBe(6) // ceil(278 / 48)
+  it('the 150 series keeps its own packing — series truth is never shared', () => {
+    const a = lineTotals(m2(100), S300)
+    const b = lineTotals(m2(100), S150)
+    expect(a.cartons).toBe(75)
+    expect(b.cartons).toBe(102) // 100 / 0.99 = 101.01…
+    expect(a.kg).not.toBe(b.kg)
   })
 
   it('an empty line contributes nothing', () => {
-    expect(lineTotals(T300, { areaM2: 0, wastePct: 10 }).cartons).toBe(0)
-    expect(lineTotals(T300, { areaM2: 0, wastePct: 10 }).pallets).toBe(0)
-  })
-
-  it('never divides by a zero pallet size', () => {
-    const broken = { ...T300, cartons_per_pallet: 0 }
-    expect(lineTotals(broken, { areaM2: 10, wastePct: 0 }).pallets).toBe(8)
+    expect(lineTotals(null, S300)).toEqual({ cartons: 0, m2: 0, pcs: 0, kg: 0 })
+    expect(lineTotals(m2(0), S300).cartons).toBe(0)
+    expect(lineTotals(m2(Number.NaN), S300).cartons).toBe(0)
   })
 })
 
 describe('sumTotals', () => {
-  it('sums pallets per line — a pallet carries one SKU', () => {
-    const a = lineTotals(T300, { areaM2: 60, wastePct: 10 }) // 49 cartons → 2 pallets
-    const b = lineTotals(T150, { areaM2: 60, wastePct: 10 }) // 67 cartons → 2 pallets
-    const total = sumTotals([a, b])
-    expect(a.pallets + b.pallets).toBe(total.pallets)
-    // recomputing on the combined carton count would understate the pallets
-    expect(total.pallets).toBeGreaterThan(Math.ceil((a.cartons + b.cartons) / 63))
-  })
-
-  it('counts only lines that actually order something', () => {
-    const empty = lineTotals(T300, { areaM2: 0, wastePct: 10 })
-    const real = lineTotals(T300, { areaM2: 50, wastePct: 10 })
-    expect(sumTotals([empty, real]).lines).toBe(1)
+  it('counts only lines that order something', () => {
+    const real = lineTotals(m2(50), S300)
+    const empty = lineTotals(m2(0), S300)
+    expect(sumTotals([real, empty]).skus).toBe(1)
   })
 
   it('adds weights without float drift', () => {
-    const many = Array.from({ length: 10 }, () => lineTotals(T150, { areaM2: 12.3, wastePct: 10 }))
+    const many = Array.from({ length: 10 }, () => lineTotals(m2(12.3), S150))
     expect(sumTotals(many).kg).toBe(many[0].kg * 10)
+  })
+
+  it('totals across series with different packing', () => {
+    const t = sumTotals([lineTotals(m2(56.7), S300), lineTotals(m2(47.52), S150)])
+    expect(t.skus).toBe(2)
+    expect(t.cartons).toBe(42 + 48)
+    expect(t.kg).toBe(42 * 25 + 48 * 19)
   })
 })
 
@@ -157,48 +137,39 @@ describe('containerFill — tiles fill by weight', () => {
   it('is empty at zero', () => {
     const f = containerFill(0, '20GP')
     expect(f.containersNeeded).toBe(0)
-    expect(f.fillPct).toBe(0)
+    expect(f.pct).toBe(0)
     expect(f.remainingKg).toBe(f.payloadKg)
   })
 
-  it('reports part-fill of a single 20GP', () => {
-    const f = containerFill(14100, '20GP') // exactly half of 28 200
+  it('reports the FCL fraction the footer prints', () => {
+    const f = containerFill(22560, '20GP') // 0.8 × 28 200
+    expect(f.fcl).toBeCloseTo(0.8, 5)
     expect(f.containersNeeded).toBe(1)
-    expect(f.fillPct).toBe(50)
-    expect(f.remainingKg).toBe(14100)
   })
 
   it('does not open a second container for an exact fit', () => {
     const f = containerFill(28200, '20GP')
     expect(f.containersNeeded).toBe(1)
-    expect(f.fillPct).toBe(100)
+    expect(f.pct).toBe(100)
     expect(f.remainingKg).toBe(0)
   })
 
-  it('opens a second container one kilo over, and reports the second box’s space', () => {
+  it('opens a second one kilo over, and reports the second box’s space', () => {
     const f = containerFill(28201, '20GP')
     expect(f.containersNeeded).toBe(2)
-    expect(f.ratio).toBeGreaterThan(1)
-    expect(f.fillPct).toBe(100) // the bar caps; the count carries the overflow
+    expect(f.fcl).toBeGreaterThan(1)
     expect(f.remainingKg).toBe(28199)
   })
 
-  it('a 40GP carries the same payload as a 20GP — the weight limit, not the space', () => {
-    // The tile-trade point the spec insists on printing: doubling the box does
-    // not double the tiles you can put in it.
+  it('a 40GP carries the same payload — the limit is weight, not room', () => {
+    // The fact the footer exists to communicate.
     expect(containerFill(28200, '40GP').containersNeeded).toBe(1)
-    expect(containerFill(28200, '40GP').fillPct).toBe(100)
-  })
-})
-
-describe('cartonsPerPallet', () => {
-  it('builds pallets to the weight cap', () => {
-    expect(cartonsPerPallet(25)).toBe(48) // 1200 / 25
-    expect(cartonsPerPallet(19)).toBe(63) // floor(1200 / 19) = 63
+    expect(containerFill(28200, '40GP').payloadKg).toBe(
+      containerFill(28200, '20GP').payloadKg,
+    )
   })
 
-  it('never returns zero for an absurd carton weight', () => {
-    expect(cartonsPerPallet(5000)).toBe(1)
-    expect(cartonsPerPallet(0)).toBe(1)
+  it('offers exactly the two boxes this trade books', () => {
+    expect(CONTAINERS.map((c) => c.kind)).toEqual(['20GP', '40GP'])
   })
 })

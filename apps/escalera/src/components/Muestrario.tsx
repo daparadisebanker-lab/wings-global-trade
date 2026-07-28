@@ -1,237 +1,401 @@
 'use client'
 
-// La Escalera · Rung 2 (the record) + Rung 3 (the arithmetic).
+// El Pasillo · §4.7 — the muestrario. Two row types, because a booth is a series.
 //
-// "THE ONE THING lives here: a buyer who leaves with a record has been served."
-// The record is the product. Everything on this screen either feeds it or is
-// cut. Rung 3 does not add a screen — it grows this one a column of inputs and
-// a set of totals the supplier can price without asking a single question.
+// A series row is a folder: tri-state checkbox, the series' own thumbnail, and
+// "22 SKUs · 6 elegidos". A SKU row is a leaf, indented, carrying the code in
+// mono and its coverage. 64px rows, hairline between, zero radius, no cards —
+// REF-A's rule: structure does a card's work for one pixel.
+//
+// Checked items float to their own section under a mono eyebrow, because the
+// buyer's shortlist is the thing they came back for. Order is theirs: long-press
+// a series row and drag it. Their logic outranks ours.
 
 import Link from 'next/link'
-import { useMemo, useState } from 'react'
-import { Reorder } from 'framer-motion'
-import { ContainerFillBar } from '@/components/ContainerFillBar'
-import { RecordRow } from '@/components/RecordRow'
-import { UndoToast } from '@/components/UndoToast'
-import { fmtInt, fmtKg, fmtM2, type ContainerKind } from '@/lib/packing'
-import { buildQuote, ASSUMED_PALLET_NOTE } from '@/lib/quote'
-import { useRecord, type RecordEntry } from '@/lib/record'
-import { quoteMessage, whatsappHref } from '@/lib/whatsapp'
-import type { Tile } from '@/types/tile'
+import { useCallback, useMemo, useRef, useState } from 'react'
+import { VolumeFooter } from '@/components/VolumeFooter'
+import { StatusLamp } from '@/components/StatusLamp'
+import { finishLabel, getSeries, skusOf } from '@/lib/catalogue'
+import {
+  BASIS_LABEL,
+  containerFill,
+  fmtInt,
+  fmtM2,
+  lineTotals,
+  sumTotals,
+  type ContainerKind,
+} from '@/lib/packing'
+import { haptic, useRecord, type Folder } from '@/lib/record'
+import type { Sku } from '@/types/catalogue'
 
-function today(): string {
-  return new Date().toISOString().slice(0, 10)
-}
-
-function Total({ label, value, hint }: { label: string; value: string; hint?: string }) {
-  return (
-    <div className="border-l-2 border-line/25 pl-3">
-      <p className="stamp text-sheet-ink-dim">{label}</p>
-      <p className="tabular font-mono text-t3 leading-tight text-sheet-ink">{value}</p>
-      {hint && <p className="stamp mt-0.5 text-sheet-ink-dim">{hint}</p>}
-    </div>
-  )
-}
-
-export function Muestrario({ tiles }: { tiles: Tile[] }) {
+export function Muestrario({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
   const rec = useRecord()
   const [kind, setKind] = useState<ContainerKind>('20GP')
-  const [exporting, setExporting] = useState(false)
-  const [pdfError, setPdfError] = useState<string | null>(null)
+  const [open, setOpen] = useState<Set<string>>(() => new Set())
+  const [drag, setDrag] = useState<{ uid: string; y: number } | null>(null)
+  const rowsRef = useRef<HTMLDivElement>(null)
 
-  const tilesById = useMemo(() => new Map(tiles.map((t) => [t.id, t])), [tiles])
-  const quote = useMemo(
-    () => ({ ...buildQuote(rec.state.entries, tilesById, kind), buyer: rec.state.buyer }),
-    [rec.state.entries, rec.state.buyer, tilesById, kind],
+  const { totals, fill } = useMemo(() => {
+    const lines = rec.state.folders.flatMap((f) => {
+      const series = getSeries(f.series_uid)
+      if (!series) return []
+      return f.selected.map((uid) => lineTotals(rec.state.qty[uid], series))
+    })
+    const t = sumTotals(lines)
+    return { totals: t, fill: containerFill(t.kg, kind) }
+  }, [rec.state.folders, rec.state.qty, kind])
+
+  const toggleOpen = (uid: string) =>
+    setOpen((s) => {
+      const n = new Set(s)
+      if (n.has(uid)) n.delete(uid)
+      else n.add(uid)
+      return n
+    })
+
+  // Long-press then drag to reorder. Computed from row midpoints so a drop
+  // always lands where the buyer sees the row, not where a transform ended.
+  const onDragMove = useCallback(
+    (uid: string, clientY: number) => {
+      const host = rowsRef.current
+      if (!host) return
+      const rows = [...host.querySelectorAll<HTMLElement>('[data-folder]')]
+      const from = rec.state.folders.findIndex((f) => f.series_uid === uid)
+      let to = from
+      rows.forEach((el, i) => {
+        const r = el.getBoundingClientRect()
+        if (clientY > r.top + r.height / 2) to = i
+      })
+      if (to !== from && to >= 0) {
+        const next = [...rec.state.folders]
+        const [moved] = next.splice(from, 1)
+        next.splice(to, 0, moved)
+        rec.reorder(next)
+      }
+    },
+    [rec],
   )
 
-  const pending = rec.state.entries.filter((e) => !e.checked)
-  const done = rec.state.entries.filter((e) => e.checked)
-  const lineFor = (e: RecordEntry) => quote.lines.find((l) => l.entry.tileId === e.tileId)
+  if (!rec.hydrated) return <div className="min-h-dvh bg-surface" aria-busy="true" />
 
-  if (!rec.hydrated) {
-    return <div className="min-h-dvh bg-sheet-0" aria-busy="true" />
-  }
+  const folders = rec.state.folders
+  const anySelected = folders.some((f) => f.selected.length > 0)
 
   return (
-    <div className="min-h-dvh bg-sheet-0 pb-32">
-      <header className="sticky top-0 z-20 border-b border-line/20 bg-sheet-0/90 px-4 py-4 backdrop-blur-md">
-        <div className="mx-auto flex max-w-3xl items-center justify-between gap-4">
+    <div className="flex min-h-dvh flex-col bg-surface">
+      <header className="border-b rule px-4 py-4">
+        <div className="mx-auto flex max-w-3xl items-baseline justify-between gap-4">
           <div>
-            <p className="stamp text-sheet-ink-dim">El Muestrario</p>
-            <h1 className="text-t2 text-sheet-ink">
-              {rec.state.entries.length}{' '}
-              {rec.state.entries.length === 1 ? 'pieza' : 'piezas'}
+            <p className="stamp opacity-resting">El Muestrario</p>
+            <h1 className="font-display text-t2 font-semibold tracking-[-0.02em]">
+              {folders.length} {folders.length === 1 ? 'serie' : 'series'}
             </h1>
           </div>
-          <Link
-            href="/"
-            className="stamp rounded-pill border border-line/30 px-4 py-2 text-sheet-ink no-underline"
-          >
-            Volver al mazo
+          <Link href="/" className="stamp rounded-chrome border border-ink/25 px-4 py-2">
+            Al pasillo
           </Link>
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-4 py-6">
+      <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-5">
         {rec.degraded && (
-          <p className="mb-5 rounded-control border border-caution/40 bg-caution/10 px-4 py-3 text-t0 text-sheet-ink">
+          <p className="mb-4 border rule px-3 py-2 text-t0 opacity-resting">
             Este navegador bloquea el almacenamiento local. El muestrario funciona en esta
-            sesión, pero no podemos garantizar que sobreviva al cierre de la pestaña — exporta
-            antes de salir.
+            sesión, pero exporta antes de salir.
           </p>
         )}
 
-        {rec.state.entries.length === 0 ? (
-          <div className="rounded-panel border border-line/25 bg-sheet-1 px-6 py-14 text-center">
-            <p className="stamp text-sheet-ink-dim">Muestrario vacío</p>
-            <p className="mx-auto mt-3 max-w-sm text-t1 text-sheet-ink">
-              Desliza a la derecha en el mazo para guardar una pieza. Lo que guardes queda en
-              este teléfono, sin cuenta y sin conexión.
+        {folders.length === 0 ? (
+          <div className="border rule px-6 py-16 text-center">
+            <p className="stamp opacity-resting">Muestrario vacío</p>
+            <p className="mx-auto mt-3 max-w-sm text-t1">
+              El muestrario está vacío. Desliza a la derecha para guardar una serie.
             </p>
             <Link
               href="/"
-              className="mt-6 inline-block rounded-control bg-accent px-6 py-3 text-t1 text-accent-ink no-underline"
+              className="mt-6 inline-block bg-ink px-6 py-3 text-t0 text-surface"
             >
-              Abrir el mazo
+              Abrir el pasillo
             </Link>
           </div>
         ) : (
-          <>
-            {/* ── pending ─────────────────────────────────────────────── */}
-            <Reorder.Group
-              axis="y"
-              values={pending}
-              onReorder={(next) => rec.reorder([...next, ...done])}
-              className="space-y-3"
-            >
-              {pending.map((entry) => {
-                const line = lineFor(entry)
-                const tile = tilesById.get(entry.tileId)
-                if (!line || !tile) return null
-                return <RecordRow key={entry.tileId} line={line} entry={entry} tile={tile} />
-              })}
-            </Reorder.Group>
-
-            {/* ── decided, floated to their own section ───────────────── */}
-            {done.length > 0 && (
-              <>
-                <h2 className="stamp mb-3 mt-8 text-sheet-ink-dim">
-                  Decididas · {done.length}
-                </h2>
-                <Reorder.Group
-                  axis="y"
-                  values={done}
-                  onReorder={(next) => rec.reorder([...pending, ...next])}
-                  className="space-y-3"
-                >
-                  {done.map((entry) => {
-                    const line = lineFor(entry)
-                    const tile = tilesById.get(entry.tileId)
-                    if (!line || !tile) return null
-                    return <RecordRow key={entry.tileId} line={line} entry={entry} tile={tile} />
-                  })}
-                </Reorder.Group>
-              </>
-            )}
-
-            {/* ── totals ──────────────────────────────────────────────── */}
-            <section className="mt-8 rounded-panel border border-line/25 bg-sheet-1 p-5">
-              <h2 className="stamp mb-4 text-sheet-ink-dim">Totales del pedido</h2>
-              {quote.pricedLines.length === 0 ? (
-                <p className="text-t1 text-sheet-ink-dim">
-                  Escribe los m² de al menos una pieza y aquí aparecen cajas, kilos y pallets.
-                </p>
-              ) : (
-                <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
-                  <Total label="Cajas" value={fmtInt(quote.totals.cartons)} />
-                  <Total label="Superficie" value={fmtM2(quote.totals.suppliedM2)} hint="m² surtidos" />
-                  <Total label="Peso bruto" value={fmtKg(quote.totals.kg)} hint="kg" />
-                  <Total
-                    label="Pallets"
-                    value={fmtInt(quote.totals.pallets)}
-                    hint={quote.hasAssumedPacking ? 'supuesto' : undefined}
-                  />
-                </div>
-              )}
-            </section>
-
-            {quote.pricedLines.length > 0 && (
-              <div className="mt-4">
-                <ContainerFillBar fill={quote.fill} kind={kind} onKind={setKind} />
-              </div>
-            )}
-
-            {quote.hasAssumedPacking && quote.pricedLines.length > 0 && (
-              <p className="mt-4 text-t0 leading-snug text-sheet-ink-dim">{ASSUMED_PALLET_NOTE}</p>
-            )}
-
-            {/* ── who is asking ───────────────────────────────────────── */}
-            <section className="mt-8 rounded-panel border border-line/25 bg-sheet-1 p-5">
-              <h2 className="stamp mb-4 text-sheet-ink-dim">Datos para la cotización</h2>
-              <div className="grid gap-3 sm:grid-cols-3">
-                {(
-                  [
-                    ['name', 'Nombre'],
-                    ['company', 'Empresa'],
-                    ['project', 'Proyecto'],
-                  ] as const
-                ).map(([key, label]) => (
-                  <label key={key}>
-                    <span className="stamp block text-sheet-ink-dim">{label}</span>
-                    <input
-                      type="text"
-                      value={rec.state.buyer[key]}
-                      onChange={(e) => rec.setBuyer({ [key]: e.target.value })}
-                      className="mt-1 w-full rounded-control border border-line/30 bg-sheet-0 px-3 py-2 text-t1 text-sheet-ink"
-                    />
-                  </label>
-                ))}
-              </div>
-            </section>
-          </>
+          <div ref={rowsRef}>
+            {folders.map((folder) => (
+              <FolderRow
+                key={folder.series_uid}
+                folder={folder}
+                expanded={open.has(folder.series_uid)}
+                dragging={drag?.uid === folder.series_uid}
+                onToggleOpen={() => toggleOpen(folder.series_uid)}
+                onOpenSku={onOpenSku}
+                onDragStart={(y) => setDrag({ uid: folder.series_uid, y })}
+                onDragMove={(y) => onDragMove(folder.series_uid, y)}
+                onDragEnd={() => setDrag(null)}
+              />
+            ))}
+          </div>
         )}
       </main>
 
-      {/* ── the exports: the record leaves the phone ─────────────────── */}
-      {rec.state.entries.length > 0 && (
-        <div className="fixed inset-x-0 bottom-0 z-30 border-t border-line/20 bg-sheet-0/95 px-4 py-4 backdrop-blur-md">
-          <div className="mx-auto flex max-w-3xl flex-col gap-2">
-            {pdfError && <p className="text-t0 text-negative">{pdfError}</p>}
-            <div className="flex gap-3">
-              <button
-                type="button"
-                disabled={exporting}
-                onClick={async () => {
-                  setPdfError(null)
-                  setExporting(true)
-                  try {
-                    const { downloadQuotePdf } = await import('@/lib/pdf')
-                    await downloadQuotePdf(quote, today())
-                  } catch {
-                    setPdfError('No se pudo generar el PDF. Intenta de nuevo.')
-                  } finally {
-                    setExporting(false)
-                  }
-                }}
-                className="flex-1 rounded-control border border-line/40 py-4 text-t1 text-sheet-ink disabled:opacity-50"
+      {anySelected && (
+        <div className="sticky bottom-0">
+          <VolumeFooter
+            totals={totals}
+            fill={fill}
+            basis={rec.state.basis}
+            onBasis={rec.setBasis}
+            kind={kind}
+            onKind={setKind}
+          />
+          {/* Two send actions, equal weight. Parity is mandatory. */}
+          <div className="border-t rule bg-surface px-4 py-3">
+            <div className="mx-auto flex max-w-3xl gap-3">
+              <Link
+                href="/mesa"
+                className="flex-1 rounded-chrome border border-ink/30 py-3 text-center text-t0"
               >
-                {exporting ? 'Generando…' : 'Descargar PDF'}
-              </button>
-              <a
-                href={whatsappHref(quoteMessage(quote, today()))}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 rounded-control bg-accent py-4 text-center text-t1 font-medium text-accent-ink no-underline"
-              >
-                Enviar por WhatsApp
-              </a>
+                Mesa de comercio
+              </Link>
             </div>
           </div>
         </div>
       )}
 
-      <UndoToast />
+      {rec.undo && (
+        <div
+          role="status"
+          className="fixed inset-x-4 bottom-24 z-50 mx-auto flex max-w-3xl items-center
+                     justify-between gap-4 rounded-chrome bg-ink px-5 py-3.5 text-surface"
+        >
+          <span className="text-t0">
+            <span className="mono">{rec.undo.label}</span> fuera del muestrario
+          </span>
+          <button type="button" onClick={rec.runUndo} className="stamp underline">
+            Deshacer
+          </button>
+        </div>
+      )}
     </div>
+  )
+}
+
+function FolderRow({
+  folder,
+  expanded,
+  dragging,
+  onToggleOpen,
+  onOpenSku,
+  onDragStart,
+  onDragMove,
+  onDragEnd,
+}: {
+  folder: Folder
+  expanded: boolean
+  dragging: boolean
+  onToggleOpen: () => void
+  onOpenSku: (sku: Sku) => void
+  onDragStart: (y: number) => void
+  onDragMove: (y: number) => void
+  onDragEnd: () => void
+}) {
+  const rec = useRecord()
+  const series = getSeries(folder.series_uid)
+  const press = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const held = useRef(false)
+
+  if (!series) return null
+  const skus = skusOf(folder.series_uid)
+  const tri = rec.triState(folder.series_uid)
+  const cover = skus[0]
+
+  return (
+    <div data-folder={folder.series_uid} className={dragging ? 'opacity-resting' : undefined}>
+      <div className="flex h-row items-center gap-3 border-b rule">
+        <TriBox
+          state={tri}
+          label={`Seleccionar ${series.name_raw}`}
+          onChange={() => {
+            haptic('check')
+            rec.setSeriesAll(folder.series_uid, tri !== 'all')
+          }}
+        />
+
+        {cover && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={cover.thumb}
+            alt=""
+            className="h-11 w-11 shrink-0 object-cover"
+            loading="lazy"
+            decoding="async"
+          />
+        )}
+
+        <button
+          type="button"
+          onClick={onToggleOpen}
+          onPointerDown={(e) => {
+            const y = e.clientY
+            press.current = setTimeout(() => {
+              held.current = true
+              haptic('check')
+              onDragStart(y)
+            }, 380)
+          }}
+          onPointerMove={(e) => {
+            if (held.current) onDragMove(e.clientY)
+          }}
+          onPointerUp={() => {
+            if (press.current) clearTimeout(press.current)
+            if (held.current) onDragEnd()
+            held.current = false
+          }}
+          onPointerLeave={() => {
+            if (press.current) clearTimeout(press.current)
+          }}
+          className="flex min-w-0 flex-1 items-center justify-between gap-3 py-2 text-left"
+        >
+          <span className="min-w-0">
+            <span className="block truncate text-t0">{series.name_raw}</span>
+            <span className="block truncate text-[12px] opacity-resting">
+              {series.format_mm[0]}×{series.format_mm[1]} · {series.m2_per_ctn.toFixed(2)} m²/caja
+            </span>
+          </span>
+          <span className="shrink-0 text-right">
+            <span className="mono block text-[12px]">{skus.length} SKU</span>
+            <span className="mono block text-[12px] opacity-resting">
+              {folder.selected.length} elegidos
+            </span>
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={onToggleOpen}
+          aria-label={expanded ? 'Contraer' : 'Expandir'}
+          aria-expanded={expanded}
+          className="w-8 shrink-0 text-center opacity-resting"
+        >
+          {expanded ? '▾' : '▸'}
+        </button>
+      </div>
+
+      {expanded && (
+        <div className="pl-4">
+          {skus.map((sku) => (
+            <SkuRow key={sku.sku_uid} sku={sku} onOpen={() => onOpenSku(sku)} />
+          ))}
+          <div className="flex h-row items-center gap-3 border-b rule pl-4">
+            <button
+              type="button"
+              onClick={() => rec.removeSeries(folder.series_uid, series.name_raw)}
+              className="stamp opacity-resting underline"
+            >
+              Quitar la serie
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function SkuRow({ sku, onOpen }: { sku: Sku; onOpen: () => void }) {
+  const rec = useRecord()
+  const series = getSeries(sku.series_uid)
+  const selected = rec.isSkuSelected(sku.series_uid, sku.sku_uid)
+  const qty = rec.state.qty[sku.sku_uid]
+  const basis = rec.state.basis
+  if (!series) return null
+  const line = lineTotals(qty, series)
+
+  return (
+    <div className="border-b rule">
+      <div className="flex h-row items-center gap-3">
+        <TriBox
+          state={selected ? 'all' : 'none'}
+          label={`Seleccionar ${sku.code}`}
+          onChange={() => rec.toggleSku(sku.series_uid, sku.sku_uid)}
+        />
+        <button type="button" onClick={onOpen} className="flex min-w-0 flex-1 items-center gap-3">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={sku.thumb}
+            alt=""
+            className="h-10 w-10 shrink-0 object-cover"
+            loading="lazy"
+            decoding="async"
+          />
+          <span className="min-w-0 flex-1 text-left">
+            <span className="mono block truncate text-[13px]">{sku.code}</span>
+            <span className="block truncate text-[11px] opacity-resting">{finishLabel(sku)}</span>
+          </span>
+        </button>
+        <span className="mono shrink-0 text-right text-[12px] opacity-resting">
+          {line.cartons > 0 ? `${fmtInt(line.cartons)} cajas` : `${series.m2_per_ctn.toFixed(2)} m²`}
+        </span>
+        <StatusLamp status={series.status} />
+      </div>
+
+      {selected && (
+        <div className="flex items-center gap-3 pb-3 pl-11">
+          <label className="flex items-center gap-2">
+            <span className="stamp opacity-resting">Cantidad</span>
+            <input
+              type="number"
+              inputMode="decimal"
+              min={0}
+              step="0.01"
+              value={qty?.value ?? ''}
+              placeholder="0"
+              onChange={(e) =>
+                rec.setQty(
+                  sku.sku_uid,
+                  e.target.value === ''
+                    ? null
+                    : { value: Math.max(0, Number(e.target.value)), basis },
+                )
+              }
+              className="mono w-24 border rule bg-surface px-2 py-1 text-t0"
+            />
+            <span className="stamp opacity-resting">{BASIS_LABEL[basis]}</span>
+          </label>
+          {line.cartons > 0 && (
+            <p className="mono text-[12px] opacity-resting">
+              → {fmtInt(line.cartons)} cajas · {fmtM2(line.m2)} m² · {fmtInt(line.kg)} kg
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+/** Tri-state box. Achromatic: state is form and value, never hue. */
+function TriBox({
+  state,
+  label,
+  onChange,
+}: {
+  state: 'none' | 'partial' | 'all'
+  label: string
+  onChange: () => void
+}) {
+  return (
+    <button
+      type="button"
+      role="checkbox"
+      aria-checked={state === 'all' ? true : state === 'partial' ? 'mixed' : false}
+      aria-label={label}
+      onClick={onChange}
+      className="ml-1 grid h-6 w-6 shrink-0 place-items-center border border-ink/40"
+    >
+      {state === 'all' && (
+        <svg viewBox="0 0 12 12" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M2 6.4 L4.8 9.2 L10 3" />
+        </svg>
+      )}
+      {state === 'partial' && <span className="h-[3px] w-3 bg-ink" />}
+    </button>
   )
 }

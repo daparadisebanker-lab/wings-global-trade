@@ -1,214 +1,111 @@
-// La Escalera · Rung 3 — the arithmetic.
+// El Pasillo — the volume math.
 //
-// Spec (LA ESCALERA §RUNG 3): "The math is money math: decimal.js throughout,
-// ceil rules unit-tested, every constant (m²/carton, kg/carton, cartons/pallet)
-// versioned per SKU. One wrong carton count in front of a buyer ends the tool's
-// credibility."
+// A muestrario that totals items but not m² and container fill is not a
+// procurement document. This module is what makes it one.
 //
-// Every number a buyer sees is produced here. Two rules govern this file:
-//   1. All arithmetic runs through Decimal. `number` appears only at the boundary.
-//   2. Nothing is invented. A constant is either read off the supplier catalog
-//      ('catalog'), computed exactly from catalog values ('derived'), or an
-//      explicit planning default awaiting supplier confirmation ('assumed').
-//      Assumed values are surfaced in the UI and in every export — never hidden.
+// Two rules govern it:
+//   1. All arithmetic runs through Decimal. `number` appears only at the
+//      boundary. A naive Math.ceil(47.52 / 0.99) returns 49 cartons where the
+//      answer is 48 — on a real carton from this catalogue.
+//   2. Every constant comes from the series tier, which came off the supplier's
+//      printed spec bar. Nothing here is assumed.
 
 import Decimal from 'decimal.js'
-// Imported through the package's `/containers` subpath, not its barrel: the
-// barrel re-exports every organ, several of which pull in framer-motion, and
-// that would put an animation library on the deck route for the sake of two
-// numbers. Same shared source of truth, none of the weight.
+// Imported through the package's `/containers` subpath rather than its barrel:
+// the barrel re-exports organs that pull in an animation library, and this
+// module is on every route.
 import { CONTAINER_KINDS, type ContainerKindSpec } from '@wings/trade-ui/containers'
+import type { Series } from '@/types/catalogue'
 
-/**
- * Bump when any packing constant or rule below changes. Stamped onto every
- * quote export so a carton count can always be traced to the rules that made it.
- */
-export const PACKING_CONSTANTS_VERSION = '2026-07-25.1'
+/** Bump when any rule below changes. Stamped onto every export. */
+export const PACKING_RULES_VERSION = '2026-07-28.1'
 
-/** Where a packing number came from. Drives the "confirm with supplier" markers. */
-export type Provenance = 'catalog' | 'derived' | 'assumed'
+/** The basis a quantity was entered in. Stored as entered, never normalised —
+ *  switching the footer's basis must not rewrite what the buyer typed. */
+export type Basis = 'm2' | 'ctn' | 'pcs'
 
-export interface TilePacking {
-  /** pieces per carton — printed on the catalog series banner */
-  pcs_per_carton: number
-  /** m² per carton — derived exactly: format_mm area × pcs_per_carton */
-  m2_per_carton: number
-  /** kg per carton — printed on the catalog series banner */
-  kg_per_carton: number
-  /** cartons per pallet — see PALLET_CAPACITY_KG; assumed until confirmed */
-  cartons_per_pallet: number
-  provenance: Record<
-    'pcs_per_carton' | 'm2_per_carton' | 'kg_per_carton' | 'cartons_per_pallet',
-    Provenance
-  >
-}
-
-/**
- * Working pallet weight cap, kg.
- *
- * The supplier catalogs give pieces/carton and kg/carton but NOT cartons/pallet.
- * Rather than invent a per-SKU constant and present it as supplier data, pallets
- * are built to a weight cap and the result is flagged `assumed` everywhere it
- * surfaces. Collecting the real per-SKU figure is part of Rung 3's data work
- * (spec: "the prerequisite the spec deliberately forces").
- */
-export const PALLET_CAPACITY_KG = 1200
-
-/** Cartons that fit one pallet at PALLET_CAPACITY_KG. Never returns 0. */
-export function cartonsPerPallet(kgPerCarton: number): number {
-  const kg = new Decimal(kgPerCarton)
-  if (!kg.isFinite() || kg.lte(0)) return 1
-  return Math.max(1, new Decimal(PALLET_CAPACITY_KG).div(kg).floor().toNumber())
-}
-
-/** m² of a single tile face, from its format in millimetres. */
-export function tileAreaM2(formatMm: readonly [number, number]): Decimal {
-  return new Decimal(formatMm[0]).div(1000).times(new Decimal(formatMm[1]).div(1000))
-}
-
-/** m² per carton — exact, from the tile format and the catalog's pcs/carton. */
-export function m2PerCarton(
-  formatMm: readonly [number, number],
-  pcsPerCarton: number,
-): number {
-  return tileAreaM2(formatMm).times(pcsPerCarton).toDecimalPlaces(4).toNumber()
-}
-
-// ── Waste ──────────────────────────────────────────────────────────────────
-// Industry defaults, editable per line (spec §RUNG 3: "10% straight lay / 15%
-// diagonal or herringbone (industry defaults, editable)").
-
-export interface WastePreset {
-  id: 'straight' | 'diagonal'
-  pct: number
-  label: string
-  detail: string
-}
-
-export const WASTE_PRESETS: readonly WastePreset[] = [
-  // `detail` sits inside a narrow <select> on a phone — it has to fit.
-  { id: 'straight', pct: 10, label: 'Recto', detail: 'Recto · 10%' },
-  { id: 'diagonal', pct: 15, label: 'Diagonal', detail: 'Diagonal · 15%' },
-] as const
-
-export const DEFAULT_WASTE_PCT = 10
-
-// ── The line calculation ───────────────────────────────────────────────────
-
-export interface LineInput {
-  /** m² the buyer actually needs to cover. */
-  areaM2: number
-  /** waste percentage, e.g. 10 or 15. Editable, so validated here. */
-  wastePct: number
+export interface Quantity {
+  value: number
+  basis: Basis
 }
 
 export interface LineTotals {
-  /** m² requested, before waste */
-  requestedM2: number
-  /** m² including the waste allowance */
-  withWasteM2: number
-  /** cartons to order — ALWAYS rounded up; you cannot buy 11.4 cartons */
+  /** cartons to ship — ALWAYS rounded up; a fraction of a carton cannot be bought */
   cartons: number
-  /** m² actually supplied by that many whole cartons */
-  suppliedM2: number
-  /** m² supplied beyond the waste-adjusted requirement */
-  surplusM2: number
+  /** m² those whole cartons actually supply */
+  m2: number
+  /** pieces in those cartons */
+  pcs: number
   /** gross weight of those cartons */
   kg: number
-  /** pallets those cartons occupy (assumed cartons/pallet) */
-  pallets: number
 }
 
-const ZERO_LINE: LineTotals = {
-  requestedM2: 0,
-  withWasteM2: 0,
-  cartons: 0,
-  suppliedM2: 0,
-  surplusM2: 0,
-  kg: 0,
-  pallets: 0,
-}
+const ZERO: LineTotals = { cartons: 0, m2: 0, pcs: 0, kg: 0 }
 
-/** Clamp a user-entered waste percentage into a sane band. */
-export function normalizeWastePct(pct: number): Decimal {
-  const d = new Decimal(Number.isFinite(pct) ? pct : DEFAULT_WASTE_PCT)
-  if (d.lt(0)) return new Decimal(0)
-  if (d.gt(100)) return new Decimal(100)
-  return d
+/** Cartons needed to cover an area. The number the whole tool is judged on. */
+export function cartonsForM2(m2: number, m2PerCtn: number): number {
+  const area = new Decimal(Number.isFinite(m2) ? m2 : 0)
+  const per = new Decimal(m2PerCtn)
+  if (area.lte(0) || !per.isFinite() || per.lte(0)) return 0
+  return area.div(per).ceil().toNumber()
 }
 
 /**
- * The single carton rule. Area + waste, divided by m²/carton, ROUNDED UP.
- * Exported on its own because it is the number the whole tool is judged on.
+ * One line of the ledger. Whatever basis the buyer worked in, the shippable
+ * unit is a whole carton, so every basis resolves to cartons first and the
+ * other figures follow from that — never the other way round.
  */
-export function cartonsFor(areaM2: number, wastePct: number, m2Carton: number): number {
-  const area = new Decimal(Number.isFinite(areaM2) ? areaM2 : 0)
-  const perCarton = new Decimal(m2Carton)
-  if (area.lte(0) || !perCarton.isFinite() || perCarton.lte(0)) return 0
-  const withWaste = area.times(normalizeWastePct(wastePct).div(100).plus(1))
-  return withWaste.div(perCarton).ceil().toNumber()
-}
+export function lineTotals(qty: Quantity | null | undefined, series: Series): LineTotals {
+  if (!qty || !Number.isFinite(qty.value) || qty.value <= 0) return ZERO
+  const v = new Decimal(qty.value)
+  const perCtn = new Decimal(series.m2_per_ctn)
+  const pcsPerCtn = new Decimal(series.pcs_per_ctn)
+  if (!perCtn.isFinite() || perCtn.lte(0) || pcsPerCtn.lte(0)) return ZERO
 
-/** Full per-line arithmetic for one tile in the record. */
-export function lineTotals(packing: TilePacking, input: LineInput): LineTotals {
-  const area = new Decimal(Number.isFinite(input.areaM2) ? input.areaM2 : 0)
-  const perCarton = new Decimal(packing.m2_per_carton)
-  if (area.lte(0) || !perCarton.isFinite() || perCarton.lte(0)) return ZERO_LINE
-
-  const withWaste = area.times(normalizeWastePct(input.wastePct).div(100).plus(1))
-  const cartons = withWaste.div(perCarton).ceil()
-  const supplied = cartons.times(perCarton)
-  const perPallet = new Decimal(Math.max(1, packing.cartons_per_pallet))
+  let cartons: Decimal
+  if (qty.basis === 'ctn') cartons = v.ceil()
+  else if (qty.basis === 'pcs') cartons = v.div(pcsPerCtn).ceil()
+  else cartons = v.div(perCtn).ceil()
 
   return {
-    requestedM2: area.toDecimalPlaces(2).toNumber(),
-    withWasteM2: withWaste.toDecimalPlaces(2).toNumber(),
     cartons: cartons.toNumber(),
-    suppliedM2: supplied.toDecimalPlaces(2).toNumber(),
-    surplusM2: supplied.minus(withWaste).toDecimalPlaces(2).toNumber(),
-    kg: cartons.times(packing.kg_per_carton).toDecimalPlaces(1).toNumber(),
-    pallets: cartons.div(perPallet).ceil().toNumber(),
+    m2: cartons.times(perCtn).toDecimalPlaces(2).toNumber(),
+    pcs: cartons.times(pcsPerCtn).toNumber(),
+    kg: cartons.times(series.kgs_per_ctn).toDecimalPlaces(1).toNumber(),
   }
 }
 
-// ── Record totals ──────────────────────────────────────────────────────────
-
 export interface RecordTotals {
-  lines: number
+  skus: number
   cartons: number
+  m2: number
+  pcs: number
   kg: number
-  /**
-   * Pallets are summed per line, not recomputed on total cartons: in the tile
-   * trade a pallet carries one SKU. Mixed pallets exist but are the exception,
-   * and assuming them would under-state the pallet count on a real order.
-   */
-  pallets: number
-  suppliedM2: number
 }
 
 export function sumTotals(all: readonly LineTotals[]): RecordTotals {
   return all.reduce<RecordTotals>(
-    (acc, t) => ({
-      lines: acc.lines + (t.cartons > 0 ? 1 : 0),
-      cartons: acc.cartons + t.cartons,
-      kg: new Decimal(acc.kg).plus(t.kg).toDecimalPlaces(1).toNumber(),
-      pallets: acc.pallets + t.pallets,
-      suppliedM2: new Decimal(acc.suppliedM2).plus(t.suppliedM2).toDecimalPlaces(2).toNumber(),
+    (a, t) => ({
+      skus: a.skus + (t.cartons > 0 ? 1 : 0),
+      cartons: a.cartons + t.cartons,
+      m2: new Decimal(a.m2).plus(t.m2).toDecimalPlaces(2).toNumber(),
+      pcs: a.pcs + t.pcs,
+      kg: new Decimal(a.kg).plus(t.kg).toDecimalPlaces(1).toNumber(),
     }),
-    { lines: 0, cartons: 0, kg: 0, pallets: 0, suppliedM2: 0 },
+    { skus: 0, cartons: 0, m2: 0, pcs: 0, kg: 0 },
   )
 }
 
 // ── Container fill ─────────────────────────────────────────────────────────
-// Tiles fill a container by WEIGHT before volume — the honest note the spec
-// insists is printed beside the bar. So the meter is a payload meter.
+// Tiles fill a container by WEIGHT long before volume, so the meter is a
+// payload meter and the footer says so. A 40' box does not carry twice the
+// tiles of a 20' — it carries the same payload in a longer room.
 //
-// Payloads come from @wings/trade-ui CONTAINER_KINDS (the ecosystem's shared ISO
-// geometry). This app does not keep its own copy — Prime Directive 1.
+// Payloads come from @wings/trade-ui CONTAINER_KINDS; this app keeps no copy.
 
 export type ContainerKind = ContainerKindSpec['kind']
 
-export const ESCALERA_CONTAINERS: readonly ContainerKindSpec[] = CONTAINER_KINDS.filter(
+export const CONTAINERS: readonly ContainerKindSpec[] = CONTAINER_KINDS.filter(
   (k) => k.kind === '20GP' || k.kind === '40GP',
 )
 
@@ -221,21 +118,13 @@ export function containerSpec(kind: ContainerKind): ContainerKindSpec {
 export interface ContainerFill {
   kind: ContainerKind
   label: string
-  /** maximum payload of the box, kg */
   payloadKg: number
-  /** the record's gross weight, kg */
   loadedKg: number
-  /**
-   * loaded ÷ payload, at full precision. > 1 means the load needs more than one
-   * box. Deliberately NOT rounded: rounding 28 201 kg in a 28 200 kg container
-   * to 1.0000 would read as "exactly one container" while two are needed.
-   */
-  ratio: number
-  /** ratio clamped to 0..1, for the bar width */
-  fillPct: number
-  /** whole containers this load needs */
+  /** loaded ÷ payload, unrounded. 0.8 means "0.8 × 20' FCL". */
+  fcl: number
+  /** 0–100, clamped, for the bar */
+  pct: number
   containersNeeded: number
-  /** kg still loadable into the last container before hitting payload */
   remainingKg: number
 }
 
@@ -246,22 +135,21 @@ export function containerFill(totalKg: number, kind: ContainerKind): ContainerFi
   const ratio = loaded.div(payload)
   const needed = loaded.lte(0) ? 0 : ratio.ceil().toNumber()
   const usedInLast = needed <= 1 ? loaded : loaded.minus(payload.times(needed - 1))
-
   return {
     kind: spec.kind,
     label: spec.label,
     payloadKg: spec.payload,
     loadedKg: loaded.toDecimalPlaces(1).toNumber(),
-    ratio: ratio.toNumber(),
-    fillPct: Decimal.min(ratio, 1).times(100).toDecimalPlaces(1).toNumber(),
+    fcl: ratio.toNumber(),
+    pct: Decimal.min(ratio, 1).times(100).toDecimalPlaces(1).toNumber(),
     containersNeeded: needed,
     remainingKg: payload.minus(usedInLast).toDecimalPlaces(1).toNumber(),
   }
 }
 
 // ── Formatting ─────────────────────────────────────────────────────────────
-// Tabular, es-ES, no currency anywhere in this tool — La Escalera quotes
-// quantities so the supplier can quote the price.
+// es-ES throughout. No currency anywhere: this tool states quantities so the
+// supplier can state the price.
 
 const nf = (min: number, max: number) =>
   new Intl.NumberFormat('es-ES', { minimumFractionDigits: min, maximumFractionDigits: max })
@@ -269,6 +157,10 @@ const nf = (min: number, max: number) =>
 export const fmtM2 = (n: number) => nf(2, 2).format(n)
 export const fmtInt = (n: number) => nf(0, 0).format(n)
 export const fmtKg = (n: number) => nf(0, 0).format(Math.round(n))
-/** Percentages go through the same locale as everything else — a stray "35.8%"
- *  next to "10.089 kg" reads as a different number system on the same line. */
-export const fmtPct = (n: number) => nf(0, 1).format(n)
+export const fmtFcl = (n: number) => nf(1, 2).format(n)
+
+export const BASIS_LABEL: Record<Basis, string> = {
+  m2: 'm²',
+  ctn: 'cajas',
+  pcs: 'piezas',
+}
