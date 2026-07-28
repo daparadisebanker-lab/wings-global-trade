@@ -13,7 +13,8 @@ import { COST_DEFAULTS } from './landed-cost'
 import { extractQuoteSpec } from '@/lib/torre/parse-spec'
 import { assembleQuoteRunInput, buildQuoteRun, type QuoteRunContext } from '@/lib/torre/quote-run'
 import type { SourceRef } from '@/lib/torre/artifacts'
-import { textResult, type Capability, type CopilotResult } from '../types'
+import { textResult, type Attachment, type Capability, type CanvasContext, type CopilotResult } from '../types'
+import { withHistory, type Turn } from '../history'
 
 /** What the 'torre-quote' renderer receives: the artifact pair + the parsed spec. */
 export interface TorreQuoteRenderData {
@@ -30,10 +31,12 @@ export const quoteRunCapability: Capability = {
       'Cotiza una excavadora CAT 320 FOB 78,400 diésel a 18% de margen para Provemaq',
       'Ármame la cotización de un montacargas 14,000 FOB, flete 1,600, 18%',
       'Quote a diesel generator CIF 8,500 at 15% margin for Andes Machinery, in English',
+      // Continuation: the equipment + value arrived in an earlier turn.
+      'Cotízalo con ese precio',
     ],
   },
-  async run(client: IntelligenceClient, text: string): Promise<CopilotResult> {
-    const spec = await extractQuoteSpec(client, text)
+  async run(client: IntelligenceClient, text: string, _attachment?: Attachment, _context?: CanvasContext, history?: Turn[]): Promise<CopilotResult> {
+    const spec = await extractQuoteSpec(client, withHistory(text, history))
     if (!spec.understood) {
       return textResult(
         spec.note ||

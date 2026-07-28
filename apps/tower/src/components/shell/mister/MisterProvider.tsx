@@ -22,6 +22,8 @@ import {
 import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import { askMister } from '@/lib/actions/mister-copilot'
 import { textResult, type CanvasContext, type CopilotResult, type SeededFrom } from '@/lib/copilot/types'
+import { artifactDigest, MAX_HISTORY_TURNS, type Turn } from '@/lib/copilot/history'
+import { loadThread, saveThread, threadStorageKey, type MisterMsg } from '@/lib/copilot/thread-store'
 import { MISTER_RENDERERS } from '../mister-renderers'
 import { deriveParentSeq } from './lineage'
 
@@ -30,8 +32,10 @@ import { deriveParentSeq } from './lineage'
 // Isomorphic so an SSR pass (provider wraps the shell) doesn't warn.
 const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
-/** One turn in the thread — the operator's message, or Mister's result. */
-export type MisterMsg = { who: 'op'; text: string; image?: string } | { who: 'mi'; result: CopilotResult }
+/** One turn in the thread — the operator's message, or Mister's result. Its shape
+ *  is fixed by what persists across page loads, so it is declared with the store
+ *  (lib/copilot/thread-store.ts) and re-exported here where consumers expect it. */
+export type { MisterMsg }
 
 /** Watchdog for a single ask. A server action can't be aborted from the client, so
  *  if the model hangs we stop waiting after this and free the dock (the in-flight
@@ -47,6 +51,22 @@ function coerceResult(result: CopilotResult, locale: Locale): CopilotResult {
     )
   }
   return result
+}
+
+/** Compact the thread into the conversation the server routes against. The dock
+ *  owns the thread, so without this the server saw only the current message and a
+ *  follow-up ("El precio es 25,000") classified as off-topic. An artifact turn
+ *  travels as its digest — the headline facts a follow-up refers to, not the whole
+ *  payload. The preview dataURL of a pasted screenshot never travels. */
+export function threadToHistory(thread: MisterMsg[]): Turn[] {
+  return thread.slice(-MAX_HISTORY_TURNS).map((m) => {
+    if (m.who === 'op') return { who: 'op' as const, text: m.text || (m.image ? '[captura adjunta]' : '') }
+    const r = m.result
+    return {
+      who: 'mi' as const,
+      text: r.renderer === 'text' ? (r.text ?? '') : artifactDigest(r.renderer, r.note, r.data),
+    }
+  })
 }
 
 /** A screenshot staged for the next turn — base64 for the wire, dataURL for preview. */
@@ -104,7 +124,17 @@ interface MisterContextValue {
 
 const MisterContext = createContext<MisterContextValue | null>(null)
 
-export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?: Locale; children: ReactNode }) {
+export function MisterProvider({
+  locale = DEFAULT_LOCALE,
+  identity = null,
+  children,
+}: {
+  locale?: Locale
+  /** Who this conversation belongs to (the operator's email) — scopes the stored
+   *  thread so a shared workstation never loads someone else's. */
+  identity?: string | null
+  children: ReactNode
+}) {
   const [thread, setThread] = useState<MisterMsg[]>([])
   const [busy, setBusy] = useState(false)
   const [pending, setPending] = useState<Pending | null>(null)
@@ -127,10 +157,35 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
   // watchdog can settle the turn from outside the send() closure.
   const activeFinish = useRef<((result: CopilotResult) => void) | null>(null)
 
+  // ── Persistence (lib/copilot/thread-store.ts) ────────────────────────────
+  // Hydrate AFTER mount, never in the useState initializer: the provider wraps the
+  // shell and renders on the server, so reading storage during render would make
+  // the first client paint disagree with the SSR HTML. Until the load lands,
+  // `hydrated` holds back the save effect — otherwise the initial empty thread
+  // would overwrite the stored conversation before it was ever read.
+  const storageKey = threadStorageKey(identity)
+  const hydrated = useRef(false)
+  useEffect(() => {
+    hydrated.current = false
+    const stored = loadThread(typeof window === 'undefined' ? undefined : window.localStorage, storageKey)
+    // Never clobber a conversation already under way (an operator who typed while
+    // the effect was pending) — the live thread wins.
+    setThread((prev) => (prev.length ? prev : stored))
+    hydrated.current = true
+  }, [storageKey])
+
+  useEffect(() => {
+    if (!hydrated.current) return
+    saveThread(typeof window === 'undefined' ? undefined : window.localStorage, storageKey, thread)
+  }, [thread, storageKey])
+
   const send = useCallback(async () => {
     const text = draft.trim()
     const attachment = pending
     if ((!text && !attachment) || busy) return
+    // Snapshot the conversation BEFORE this message joins it — the ask carries the
+    // turns that precede it, and `text` travels on its own.
+    const history = threadToHistory(thread)
     setThread((prev) => [...prev, { who: 'op', text, image: attachment?.preview }])
     setDraft('')
     setPending(null)
@@ -161,6 +216,7 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
         text,
         attachment ? { mediaType: attachment.mediaType, dataBase64: attachment.dataBase64 } : undefined,
         context,
+        history,
       )
       clearTimeout(watchdog)
       finish(coerceResult(result.error ? textResult(result.error.message) : result.data, locale))
@@ -168,7 +224,7 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
       clearTimeout(watchdog)
       finish(textResult(t({ es: 'No pude procesarlo ahora.', en: 'Could not process that.' }, locale)))
     }
-  }, [draft, pending, busy, locale, skipCanvasContext])
+  }, [draft, pending, busy, locale, skipCanvasContext, thread])
 
   /** Bail out of the current ask (a live "Detener" control). Server-side the call
    *  keeps running (a server action can't be client-aborted), but the dock frees
