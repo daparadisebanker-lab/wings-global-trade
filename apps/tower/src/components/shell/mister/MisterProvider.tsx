@@ -23,6 +23,7 @@ import { DEFAULT_LOCALE, t, type Locale } from '@/lib/i18n'
 import { askMister } from '@/lib/actions/mister-copilot'
 import { textResult, type CanvasContext, type CopilotResult, type SeededFrom } from '@/lib/copilot/types'
 import { artifactDigest, MAX_HISTORY_TURNS, type Turn } from '@/lib/copilot/history'
+import { loadThread, saveThread, threadStorageKey, type MisterMsg } from '@/lib/copilot/thread-store'
 import { MISTER_RENDERERS } from '../mister-renderers'
 import { deriveParentSeq } from './lineage'
 
@@ -31,8 +32,10 @@ import { deriveParentSeq } from './lineage'
 // Isomorphic so an SSR pass (provider wraps the shell) doesn't warn.
 const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
-/** One turn in the thread — the operator's message, or Mister's result. */
-export type MisterMsg = { who: 'op'; text: string; image?: string } | { who: 'mi'; result: CopilotResult }
+/** One turn in the thread — the operator's message, or Mister's result. Its shape
+ *  is fixed by what persists across page loads, so it is declared with the store
+ *  (lib/copilot/thread-store.ts) and re-exported here where consumers expect it. */
+export type { MisterMsg }
 
 /** Watchdog for a single ask. A server action can't be aborted from the client, so
  *  if the model hangs we stop waiting after this and free the dock (the in-flight
@@ -121,7 +124,17 @@ interface MisterContextValue {
 
 const MisterContext = createContext<MisterContextValue | null>(null)
 
-export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?: Locale; children: ReactNode }) {
+export function MisterProvider({
+  locale = DEFAULT_LOCALE,
+  identity = null,
+  children,
+}: {
+  locale?: Locale
+  /** Who this conversation belongs to (the operator's email) — scopes the stored
+   *  thread so a shared workstation never loads someone else's. */
+  identity?: string | null
+  children: ReactNode
+}) {
   const [thread, setThread] = useState<MisterMsg[]>([])
   const [busy, setBusy] = useState(false)
   const [pending, setPending] = useState<Pending | null>(null)
@@ -143,6 +156,28 @@ export function MisterProvider({ locale = DEFAULT_LOCALE, children }: { locale?:
   // The current ask's resolver (set while a send is in flight) so `stop()` and the
   // watchdog can settle the turn from outside the send() closure.
   const activeFinish = useRef<((result: CopilotResult) => void) | null>(null)
+
+  // ── Persistence (lib/copilot/thread-store.ts) ────────────────────────────
+  // Hydrate AFTER mount, never in the useState initializer: the provider wraps the
+  // shell and renders on the server, so reading storage during render would make
+  // the first client paint disagree with the SSR HTML. Until the load lands,
+  // `hydrated` holds back the save effect — otherwise the initial empty thread
+  // would overwrite the stored conversation before it was ever read.
+  const storageKey = threadStorageKey(identity)
+  const hydrated = useRef(false)
+  useEffect(() => {
+    hydrated.current = false
+    const stored = loadThread(typeof window === 'undefined' ? undefined : window.localStorage, storageKey)
+    // Never clobber a conversation already under way (an operator who typed while
+    // the effect was pending) — the live thread wins.
+    setThread((prev) => (prev.length ? prev : stored))
+    hydrated.current = true
+  }, [storageKey])
+
+  useEffect(() => {
+    if (!hydrated.current) return
+    saveThread(typeof window === 'undefined' ? undefined : window.localStorage, storageKey, thread)
+  }, [thread, storageKey])
 
   const send = useCallback(async () => {
     const text = draft.trim()

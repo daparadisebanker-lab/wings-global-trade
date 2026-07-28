@@ -45,7 +45,7 @@ describe('routeAndRun — conversation awareness', () => {
   })
 
   it('teaches the classifier that a follow-up continues the conversation', async () => {
-    const client = fakeClient(['{"capability":"none"}', 'Anotado.'])
+    const client = fakeClient(['{"capability":"none","reply":"Anotado."}'])
     await routeAndRun(client, 'ok', undefined, undefined, HISTORY)
     expect(client.requests[0].system).toContain('CONVERSACIÓN')
     expect(client.requests[0].system).toContain('Ante la duda entre "none" y una capacidad plausible')
@@ -92,34 +92,30 @@ describe('routeAndRun — conversation awareness', () => {
 })
 
 describe('routeAndRun — the "none" branch answers instead of dumping the menu', () => {
-  it('replies conversationally, with the transcript in hand', async () => {
-    const client = fakeClient(['{"capability":"none"}', 'Anotado: 25,000 USD. ¿Es FOB o CIF?'])
+  it('replies with what the classifier drafted, in the SAME call (no second round-trip)', async () => {
+    const client = fakeClient(['{"capability":"none","reply":"Anotado: 25,000 USD. ¿Es FOB o CIF?"}'])
     const result = await routeAndRun(client, 'El precio es 25,000', undefined, undefined, HISTORY)
 
     expect(result.renderer).toBe('text')
     expect(result.text).toBe('Anotado: 25,000 USD. ¿Es FOB o CIF?')
     expect(result.text).not.toContain('Puedo ayudarte con')
-    expect(client.requests[1].user).toContain('Retroexcavadora')
+    expect(client.requests).toHaveLength(1) // the fall-through costs no extra call
   })
 
-  it('falls back to the deterministic menu when the reply comes back empty', async () => {
-    const client = fakeClient(['{"capability":"none"}', '   '])
-    const result = await routeAndRun(client, 'hola', undefined, undefined, [])
-    expect(result.text).toBe(capabilityMenu())
+  it('asks for the reply only on the "none" path, and gives it room to fit', () => {
+    const client = fakeClient(['{"capability":"none","reply":"ok"}'])
+    return routeAndRun(client, 'hola').then(() => {
+      expect(client.requests[0].system).toContain('SOLO si eliges "none"')
+      expect(client.requests[0].system).toContain('NUNCA inventes precios')
+      expect(client.requests[0].maxTokens).toBeGreaterThan(200)
+    })
   })
 
-  it('falls back to the menu when the fallback call itself fails', async () => {
-    const client: IntelligenceClient = {
-      complete: vi
-        .fn()
-        .mockResolvedValueOnce('{"capability":"none"}')
-        .mockRejectedValueOnce(new Error('transport')),
-      async *stream() {
-        yield ''
-      },
+  it('falls back to the deterministic menu when no usable reply comes back', async () => {
+    for (const raw of ['{"capability":"none"}', '{"capability":"none","reply":"   "}', 'no es json']) {
+      const result = await routeAndRun(fakeClient([raw]), 'hola', undefined, undefined, [])
+      expect(result.text).toBe(capabilityMenu())
     }
-    const result = await routeAndRun(client, 'hola')
-    expect(result.text).toBe(capabilityMenu())
   })
 
   it('the deterministic menu still lists every capability', () => {

@@ -6,67 +6,35 @@
 // dead end becomes a turn: a short reply that either answers, or asks for the ONE
 // missing datum that would let a capability run.
 //
-// It is deliberately NOT a registered capability — the router can never select it;
-// it only ever handles the fall-through, so it can't shadow a real capability.
-// Guardrails match the rest of Mister: never invent a rate, a tariff or a price
-// (those come from the engine), never promise a side effect.
+// COST: that reply is drafted by the ROUTER's own call — the classifier has
+// already read the transcript, so asking it for a reply in the same JSON costs
+// output tokens only on the 'none' path and adds no second round-trip. (It was a
+// separate call for one commit; folding it in removed that.) A capability match
+// emits ~15 tokens and never pays for the larger ceiling.
+//
+// This is deliberately NOT a registered capability — the router can never select
+// it; it only ever handles the fall-through, so it can't shadow a real capability.
 
-import { INTELLIGENCE_MODELS } from '@/lib/ai/types'
-import type { IntelligenceClient } from '@/lib/ai/client'
 import { CAPABILITIES } from './registry'
-import { withHistory, type Turn } from './history'
-import { textResult, type CopilotResult } from './types'
 
-/** The deterministic last resort: what Mister can do. Also the first-contact
- *  answer to "¿qué puedes hacer?" when there is no model reply to give. */
+/** The deterministic last resort: what Mister can do. Used when the model returns
+ *  no usable reply, and it is the honest answer to "¿qué puedes hacer?". */
 export function capabilityMenu(): string {
   const menu = CAPABILITIES.map((c) => `• ${c.router.description}`).join('\n')
   return `Puedo ayudarte con: / I can help with:\n${menu}`
 }
 
-function converseSystem(): string {
-  const list = CAPABILITIES.map((c) => `- ${c.id}: ${c.router.description}`).join('\n')
-  return `Eres Mister, el copiloto interno de Wings Global Trade (comercio MAYORISTA B2B, Perú).
-El mensaje del operador no cayó en ninguna de tus capacidades ejecutables:
-
-${list}
-
-Responde en español, breve (máximo 4 líneas), en el tono de un operador de comercio
-exterior: directo, sin relleno, sin saludos de asistente.
-
-Reglas:
-- Si el operador está contestando algo que pediste antes, acusa recibo del dato y di
-  exactamente qué falta para ejecutar (UNA sola cosa, la más importante).
-- Si su mensaje sí se puede ejecutar pero le falta un dato, pide SOLO ese dato.
-- Si el mensaje no tiene nada que ver con comercio mayorista, dilo en una línea y
-  nombra 2 o 3 cosas concretas que sí puedes hacer.
+/** The guardrails for the fallback reply, injected into the router's system prompt.
+ *  Kept here rather than inline in router.ts so Mister's voice and its refusals
+ *  live in one place — the same law whether the reply is a nudge or a question. */
+export function fallbackReplyRules(): string {
+  return `SOLO si eliges "none", escribe además un campo "reply": la respuesta que Mister le da
+al operador. Reglas del "reply" (si eliges una capacidad, OMÍTELO):
+- Español, máximo 3 líneas, tono de operador de comercio exterior: directo, sin saludos.
+- Si el operador está contestando algo que Mister pidió antes, acusa recibo del dato y pide
+  UNA sola cosa: la que falta para poder ejecutar.
+- Si el mensaje no tiene nada que ver con comercio mayorista, dilo en una línea y nombra 2 o
+  3 cosas concretas que Mister sí puede hacer.
 - NUNCA inventes precios, fletes, aranceles ni tipos de cambio: esos salen del motor.
-- NUNCA prometas haber guardado, enviado o cotizado algo.
-- No listes todas tus capacidades como catálogo salvo que te pregunten qué puedes hacer.
-
-Responde solo con el texto de la respuesta, sin JSON y sin comillas alrededor.`
-}
-
-/**
- * Reply conversationally when nothing routed. Any failure (transport, empty
- * answer) degrades to the deterministic menu — the dock always renders a bubble.
- */
-export async function converse(
-  client: IntelligenceClient,
-  text: string,
-  history?: Turn[],
-): Promise<CopilotResult> {
-  try {
-    const raw = await client.complete({
-      model: INTELLIGENCE_MODELS.classify,
-      system: converseSystem(),
-      user: withHistory(text, history),
-      maxTokens: 300,
-    })
-    const reply = raw.trim()
-    if (reply) return textResult(reply)
-  } catch {
-    // fall through to the menu
-  }
-  return textResult(capabilityMenu())
+- NUNCA prometas haber guardado, enviado ni cotizado algo.`
 }

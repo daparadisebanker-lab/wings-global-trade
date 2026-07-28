@@ -12,9 +12,9 @@ import { INTELLIGENCE_MODELS } from '@/lib/ai/types'
 import { extractJsonObject } from '@/lib/ai/parse'
 import type { IntelligenceClient } from '@/lib/ai/client'
 import { CAPABILITIES } from './registry'
-import { converse } from './converse'
+import { capabilityMenu, fallbackReplyRules } from './converse'
 import { renderTranscript, type Turn } from './history'
-import { type Attachment, type CanvasContext, type CopilotResult } from './types'
+import { textResult, type Attachment, type CanvasContext, type CopilotResult } from './types'
 
 function routerSystem(): string {
   const list = CAPABILITIES.map(
@@ -37,13 +37,16 @@ CONVERSACIÓN: si hay conversación previa, el mensaje a clasificar casi siempre
 Usa "none" SOLO si el mensaje es realmente ajeno al comercio mayorista o es puramente social.
 Ante la duda entre "none" y una capacidad plausible, elige la capacidad.
 
-Responde SOLO con JSON, sin texto alrededor: {"capability": "<id>" | "none"}`
+${fallbackReplyRules()}
+
+Responde SOLO con JSON, sin texto alrededor: {"capability": "<id>" | "none", "reply": "<texto>"}`
 }
 
 /**
  * Route a message to a capability and run it. Throws only on a transport error;
- * a message no capability fits gets a conversational reply (converse.ts), not a
- * dead-end menu.
+ * a message no capability fits gets a conversational reply — drafted by this same
+ * classify call (converse.ts owns its rules), so the fall-through costs no extra
+ * round-trip — instead of a dead-end menu.
  *
  * An image attachment short-circuits the text classifier: an image is an
  * unambiguous signal for the (single) image-accepting capability, so we route
@@ -74,7 +77,10 @@ export async function routeAndRun(
     model: INTELLIGENCE_MODELS.classify,
     system: routerSystem(),
     user: renderTranscript(history) + hint + `MENSAJE A CLASIFICAR:\n${text}`,
-    maxTokens: 60,
+    // Room for the fallback `reply` on the 'none' path. A capability match emits
+    // ~15 tokens, so the larger ceiling costs nothing in the common case — output
+    // is billed on what's generated, not on the cap.
+    maxTokens: 320,
   })
   const obj = extractJsonObject(raw)
   const id = typeof obj?.capability === 'string' ? obj.capability : 'none'
@@ -88,6 +94,11 @@ export async function routeAndRun(
     cap = CAPABILITIES.find((c) => c.id === 'container-fit')
   }
 
-  if (!cap) return converse(client, text, history)
+  // Nothing routed: answer with the reply the classifier drafted in the same call,
+  // and only fall back to the deterministic menu when it gave none.
+  if (!cap) {
+    const reply = typeof obj?.reply === 'string' ? obj.reply.trim() : ''
+    return textResult(reply || capabilityMenu())
+  }
   return cap.run(client, text, undefined, context, history)
 }
