@@ -12,7 +12,8 @@
 import { INTELLIGENCE_MODELS } from '@/lib/ai/types'
 import { extractJsonObject } from '@/lib/ai/parse'
 import type { IntelligenceClient } from '@/lib/ai/client'
-import { textResult, type Capability, type CopilotResult } from '../types'
+import { textResult, type Attachment, type Capability, type CanvasContext, type CopilotResult } from '../types'
+import { withHistory, type Turn } from '../history'
 
 // ── Renderer payload (PURE-parser output; unit-tested) ───────────────────────
 
@@ -90,11 +91,12 @@ export const proposalDraftCapability: Capability = {
       'Draft an email proposal for a distributor interested in our generators',
     ],
   },
-  async run(client: IntelligenceClient, text: string): Promise<CopilotResult> {
+  async run(client: IntelligenceClient, text: string, _attachment?: Attachment, _context?: CanvasContext, history?: Turn[]): Promise<CopilotResult> {
     const raw = await client.complete({
       model: INTELLIGENCE_MODELS.reason,
       system: SYSTEM,
-      user: text,
+      cacheSystem: true, // constant per capability — cached, not re-billed per ask
+      user: withHistory(text, history),
       maxTokens: 900,
     })
     const obj = extractJsonObject(raw)

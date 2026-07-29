@@ -1,7 +1,8 @@
 // src/lib/ai — TOWER Intelligence (the Claude API layer, Wave 4).
 //
-//   claude-haiku-4-5-20251001 → triage / lead scoring (classify tier)
-//   claude-sonnet-5           → spec extraction, weekly briefs (reason tier)
+//   claude-opus-5 → triage / lead scoring / routing (classify tier)
+//   claude-opus-5 → spec extraction, weekly briefs (reason tier)
+// Both tiers run Opus 5; the tier names are ROLES, not model pins (lib/ai/types.ts).
 //
 // Directive 7 (CLAUDE.md core law): Intelligence proposes, humans dispose. Every
 // output here is an AiDraft with its confidence shown; it lands as an

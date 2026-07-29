@@ -18,10 +18,16 @@ import { requireApiUser } from '../_lib/drafts'
 import { wrapAnthropic } from '@/lib/torre/agent/anthropic-runner'
 import { createTorreProvider } from '@/lib/torre/agent/provider'
 import { runTorreAgent } from '@/lib/torre/agent/run'
+import { deadlineSignal } from '@/lib/ai/resilience'
+import { TORRE_RUN_BUDGET_MS } from '@/lib/ai/budget'
 import type { QuoteLaneRow } from '@/lib/torre/quote-core'
 
 export const runtime = 'nodejs'
-export const maxDuration = 120
+// 60s is the platform ceiling on this plan (lib/ai/budget.ts) — this route asked
+// for 120 and always received 60, so a long run was killed mid-stream with no
+// terminal frame. The run now stops ITSELF at TORRE_RUN_BUDGET_MS, in time to
+// close the stream properly.
+export const maxDuration = 60
 
 const bodySchema = z.object({
   laneId: z.string().uuid(),
@@ -87,6 +93,11 @@ export async function POST(request: NextRequest) {
       // Heartbeat: a comment frame keeps intermediaries from idle-timing-out the stream
       // during a long Sonnet turn (steps can be tens of seconds apart).
       const heartbeat = setInterval(() => enqueue(encoder.encode(': ping\n\n')), 15000)
+      // Stop the run before the PLATFORM does. A step count cannot bound wall
+      // clock — six model turns can exceed 60s on their own — and being killed
+      // by the platform severs the stream with no `done`, leaving the UI waiting
+      // forever. Our own deadline ends it with frames the client can render.
+      const deadline = deadlineSignal(request.signal, TORRE_RUN_BUDGET_MS)
       try {
         await runTorreAgent({
           routerClient,
@@ -94,14 +105,17 @@ export async function POST(request: NextRequest) {
           provider,
           text: body.text,
           today,
-          maxSteps: 6, // bounded run within maxDuration (each step is a Sonnet turn)
-          signal: request.signal,
+          maxSteps: 6, // upper bound on steps; the deadline is the real limit
+          signal: deadline.signal,
           onEvent: (e) => enqueue(sse(e.type, e)),
         })
       } catch (err) {
         console.error('[ai/torre]', err)
         enqueue(sse('error', { code: 'AI_ERROR', message: 'La corrida falló / The run failed' }))
       } finally {
+        // Release the timer first — a pending one would hold the function open
+        // for its whole platform budget after the work is already done.
+        deadline.dispose()
         clearInterval(heartbeat)
         enqueue(sse('done', {}))
         controller.close()

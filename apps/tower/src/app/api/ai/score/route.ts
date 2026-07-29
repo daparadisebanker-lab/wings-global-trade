@@ -1,5 +1,5 @@
 // POST /api/intelligence/score  (API_MAP: POST /api/ai/score — nightly batch)
-// Lead-score an account 0–100 by the lane's archetype behaviour (haiku). Auth'd;
+// Lead-score an account 0–100 by the lane's archetype behaviour. Auth'd;
 // the score lands as a DRAFT — approveLeadScore writes accounts.score, not this.
 import type { NextRequest } from 'next/server'
 import { z, ZodError } from 'zod'

@@ -16,6 +16,7 @@ import type {
   Origin,
 } from '@/lib/costing/types'
 import { textResult, type Capability, type CanvasContext, type CopilotResult, type SeededFrom } from '../types'
+import { withHistory, type Turn } from '../history'
 import { inheritedCostingLabels, safeSeq } from '../canvas-seed'
 
 // ── The renderer payload (ImportResult + display extras) ─────────────────────
@@ -128,13 +129,18 @@ export const landedCostCapability: Capability = {
       'Costo de importación de una moto 150cc gasolina FOB 1,200 desde China',
       '¿Cuál es el landed cost de un montacargas a 14,000 FOB con Ad Valorem 6%?',
       'Landed cost for a diesel generator, CIF 8,500, margin 15%',
+      // Continuation: the operator is answering Mister's request for the price to
+      // cost the import — the product came from the previous turn.
+      'El precio es 25,000',
+      'Cuéstame la importación de eso',
     ],
   },
-  async run(client: IntelligenceClient, text: string, _attachment, context?: CanvasContext): Promise<CopilotResult> {
+  async run(client: IntelligenceClient, text: string, _attachment, context?: CanvasContext, history?: Turn[]): Promise<CopilotResult> {
     const raw = await client.complete({
       model: INTELLIGENCE_MODELS.reason,
       system: SYSTEM,
-      user: text,
+      cacheSystem: true, // constant per capability — cached, not re-billed per ask
+      user: withHistory(text, history),
       maxTokens: 600,
     })
     const obj = extractJsonObject(raw)

@@ -331,7 +331,7 @@ export function ShellChrome({
       data-dock-pinned={dockPinned}
       className="tower-premium-ground min-h-screen bg-surface-0 text-ink-primary"
     >
-     <MisterProvider locale={DEFAULT_LOCALE}>
+     <MisterProvider locale={DEFAULT_LOCALE} identity={userEmail}>
       <RouteProgress />
       <div className="flex min-h-screen">
         {/* Mobile drawer backdrop */}

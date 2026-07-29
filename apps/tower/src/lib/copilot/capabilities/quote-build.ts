@@ -20,7 +20,8 @@ import type { IntelligenceClient } from '@/lib/ai/client'
 import { computeImportCost, DEFAULT_INPUTS } from '@/lib/costing/engine'
 import type { FuelType, Incoterm } from '@/lib/costing/types'
 import { addMinor, lineTotalMinor } from '@/lib/money'
-import { textResult, type Capability, type CopilotResult } from '../types'
+import { textResult, type Attachment, type Capability, type CanvasContext, type CopilotResult } from '../types'
+import { withHistory, type Turn } from '../history'
 
 // ── Renderer payload (PURE-resolver output; unit-tested) ─────────────────────
 
@@ -232,13 +233,18 @@ export const quoteBuildCapability: Capability = {
       'Cotiza 200 scooters eléctricos a 22% de margen sobre un FOB de 128',
       'Ármame una cotización: 50 generadores diésel a 8,500 cada uno para este cliente',
       'Quote 100 forklifts, cost them at 18% margin over 14,000 FOB',
+      // Continuations: the renglones came from an earlier turn (a supplier extract,
+      // a correction). The classifier gets the transcript — these are its shape.
+      'Ayúdame a crear una cotización',
+      'Ármame la cotización con eso',
     ],
   },
-  async run(client: IntelligenceClient, text: string): Promise<CopilotResult> {
+  async run(client: IntelligenceClient, text: string, _attachment?: Attachment, _context?: CanvasContext, history?: Turn[]): Promise<CopilotResult> {
     const raw = await client.complete({
       model: INTELLIGENCE_MODELS.reason,
       system: SYSTEM,
-      user: text,
+      cacheSystem: true, // constant per capability — cached, not re-billed per ask
+      user: withHistory(text, history),
       maxTokens: 1100,
     })
     const obj = extractJsonObject(raw)

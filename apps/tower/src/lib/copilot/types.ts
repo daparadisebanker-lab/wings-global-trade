@@ -15,6 +15,7 @@ import type { IntelligenceClient, ImageInput } from '@/lib/ai/client'
 import type { ImportInputs } from '@/lib/costing/types'
 import type { Localized } from '@/lib/i18n'
 import type { ContainerFitInput } from './container-fit'
+import type { Turn } from './history'
 
 /** An attachment the operator sends with a message — currently a pasted/added image. */
 export type Attachment = ImageInput
@@ -82,8 +83,20 @@ export interface Capability {
    * optional `context` is the canvas working memory of the artifact the operator
    * had open — a capability may seed unspecified fields from it (Part B); ignoring
    * it is fine (a fewer-param run still satisfies this contract).
+   *
+   * `history` is the recent conversation (history.ts). A capability whose inputs
+   * can arrive across turns — a price given after Mister asked for it, a MOQ
+   * corrected before "ármame la cotización" — should fold it into its extraction
+   * turn with `withHistory(text, history)`. Capabilities whose input is always
+   * self-contained (a document search, a vision extract) ignore it.
    */
-  run(client: IntelligenceClient, text: string, attachment?: Attachment, context?: CanvasContext): Promise<CopilotResult>
+  run(
+    client: IntelligenceClient,
+    text: string,
+    attachment?: Attachment,
+    context?: CanvasContext,
+    history?: Turn[],
+  ): Promise<CopilotResult>
 }
 
 /** A plain-text result — the graceful fallback every capability can return. */

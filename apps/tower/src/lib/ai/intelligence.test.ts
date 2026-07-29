@@ -10,6 +10,7 @@ import {
   parseWeeklyBriefDraft,
   type TriageLaneCandidate,
 } from './parse'
+import { INTELLIGENCE_MODELS } from './types'
 import { runTriage, type TriageLane } from './triage'
 import { runSpecExtract } from './spec-extract'
 import type { IntelligenceClient } from './client'
@@ -172,7 +173,7 @@ describe('runTriage (fake client)', () => {
       complete: JSON.stringify({ laneCode: 'WGT/01', draftReplyEs: 'a', draftReplyEn: 'b', confidence: 0.55 }),
     })
     const draft = await runTriage(client, { inboundText: 'need 2 excavators', lanes })
-    expect(draft.model).toBe('claude-haiku-4-5-20251001')
+    expect(draft.model).toBe(INTELLIGENCE_MODELS.classify)
     expect(draft.draft.proposedLaneId).toBe('lane-uuid-1')
     expect(draft.confidence).toBeCloseTo(0.55)
   })

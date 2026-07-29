@@ -168,7 +168,7 @@ const ROUTER_SYSTEM = [
 ].join('\n')
 
 /**
- * Route an operator request to a profile + urgency. Uses the Haiku classifier when a
+ * Route an operator request to a profile + urgency. Uses the model classifier when a
  * client is available and its reply is valid; otherwise returns the heuristic decision.
  * NEVER throws — a routing failure degrades to the deterministic heuristic.
  */
