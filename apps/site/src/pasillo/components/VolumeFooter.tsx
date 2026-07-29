@@ -49,7 +49,7 @@ export function VolumeFooter({
 
   return (
     <section className="border-t pas-rule-hard bg-pas-surface px-4 py-3">
-      <div className="mx-auto max-w-3xl">
+      <div className="pas-measure">
         <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
           {/* EMPTY IS PROSE, NOT A TOTAL.
               This slot used to render the empty state inside the basis button,

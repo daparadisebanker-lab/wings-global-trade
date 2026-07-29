@@ -71,7 +71,7 @@ export function TradeDesk() {
   return (
     <div className="flex min-h-dvh flex-col bg-pas-surface">
       <header className="border-b pas-rule px-4 py-4">
-        <div className="mx-auto flex max-w-4xl items-baseline justify-between gap-4">
+        <div className="pas-measure flex items-baseline justify-between gap-4">
           <div>
             <LaneExit />
             <h1 className="font-pas-display text-pas-t2 font-semibold tracking-pas-display">
@@ -84,7 +84,7 @@ export function TradeDesk() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-pas-5">
+      <main className="pas-measure flex-1 px-4 py-pas-5">
         {rows.length === 0 ? (
           <p className="border pas-rule px-pas-6 py-pas-7 text-center text-pas-t1 opacity-pas-resting">
             Marca referencias en el muestrario y aparecerán aquí para cotizar.{' '}
@@ -177,13 +177,19 @@ export function TradeDesk() {
               <table className="w-full border-collapse">
                 <thead>
                   <tr className="border-b pas-rule-hard">
+                    {/* Acabado absorbs the slack (w-full on one cell of an
+                        auto-layout table), so the four numeric columns group at
+                        the right edge instead of floating mid-table with 200px of
+                        ground on either side of them at 1280. Figures right,
+                        identity left — the shape every buyer already reads a
+                        quotation in. */}
                     {['Código', 'Serie', 'Acabado', `Cant. (${BASIS_LABEL[basis]})`, 'Cajas', 'm²', 'kg', ''].map(
                       (h, i) => (
                         <th
                           key={h || i}
                           className={`pas-stamp py-2 font-normal opacity-pas-resting ${
                             i >= 3 && i <= 6 ? 'text-right' : 'text-left'
-                          }`}
+                          } ${i === 2 ? 'w-full' : 'whitespace-nowrap'}`}
                         >
                           {h}
                         </th>
@@ -311,8 +317,11 @@ export function TradeDesk() {
             onKind={setKind}
           />
           <div className="border-t pas-rule bg-pas-surface px-4 py-4">
-            <div className="mx-auto max-w-4xl">
-              <div className="flex gap-3">
+            <div className="pas-measure">
+              {/* Capped, not stretched. Two 620px slabs at 1280 is the send bar
+                  of a phone blown up; equal weight is about the PAIR being
+                  identical, which a 448px pair satisfies exactly as well. */}
+              <div className="flex max-w-md gap-3">
                 {/* Equal weight is spec law (§4.12), not a preference: the
                     buyer's counterpart uses one or the other and the tool does
                     not get to nominate a favourite. Both filled, identically. */}

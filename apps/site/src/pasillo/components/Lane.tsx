@@ -258,15 +258,16 @@ export function Lane({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
             {/* The booth needs a measure, but not the same one at every size.
                 Unconstrained it stretched to 1440px: the face grid clipped its
                 second row to a sliver, thumbs blew up to ~630px and the actions
-                became 940px pills. Pinned at max-w-2xl it did the opposite on a
-                desktop — a 672px column of six tiles inside 1440px of empty
+                became 940px pills. Pinned at a phone measure it did the opposite
+                on a desktop — a 672px column of six tiles inside 1440px of empty
                 ground, on a screen where a buyer opens this precisely to see the
-                colour big. So the measure grows with the grid: 2xl through the
-                2- and 3-column steps, 5xl at lg where the grid is 4 across and
-                each face lands near 250px.
+                colour big. .pas-measure is the aisle's one measure and it grows
+                with the grid: at lg the grid is 4 across and each face lands near
+                270px. The scrubber below rides the SAME class, which is the only
+                way the rail and the column it indexes cannot drift apart.
                 pt-pas-8 clears the fixed control band (exit stamp + switch). */}
             <div
-              className={`mx-auto flex h-full w-full max-w-2xl flex-col px-pas-5 pt-pas-8 transition-opacity duration-pas-cross lg:max-w-5xl ${
+              className={`pas-measure flex h-full flex-col px-pas-5 pt-pas-8 transition-opacity duration-pas-cross ${
                 swapping ? 'opacity-0' : 'opacity-100'
               }`}
             >
@@ -384,7 +385,7 @@ function LaneActions({
 }) {
   // Everything interactive stays in the bottom 60% — one-handed, 24 booths.
   return (
-    <div className="mx-auto w-full max-w-2xl shrink-0 px-pas-5 pb-24 pt-3 pr-12">
+    <div className="pas-measure shrink-0 px-pas-5 pb-24 pr-12 pt-3">
       {/* GOING BACK.
           The edge scrubber can reach any booth, but it is a bare rail of ticks
           with no label — a buyer who has just passed a series by mistake has no
@@ -393,7 +394,11 @@ function LaneActions({
           named control, in the thumb zone, that says what it does.
           It is hidden at the first booth rather than disabled, because a dead
           control a buyer can press is worse than one that is not there. */}
-      <div className="mb-3 flex min-h-[1.25rem] items-center justify-between gap-3">
+      {/* Capped to the same column as the buttons below. Left free, justify-between
+          pushed the keyboard legend to the far end of the booth's measure — 600px
+          from the two controls it describes, on the widest screens, which is where
+          a keyboard is actually in use. */}
+      <div className="mb-3 flex min-h-[1.25rem] max-w-md items-center justify-between gap-3">
         {index > 0 ? (
           <button
             type="button"
@@ -419,7 +424,13 @@ function LaneActions({
       {/* data-tour is a CONTRACT, not a hook of convenience: the tour targets
           these by attribute and never by class, because class names change
           under restyling and take the tour with them, silently. */}
-      <div data-tour="lane-actions" className="flex items-center gap-3">
+      {/* THE BUTTONS DO NOT GROW WITH THE BOOTH.
+          flex-1 inside the booth's measure is right at 390px, where a thumb
+          wants the whole width, and absurd at 1280, where it drew two 620px
+          pills for a click a mouse makes in 24px of travel. The row keeps the
+          booth's left edge — the verdict belongs under the faces it judges —
+          and caps its own width, so the pair stays a pair of buttons. */}
+      <div data-tour="lane-actions" className="flex max-w-md items-center gap-3">
         {/* py-3 lands these at ~47px — past the 44px floor, and on the frozen
             scale, where py-3.5 (14px) was not. */}
         <button
@@ -475,58 +486,71 @@ function EdgeScrubber({ index, onGo }: { index: number; onGo: (i: number) => voi
   })
 
   return (
+    // THE RAIL BELONGS TO THE BOOTH, NOT TO THE WINDOW.
+    // Pinned to right-0 it sat on the viewport edge — at 1920 that is ~450px of
+    // empty ground away from the column it indexes, so the one element tying the
+    // record to the walk read as unrelated furniture.
+    //
+    // This wrapper ONLY positions: it rides the booth's own measure and takes no
+    // pointer events, so a full-width band cannot swallow taps across the whole
+    // booth. The slider is the child, and keeps its 44px grab area.
     <div
-      {...bind()}
-      role="slider"
-      aria-label="Recorrer el catálogo"
-      aria-valuemin={1}
-      aria-valuemax={LANE.length}
-      aria-valuenow={index + 1}
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'ArrowDown') onGo(index + 1)
-        if (e.key === 'ArrowUp') onGo(index - 1)
-      }}
-      // 3px rail, 44px invisible hit area
-      className="absolute bottom-0 right-0 top-pas-8 z-10 flex w-11 cursor-ns-resize touch-none justify-end"
+      className="pas-measure pointer-events-none absolute inset-x-0 bottom-0 top-pas-8 z-10
+                 flex justify-end px-pas-5"
     >
-      {/* The rail stays 3px; the MARKS protrude. At 3px wide and 25% opacity
-          on a near-black ground, collected and passed were indistinguishable —
-          which cost the signature element its entire point: the record and the
-          walk being the same object seen twice. Values stay on the 4/8 steps. */}
-      {/* Names the rail the moment it is touched or focused. Without this it
-          is a column of ticks that a buyer has no reason to believe is a
-          control — the concept was sound and completely unannounced. */}
-      <span
-        aria-hidden
-        className={`pas-stamp pointer-events-none absolute right-11 top-1/2 -translate-y-1/2 whitespace-nowrap
-                    rounded-pas-chrome bg-pas-surface px-2 py-1 text-pas-ink transition-opacity duration-pas-light
-                    ${scrubbing ? 'opacity-pas-lit' : 'opacity-0'}`}
+      <div
+        {...bind()}
+        role="slider"
+        aria-label="Recorrer el catálogo"
+        aria-valuemin={1}
+        aria-valuemax={LANE.length}
+        aria-valuenow={index + 1}
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'ArrowDown') onGo(index + 1)
+          if (e.key === 'ArrowUp') onGo(index - 1)
+        }}
+        // 3px rail, 44px invisible hit area
+        className="pointer-events-auto relative flex w-11 cursor-ns-resize touch-none justify-end"
       >
-        Serie {String(index + 1).padStart(2, '0')} / {LANE.length}
-      </span>
-      <div ref={railRef} className="my-pas-6 mr-2 flex w-[3px] flex-col items-end justify-between">
-        {LANE.map((s: Series, i) => {
-          const isCollected = rec.isCollected(s.series_uid)
-          const isPassed = rec.passed.has(s.series_uid)
-          return (
-            <span
-              key={s.series_uid}
-              aria-hidden
-              className={`block transition-[width,height,background-color,opacity] duration-pas-light ${
-                i === index ? 'h-4' : 'h-2'
-              } ${
-                isCollected
-                  ? 'w-2 bg-pas-surface'
-                  : isPassed
-                    ? 'w-full border border-pas-surface/40 bg-transparent'
-                    : i === index
-                      ? 'w-full bg-pas-surface'
-                      : 'w-full bg-pas-surface/25'
-              }`}
-            />
-          )
-        })}
+        {/* The rail stays 3px; the MARKS protrude. At 3px wide and 25% opacity
+            on a near-black ground, collected and passed were indistinguishable —
+            which cost the signature element its entire point: the record and the
+            walk being the same object seen twice. Values stay on the 4/8 steps. */}
+        {/* Names the rail the moment it is touched or focused. Without this it
+            is a column of ticks that a buyer has no reason to believe is a
+            control — the concept was sound and completely unannounced. */}
+        <span
+          aria-hidden
+          className={`pas-stamp pointer-events-none absolute right-11 top-1/2 -translate-y-1/2 whitespace-nowrap
+                      rounded-pas-chrome bg-pas-surface px-2 py-1 text-pas-ink transition-opacity duration-pas-light
+                      ${scrubbing ? 'opacity-pas-lit' : 'opacity-0'}`}
+        >
+          Serie {String(index + 1).padStart(2, '0')} / {LANE.length}
+        </span>
+        <div ref={railRef} className="my-pas-6 mr-2 flex w-[3px] flex-col items-end justify-between">
+          {LANE.map((s: Series, i) => {
+            const isCollected = rec.isCollected(s.series_uid)
+            const isPassed = rec.passed.has(s.series_uid)
+            return (
+              <span
+                key={s.series_uid}
+                aria-hidden
+                className={`block transition-[width,height,background-color,opacity] duration-pas-light ${
+                  i === index ? 'h-4' : 'h-2'
+                } ${
+                  isCollected
+                    ? 'w-2 bg-pas-surface'
+                    : isPassed
+                      ? 'w-full border border-pas-surface/40 bg-transparent'
+                      : i === index
+                        ? 'w-full bg-pas-surface'
+                        : 'w-full bg-pas-surface/25'
+                }`}
+              />
+            )
+          })}
+        </div>
       </div>
     </div>
   )
