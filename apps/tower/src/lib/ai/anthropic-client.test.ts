@@ -52,6 +52,32 @@ describe('AnthropicIntelligenceClient request shape', () => {
     expect(cap.create?.thinking).toBeUndefined()
   })
 
+  it('marks a long identical system prompt cacheable, and leaves a short one plain', async () => {
+    const long = 'L'.repeat(2_500)
+    const capLong: { create?: CreateBody } = {}
+    await new AnthropicIntelligenceClient(stubSdk(capLong)).complete({
+      model: 'claude-opus-5', system: long, user: 'hi', maxTokens: 100, cacheSystem: true,
+    })
+    expect(capLong.create?.system).toEqual([
+      { type: 'text', text: long, cache_control: { type: 'ephemeral' } },
+    ])
+
+    // Below the threshold the cache write would cost more than it saves.
+    const capShort: { create?: CreateBody } = {}
+    await new AnthropicIntelligenceClient(stubSdk(capShort)).complete({
+      model: 'claude-opus-5', system: 'short', user: 'hi', maxTokens: 100, cacheSystem: true,
+    })
+    expect(capShort.create?.system).toBe('short')
+  })
+
+  it('never caches a system prompt that did not ask to be cached', async () => {
+    const cap: { create?: CreateBody } = {}
+    await new AnthropicIntelligenceClient(stubSdk(cap)).complete({
+      model: 'claude-opus-5', system: 'S'.repeat(5_000), user: 'hi', maxTokens: 100,
+    })
+    expect(typeof cap.create?.system).toBe('string')
+  })
+
   it('sends an image block before the text on a vision turn', async () => {
     const cap: { create?: CreateBody } = {}
     const client = new AnthropicIntelligenceClient(stubSdk(cap))

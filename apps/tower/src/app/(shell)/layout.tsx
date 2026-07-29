@@ -7,6 +7,22 @@ import { getMyRepProfile } from '@/lib/actions/rep-profile'
 import { getMentionStatus } from '@/lib/actions/team-space'
 
 /**
+ * Function budget for every (shell) route — and, critically, for the SERVER
+ * ACTIONS invoked from them, which run in this segment's function rather than in
+ * a route of their own.
+ *
+ * Mister's dock is global chrome, so `askMister` runs here. Every AI *route*
+ * (/api/ai/*) already declares 30–120s; the action path declared nothing and so
+ * inherited the platform default, which is far below what two Opus calls need.
+ * Under load that is a hard ceiling no amount of application tuning can lift: the
+ * function is killed mid-call and the operator gets a generic client-side
+ * failure. 60s leaves room above the ask's own 38s budget (lib/actions/
+ * mister-copilot.ts) so OUR deadline is always the one that fires — a timeout we
+ * control returns a real message; a platform kill returns nothing.
+ */
+export const maxDuration = 60
+
+/**
  * Server layout for every (shell) route. Fetches the current user + their lane
  * memberships server-side (RLS-scoped) and hands them to the client chrome. If
  * the DB isn't reachable yet (Wave-1, empty tower schema) both degrade to empty

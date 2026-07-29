@@ -73,6 +73,9 @@ export async function classify(
   const raw = await client.complete({
     model: INTELLIGENCE_MODELS.classify,
     system: routerSystem(),
+    // Byte-identical on every ask (the capability list + routing law), and the
+    // highest-frequency prompt in the app — the single best caching candidate.
+    cacheSystem: true,
     user: renderTranscript(history) + hint + `MENSAJE A CLASIFICAR:\n${text}`,
     // Room for the fallback `reply` on the 'none' path. A capability match emits
     // ~15 tokens, so the larger ceiling costs nothing in the common case — output

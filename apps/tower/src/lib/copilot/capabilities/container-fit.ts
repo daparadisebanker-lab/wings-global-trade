@@ -59,6 +59,7 @@ export const containerFitCapability: Capability = {
     const raw = await client.complete({
       model: INTELLIGENCE_MODELS.reason,
       system: SYSTEM,
+      cacheSystem: true, // constant per capability — cached, not re-billed per ask
       user: withHistory(text, history),
       maxTokens: 500,
     })

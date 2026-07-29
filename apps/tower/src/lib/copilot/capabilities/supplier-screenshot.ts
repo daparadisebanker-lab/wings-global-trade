@@ -176,6 +176,7 @@ export const supplierScreenshotCapability: Capability = {
     const raw = await client.complete({
       model: INTELLIGENCE_MODELS.reason,
       system: SYSTEM,
+      cacheSystem: true, // constant per capability — cached, not re-billed per ask
       user: text.trim() || 'Extrae la oferta del proveedor de esta captura.',
       maxTokens: 900,
       image: attachment,

@@ -21,6 +21,21 @@ function withThinkingOff<T extends object>(params: T, model: string): T {
   return params
 }
 
+/** Prompt caching needs a minimum prompt length to be accepted at all, and below
+ *  roughly this size the saving would not pay for the cache write anyway. Short
+ *  system prompts are sent plain. */
+const MIN_CACHEABLE_SYSTEM_CHARS = 2_000
+
+/** Build the `system` field: a plain string, or — for a byte-identical prompt big
+ *  enough to be worth it — a single text block marked cacheable. Under load the
+ *  Mister router sends the SAME ~1k-token capability list on every ask; caching it
+ *  cuts that from full price per ask to one write per window, which is headroom
+ *  against the org's token-per-minute ceiling, not just a smaller bill. */
+function systemField(system: string, cacheSystem: boolean | undefined): unknown {
+  if (!cacheSystem || system.length < MIN_CACHEABLE_SYSTEM_CHARS) return system
+  return [{ type: 'text', text: system, cache_control: { type: 'ephemeral' } }]
+}
+
 /** Per-request ceiling so a hung or slow Anthropic call fails fast with a clean
  *  thrown error instead of inheriting the SDK's ~10-minute default — which would
  *  hang the caller (e.g. the Mister dock's server action) with no recovery. Kept
@@ -47,6 +62,23 @@ export interface CompletionRequest {
   maxTokens: number
   /** Optional image for a vision turn (supplier screenshots). Ignored by `stream`. */
   image?: ImageInput
+  /**
+   * Milliseconds this call may take, injected by the resilience wrapper as what
+   * REMAINS of the whole ask's budget (lib/ai/resilience.ts). Absent → the
+   * standard per-request ceiling. Capped at REQUEST_TIMEOUT_MS either way, so a
+   * caller can shrink the budget but never extend it.
+   */
+  budgetMs?: number
+  /**
+   * Mark the system prompt as cacheable. Set it for a prompt that is BYTE-
+   * IDENTICAL across calls — the router's capability list, a capability's
+   * extraction schema. Under load this is the difference between paying full
+   * input price on every ask and paying it once per cache window, which raises
+   * how far the org's token-per-minute ceiling stretches. Never set it on a
+   * prompt that interpolates per-ask data: that would write a new cache entry
+   * every time and cost more than not caching.
+   */
+  cacheSystem?: boolean
 }
 
 /**
@@ -82,18 +114,28 @@ export class AnthropicIntelligenceClient implements IntelligenceClient {
           { type: 'text' as const, text: req.user },
         ])
       : req.user
-    const res = await this.sdk.messages.create(
-      withThinkingOff(
-        {
-          model: req.model,
-          max_tokens: req.maxTokens,
-          system: req.system,
-          messages: [{ role: 'user', content }],
-        },
-        req.model,
-      ),
-      { timeout: REQUEST_TIMEOUT_MS },
+    // A caller-supplied budget may only SHRINK the ceiling, never extend it — the
+    // 40s invariant against the dock's 45s watchdog has to survive any caller.
+    const timeout =
+      typeof req.budgetMs === 'number' && Number.isFinite(req.budgetMs)
+        ? Math.max(1, Math.min(REQUEST_TIMEOUT_MS, Math.floor(req.budgetMs)))
+        : REQUEST_TIMEOUT_MS
+    const params = withThinkingOff(
+      {
+        model: req.model,
+        max_tokens: req.maxTokens,
+        // Keep the plain string here so the SDK's NON-streaming overload resolves;
+        // the cacheable block form is assigned below, like `thinking`.
+        system: req.system,
+        // `as const` — without the contextual typing the inline call used to give
+        // it, `role` widens to string and stops matching MessageParam.
+        messages: [{ role: 'user' as const, content }],
+      },
+      req.model,
     )
+    const sys = systemField(req.system, req.cacheSystem)
+    if (typeof sys !== 'string') (params as Record<string, unknown>).system = sys
+    const res = await this.sdk.messages.create(params, { timeout })
     let text = ''
     for (const block of res.content) {
       if (block.type === 'text') text += block.text
