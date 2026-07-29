@@ -24,6 +24,7 @@ import { askMister } from '@/lib/actions/mister-copilot'
 import { textResult, type CanvasContext, type CopilotResult, type SeededFrom } from '@/lib/copilot/types'
 import { artifactDigest, MAX_HISTORY_TURNS, type Turn } from '@/lib/copilot/history'
 import { loadThread, saveThread, threadStorageKey, type MisterMsg } from '@/lib/copilot/thread-store'
+import { MISTER_BUDGET } from '@/lib/ai/budget'
 import { MISTER_RENDERERS } from '../mister-renderers'
 import { deriveParentSeq } from './lineage'
 
@@ -40,7 +41,7 @@ export type { MisterMsg }
 /** Watchdog for a single ask. A server action can't be aborted from the client, so
  *  if the model hangs we stop waiting after this and free the dock (the in-flight
  *  call is abandoned; the server-side timeout in lib/ai/client.ts bounds its cost). */
-const MISTER_TIMEOUT_MS = 45_000
+const MISTER_TIMEOUT_MS = MISTER_BUDGET.clientWatchdogMs
 
 /** Never render a blank Mister bubble: an empty/whitespace text result becomes an
  *  explicit "try again" message (the silent-empty-answer failure class). */

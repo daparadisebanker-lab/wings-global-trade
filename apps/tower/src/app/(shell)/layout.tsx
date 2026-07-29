@@ -13,12 +13,22 @@ import { getMentionStatus } from '@/lib/actions/team-space'
  *
  * Mister's dock is global chrome, so `askMister` runs here. Every AI *route*
  * (/api/ai/*) already declares 30–120s; the action path declared nothing and so
- * inherited the platform default, which is far below what two Opus calls need.
- * Under load that is a hard ceiling no amount of application tuning can lift: the
- * function is killed mid-call and the operator gets a generic client-side
- * failure. 60s leaves room above the ask's own 38s budget (lib/actions/
- * mister-copilot.ts) so OUR deadline is always the one that fires — a timeout we
- * control returns a real message; a platform kill returns nothing.
+ * inherited the platform default, far below what two Opus calls need. The
+ * function is then killed mid-call: no message, no log line, no cause — a hard
+ * ceiling no application tuning can lift. Verified in the build output
+ * (.next/server/functions-config-manifest.json): this export propagates to all
+ * 31 child pages of the group.
+ *
+ * ── This number MUST be a literal. ──
+ * Next static-analyses the export; `MISTER_BUDGET.functionSeconds` fails the
+ * build with "Unsupported node type MemberExpression". So the one rung of the
+ * timeout ladder that matters most is the one that cannot be imported from it.
+ * That is exactly why lib/ai/budget.test.ts parses this file and asserts the
+ * value still sits outside the client watchdog — the test is the only thing
+ * keeping these two in step.
+ *
+ * 60, not more: it is the largest value valid on every Vercel plan (Hobby caps
+ * at 60), so this can never become an environment-dependent failure.
  */
 export const maxDuration = 60
 

@@ -12,13 +12,14 @@ import { routeAndRun } from '@/lib/copilot/router'
 import { sanitizeCanvasContext } from '@/lib/copilot/context-guard'
 import { sanitizeHistory, type Turn } from '@/lib/copilot/history'
 import { classifyError, resilient, type CallOutcome, type FailureClass } from '@/lib/ai/resilience'
+import { MISTER_BUDGET } from '@/lib/ai/budget'
 import { textResult, type Attachment, type CanvasContext, type CopilotResult } from '@/lib/copilot/types'
 import { ok, fail, type ActionResult } from './result'
 
-/** The whole ask's budget, shared across its model calls. Under the dock's 45s
- *  client watchdog so the SERVER gives up first and the operator gets a real
- *  message instead of the generic client-side timeout. */
-const ASK_BUDGET_MS = 38_000
+/** The whole ask's budget, shared across its model calls — one rung of the
+ *  timeout ladder in lib/ai/budget.ts, which documents and tests the ordering
+ *  that makes it work. */
+const ASK_BUDGET_MS = MISTER_BUDGET.askMs
 
 /** What the operator reads when an ask fails, by cause. A rate limit is transient
  *  and worth retrying; a bad payload is not, and telling someone to "try again"

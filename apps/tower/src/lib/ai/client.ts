@@ -9,6 +9,7 @@
 // dependency this workspace does not carry.
 import Anthropic from '@anthropic-ai/sdk'
 import { THINKING_ON_BY_DEFAULT, type IntelligenceModel } from './types'
+import { MISTER_BUDGET } from './budget'
 
 /** Attach `thinking: { disabled }` for a thinking-on-by-default model, in a shape
  *  the pinned SDK's params type predates (runtime-only key; sent on the wire). Left
@@ -44,7 +45,7 @@ function systemField(system: string, cacheSystem: boolean | undefined): unknown 
  *  IS the worst-case wall clock — with the SDK's default 2 retries a timed-out call
  *  would be re-tried up to 3× (~120s), blowing straight past the 45s watchdog and
  *  making this invariant false in exactly the hang it guards against. */
-const REQUEST_TIMEOUT_MS = 40_000
+const REQUEST_TIMEOUT_MS = MISTER_BUDGET.perCallMs
 
 /** A base64 image attached to a completion — the supplier-screenshot vision path. */
 export interface ImageInput {
