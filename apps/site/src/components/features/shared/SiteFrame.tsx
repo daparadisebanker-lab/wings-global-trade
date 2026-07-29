@@ -21,10 +21,36 @@
 //
 // The lane page at /interiores is NOT gated. It is an ordinary Wings page.
 
+import { useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { isAislePath } from '@/pasillo/lib/routes'
+import { laneFromPath } from '@/lib/lanes/registry'
 import { PageTransition } from '@/components/features/shared/PageTransition'
 import { SmoothScroll } from '@/components/features/shared/SmoothScroll'
+
+/**
+ * Stamps the current lane on <html>, so the site chrome can theme itself.
+ *
+ * SiteNav and the footer are SIBLINGS of the lane wrapper in the root layout —
+ * they sit outside `[data-lane]` and cannot see it through the cascade, which is
+ * why the header and footer stayed machinery navy on a bone lane. Putting the
+ * attribute at the document root lets one nav serve every lane. The alternative
+ * was a forked navigation per lane, which root §1.1 forbids outright.
+ */
+export function LaneScope() {
+  const path = usePathname()
+  // The aisle is excluded on purpose. It drops the chrome entirely, so it has
+  // nothing to theme — and stamping the lane on <html> would paint bone behind a
+  // deliberately achromatic near-black tool, which shows on overscroll bounce.
+  const lane = isAislePath(path) ? null : laneFromPath(path)
+  useEffect(() => {
+    const el = document.documentElement
+    if (lane) el.setAttribute('data-lane', lane)
+    else el.removeAttribute('data-lane')
+    return () => el.removeAttribute('data-lane')
+  }, [lane])
+  return null
+}
 
 /** Renders its children on every route except the aisle. */
 export function ChromeGate({ children }: { children: React.ReactNode }) {

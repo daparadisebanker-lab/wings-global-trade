@@ -109,19 +109,23 @@ export function Lista({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
               100% occluded at 390px, invisible and untappable. And it read "Al
               catálogo", which collides with the machinery Catálogo in the global
               nav: the same word naming two different trees. */}
-          <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
-            <div>
-              <LaneExit />
-              <h1 className="font-pas-display text-pas-t2 font-semibold tracking-pas-display">
-                {rows.length} {rows.length === 1 ? 'referencia' : 'referencias'}
-              </h1>
-            </div>
-            {allAvailable && rows.length > 0 && (
-              // Stated once, so 236 identical green lamps stop being noise and an
-              // exception can actually pop.
-              <p className="pas-stamp opacity-pas-resting">Disponibles salvo indicación</p>
-            )}
+          {/* The fixed density switch owns the top-right band. Nothing else
+              may sit in it: the availability note used to, and truncated
+              mid-word under the pill. pr reserves the switch's width so the
+              exit stamp and the count can never slide beneath it either. */}
+          <div className="flex flex-col gap-1 pr-[11.5rem]">
+            <LaneExit />
+            <h1 className="font-pas-display text-pas-t2 font-semibold tracking-pas-display">
+              {rows.length} {rows.length === 1 ? 'referencia' : 'referencias'}
+            </h1>
           </div>
+
+          {allAvailable && rows.length > 0 && (
+            // Stated once, so 236 identical green lamps stop being noise and a
+            // real exception can pop. It describes the rows, so it sits with
+            // them rather than in the chrome band.
+            <p className="pas-stamp mt-2 opacity-pas-resting">Disponibles salvo indicación</p>
+          )}
 
           <input
             type="search"
@@ -212,7 +216,12 @@ export function Lista({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
                   if (selected) rec.toggleSku(sku.series_uid, sku.sku_uid)
                   else rec.collectSku(sku.series_uid, sku.sku_uid)
                 }}
-                className="grid h-pas-6 w-pas-6 shrink-0 place-items-center border border-pas-ink/40"
+                // 32px visual, 44px target. The lane's own law calls 44 the
+                // touch floor; this control was 32 and butted against a much
+                // larger button, so a miss opened the sheet instead of
+                // selecting. The inset keeps the density and buys the finger.
+                className="relative grid h-pas-6 w-pas-6 shrink-0 place-items-center border
+                           border-pas-ink/40 before:absolute before:-inset-1.5 before:content-['']"
               >
                 {selected && (
                   <svg viewBox="0 0 12 12" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2">

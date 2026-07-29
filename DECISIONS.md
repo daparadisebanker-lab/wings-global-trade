@@ -1,5 +1,57 @@
 # DECISIONS.md — WINGS Homepage Build
 
+## Lane-aware site chrome, and the aisle's way back — 2026-07-29
+
+From device testing on a real phone, plus an adversarial review of the previous
+pass (all 12 claims verified PASS; its findings are folded in below).
+
+- **The header and footer stayed machinery navy on a bone lane.** They are
+  SIBLINGS of the lane wrapper in the root layout, so they never saw
+  `[data-lane]` through the cascade. `LaneScope` now stamps the lane on `<html>`,
+  and `SiteNav` + `TrustFooter` read a `--chrome-*` contract whose fallbacks are
+  the current navy/gold — every non-lane route is byte-identical. §1.1 forbids
+  forking a shared component per lane; this themes them instead.
+- **Walnut, not bone.** The Wings logo is a white mark with no dark variant, so a
+  bone header would erase it. Walnut `#2A2118` is the lane's own inverse ground,
+  is unmistakably the brown side of the palette, and carries the white logo at
+  15.8:1. The footer CTA is bone-on-walnut (14.02:1), **not** oxblood: oxblood on
+  walnut is 1.50:1. It now matches the lane page's own closing action.
+- **The footer's column labels were gold at 2.30:1** on navy — a pre-existing
+  contrast failure inherited from the house. They read `--chrome-label`, which on
+  this lane composites to 4.82:1.
+- **A Tailwind trap, twice now:** `bg-[var(--x,#hex)]/95` silently emits nothing,
+  because an opacity modifier cannot apply to an arbitrary `var()` whose fallback
+  contains a comma. The header rendered fully transparent. Alpha now lives inside
+  the token (`--chrome-nav-bg`). Same class of bug as the `<alpha-value>` issue
+  that forced the channel-triplet tokens.
+- **Lane routes force the solid nav.** A transparent nav over bone needs a scrim,
+  and the navy scrim on bone read as grey mud.
+- **The lane header stamp cluster** was three marks crammed on one line, the
+  plate clipping at the container edge and colliding with the display type. Mark
+  and status now stack as one block with the h1 a full step away.
+- **The Lista header collapsed under the fixed density switch** — the
+  availability note truncated mid-word beneath it. The switch owns the top-right
+  band exclusively; the note moved down to sit with the rows it describes.
+- **The aisle had no visible way back.** The edge scrubber can reach any booth,
+  but it is a 3px rail of unlabelled ticks — not an answer for a buyer who just
+  passed a series by mistake on a phone. A named "← Serie anterior" now sits in
+  the thumb zone (hidden at the first booth rather than disabled: a dead control
+  a buyer can press is worse than one that is not there), and the rail names
+  itself on touch.
+- **The on-screen decimal convention was split** (review finding): the Lane's
+  spec bar printed `0.99 M²/CTN` with a dot while the Lista showed `0,99` one
+  view away — the exact ambiguity the export rule exists to kill, live on
+  adjacent screens. Every on-screen figure now goes through the es-ES formatter;
+  `toFixed` is gone from all display code.
+- **The Lista checkbox was 32px butted against a larger sheet-opening button**
+  (review's most serious finding), on the view this lane's own law calls the
+  accessibility floor — a miss opened the sheet. 32px visual, 44px target.
+
+**Left alone, deliberately:** the Mister launcher keeps its own `--mister-*`
+colour. Mister is a distinct identity with a ratified colour law, not machinery
+chrome; repainting it per lane is a bigger decision than the header and footer
+and is not mine to take silently.
+
 ## WGT/02 enhancement pass — identity, UI, IA, copy — 2026-07-29
 
 Four parallel audits (brand-universe · ui-excellence · information-architecture ·

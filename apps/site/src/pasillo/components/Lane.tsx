@@ -344,7 +344,13 @@ export function Lane({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
         </div>
       </div>
 
-      <LaneActions collected={collected} onCollect={collect} onPass={pass} />
+      <LaneActions
+        collected={collected}
+        onCollect={collect}
+        onPass={pass}
+        index={index}
+        onBack={() => advance(index - 1)}
+      />
       <EdgeScrubber index={index} onGo={advance} />
     </div>
   )
@@ -354,19 +360,49 @@ function LaneActions({
   collected,
   onCollect,
   onPass,
+  index,
+  onBack,
 }: {
   collected: boolean
   onCollect: () => void
   onPass: () => void
+  index: number
+  onBack: () => void
 }) {
   // Everything interactive stays in the bottom 60% — one-handed, 24 booths.
   return (
     <div className="mx-auto w-full max-w-2xl shrink-0 px-pas-5 pb-24 pt-3 pr-12">
-      {/* Full keyboard parity ships and nothing said so. Pointer-fine only: on
-          a phone the gesture IS the affordance and this would be noise. */}
-      <p className="pas-stamp mb-3 hidden opacity-pas-dimmed [@media(pointer:fine)]:block">
-        → guardar · ← pasar · ↑ ↓ serie
-      </p>
+      {/* GOING BACK.
+          The edge scrubber can reach any booth, but it is a bare rail of ticks
+          with no label — a buyer who has just passed a series by mistake has no
+          visible way to return, and reaching for a 3px rail at the screen edge
+          is not an answer on a phone held one-handed. This is that answer: a
+          named control, in the thumb zone, that says what it does.
+          It is hidden at the first booth rather than disabled, because a dead
+          control a buyer can press is worse than one that is not there. */}
+      <div className="mb-3 flex min-h-[1.25rem] items-center justify-between gap-3">
+        {index > 0 ? (
+          <button
+            type="button"
+            onClick={onBack}
+            className="pas-stamp relative -ml-1 whitespace-nowrap px-1 py-1 underline-offset-4 opacity-pas-resting
+                       transition-opacity duration-pas-light hover:underline hover:opacity-pas-lit
+                       focus-visible:underline focus-visible:opacity-pas-lit
+                       before:absolute before:-inset-2 before:content-['']"
+          >
+            ← Serie anterior
+          </button>
+        ) : (
+          <span />
+        )}
+        {/* Full keyboard parity ships and nothing said so. Pointer-fine only: on
+            a phone the gesture IS the affordance and this would be noise. */}
+        {/* Wide AND fine-pointer. A fine pointer at 390px is a narrow desktop
+            window, where this legend wrapped into the back control beside it. */}
+        <p className="pas-stamp hidden whitespace-nowrap opacity-pas-dimmed sm:[@media(pointer:fine)]:block">
+          → guardar · ← pasar · ↑ ↓ serie
+        </p>
+      </div>
       <div className="flex items-center gap-3">
         {/* py-3 lands these at ~47px — past the 44px floor, and on the frozen
             scale, where py-3.5 (14px) was not. */}
@@ -414,8 +450,10 @@ function EdgeScrubber({ index, onGo }: { index: number; onGo: (i: number) => voi
     [onGo],
   )
 
-  const bind = useDrag(({ xy: [, y], event }) => {
+  const [scrubbing, setScrubbing] = useState(false)
+  const bind = useDrag(({ xy: [, y], event, down }) => {
     event.preventDefault()
+    setScrubbing(down)
     goFromY(y)
   })
 
@@ -433,12 +471,23 @@ function EdgeScrubber({ index, onGo }: { index: number; onGo: (i: number) => voi
         if (e.key === 'ArrowUp') onGo(index - 1)
       }}
       // 3px rail, 44px invisible hit area
-      className="absolute bottom-0 right-0 top-20 z-10 flex w-11 cursor-ns-resize touch-none justify-end"
+      className="absolute bottom-0 right-0 top-pas-8 z-10 flex w-11 cursor-ns-resize touch-none justify-end"
     >
       {/* The rail stays 3px; the MARKS protrude. At 3px wide and 25% opacity
           on a near-black ground, collected and passed were indistinguishable —
           which cost the signature element its entire point: the record and the
           walk being the same object seen twice. Values stay on the 4/8 steps. */}
+      {/* Names the rail the moment it is touched or focused. Without this it
+          is a column of ticks that a buyer has no reason to believe is a
+          control — the concept was sound and completely unannounced. */}
+      <span
+        aria-hidden
+        className={`pas-stamp pointer-events-none absolute right-11 top-1/2 -translate-y-1/2 whitespace-nowrap
+                    rounded-pas-chrome bg-pas-surface px-2 py-1 text-pas-ink transition-opacity duration-pas-light
+                    ${scrubbing ? 'opacity-pas-lit' : 'opacity-0'}`}
+      >
+        Serie {String(index + 1).padStart(2, '0')} / {LANE.length}
+      </span>
       <div ref={railRef} className="my-pas-6 mr-2 flex w-[3px] flex-col items-end justify-between">
         {LANE.map((s: Series, i) => {
           const isCollected = rec.isCollected(s.series_uid)

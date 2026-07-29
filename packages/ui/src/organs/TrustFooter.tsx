@@ -78,7 +78,12 @@ export function TrustFooter({
   labels,
 }: TrustFooterProps) {
   return (
-    <footer className="bg-[#000C1F] text-warm-white">
+    <footer
+      // Themeable, not forkable (root §1.1). A lane sets --chrome-* and the
+      // footer follows; every page that sets nothing gets the house navy it
+      // always had, byte-identical.
+      className="bg-[var(--chrome-ground,#000C1F)] text-[color:var(--chrome-ink,#F8F6F0)]"
+    >
       {/* Brand strip — full width with gold rule */}
       <div className="border-b border-warm-white/[0.05] px-6 py-16 md:px-10">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 md:flex-row md:items-end md:justify-between">
@@ -99,14 +104,14 @@ export function TrustFooter({
               href={whatsappHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-3 border border-gold/20 px-6 py-3 font-mono text-[11px] uppercase tracking-[0.10em] text-warm-white/60 transition-all duration-200 hover:border-gold/60 hover:text-gold"
+              className="inline-flex items-center gap-3 border border-[var(--chrome-label,rgba(196,147,63,0.20))] px-6 py-3 font-mono text-[11px] uppercase tracking-[0.10em] text-[color:var(--chrome-ink,#F8F6F0)]/60 transition-all duration-200 hover:border-[var(--chrome-accent,var(--color-gold))] hover:text-[color:var(--chrome-ink,#F8F6F0)]"
             >
-              <span className="h-px w-4 bg-gold/40" aria-hidden />
+              <span className="h-px w-4 bg-[var(--chrome-accent,var(--color-gold))] opacity-40" aria-hidden />
               {whatsappLabel}
             </a>
             {renderLink(
               quoteHref,
-              'inline-flex items-center gap-3 bg-gold px-6 py-3 font-mono text-[11px] uppercase tracking-[0.10em] text-navy transition-colors duration-200 hover:bg-gold-hover',
+              'inline-flex items-center gap-3 bg-[var(--chrome-accent,var(--color-gold))] px-6 py-3 font-mono text-[11px] uppercase tracking-[0.10em] text-[color:var(--chrome-accent-ink,var(--color-navy))] transition-colors duration-200 hover:opacity-90',
               <>
                 <span className="h-px w-4 bg-current" aria-hidden />
                 {quoteLabel}
@@ -121,7 +126,7 @@ export function TrustFooter({
         <div className="mx-auto grid w-full max-w-6xl grid-cols-2 gap-10 md:grid-cols-4">
           {/* Catálogo */}
           <div>
-            <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.15em] text-gold/35">
+            <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.15em] text-[var(--chrome-label,rgba(196,147,63,0.35))]">
               {labels.catalog}
             </p>
             <ul className="flex flex-col gap-2">
@@ -146,7 +151,7 @@ export function TrustFooter({
 
           {/* Servicios */}
           <div>
-            <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.15em] text-gold/35">
+            <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.15em] text-[var(--chrome-label,rgba(196,147,63,0.35))]">
               {labels.services}
             </p>
             <ul className="flex flex-col gap-2">
@@ -164,7 +169,7 @@ export function TrustFooter({
 
           {/* Operaciones */}
           <div>
-            <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.15em] text-gold/35">
+            <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.15em] text-[var(--chrome-label,rgba(196,147,63,0.35))]">
               {labels.operations}
             </p>
             <ul className="flex flex-col gap-2">
@@ -175,7 +180,7 @@ export function TrustFooter({
                 </li>
               ))}
               <li className="mt-4">
-                <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.15em] text-gold/35">
+                <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.15em] text-[var(--chrome-label,rgba(196,147,63,0.35))]">
                   {marketsLabel}
                 </p>
                 <p className="font-mono text-[10px] leading-loose text-warm-white/30">
@@ -187,7 +192,7 @@ export function TrustFooter({
 
           {/* Contacto */}
           <div>
-            <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.15em] text-gold/35">
+            <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.15em] text-[var(--chrome-label,rgba(196,147,63,0.35))]">
               {labels.contact}
             </p>
             <ul className="flex flex-col gap-3">

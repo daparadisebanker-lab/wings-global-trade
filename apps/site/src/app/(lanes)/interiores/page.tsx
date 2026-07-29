@@ -71,21 +71,25 @@ export default function InterioresPage() {
     // must start at pixel zero.
     <div className="pt-16 md:pt-16" style={{ backgroundImage: 'var(--texture)' }}>
       {/* ── Lane header ──────────────────────────────────────────────────── */}
-      <header className="mx-auto max-w-[var(--grid-max-width)] px-6 pb-12 pt-16 md:px-8 md:pb-16 md:pt-24">
-        <div className="flex flex-wrap items-end gap-x-6 gap-y-3">
+      <header className="mx-auto max-w-[var(--grid-max-width)] px-6 pb-12 pt-12 md:px-8 md:pb-16 md:pt-24">
+        {/* The mark and its status are one block, on their own line, with the
+            status on a rule beneath rather than jammed against a two-line unit
+            number. The identity reads as a stamped plate, not as debris above a
+            headline. */}
+        <div className="flex flex-col items-start gap-3">
           {/* The full BIC unit number, its check digit computed from the lane
               code rather than typed. "Lane" was internal framework English on a
               buyer-facing page — to the person reading it, this is a división. */}
           <LaneStamp code={lane.code} name={lane.name} archetype={lane.archetype} variant="full" />
           <span
-            className="lane-stamp border-0 px-0 text-[length:var(--lane-type-stamp)] leading-none"
+            className="lane-stamp text-[length:var(--lane-type-stamp)] leading-none"
             data-status={lane.status}
           >
             {lane.status === 'OPENING' ? 'División en apertura' : 'División activa'}
           </span>
         </div>
 
-        <h1 className="mt-6 max-w-[16ch] text-[length:var(--type-6)] font-normal leading-[1.05] tracking-[var(--lane-display-tracking)] md:text-[length:var(--type-7)]">
+        <h1 className="mt-12 max-w-[16ch] text-[length:var(--type-6)] font-normal leading-[1.05] tracking-[var(--lane-display-tracking)] md:text-[length:var(--type-7)]">
           Interiores
         </h1>
 

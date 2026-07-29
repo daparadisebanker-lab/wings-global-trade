@@ -9,6 +9,7 @@
 
 import { StatusLamp } from '@/pasillo/components/StatusLamp'
 import { formatLabel } from '@/pasillo/lib/catalogue'
+import { fmtM2 } from '@/pasillo/lib/packing'
 import type { Series } from '@/pasillo/types/catalogue'
 
 export function SpecBar({
@@ -36,7 +37,7 @@ export function SpecBar({
       >
         <p className="pas-stamp truncate">
           {series.pcs_per_ctn} PCS/CTN · {series.kgs_per_ctn} KGS/CTN ·{' '}
-          {series.m2_per_ctn.toFixed(2)} m²/CTN
+          {fmtM2(series.m2_per_ctn)} m²/CTN
         </p>
       </div>
 

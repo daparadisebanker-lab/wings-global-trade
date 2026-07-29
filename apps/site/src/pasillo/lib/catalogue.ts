@@ -6,6 +6,7 @@
 // carton count.
 
 import { SERIES, SKUS } from '@/pasillo/data/catalogue'
+import { fmtM2 } from '@/pasillo/lib/packing'
 import type { Finish, Relief, Series, Sku } from '@/pasillo/types/catalogue'
 
 export { SERIES, SKUS }
@@ -60,7 +61,7 @@ export const formatLabel = (s: Series): string => `${s.format_mm[0]}×${s.format
 
 /** The inverted spec bar's line: series truth, stated once. */
 export function specBarLine(s: Series): string {
-  return `${s.pcs_per_ctn} PCS/CTN · ${s.kgs_per_ctn} KGS/CTN · ${s.m2_per_ctn.toFixed(2)} m²`
+  return `${s.pcs_per_ctn} PCS/CTN · ${s.kgs_per_ctn} KGS/CTN · ${fmtM2(s.m2_per_ctn)} m²`
 }
 
 export function seriesName(s: Series): string {

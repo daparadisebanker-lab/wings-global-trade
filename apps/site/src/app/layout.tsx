@@ -15,7 +15,7 @@ import { organizationSchema } from '@/lib/schema'
 import { MisterSiteWidget } from '@/components/features/mister/MisterSiteWidget'
 // The chrome gate. Every route keeps the chrome below except the Azulejos
 // aisle, which is a full-viewport tool — see SiteFrame for the reasoning.
-import { ChromeGate, MainFrame } from '@/components/features/shared/SiteFrame'
+import { ChromeGate, LaneScope, MainFrame } from '@/components/features/shared/SiteFrame'
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -73,6 +73,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <JsonLd data={organizationSchema()} />
       </head>
       <body className="font-body antialiased">
+        {/* Stamps data-lane on <html> so the chrome below can theme itself. */}
+        <LaneScope />
         <ToastProvider>
           <ComparisonProvider>
             <ChromeGate>

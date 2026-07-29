@@ -114,7 +114,10 @@ export function SiteNav({ categories }: SiteNavProps) {
     pathname?.startsWith('/g/') ||
     pathname?.startsWith('/contenedor') ||
     // Brand shelves sit on the pure-white canvas — transparent nav is illegible there
-    pathname?.startsWith('/marcas')
+    pathname?.startsWith('/marcas') ||
+    // Lane grounds are light (bone). A transparent nav over them needs a scrim,
+    // and a navy scrim on bone reads as grey mud — go solid immediately.
+    pathname?.startsWith('/interiores')
   const solid = scrolled || forceSolid
 
   return (
@@ -124,7 +127,11 @@ export function SiteNav({ categories }: SiteNavProps) {
         className={cn(
           'fixed inset-x-0 top-0 z-50 transition-all duration-300',
           solid
-            ? 'bg-[#000C1F]/95 backdrop-blur-md border-b border-warm-white/[0.07]'
+            // The alpha lives IN the token, not in a Tailwind modifier:
+            // `/95` cannot be applied to an arbitrary var() whose fallback
+            // contains a comma — the class silently emits nothing and the
+            // header renders transparent.
+            ? 'bg-[var(--chrome-nav-bg,rgba(0,12,31,0.95))] backdrop-blur-md border-b border-[var(--chrome-hairline,rgba(248,246,240,0.07))]'
             : 'bg-transparent',
           hidden && !menuOpen && '-translate-y-full',
         )}
@@ -133,7 +140,7 @@ export function SiteNav({ categories }: SiteNavProps) {
         {/* Scrim behind the transparent nav — keeps links legible over light hero imagery */}
         {!solid && (
           <div
-            className="pointer-events-none absolute inset-x-0 top-0 z-0 h-32 bg-gradient-to-b from-[rgba(0,12,31,0.6)] to-transparent md:h-40"
+            className="pointer-events-none absolute inset-x-0 top-0 z-0 h-32 bg-gradient-to-b from-[var(--chrome-scrim,rgba(0,12,31,0.6))] to-transparent md:h-40"
             aria-hidden
           />
         )}
