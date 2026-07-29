@@ -10,7 +10,7 @@
 
 import { lane as interiores } from '@wings/liveries/interiores/lane.config'
 
-const LANES = [interiores] as const
+export const LANES = [interiores] as const
 
 /** `/interiores/azulejos` → `interiores`. Null on every non-lane route. */
 export function laneFromPath(path: string | null | undefined): string | null {

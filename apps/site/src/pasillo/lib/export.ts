@@ -5,30 +5,30 @@
 // carry the same body: every line with its quantity resolved to whole cartons,
 // then the container load.
 //
-// The arithmetic travels WITH the request. A supplier who receives
-// "56,70 m² = 42 cajas ≈ 1 050 kg" can reply with a price; one who receives a
-// list of codes replies with questions, and the whole promise dies there.
+// The arithmetic travels WITH the request. A request that arrives as
+// "56,70 m² = 42 cajas ≈ 1 050 kg" can be sourced; one that arrives as a list of
+// codes starts a round of questions, and the whole promise dies there.
 //
-// THIS FILE IS THE ONLY ARTEFACT A COUNTERPARTY EVER READS. Three rules follow
-// from that, and none of them are style:
+// THE RECIPIENT IS WINGS OPS. The buyer assembles a muestrario and sends it in;
+// this is a lead landing in the Wings inbox, and Wings sources against it. That
+// framing decides what belongs here:
 //
-//  1. NUMBERS ARE UNAMBIGUOUS ACROSS LOCALES. The screen formats es-ES, where
-//     `25.000` means twenty-five thousand. A factory in Foshan reads that as
-//     twenty-five. This document therefore uses a decimal comma and a SPACE for
-//     thousands — `25 000 kg`, `56,70 m²` — one convention, no dot anywhere in a
-//     number. Everything upstream is decimal-exact; it would be absurd to lose
-//     that in transmission.
-//  2. THE REQUEST MATCHES THE HEADER. The incoterm asked for is the incoterm the
-//     buyer selected. It previously stated the buyer's terms and then requested
-//     "(FOB y CIF)" regardless.
-//  3. IT ASKS FOR WHAT IS MISSING. The catalogue prints no PEI, absorption or
-//     slip rating, and the UI is scrupulous about saying so — this message is
-//     the one moment those fields can actually be resolved, so it requests them.
-//     A `review` face_kind travels with its line for the same reason.
+//  · Nothing internal to the tool. No packing-rules build id, no admission about
+//    what our own printed catalogue omits. A client does not narrate our data
+//    gaps back to us; they state what they need.
+//  · NUMBERS ARE UNAMBIGUOUS. The screen formats es-ES, where `25.000` means
+//    twenty-five thousand — and this document gets forwarded to a factory that
+//    reads it as twenty-five. Decimal comma, SPACE thousands, no dot inside any
+//    number. Everything upstream is decimal-exact; losing that in transmission
+//    would be absurd.
+//  · THE REQUEST MATCHES THE HEADER. The incoterm asked for is the one the buyer
+//    selected. It previously stated the buyer's terms and then asked for
+//    "(FOB y CIF)" regardless.
+//  · A `review` face_kind travels with its line, because a known data
+//    discrepancy reaching Wings ops silently is how it reaches a factory.
 
 import { getSeries, getSku } from '@/pasillo/lib/catalogue'
 import {
-  PACKING_RULES_VERSION,
   containerFill,
   fmtFcl,
   lineTotals,
@@ -48,7 +48,7 @@ export interface RequestInput {
 }
 
 // ── Export-only number formatting ──────────────────────────────────────────
-// Deliberately NOT the es-ES display formatters. See rule 1 above.
+// Deliberately NOT the es-ES display formatters — see the header note.
 
 const dec = (n: number, places: number) =>
   n.toFixed(places).replace('.', ',')
@@ -62,7 +62,11 @@ const int = (n: number) =>
 /** Where the request is sent, exactly as the buyer set it. */
 const deliveryTerms = (buyer: Buyer) => [buyer.incoterm, buyer.port].filter(Boolean).join(' ')
 
-/** The one block that asks for everything the catalogue cannot answer. */
+/**
+ * What the buyer is asking for. Kept to three lines and no meta-commentary:
+ * "el catálogo impreso no los declara" was us explaining our own data gap inside
+ * the client's message, which is not the client's to say.
+ */
 function askBlock(buyer: Buyer): string[] {
   const terms = deliveryTerms(buyer)
   return [
@@ -70,7 +74,7 @@ function askBlock(buyer: Buyer): string[] {
     `1. Precio por m² por referencia${terms ? `, ${terms}` : ''}.`,
     '2. Tiempo de producción y disponibilidad por serie.',
     '3. Ficha técnica de las referencias listadas: PEI, absorción de agua,',
-    '   resistencia al deslizamiento y canto. El catálogo impreso no los declara.',
+    '   resistencia al deslizamiento y canto.',
     '',
     'Quedamos atentos a su cotización.',
   ]
@@ -107,8 +111,9 @@ export function requestBody({ folders, qty, notes, buyer, kind, dateISO }: Reque
       n += 1
       const t = lineTotals(qty[uid], series)
       lines.push(t)
-      // The supplier's OWN printed finish, not our Spanish rendering of it —
-      // they should recognise their vocabulary coming back at them.
+      // The supplier's OWN printed finish, not our Spanish rendering of it.
+      // Wings ops relays this to the factory, and the factory recognises its own
+      // vocabulary; a translated finish would have to be translated back.
       const head = `  ${n}. ${sku.code} · ${sku.finish_raw}`
       if (t.cartons > 0) {
         L.push(`${head} — ${int(t.cartons)} cajas · ${dec(t.m2, 2)} m² · ${int(t.kg)} kg`)
@@ -133,9 +138,9 @@ export function requestBody({ folders, qty, notes, buyer, kind, dateISO }: Reque
   if (totals.cartons > 0) {
     const fill = containerFill(totals.kg, kind)
     L.push('TOTALES')
-    // Explicitly "with a quantity": a line listed above may still read
-    // "cantidad por definir", and a bare count beside a longer list invites the
-    // supplier to wonder which number is wrong.
+    // Explicitly "with a quantity": a line above may still read "cantidad por
+    // definir", and a bare count beside a longer list invites the reader to
+    // wonder which number is wrong.
     L.push(`Referencias con cantidad: ${int(totals.skus)}`)
     L.push(`Cajas: ${int(totals.cartons)}`)
     L.push(`Superficie: ${dec(totals.m2, 2)} m²`)
@@ -155,14 +160,13 @@ export function requestBody({ folders, qty, notes, buyer, kind, dateISO }: Reque
 
   L.push('')
   L.push(...askBlock(buyer))
-  L.push(`Cálculo: ${PACKING_RULES_VERSION}`)
   return L.join('\n')
 }
 
 /**
- * The supplier's WhatsApp number, digits only. Unset by default: with no
+ * Where the request lands — Wings ops. Digits only. Unset by default: with no
  * number, wa.me opens the composer and the buyer picks the chat, which is right
- * until a real line is configured. Never guess one — a quote delivered to the
+ * until a real line is configured. Never guess one — a request delivered to the
  * wrong chat is worse than one the buyer has to address.
  */
 const SUPPLIER_WA = (process.env.NEXT_PUBLIC_SUPPLIER_WHATSAPP ?? '').replace(/\D/g, '')

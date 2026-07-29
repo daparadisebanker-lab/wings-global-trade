@@ -1,5 +1,38 @@
 # DECISIONS.md — WINGS Homepage Build
 
+## The footer becomes a lane hub; the RFQ loses its internal artefacts — 2026-07-29
+
+**The RFQ goes to Wings ops, not to a factory.** That was recorded wrongly in the
+code comments and it drove choices. The buyer assembles a muestrario and sends it
+in; Wings sources against it. Consequences:
+- `Cálculo: 2026-07-28.1` (the packing-rules build id) and "El catálogo impreso
+  no los declara" are both **ours, not the client's**. A client does not narrate
+  our data gaps back to us. Removed, and a test now asserts neither can return.
+- The three numbered asks stay — price at the buyer's own incoterm, lead time,
+  and the spec fields the UI marks *pendiente*. Those are the client's request.
+- The number-convention rule survives the reframing intact: Wings forwards this
+  to a factory, and `25.000 kg` still reads as twenty-five kilos there.
+
+**The footer is now a navigation hub, not a link dump.** Its content model is a
+list of SECTIONS, so opening WGT/03 means appending one — the organ never
+changes. The divisions section is DERIVED from the lane registry: registered
+lanes resolve to their real route, unregistered ones render as a dimmed stamp
+with "en apertura" and are **not links**, because a footer entry that navigates
+nowhere is worse than one that plainly says "not yet". Same argument the lane
+page already makes for showing six disciplines with one open.
+
+**Collapsible without JavaScript, and the obvious approach does not work.**
+TrustFooter is a Server Component by contract (the app passes render callbacks
+across the RSC boundary), so an accordion needing state would have forced it
+client-side — and a footer that only works after hydration is a footer that does
+not work. The obvious move is one `<details>` forced open by a media query;
+**Chrome hides disclosure content through the element's own slot**, so overriding
+the child's `display` reveals nothing and the desktop footer came back as four
+headings above four empty columns. Rather than chase `::details-content` across
+engines, the panel is authored once and mounted in two shells — a real
+`<details>` below `md`, a plain column from `md` up. Only one is ever in the
+layout, so assistive tech sees one.
+
 ## Lane-aware site chrome, and the aisle's way back — 2026-07-29
 
 From device testing on a real phone, plus an adversarial review of the previous

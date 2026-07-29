@@ -51,18 +51,14 @@ describe('outbound RFQ · number conventions', () => {
       dateISO: '2026-07-29',
     })
     expect(out).toContain('×8,8 mm')
-    expect(out.split('\n').filter((l) => !l.startsWith('Cálculo:')).join('\n')).not.toMatch(/\d\.\d/)
+    expect(out).not.toMatch(/\d\.\d/)
   })
 
   it('never emits a dot inside a number — es-ES thousands read as decimals abroad', () => {
     // `25.000 kg` is twenty-five thousand here and twenty-five in Foshan.
-    // The packing-rules stamp (`2026-07-28.1`) is a document control number, not
-    // a quantity, so it is excluded by line rather than by loosening the pattern.
-    const quantityLines = body
-      .split('\n')
-      .filter((l) => !l.startsWith('Cálculo:'))
-      .join('\n')
-    expect(quantityLines.match(/\d\.\d/g)).toBeNull()
+    // No carve-out needed any more: the packing-rules build id was internal and
+    // has been removed from the document entirely.
+    expect(body.match(/\d\.\d/g)).toBeNull()
   })
 
   it('separates thousands with a space', () => {
@@ -102,6 +98,17 @@ describe('outbound RFQ · asks for what the catalogue cannot answer', () => {
     expect(body).toContain('PEI')
     expect(body).toContain('absorción de agua')
     expect(body).toContain('resistencia al deslizamiento')
+  })
+
+  it('carries nothing internal to the tool', () => {
+    const body = build({ [skus[0].sku_uid]: { basis: 'm2', value: 47.52 } })
+    // A packing-rules build id and an admission about our own catalogue's gaps
+    // are both ours, not the client's, and neither belongs in their message.
+    expect(body).not.toMatch(/Cálculo:/)
+    // The build id is a date with a `.N` revision suffix — matched precisely, so
+    // the legitimate `Fecha de solicitud` line is not caught with it.
+    expect(body).not.toMatch(/\d{4}-\d{2}-\d{2}\.\d/)
+    expect(body).not.toMatch(/catálogo impreso no los declara/)
   })
 
   it('quotes the supplier’s own printed finish, not our translation', () => {

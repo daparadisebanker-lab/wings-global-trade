@@ -19,6 +19,7 @@ export type {
   FooterCategory,
   FooterLink,
   FooterZone,
+  FooterSection,
 } from './organs/TrustFooter'
 
 // UI primitives (M3b) — the app re-exports these from components/ui/*.
