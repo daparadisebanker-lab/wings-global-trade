@@ -45,7 +45,24 @@ const BOOTH_FACES = 12
 /** Matches --pas-dur-light. The verdict must read before the booth swaps. */
 const VERDICT_FLASH_MS = 240
 
-export function Lane({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
+export function Lane({
+  onOpenSku,
+  /** The SKU the desktop spec panel is currently showing, if any. A master pane
+   *  that does not mark its own selection is the classic two-panel failure: the
+   *  buyer clicks a third face, the panel changes, and nothing on the aisle says
+   *  which of the six is being described. Null on a phone, where the sheet
+   *  covers the booth and the question cannot arise. */
+  openSkuUid = null,
+  /** Fired whenever the booth moves to another series. The spec panel uses it to
+   *  close: the tile it was describing is no longer on the aisle, so leaving it
+   *  up is a panel with no visible link to anything on screen — the stale half
+   *  of a two-panel view. Walking on also means the buyer wants the width back. */
+  onSeriesChange,
+}: {
+  onOpenSku: (sku: Sku) => void
+  openSkuUid?: string | null
+  onSeriesChange?: () => void
+}) {
   const rec = useRecord()
   const reduced = useReducedMotion()
   const params = useSearchParams()
@@ -142,10 +159,11 @@ export function Lane({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
       if (next === index) return
       setSwapping(true)
       setIndex(next)
+      onSeriesChange?.()
       // the frame never moves; only the contents cross-fade
       setTimeout(() => setSwapping(false), reduced ? 0 : 180)
     },
-    [index, reduced],
+    [index, onSeriesChange, reduced],
   )
 
   /**
@@ -292,14 +310,34 @@ export function Lane({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
                     series left half the aisle empty below it. Two columns put
                     the face at ~167px, and the same six SKUs now fill the
                     booth instead of floating at the top of a void.
-                    Three from sm, four from lg, where width is not scarce. */}
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+                    Three from sm, four from lg, where width is not scarce.
+                    AND ONE FEWER WHEN THE SPEC PANEL IS OPEN: four columns in a
+                    608px booth is a 140px face, which is a swatch you cannot
+                    judge — the exact failure two columns at 390px exists to
+                    prevent. The panel is worth a column, not the faces. */}
+                <div
+                  className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4
+                             lg:group-data-[panel=open]/aisle:grid-cols-3
+                             2xl:group-data-[panel=open]/aisle:grid-cols-4"
+                >
                   {faces.slice(0, BOOTH_FACES).map((sku) => (
                     <button
                       key={sku.sku_uid}
                       type="button"
                       onClick={() => onOpenSku(sku)}
-                      className="relative aspect-square overflow-hidden rounded-pas-record bg-pas-surface-2"
+                      aria-current={sku.sku_uid === openSkuUid ? 'true' : undefined}
+                      // THE OPEN MARK GOES OUTSIDE THE TILE, the collected mark
+                      // inside. Both are achromatic — form and value, never hue,
+                      // because every accent already exists in this catalogue —
+                      // and they have to stay legible on the same face at the
+                      // same time, so they cannot share an edge. An outline with
+                      // an offset never covers a pixel of glaze, which is the
+                      // one thing this button exists to show.
+                      className={`relative aspect-square overflow-hidden rounded-pas-record bg-pas-surface-2 ${
+                        sku.sku_uid === openSkuUid
+                          ? 'outline outline-2 outline-offset-2 outline-pas-surface'
+                          : ''
+                      }`}
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img

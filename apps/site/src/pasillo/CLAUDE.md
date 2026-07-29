@@ -37,7 +37,8 @@ corridor. The two view labels are `Recorrido` and `Lista`; the header counts
 |---|---|---|
 | **Lane** (§4.6, §4.9, §4.10) | ✅ | one series per screen, swipe grammar, edge scrubber |
 | **Booth header** (§4.2) | ✅ | the inverted spec bar |
-| **Sheet-dock** (§4.5) | ✅ | `vaul`, ruled table, sibling strip |
+| **Sheet-dock** (§4.5) | ✅ | `vaul`, ruled table, sibling strip — **phone frame only** |
+| **Spec panel** (§4.5-bis) | ✅ | the same body in a desktop frame: two panels above `lg` |
 | **3×3 repeat** (§4.4) | ✅ | **default state**, not 1× |
 | **Muestrario** (§4.7) | ✅ | series + SKU rows, tri-state |
 | **Volume footer** (§4.8) | ✅ | m² · cajas · piezas · FCL |
@@ -188,6 +189,11 @@ the page grid, so the grid has no opinion about them:
   desktop. Right-aligned numerals only form a column if the column has a width;
   96px is the widest of the three strings (`1.024 kg/caja`) with air, and one
   width for all three is what makes them scan down the page.
+- `w-[26rem]` / `xl:w-[30rem]` (416 / 480px) — the desktop spec panel. Sized to
+  its contents, not to the grid: the narrowest width at which the 3×3 repeat is
+  still a field rather than three stripes, and the ruled spec rows still fit a
+  label and its value on one line. Wider and it starts eating the booth's
+  columns, which is the thing the split exists to protect.
 - `max-w-md` (448px) — the cap on every send/verdict button pair in the aisle
   (Lane actions, Trade Desk WhatsApp+Email, muestrario CTA). `flex-1` is correct
   at 390px and absurd at 1280, where it drew 620px slabs. It is a control width,
@@ -195,6 +201,41 @@ the page grid, so the grid has no opinion about them:
 - `11ch` / `26ch` / `46ch` / `34ch` / `42ch` / `58ch` — text measures, sized to
   the longest string or to a reading line. A `ch` is not a layout value: it is
   typography, and it re-measures itself if the typeface ever changes.
+
+**One body, two frames — and above `lg` the Lane is two panels.** A bottom sheet
+is right at 390px and wrong at 1440: it covered the booth it was opened from, so
+a buyer who asked to see one tile closely lost the aisle they were judging it
+against. Above `lg` the booth narrows, the spec stands beside it, and tapping a
+face swaps the panel without closing anything.
+
+- `SkuDetail` is the body. `SheetDock` (vaul) and `SkuPanel` (aside) are frames.
+  Two copies of a spec table is how a catalogue ends up telling a buyer two
+  different things about the same tile depending on their window width.
+- The route picks the frame and mounts **exactly one**. Rendering both and
+  hiding one with a media class keeps a vaul drawer, its overlay and its scroll
+  lock alive under the panel.
+- **The panel is not a dialog.** No overlay, no focus trap, no `aria-modal` —
+  the buyer keeps swiping, scrubbing and opening faces with it open, which is
+  the entire reason it is not a sheet. Escape still closes it.
+- The booth **marks the open face** (`aria-current`, outline OUTSIDE the tile —
+  the collected mark is inset, so the two never share an edge and neither covers
+  a pixel of glaze). A master pane that does not mark its own selection is the
+  classic two-panel failure.
+- Advancing the booth **closes the panel** (`onSeriesChange`). The tile it
+  described is no longer on the aisle, and a panel with no visible link to
+  anything on screen is the stale half of a two-panel view.
+- The split container is `transform-gpu`, which makes it the containing block
+  for every `position:fixed` descendant — so the exit stamp, the density switch,
+  the record tab and the scrubber re-anchor to the booth's column instead of a
+  window that is no longer theirs. With no panel open the column IS the window,
+  so the phone layout is unchanged. The vaul portal targets `<body>` and escapes
+  this, which is what keeps the sheet viewport-fixed.
+- `useMediaQuery` returns **false on the server and the first client render**, so
+  every consumer must be a progressive enhancement: the false branch has to be a
+  complete UI on its own. Here it is — the phone sheet.
+- The Lista keeps the sheet at every width. Its own scroll is the page's, so a
+  full-height split would have to re-parent that scroll; the master/detail is
+  worth doing there but it is not this change.
 
 **The measure is `.pas-measure`, and it is not a utility.** Every screen in the
 aisle rides that one class (`pasillo.css`) — 896 / 1152 at lg / 1280 at 2xl — so
