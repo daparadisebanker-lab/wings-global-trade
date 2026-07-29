@@ -16,7 +16,12 @@ import { describe, it, expect } from 'vitest'
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { FUNCTION_BUDGET_MS, MISTER_BUDGET } from './budget'
+import {
+  FUNCTION_BUDGET_MS,
+  MISTER_BUDGET,
+  PLATFORM_MAX_DURATION_SECONDS,
+  TORRE_RUN_BUDGET_MS,
+} from './budget'
 
 const APP_DIR = fileURLToPath(new URL('../../app', import.meta.url))
 
@@ -26,6 +31,16 @@ function findLayouts(dir: string, out: string[] = []): string[] {
     const full = join(dir, entry)
     if (statSync(full).isDirectory()) findLayouts(full, out)
     else if (entry === 'layout.tsx') out.push(full)
+  }
+  return out
+}
+
+/** Every segment file that can carry route config. */
+function findSegments(dir: string, out: string[] = []): string[] {
+  for (const entry of readdirSync(dir)) {
+    const full = join(dir, entry)
+    if (statSync(full).isDirectory()) findSegments(full, out)
+    else if (entry === 'layout.tsx' || entry === 'page.tsx' || entry === 'route.ts') out.push(full)
   }
   return out
 }
@@ -64,6 +79,36 @@ describe('the Mister timeout ladder', () => {
     // Hobby caps maxDuration at 60s. A larger value would work in one environment
     // and be silently clamped in another — the worst kind of production bug.
     expect(MISTER_BUDGET.functionSeconds).toBeLessThanOrEqual(60)
+  })
+})
+
+describe('no segment asks for a budget the hosting plan will not give', () => {
+  // Declaring more than the plan allows does not fail — it is silently reduced.
+  // Two AI routes asked for 120s on a plan that caps at 60 and were written
+  // against a budget they never had. That is invisible until something is killed
+  // mid-run, so it has to be a test rather than a convention.
+  const declared = findSegments(APP_DIR)
+    .map((file) => [file.slice(APP_DIR.length), declaredMaxDuration(file)] as const)
+    .filter((e): e is readonly [string, number] => e[1] !== null)
+
+  it('finds the segments that declare one (else this suite is silently vacuous)', () => {
+    expect(declared.length).toBeGreaterThan(0)
+  })
+
+  it.each(declared)('app%s asks for %ds — within the plan ceiling', (_seg, seconds) => {
+    expect(
+      seconds,
+      `The plan caps a function at ${PLATFORM_MAX_DURATION_SECONDS}s. A larger number is ` +
+        'not an error and not honoured — it is quietly reduced, so the code behind it ' +
+        'runs against a budget that does not exist.',
+    ).toBeLessThanOrEqual(PLATFORM_MAX_DURATION_SECONDS)
+  })
+
+  it('leaves a multi-step Torre run time to close its stream before the platform kills it', () => {
+    // The gap is what the route uses to emit `error` + `done`. Without it the SSE
+    // connection is severed with no terminal frame and the UI waits forever.
+    expect(TORRE_RUN_BUDGET_MS).toBeLessThan(PLATFORM_MAX_DURATION_SECONDS * 1_000)
+    expect(PLATFORM_MAX_DURATION_SECONDS * 1_000 - TORRE_RUN_BUDGET_MS).toBeGreaterThanOrEqual(5_000)
   })
 })
 

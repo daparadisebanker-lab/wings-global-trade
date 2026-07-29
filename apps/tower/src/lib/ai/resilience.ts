@@ -27,6 +27,39 @@
 
 import type { CompletionRequest, IntelligenceClient } from './client'
 
+/**
+ * A signal that aborts when EITHER the caller's signal fires (client disconnect)
+ * or the wall-clock budget runs out — whichever comes first.
+ *
+ * Built by hand rather than with `AbortSignal.any`, which needs Node 20.3+; the
+ * runtime here is not pinned that tightly and a multi-step agent losing its
+ * deadline is a silent regression rather than a loud one.
+ *
+ * ALWAYS call `dispose()` when the work finishes: the pending timer would
+ * otherwise hold the function alive to its full platform budget, turning a fast
+ * run into a slow, billable one.
+ */
+export function deadlineSignal(
+  parent: AbortSignal | undefined,
+  budgetMs: number,
+): { signal: AbortSignal; dispose: () => void } {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(new DeadlineExceededError()), budgetMs)
+  const onParentAbort = () => {
+    clearTimeout(timer)
+    controller.abort(parent?.reason)
+  }
+  if (parent?.aborted) onParentAbort()
+  else parent?.addEventListener('abort', onParentAbort, { once: true })
+  return {
+    signal: controller.signal,
+    dispose: () => {
+      clearTimeout(timer)
+      parent?.removeEventListener('abort', onParentAbort)
+    },
+  }
+}
+
 /** Stable failure labels — for retry decisions and for logs you can aggregate. */
 export type FailureClass =
   | 'rate_limit' // 429 — org RPM/TPM ceiling; the load signal

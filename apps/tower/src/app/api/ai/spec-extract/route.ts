@@ -18,7 +18,10 @@ import type { Archetype } from '@/lib/archetypes'
 import { requireApiUser, insertDraft } from '../_lib/drafts'
 
 export const runtime = 'nodejs'
-export const maxDuration = 120
+// 60s is the platform ceiling on this plan (lib/ai/budget.ts). This route was
+// declaring 120 and silently getting 60. Its own work is a single streaming call
+// already bounded well under that, so only the declaration was wrong.
+export const maxDuration = 60
 
 const bodySchema = z.object({
   laneId: z.string().uuid(),

@@ -6,6 +6,7 @@ import {
   resilient,
   retryAfterMs,
   DeadlineExceededError,
+  deadlineSignal,
   MAX_RETRIES,
   type CallOutcome,
 } from './resilience'
@@ -208,6 +209,40 @@ describe('resilient — the shared budget', () => {
       rand: () => 1,
     })
     await expect(client.complete(REQ)).rejects.toMatchObject({ status: 429 })
+  })
+
+  it('deadlineSignal fires on its own budget, and disposing stops the timer', async () => {
+    vi.useFakeTimers()
+    try {
+      const { signal, dispose } = deadlineSignal(undefined, 1_000)
+      expect(signal.aborted).toBe(false)
+      vi.advanceTimersByTime(1_001)
+      expect(signal.aborted).toBe(true)
+      dispose() // idempotent after the fact
+
+      const live = deadlineSignal(undefined, 1_000)
+      live.dispose()
+      vi.advanceTimersByTime(5_000)
+      // A disposed deadline must not fire — a stray timer would hold the function
+      // open for its whole platform budget after the work finished.
+      expect(live.signal.aborted).toBe(false)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('deadlineSignal also aborts when the caller disconnects first', () => {
+    const parent = new AbortController()
+    const { signal } = deadlineSignal(parent.signal, 60_000)
+    expect(signal.aborted).toBe(false)
+    parent.abort()
+    expect(signal.aborted).toBe(true)
+  })
+
+  it('deadlineSignal starts aborted when the caller is already gone', () => {
+    const parent = new AbortController()
+    parent.abort()
+    expect(deadlineSignal(parent.signal, 60_000).signal.aborted).toBe(true)
   })
 
   it('leaves streaming untouched — it is not on this path', async () => {
