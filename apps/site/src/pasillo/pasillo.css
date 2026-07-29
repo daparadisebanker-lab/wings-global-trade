@@ -1,0 +1,151 @@
+/* El Pasillo — token layer, scoped.
+ *
+ * This lives inside the live Wings site, so NOTHING here may leak. Every token
+ * is `--pas-*` and every declaration sits under [data-app='pasillo'], which the
+ * route group's layout stamps on its own wrapper. The site's own --color-* set,
+ * its body type and its Wings livery are untouched by this file.
+ *
+ * THE COLOUR DOCTRINE, and why it overrides the Wings livery inside this route:
+ * when the product IS colour, the interface is achromatic. Every accent hue
+ * available already exists in this catalogue — Massed Glaze is overwhelmingly
+ * cobalt, Flower Sea carries hot pink, sage and terracotta. A gold "collected"
+ * mark would vanish on some tiles and clash with others, so collected state is
+ * carried by FORM and VALUE, never by hue.
+ *
+ * The neutral ground is a measurement decision, not a mood: a warm ground shifts
+ * perceived hue and buyers reject shipments over colour variance. The site
+ * already carries this exact precedent — the (brands) route group takes a
+ * neutral ground so partner palettes are not tinted by the Wings warm cast
+ * (root CLAUDE.md §5-bis). Same argument, same exception, now scoped the same way.
+ */
+
+@font-face {
+  font-family: 'Archivo';
+  src: url('/fonts/archivo-var.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Geist Mono';
+  src: url('/fonts/geist-mono.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+[data-app='pasillo'] {
+  /* Ground — colour-neutral by requirement */
+  --pas-surface: 240 239 238;
+  --pas-surface-2: 230 229 228;
+  --pas-ink: 20 20 20;
+  --pas-lane-ground: 13 13 13;
+
+  /* Status only — never on a tile face */
+  --pas-lamp-avail: 20 160 90;
+  --pas-lamp-made: 224 138 0;
+
+  /* State ladder: one type size, four levels of importance */
+  --pas-lit: 1;
+  --pas-resting: 0.62;
+  --pas-dimmed: 0.34;
+
+  /* Hard record, soft chrome */
+  --pas-radius-record: 0px;
+  --pas-radius-chrome: 20px;
+
+  /* The sub-14px density steps.
+     Tier 1 freezes the type scale at 14px and up, and that floor is right for
+     a page. It is wrong for a comparison table where a buyer scans forty rows
+     of codes and carton counts at arm's length — dropping to --type-0 there
+     costs rows, and rows are the whole point of the dense views. So the three
+     steps below the floor are declared ONCE, as Tier-2 tokens, and never
+     appear as literals in a component. */
+  --pas-type-label: 11px; /* stamps, column heads, units */
+  --pas-type-micro: 12px; /* secondary cell text in the dense views */
+  --pas-type-dense: 13px; /* primary cell text in the dense views */
+  --pas-font-display: 'Archivo', ui-sans-serif, system-ui, sans-serif;
+  --pas-font-ui: 'Archivo', ui-sans-serif, system-ui, sans-serif;
+  --pas-font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --pas-dur-light: 240ms;
+  --pas-dur-cross: 180ms;
+  --pas-ease-settle: cubic-bezier(0.22, 1, 0.36, 1);
+  --pas-ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  /* The route owns its own ground and type inside the site's shell. */
+  background: rgb(var(--pas-surface));
+  color: rgb(var(--pas-ink));
+  font-family: var(--pas-font-ui);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-app='pasillo'] {
+    --pas-dur-light: 0ms;
+    --pas-dur-cross: 0ms;
+    --pas-ease-settle: linear;
+    --pas-ease-exit: linear;
+  }
+}
+
+[data-app='pasillo'] .pas-stamp {
+  font-family: var(--pas-font-mono);
+  font-size: var(--pas-type-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Every numeral is tabular. A SKU code is a part number and should look like one. */
+[data-app='pasillo'] .pas-mono,
+[data-app='pasillo'] input[type='number'] {
+  font-family: var(--pas-font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+[data-app='pasillo'] input[type='number']::-webkit-outer-spin-button,
+[data-app='pasillo'] input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+[data-app='pasillo'] input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+[data-app='pasillo'] :focus-visible {
+  outline: 2px solid rgb(var(--pas-ink));
+  outline-offset: 2px;
+}
+
+/* The collected mark: achromatic by requirement. A double-stroke inset, paper
+   then ink, plus a filled ink corner triangle. It reads identically on a white
+   tile, a navy tile and a pink one — which no hue does. */
+[data-app='pasillo'] .pas-collected-mark {
+  box-shadow:
+    inset 0 0 0 2px rgb(var(--pas-surface)),
+    inset 0 0 0 4px rgb(var(--pas-ink));
+}
+[data-app='pasillo'] .pas-collected-corner {
+  position: absolute;
+  inset: auto auto 0 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 0 28px 28px;
+  border-color: transparent transparent rgb(var(--pas-ink)) transparent;
+}
+
+/* The inverted spec bar — series truth stated once, on ink ground. */
+[data-app='pasillo'] .pas-spec-bar {
+  background: rgb(var(--pas-ink));
+  color: rgb(var(--pas-surface));
+}
+
+[data-app='pasillo'] .pas-rule {
+  border-color: rgb(var(--pas-ink) / 0.14);
+}
+[data-app='pasillo'] .pas-rule-hard {
+  border-color: rgb(var(--pas-ink));
+}

@@ -9,6 +9,9 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@wings/liveries/*": [
+        "../../packages/liveries/*"
       ]
     }
   },
@@ -16,6 +19,7 @@
     "next-env.d.ts",
     "src/**/*.ts",
     "src/**/*.tsx",
+    "../../packages/liveries/*/lane.config.ts",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],

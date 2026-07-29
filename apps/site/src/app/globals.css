@@ -5,6 +5,10 @@
 /* Mister livery — brand tokens (--mister-azul, COLOR LAW) + thermal ramp.
    Generated from ramp.ts; see packages/liveries/mister/livery.css. */
 @import '../../../../packages/liveries/mister/livery.css';
+/* WGT/02 Interiores — the first lane onboarded through the §4 protocol. Every
+   declaration is scoped under [data-lane="interiores"], so importing it here
+   costs the rest of the site nothing. */
+@import '../../../../packages/liveries/interiores/livery.css';
 
 @tailwind base;
 @tailwind components;

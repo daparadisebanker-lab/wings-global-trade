@@ -11,7 +11,7 @@ into the structured SERIES -> SKU data every component in the UI spec depends on
     (4) OCR       the printed captions and spec bars  [human/model, checked in
                   as transcription.json - this script does not re-read the PDF text]
     (5) PROPOSE   k-means dominant colours per SKU
-    (6) EMIT      apps/escalera/src/data/catalogue.ts
+    (6) EMIT      apps/site/src/pasillo/data/catalogue.ts
 
 Stages 1-3 and 5-6 are automated and re-runnable; stage 4 is the human gate and
 lives in transcription.json. Everything is deterministic, so a rebuild of the
@@ -45,9 +45,12 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
 TRANSCRIPTION = HERE / "transcription.json"
-APP = REPO / "apps" / "escalera"
+# The catalogue is mounted inside the live site as the Azulejos catalogue of
+# WGT/02 Interiores (see apps/site/src/pasillo/). This pipeline keeps its own
+# name because it is the extraction pipeline, not the app.
+APP = REPO / "apps" / "site"
 IMG_OUT = APP / "public" / "tiles"
-TS_OUT = APP / "src" / "data" / "catalogue.ts"
+TS_OUT = APP / "src" / "pasillo" / "data" / "catalogue.ts"
 
 SUPPLIER = "HUAZHUAN"
 
@@ -422,7 +425,7 @@ def emit(series: list[dict], skus: list[dict]) -> str:
     A("// Absent from these catalogues and therefore null, never invented:")
     A("//   PEI, slip rating, water absorption, application, rectified edge, price.")
     A("")
-    A("import type { Series, Sku } from '@/types/catalogue'")
+    A("import type { Series, Sku } from '@/pasillo/types/catalogue'")
     A("")
     A("export const SERIES: Series[] = [")
     for s in series:

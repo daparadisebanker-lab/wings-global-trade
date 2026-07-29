@@ -9,26 +9,34 @@ This file is the operating brain for the Wings Global Trade multi-lane platform.
 
 The repo-to-monorepo migration is **complete** (waves M0–M4, 2026-07). Where things stand:
 
-- **`apps/site`** is the live Wings Global Trade site — it is **NOT yet split into lanes**. It has its own `apps/site/CLAUDE.md` (site-specific law) that extends this file. Deeper file overrides root; it never restates.
+- **`apps/site`** is the live Wings Global Trade site. The lane split has **begun**: `src/app/(lanes)/` now exists and holds WGT/02 (below); everything else is still the pre-lane single-site form. It has its own `apps/site/CLAUDE.md` (site-specific law) that extends this file. Deeper file overrides root; it never restates.
 - **`apps/tower`** (TOWER: internal CRM/ERP/PIM/analytics) is **unblocked but not built** — see `programs/tower/`.
 - **`packages/`** exist and are consumed by `apps/site`: `@wings/trade-ui` (skeleton organs + primitives + Tier-1 tokens), `@wings/mister` (Mister client contract + SSE hook), `packages/liveries/wings` (Tier-2 livery). Two organs remain deliberately app-local (`QuotationForm`, the `MisterDock` shell) — see `programs/ecosystem/MIGRATION_DECISIONS.md` D-10/D-11.
-- **`apps/escalera`** is **El Pasillo** — the supplier tile catalogue rebuilt as an aisle of series (booths), with a local-first muestrario and a Trade Desk that states m², cartons, kilos and container fill. Built to `apps/escalera/EL-PASILLO-UI.md` (P1); Mosaico and the facet rail are P2, gated on pattern-family tagging. **Its interface is deliberately achromatic and its ground colour-neutral** — when the product is colour, a Wings-gold accent would vanish on some tiles and falsify others; this is the same exception §5-bis already grants the `(brands)` route group. Wholesale-only law holds: it states quantities, never prices.
+- **WGT/02 Interiores is open** (2026-07-28) — the first lane onboarded through the §4 protocol rather than inherited. Registered at `packages/liveries/interiores/`, ledgered in `registry.md`, live at `/interiores` inside `apps/site`. PROJECT archetype; status `OPENING`. Its first catalogue is **Azulejos** at `/interiores/azulejos` — the supplier tile catalogue rebuilt as an aisle of series (booths), with a local-first muestrario and a Trade Desk that states m², cartons, kilos and container fill. Code lives at `apps/site/src/pasillo/`; spec and app law travel with it (`EL-PASILLO-UI.md`, `CLAUDE.md` in that directory). Mosaico and the facet rail are P2, gated on pattern-family tagging.
+  - **Naming:** "Azulejos" is the buyer-facing name and the only one that appears in navigation. "El Pasillo" is the *interaction* — the aisle you walk — and stays in the spec, the code and the build log.
+  - **The aisle is achromatic and its ground colour-neutral**, suppressing its own lane's oxblood accent: when the product is colour, a lane accent would vanish on some tiles and falsify others, and a warm ground shifts perceived hue on a purchase buyers reject over colour variance. Registered as an exception in `registry.md`; same argument and same scoping §5-bis grants the `(brands)` route group. Wholesale-only law holds: it states quantities, never prices.
+  - The aisle is the one subtree that drops site chrome (`components/features/shared/SiteFrame.tsx`). Everything else on the site keeps it.
+- `apps/escalera` **no longer exists** — it was a standalone shell for the catalogue and was folded into `apps/site` when the lane opened, so the work ships on the existing Vercel project.
 - **`programs/`** are still QUEUED specs, not active law: TOWER, Network, shared-container. Never build from them unless explicitly told to start that program.
 
 ### Repository Map
 
 ```
 apps/site/          The live site (Next.js App Router). Its @/ alias resolves within apps/site/src.
+  src/app/(lanes)/  Lane routes — the layout sets data-lane. First entry: interiores (WGT/02).
+  src/pasillo/      Azulejos — the tile catalogue as an aisle: Lane → sheet-dock → muestrario →
+                    Trade Desk. Self-contained (components/lib/data/types + its own token layer,
+                    pasillo.css, and pas-* Tailwind namespace). Spec + app law live in-directory.
 apps/tower/         TOWER app (queued; not built).
-apps/escalera/      El Pasillo — the supplier tile catalogue as an aisle: Lane → sheet-dock →
-                    muestrario → Trade Desk. Spec: apps/escalera/EL-PASILLO-UI.md.
 packages/ui/        @wings/trade-ui — frozen organs + primitives; tokens/skeleton.css (Tier 1, frozen).
 packages/liveries/  {slug}/ livery.css + lane.config.ts; registry.md (append-only hue registry).
+                    Registered: wings (house), interiores (WGT/02).
 packages/mister/    @wings/mister — Mister client surface (types/contract + useMisterStream). Server/guardrails stay in apps/site.
 content/            (placeholder) per-lane content, ES/EN — not yet populated.
 supabase/           Migrations + config (single project pyznlglvwihosemqkhtq). Never manual prod SQL.
 data/               Master catalog data + generated seed payloads (read by infrastructure/ from repo root).
 infrastructure/     Data pipeline scripts (run from repo root, read data/ relatively).
+                    escalera/ emits the Azulejos catalogue into apps/site/src/pasillo/data/.
 scripts/            Utility scripts (icon generation, swap-test).
 spec/               AUTHORITATIVE product + design spec for apps/site. Outranks docs/.
 docs/               Strategy/research/build-history. docs/build-history/ is superseded — never build from it.
@@ -73,7 +81,7 @@ Every lane — current or future — maps to exactly one archetype. The archetyp
 | Archetype | Buyer buys… | Unit math | IA pattern | Current examples |
 |-----------|-------------|-----------|------------|------------------|
 | **EQUIPMENT** | Specified units + after-sale confidence | per unit / per crate CBM | Catalog by function → spec sheet | WGT/01 Machinery |
-| **PROJECT** | A scoped delivery tied to milestones | per key / per room / per m² | **Dual taxonomy** (discipline + space) → spec sheet → project RFQ | WGT/02 Interiors |
+| **PROJECT** | A scoped delivery tied to milestones | per key / per room / per m² | **Dual taxonomy** (discipline + space) → spec sheet → project RFQ | WGT/02 Interiores — OPEN, first catalogue Azulejos |
 | **COMMODITY** | Volume at grade + price window | per pallet / per container / per MT | Commodity table (grades, seasons, availability) → contract RFQ | WGT/03 Provisions |
 | **PROGRAM** | Repeating SKU assortments | per SKU program / per carton run | Assortment builder → program RFQ | WGT/04 Living |
 | **CREDENTIAL** | Access + legitimacy (a mandate) | per territory / per scope | Roster → credential page → mandate inquiry | WGT/05 Representation |

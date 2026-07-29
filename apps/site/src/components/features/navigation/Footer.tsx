@@ -20,6 +20,7 @@ interface FooterProps {
 const NAV_SERVICES = [
   { href: '/cotizar', label: 'Solicitar cotización' },
   { href: '/proceso', label: 'Cómo importar' },
+  { href: '/interiores', label: 'Interiores — WGT/02' },
   { href: '/marcas', label: 'Marcas representadas' },
   { href: '/mister', label: 'Mister IA' },
   { href: '/nosotros', label: 'Nosotros' },

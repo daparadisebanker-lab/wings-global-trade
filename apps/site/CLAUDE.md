@@ -1,19 +1,41 @@
 # apps/site — Wings Global Trade (the live site)
 
 The Wings Global Trade B2B trade-intelligence site: the live app of the ecosystem
-monorepo. Not yet split into lanes — see the root `CLAUDE.md` (ecosystem law) for the
-family-wide framework, token tiers, and repository map. This file is the site-specific
-law that extends it. Production, with real users.
+monorepo. See the root `CLAUDE.md` (ecosystem law) for the family-wide framework, token
+tiers, and repository map. This file is the site-specific law that extends it.
+Production, with real users.
 
-Two flows, no cart / checkout / payment / accounts — the platform converts visitors
+Three flows, no cart / checkout / payment / accounts — the platform converts visitors
 into documented leads delivered to Wings ops via WhatsApp + email:
 
 1. **Catalog** — browse curated inventory, submit an inquiry (RFQFlow). Conversion = form submission.
 2. **Mister (v2)** — AI trade-intelligence layer. Inducts to one of 5 archetypes, guides discovery → consideration → pre_qualification → support, teaches landed-cost STRUCTURE via indexed ranges (base 100). **Never shows an absolute price, availability, or lead time.** Conversion = quotation / WhatsApp handoff / document download.
+3. **Lanes** — coded divisions under `src/app/(lanes)/`. First: **WGT/02 Interiores** at `/interiores`, PROJECT archetype, with the **Azulejos** catalogue at `/interiores/azulejos`. Conversion = muestrario → Trade Desk (WhatsApp + email at equal weight).
+
+## Lanes (`src/app/(lanes)/`)
+- The lane layout sets `data-lane="{slug}"` and **nothing else** — no padding, no wrapper
+  chrome. A child may be a scrolling page or a full viewport, and a layout that assumes
+  the first breaks the second.
+- Lane tokens live in `packages/liveries/{slug}/livery.css` (Tier 2, scoped to the
+  attribute) and the Phase-0 record in `lane.config.ts`. The lane page reads its figures
+  from that config and from the catalogue — it never restates them.
+- Import lane configs via `@wings/liveries/{slug}/lane.config` (tsconfig path).
+- **Azulejos** (`src/pasillo/`) is self-contained: its own token layer (`pasillo.css`,
+  every token `--pas-*`, scoped to `[data-app="pasillo"]`), its own `pas-*` Tailwind
+  namespace, its own money math on `decimal.js`, and its own spec + app law in-directory
+  (`EL-PASILLO-UI.md`, `CLAUDE.md`). **Read `src/pasillo/CLAUDE.md` before touching it** —
+  its achromatic doctrine and its carton-first arithmetic are not preferences.
+- It is the **only** subtree that drops site chrome. The gate is
+  `components/features/shared/SiteFrame.tsx`, keyed on `isAislePath()` from
+  `src/pasillo/lib/routes.ts`. Never hardcode that path anywhere else.
 
 ## Commands (from the monorepo root)
-- `pnpm dev` · `pnpm build` · `pnpm start` · `pnpm lint` — proxy to `--filter site`.
+- `pnpm dev` · `pnpm build` · `pnpm start` · `pnpm lint` · `pnpm test` · `pnpm typecheck` — proxy to `--filter site`.
+- `pnpm test` runs the Azulejos money-math, spring and swipe suites. It is the only thing
+  between a buyer and a wrong carton count — it must stay green.
 - `pnpm swap-test` — asserts the shared packages import nothing from `apps/*`.
+- `python infrastructure/escalera/build_catalog.py --data-only` regenerates
+  `src/pasillo/data/catalogue.ts`. That file is **generated — never hand-edit it.**
 - Product seed pipeline is Python: `python infrastructure/scripts/generate-sql-seed.py` (reads root `data/`).
 
 ## Stack

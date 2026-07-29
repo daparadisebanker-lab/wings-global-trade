@@ -18,6 +18,9 @@ interface SiteNavProps {
 
 const LINKS = [
   { href: '/proceso',    label: 'Cómo importar' },
+  // WGT/02 — the lane, not the catalogue. "Azulejos" is what sits inside it;
+  // a buyer scanning a menu for finishes looks for the discipline first.
+  { href: '/interiores', label: 'Interiores' },
   { href: '/repuestos',  label: 'Motores' },
   { href: '/marcas',     label: 'Marcas' },
   { href: '/mister',     label: 'Mister IA' },

@@ -12,9 +12,10 @@ import { ComparisonProvider } from '@/contexts/comparison-context'
 import { WINGS_TAGLINE } from '@/lib/constants'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { organizationSchema } from '@/lib/schema'
-import { PageTransition } from '@/components/features/shared/PageTransition'
 import { MisterSiteWidget } from '@/components/features/mister/MisterSiteWidget'
-import { SmoothScroll } from '@/components/features/shared/SmoothScroll'
+// The chrome gate. Every route keeps the chrome below except the Azulejos
+// aisle, which is a full-viewport tool — see SiteFrame for the reasoning.
+import { ChromeGate, MainFrame } from '@/components/features/shared/SiteFrame'
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -72,19 +73,21 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <JsonLd data={organizationSchema()} />
       </head>
       <body className="font-body antialiased">
-        <SmoothScroll>
-          <ToastProvider>
-            <ComparisonProvider>
+        <ToastProvider>
+          <ComparisonProvider>
+            <ChromeGate>
               <SiteNav categories={categories} />
-              <main className="min-h-screen overflow-x-clip"><PageTransition>{children}</PageTransition></main>
+            </ChromeGate>
+            <MainFrame>{children}</MainFrame>
+            <ChromeGate>
               <Footer categories={categories} />
               <CompareBar />
               <MultiInquiryPanel />
               {/* Mister site-wide widget: floating button + fullscreen overlay */}
               <MisterSiteWidget />
-            </ComparisonProvider>
-          </ToastProvider>
-        </SmoothScroll>
+            </ChromeGate>
+          </ComparisonProvider>
+        </ToastProvider>
       </body>
     </html>
   )

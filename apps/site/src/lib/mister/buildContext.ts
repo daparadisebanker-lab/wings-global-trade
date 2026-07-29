@@ -21,6 +21,7 @@ import {
   inferProductType,
   isEscalationStage,
 } from '@/lib/mister/tools'
+import { getLaneMisterPacks, type LaneMisterPack } from '@/lib/lanes/interioresMisterPack'
 import { getRbMisterPacks, type RbMisterPack } from '@/lib/rb/misterPack'
 
 interface AssembledContext {
@@ -51,7 +52,8 @@ export async function buildMisterContext(
 ): Promise<BuildContextResult> {
   const interests = session.collected.productInterest ?? []
 
-  const [productResult, documentResult, contactResult, rbPacksResult] = await Promise.allSettled([
+  const [productResult, documentResult, contactResult, rbPacksResult, lanePacksResult] =
+    await Promise.allSettled([
     request.currentProductId
       ? fetchProduct(request.currentProductId, supabase)
       : Promise.resolve(null),
@@ -71,6 +73,10 @@ export async function buildMisterContext(
     // Represented-brands packs (RB lane) — compiled from the same views the
     // shelf reads; a failure degrades to no pack, never breaks the turn.
     getRbMisterPacks(),
+
+    // Lane knowledge packs (WGT/NN) — compiled from each lane's own catalogue
+    // on the same terms: one brain, many mouths. Same degradation rule.
+    getLaneMisterPacks(),
   ])
 
   let comparisonResult: ComparisonSurface | null = null
@@ -107,6 +113,7 @@ export async function buildMisterContext(
     actionId: request.actionId ?? null,
     backend,
     rbPacks: rbPacksResult.status === 'fulfilled' ? rbPacksResult.value : [],
+    lanePacks: lanePacksResult.status === 'fulfilled' ? lanePacksResult.value : [],
     opsWhatsapp: process.env.MISTER_OPS_WHATSAPP ?? '+50760250735',
   })
 
@@ -124,9 +131,11 @@ function renderContextBlock(params: {
   actionId: MisterActionId | null
   backend: AssembledContext
   rbPacks: RbMisterPack[]
+  lanePacks: LaneMisterPack[]
   opsWhatsapp: string
 }): string {
-  const { session, currentPage, currentProductId, actionId, backend, rbPacks, opsWhatsapp } = params
+  const { session, currentPage, currentProductId, actionId, backend, rbPacks, lanePacks, opsWhatsapp } =
+    params
 
   const productLine = backend.product
     ? JSON.stringify({
@@ -171,6 +180,7 @@ backend:
   logistics_docs: ${logisticsLine}
   contacts: ${contactsLine}
 represented_brands: ${rbPacks.length > 0 ? JSON.stringify(rbPacks) : 'null'}
+lanes: ${lanePacks.length > 0 ? JSON.stringify(lanePacks) : 'null'}
 ops_whatsapp: ${opsWhatsapp}
 ${turnWarning}
 <<END_CONTEXT>>`

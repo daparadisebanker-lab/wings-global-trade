@@ -1,0 +1,117 @@
+/* ============================================================
+   WGT/02 Interiores — Tier 2 semantic tokens
+   ------------------------------------------------------------
+   Derived by the ecosystem §Phase-2 rules, not chosen by taste.
+   The full measurement table is in ../registry.md; the short form:
+
+     Ground  bone #F5F1E8    — the environment the cargo lives in.
+                               Hard finishes and FF&E are photographed on
+                               plaster and paper, not on steel. PROJECT
+                               leans light-editorial (Phase-2 step 1).
+     Ink     walnut #2A2118  — derived from ground temperature. A warm
+                               ground never takes pure #000 (step 2);
+                               14.02:1 on bone.
+     Accent  oxblood #6B2A2A — the cargo's most premium material signal:
+                               fired clay and lacquered wood. 9.36:1 on
+                               bone, 37.9° from the house gold. Brass was
+                               the intuitive pick and failed BOTH gates
+                               (8.9° hue, 4.10:1) — see registry.md.
+     Texture linen-paper     — exactly one, from the library (step 5).
+     Type    editorial-light — the PROJECT posture (step 6). Same variable
+                               family as every other lane; no new typeface.
+
+   Tier-2 ONLY. Nothing here changes a spacing step, a type step, a grid
+   value or a motion curve — those are frozen in
+   @wings/trade-ui/tokens/skeleton.css and a lane that needs to move one
+   has a content problem, not a skeleton problem.
+   ============================================================ */
+
+[data-lane='interiores'] {
+  /* --- Ground / ink --- */
+  --surface-0: #f5f1e8; /* bone — the lane ground */
+  --surface-1: #ffffff; /* raised card on bone */
+  --surface-2: #ece6d9; /* inset well, table zebra, rule ground */
+  /* Measured against BOTH grounds this lane uses, because an alpha ink that
+     passes on bone can fail on the inset well one step darker. Composites and
+     ratios are recomputed, never assumed from the alpha value. */
+  --ink-primary: #2a2118; /* walnut — 14.02:1 on bone, 12.71:1 on surface-2 */
+  --ink-secondary: rgba(42, 33, 24, 0.68); /* → #6B645B · 5.18:1 bone, 4.97:1 surface-2 */
+  /* NOT text. There is no alpha that reads as a third step below secondary and
+     still clears 4.5:1 on bone — 0.42 lands at 2.48:1. So this token is hairline
+     rules, dividers and disabled marks only, and the OPENING state below takes
+     --ink-secondary instead. A "quiet" token that silently carries body copy is
+     how a lane ships unreadable text. */
+  --ink-decoration: rgba(42, 33, 24, 0.42); /* 2.48:1 — non-text by definition */
+
+  /* --- Accent --- *
+   * Oxblood clears 4.5:1 on bone by itself, so unlike the RB contracts it
+   * needs no separate --accent-ink pair to carry text. The pair is declared
+   * anyway and points at the same value: the organs read --accent-ink
+   * unconditionally, and a lane that silently omits it would fall back to
+   * whatever the previous lane left behind. */
+  --accent: #6b2a2a;
+  --accent-ink: #6b2a2a; /* 9.36:1 on bone — text-safe */
+  --accent-hover: #85383a;
+  --accent-active: #521e1e;
+  /* Alpha variants are declared, not composed: Tailwind slash opacity cannot
+     modify a var() color (precedent: --livery-gold-subtle, --rb-accent-soft). */
+  --accent-soft: rgba(107, 42, 42, 0.1);
+  --accent-border: rgba(107, 42, 42, 0.28);
+
+  /* --- Cargo tint — FillMeter reads this for the lane's cargo set --- */
+  --cargo: #b0714b; /* fired-clay carton face, decoration only, never text */
+
+  /* --- Type posture: editorial-light ---
+     Same variable family the whole ecosystem shares. The posture is weight
+     and tracking, not a new typeface (Phase-2 step 6). */
+  --lane-display-weight: 400;
+  --lane-display-tracking: -0.015em;
+  --lane-label-tracking: 0.08em;
+  /* The stamp step. Tier 1 freezes the type scale at 14px and up, which is
+     correct for reading; a stencilled lane code is a mark, not prose, and it
+     reads as a mark at 11. Declared once here so no component ever writes the
+     number — the same Tier-2 escape the dense catalogue views take. */
+  --lane-type-stamp: 11px;
+
+  /* --- Texture: linen-paper, exactly one ---
+     A woven tooth built from two crossed repeating-linear-gradients rather
+     than an image: it costs no request, survives any viewport, and cannot
+     drift from the token the way a raster can. */
+  --texture: repeating-linear-gradient(
+      0deg,
+      rgba(42, 33, 24, 0.022) 0px,
+      rgba(42, 33, 24, 0.022) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(42, 33, 24, 0.022) 0px,
+      rgba(42, 33, 24, 0.022) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+
+  background-color: var(--surface-0);
+  color: var(--ink-primary);
+}
+
+/* The lane stamp — stencil-marked lane code, container-marking grammar
+   (ISO 6346 / BIC). Every lane draws this identically; only the tokens
+   differ, which is the swap test in one element. */
+[data-lane='interiores'] .lane-stamp {
+  font-variant-numeric: var(--numeric-variant);
+  letter-spacing: var(--lane-label-tracking);
+  text-transform: uppercase;
+  border: 1px solid var(--accent-border);
+  color: var(--accent-ink);
+}
+
+/* An OPENING discipline is legible, never decorative-only: it drops to the
+   secondary ink (5.18:1 — still text-safe) and takes a hairline rule rather
+   than a fill, so "not yet" reads as a state and not as a broken card. The
+   rule itself is the decoration token; the words never are. */
+[data-lane='interiores'] [data-status='OPENING'] {
+  color: var(--ink-secondary);
+  border-color: var(--ink-decoration);
+}

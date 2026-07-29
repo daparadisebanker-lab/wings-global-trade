@@ -7,9 +7,8 @@
     "build": "pnpm --filter site build",
     "start": "pnpm --filter site start",
     "lint": "pnpm --filter site lint",
-    "escalera:dev": "pnpm --filter @wings/escalera dev",
-    "escalera:build": "pnpm --filter @wings/escalera build",
-    "escalera:test": "pnpm --filter @wings/escalera test",
+    "test": "pnpm --filter site test",
+    "typecheck": "pnpm --filter site typecheck",
     "swap-test": "node scripts/swap-test.mjs",
     "generate-icons": "node scripts/generate-icons.mjs"
   },

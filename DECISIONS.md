@@ -1,5 +1,64 @@
 # DECISIONS.md — WINGS Homepage Build
 
+## WGT/02 Interiores opened; Azulejos is its first catalogue — 2026-07-29
+
+- **Decision:** the tile catalogue built as `apps/escalera` is **not a standalone
+  product**. It is the first catalogue of **WGT/02 Interiores**, the second lane
+  and the first onboarded through the ecosystem §4 protocol rather than
+  inherited. `apps/escalera` was deleted; the code moved to
+  `apps/site/src/pasillo/` so the work ships on the existing
+  `wings-global-trade` Vercel project — the one serving the production domain,
+  whose root directory therefore could not be repointed.
+- **Route + name:** `/interiores` (lane) → `/interiores/azulejos` (catalogue).
+  The buyer-facing name is **Azulejos**; "El Pasillo" is the interaction and
+  stays in the spec and the code. Spanish slug, consistent with every existing
+  route and with `lang="es-PE"` — this diverges from the umbrella program doc's
+  English `/interiors`, deliberately and on the record, because the site is
+  Spanish-facing and lane slugs are permanent.
+- **Phase 0 answered** (stored in `packages/liveries/interiores/lane.config.ts`):
+  buyer = procurement firms + builders/contractors (explicitly NOT hotel
+  developers or design studios — neither signs today); archetype PROJECT; unit
+  math m² coverage + per key; taxonomy = the full six-discipline axis registered
+  at once with only `acabados-duros` ACTIVE; photography `INTERIM_TYPOGRAPHIC`
+  (tile faces exist, no supplier room render is bound to a series); Mister pack
+  compiled from the catalogue, existing WhatsApp + CRM handoff.
+- **Accent derived, not chosen — brass rejected.** The umbrella doc offered
+  "brass — or oxblood". Brass `#9A6B3F` fails BOTH Phase-2 gates: 8.9° from the
+  house harvest gold (needs ≥30°) and 4.10:1 on the bone ground (needs 4.5:1).
+  Terracotta fails the hue gate at 23.5°. **Oxblood `#6B2A2A`** passes both
+  (37.9°, 9.36:1) and is registered. Brass is the intuitive interiors signal and
+  is exactly what the hue rule exists to stop — at 8.9° it reads as a warmer
+  Wings, not as a lane. Full table in `packages/liveries/registry.md`.
+- **`--ink-tertiary` renamed `--ink-decoration` and barred from text.** No alpha
+  reads as a third step below secondary and still clears 4.5:1 on bone (0.42
+  lands at 2.48:1). A "quiet" token that silently carries body copy is how a lane
+  ships unreadable text, so the OPENING state takes the secondary ink (5.18:1)
+  and the decoration token is hairlines only.
+- **Achromatic exception, registered:** the Azulejos subtree suppresses its own
+  lane's accent and takes a colour-neutral ground. When the product IS colour, a
+  lane accent vanishes on some tiles and falsifies others, and a warm ground
+  shifts perceived hue on a purchase buyers reject over colour variance. Same
+  argument and same scoping root §5-bis grants the `(brands)` group.
+- **Chrome gated, not removed** — `SiteFrame.tsx` drops SiteNav/Footer/CompareBar/
+  MultiInquiryPanel/Mister launcher/Lenis/PageTransition on the aisle only.
+  Following the existing precedent in this file ("Legacy chrome gated, not
+  removed"): parallel root layouts would mean relocating ~70 routes to suppress a
+  header on four.
+- **`FillMeter` made themeable rather than forked** — it hardcoded `--color-gold`
+  on every fill, so a lane could not theme it, which root §1.1 forbids. Now reads
+  `var(--cargo, var(--color-gold))`; existing pages define no `--cargo` and render
+  byte-identically.
+- **Site-wide safety:** every El Pasillo Tailwind key and CSS token is namespaced
+  (`pas-*` / `--pas-*`). The Tier-1 spacing scale diverges from Tailwind's default
+  at 5 and above, so spacing utilities were renamed rather than the site's scale
+  overridden — the alternative silently re-spaces every existing route.
+- **Deferred, on the record:** the lane's space overlay (the PROJECT dual
+  taxonomy's second axis) — one catalogue cannot populate a space view; the
+  Mister pack is compiled in-process rather than stored in Supabase (no
+  knowledge-pack table exists and inventing schema was out of scope); a
+  weight-limited FillMeter variant for PROJECT lanes (the shipped organ models
+  slots, which is ALLOCATION math).
+
 ## Mister Torre adopted — 2026-07-23 (internal AI operator, flagship quote run)
 
 - **Decision:** the `mister-tower-scope` package is adopted as an **experience/

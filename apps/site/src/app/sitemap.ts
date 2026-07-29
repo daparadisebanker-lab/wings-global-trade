@@ -37,6 +37,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: buildDate,
     },
     {
+      // WGT/02 Interiores. The lane page is the indexable surface; the Azulejos
+      // aisle beneath it is noindex by its own layout (a sourcing tool carrying
+      // supplier data, not a landing page) and is deliberately absent here.
+      url: `${BASE}/interiores`,
+      priority: 0.8,
+      changeFrequency: 'weekly',
+      lastModified: buildDate,
+    },
+    {
       url: `${BASE}/nosotros`,
       priority: 0.5,
       changeFrequency: 'monthly',
