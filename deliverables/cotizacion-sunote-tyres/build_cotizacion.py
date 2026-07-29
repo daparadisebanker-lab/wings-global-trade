@@ -4,13 +4,36 @@ SUNOTE tyre order — issued by the Chilean company (Shining Star), destined for
 ZOFRI / Iquique. Prices are the CLIENT (marked-up) prices, never the supplier's
 cost, and the supplier (SINOTYRE) is never named to the client.
 
-Reuses the proforma's `pdoc` layout, tightened to sit on a single A4 page.
-Self-contained HTML (logo inlined). Run:  python3 build_cotizacion.py
+The tyre product photos are lifted from the supplier's PDF (embedded JPEGs, in
+document order → SN116 / SN388 / SN228+) and inlined as data URIs, so the doc
+stays self-contained. Reuses the proforma's `pdoc` layout, tightened to a single
+A4 page. Run:  python3 build_cotizacion.py
 """
+import base64
 from pathlib import Path
+
+from pypdf import PdfReader
 
 HERE = Path(__file__).resolve().parent
 LOGO_SVG = "/home/user/wings-global-trade/apps/tower/public/brand/wings-imagotipo.svg"
+SRC_PDF = "/root/.claude/uploads/9b3418c8-23ea-51a6-a669-775bbf844870/dac7d0a0-SUNOTE_PI190305WZQ260728.pdf"
+
+
+def model_images() -> dict[str, str]:
+    """The supplier PDF embeds three product photos in document order; the
+    proforma lists them as SN116, SN388, SN228+. Return {model: data-uri}."""
+    reader = PdfReader(SRC_PDF)
+    uris: list[str] = []
+    for page in reader.pages:
+        for img in page.images:
+            b64 = base64.b64encode(img.data).decode("ascii")
+            mime = "image/png" if img.name.lower().endswith(".png") else "image/jpeg"
+            uris.append(f"data:{mime};base64,{b64}")
+    order = ["SN116", "SN388", "SN228+"]
+    return {model: uris[i] for i, model in enumerate(order) if i < len(uris)}
+
+
+IMAGES = model_images()
 
 # ── Client line items (SELLING prices from the client quotation) ──────────────
 # (marca, medida, modelo, cantidad, precio unit. FOB Qingdao USD)
@@ -35,10 +58,12 @@ def money_rows():
         amount = round(qty * unit, 2)
         subtotal += amount
         total_qty += qty
+        uri = IMAGES.get(model, "")
+        pic = f'<img class="pd-tile" src="{uri}" alt="{brand} {model}" />' if uri else ""
         rows.append(
             f'<tr><td class="pd-item">{i}</td>'
-            f'<td class="pd-brand">{brand}</td>'
-            f'<td class="pd-desc">{size} · {model}</td>'
+            f'<td class="pd-desc"><span class="pd-brand">{brand}</span> · {size} · {model}</td>'
+            f'<td class="pd-pic">{pic}</td>'
             f'<td class="pd-cell-num">{qty} pcs</td>'
             f'<td class="pd-cell-num">{fmt(unit)}</td>'
             f'<td class="pd-cell-num">{fmt(amount)}</td></tr>'
@@ -76,6 +101,7 @@ HTMLDOC = f"""<!doctype html>
     box-sizing: border-box; width: 100%; max-width: 820px; margin: 0 auto;
     padding: 22px 52px 20px; background: #ffffff; color: var(--pd-ink);
     font-family: var(--font-ui, system-ui, sans-serif); font-size: 12px; line-height: 1.35;
+    display: flex; flex-direction: column; min-height: 1040px;
   }}
   .pdoc *, .pdoc *::before, .pdoc *::after {{ box-sizing: border-box; }}
 
@@ -89,10 +115,10 @@ HTMLDOC = f"""<!doctype html>
   .pdoc-rule {{ position: relative; height: 3px; margin: 10px 0 12px; background: var(--pd-line); }}
   .pdoc-rule::before {{ content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 168px; background: var(--pd-ink); }}
 
-  .pdoc-dateline {{ display: flex; flex-wrap: wrap; gap: 5px 16px; margin-bottom: 10px; font-size: 11.5px; color: var(--pd-muted); }}
+  .pdoc-dateline {{ display: flex; flex-wrap: wrap; gap: 5px 16px; margin-bottom: 7px; font-size: 11.5px; color: var(--pd-muted); }}
   .pdoc-dateline span:not(:last-child)::after {{ content: '|'; margin-left: 16px; color: var(--pd-line); }}
 
-  .pdoc-parties {{ display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }}
+  .pdoc-parties {{ display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 6px; }}
   .pdoc-party {{ border: 1px solid var(--pd-line); padding: 10px 12px; }}
   .pdoc-party-head {{ font-size: 10.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 7px; }}
   .pdoc-party-name {{ font-weight: 600; margin-bottom: 7px; }}
@@ -102,15 +128,17 @@ HTMLDOC = f"""<!doctype html>
 
   .pdoc-table {{ width: 100%; border-collapse: collapse; table-layout: fixed; }}
   .pdoc-table thead th {{ background: var(--pd-bar); font-size: 10.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 6px 9px; text-align: center; border: 1px solid var(--pd-line); }}
-  .pdoc-table th.pd-col-item {{ width: 7%; }}
-  .pdoc-table th.pd-col-brand {{ width: 15%; }}
-  .pdoc-table th.pd-col-desc {{ width: 30%; }}
+  .pdoc-table th.pd-col-item {{ width: 6%; }}
+  .pdoc-table th.pd-col-desc {{ width: 34%; }}
+  .pdoc-table th.pd-col-pic {{ width: 13%; }}
   .pdoc-table th.pd-col-qty {{ width: 12%; }}
   .pdoc-table tbody tr {{ break-inside: avoid; }}
   .pdoc-table tbody td {{ border: 1px solid var(--pd-line); padding: 5px 9px; vertical-align: middle; font-size: 11.5px; }}
   .pd-item {{ font-weight: 600; text-align: center; }}
   .pd-brand {{ font-weight: 600; }}
   .pd-desc {{ text-align: left; }}
+  .pd-pic {{ text-align: center; padding: 2px !important; }}
+  .pd-tile {{ display: block; margin: 0 auto; max-width: 100%; max-height: 30px; object-fit: contain; }}
   .pd-cell-num {{ text-align: right; font-family: var(--font-mono, monospace); font-variant-numeric: tabular-nums; }}
   .pd-row-total td {{ background: var(--pd-tint); font-weight: 700; }}
 
@@ -121,7 +149,7 @@ HTMLDOC = f"""<!doctype html>
   .pdoc-total-row[data-emphasis='true'] {{ border-top: 2px solid var(--pd-ink); }}
   .pdoc-total-row[data-emphasis='true'] .pd-total-label, .pdoc-total-row[data-emphasis='true'] .pd-total-value {{ font-size: 14.5px; font-weight: 700; }}
 
-  .pdoc-section-bar {{ background: var(--pd-bar); padding: 6px 12px; margin: 8px 0 6px; font-size: 11.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }}
+  .pdoc-section-bar {{ background: var(--pd-bar); padding: 5px 12px; margin: 6px 0 5px; font-size: 11.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }}
   .pdoc-terms {{ display: grid; grid-template-columns: 210px 1fr; gap: 4px 16px; padding: 0 4px; font-size: 11.5px; }}
   .pdoc-term-label {{ font-weight: 600; }}
   .pdoc-observations {{ margin: 0; padding: 0 4px; list-style: none; font-size: 11.5px; }}
@@ -129,11 +157,12 @@ HTMLDOC = f"""<!doctype html>
   .pdoc-observations li::before {{ content: '•'; position: absolute; left: 4px; }}
 
   /* Sign-off + attended-by sit side by side to save vertical space. */
-  .pdoc-close-row {{ display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; margin-top: 6px; }}
+  .pdoc-tail {{ margin-top: auto; padding-top: 10px; }}
+  .pdoc-close-row {{ display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; }}
   .pdoc-close-signoff {{ margin-top: 2px; font-weight: 600; }}
   .pdoc-issuedby {{ min-width: 260px; }}
   .pdoc-issuedby-label {{ font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--pd-muted); margin-bottom: 4px; }}
-  .pdoc-signature-blank {{ height: 16px; }}
+  .pdoc-signature-blank {{ height: 10px; }}
   .pdoc-issuedby-name {{ font-weight: 600; padding-top: 6px; border-top: 1px solid var(--pd-line); }}
   .pdoc-issuedby-title {{ margin-top: 2px; font-size: 11.5px; color: var(--pd-muted); }}
 
@@ -155,7 +184,7 @@ HTMLDOC = f"""<!doctype html>
     body {{ background: #ffffff; }}
     .pdoc-page {{ min-height: 0; padding: 0; }}
     .pdoc-page .pdoc {{ box-shadow: none; }}
-    .pdoc {{ max-width: none; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }}
+    .pdoc {{ max-width: none; padding: 0; min-height: 280mm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }}
     .pdoc-close-row, .pdoc-footer {{ break-inside: avoid; }}
   }}
 </style>
@@ -210,8 +239,8 @@ HTMLDOC = f"""<!doctype html>
     <thead>
       <tr>
         <th class="pd-col-item">Ítem</th>
-        <th class="pd-col-brand">Marca</th>
         <th class="pd-col-desc">Descripción</th>
+        <th class="pd-col-pic">Imagen</th>
         <th class="pd-col-qty">Cantidad</th>
         <th>Precio unit. FOB Qingdao (USD)</th>
         <th>Importe (USD)</th>
@@ -221,8 +250,8 @@ HTMLDOC = f"""<!doctype html>
       {ROWS}
       <tr class="pd-row-total">
         <td class="pd-item"></td>
-        <td class="pd-brand"></td>
         <td class="pd-desc">Total FOB puerto</td>
+        <td class="pd-pic"></td>
         <td class="pd-cell-num">{TOTAL_QTY} pcs</td>
         <td class="pd-cell-num"></td>
         <td class="pd-cell-num">{SUBTOTAL}</td>
@@ -263,6 +292,7 @@ HTMLDOC = f"""<!doctype html>
     <li>El flete se confirma antes del embarque; variaciones logísticas o de tipo de cambio pueden afectar el precio final.</li>
   </ul>
 
+  <div class="pdoc-tail">
   <div class="pdoc-close-row">
     <div class="pdoc-close">
       <div>Atentamente,</div>
@@ -285,6 +315,7 @@ HTMLDOC = f"""<!doctype html>
       <div>wingsglobaltrade.com</div>
     </div>
   </footer>
+  </div>
 
 </article>
 </div>
@@ -296,3 +327,4 @@ out = HERE / "cotizacion.html"
 out.write_text(HTMLDOC, encoding="utf-8")
 print(f"wrote {out} ({len(HTMLDOC):,} bytes)")
 print(f"items={len(ITEMS)} total_qty={TOTAL_QTY} subtotal={SUBTOTAL} freight={FREIGHT_S} grand={GRAND}")
+print(f"images={list(IMAGES.keys())}")
