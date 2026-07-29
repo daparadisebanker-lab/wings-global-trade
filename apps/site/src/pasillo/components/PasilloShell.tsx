@@ -96,6 +96,7 @@ export function RecordTab() {
   return (
     <Link
       href={PASILLO_ROUTES.muestrario}
+      data-tour="record-tab"
       className="fixed bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-3
                  rounded-pas-chrome bg-pas-ink px-pas-5 py-3 text-pas-surface no-underline"
     >

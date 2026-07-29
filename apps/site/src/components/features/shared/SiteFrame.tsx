@@ -63,7 +63,12 @@ export function ChromeGate({ children }: { children: React.ReactNode }) {
  * exactly what the root layout rendered before this gate existed.
  */
 export function MainFrame({ children }: { children: React.ReactNode }) {
-  if (isAislePath(usePathname())) return <main>{children}</main>
+  // A DIV, not a <main>. Every aisle view — Lista, Muestrario, Trade Desk,
+  // Formatos — declares its own <main> under its own header, so wrapping them
+  // in another one nested the landmark: two "main" regions per route, and an
+  // ambiguous skip-to-content target for anyone navigating by landmark. The
+  // frame's job here is only to exist; the view owns its structure.
+  if (isAislePath(usePathname())) return <div>{children}</div>
 
   return (
     <SmoothScroll>
