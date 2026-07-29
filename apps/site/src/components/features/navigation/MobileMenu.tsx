@@ -2,15 +2,34 @@
 
 // src/components/features/navigation/MobileMenu.tsx
 //
-// The phone's primary navigation — and therefore CHROME, which means it reads
-// --chrome-* like the header and the footer do, never a brand literal. It was
-// the last piece of the header system still painting machinery navy and gold,
-// so on /interiores the bar went walnut and the menu behind it did not.
-// Every fallback carries the house value, so navy surfaces are unchanged.
+// THE DRAWER IS THE SITE'S NAVIGATION, not a page's. It is the one surface that
+// spans machinery, Interiores, the represented brands and whatever opens next,
+// and a buyer reaches for it precisely because they are not where they want to
+// be. So it is achromatic and identical everywhere — see the --nav-* block in
+// globals.css for why it no longer reads --chrome-*.
+//
+// TWO LEVELS, NOT NINE ROWS. The old drawer was a flat numbered list — Catálogo,
+// Interiores, Motores, Marcas, Cotizar, Cómo importar, Mister IA, Nosotros,
+// Contacto — then a chip rail of machinery categories underneath, unlabelled and
+// belonging to exactly one of those nine. Everything sat at one level, so the
+// list said nothing about how the site is actually shaped: two product worlds,
+// and some pages about the company.
+//
+// Now: Categorías opens to the worlds. Maquinaria opens in place to its own
+// categories, because it has several. Interiores goes straight there, because
+// it has one catalogue and a step that leads nowhere is worse than no step.
+// The structure is the information.
+//
+// Mister is gone from here. It has a dedicated launcher on every screen, and a
+// menu row that duplicates a permanent button spends a line to say nothing.
+// Cotizar is gone as a row too — it is the closing action, so it is the CTA.
+
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Category } from '@/types/database'
-import { WINGS_PUBLIC_EMAIL } from '@/lib/constants'
+import { WINGS_PUBLIC_EMAIL, WINGS_PUBLIC_WHATSAPP } from '@/lib/constants'
+import { buildWhatsAppLink } from '@/lib/utils'
 import { SearchBar } from '@/components/features/homepage/SearchBar'
 
 interface MobileMenuProps {
@@ -19,162 +38,258 @@ interface MobileMenuProps {
   categories: Category[]
 }
 
-// TAILWIND CANNOT APPLY AN OPACITY MODIFIER TO AN ARBITRARY var() COLOUR:
-// `text-[color:var(--chrome-ink,#F8F6F0)]/35` emits NO RULE AT ALL, so the
-// element silently inherits and only looks right while the inherited ink
-// happens to be near-white. color-mix() survives compilation, and Tailwind's
-// scanner only sees string literals, so the ladder lives here.
-const INK_35 = 'text-[color:color-mix(in_srgb,var(--chrome-ink,#F8F6F0)_35%,transparent)]'
-const INK_20 = 'text-[color:color-mix(in_srgb,var(--chrome-ink,#F8F6F0)_20%,transparent)]'
-const RULE_8 = 'border-[color:color-mix(in_srgb,var(--chrome-ink,#F8F6F0)_8%,transparent)]'
-
-const PRIMARY_NAV = [
-  { href: '/catalogo',   label: 'Catálogo',       num: '01' },
-  // WGT/02. This entry is not optional: the Azulejos catalogue inside this lane
-  // is built thumb-first — swipe grammar, every control in the bottom 60%, one
-  // hand across ten booths — and it shipped unreachable from the phone's own
-  // primary navigation, findable only through the footer.
-  { href: '/interiores', label: 'Interiores',      num: '02' },
-  { href: '/repuestos',  label: 'Motores',        num: '03' },
-  { href: '/marcas',     label: 'Marcas',          num: '04' },
-  { href: '/cotizar',    label: 'Cotizar',         num: '05' },
-  { href: '/proceso',    label: 'Cómo importar',   num: '06' },
-  { href: '/mister',     label: 'Mister IA',       num: '07' },
-  { href: '/nosotros',   label: 'Nosotros',        num: '08' },
-  { href: '/contacto',   label: 'Contacto',        num: '09' },
+/** Pages about the company rather than about a product. */
+const SECONDARY = [
+  { href: '/proceso', label: 'Cómo importar' },
+  { href: '/marcas', label: 'Marcas representadas' },
+  { href: '/nosotros', label: 'Nosotros' },
+  { href: '/contacto', label: 'Contacto' },
 ]
 
-// Fix #14 — stagger container drives timing; items use shared variants
-const NAV_CONTAINER_VARIANTS = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.04 } },
-}
-
-const ITEM_VARIANTS = {
-  hidden: { opacity: 0, x: -12 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
-  },
-}
+const EASE = [0.16, 1, 0.3, 1] as [number, number, number, number]
 
 export function MobileMenu({ open, onClose, categories }: MobileMenuProps) {
+  // Which world is expanded. Only one at a time — the drawer is a place to
+  // decide, and two open trees on a 390px screen is a place to scroll.
+  const [openWorld, setOpenWorld] = useState<string | null>(null)
+
+  // A fresh open starts closed. Reopening the drawer into whatever tree was
+  // expanded three pages ago is state the buyer did not ask us to keep.
+  useEffect(() => {
+    if (!open) setOpenWorld(null)
+  }, [open])
+
   return (
     <AnimatePresence>
       {open && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.25 } }}
-          transition={{ duration: 0.3 }}
-          className="fixed inset-0 z-40 overflow-y-auto bg-[var(--chrome-ground,#000C1F)] hero-grain lg:hidden"
+          exit={{ opacity: 0, transition: { duration: 0.22 } }}
+          transition={{ duration: 0.26 }}
+          className="fixed inset-0 z-40 overflow-y-auto bg-[var(--nav-ground)] lg:hidden"
         >
-          {/* Left-edge accent line */}
-          <div
-            className="pointer-events-none absolute inset-y-0 left-0 w-px bg-gradient-to-b from-transparent via-[var(--chrome-accent-line,rgba(196,147,63,0.20))] to-transparent"
-            aria-hidden
-          />
+          <div className="flex min-h-full flex-col px-6 pb-10 pt-24">
+            <SearchBar
+              onNavy
+              mono
+              placeholder="Buscar modelo, categoría o código HS"
+              onNavigate={onClose}
+            />
 
-          <div className="flex min-h-full flex-col px-8 pb-12 pt-24">
+            {/* ── The worlds ─────────────────────────────────────────────── */}
+            <p className="mt-10 font-mono text-[9px] uppercase tracking-[0.20em] text-[color:var(--nav-ink-3)]">
+              Categorías
+            </p>
 
-            {/* Search — near the top so it's the first action available */}
-            <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0, transition: { duration: 0.3, delay: 0.05 } }}
-              className="mb-8"
-            >
-              <SearchBar
-                onNavy
-                placeholder="Buscar modelo, categoría o código HS"
-                onNavigate={onClose}
-              />
-            </motion.div>
-
-            {/* Primary nav — numbered editorial style */}
-            <motion.nav
-              aria-label="Navegación principal"
-              variants={NAV_CONTAINER_VARIANTS}
-              initial="hidden"
-              animate="visible"
-            >
-              {PRIMARY_NAV.map((link) => (
-                <motion.div
-                  key={link.href}
-                  variants={ITEM_VARIANTS}
-                  className="border-b border-[var(--chrome-hairline,rgba(248,246,240,0.06))] last:border-0"
-                >
-                  <Link
-                    href={link.href}
-                    onClick={onClose}
-                    className="group flex items-baseline gap-5 py-5"
-                  >
-                    <span className="w-6 font-mono text-[9px] tracking-[0.18em] text-[var(--chrome-label,rgba(196,147,63,0.30))] transition-colors group-hover:text-[var(--chrome-accent,var(--color-gold))]">
-                      {link.num}
-                    </span>
-                    <span className="font-display text-[2rem] font-light leading-none tracking-[-0.02em] text-[color:var(--chrome-ink,#F8F6F0)] transition-colors duration-150 group-hover:text-[var(--chrome-accent,var(--color-gold))]">
-                      {link.label}
-                    </span>
-                  </Link>
-                </motion.div>
-              ))}
-            </motion.nav>
-
-            {/* Category chips */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1, transition: { duration: 0.4, delay: 0.38 } }}
-              className="mt-10"
-            >
-              <p className="mb-4 font-mono text-[9px] uppercase tracking-[0.18em] text-[var(--chrome-label,rgba(196,147,63,0.30))]">
-                Categorías
-              </p>
-              <div className="flex flex-wrap gap-2">
+            <nav aria-label="Categorías" className="mt-3">
+              <World
+                label="Maquinaria"
+                note="Tractores, camiones, buses y equipo"
+                expanded={openWorld === 'maquinaria'}
+                onToggle={() =>
+                  setOpenWorld((w) => (w === 'maquinaria' ? null : 'maquinaria'))
+                }
+              >
                 {categories.map((c) => (
-                  <Link
+                  <Leaf
                     key={c.id}
                     href={`/catalogo/${c.slug}`}
-                    onClick={onClose}
-                    className={`border ${RULE_8} px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.10em] ${INK_35} transition-colors duration-150 hover:border-[var(--chrome-accent,var(--color-gold))] hover:text-[var(--chrome-accent,var(--color-gold))]`}
-                  >
-                    {c.name_es}
-                  </Link>
+                    label={c.name_es}
+                    onClose={onClose}
+                  />
                 ))}
-              </div>
-            </motion.div>
+                <Leaf href="/catalogo" label="Todo el catálogo" onClose={onClose} />
+                <Leaf href="/repuestos" label="Motores JDM" onClose={onClose} />
+              </World>
 
-            {/* Footer actions */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1, transition: { duration: 0.4, delay: 0.44 } }}
-              className="mt-auto pt-10"
-            >
-              <div className="mb-6 h-px w-full bg-[var(--chrome-hairline,rgba(248,246,240,0.05))]" />
+              {/* One catalogue behind it, so it is a link and not a tree. A
+                  disclosure that opens onto a single row is a wasted tap. */}
+              <World
+                label="Interiores"
+                note="Azulejo cerámico · 236 referencias"
+                href="/interiores"
+                onClose={onClose}
+              />
+            </nav>
 
+            {/* ── The company ────────────────────────────────────────────── */}
+            <nav aria-label="Wings Global Trade" className="mt-10">
+              <ul className="flex flex-col">
+                {SECONDARY.map((l) => (
+                  <li key={l.href}>
+                    <Link
+                      href={l.href}
+                      onClick={onClose}
+                      className="flex min-h-11 items-center border-b border-[color:var(--nav-rule)] py-3
+                                 font-body text-[15px] text-[color:var(--nav-ink-2)]
+                                 transition-colors duration-150 hover:text-[color:var(--nav-ink)]"
+                    >
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+
+            {/* ── The close ──────────────────────────────────────────────── */}
+            <div className="mt-auto pt-10">
               <Link
                 href="/cotizar"
                 onClick={onClose}
-                className="flex w-full items-center justify-center gap-3 bg-[var(--chrome-accent,var(--color-gold))] py-4 font-mono text-[11px] uppercase tracking-[0.12em] text-[color:var(--chrome-accent-ink,var(--color-navy))]"
+                className="flex min-h-11 w-full items-center justify-center gap-3 bg-[var(--nav-cta)] py-4
+                           font-mono text-[11px] uppercase tracking-[0.14em] text-[color:var(--nav-cta-ink)]
+                           transition-opacity duration-150 hover:opacity-90"
               >
-                <span className="h-px w-5 bg-current" aria-hidden />
                 Solicitar cotización
               </Link>
+              <a
+                href={buildWhatsAppLink(
+                  WINGS_PUBLIC_WHATSAPP,
+                  'Hola, me interesa importar a través de Wings Global Trade.',
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 flex min-h-11 w-full items-center justify-center gap-3
+                           border border-[color:var(--nav-rule-strong)] py-4 font-mono text-[11px]
+                           uppercase tracking-[0.14em] text-[color:var(--nav-ink)]
+                           transition-colors duration-150 hover:border-[color:var(--nav-ink)]"
+              >
+                WhatsApp
+              </a>
 
-              <div className="mt-6 flex items-center justify-between">
-                <p className={`font-mono text-[9px] uppercase tracking-[0.15em] ${INK_20}`}>
-                  Contacto directo
-                </p>
-                <a
-                  href={`mailto:${WINGS_PUBLIC_EMAIL}`}
-                  className={`font-mono text-[10px] ${INK_35} transition-colors hover:text-[color:var(--chrome-ink,#F8F6F0)]`}
-                >
-                  {WINGS_PUBLIC_EMAIL}
-                </a>
-              </div>
-            </motion.div>
+              <a
+                href={`mailto:${WINGS_PUBLIC_EMAIL}`}
+                className="mt-6 block font-mono text-[10px] text-[color:var(--nav-ink-3)]
+                           transition-colors hover:text-[color:var(--nav-ink)]"
+              >
+                {WINGS_PUBLIC_EMAIL}
+              </a>
+            </div>
           </div>
         </motion.div>
       )}
     </AnimatePresence>
+  )
+}
+
+/**
+ * A product world. With `href` it is a link; with `children` it is a disclosure
+ * that expands in place. Both render identically at rest, because to the buyer
+ * they are the same kind of thing — the difference is only how much is behind.
+ */
+function World({
+  label,
+  note,
+  href,
+  onClose,
+  expanded,
+  onToggle,
+  children,
+}: {
+  label: string
+  note: string
+  href?: string
+  onClose?: () => void
+  expanded?: boolean
+  onToggle?: () => void
+  children?: React.ReactNode
+}) {
+  const body = (
+    <>
+      <span className="min-w-0">
+        <span className="block font-display text-[1.75rem] font-light leading-none tracking-[-0.02em] text-[color:var(--nav-ink)]">
+          {label}
+        </span>
+        <span className="mt-2 block font-mono text-[10px] uppercase tracking-[0.12em] text-[color:var(--nav-ink-3)]">
+          {note}
+        </span>
+      </span>
+      <Chevron open={expanded} isLink={Boolean(href)} />
+    </>
+  )
+
+  return (
+    <div className="border-b border-[color:var(--nav-rule)]">
+      {href ? (
+        <Link
+          href={href}
+          onClick={onClose}
+          className="flex min-h-11 items-center justify-between gap-4 py-5"
+        >
+          {body}
+        </Link>
+      ) : (
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-expanded={expanded}
+          className="flex min-h-11 w-full items-center justify-between gap-4 py-5 text-left"
+        >
+          {body}
+        </button>
+      )}
+
+      {/* height:auto is not animatable, and a fixed max-height either clips a
+          longer category list or leaves the collapse coasting through empty
+          space. Framer measures it. */}
+      <AnimatePresence initial={false}>
+        {expanded && children && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1, transition: { duration: 0.28, ease: EASE } }}
+            exit={{ height: 0, opacity: 0, transition: { duration: 0.2, ease: EASE } }}
+            className="overflow-hidden"
+          >
+            <ul className="pb-4 pl-4">{children}</ul>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+/** A category inside an open world. Indented, quieter, and still a 44px row. */
+function Leaf({
+  href,
+  label,
+  onClose,
+}: {
+  href: string
+  label: string
+  onClose: () => void
+}) {
+  return (
+    <li>
+      <Link
+        href={href}
+        onClick={onClose}
+        className="flex min-h-11 items-center border-l border-[color:var(--nav-rule)] py-2 pl-4
+                   font-body text-[15px] text-[color:var(--nav-ink-2)]
+                   transition-colors duration-150 hover:border-[color:var(--nav-ink)] hover:text-[color:var(--nav-ink)]"
+      >
+        {label}
+      </Link>
+    </li>
+  )
+}
+
+/** → for a link, a rotating ⌄ for a disclosure. The shape says which it is. */
+function Chevron({ open, isLink }: { open?: boolean; isLink: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 14 14"
+      className={`h-3.5 w-3.5 shrink-0 text-[color:var(--nav-ink-3)] transition-transform duration-200 ${
+        !isLink && open ? 'rotate-180' : ''
+      }`}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      {isLink ? <path d="M2 7h10M8 3l4 4-4 4" /> : <path d="M3 5.5 L7 9.5 L11 5.5" />}
+    </svg>
   )
 }

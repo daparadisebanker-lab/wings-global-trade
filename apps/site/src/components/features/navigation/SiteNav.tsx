@@ -133,7 +133,15 @@ export function SiteNav({ categories }: SiteNavProps) {
         ref={headerRef}
         className={cn(
           'fixed inset-x-0 top-0 z-50 transition-all duration-300',
-          solid
+          // WITH THE DRAWER OPEN THE BAR IS PART OF THE DRAWER.
+          // The drawer is universal black; the bar is lane chrome. Left solid,
+          // opening the menu on /interiores put a walnut strip across the top
+          // of a black panel — two surfaces where the buyer sees one. It goes
+          // transparent so the logo and the close control sit directly on the
+          // drawer's own ground.
+          menuOpen
+            ? 'bg-transparent'
+            : solid
             // The alpha lives IN the token, not in a Tailwind modifier:
             // `/95` cannot be applied to an arbitrary var() whose fallback
             // contains a comma — the class silently emits nothing and the
@@ -145,7 +153,7 @@ export function SiteNav({ categories }: SiteNavProps) {
         onMouseLeave={() => setMenuHovered(false)}
       >
         {/* Scrim behind the transparent nav — keeps links legible over light hero imagery */}
-        {!solid && (
+        {!solid && !menuOpen && (
           <div
             className="pointer-events-none absolute inset-x-0 top-0 z-0 h-32 bg-gradient-to-b from-[var(--chrome-scrim,rgba(0,12,31,0.6))] to-transparent md:h-40"
             aria-hidden
@@ -270,7 +278,12 @@ export function SiteNav({ categories }: SiteNavProps) {
             aria-label="Abrir menú"
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((o) => !o)}
-            className="relative z-50 flex h-10 w-10 items-center justify-center text-[color:var(--chrome-ink,#F8F6F0)] lg:hidden"
+            className={cn(
+              'relative z-50 flex h-11 w-11 items-center justify-center lg:hidden',
+              menuOpen
+                ? 'text-[color:var(--nav-ink)]'
+                : 'text-[color:var(--chrome-ink,#F8F6F0)]',
+            )}
           >
             <div className="flex flex-col gap-1.5">
               <span

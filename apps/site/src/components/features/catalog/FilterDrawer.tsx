@@ -187,7 +187,11 @@ function FloatingTriggerButton({ activeCount, onClick }: FloatingTriggerProps) {
       type="button"
       onClick={onClick}
       className={cn(
-        'fixed bottom-[84px] right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-navy shadow-lg lg:hidden',
+        // z-30 — the floating-tool layer. The ladder is page tools 30 <
+        // navigation drawer 40 < header 50. At z-40 this tied with the drawer
+        // and won on DOM order, so opening the menu on the catalogue left a
+        // filter button floating over the navigation.
+        'fixed bottom-[84px] right-6 z-30 flex h-12 w-12 items-center justify-center rounded-full bg-navy shadow-lg lg:hidden',
         'transition-colors duration-200 hover:bg-navy-light',
         'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold',
       )}

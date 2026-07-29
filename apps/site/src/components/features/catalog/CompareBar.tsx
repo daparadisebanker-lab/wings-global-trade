@@ -11,6 +11,7 @@ import { useState, useRef, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { usePathname } from 'next/navigation'
 import { useComparison } from '@/hooks/useComparison'
+import { isMachineryPath } from '@/lib/scope'
 import { cn } from '@/lib/utils'
 
 // ---------------------------------------------------------------------------
@@ -213,7 +214,7 @@ function DesktopCompareBar() {
           animate={{ y: 0 }}
           exit={{ y: '100%' }}
           transition={{ duration: 0.32, ease: [0.0, 0.0, 0.2, 1.0] }}
-          className="fixed bottom-0 left-0 right-0 z-40 hidden border-t border-warm-white/[0.08] bg-[#000C1F] lg:block"
+          className="fixed bottom-0 left-0 right-0 z-30 hidden border-t border-warm-white/[0.08] bg-[#000C1F] lg:block"
           role="region"
           aria-label="Comparación de productos"
         >
@@ -321,14 +322,28 @@ export function CompareBar() {
     prevItemCount.current = items.length
   }, [items.length])
 
-  const isOnCatalog = pathname?.startsWith('/catalogo')
+  // SCOPED TO MACHINERY, and gated on the ROUTE — never on whether the tray
+  // happens to hold something. The old gate was `!isOnCatalog && !hasItems`,
+  // which meant that once a buyer selected two tractors the tray followed them
+  // out of the catalogue and floated over Interiores and the brand shelves —
+  // worlds where "comparar productos" names nothing that exists.
+  //
+  // The selection itself survives: it lives in ComparisonProvider, so walking
+  // to Interiores and back finds it intact. Only the surface is scoped.
+  if (!isMachineryPath(pathname)) return null
+  // /repuestos is machinery, but it is a single-model page with nothing to
+  // compare against — a display decision for that route, not a scope claim.
   if (pathname?.startsWith('/repuestos')) return null
-  if (!isOnCatalog && !hasItems) return null
+  if (!hasItems && !pathname?.startsWith('/catalogo')) return null
 
   return (
     <>
-      {/* Mobile FAB — hidden on desktop */}
-      <div className="fixed bottom-6 right-6 z-40 lg:hidden">
+      {/* Mobile FAB — hidden on desktop.
+          // THE FLOATING-TOOL LAYER IS z-30. The ladder is: page tools 30 <
+        // navigation drawer 40 < header bar 50. At z-40 this button tied
+        // with the drawer and won on DOM order, so opening the menu left a
+        // compare FAB sitting on top of the navigation. */}
+      <div className="fixed bottom-6 right-6 z-30 lg:hidden">
         {/* Pulse ring — expands + fades each time an item is added */}
         <AnimatePresence>
           {pulseVersion > 0 && (
