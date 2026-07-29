@@ -1,5 +1,230 @@
 # DECISIONS.md — WINGS Homepage Build
 
+## The footer becomes a lane hub; the RFQ loses its internal artefacts — 2026-07-29
+
+**The RFQ goes to Wings ops, not to a factory.** That was recorded wrongly in the
+code comments and it drove choices. The buyer assembles a muestrario and sends it
+in; Wings sources against it. Consequences:
+- `Cálculo: 2026-07-28.1` (the packing-rules build id) and "El catálogo impreso
+  no los declara" are both **ours, not the client's**. A client does not narrate
+  our data gaps back to us. Removed, and a test now asserts neither can return.
+- The three numbered asks stay — price at the buyer's own incoterm, lead time,
+  and the spec fields the UI marks *pendiente*. Those are the client's request.
+- The number-convention rule survives the reframing intact: Wings forwards this
+  to a factory, and `25.000 kg` still reads as twenty-five kilos there.
+
+**The footer is now a navigation hub, not a link dump.** Its content model is a
+list of SECTIONS, so opening WGT/03 means appending one — the organ never
+changes. The divisions section is DERIVED from the lane registry: registered
+lanes resolve to their real route, unregistered ones render as a dimmed stamp
+with "en apertura" and are **not links**, because a footer entry that navigates
+nowhere is worse than one that plainly says "not yet". Same argument the lane
+page already makes for showing six disciplines with one open.
+
+**Collapsible without JavaScript, and the obvious approach does not work.**
+TrustFooter is a Server Component by contract (the app passes render callbacks
+across the RSC boundary), so an accordion needing state would have forced it
+client-side — and a footer that only works after hydration is a footer that does
+not work. The obvious move is one `<details>` forced open by a media query;
+**Chrome hides disclosure content through the element's own slot**, so overriding
+the child's `display` reveals nothing and the desktop footer came back as four
+headings above four empty columns. Rather than chase `::details-content` across
+engines, the panel is authored once and mounted in two shells — a real
+`<details>` below `md`, a plain column from `md` up. Only one is ever in the
+layout, so assistive tech sees one.
+
+## Lane-aware site chrome, and the aisle's way back — 2026-07-29
+
+From device testing on a real phone, plus an adversarial review of the previous
+pass (all 12 claims verified PASS; its findings are folded in below).
+
+- **The header and footer stayed machinery navy on a bone lane.** They are
+  SIBLINGS of the lane wrapper in the root layout, so they never saw
+  `[data-lane]` through the cascade. `LaneScope` now stamps the lane on `<html>`,
+  and `SiteNav` + `TrustFooter` read a `--chrome-*` contract whose fallbacks are
+  the current navy/gold — every non-lane route is byte-identical. §1.1 forbids
+  forking a shared component per lane; this themes them instead.
+- **Walnut, not bone.** The Wings logo is a white mark with no dark variant, so a
+  bone header would erase it. Walnut `#2A2118` is the lane's own inverse ground,
+  is unmistakably the brown side of the palette, and carries the white logo at
+  15.8:1. The footer CTA is bone-on-walnut (14.02:1), **not** oxblood: oxblood on
+  walnut is 1.50:1. It now matches the lane page's own closing action.
+- **The footer's column labels were gold at 2.30:1** on navy — a pre-existing
+  contrast failure inherited from the house. They read `--chrome-label`, which on
+  this lane composites to 4.82:1.
+- **A Tailwind trap, twice now:** `bg-[var(--x,#hex)]/95` silently emits nothing,
+  because an opacity modifier cannot apply to an arbitrary `var()` whose fallback
+  contains a comma. The header rendered fully transparent. Alpha now lives inside
+  the token (`--chrome-nav-bg`). Same class of bug as the `<alpha-value>` issue
+  that forced the channel-triplet tokens.
+- **Lane routes force the solid nav.** A transparent nav over bone needs a scrim,
+  and the navy scrim on bone read as grey mud.
+- **The lane header stamp cluster** was three marks crammed on one line, the
+  plate clipping at the container edge and colliding with the display type. Mark
+  and status now stack as one block with the h1 a full step away.
+- **The Lista header collapsed under the fixed density switch** — the
+  availability note truncated mid-word beneath it. The switch owns the top-right
+  band exclusively; the note moved down to sit with the rows it describes.
+- **The aisle had no visible way back.** The edge scrubber can reach any booth,
+  but it is a 3px rail of unlabelled ticks — not an answer for a buyer who just
+  passed a series by mistake on a phone. A named "← Serie anterior" now sits in
+  the thumb zone (hidden at the first booth rather than disabled: a dead control
+  a buyer can press is worse than one that is not there), and the rail names
+  itself on touch.
+- **The on-screen decimal convention was split** (review finding): the Lane's
+  spec bar printed `0.99 M²/CTN` with a dot while the Lista showed `0,99` one
+  view away — the exact ambiguity the export rule exists to kill, live on
+  adjacent screens. Every on-screen figure now goes through the es-ES formatter;
+  `toFixed` is gone from all display code.
+- **The Lista checkbox was 32px butted against a larger sheet-opening button**
+  (review's most serious finding), on the view this lane's own law calls the
+  accessibility floor — a miss opened the sheet. 32px visual, 44px target.
+
+**Left alone, deliberately:** the Mister launcher keeps its own `--mister-*`
+colour. Mister is a distinct identity with a ratified colour law, not machinery
+chrome; repainting it per lane is a bigger decision than the header and footer
+and is not mine to take silently.
+
+## WGT/02 enhancement pass — identity, UI, IA, copy — 2026-07-29
+
+Four parallel audits (brand-universe · ui-excellence · information-architecture ·
+copy-messaging) against the shipped lane. Every claim was re-verified before
+implementation; the arithmetic ones were recomputed. What they found and what
+was decided:
+
+- **The sheet-dock was broken in production.** `vaul` portals to `<body>`, outside
+  the `[data-app="pasillo"]` wrapper, so every `--pas-*` token, every scoped
+  selector and both self-hosted faces failed inside it: transparent background,
+  site body face, **SKU codes not in mono** — on the one surface where a buyer
+  studies the code. Introduced by the mount. It only looked plausible on the dark
+  Lane, where white-on-blur reads by accident, which is why the first
+  verification pass missed it. Fixed by stamping `data-app` on both portal
+  children; the ground moved to a `data-app-root` variant so the token layer no
+  longer paints (stamping it on the scrim had turned a 55% dark overlay into an
+  opaque sheet of paper).
+- **The lane was unreachable on a phone.** `SiteNav` and the footer carried
+  Interiores; `MobileMenu` never did — on a lane whose catalogue is built
+  thumb-first. Added.
+- **Site search delivered real tile codes to the AI advisor.** `routing.ts` routed
+  any 4–8 digit query to Mister as an HS code, and 14 SKUs in this catalogue are
+  bare numerics (`1500084`…). Now an exact code index emitted by the pipeline is
+  tested BEFORE the HS heuristic, with tile vocabulary added. A genuine HS
+  heading (6907) still reaches Mister — that is a test.
+- **The outbound RFQ mixed three number conventions.** `25.000 kg` (es-ES
+  thousands) reads as twenty-five kilos in Foshan, beside `56,70` comma-decimals
+  and `8.10` dot-decimals. Everything upstream is decimal-exact and it was being
+  lost in transmission. The export now uses one convention — decimal comma,
+  space thousands, no dot in any number — enforced by test. It also hardcoded
+  "(FOB y CIF)" while printing the buyer's own selected incoterm two lines above;
+  the request now derives from the selection. And it never asked for the fields
+  the UI honestly marks *pendiente* (PEI, absorption, slip) — it does now, and it
+  carries the `PM3001` review flag to the supplier instead of hiding it.
+- **The focus ring was invisible on the dark aisle** — `#141414` on `#0D0D0D`,
+  1.05:1, an outright WCAG failure on the primary view. Now `currentColor`:
+  achromatic by construction, correct on both grounds, no second token.
+- **The aisle had no exit.** `PASILLO_ROUTES.parent` was defined at mount and
+  never wired. A buyer arriving on a shared link — the tool's own export channel
+  — landed on a dark viewport with no Wings mark and no way up. One stamp now
+  carries identity, location and exit; the site header stays dropped, because a
+  fixed header would take the muestrario tab's bar and fight the drag loop.
+
+**Decided against the obvious:**
+
+- **Brass is still refused**, now with its usage law written down. The accent
+  constitution (registry.md) is exhaustive about where oxblood may and may not
+  appear — an accent without one becomes wallpaper in three sprints.
+- **`/interiores/azulejos` stays flat.** The PROJECT template wants canonical
+  discipline URLs; interposing `/acabados-duros/` today would be a corridor with
+  one door, at the cost of breaking a permanent URL. The rule for when a
+  discipline earns a URL is ratified instead (≥2 catalogues or ≥2 ACTIVE).
+- **All six disciplines stay visible.** They render as non-link `<li>` stamps, so
+  there is no dead end to fall into, and a lane showing only tiles disqualifies
+  itself from FF&E conversations. Never make an OPENING entry an `<a>`.
+- **The space overlay stays unbuilt**, with both build triggers now written into
+  the config rather than left as a someday.
+- **El umbral does not block navigation.** As specified it delayed the route by
+  700ms to play the drain. A procurement tool does not tax a click for an
+  animation: the route is issued immediately and the drain plays on the outgoing
+  page. If the route wins the race, the moment is simply not seen.
+
+**Tier 1 amended, additively.** `skeleton.css` still shipped `radius 0 / 2px` and
+no spring set while claiming byte-stability against §2, which was amended and
+ratified 2026-07-22. The macOS scale enters under FRESH names
+(`--radius-control/card-lg/panel/dock/pill`) rather than redefining
+`--radius-card`, which `apps/tower` binds to a Tailwind key — the same collision
+tower had already resolved the same way. The springs collapse under
+`prefers-reduced-motion`. No existing value changed, so no rendered surface moved.
+
+**`LaneStamp` now exists as a shared organ** (§2 has always named it). It renders
+the ISO 6346 unit number with a **computed** check digit — `WGTU 000002` → `0`,
+because 1473 mod 11 = 10 and the standard stamps zero there. Verified against the
+standard's own worked example (`CSQU3054383` → 3). No lane types its own digit.
+
+**Verified, not asserted:** swap test structurally identical under the house
+navy/gold livery (including the new stamp and check-digit cell); keyboard grammar
+→ ← ↑↓ with the passed state now legible; reduced motion clean; LCP on 4G lane
+1424ms · aisle 1488ms · lista 1344ms · mesa 1244ms; 66 tests green (was 41);
+FillMeter unchanged at `rgb(196,147,63)` wherever no `--cargo` is set.
+
+## WGT/02 Interiores opened; Azulejos is its first catalogue — 2026-07-29
+
+- **Decision:** the tile catalogue built as `apps/escalera` is **not a standalone
+  product**. It is the first catalogue of **WGT/02 Interiores**, the second lane
+  and the first onboarded through the ecosystem §4 protocol rather than
+  inherited. `apps/escalera` was deleted; the code moved to
+  `apps/site/src/pasillo/` so the work ships on the existing
+  `wings-global-trade` Vercel project — the one serving the production domain,
+  whose root directory therefore could not be repointed.
+- **Route + name:** `/interiores` (lane) → `/interiores/azulejos` (catalogue).
+  The buyer-facing name is **Azulejos**; "El Pasillo" is the interaction and
+  stays in the spec and the code. Spanish slug, consistent with every existing
+  route and with `lang="es-PE"` — this diverges from the umbrella program doc's
+  English `/interiors`, deliberately and on the record, because the site is
+  Spanish-facing and lane slugs are permanent.
+- **Phase 0 answered** (stored in `packages/liveries/interiores/lane.config.ts`):
+  buyer = procurement firms + builders/contractors (explicitly NOT hotel
+  developers or design studios — neither signs today); archetype PROJECT; unit
+  math m² coverage + per key; taxonomy = the full six-discipline axis registered
+  at once with only `acabados-duros` ACTIVE; photography `INTERIM_TYPOGRAPHIC`
+  (tile faces exist, no supplier room render is bound to a series); Mister pack
+  compiled from the catalogue, existing WhatsApp + CRM handoff.
+- **Accent derived, not chosen — brass rejected.** The umbrella doc offered
+  "brass — or oxblood". Brass `#9A6B3F` fails BOTH Phase-2 gates: 8.9° from the
+  house harvest gold (needs ≥30°) and 4.10:1 on the bone ground (needs 4.5:1).
+  Terracotta fails the hue gate at 23.5°. **Oxblood `#6B2A2A`** passes both
+  (37.9°, 9.36:1) and is registered. Brass is the intuitive interiors signal and
+  is exactly what the hue rule exists to stop — at 8.9° it reads as a warmer
+  Wings, not as a lane. Full table in `packages/liveries/registry.md`.
+- **`--ink-tertiary` renamed `--ink-decoration` and barred from text.** No alpha
+  reads as a third step below secondary and still clears 4.5:1 on bone (0.42
+  lands at 2.48:1). A "quiet" token that silently carries body copy is how a lane
+  ships unreadable text, so the OPENING state takes the secondary ink (5.18:1)
+  and the decoration token is hairlines only.
+- **Achromatic exception, registered:** the Azulejos subtree suppresses its own
+  lane's accent and takes a colour-neutral ground. When the product IS colour, a
+  lane accent vanishes on some tiles and falsifies others, and a warm ground
+  shifts perceived hue on a purchase buyers reject over colour variance. Same
+  argument and same scoping root §5-bis grants the `(brands)` group.
+- **Chrome gated, not removed** — `SiteFrame.tsx` drops SiteNav/Footer/CompareBar/
+  MultiInquiryPanel/Mister launcher/Lenis/PageTransition on the aisle only.
+  Following the existing precedent in this file ("Legacy chrome gated, not
+  removed"): parallel root layouts would mean relocating ~70 routes to suppress a
+  header on four.
+- **`FillMeter` made themeable rather than forked** — it hardcoded `--color-gold`
+  on every fill, so a lane could not theme it, which root §1.1 forbids. Now reads
+  `var(--cargo, var(--color-gold))`; existing pages define no `--cargo` and render
+  byte-identically.
+- **Site-wide safety:** every El Pasillo Tailwind key and CSS token is namespaced
+  (`pas-*` / `--pas-*`). The Tier-1 spacing scale diverges from Tailwind's default
+  at 5 and above, so spacing utilities were renamed rather than the site's scale
+  overridden — the alternative silently re-spaces every existing route.
+- **Deferred, on the record:** the lane's space overlay (the PROJECT dual
+  taxonomy's second axis) — one catalogue cannot populate a space view; the
+  Mister pack is compiled in-process rather than stored in Supabase (no
+  knowledge-pack table exists and inventing schema was out of scope); a
+  weight-limited FillMeter variant for PROJECT lanes (the shipped organ models
+  slots, which is ALLOCATION math).
+
 ## Mister Torre adopted — 2026-07-23 (internal AI operator, flagship quote run)
 
 - **Decision:** the `mister-tower-scope` package is adopted as an **experience/

@@ -30,7 +30,11 @@ export function MisterFloatingButton() {
       variants={launcherVariants}
       initial="hidden"
       animate={reduced ? 'visibleReduced' : 'visible'}
-      className="fixed bottom-[max(2rem,env(safe-area-inset-bottom))] right-8 z-[60]"
+      // z-30 puts the launcher over page content and UNDER the chrome. It was
+      // z-[60], above both the header (z-50) and the open mobile menu (z-40),
+      // so on a phone it floated on top of the very navigation it obstructs —
+      // and the overlay it opens is z-[99]/[100], so nothing here needs 60.
+      className="fixed bottom-[max(2rem,env(safe-area-inset-bottom))] right-8 z-30"
     >
       <button
         type="button"

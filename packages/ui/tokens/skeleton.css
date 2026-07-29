@@ -1,11 +1,16 @@
 /* ============================================================
    @wings/trade-ui · Tier 1 — THE FROZEN SKELETON
    ------------------------------------------------------------
-   Identical in every lane, forever. Source of truth:
-   programs/ecosystem/CLAUDE.ecosystem.md §2 (frozen skeleton).
-   This file is byte-stable against §2 — do not edit values here
-   to solve a lane need. That need is a livery (Tier 2) problem or
-   a content problem, never a skeleton problem.
+   Identical in every lane, forever. Source of truth: root CLAUDE.md §2
+   (the frozen skeleton), as amended and ratified 2026-07-22 — see
+   DECISIONS.md "macOS material adoption".
+
+   Do not edit values here to solve a lane need. That need is a livery
+   (Tier 2) problem or a content problem, never a skeleton problem.
+
+   Amendments arrive ADDITIVELY, under new names. Every value that existed
+   before an amendment keeps it, because a consumer that never asked for a
+   change must never receive one — the whole point of a frozen tier.
    ============================================================ */
 
 :root {
@@ -42,13 +47,34 @@
   --bp-lg: 1024px;
   --bp-xl: 1280px;
 
-  /* --- Radii: 0 structural, ≤2px cards --- */
+  /* --- Radii: macOS material scale ---
+     Amended 2026-07-22 (ratified; see DECISIONS.md "macOS material adoption").
+     This file shipped `0 structural / ≤2px cards` and claimed byte-stability
+     against §2 after §2 had already moved — the law and the frozen file
+     disagreed. Structural 0 remains available wherever a hard edge is wanted,
+     which is the amendment's own clause and what the record surfaces rely on. */
   --radius-structural: 0;
   --radius-card: 2px;
+
+  /* The macOS material scale enters under FRESH names rather than by
+     redefining --radius-card. That name is already consumed (apps/tower binds
+     it to a Tailwind key), and apps/tower resolved this exact collision the
+     same way — "Colliding names (--radius-card) are given fresh macOS names"
+     (apps/tower/src/app/globals.css). Redefining it would silently restyle a
+     consumer to prove a point about tidiness. */
+  --radius-control: 8px;
+  --radius-card-lg: 12px;
+  --radius-panel: 16px;
+  --radius-dock: 20px;
+  --radius-pill: 999px;
 
   /* --- Motion --- */
   --ease-gantry: cubic-bezier(0.83, 0, 0.17, 1); /* structural moves */
   --ease-settle: cubic-bezier(0.22, 1, 0.36, 1); /* reveals */
+  /* The macOS spring set (amended 2026-07-22, ratified). */
+  --spring-snappy: cubic-bezier(0.32, 0.72, 0, 1);
+  --spring-settle: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
   --lane-switch-duration: 700ms; /* livery flood + stamp-settle, 600–800ms */
 }
 
@@ -57,6 +83,12 @@
   :root {
     --ease-gantry: linear;
     --ease-settle: linear;
+    /* The springs collapse here too. A spring curve added to the frozen tier
+       without a reduced-motion entry is a spring that still bounces for the
+       users the rule exists to protect. */
+    --spring-snappy: linear;
+    --spring-settle: linear;
+    --ease-exit: linear;
   }
 }
 

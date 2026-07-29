@@ -7,6 +7,9 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
+    "./containers": "./src/organs/diagrams/containerSpecs.ts",
+    "./lane-stamp": "./src/organs/LaneStamp.tsx",
+    "./iso6346": "./src/lib/iso6346.ts",
     "./tokens/skeleton.css": "./tokens/skeleton.css"
   },
   "peerDependencies": {

@@ -31,8 +31,17 @@ export interface FillMeterProps {
   className?: string
 }
 
-const HATCH =
-  'repeating-linear-gradient(45deg, var(--color-gold) 0 3px, transparent 3px 7px)'
+// The cargo tint (ecosystem §Phase-4: "cargo tints from --cargo").
+//
+// Until now every fill in this organ was hardcoded to the house gold, which
+// meant a lane could not theme it and would have had to fork it — exactly what
+// §1.1 forbids. --cargo is the semantic token a lane sets to say what its cargo
+// looks like; the fallback is the house gold, so every page that does not set
+// it renders byte-identically to before.
+const CARGO = 'var(--cargo, var(--color-gold))'
+const CARGO_EDGE = 'var(--cargo, var(--color-border-gold))'
+
+const HATCH = `repeating-linear-gradient(45deg, ${CARGO} 0 3px, transparent 3px 7px)`
 
 const HEIGHTS: Record<NonNullable<FillMeterProps['size']>, string> = {
   sm: 'h-8',
@@ -74,9 +83,10 @@ export function FillMeter({
       <div
         className={cn(
           'relative flex w-full gap-[2px] overflow-hidden rounded-none',
-          'border border-[var(--color-border-gold)] bg-[var(--color-surface-card)] p-[3px]',
+          'border bg-[var(--color-surface-card)] p-[3px]',
           HEIGHTS[size],
         )}
+        style={{ borderColor: CARGO_EDGE }}
         role="img"
         aria-label={caption(taken, total)}
       >
@@ -94,14 +104,14 @@ export function FillMeter({
             key={i}
             className={cn(
               'relative flex-1 rounded-none',
-              state === 'open' &&
-                'border border-dashed border-[var(--color-border-gold)] bg-transparent',
-              state === 'committed' && 'bg-[var(--color-gold)]',
+              state === 'open' && 'border border-dashed bg-transparent',
             )}
             style={{
               transformOrigin: 'left',
+              ...(state === 'open' ? { borderColor: CARGO_EDGE } : {}),
+              ...(state === 'committed' ? { background: CARGO } : {}),
               ...(state === 'reserved'
-                ? { backgroundImage: HATCH, border: '1px solid var(--color-border-gold)' }
+                ? { backgroundImage: HATCH, border: `1px solid ${CARGO_EDGE}` }
                 : {}),
             }}
             initial={doAnimate ? { opacity: 0, scaleX: 0 } : false}
@@ -144,14 +154,15 @@ function LegendSwatch({ label, kind }: { label: string; kind: SegmentState }) {
         aria-hidden
         className={cn(
           'inline-block h-3 w-3 rounded-none',
-          kind === 'committed' && 'bg-[var(--color-gold)]',
-          kind === 'open' && 'border border-dashed border-[var(--color-border-gold)]',
+          kind === 'open' && 'border border-dashed',
         )}
-        style={
-          kind === 'reserved'
-            ? { backgroundImage: HATCH, border: '1px solid var(--color-border-gold)' }
-            : undefined
-        }
+        style={{
+          ...(kind === 'open' ? { borderColor: CARGO_EDGE } : {}),
+          ...(kind === 'committed' ? { background: CARGO } : {}),
+          ...(kind === 'reserved'
+            ? { backgroundImage: HATCH, border: `1px solid ${CARGO_EDGE}` }
+            : {}),
+        }}
       />
       {label}
     </span>

@@ -7,11 +7,14 @@
     "build": "pnpm --filter site build",
     "start": "pnpm --filter site start",
     "lint": "pnpm --filter site lint",
+    "test": "pnpm --filter site test",
+    "typecheck": "pnpm --filter site typecheck",
     "swap-test": "node scripts/swap-test.mjs",
     "generate-icons": "node scripts/generate-icons.mjs"
   },
   "devDependencies": {
     "@resvg/resvg-js": "^2.6.2",
+    "playwright": "^1.62.0",
     "sharp": "^0.35.3",
     "tsx": "^4.23.0"
   }

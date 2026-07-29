@@ -90,6 +90,15 @@ interface StoredSession {
   sessionId: string
   token: string
   savedAt: number
+  /**
+   * Has this session ever completed a turn? A row in mister_projects is only
+   * written by POST /api/mister, so a session that has never spoken has nothing
+   * to rehydrate FROM — and we used to ask anyway, on every single page load,
+   * and take a guaranteed 404 for it. Absent on pre-existing payloads, which
+   * read as false: the worst case is one wasted request per returning visitor,
+   * once, and then it self-corrects on their next turn.
+   */
+  persisted?: boolean
 }
 
 /** Read the persisted session. All access guarded (Safari private mode). */
@@ -116,14 +125,25 @@ function readStoredSession(): StoredSession | null {
 }
 
 /** Persist the session id + secret, stamping savedAt = now. No-op if blocked. */
-function writeStoredSession(sessionId: string, token: string): void {
+function writeStoredSession(sessionId: string, token: string, persisted: boolean): void {
   try {
-    const payload: StoredSession = { sessionId, token, savedAt: Date.now() }
+    const payload: StoredSession = { sessionId, token, savedAt: Date.now(), persisted }
     localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(payload))
   } catch {
     // Storage disabled / quota / Safari private mode — persistence degrades
     // silently; the session still works for the current page life.
   }
+}
+
+/**
+ * Mark the stored session as having a server-side row, after the first turn
+ * completes. From here on a reload is worth a rehydrate request; before it,
+ * asking is guaranteed to 404.
+ */
+function markStoredSessionPersisted(): void {
+  const stored = readStoredSession()
+  if (!stored || stored.persisted) return
+  writeStoredSession(stored.sessionId, stored.token, true)
 }
 
 /** Shape returned by GET /api/mister/session (sanitized rehydration fields). */
@@ -273,7 +293,8 @@ export function MisterProvider({
       rehydrationTokenRef.current = token
       setSessionId(id)
       stampOpening()
-      writeStoredSession(id, token)
+      // persisted: false — no row exists until the first turn completes.
+      writeStoredSession(id, token, false)
       // entries keeps the default opening (turn 1); assistantTurnCountRef stays 1.
     }
 
@@ -303,6 +324,18 @@ export function MisterProvider({
 
     if (!storedIsUsable) {
       startFresh()
+      return
+    }
+
+    // A session that never spoke has no row to rehydrate FROM — POST is what
+    // writes it. Asking anyway cost one guaranteed 404 on EVERY navigation for
+    // every visitor who never opened Mister, which is most of them. Keep the
+    // id and the secret (so the conversation stays one conversation across the
+    // site) and skip the round-trip entirely.
+    if (!stored.persisted) {
+      rehydrationTokenRef.current = stored.token
+      setSessionId(stored.sessionId)
+      stampOpening()
       return
     }
 
@@ -351,7 +384,7 @@ export function MisterProvider({
           setSessionId(storedId)
           stampOpening()
           restoreState(data)
-          writeStoredSession(storedId, storedToken) // refresh savedAt after successful rehydrate
+          writeStoredSession(storedId, storedToken, true) // refresh savedAt after successful rehydrate
           setInFlight(false)
           return
         }
@@ -389,7 +422,7 @@ export function MisterProvider({
         assistantTurnCountRef.current = assistantCount
         restoreState(data)
         setSessionId(storedId)
-        writeStoredSession(storedId, storedToken) // refresh savedAt after successful rehydrate
+        writeStoredSession(storedId, storedToken, true) // refresh savedAt after successful rehydrate
         setInFlight(false)
       } catch {
         window.clearTimeout(abortTimer)
@@ -526,6 +559,9 @@ export function MisterProvider({
               clearInterval(thinkingPulseRef.current)
               thinkingPulseRef.current = null
             }
+            // The turn completed, so POST wrote the row. From here a reload is
+            // worth a rehydrate request; before this it never was.
+            markStoredSessionPersisted()
             assistantTurnCountRef.current += 1
             const surfacesForEntry = [...pendingSurfacesRef.current]
             if (

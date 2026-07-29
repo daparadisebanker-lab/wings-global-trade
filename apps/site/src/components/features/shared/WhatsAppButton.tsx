@@ -7,7 +7,13 @@ interface WhatsAppButtonProps {
   message?: string
   label?: string
   className?: string
-  variant?: 'gold' | 'green'
+  /**
+   * `gold`/`green` are the in-page variants and stay brand-literal — the lane
+   * page draws them on ITS own ground, where the chrome contract is wrong
+   * (bone-on-bone). `chrome` is for the header only: it reads --chrome-* and so
+   * follows the lane, falling back to exactly the gold pair off a lane route.
+   */
+  variant?: 'gold' | 'green' | 'chrome'
 }
 
 function WhatsAppIcon() {
@@ -32,9 +38,10 @@ export function WhatsAppButton({
       rel="noopener noreferrer"
       className={cn(
         'inline-flex items-center gap-2 rounded-wings px-5 py-3 font-mono text-[11px] uppercase tracking-[0.10em] transition-colors',
-        variant === 'gold'
-          ? 'bg-gold text-navy hover:bg-gold-hover'
-          : 'bg-whatsapp text-white hover:brightness-95',
+        variant === 'gold' && 'bg-gold text-navy hover:bg-gold-hover',
+        variant === 'green' && 'bg-whatsapp text-white hover:brightness-95',
+        variant === 'chrome' &&
+          'bg-[var(--chrome-accent,var(--color-gold))] text-[color:var(--chrome-accent-ink,var(--color-navy))] hover:opacity-90',
         className,
       )}
     >

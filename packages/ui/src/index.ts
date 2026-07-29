@@ -9,6 +9,9 @@ export { RFQFlow } from './organs/RFQFlow'
 export type { RFQFlowProps } from './organs/RFQFlow'
 export { FillMeter } from './organs/FillMeter'
 export type { FillMeterProps } from './organs/FillMeter'
+export { LaneStamp } from './organs/LaneStamp'
+export type { LaneStampProps } from './organs/LaneStamp'
+export { iso6346CheckDigit, laneUnitNumber } from './lib/iso6346'
 export { useRFQForm } from './hooks/useRFQForm'
 export type { RFQLeadRequest, RFQSubmitResult } from './hooks/useRFQForm'
 export type {
@@ -16,6 +19,7 @@ export type {
   FooterCategory,
   FooterLink,
   FooterZone,
+  FooterSection,
 } from './organs/TrustFooter'
 
 // UI primitives (M3b) — the app re-exports these from components/ui/*.

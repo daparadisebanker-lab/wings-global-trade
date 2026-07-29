@@ -1,0 +1,2601 @@
+{
+ "A03": {
+  "page": "A03",
+  "series": [
+   {
+    "name": "Hand-Painted Series",
+    "format_label": "150X150X9MM",
+    "pcs_per_carton": 45,
+    "kg_per_carton": 17.5
+   }
+  ],
+  "tiles": [
+   {
+    "n": 1,
+    "code": "G15001",
+    "series": "Hand-Painted Series",
+    "label_kind": "series_group",
+    "patterns": 12,
+    "finish": "Uneven, Matte",
+    "note": "12 Patterns"
+   },
+   {
+    "n": 2,
+    "code": "G15001",
+    "series": "Hand-Painted Series",
+    "label_kind": "series_group",
+    "patterns": 12,
+    "finish": "Uneven, Matte",
+    "note": "12 Patterns"
+   },
+   {
+    "n": 3,
+    "code": "G15001",
+    "series": "Hand-Painted Series",
+    "label_kind": "series_group",
+    "patterns": 12,
+    "finish": "Uneven, Matte",
+    "note": "12 Patterns"
+   },
+   {
+    "n": 4,
+    "code": "G15001",
+    "series": "Hand-Painted Series",
+    "label_kind": "series_group",
+    "patterns": 12,
+    "finish": "Uneven, Matte",
+    "note": "12 Patterns"
+   },
+   {
+    "n": 5,
+    "code": "G15001",
+    "series": "Hand-Painted Series",
+    "label_kind": "series_group",
+    "patterns": 12,
+    "finish": "Uneven, Matte",
+    "note": "12 Patterns"
+   },
+   {
+    "n": 6,
+    "code": "G15001",
+    "series": "Hand-Painted Series",
+    "label_kind": "series_group",
+    "patterns": 12,
+    "finish": "Uneven, Matte",
+    "note": "12 Patterns"
+   },
+   {
+    "n": 7,
+    "code": "G15001",
+    "series": "Hand-Painted Series",
+    "label_kind": "series_group",
+    "patterns": 12,
+    "finish": "Uneven, Matte",
+    "note": "12 Patterns"
+   },
+   {
+    "n": 8,
+    "code": "G15001",
+    "series": "Hand-Painted Series",
+    "label_kind": "series_group",
+    "patterns": 12,
+    "finish": "Uneven, Matte",
+    "note": "12 Patterns"
+   },
+   {
+    "n": 9,
+    "code": "G15001",
+    "series": "Hand-Painted Series",
+    "label_kind": "series_group",
+    "patterns": 12,
+    "finish": "Uneven, Matte",
+    "note": "12 Patterns"
+   },
+   {
+    "n": 10,
+    "code": "G15001",
+    "series": "Hand-Painted Series",
+    "label_kind": "series_group",
+    "patterns": 12,
+    "finish": "Uneven, Matte",
+    "note": "12 Patterns"
+   },
+   {
+    "n": 11,
+    "code": "G15001",
+    "series": "Hand-Painted Series",
+    "label_kind": "series_group",
+    "patterns": 12,
+    "finish": "Uneven, Matte",
+    "note": "12 Patterns"
+   },
+   {
+    "n": 12,
+    "code": "G15001",
+    "series": "Hand-Painted Series",
+    "label_kind": "series_group",
+    "patterns": 12,
+    "finish": "Uneven, Matte",
+    "note": "12 Patterns"
+   },
+   {
+    "n": 13,
+    "code": "G15002",
+    "series": "Hand-Painted Series",
+    "label_kind": "series_group",
+    "patterns": 12,
+    "finish": "Uneven, Matte",
+    "note": "12 Patterns"
+   },
+   {
+    "n": 14,
+    "code": "G15002",
+    "series": "Hand-Painted Series",
+    "label_kind": "series_group",
+    "patterns": 12,
+    "finish": "Uneven, Matte",
+    "note": "12 Patterns"
+   },
+   {
+    "n": 15,
+    "code": "G15002",
+    "series": "Hand-Painted Series",
+    "label_kind": "series_group",
+    "patterns": 12,
+    "finish": "Uneven, Matte",
+    "note": "12 Patterns"
+   },
+   {
+    "n": 16,
+    "code": "G15002",
+    "series": "Hand-Painted Series",
+    "label_kind": "series_group",
+    "patterns": 12,
+    "finish": "Uneven, Matte",
+    "note": "12 Patterns"
+   },
+   {
+    "n": 17,
+    "code": "G15002",
+    "series": "Hand-Painted Series",
+    "label_kind": "series_group",
+    "patterns": 12,
+    "finish": "Uneven, Matte",
+    "note": "12 Patterns"
+   },
+   {
+    "n": 18,
+    "code": "G15002",
+    "series": "Hand-Painted Series",
+    "label_kind": "series_group",
+    "patterns": 12,
+    "finish": "Uneven, Matte",
+    "note": "12 Patterns"
+   },
+   {
+    "n": 19,
+    "code": "G15002",
+    "series": "Hand-Painted Series",
+    "label_kind": "series_group",
+    "patterns": 12,
+    "finish": "Uneven, Matte",
+    "note": "12 Patterns"
+   },
+   {
+    "n": 20,
+    "code": "G15002",
+    "series": "Hand-Painted Series",
+    "label_kind": "series_group",
+    "patterns": 12,
+    "finish": "Uneven, Matte",
+    "note": "12 Patterns"
+   },
+   {
+    "n": 21,
+    "code": "G15002",
+    "series": "Hand-Painted Series",
+    "label_kind": "series_group",
+    "patterns": 12,
+    "finish": "Uneven, Matte",
+    "note": "12 Patterns"
+   },
+   {
+    "n": 22,
+    "code": "G15002",
+    "series": "Hand-Painted Series",
+    "label_kind": "series_group",
+    "patterns": 12,
+    "finish": "Uneven, Matte",
+    "note": "12 Patterns"
+   },
+   {
+    "n": 23,
+    "code": "G15002",
+    "series": "Hand-Painted Series",
+    "label_kind": "series_group",
+    "patterns": 12,
+    "finish": "Uneven, Matte",
+    "note": "12 Patterns"
+   },
+   {
+    "n": 24,
+    "code": "G15002",
+    "series": "Hand-Painted Series",
+    "label_kind": "series_group",
+    "patterns": 12,
+    "finish": "Uneven, Matte",
+    "note": "12 Patterns"
+   }
+  ],
+  "issues": [
+   "Sheet has ONE series banner (Hand-Painted Series, 150X150X9MM, 45 PCS/CTN, 17.5 KGS /CTN) but TWO series_group code blocks under it: G15001 (12 Patterns, tiles 1-12) and G15002 (12 Patterns, tiles 13-24). Both blocks inherit the single banner's packing/weight - there is no second banner with different numbers. If the schema expects one series row per code block, this needs downstream handling.",
+   "No per-tile codes are printed anywhere on this sheet. Every swatch is a pattern variant under a shared block code, so all 24 are label_kind='series_group'. No per-tile SKU was invented.",
+   "Overlay numbering is NOT strict reading order in two places: top block row 1 runs 1, 5, 2, 3, 4 (left-to-right) and row 3 runs 12, 11. No data impact - all six of those swatches fall inside the same G15001 block - but flagging since the task stated reading order.",
+   "Finish text is printed as 'Uneven、Matte' with a Chinese enumeration comma; transcribed as 'Uneven, Matte' per the instruction to keep English and drop Chinese characters.",
+   "Both block labels declare '(12 Patterns)' and each block does contain exactly 12 detected swatches, so patterns count and swatch count reconcile (12 + 12 = 24).",
+   "Series title is set with an en-dash-like glyph rendering ('Hand—Painted Series'); transcribed as an ASCII hyphen 'Hand-Painted Series'. This is a typographic rendering call, not a reading uncertainty.",
+   "The large lifestyle/installation photograph at the bottom of the sheet is not a tile swatch and was correctly not numbered; no code is associated with it."
+  ]
+ },
+ "A02": {
+  "page": "A02",
+  "series": [
+   {
+    "name": "Flat And Matte Series",
+    "format_label": "150X150X9MM",
+    "pcs_per_carton": 44,
+    "kg_per_carton": 19
+   },
+   {
+    "name": "Colored Geometric Series",
+    "format_label": "150X150X9MM",
+    "pcs_per_carton": 45,
+    "kg_per_carton": 17.5
+   }
+  ],
+  "tiles": [
+   {
+    "n": 1,
+    "code": "HJ-F1551",
+    "series": "Flat And Matte Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "White Gray"
+   },
+   {
+    "n": 2,
+    "code": "HJ-F1552",
+    "series": "Flat And Matte Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "Blue Green"
+   },
+   {
+    "n": 3,
+    "code": "HJ-F1553",
+    "series": "Flat And Matte Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "Earthy Yellow"
+   },
+   {
+    "n": 4,
+    "code": "HJ-F1555",
+    "series": "Flat And Matte Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "Deep Yellow"
+   },
+   {
+    "n": 5,
+    "code": "HJ-F1556",
+    "series": "Flat And Matte Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "Zirconium Red"
+   },
+   {
+    "n": 6,
+    "code": "HJ-F1558",
+    "series": "Flat And Matte Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "Dark Gray"
+   },
+   {
+    "n": 7,
+    "code": "1500084",
+    "series": "Colored Geometric Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 8,
+    "code": "1500085",
+    "series": "Colored Geometric Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 9,
+    "code": "1500086",
+    "series": "Colored Geometric Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 10,
+    "code": "1500087",
+    "series": "Colored Geometric Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 11,
+    "code": "1500088",
+    "series": "Colored Geometric Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 12,
+    "code": "1500089",
+    "series": "Colored Geometric Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 13,
+    "code": "1500090",
+    "series": "Colored Geometric Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 14,
+    "code": "1500091",
+    "series": "Colored Geometric Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 15,
+    "code": "1500092",
+    "series": "Colored Geometric Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 16,
+    "code": "1500093",
+    "series": "Colored Geometric Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 17,
+    "code": "1500094",
+    "series": "Colored Geometric Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 18,
+    "code": "1500095",
+    "series": "Colored Geometric Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 19,
+    "code": "1500096",
+    "series": "Colored Geometric Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 20,
+    "code": "1500097",
+    "series": "Colored Geometric Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   }
+  ],
+  "issues": [
+   "Dash glyph in the HJ codes: the sheet prints a mid-length dash (renders as an en-dash, 'HJ–F1551'), not a plain ASCII hyphen. Transcribed with a normal hyphen 'HJ-F1551' per the instruction to keep hyphens. Flag if the quoting tool needs the exact codepoint.",
+   "The Flat And Matte Series numbering skips values: 1551, 1552, 1553, 1555, 1556, 1558 — no 1554 or 1557 appears on this sheet. Verified at 4x zoom on each label; the skips are as printed, not misreads.",
+   "Finish text is printed as '（Flat、 Matte Surface）' using the Chinese enumeration comma and full-width parens. Recorded as 'Flat, Matte Surface' (Chinese punctuation dropped, English kept) per instruction.",
+   "No series_group blocks on this sheet — all 20 swatches carry their own printed code. Every Colored Geometric tile carries the parenthetical '(1 Patterns)', which is a per-tile note here rather than a shared-block pattern count, so the 'patterns' field was left unset.",
+   "Swatch 20 (1500097) is a brown/terracotta 3D-cube geometric, visually unlike the blue/cream tiles around it, but it sits inside the Colored Geometric Series block and under that banner's packing figures. Assigned to that series as laid out; worth a human glance if the supplier ever quotes it separately.",
+   "Both series share the identical format label '150X150X9MM' but have different packing (44 vs 45 PCS/CTN) and weight (19 vs 17.5 KGS/CTN). Not a transcription error — confirmed on both banners at 2x zoom. The quoting tool must key packing off series, not off format."
+  ]
+ },
+ "A04": {
+  "page": "A04",
+  "series": [
+   {
+    "name": "Massed Glaze",
+    "format_label": "150X150X9MM",
+    "pcs_per_carton": 45,
+    "kg_per_carton": 17.5
+   }
+  ],
+  "tiles": [
+   {
+    "n": 1,
+    "code": "TF1500148",
+    "series": "Massed Glaze",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 2,
+    "code": "TF1500149",
+    "series": "Massed Glaze",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 3,
+    "code": "TF1500150",
+    "series": "Massed Glaze",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 4,
+    "code": "TF1500151",
+    "series": "Massed Glaze",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 5,
+    "code": "TF1500152",
+    "series": "Massed Glaze",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 6,
+    "code": "TF1500153",
+    "series": "Massed Glaze",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 7,
+    "code": "TF1500154",
+    "series": "Massed Glaze",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 8,
+    "code": "TF1500155",
+    "series": "Massed Glaze",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 9,
+    "code": "TF1500156",
+    "series": "Massed Glaze",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 10,
+    "code": "TF1500157",
+    "series": "Massed Glaze",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 11,
+    "code": "TF1500158",
+    "series": "Massed Glaze",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 12,
+    "code": "TF1500159",
+    "series": "Massed Glaze",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 13,
+    "code": "TF1500160",
+    "series": "Massed Glaze",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 14,
+    "code": "TF1500161",
+    "series": "Massed Glaze",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 15,
+    "code": "TF1500162",
+    "series": "Massed Glaze",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 16,
+    "code": "TF1500163",
+    "series": "Massed Glaze",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 17,
+    "code": "TF1500164",
+    "series": "Massed Glaze",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 18,
+    "code": "TF1500165",
+    "series": "Massed Glaze",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 19,
+    "code": "TF1500166",
+    "series": "Massed Glaze",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 20,
+    "code": "TF1500167",
+    "series": "Massed Glaze",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 21,
+    "code": "TF1500168",
+    "series": "Massed Glaze",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 22,
+    "code": "TF1500169",
+    "series": "Massed Glaze",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   }
+  ],
+  "issues": [
+   "Only one series on this sheet. All 22 codes verified at 3x magnification against the clean page: they run strictly sequentially TF1500148 (n=1) through TF1500169 (n=22) in reading order, with no gaps and no duplicates.",
+   "The format label '150X150X9MM' is printed above and to the right of the dark banner, not inside it. The banner reads 'Massed Glaze | Packing: 45 PCS/CTN | Weight: 17.5 KGS /CTN'.",
+   "Weight is 17.5 KGS/CTN (decimal, not 17 or 175) - confirmed at magnification.",
+   "Every swatch carries its own printed code, so all are label_kind='per_tile'. No series_group block appears on this sheet; the red '(1 Patterns)' line under each tile is a per-tile pattern count of 1, not a shared multi-pattern block, so 'patterns' was left unset per the schema note that it applies to series_group only.",
+   "The finish line is printed as '(Massed glaze, Glossy)' with a Chinese enumeration comma; per instructions the Chinese punctuation was dropped. Note the printed finish uses lowercase 'glaze' while the series banner uses title case 'Massed Glaze' - both transcribed as printed.",
+   "The last row holds only 2 tiles (n=21, n=22); the remaining 3 grid slots are blank whitespace, not unlabelled swatches. No numbered box on the sheet is anything other than a tile swatch."
+  ]
+ },
+ "B02": {
+  "page": "B02",
+  "series": [
+   {
+    "name": "Flower Sea Series",
+    "format_label": "300X300X8.8MM",
+    "pcs_per_carton": 15,
+    "kg_per_carton": 25
+   }
+  ],
+  "tiles": [
+   {
+    "n": 1,
+    "code": "PM34440",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Sculptured, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 2,
+    "code": "PM34441",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Sculptured, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 3,
+    "code": "PM34437",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 4,
+    "code": "PM34438",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 5,
+    "code": "PM34439",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Sculptured, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 6,
+    "code": "PM34436",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 7,
+    "code": "PM34172",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 8,
+    "code": "PM34173",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 9,
+    "code": "PM34190",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 10,
+    "code": "PM34178",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 11,
+    "code": "PM33955",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 12,
+    "code": "PM34180",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 13,
+    "code": "PM33651",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 14,
+    "code": "PM34194",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 15,
+    "code": "PM34058",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 16,
+    "code": "PM34192",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 17,
+    "code": "PM31741",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 18,
+    "code": "PM34184",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 19,
+    "code": "T3584",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 20,
+    "code": "PM32050",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 21,
+    "code": "T33265",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   }
+  ],
+  "issues": [
+   "Only ONE series banner on this sheet (Flower Sea Series, 300X300X8.8MM, 15 PCS/CTN, 25 KGS/CTN); all 21 swatches fall under it.",
+   "No series_group blocks on this sheet - every one of the 21 swatches has its own printed code and its own '(1 Patterns)' line, so all are label_kind='per_tile'.",
+   "The large bathroom lifestyle photograph occupying the lower-left quadrant is not a tile swatch and is correctly not numbered by the overlay.",
+   "Finish text on the sheet is printed with a Chinese enumeration comma (e.g. 'Flat、Matte Surface'); transcribed with a normal comma as instructed. Tiles 1, 2 and 5 read 'Sculptured、Matte Surface'; all others read 'Flat、Matte Surface'.",
+   "Codes T3584 (19) and T33265 (21) were verified at 10x zoom - T3584 genuinely has 4 digits while T33265 has 5; not a truncation.",
+   "PM31741 (17) verified at 10x zoom - the characters after 'PM3' are digits 1-7-4-1, not letter I."
+  ]
+ },
+ "B03": {
+  "page": "B03",
+  "series": [
+   {
+    "name": "Flower Sea Series",
+    "format_label": "300X300X8.8MM",
+    "pcs_per_carton": 15,
+    "kg_per_carton": 25
+   }
+  ],
+  "tiles": [
+   {
+    "n": 1,
+    "code": "PM33309",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 2,
+    "code": "PM34177",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 3,
+    "code": "PM32506",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 4,
+    "code": "PM31821",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 5,
+    "code": "PM34175",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 6,
+    "code": "PM32643",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 7,
+    "code": "PM34219",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 8,
+    "code": "PM31899",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 9,
+    "code": "PM33708",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 10,
+    "code": "PM33655",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 11,
+    "code": "PM33653",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 12,
+    "code": "PM33654",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 13,
+    "code": "PM34176",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 14,
+    "code": "T3589",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 15,
+    "code": "T3860",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 16,
+    "code": "T3874",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 17,
+    "code": "T3875",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 18,
+    "code": "T3999",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 19,
+    "code": "T3876",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 20,
+    "code": "T31008",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 21,
+    "code": "T31009",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   }
+  ],
+  "issues": [
+   "Swatch 21 (T31009) is a white tile with a large gold X and pink corner brackets. Verified against the high-res crop: it is a genuine printed tile design in the same graphic family as T3874/T3875/T31008, NOT a 'missing image' placeholder. Flagging only because it can read as one at thumbnail size.",
+   "The finish text is printed as 'Flat、Matte Surface' with a Chinese enumeration comma; transcribed as 'Flat, Matte Surface' per instruction to drop Chinese characters.",
+   "The sheet contains exactly one series banner (Flower Sea Series, 300X300X8.8MM, 15 PCS/CTN, 25 KGS/CTN). All 21 swatches sit under it, including the right-hand column beside the kitchen lifestyle photo — there is no second banner on the page, so the T-prefixed codes (14–21) inherit the same packing numbers. Worth a human confirm since the T-codes look like a different product family from the PM-codes.",
+   "The large kitchen interior photograph in the lower-left is a lifestyle shot, not a numbered swatch, and was correctly not detected as one."
+  ]
+ },
+ "B04": {
+  "issues": [
+   "Tile 16 reads \"T3991\" — four digits after the T, whereas every other T-code on the sheet has five (T31843, T31014, T33276, T31694). Verified at 4x zoom on the clean scan; it is genuinely printed as T3991, not a truncation, but flagging because it is the one code whose length breaks the sheet's pattern.",
+   "The large lifestyle/room photograph occupying the right half of the middle band (beside tiles 11-13) carries no code and is correctly not numbered by the overlay. No 19th swatch is missing.",
+   "Finish text on every tile is printed as \"（Flat、Matte Surface）\" with a Chinese enumeration comma; the comma was normalised to a standard comma in the finish field as instructed (Chinese characters dropped, English kept).",
+   "Only one series banner exists on this sheet, so all 18 tiles inherit the same packing (15 PCS/CTN) and weight (25 KGS/CTN)."
+  ],
+  "page": "B04",
+  "series": [
+   {
+    "name": "Flower Sea Series",
+    "format_label": "300X300X8.8MM",
+    "pcs_per_carton": 15,
+    "kg_per_carton": 25
+   }
+  ],
+  "tiles": [
+   {
+    "n": 1,
+    "code": "PM31751",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 2,
+    "code": "PM32960",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 3,
+    "code": "PM32027",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 4,
+    "code": "PM31738",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 5,
+    "code": "PM34188",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 6,
+    "code": "T31843",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 7,
+    "code": "PM32675",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 8,
+    "code": "PM34183",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 9,
+    "code": "PM34191",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 10,
+    "code": "PM34181",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 11,
+    "code": "PM34210",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 12,
+    "code": "T31014",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 13,
+    "code": "PM34174",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 14,
+    "code": "T33276",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 15,
+    "code": "PM32673",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 16,
+    "code": "T3991",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 17,
+    "code": "PM31254",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 18,
+    "code": "T31694",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   }
+  ]
+ },
+ "B05": {
+  "page": "B05",
+  "series": [
+   {
+    "name": "Flower Sea Series",
+    "format_label": "300X300X8.8MM",
+    "pcs_per_carton": 15,
+    "kg_per_carton": 25
+   }
+  ],
+  "tiles": [
+   {
+    "n": 1,
+    "code": "PM31430",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 2,
+    "code": "PM31431",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 3,
+    "code": "PM34200",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 4,
+    "code": "PM33521",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 5,
+    "code": "PM33243",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 6,
+    "code": "PM33652",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 7,
+    "code": "PM33956",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 8,
+    "code": "PM33855",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 9,
+    "code": "PM34066",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 10,
+    "code": "PM34212",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 11,
+    "code": "PM33656",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 12,
+    "code": "PM33773",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 13,
+    "code": "PM32852",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 14,
+    "code": "PM31777",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 15,
+    "code": "PM31587",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 16,
+    "code": "T33661",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 17,
+    "code": "T33660",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 18,
+    "code": "PM32853",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   }
+  ],
+  "issues": [
+   "Only ONE series banner exists on this sheet (Flower Sea Series / 300X300X8.8MM / Packing 15 PCS/CTN / Weight 25 KGS/CTN); all 18 swatches fall under it. The two large room-scene renders on the right half are photography, not swatches, and were correctly left unnumbered.",
+   "Finish text as printed uses a Chinese enumeration comma: '( Flat、 Matte Surface )'. Transcribed as 'Flat, Matte Surface' per the instruction to drop Chinese characters.",
+   "Every swatch carries its own printed code plus a red '( 1 Patterns )', so all 18 are label_kind='per_tile'. There is no series_group block on this sheet.",
+   "Tiles 16 and 17 are the only non-'PM' prefixes: T33661 and T33660 (single leading 'T', no hyphen). Verified at 5x magnification on the clean scan. Note they are NOT in ascending order across the row: T33661 is tile 16 (left), T33660 is tile 17 (middle).",
+   "Near-identical code pairs were each checked individually at 5x to rule out digit confusion: PM31430 vs PM31431 (tiles 1/2), PM32852 vs PM32853 (tiles 13/18), PM33652 (tile 6) vs PM33656 (tile 11). All confirmed distinct as recorded."
+  ]
+ },
+ "B06": {
+  "page": "B06",
+  "series": [
+   {
+    "name": "Flower Sea Series",
+    "format_label": "300X300X8.8MM",
+    "pcs_per_carton": 15,
+    "kg_per_carton": 25
+   }
+  ],
+  "tiles": [
+   {
+    "n": 1,
+    "code": "T31736",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 2,
+    "code": "T31737",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 3,
+    "code": "PM31168",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 4,
+    "code": "PM31170",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 5,
+    "code": "PM31169",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 6,
+    "code": "PM31171",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 7,
+    "code": "PM31253",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 8,
+    "code": "PM31196",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 9,
+    "code": "PM31416",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 10,
+    "code": "T3254",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 11,
+    "code": "T3446",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 12,
+    "code": "HJ-J33033",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Sculptured, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 13,
+    "code": "HJ33036",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 14,
+    "code": "PM32249",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 15,
+    "code": "HJ-J33031",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Sculptured, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 16,
+    "code": "HJ-J33032",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Sculptured, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 17,
+    "code": "HJ-J33035",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Sculptured, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 18,
+    "code": "HJ-M33029",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Mold, Glossy Surface",
+    "note": "4 Patterns"
+   },
+   {
+    "n": 19,
+    "code": "HJ-M33030",
+    "series": "Flower Sea Series",
+    "label_kind": "per_tile",
+    "finish": "Mold, Glossy Surface",
+    "note": "4 Patterns"
+   }
+  ],
+  "issues": [
+   "NUMBERING IS NOT IN READING ORDER in row 4. The task statement says 1..19 run left-to-right/top-to-bottom, but the overlay's 4th swatch row is boxed 14, 15, 16, 12, 13 from left to right (verified by zooming the overlay number boxes AND by matching swatches/B06/12.jpg-16.jpg against the tile art). I transcribed against the PRINTED BOX NUMBERS, not positional order. So: 12=HJ-J33033 (yellow border), 13=HJ33036 (beige octagon, black corners), 14=PM32249 (white speckle), 15=HJ-J33031 (pink border), 16=HJ-J33032 (blue-grey border). If the downstream tool assumes positional order it will mis-map these five SKUs.",
+   "Tile 13 is printed 'HJ33036' with NO hyphen, unlike every other HJ code on the sheet (HJ-J33031/32/33/35, HJ-M33029/30). Verified at 10x zoom - this is how it is printed, not an OCR drop. Likely a supplier typo but transcribed exactly as printed.",
+   "The HJ codes are printed with an en-dash-width glyph (HJ–J33031). Transcribed with an ASCII hyphen (HJ-J33031) to match the example format given in the task (HJ-F1551). Flag if byte-exact dash preservation matters.",
+   "Only ONE series banner on this sheet (Flower Sea Series, 300X300X8.8MM, 15 PCS/CTN, 25 KGS/CTN). All 19 swatches fall under it, including the HJ-* tiles in the lower rows which have no separate banner of their own.",
+   "All 19 swatches are per_tile - every one has its own code printed directly beneath it. There is no series_group block on this sheet. Note tiles 18 (HJ-M33029) and 19 (HJ-M33030) are labelled '(4 Patterns)' rather than '(1 Patterns)', but each still carries a single dedicated code, so they are per_tile, not series_group. Per the schema, 'patterns' was left unset (series_group only) and the printed value is recorded in 'note'.",
+   "The large interior/coffee-shop photograph occupying the left half of the sheet is a room scene, not a tile swatch, and is correctly not numbered by the overlay.",
+   "Finish text on the sheet uses the Chinese enumeration comma (Flat、Matte Surface). Rendered as a plain comma per instructions."
+  ]
+ },
+ "B07": {
+  "issues": [
+   "Code sequence on this sheet skips HJ-D33024 (present: 33021, 33022, 33023, 33025, 33026, 33027, 33028) — this is how the sheet is printed, not a transcription gap.",
+   "The separator glyph in the codes renders as a long dash (en-dash-like) in the print, e.g. 'HJ–D33027'. Transcribed as a plain ASCII hyphen ('HJ-D33027') per the supplier's normal code convention. Flagging in case the source data actually uses an en dash.",
+   "Tiles 1 (HJ-D33027) and 2 (HJ-D33028) are marked '( 4 Patterns )' but each still carries its own code printed directly beneath it, so both are label_kind='per_tile', not a series_group block. The pattern count is recorded in 'note'.",
+   "Finish text is printed with a Chinese enumeration comma: '（Massed glaze、Glossy）'. Transcribed as 'Massed glaze, Glossy' (English kept, CJK punctuation dropped as instructed).",
+   "Sheet contains only one series banner; the lower ~60% of the page is blank."
+  ],
+  "page": "B07",
+  "series": [
+   {
+    "name": "Massed Glaze Series",
+    "format_label": "300X300X8.8MM",
+    "pcs_per_carton": 11,
+    "kg_per_carton": 18.5
+   }
+  ],
+  "tiles": [
+   {
+    "n": 1,
+    "code": "HJ-D33027",
+    "series": "Massed Glaze Series",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "4 Patterns"
+   },
+   {
+    "n": 2,
+    "code": "HJ-D33028",
+    "series": "Massed Glaze Series",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "4 Patterns"
+   },
+   {
+    "n": 3,
+    "code": "HJ-D33021",
+    "series": "Massed Glaze Series",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 4,
+    "code": "HJ-D33022",
+    "series": "Massed Glaze Series",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 5,
+    "code": "HJ-D33023",
+    "series": "Massed Glaze Series",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 6,
+    "code": "HJ-D33025",
+    "series": "Massed Glaze Series",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 7,
+    "code": "HJ-D33026",
+    "series": "Massed Glaze Series",
+    "label_kind": "per_tile",
+    "finish": "Massed glaze, Glossy",
+    "note": "1 Patterns"
+   }
+  ]
+ },
+ "B09": {
+  "page": "B09",
+  "series": [
+   {
+    "name": "Black & White Series",
+    "format_label": "300X300X8.8MM",
+    "pcs_per_carton": 15,
+    "kg_per_carton": 25
+   }
+  ],
+  "tiles": [
+   {
+    "n": 1,
+    "code": "PM3389",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 2,
+    "code": "PM3434",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 3,
+    "code": "PM3433",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 4,
+    "code": "PM33023",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 5,
+    "code": "T3014",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 6,
+    "code": "PM3390",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 7,
+    "code": "PM31488",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 8,
+    "code": "PM3392",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 9,
+    "code": "PM3535",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 10,
+    "code": "PM33047",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 11,
+    "code": "PM31184",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 12,
+    "code": "PM33008",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 13,
+    "code": "PM31688",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   }
+  ],
+  "issues": [
+   "Finish text is printed as \"（Flat、Matte Surface）\" using a Chinese enumeration comma (、); transcribed as \"Flat, Matte Surface\" per the drop-Chinese-characters instruction.",
+   "All 13 swatches carry their own printed code and are labelled \"(1 Patterns)\", so all are label_kind=per_tile. There is no series_group block on this sheet, so no 'patterns' count was set on any tile.",
+   "Tile 5 (T3014) is the only non-PM prefix on the sheet — verified at 3x upscale as a capital T followed by 3014 (not PM, I, or 1).",
+   "The large room-scene photograph at the bottom of the sheet is a lifestyle render, not a numbered swatch, and was excluded.",
+   "No colour-name notes appear on this sheet; the red parenthetical is the pattern count for every tile."
+  ]
+ },
+ "B08": {
+  "page": "B08",
+  "series": [
+   {
+    "name": "Black & White Series",
+    "format_label": "300X300X8.8MM",
+    "pcs_per_carton": 15,
+    "kg_per_carton": 25
+   }
+  ],
+  "tiles": [
+   {
+    "n": 1,
+    "code": "PM33293",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 2,
+    "code": "PM3505",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 3,
+    "code": "PM33048",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 4,
+    "code": "PM33212",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 5,
+    "code": "PM34171",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 6,
+    "code": "PM31894",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 7,
+    "code": "PM3397",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 8,
+    "code": "PM31588",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 9,
+    "code": "PM34193",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 10,
+    "code": "PM3484",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 11,
+    "code": "PM33025",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 12,
+    "code": "PM3291",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 13,
+    "code": "PM33012",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 14,
+    "code": "PM33125",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 15,
+    "code": "PM33126",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 16,
+    "code": "PM33027",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 17,
+    "code": "PM33026",
+    "series": "Black & White Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   }
+  ],
+  "issues": [
+   "MISSED SWATCH: the sheet actually contains 18 tile swatches, not 17. The swatch in the right-hand column of the 4th tile row (immediately to the right of #10 PM3484) — a near-white tile with black triangular corners, printed code 'PM3735' (Flat, Matte Surface) (1 Patterns) — has NO red detection box and therefore no number. It belongs to the same Black & White Series and should be added to the dataset.",
+   "The overlay's numbering is otherwise strict reading order, but because PM3735 was skipped, numbers 11-17 sit one position later in the page than a naive 'nth swatch' index would suggest. Mapping was verified against the high-res crops (10.jpg = hexagon-flower mosaic = PM3484; 11.jpg = 4x4 checkerboard = PM33025)."
+  ]
+ },
+ "B10": {
+  "page": "B10",
+  "series": [
+   {
+    "name": "Pure Color Series",
+    "format_label": "300X300X8.8MM",
+    "pcs_per_carton": 15,
+    "kg_per_carton": 25
+   }
+  ],
+  "tiles": [
+   {
+    "n": 1,
+    "code": "T3494",
+    "series": "Pure Color Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 2,
+    "code": "PM3956",
+    "series": "Pure Color Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 3,
+    "code": "T3470",
+    "series": "Pure Color Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 4,
+    "code": "T3471",
+    "series": "Pure Color Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 5,
+    "code": "PM3959",
+    "series": "Pure Color Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 6,
+    "code": "PM3560",
+    "series": "Pure Color Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 7,
+    "code": "PM3931",
+    "series": "Pure Color Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 8,
+    "code": "PM3957",
+    "series": "Pure Color Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 9,
+    "code": "PM3561",
+    "series": "Pure Color Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 10,
+    "code": "PM3960",
+    "series": "Pure Color Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 11,
+    "code": "T3988",
+    "series": "Pure Color Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 12,
+    "code": "T3987",
+    "series": "Pure Color Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 13,
+    "code": "T3839",
+    "series": "Pure Color Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 14,
+    "code": "T3989",
+    "series": "Pure Color Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 15,
+    "code": "PM3558",
+    "series": "Pure Color Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 16,
+    "code": "PM3930",
+    "series": "Pure Color Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 17,
+    "code": "PM3958",
+    "series": "Pure Color Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 18,
+    "code": "PM3559",
+    "series": "Pure Color Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   }
+  ],
+  "issues": [
+   "Overlay numbering is NOT strictly reading order in row 3: box 12 sits on the LEFT swatch (light blue 2x2, T3987) and box 11 on the RIGHT swatch (dark green 2x2, T3988). Verified by zooming the overlay at 3x. Codes above are mapped to the PRINTED red box numbers, not to left-to-right position. If the consuming tool assumes reading order, tiles 11 and 12 will be swapped.",
+   "All 18 swatches are per_tile: each has its own code printed directly beneath it and its own red '(1 Patterns)' line. There is no series_group block on this sheet, so no 'patterns' field is set (the printed value would be 1 for every tile).",
+   "Only ONE series banner on this sheet: 'Pure Color Series | Packing: 15 PCS/CTN | Weight: 25 KGS /CTN' with format '300X300X8.8MM' set above and to the right. All 18 tiles fall under it.",
+   "Tile 13 reads 'T3839', which breaks the T398x run of its neighbours (T3987 / T3988 / T3989). This was re-checked on the 3000x5269 full-resolution source and the third character is unambiguously '8', not '9'. Transcribed as printed - do NOT auto-correct it to T3939 or T3989.",
+   "Finish text is printed as 'Flat、Matte Surface' using a Chinese enumeration comma. The comma was normalised to a standard ASCII comma per the instruction to drop Chinese characters and keep the English; no other change was made.",
+   "The two large images on the right side of the sheet (a bathroom scene and a living-room scene) are lifestyle photography, not tile swatches, and are correctly unnumbered. No numbered box was found that is not a tile swatch."
+  ]
+ },
+ "B11": {
+  "page": "B11",
+  "series": [
+   {
+    "name": "Wooden tile",
+    "format_label": "300X300X8.8MM",
+    "pcs_per_carton": 15,
+    "kg_per_carton": 25
+   }
+  ],
+  "tiles": [
+   {
+    "n": 1,
+    "code": "HJ33008",
+    "series": "Wooden tile",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 2,
+    "code": "HJ33009",
+    "series": "Wooden tile",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 3,
+    "code": "HJ33001",
+    "series": "Wooden tile",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 4,
+    "code": "HJ33005",
+    "series": "Wooden tile",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 5,
+    "code": "HJ33007",
+    "series": "Wooden tile",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 6,
+    "code": "HJ33002",
+    "series": "Wooden tile",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 7,
+    "code": "HJ33011",
+    "series": "Wooden tile",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "4 Patterns"
+   },
+   {
+    "n": 8,
+    "code": "HJ33006",
+    "series": "Wooden tile",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 9,
+    "code": "HJ33010",
+    "series": "Wooden tile",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 10,
+    "code": "HJ-J33019",
+    "series": "Wooden tile",
+    "label_kind": "per_tile",
+    "finish": "Sculptured, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 11,
+    "code": "HJ-J33012",
+    "series": "Wooden tile",
+    "label_kind": "per_tile",
+    "finish": "Sculptured, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 12,
+    "code": "HJ-J33015",
+    "series": "Wooden tile",
+    "label_kind": "per_tile",
+    "finish": "Sculptured, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 13,
+    "code": "HJ-J33018",
+    "series": "Wooden tile",
+    "label_kind": "per_tile",
+    "finish": "Sculptured, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 14,
+    "code": "HJ-J33017",
+    "series": "Wooden tile",
+    "label_kind": "per_tile",
+    "finish": "Sculptured, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 15,
+    "code": "HJ-J33016",
+    "series": "Wooden tile",
+    "label_kind": "per_tile",
+    "finish": "Sculptured, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 16,
+    "code": "HJ-J33013",
+    "series": "Wooden tile",
+    "label_kind": "per_tile",
+    "finish": "Sculptured, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 17,
+    "code": "PM34186",
+    "series": "Wooden tile",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   },
+   {
+    "n": 18,
+    "code": "PM34185",
+    "series": "Wooden tile",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns"
+   }
+  ],
+  "issues": [
+   "MISSED SWATCH: the sheet prints 19 tile swatches but only 18 were numbered by the overlay. The swatch immediately to the right of #16 is undetected/unnumbered: code 'HJ-J33020', (Sculptured, Matte Surface), (1 Patterns), same 'Wooden tile' series, same 300X300X8.8MM / 15 PCS/CTN / 25 KGS/CTN packing. It is excluded from the tiles array because it has no overlay number, but it must be captured downstream or the sheet will be short one SKU.",
+   "Dash glyph: the HJ-J codes are printed with a long dash (en-dash), e.g. 'HJ–J33019'. I transcribed them with a plain ASCII hyphen ('HJ-J33019') to match the 'HJ-F1551' convention in the brief. Flag if the en-dash must be preserved byte-for-byte.",
+   "Series banner differs from the described pattern: it reads 'Wooden tile | Packing: 15 PCS/CTN | Weight: 25 KGS /CTN' with '300X300X8.8MM' set above-right. There is no 'Flat And Matte Series'-style wording; finish (Flat vs Sculptured) is printed per tile instead, so this one packing spec covers tiles of both finishes. Only ONE series on this sheet.",
+   "Tile #7 (HJ33011) is annotated '(4 Patterns)' and its swatch image is visibly a 2x2 composite of four pattern variants, but its code is printed directly beneath that single swatch, so it is recorded as label_kind='per_tile', not 'series_group'. No series_group blocks exist on this sheet.",
+   "Finish text on the sheet uses a Chinese enumeration comma ('Flat、Matte Surface'); normalised to a plain comma as instructed.",
+   "The lower-right portion of the sheet is a room/lifestyle photograph, not a swatch; no numbered boxes fall inside it."
+  ]
+ },
+ "B12": {
+  "page": "B12",
+  "series": [
+   {
+    "name": "Mixed Series",
+    "format_label": "300X300X8.8MM",
+    "pcs_per_carton": 15,
+    "kg_per_carton": 25
+   }
+  ],
+  "tiles": [
+   {
+    "n": 1,
+    "code": "PM3001",
+    "series": "Mixed Series",
+    "label_kind": "series_group",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 2,
+    "code": "PM3001",
+    "series": "Mixed Series",
+    "label_kind": "series_group",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 3,
+    "code": "PM3001",
+    "series": "Mixed Series",
+    "label_kind": "series_group",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 4,
+    "code": "PM3001",
+    "series": "Mixed Series",
+    "label_kind": "series_group",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 5,
+    "code": "PM3001",
+    "series": "Mixed Series",
+    "label_kind": "series_group",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 6,
+    "code": "PM3001",
+    "series": "Mixed Series",
+    "label_kind": "series_group",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 7,
+    "code": "PM3001",
+    "series": "Mixed Series",
+    "label_kind": "series_group",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 8,
+    "code": "PM3001",
+    "series": "Mixed Series",
+    "label_kind": "series_group",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 9,
+    "code": "PM3001",
+    "series": "Mixed Series",
+    "label_kind": "series_group",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 10,
+    "code": "PM3001",
+    "series": "Mixed Series",
+    "label_kind": "series_group",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 11,
+    "code": "PM3001",
+    "series": "Mixed Series",
+    "label_kind": "series_group",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 12,
+    "code": "PM3001",
+    "series": "Mixed Series",
+    "label_kind": "series_group",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 13,
+    "code": "PM3001",
+    "series": "Mixed Series",
+    "label_kind": "series_group",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 14,
+    "code": "PM3001",
+    "series": "Mixed Series",
+    "label_kind": "series_group",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 15,
+    "code": "PM3001",
+    "series": "Mixed Series",
+    "label_kind": "series_group",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 16,
+    "code": "PM3001",
+    "series": "Mixed Series",
+    "label_kind": "series_group",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 17,
+    "code": "PM3001",
+    "series": "Mixed Series",
+    "label_kind": "series_group",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 18,
+    "code": "PM3001",
+    "series": "Mixed Series",
+    "label_kind": "series_group",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 19,
+    "code": "PM3001",
+    "series": "Mixed Series",
+    "label_kind": "series_group",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 20,
+    "code": "PM3001",
+    "series": "Mixed Series",
+    "label_kind": "series_group",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   },
+   {
+    "n": 21,
+    "code": "PM3001",
+    "series": "Mixed Series",
+    "label_kind": "series_group",
+    "finish": "Flat, Matte Surface",
+    "note": "1 Patterns",
+    "patterns": 1
+   }
+  ],
+  "issues": [
+   "Pattern-count discrepancy: 21 visually distinct swatches are shown, but the single printed caption reads \"（1 Patterns）\", not \"21 Patterns\". Verified at 10x zoom on the clean scan - there is a clear gap between the opening full-width parenthesis and the digit, and only one digit glyph is present. Transcribed as printed (patterns=1). Plausibly intentional for a \"Mixed Series\" (21 designs shipping as one mixed SKU), but confirm with the supplier before this drives carton math.",
+   "No per-tile codes are printed anywhere on this sheet. The only code is \"PM3001\", printed once to the right of swatch 21, so all 21 swatches are recorded as label_kind='series_group' under that one code. No per-tile codes were invented.",
+   "Finish text as printed is \"（Flat、Matte Surface）\" using the Chinese enumeration comma. Transcribed as \"Flat, Matte Surface\" per the instruction to drop Chinese characters and keep the English.",
+   "The character following the code on the sheet (\"PM3001-\") is a layout separator dash, not part of the SKU; the code is recorded as \"PM3001\".",
+   "Only one series banner appears on this sheet (Mixed Series). The lower half of the page is a lifestyle bathroom photograph with no additional codes, banners, or packing data; the strip below the photo is blank."
+  ]
+ },
+ "B13": {
+  "page": "B13",
+  "series": [
+   {
+    "name": "Mixed Series",
+    "format_label": "300X300X8.8MM",
+    "pcs_per_carton": 15,
+    "kg_per_carton": 25
+   }
+  ],
+  "tiles": [
+   {
+    "n": 1,
+    "code": "PM3465",
+    "series": "Mixed Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "9 Patterns"
+   },
+   {
+    "n": 2,
+    "code": "XPM3007",
+    "series": "Mixed Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "9 Patterns"
+   },
+   {
+    "n": 3,
+    "code": "XPM3005",
+    "series": "Mixed Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "9 Patterns"
+   },
+   {
+    "n": 4,
+    "code": "XPM3012",
+    "series": "Mixed Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "4 Patterns"
+   },
+   {
+    "n": 5,
+    "code": "PM3775",
+    "series": "Mixed Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "4 Patterns"
+   },
+   {
+    "n": 6,
+    "code": "XPM3001",
+    "series": "Mixed Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "8 Patterns"
+   },
+   {
+    "n": 7,
+    "code": "PM31483",
+    "series": "Mixed Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "8 Patterns"
+   },
+   {
+    "n": 8,
+    "code": "PM3466",
+    "series": "Mixed Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "4 Patterns"
+   },
+   {
+    "n": 9,
+    "code": "PM3693",
+    "series": "Mixed Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "4 Patterns"
+   },
+   {
+    "n": 10,
+    "code": "PM3796",
+    "series": "Mixed Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "4 Patterns"
+   },
+   {
+    "n": 11,
+    "code": "XPM3006",
+    "series": "Mixed Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "7 Patterns"
+   },
+   {
+    "n": 12,
+    "code": "XPM3011",
+    "series": "Mixed Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "7 Patterns"
+   },
+   {
+    "n": 13,
+    "code": "XPM3008",
+    "series": "Mixed Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "7 Patterns"
+   },
+   {
+    "n": 14,
+    "code": "XPM3009",
+    "series": "Mixed Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "7 Patterns"
+   },
+   {
+    "n": 15,
+    "code": "PM3538",
+    "series": "Mixed Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "6 Patterns"
+   },
+   {
+    "n": 16,
+    "code": "PM3557",
+    "series": "Mixed Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "6 Patterns"
+   },
+   {
+    "n": 17,
+    "code": "PM3573",
+    "series": "Mixed Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "5 Patterns"
+   },
+   {
+    "n": 18,
+    "code": "XPM3582",
+    "series": "Mixed Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "5 Patterns"
+   },
+   {
+    "n": 19,
+    "code": "PM3657",
+    "series": "Mixed Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "5 Patterns"
+   },
+   {
+    "n": 20,
+    "code": "PM3655",
+    "series": "Mixed Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "5 Patterns"
+   },
+   {
+    "n": 21,
+    "code": "XPM3003",
+    "series": "Mixed Series",
+    "label_kind": "per_tile",
+    "finish": "Flat, Matte Surface",
+    "note": "12 Patterns"
+   }
+  ],
+  "issues": [
+   "COVERAGE GAP: the sheet actually contains 21 tile swatches, but only 18 were outlined/numbered by the detector. Three printed swatches carry NO red number and are therefore absent from the tiles array: 'PM3538' (Flat, Matte Surface) (6 Patterns) and 'PM3557' (Flat, Matte Surface) (6 Patterns) - the pair sitting directly below numbers 13/14 in the right-hand column - and 'XPM3003' (Flat, Matte Surface) (12 Patterns) - the newsprint-pattern swatch at the far right of the bottom row, immediately after number 18. All three codes were read at high magnification and are certain; they should be added if the extraction is meant to be exhaustive.",
+   "label_kind rationale: every numbered swatch on this sheet is a single composite image showing N different pattern variants, with its own unique code printed directly beneath it (e.g. XPM3007 shows 9 variants in one photo). No code is shared across two or more numbered swatches, so all 18 are recorded as 'per_tile'. The printed '(N Patterns)' red text is preserved in the 'note' field rather than the 'patterns' field, since 'patterns' is specified for series_group only.",
+   "Finish text is printed as '(Flat, Matte Surface)' using a Chinese ideographic comma between 'Flat' and 'Matte'; transcribed as 'Flat, Matte Surface' with the punctuation normalised to an ASCII comma. No other Chinese characters appear on the sheet.",
+   "Code n=7 'PM31483' has FIVE digits, unlike every other PM code on the sheet which has four. Verified at 3x magnification on the clean page - the printed text is unambiguously PM31483, not PM3148 or PM31843. Flagging because it is an outlier pattern that a downstream validator may wrongly 'correct'.",
+   "The large kitchen lifestyle photograph occupying the middle-left of the sheet is not a tile swatch and correctly received no number.",
+   "Only ONE series banner exists on this sheet ('Mixed Series', 300X300X8.8MM, 15 PCS/CTN, 25 KGS/CTN); it governs all swatches including the three unnumbered ones. The sheet prints the weight as '25 KGS /CTN' with a space before '/CTN'.",
+   "v2 re-extraction: grid recovery added the three swatches the first detector truncated (PM3538, PM3557, XPM3003). Sheet is now exhaustive at 21; numbering re-mapped accordingly."
+  ]
+ }
+}
