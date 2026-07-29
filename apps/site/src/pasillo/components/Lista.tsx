@@ -14,7 +14,9 @@
 // collectable here, with checkboxes instead of gestures.
 
 import { useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
+import { Hint } from '@/pasillo/components/Hint'
 import { LaneExit } from '@/pasillo/components/PasilloShell'
 import { StatusLamp } from '@/pasillo/components/StatusLamp'
 import {
@@ -29,7 +31,7 @@ import {
   seriesOption,
 } from '@/pasillo/lib/catalogue'
 import { fmtM2 } from '@/pasillo/lib/packing'
-import { PARAM_SKU } from '@/pasillo/lib/routes'
+import { PARAM_FORMAT, PARAM_SKU, PASILLO_ROUTES } from '@/pasillo/lib/routes'
 import { haptic, useRecord } from '@/pasillo/lib/record'
 import type { Finish, Sku } from '@/pasillo/types/catalogue'
 
@@ -59,10 +61,14 @@ export function Lista({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
   const [query, setQuery] = useState('')
   const params = useSearchParams()
 
-  /** A shared link lands here with its code already in the box. */
+  /** A shared link lands here with its code already in the box, and a buyer
+   *  arriving from "¿Qué formato?" lands with that format already applied —
+   *  the comparison hands off INTO the catalogue, not at its door. */
   useEffect(() => {
     const code = params.get(PARAM_SKU)
     if (code) setQuery(code)
+    const fmt = params.get(PARAM_FORMAT)
+    if (fmt && FORMATS.includes(fmt)) setFormats(new Set([fmt]))
   }, [params])
 
   const rows = useMemo(() => {
@@ -228,6 +234,21 @@ export function Lista({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
               <option value="series">Serie</option>
               <option value="coverage">m² por caja</option>
             </select>
+          </div>
+
+          {/* Teaching at the moment of the decision. It links to the
+              comparison rather than explaining it: "which format" is a
+              question about cartons and pieces, not about this control.
+              Retires the moment a format is applied — the buyer has just
+              demonstrated they know what the chips do. */}
+          <div className="mt-2">
+            <Hint id="formato" retireWhen={formats.size > 0}>
+              ¿150×150 o 300×300?{' '}
+              <Link href={PASILLO_ROUTES.formatos} className="underline underline-offset-4">
+                Mira lo que cambia
+              </Link>{' '}
+              en piezas, cajas y contenedor.
+            </Hint>
           </div>
         </div>
       </header>

@@ -19,6 +19,8 @@ export const PASILLO_ROUTES = {
   lista: `${PASILLO_BASE}/lista`,
   muestrario: `${PASILLO_BASE}/muestrario`,
   mesa: `${PASILLO_BASE}/mesa`,
+  /** "¿Qué formato?" — the comparison a buyer needs before they filter. */
+  formatos: `${PASILLO_BASE}/formatos`,
   /** Back out to the lane that owns this catalogue. */
   parent: LANE_BASE,
 } as const
@@ -45,6 +47,10 @@ export function isAislePath(path: string | null | undefined): boolean {
 
 export const PARAM_SERIES = 'serie'
 export const PARAM_SKU = 'sku'
+/** Preselects a format filter in the Lista — the handoff out of "¿Qué formato?",
+ *  so the comparison lands the buyer IN the filtered catalogue rather than at a
+ *  page that tells them to go and filter it themselves. */
+export const PARAM_FORMAT = 'formato'
 
 /** A link to one booth in the aisle. */
 export function seriesHref(seriesUid: string, base: string = PASILLO_ROUTES.lane): string {

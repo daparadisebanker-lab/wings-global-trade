@@ -9,9 +9,15 @@ import {
   SheetDock,
   useSheet,
 } from '@/pasillo/components/PasilloShell'
+import { TourGate } from '@/pasillo/components/TourGate'
+import { useRecord } from '@/pasillo/lib/record'
 
 function Aisle() {
   const sheet = useSheet()
+  // The tour waits on the record's own hydration signal rather than on mount.
+  // Starting on mount is the classic tour bug: the spotlight measures targets
+  // that have not been laid out yet and lands on the wrong coordinates.
+  const rec = useRecord()
   return (
     <>
       {/* The Lane has no header of its own — its counter lives inside the
@@ -22,6 +28,10 @@ function Aisle() {
       <Lane onOpenSku={sheet.open} />
       <RecordTab />
       <SheetDock sku={sheet.sku} onClose={sheet.close} onOpenSku={sheet.open} />
+      {/* Only on the Lane. The Lista and the record screens are conventional
+          and teach themselves; a tour that follows a buyer across four routes
+          is a tour that has stopped being about a sequence. */}
+      <TourGate ready={rec.hydrated} />
     </>
   )
 }

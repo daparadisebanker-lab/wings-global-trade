@@ -416,7 +416,10 @@ function LaneActions({
           → guardar · ← pasar · ↑ ↓ serie
         </p>
       </div>
-      <div className="flex items-center gap-3">
+      {/* data-tour is a CONTRACT, not a hook of convenience: the tour targets
+          these by attribute and never by class, because class names change
+          under restyling and take the tour with them, silently. */}
+      <div data-tour="lane-actions" className="flex items-center gap-3">
         {/* py-3 lands these at ~47px — past the 44px floor, and on the frozen
             scale, where py-3.5 (14px) was not. */}
         <button
@@ -428,6 +431,7 @@ function LaneActions({
         </button>
         <button
           type="button"
+          data-tour="lane-collect"
           onClick={onCollect}
           className={`flex-1 rounded-pas-chrome py-3 text-pas-t0 ${
             collected
