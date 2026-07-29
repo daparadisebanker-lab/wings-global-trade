@@ -11,6 +11,7 @@ export default defineConfig({
         __dirname,
         '../../packages/ui/src/organs/diagrams/containerSpecs.ts',
       ),
+      '@wings/trade-ui/iso6346': resolve(__dirname, '../../packages/ui/src/lib/iso6346.ts'),
       '@wings/trade-ui': resolve(__dirname, '../../packages/ui/src/index.ts'),
     },
   },

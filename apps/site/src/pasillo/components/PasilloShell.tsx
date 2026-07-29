@@ -27,13 +27,19 @@ export function useSheet() {
 export function DensitySwitch() {
   const path = usePathname()
   return (
-    <nav className="fixed right-3 top-3 z-30 flex rounded-pas-chrome border border-pas-ink/20 bg-pas-surface/90 p-1 backdrop-blur">
+    // Opaque, not translucent. The blur sat on a 163×38 pill over a near-black
+    // ground where it was invisible, while keeping a compositing layer alive
+    // through the drag loop — and the spec's own refusal list names blur stacks
+    // as the battery line item.
+    <nav className="fixed right-3 top-3 z-30 flex rounded-pas-chrome border border-pas-ink/20 bg-pas-surface p-1">
       {VIEWS.map((v) => (
         <Link
           key={v.href}
           href={v.href}
           aria-current={path === v.href ? 'page' : undefined}
-          className={`pas-stamp rounded-pas-chrome px-3 py-1.5 no-underline ${
+          // before:-inset-2 extends the hit area to a thumb's worth without
+          // inflating the chrome — density is the point; the target is not.
+          className={`pas-stamp relative rounded-pas-chrome px-3 py-2 no-underline before:absolute before:-inset-2 before:content-[''] ${
             path === v.href ? 'bg-pas-ink text-pas-surface' : 'opacity-pas-resting'
           }`}
         >
@@ -41,6 +47,42 @@ export function DensitySwitch() {
         </Link>
       ))}
     </nav>
+  )
+}
+
+/**
+ * The exit. The aisle drops the site header — correctly, it is a viewport tool
+ * and a fixed header would take the bottom bar the muestrario tab lives in — but
+ * it replaced the header's three functions (identity, location, way up) with
+ * nothing. A buyer arriving on a shared link, which is this tool's own export
+ * channel, landed on a dark full-viewport surface with no Wings mark and no way
+ * back except leaving the site.
+ *
+ * One stamp does all three, in the top-left zone the view switch already
+ * concedes, and stays achromatic so the colour doctrine holds.
+ */
+export function LaneExit({ variant = 'inline' }: { variant?: 'inline' | 'fixed' }) {
+  return (
+    <Link
+      href={PASILLO_ROUTES.parent}
+      // border-current, not a token: this renders on the dark aisle AND on the
+      // light record ground, so the rule must be whatever the ink is here. The
+      // element's own resting opacity softens it — achromatic on both.
+      // The fixed variant is used ONLY on the Lane, and it sits outside the
+      // Lane's own colour context — as a sibling it inherits [data-app]'s ink
+      // (#141414) onto the #0D0D0D aisle ground, i.e. invisible. It has to name
+      // the paper explicitly. The inline variant lives inside a record-ground
+      // header and correctly inherits ink there.
+      className={`pas-stamp inline-flex items-center gap-2 no-underline opacity-pas-resting
+                  transition-opacity duration-pas-light hover:opacity-pas-lit focus-visible:opacity-pas-lit ${
+                    variant === 'fixed'
+                      ? 'fixed left-3 top-3 z-30 rounded-pas-chrome border border-pas-surface/30 px-3 py-2 text-pas-surface'
+                      : ''
+                  }`}
+    >
+      <span aria-hidden>←</span>
+      <span>WGT/02 · Interiores</span>
+    </Link>
   )
 }
 

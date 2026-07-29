@@ -22,8 +22,12 @@ import '@/pasillo/pasillo.css'
 
 export const metadata: Metadata = {
   title: 'Azulejos — WGT/02 Interiores',
+  // This route is noindex, but the description still renders in WhatsApp and
+  // Slack link previews — which is exactly how a buyer shares this URL with a
+  // colleague. So it is a buyer-facing string, and "pasillo" may not appear in
+  // one. ("un muestrario que ya sabe" also anthropomorphised the tool.)
   description:
-    'El catálogo de azulejos recorrido como un pasillo: revisa las series, guarda las que sirven y sal con un muestrario que ya sabe cuántos m², cuántas cajas, cuántos kilos y cuánto contenedor.',
+    'Recorre el catálogo de azulejos serie por serie, guarda las que sirven y sal con un muestrario resuelto: m², cajas enteras, kilos y llenado de contenedor, listos para cotizar.',
   // A sourcing tool carrying supplier data, not a landing page. The lane page
   // at /interiores is the indexable surface.
   robots: { index: false, follow: false },
@@ -31,7 +35,10 @@ export const metadata: Metadata = {
 
 export default function AzulejosLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div data-app="pasillo">
+    // data-app-root marks THIS as the ground-owning wrapper. The sheet-dock
+    // carries data-app too (so the token layer reaches through vaul's portal)
+    // but must not inherit a painted background — see pasillo.css.
+    <div data-app="pasillo" data-app-root>
       <RecordProvider>{children}</RecordProvider>
     </div>
   )

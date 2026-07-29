@@ -31,3 +31,27 @@ export const PASILLO_ROUTES = {
 export function isAislePath(path: string | null | undefined): boolean {
   return !!path && (path === PASILLO_BASE || path.startsWith(`${PASILLO_BASE}/`))
 }
+
+// ── Deep links ─────────────────────────────────────────────────────────────
+// Series and SKUs address as query params on the four existing routes, never as
+// new path segments: lane slugs are append-only and permanent, and a params
+// approach costs no URL commitment.
+//
+// This exists because procurement is multi-party. The buyer is working against a
+// specification someone else wrote, and without a link the only way to ask that
+// person "is this the one?" is a screenshot — which is precisely the failure the
+// volume footer was built to end. A screenshot carries no code, no coverage and
+// no carton count.
+
+export const PARAM_SERIES = 'serie'
+export const PARAM_SKU = 'sku'
+
+/** A link to one booth in the aisle. */
+export function seriesHref(seriesUid: string, base: string = PASILLO_ROUTES.lane): string {
+  return `${base}?${PARAM_SERIES}=${encodeURIComponent(seriesUid)}`
+}
+
+/** A link that opens one SKU's sheet, on whichever view the buyer should land in. */
+export function skuHref(code: string, base: string = PASILLO_ROUTES.lane): string {
+  return `${base}?${PARAM_SKU}=${encodeURIComponent(code)}`
+}

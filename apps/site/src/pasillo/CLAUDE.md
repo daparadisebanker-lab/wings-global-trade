@@ -126,6 +126,21 @@ mark would vanish on some tiles and clash with others.
   it, never fake a rotation), `review` (they disagree; the UI says so).
   One SKU is currently flagged: `PM3001`.
 
+## 4-bis · The token lint, and what legitimately fails it
+
+Zero raw values means zero LAYOUT values. Four component-intrinsic dimensions are
+not on the frozen spacing scale and must stay off it:
+
+- `w-11 / h-11 / pl-11` (44px) — the touch-target floor. An accessibility
+  constant, not a spacing step; rounding it to 48 to please a lint is the wrong
+  direction and rounding it to 32 is a regression.
+- `w-3.5 h-3.5` (14px) — the checkmark glyph, sized to its 32px box, not to the
+  page grid.
+- `h-1.5` (6px) — the fill bar's stroke weight.
+
+Everything else in this directory is on the scale or is a declared `--pas-*`
+token. If you find a bare px anywhere else, it is a bug.
+
 ## 5 · Stack
 
 Next.js 15 App Router · TypeScript · Tailwind over CSS custom properties ·

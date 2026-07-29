@@ -12,6 +12,7 @@
 // a series row and drag it. Their logic outranks ours.
 
 import Link from 'next/link'
+import { LaneExit } from '@/pasillo/components/PasilloShell'
 import { PASILLO_ROUTES } from '@/pasillo/lib/routes'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { VolumeFooter } from '@/pasillo/components/VolumeFooter'
@@ -87,13 +88,19 @@ export function Muestrario({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
       <header className="border-b pas-rule px-4 py-4">
         <div className="mx-auto flex max-w-3xl items-baseline justify-between gap-4">
           <div>
-            <p className="pas-stamp opacity-pas-resting">El Muestrario</p>
-            <h1 className="font-pas-display text-pas-t2 font-semibold tracking-[-0.02em]">
+            <LaneExit />
+            <h1 className="font-pas-display text-pas-t2 font-semibold tracking-pas-display">
               {folders.length} {folders.length === 1 ? 'serie' : 'series'}
             </h1>
           </div>
-          <Link href={PASILLO_ROUTES.lane} className="pas-stamp rounded-pas-chrome border border-pas-ink/25 px-4 py-2">
-            Al catálogo
+          {/* "Al recorrido", not "Al catálogo": Catálogo in the global nav is
+              the machinery catalogue, and one word naming two trees is how a
+              buyer ends up in the wrong one. */}
+          <Link
+            href={PASILLO_ROUTES.lane}
+            className="pas-stamp rounded-pas-chrome border border-pas-ink/25 px-4 py-2"
+          >
+            Al recorrido
           </Link>
         </div>
       </header>
@@ -101,8 +108,8 @@ export function Muestrario({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-pas-5">
         {rec.degraded && (
           <p className="mb-4 border pas-rule px-3 py-2 text-pas-t0 opacity-pas-resting">
-            Este navegador bloquea el almacenamiento local. El muestrario funciona en esta
-            sesión, pero exporta antes de salir.
+            Este navegador bloquea el almacenamiento local. El muestrario se perderá al cerrar
+            esta pestaña — envía la solicitud desde la mesa de comercio antes de salir.
           </p>
         )}
 
@@ -110,13 +117,14 @@ export function Muestrario({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
           <div className="border pas-rule px-pas-6 py-16 text-center">
             <p className="pas-stamp opacity-pas-resting">Muestrario vacío</p>
             <p className="mx-auto mt-3 max-w-sm text-pas-t1">
-              El muestrario está vacío. Desliza a la derecha para guardar una serie.
+              Aún no hay series guardadas. En el recorrido, desliza una serie a la derecha y
+              llega aquí con todos sus diseños marcados.
             </p>
             <Link
               href={PASILLO_ROUTES.lane}
               className="mt-pas-6 inline-block bg-pas-ink px-pas-6 py-3 text-pas-t0 text-pas-surface"
             >
-              Abrir el catálogo
+              Abrir el recorrido
             </Link>
           </div>
         ) : (
@@ -155,7 +163,7 @@ export function Muestrario({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
                 href={PASILLO_ROUTES.mesa}
                 className="flex-1 rounded-pas-chrome border border-pas-ink/30 py-3 text-center text-pas-t0"
               >
-                Mesa de comercio
+                Preparar la cotización
               </Link>
             </div>
           </div>
@@ -259,7 +267,7 @@ function FolderRow({
           <span className="min-w-0">
             <span className="block truncate text-pas-t0">{series.name_raw}</span>
             <span className="block truncate text-pas-micro opacity-pas-resting">
-              {series.format_mm[0]}×{series.format_mm[1]} · {series.m2_per_ctn.toFixed(2)} m²/caja
+              {series.format_mm[0]}×{series.format_mm[1]} · {fmtM2(series.m2_per_ctn)} m²/caja
             </span>
           </span>
           <span className="shrink-0 text-right">
@@ -328,18 +336,23 @@ function SkuRow({ sku, onOpen }: { sku: Sku; onOpen: () => void }) {
             decoding="async"
           />
           <span className="min-w-0 flex-1 text-left">
-            <span className="pas-mono block truncate text-pas-dense">{sku.code}</span>
+            {/* The code never truncates — it is what gets pasted into
+                WhatsApp. The finish line below it may. */}
+            <span className="pas-mono block whitespace-nowrap text-pas-dense">{sku.code}</span>
             <span className="block truncate text-pas-label opacity-pas-resting">{finishLabel(sku)}</span>
           </span>
         </button>
         <span className="pas-mono shrink-0 text-right text-pas-micro opacity-pas-resting">
-          {line.cartons > 0 ? `${fmtInt(line.cartons)} cajas` : `${series.m2_per_ctn.toFixed(2)} m²`}
+          {line.cartons > 0 ? `${fmtInt(line.cartons)} cajas` : `${fmtM2(series.m2_per_ctn)} m²`}
         </span>
         <StatusLamp status={series.status} />
       </div>
 
       {selected && (
-        <div className="flex items-center gap-3 pb-3 pl-11">
+        // Column, not row: squeezed to the right of the input this wrapped to
+        // three ragged lines at 390px and stole the width that was truncating
+        // the code above it. One line, one reading direction.
+        <div className="flex flex-col gap-2 pb-3 pl-11">
           <label className="flex items-center gap-2">
             <span className="pas-stamp opacity-pas-resting">Cantidad</span>
             <input

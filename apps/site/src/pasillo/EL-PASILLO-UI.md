@@ -806,3 +806,49 @@ Lane ↔ Lista; `SkuTile` unwired (Mosaico is P2); §9.3–9.8 workbook, validat
 importer, Postgres and soft-delete; waste percentage; the §7 on-device checks
 (colour fidelity OLED vs LCD, achromatic mark on white/navy/pink, tap accuracy,
 3×3 render cost).
+
+
+---
+
+## 13 · ENHANCEMENT PASS — 2026-07-29
+
+Four audits run in parallel against the shipped build. Findings verified before
+implementation; see DECISIONS.md for the decision record. What changed here:
+
+**Broken, fixed:** the sheet-dock rendered outside the token scope (vaul portals
+to `<body>`) — transparent, wrong face, codes not in mono; the density switch
+fully occluded the Lista's back-link and the Lane's passed stamp at 390px; the
+desktop aisle was a stretched phone (clipped face row, 940px buttons, 320px
+thumbs at ~630px); the focus ring was 1.05:1 on the aisle ground.
+
+**Layout:** the booth takes `max-w-2xl`, mirroring the sheet — a viewport tool
+still needs a measure. SpecBar returns to its specified 32px (it shipped at 64,
+a slab that pushed the faces down). Every spacing utility is back on the frozen
+scale; the four that are not are documented in CLAUDE.md §4-bis as
+component-intrinsic.
+
+**State:** collect and pass now flash the verdict wash on the keyboard and button
+paths, which previously advanced with no confirmation at all. The flash needs
+`flashUntil` because the index effect re-runs `paint()` and would wipe it in the
+same frame. Scrubber marks protrude (collected `w-2` solid, passed hollow) — at
+3px and 25% opacity the signature element was sub-perceptual, which cost it the
+whole idea of the record and the walk being one object. The Lista shows m²/caja
+at every width and drops the 236 identical availability lamps to a single stated
+default. The keyboard grammar is announced on pointer-fine devices.
+
+**IA:** an exit stamp in all four views (the eyebrow on the three that have
+headers, fixed on the Lane which does not); `?serie=` / `?sku=` deep links via
+route builders, so a shortlist is shareable as a link rather than a screenshot;
+a text filter over code / series / colour_name — the fields the supplier actually
+printed, and NOT the facet rail, which still needs `pattern_family`; format chips.
+
+**Copy:** the headline no longer promises dates the lane never states. Framework
+vocabulary (*lane*, *arquetipo PROJECT*, *taxonomía*) is gone from buyer-facing
+surfaces. "Al catálogo" became "Al recorrido" — Catálogo in the global nav is the
+machinery catalogue. The outbound RFQ was rebuilt; it is the only artefact a
+counterparty reads and it is now the most tested file here.
+
+**Still open, unchanged:** §4.7's SELECCIONADOS float section, bulk bar and note
+UI; drag-reorder untested; position preservation across Lane ↔ Lista; `SkuTile`
+unwired (Mosaico is P2); §9.3–9.8 workbook, importer, Postgres, soft-delete;
+waste percentage; the §7 on-device checks.

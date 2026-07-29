@@ -20,10 +20,12 @@ import Link from 'next/link'
 // The lane config is the Phase-0 record, not a copy of it. Every figure this
 // page states about the lane's identity is read from there, so the page cannot
 // drift from the registration.
+import { LaneStamp } from '@wings/trade-ui/lane-stamp'
 import { lane } from '@wings/liveries/interiores/lane.config'
 import { SERIES, SKUS } from '@/pasillo/data/catalogue'
 import { CONTAINERS, fmtInt, fmtM2 } from '@/pasillo/lib/packing'
 import { PASILLO_ROUTES } from '@/pasillo/lib/routes'
+import { Umbral } from './Umbral'
 
 export const metadata: Metadata = {
   title: 'Interiores — WGT/02',
@@ -67,16 +69,19 @@ export default function InterioresPage() {
     // is light and has no dark hero for the transparent nav to float over. It
     // lives here rather than on the lane layout — the aisle is a sibling and
     // must start at pixel zero.
-    <div className="pt-16 md:pt-18" style={{ backgroundImage: 'var(--texture)' }}>
+    <div className="pt-16 md:pt-16" style={{ backgroundImage: 'var(--texture)' }}>
       {/* ── Lane header ──────────────────────────────────────────────────── */}
-      <header className="mx-auto max-w-[var(--grid-max-width)] px-6 pb-12 pt-16 md:px-10 md:pb-16 md:pt-24">
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="lane-stamp px-2.5 py-1 text-[length:var(--lane-type-stamp)] leading-none">{lane.code}</span>
+      <header className="mx-auto max-w-[var(--grid-max-width)] px-6 pb-12 pt-16 md:px-8 md:pb-16 md:pt-24">
+        <div className="flex flex-wrap items-end gap-x-6 gap-y-3">
+          {/* The full BIC unit number, its check digit computed from the lane
+              code rather than typed. "Lane" was internal framework English on a
+              buyer-facing page — to the person reading it, this is a división. */}
+          <LaneStamp code={lane.code} name={lane.name} archetype={lane.archetype} variant="full" />
           <span
             className="lane-stamp border-0 px-0 text-[length:var(--lane-type-stamp)] leading-none"
             data-status={lane.status}
           >
-            {lane.status === 'OPENING' ? 'Lane en apertura' : 'Lane activa'}
+            {lane.status === 'OPENING' ? 'División en apertura' : 'División activa'}
           </span>
         </div>
 
@@ -91,47 +96,46 @@ export default function InterioresPage() {
 
       {/* ── Capability statement ─────────────────────────────────────────── */}
       <section className="border-y border-[color:var(--ink-decoration)] bg-[color:var(--surface-2)]">
-        <div className="mx-auto grid max-w-[var(--grid-max-width)] gap-8 px-6 py-12 md:grid-cols-3 md:px-10 md:py-16">
+        <div className="mx-auto grid max-w-[var(--grid-max-width)] gap-8 px-6 py-12 md:grid-cols-3 md:px-8 md:py-16">
           <div className="md:col-span-2">
             <h2 className="text-[length:var(--type-4)] leading-[1.15] tracking-[var(--lane-display-tracking)]">
-              Un proyecto no se compra por unidad. Se compra por cobertura y por fecha.
+              Un proyecto se compra en m² y se embarca en cajas enteras.
             </h2>
-            <p className="mt-5 max-w-[58ch] text-[length:var(--type-1)] leading-[1.55] text-[color:var(--ink-secondary)]">
-              Esta lane existe para quien compra contra una especificación que no escribió: firmas
+            <p className="mt-6 max-w-[58ch] text-[length:var(--type-1)] leading-[1.55] text-[color:var(--ink-secondary)]">
+              Esta división es para quien compra contra una especificación que no escribió: firmas
               de procura y constructoras que necesitan saber cuántos m² cubren un piso, cuántas
               cajas son, cuánto pesan y cuánto contenedor ocupan — antes de pedir precio. Cada
               catálogo declara esas cuatro cifras en la misma pantalla donde se elige el diseño.
             </p>
           </div>
 
-          <dl className="grid grid-cols-2 gap-x-6 gap-y-5 self-start md:grid-cols-1">
+          <dl className="grid grid-cols-2 gap-x-6 gap-y-6 self-start md:grid-cols-1">
             {/* lane.unitMath is the registration record and is English on
                 purpose — it is data. The buyer reads Spanish. */}
-            <Figure label="Compra en" value="m² de cobertura · por llave" />
-            <Figure label="Arquetipo" value="PROJECT" />
+            <Figure label="Se negocia en" value="m² de cobertura · por llave" />
+            <Figure label="Modalidad" value="Compra por proyecto" />
             <Figure label="Formatos" value={FORMATS.join(' · ') + ' mm'} />
-            <Figure label="Referencias" value={`${fmtInt(SKUS.length)} SKU`} />
+            <Figure label="Referencias" value={fmtInt(SKUS.length)} />
           </dl>
         </div>
       </section>
 
       {/* ── Category architecture ────────────────────────────────────────── */}
-      <section className="mx-auto max-w-[var(--grid-max-width)] px-6 py-14 md:px-10 md:py-20">
+      <section className="mx-auto max-w-[var(--grid-max-width)] px-6 py-12 md:px-8 md:py-24">
         <SectionLabel>Disciplinas</SectionLabel>
         <p className="mt-4 max-w-[60ch] text-[length:var(--type-1)] leading-[1.55] text-[color:var(--ink-secondary)]">
-          El eje completo queda registrado desde el primer día. Sólo una disciplina tiene
-          profundidad embarcable hoy; las demás llevan sello de apertura en lugar de una página
-          vacía, porque una taxonomía que se recorta después obliga a mover URLs que ya se
-          compartieron.
+          Seis disciplinas, declaradas completas desde el primer día. Hoy solo una tiene catálogo
+          embarcable; las demás llevan sello de apertura en lugar de una página vacía. Preferimos
+          declarar lo que aún no está antes que aparentar profundidad que no existe.
         </p>
 
-        <div className="mt-10 space-y-4">
+        <div className="mt-12 space-y-4">
           {active.map((d) => (
             <article
               key={d.slug}
               className="border border-[color:var(--accent-border)] bg-[color:var(--surface-1)]"
             >
-              <div className="flex flex-wrap items-baseline justify-between gap-4 border-b border-[color:var(--ink-decoration)] px-6 py-5">
+              <div className="flex flex-wrap items-baseline justify-between gap-4 border-b border-[color:var(--ink-decoration)] px-6 py-4">
                 <h3 className="text-[length:var(--type-3)] tracking-[var(--lane-display-tracking)]">
                   {d.name.es}
                 </h3>
@@ -145,17 +149,19 @@ export default function InterioresPage() {
                   </h4>
                   <p className="mt-2 max-w-[46ch] text-[length:var(--type-0)] leading-[1.5] text-[color:var(--ink-secondary)]">
                     {fmtInt(SERIES.length)} series · {fmtInt(SKUS.length)} referencias ·{' '}
-                    {FORMATS.join(' y ')} mm. Azulejo de arte esmaltado, cerámica cocida.
+                    {FORMATS.join(' y ')} mm. Azulejo de arte cerámico esmaltado.
                   </p>
                 </div>
 
                 {/* One primary action for this card, and it is not "comprar". */}
-                <Link
-                  href={PASILLO_ROUTES.lane}
-                  className="border border-[color:var(--accent)] bg-[color:var(--accent)] px-6 py-3 text-[length:var(--type-0)] tracking-[var(--lane-label-tracking)] text-[color:var(--surface-0)] uppercase transition-colors hover:bg-[color:var(--accent-hover)]"
-                >
-                  Recorrer el catálogo
-                </Link>
+                <Umbral>
+                  <Link
+                    href={PASILLO_ROUTES.lane}
+                    className="inline-block border border-[color:var(--accent)] bg-[color:var(--accent)] px-6 py-3 text-[length:var(--type-0)] uppercase tracking-[var(--lane-label-tracking)] text-[color:var(--surface-0)] transition-colors hover:bg-[color:var(--accent-hover)]"
+                  >
+                    Recorrer el catálogo
+                  </Link>
+                </Umbral>
               </div>
             </article>
           ))}
@@ -165,7 +171,7 @@ export default function InterioresPage() {
               <li
                 key={d.slug}
                 data-status="OPENING"
-                className="flex items-center justify-between border px-5 py-4"
+                className="flex items-center justify-between border px-4 py-4"
               >
                 <span className="text-[length:var(--type-1)]">{d.name.es}</span>
                 <span className="text-[length:var(--lane-type-stamp)] uppercase tracking-[var(--lane-label-tracking)]">
@@ -179,20 +185,20 @@ export default function InterioresPage() {
 
       {/* ── Container logic ──────────────────────────────────────────────── */}
       <section className="border-y border-[color:var(--ink-decoration)] bg-[color:var(--surface-2)]">
-        <div className="mx-auto max-w-[var(--grid-max-width)] px-6 py-14 md:px-10 md:py-20">
+        <div className="mx-auto max-w-[var(--grid-max-width)] px-6 py-12 md:px-8 md:py-24">
           <SectionLabel>Lógica de contenedor</SectionLabel>
           <h2 className="mt-4 max-w-[24ch] text-[length:var(--type-4)] leading-[1.15] tracking-[var(--lane-display-tracking)]">
-            La cerámica llega al peso mucho antes que al volumen.
+            La cerámica llega al límite de peso mucho antes que al de volumen.
           </h2>
-          <p className="mt-5 max-w-[62ch] text-[length:var(--type-1)] leading-[1.55] text-[color:var(--ink-secondary)]">
-            Por eso el medidor de esta lane mide <strong className="font-medium">kilos</strong>, no
-            metros cúbicos. Un 40&apos; admite la misma carga útil que un 20&apos; —{' '}
-            {fmtInt(PAYLOAD_KG)} kg— en una caja más larga: pedir el contenedor grande no sube el
-            tonelaje, sólo el flete. Las cifras de abajo salen del empaque impreso del proveedor,
-            no de un promedio.
+          <p className="mt-6 max-w-[62ch] text-[length:var(--type-1)] leading-[1.55] text-[color:var(--ink-secondary)]">
+            Por eso el medidor de esta división mide{' '}
+            <strong className="font-medium">kilos</strong>, no metros cúbicos. Un 40&apos; admite la
+            misma carga útil que un 20&apos; — {fmtInt(PAYLOAD_KG)} kg— en una caja más larga: el
+            contenedor grande no aumenta el tonelaje que se puede cargar. Las cifras de abajo salen
+            del empaque impreso del proveedor, no de un promedio.
           </p>
 
-          <div className="mt-10 overflow-x-auto">
+          <div className="mt-12 overflow-x-auto">
             <table className="w-full min-w-[34rem] border-collapse text-left">
               <caption className="sr-only">
                 Cobertura máxima por formato antes de alcanzar la carga útil de {fmtInt(PAYLOAD_KG)}{' '}
@@ -217,11 +223,11 @@ export default function InterioresPage() {
                     key={`${r.format}-${r.kgPerCtn}`}
                     className="border-b border-[color:var(--ink-decoration)]"
                   >
-                    <td className="py-4 pr-6 text-[length:var(--type-1)]">{r.format} mm</td>
-                    <td className="py-4 pr-6 text-[length:var(--type-1)]">{fmtM2(r.m2PerCtn)}</td>
-                    <td className="py-4 pr-6 text-[length:var(--type-1)]">{fmtM2(r.kgPerCtn)}</td>
-                    <td className="py-4 pr-6 text-[length:var(--type-1)]">{fmtInt(r.cartons)}</td>
-                    <td className="py-4 text-[length:var(--type-1)]">
+                    <td className="py-4 pr-6 font-mono text-mono-sm">{r.format} mm</td>
+                    <td className="py-4 pr-6 font-mono text-mono-sm">{fmtM2(r.m2PerCtn)}</td>
+                    <td className="py-4 pr-6 font-mono text-mono-sm">{fmtM2(r.kgPerCtn)}</td>
+                    <td className="py-4 pr-6 font-mono text-mono-sm">{fmtInt(r.cartons)}</td>
+                    <td className="py-4 font-mono text-mono-sm">
                       <span className="text-[color:var(--accent-ink)]">{fmtM2(r.m2)} m²</span>
                     </td>
                   </tr>
@@ -230,7 +236,7 @@ export default function InterioresPage() {
             </table>
           </div>
 
-          <p className="mt-5 max-w-[62ch] text-[length:var(--type-0)] leading-[1.5] text-[color:var(--ink-secondary)]">
+          <p className="mt-6 max-w-[62ch] text-[length:var(--type-0)] leading-[1.5] text-[color:var(--ink-secondary)]">
             Cobertura de tope de carga, sin merma. La merma por corte y rotura se define contra el
             despiece del proyecto y se acuerda en la cotización — este catálogo no la supone.
           </p>
@@ -238,9 +244,9 @@ export default function InterioresPage() {
       </section>
 
       {/* ── Proof ────────────────────────────────────────────────────────── */}
-      <section className="mx-auto max-w-[var(--grid-max-width)] px-6 py-14 md:px-10 md:py-20">
+      <section className="mx-auto max-w-[var(--grid-max-width)] px-6 py-12 md:px-8 md:py-24">
         <SectionLabel>Qué está declarado y qué no</SectionLabel>
-        <div className="mt-8 grid gap-10 md:grid-cols-2">
+        <div className="mt-8 grid gap-12 md:grid-cols-2">
           <div>
             <h3 className="text-[length:var(--type-2)] tracking-[var(--lane-display-tracking)]">
               Declarado
@@ -268,7 +274,7 @@ export default function InterioresPage() {
             </h3>
             <ul className="mt-4 space-y-3 text-[length:var(--type-1)] leading-[1.5] text-[color:var(--ink-secondary)]">
               {[
-                'PEI, resistencia al deslizamiento y absorción: el proveedor no las imprime en estos catálogos',
+                'PEI, resistencia al deslizamiento y absorción de agua: el proveedor no los imprime en estos catálogos',
                 'Uso recomendado y canto rectificado: mismo motivo',
                 'Renders de ambiente: ninguno viene atado a una serie real',
                 'Precio: se cotiza contra volumen, destino e incoterm',
@@ -291,21 +297,23 @@ export default function InterioresPage() {
       </section>
 
       {/* ── One primary action ───────────────────────────────────────────── */}
-      <section className="border-t border-[color:var(--ink-primary)] bg-[color:var(--ink-primary)] text-[color:var(--surface-0)]">
-        <div className="mx-auto max-w-[var(--grid-max-width)] px-6 py-14 md:px-10 md:py-20">
+      <section className="border-t border-[color:var(--surface-inverse)] bg-[color:var(--surface-inverse)] text-[color:var(--ink-inverse)]">
+        <div className="mx-auto max-w-[var(--grid-max-width)] px-6 py-12 md:px-8 md:py-24">
           <h2 className="max-w-[20ch] text-[length:var(--type-5)] leading-[1.1] tracking-[var(--lane-display-tracking)]">
-            Empieza por la cantidad, no por el precio.
+            Sal con la cantidad lista para cotizar.
           </h2>
-          <p className="mt-5 max-w-[58ch] text-[length:var(--type-1)] leading-[1.55] opacity-80">
+          <p className="mt-6 max-w-[58ch] text-[length:var(--type-1)] leading-[1.55] text-[color:var(--ink-inverse-secondary)]">
             Recorre el catálogo, arma el muestrario y sal con los m², las cajas, los kilos y el
             llenado ya calculados. Esa lista es la que se cotiza.
           </p>
-          <Link
-            href={PASILLO_ROUTES.lane}
-            className="mt-9 inline-block bg-[color:var(--surface-0)] px-8 py-4 text-[length:var(--type-0)] uppercase tracking-[var(--lane-label-tracking)] text-[color:var(--ink-primary)]"
-          >
-            Recorrer azulejos
-          </Link>
+          <Umbral>
+            <Link
+              href={PASILLO_ROUTES.lane}
+              className="mt-8 inline-block bg-[color:var(--ink-inverse)] px-8 py-4 text-[length:var(--type-0)] uppercase tracking-[var(--lane-label-tracking)] text-[color:var(--surface-inverse)]"
+            >
+              Recorrer el catálogo de azulejos
+            </Link>
+          </Umbral>
         </div>
       </section>
     </div>
@@ -326,7 +334,7 @@ function Figure({ label, value }: { label: string; value: string }) {
       <dt className="text-[length:var(--lane-type-stamp)] uppercase tracking-[var(--lane-label-tracking)] text-[color:var(--ink-secondary)]">
         {label}
       </dt>
-      <dd className="mt-1.5 text-[length:var(--type-1)] [font-variant-numeric:var(--numeric-variant)]">
+      <dd className="mt-2 text-[length:var(--type-1)] [font-variant-numeric:var(--numeric-variant)]">
         {value}
       </dd>
     </div>

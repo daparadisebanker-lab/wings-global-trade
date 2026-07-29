@@ -68,17 +68,36 @@
   --pas-font-ui: 'Archivo', ui-sans-serif, system-ui, sans-serif;
   --pas-font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
+  /* The scrim blur is a spec-mandated cap, not a taste value — blur is the
+     battery line item on a phone held for twenty minutes. A token so it cannot
+     drift upward one PR at a time. */
+  --pas-blur-scrim: 8px;
+  /* The outbound-message preview. Tall enough to read the shape of the document,
+     short enough that the send actions stay on screen. */
+  --pas-preview-max: 256px;
+  /* Display tracking, declared once. It was a raw literal in four components. */
+  --pas-track-display: -0.02em;
+
   --pas-dur-light: 240ms;
   --pas-dur-cross: 180ms;
   --pas-ease-settle: cubic-bezier(0.22, 1, 0.36, 1);
   --pas-ease-exit: cubic-bezier(0.4, 0, 1, 1);
 
-  /* The route owns its own ground and type inside the site's shell. */
-  background: rgb(var(--pas-surface));
+  /* Type and ink travel with the attribute — including through the vaul portal,
+     which is why the sheet carries data-app at all.
+     BACKGROUND DOES NOT. A token layer must not paint: the attribute now also
+     sits on the drawer's scrim, and painting here overrode `bg-pas-lane-ground/55`
+     at equal specificity, turning a 55% dark scrim into an opaque sheet of
+     paper. The route wrapper asks for its ground explicitly, below. */
   color: rgb(var(--pas-ink));
   font-family: var(--pas-font-ui);
   font-size: 15px;
   line-height: 1.45;
+}
+
+/* The route's own ground, on the wrapper only. */
+[data-app='pasillo'][data-app-root] {
+  background: rgb(var(--pas-surface));
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -114,8 +133,12 @@
   -moz-appearance: textfield;
 }
 
+/* currentColor, not --pas-ink. The ink is #141414 and the lane ground is
+   #0D0D0D — a 1.05:1 focus ring, i.e. no focus ring at all, on the primary
+   view. currentColor resolves to paper on the aisle and ink on the record, so
+   the indicator is achromatic by construction rather than by a second token. */
 [data-app='pasillo'] :focus-visible {
-  outline: 2px solid rgb(var(--pas-ink));
+  outline: 2px solid currentColor;
   outline-offset: 2px;
 }
 

@@ -1,5 +1,86 @@
 # DECISIONS.md — WINGS Homepage Build
 
+## WGT/02 enhancement pass — identity, UI, IA, copy — 2026-07-29
+
+Four parallel audits (brand-universe · ui-excellence · information-architecture ·
+copy-messaging) against the shipped lane. Every claim was re-verified before
+implementation; the arithmetic ones were recomputed. What they found and what
+was decided:
+
+- **The sheet-dock was broken in production.** `vaul` portals to `<body>`, outside
+  the `[data-app="pasillo"]` wrapper, so every `--pas-*` token, every scoped
+  selector and both self-hosted faces failed inside it: transparent background,
+  site body face, **SKU codes not in mono** — on the one surface where a buyer
+  studies the code. Introduced by the mount. It only looked plausible on the dark
+  Lane, where white-on-blur reads by accident, which is why the first
+  verification pass missed it. Fixed by stamping `data-app` on both portal
+  children; the ground moved to a `data-app-root` variant so the token layer no
+  longer paints (stamping it on the scrim had turned a 55% dark overlay into an
+  opaque sheet of paper).
+- **The lane was unreachable on a phone.** `SiteNav` and the footer carried
+  Interiores; `MobileMenu` never did — on a lane whose catalogue is built
+  thumb-first. Added.
+- **Site search delivered real tile codes to the AI advisor.** `routing.ts` routed
+  any 4–8 digit query to Mister as an HS code, and 14 SKUs in this catalogue are
+  bare numerics (`1500084`…). Now an exact code index emitted by the pipeline is
+  tested BEFORE the HS heuristic, with tile vocabulary added. A genuine HS
+  heading (6907) still reaches Mister — that is a test.
+- **The outbound RFQ mixed three number conventions.** `25.000 kg` (es-ES
+  thousands) reads as twenty-five kilos in Foshan, beside `56,70` comma-decimals
+  and `8.10` dot-decimals. Everything upstream is decimal-exact and it was being
+  lost in transmission. The export now uses one convention — decimal comma,
+  space thousands, no dot in any number — enforced by test. It also hardcoded
+  "(FOB y CIF)" while printing the buyer's own selected incoterm two lines above;
+  the request now derives from the selection. And it never asked for the fields
+  the UI honestly marks *pendiente* (PEI, absorption, slip) — it does now, and it
+  carries the `PM3001` review flag to the supplier instead of hiding it.
+- **The focus ring was invisible on the dark aisle** — `#141414` on `#0D0D0D`,
+  1.05:1, an outright WCAG failure on the primary view. Now `currentColor`:
+  achromatic by construction, correct on both grounds, no second token.
+- **The aisle had no exit.** `PASILLO_ROUTES.parent` was defined at mount and
+  never wired. A buyer arriving on a shared link — the tool's own export channel
+  — landed on a dark viewport with no Wings mark and no way up. One stamp now
+  carries identity, location and exit; the site header stays dropped, because a
+  fixed header would take the muestrario tab's bar and fight the drag loop.
+
+**Decided against the obvious:**
+
+- **Brass is still refused**, now with its usage law written down. The accent
+  constitution (registry.md) is exhaustive about where oxblood may and may not
+  appear — an accent without one becomes wallpaper in three sprints.
+- **`/interiores/azulejos` stays flat.** The PROJECT template wants canonical
+  discipline URLs; interposing `/acabados-duros/` today would be a corridor with
+  one door, at the cost of breaking a permanent URL. The rule for when a
+  discipline earns a URL is ratified instead (≥2 catalogues or ≥2 ACTIVE).
+- **All six disciplines stay visible.** They render as non-link `<li>` stamps, so
+  there is no dead end to fall into, and a lane showing only tiles disqualifies
+  itself from FF&E conversations. Never make an OPENING entry an `<a>`.
+- **The space overlay stays unbuilt**, with both build triggers now written into
+  the config rather than left as a someday.
+- **El umbral does not block navigation.** As specified it delayed the route by
+  700ms to play the drain. A procurement tool does not tax a click for an
+  animation: the route is issued immediately and the drain plays on the outgoing
+  page. If the route wins the race, the moment is simply not seen.
+
+**Tier 1 amended, additively.** `skeleton.css` still shipped `radius 0 / 2px` and
+no spring set while claiming byte-stability against §2, which was amended and
+ratified 2026-07-22. The macOS scale enters under FRESH names
+(`--radius-control/card-lg/panel/dock/pill`) rather than redefining
+`--radius-card`, which `apps/tower` binds to a Tailwind key — the same collision
+tower had already resolved the same way. The springs collapse under
+`prefers-reduced-motion`. No existing value changed, so no rendered surface moved.
+
+**`LaneStamp` now exists as a shared organ** (§2 has always named it). It renders
+the ISO 6346 unit number with a **computed** check digit — `WGTU 000002` → `0`,
+because 1473 mod 11 = 10 and the standard stamps zero there. Verified against the
+standard's own worked example (`CSQU3054383` → 3). No lane types its own digit.
+
+**Verified, not asserted:** swap test structurally identical under the house
+navy/gold livery (including the new stamp and check-digit cell); keyboard grammar
+→ ← ↑↓ with the passed state now legible; reduced motion clean; LCP on 4G lane
+1424ms · aisle 1488ms · lista 1344ms · mesa 1244ms; 66 tests green (was 41);
+FillMeter unchanged at `rgb(196,147,63)` wherever no `--cargo` is set.
+
 ## WGT/02 Interiores opened; Azulejos is its first catalogue — 2026-07-29
 
 - **Decision:** the tile catalogue built as `apps/escalera` is **not a standalone

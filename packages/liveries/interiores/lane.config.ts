@@ -13,9 +13,12 @@ export const lane = {
   slug: 'interiores',
   name: 'Interiores',
 
+  // Ordered by what actually ships. Leading on FF&E and OS&E — the two
+  // disciplines with nothing behind them yet — put the least shippable words
+  // first on a page whose whole argument is that it declares what it has.
   scope: {
-    es: 'FF&E, OS&E, acabados duros, textiles e iluminación para proyectos de hospitalidad y residenciales.',
-    en: 'FF&E, OS&E, hard finishes, textiles and lighting for hospitality and residential projects.',
+    es: 'Acabados duros, mobiliario (FF&E), iluminación, textiles, baño y OS&E para proyectos de hospitalidad y residenciales.',
+    en: 'Hard finishes, furniture (FF&E), lighting, textiles, bath and OS&E for hospitality and residential projects.',
   },
 
   // §3 decision tree: the buyer (procurement / construction) and the unit math
@@ -46,6 +49,23 @@ export const lane = {
    *
    * The PROJECT archetype's second axis (space) is an overlay on these
    * canonical discipline URLs, never a competing URL set.
+   *
+   * URL POLICY, ratified with this lane so catalogue #2 is not improvised:
+   *
+   *   · A catalogue mounts FLAT at /interiores/{catalogue-slug}.
+   *   · A discipline earns its own URL, /interiores/{discipline-slug}, only once
+   *     it holds ≥2 catalogues or ≥2 disciplines are ACTIVE. Until then a
+   *     discipline page is a corridor with one door.
+   *   · Catalogue slugs are checked against discipline slugs at registration;
+   *     a collision is a registration error, not a runtime surprise.
+   *
+   * This is why /interiores/azulejos is flat and stays flat: lane slugs are
+   * append-only and permanent, and breaking a live URL to satisfy a template
+   * diagram is not a trade worth making.
+   *
+   * An OPENING entry must NEVER be rendered as a link before its catalogue
+   * exists. It is a stamp, not a door — that is the whole reason showing five of
+   * them is honest rather than a promise the lane cannot keep.
    */
   taxonomy: [
     {
@@ -61,8 +81,21 @@ export const lane = {
     { slug: 'os-e', name: { es: 'OS&E', en: 'OS&E' }, status: 'OPENING', catalogues: [] },
   ],
 
-  /** The space overlay — curated, not canonical. Deferred until a second
-   *  discipline has depth; one catalogue cannot populate a space view. */
+  /**
+   * The space overlay — curated, not canonical, and deliberately empty.
+   *
+   * One catalogue cannot populate a space view: a "Baño" page showing only tiles
+   * is a filter pretending to be a place. The data cannot support it either —
+   * `application` is null throughout, because the supplier does not print it.
+   *
+   * BUILD TRIGGERS, both required, so this is a gate rather than a someday:
+   *   1. a second discipline reaches ACTIVE with ≥1 shippable catalogue, so a
+   *      space can compose ACROSS disciplines — the overlay's only reason to exist;
+   *   2. per-series application/space data exists from a printed or
+   *      supplier-confirmed source.
+   * When triggered, reuse the site's existing curated-overlay pattern at
+   * /catalogo/[category]/aplicacion/[useCase] — do not invent a second one.
+   */
   spaces: [],
 
   /**

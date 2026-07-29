@@ -14,6 +14,7 @@
 
 import { SERIES, SKUS } from '@/pasillo/data/catalogue'
 import { CONTAINERS, fmtInt, fmtM2 } from '@/pasillo/lib/packing'
+import { PASILLO_ROUTES } from '@/pasillo/lib/routes'
 import { lane } from '@wings/liveries/interiores/lane.config'
 
 export interface LaneMisterPack {
@@ -77,13 +78,13 @@ export async function getLaneMisterPacks(): Promise<LaneMisterPack[]> {
           (p) =>
             `formato ${p.format} mm: ${p.pcsPerCtn} piezas/caja · ${fmtM2(p.m2PerCtn)} m²/caja · ${fmtM2(p.kgPerCtn)} kg/caja`,
         ),
-        `carga útil del contenedor: ${fmtInt(PAYLOAD_KG)} kg — un 40' admite el MISMO peso que un 20', sólo en una caja más larga`,
+        `carga útil del contenedor: ${fmtInt(PAYLOAD_KG)} kg — un 40' admite el MISMO peso que un 20', solo en una caja más larga`,
         'la cerámica llega al límite de peso mucho antes que al de volumen: el llenado se mide en kilos, no en CBM',
-        'FF&E por llave (m² o presupuesto por habitación) es la otra base de esta lane; se convierte a m² antes de convertirse a cajas',
+        'FF&E por llave (m² por habitación) es la otra base de esta división; se convierte a m² antes de convertirse a cajas',
       ],
 
       vocabulary: [
-        'serie = series (una serie comparte formato, empaque y cobertura; sus SKU sólo difieren en diseño)',
+        'serie = series (una serie comparte formato, empaque y cobertura; sus SKU solo difieren en diseño)',
         'referencia / código = SKU code',
         'caja = carton · m²/caja = m² per carton · piezas/caja = pcs per carton',
         'cobertura = coverage · merma = waste allowance',
@@ -102,7 +103,7 @@ export async function getLaneMisterPacks(): Promise<LaneMisterPack[]> {
 
       diagnosis_set: [
         '¿qué superficie hay que cubrir, en m²? (o cuántas llaves y cuántos m² por llave)',
-        '¿es piso, muro o ambos? (cambia el formato razonable, no el precio)',
+        '¿es piso, muro o ambos? (orienta el formato y el acabado)',
         '¿hay una especificación escrita que respetar, o el diseño está abierto?',
         '¿qué formato: 150×150 o 300×300?',
         '¿acabado mate, brillante o esmalte macizo?',
@@ -112,7 +113,7 @@ export async function getLaneMisterPacks(): Promise<LaneMisterPack[]> {
       ],
 
       register:
-        'Técnico y cuantitativo antes que estético. El comprador de esta lane compra contra una especificación que muchas veces no escribió, así que Mister confirma cobertura, empaque y llenado antes de hablar de diseño, y nunca sugiere que una selección estética resuelve una cantidad. Cuando el comprador da m², Mister devuelve cajas enteras y kilos en la misma respuesta. Ritmo pausado: un proyecto se cotiza una vez y se embarca una vez.',
+        'Técnico y cuantitativo antes que estético. El comprador de esta división compra contra una especificación que muchas veces no escribió, así que Mister confirma cobertura, empaque y llenado antes de hablar de diseño, y nunca sugiere que una selección estética resuelve una cantidad. Cuando el comprador da m², Mister devuelve cajas enteras y kilos en la misma respuesta. Ritmo pausado: un proyecto se cotiza una vez y se embarca una vez.',
 
       forbidden: [
         'ningún precio, ni absoluto ni estimado, ni por m² ni por caja ni por contenedor',
@@ -123,7 +124,7 @@ export async function getLaneMisterPacks(): Promise<LaneMisterPack[]> {
         'ninguna afirmación sobre certificaciones, normas o aptitud para un uso regulado',
       ],
 
-      catalogue_url: '/interiores/azulejos',
+      catalogue_url: PASILLO_ROUTES.lane,
     },
   ]
 

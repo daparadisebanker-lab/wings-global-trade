@@ -51,6 +51,10 @@ TRANSCRIPTION = HERE / "transcription.json"
 APP = REPO / "apps" / "site"
 IMG_OUT = APP / "public" / "tiles"
 TS_OUT = APP / "src" / "pasillo" / "data" / "catalogue.ts"
+# The site-wide search router needs to recognise a tile code without importing
+# the whole catalogue into the homepage bundle. Emitting a compact index keeps
+# the two in lockstep: a rebuild that adds a SKU makes it findable the same day.
+CODES_OUT = APP / "src" / "pasillo" / "data" / "codeIndex.ts"
 
 SUPPLIER = "HUAZHUAN"
 
@@ -463,6 +467,27 @@ def emit(series: list[dict], skus: list[dict]) -> str:
     return "\n".join(L)
 
 
+def emit_code_index(skus: list[dict]) -> str:
+    """A compact, exact index of every printed SKU code.
+
+    Exact rather than heuristic on purpose: this catalogue carries BARE NUMERIC
+    codes (1500084 ...), which the site's search router was reading as HS codes
+    and routing to the AI advisor. A prefix regex would still misfire; a set of
+    the real strings cannot.
+    """
+    codes = sorted({s["code"] for s in skus})
+    body = ",\n  ".join(f'"{c}"' for c in codes)
+    return (
+        "// GENERATED FILE - do not edit by hand.\n"
+        "// Source: infrastructure/escalera/build_catalog.py\n"
+        "//\n"
+        "// Every printed SKU code in the Azulejos catalogue, so site search can\n"
+        "// recognise one exactly. Kept separate from catalogue.ts so the homepage\n"
+        "// never pulls the full two-tier dataset into its bundle.\n\n"
+        f"export const CATALOGUE_CODES: ReadonlySet<string> = new Set([\n  {body},\n])\n"
+    )
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--pdf-a")
@@ -490,6 +515,7 @@ def main() -> None:
 
     TS_OUT.parent.mkdir(parents=True, exist_ok=True)
     TS_OUT.write_text(emit(series, skus), encoding="utf-8")
+    CODES_OUT.write_text(emit_code_index(skus), encoding="utf-8")
 
     flagged = [s["sku_uid"] for s in skus if s["review_flag"]]
     print(

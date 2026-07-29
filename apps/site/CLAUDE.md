@@ -25,6 +25,11 @@ into documented leads delivered to Wings ops via WhatsApp + email:
   namespace, its own money math on `decimal.js`, and its own spec + app law in-directory
   (`EL-PASILLO-UI.md`, `CLAUDE.md`). **Read `src/pasillo/CLAUDE.md` before touching it** —
   its achromatic doctrine and its carton-first arithmetic are not preferences.
+- **Anything rendered through a portal must re-stamp `data-app="pasillo"`** (the
+  sheet-dock does). `vaul` portals to `<body>`, outside the wrapper, where every
+  `--pas-*` token and scoped selector silently fails. The ground is applied on
+  `[data-app-root]` only — a token layer must not paint, or it overrides the
+  scrim it was stamped onto.
 - It is the **only** subtree that drops site chrome. The gate is
   `components/features/shared/SiteFrame.tsx`, keyed on `isAislePath()` from
   `src/pasillo/lib/routes.ts`. Never hardcode that path anywhere else.

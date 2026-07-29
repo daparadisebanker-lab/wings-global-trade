@@ -18,13 +18,14 @@ import { useEffect, useState } from 'react'
 import { RepeatPreview } from '@/pasillo/components/RepeatPreview'
 import { StatusLamp } from '@/pasillo/components/StatusLamp'
 import { finishLabel, formatLabel, getSeries, patternLabel, skusOf } from '@/pasillo/lib/catalogue'
+import { fmtM2 } from '@/pasillo/lib/packing'
 import { haptic, useRecord } from '@/pasillo/lib/record'
 import type { Sku } from '@/pasillo/types/catalogue'
 
 function Row({ label, value }: { label: string; value: string | null | undefined }) {
   const missing = value == null || value === ''
   return (
-    <div className="flex items-baseline justify-between gap-pas-6 border-b pas-rule py-2.5">
+    <div className="flex items-baseline justify-between gap-pas-6 border-b pas-rule py-2">
       <dt className="text-pas-t0 opacity-pas-resting">{label}</dt>
       <dd className={`pas-mono text-pas-t0 text-right ${missing ? 'opacity-pas-dimmed' : 'opacity-pas-lit'}`}>
         {missing ? 'pendiente' : value}
@@ -64,9 +65,22 @@ export function SheetDock({
   return (
     <Drawer.Root open={!!sku} onOpenChange={(o) => !o && onClose()} snapPoints={[0.35, 0.92]}>
       <Drawer.Portal>
-        {/* the scrim is capped: blur is the battery line item */}
-        <Drawer.Overlay className="fixed inset-0 z-40 bg-pas-lane-ground/55 backdrop-blur-[8px]" />
+        {/* data-app is REQUIRED on both portal children and is not decoration.
+            vaul portals to <body>, which is outside the [data-app='pasillo']
+            wrapper the route layout stamps — so every --pas-* token, every
+            scoped selector (.pas-mono, .pas-stamp, .pas-rule, the focus ring)
+            and the Archivo/Geist Mono faces silently fail inside the portal.
+            The drawer rendered transparent, in the site's body face, with SKU
+            codes NOT in mono — breaking the one doctrine that matters most on
+            the one surface where the buyer studies the code. It only looked
+            plausible on the dark Lane, where white-on-blur reads by accident.
+            Re-stamping the attribute brings the token layer through the portal. */}
+        <Drawer.Overlay
+          data-app="pasillo"
+          className="fixed inset-0 z-40 bg-pas-lane-ground/55 backdrop-blur-[var(--pas-blur-scrim)]"
+        />
         <Drawer.Content
+          data-app="pasillo"
           className="fixed inset-x-0 bottom-0 z-50 mx-auto flex h-[92dvh] max-w-2xl flex-col
                      rounded-t-pas-chrome bg-pas-surface outline-none"
         >
@@ -91,7 +105,7 @@ export function SheetDock({
                     if (collected) rec.toggleSku(active.series_uid, active.sku_uid)
                     else rec.collectSku(active.series_uid, active.sku_uid)
                   }}
-                  className={`shrink-0 rounded-pas-chrome px-pas-5 py-2.5 text-pas-t0 transition-colors ${
+                  className={`shrink-0 rounded-pas-chrome px-pas-5 py-2 text-pas-t0 transition-colors ${
                     collected ? 'bg-pas-ink text-pas-surface' : 'border border-pas-ink/30'
                   }`}
                 >
@@ -113,13 +127,13 @@ export function SheetDock({
                 <Row label="Acabado" value={finishLabel(active)} />
                 <Row label="Patrones" value={patternLabel(active)} />
                 <Row label="Piezas/caja" value={String(series.pcs_per_ctn)} />
-                <Row label="Cobertura" value={`${series.m2_per_ctn.toFixed(2)} m²/caja`} />
+                <Row label="Cobertura" value={`${fmtM2(series.m2_per_ctn)} m²/caja`} />
                 <Row label="Peso/caja" value={`${series.kgs_per_ctn} kg`} />
                 {/* Absent from these catalogues. Shown as pending rather than invented —
                     a spec a buyer relies on must have a printed source. */}
-                <Row label="Absorción" value={null} />
+                <Row label="Absorción de agua" value={null} />
                 <Row label="PEI" value={null} />
-                <Row label="Antideslizante" value={null} />
+                <Row label="Resist. al deslizamiento" value={null} />
                 <Row label="Aplicación" value={null} />
               </dl>
 
@@ -142,7 +156,7 @@ export function SheetDock({
                           key={s.sku_uid}
                           type="button"
                           onClick={() => onOpenSku(s)}
-                          className="relative w-20 shrink-0"
+                          className="relative w-pas-8 shrink-0"
                         >
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img

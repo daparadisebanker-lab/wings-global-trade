@@ -21,7 +21,7 @@ export function SpecBar({
 }) {
   return (
     <header className={invertedOnDark ? 'text-pas-surface' : 'text-pas-ink'}>
-      <h2 className="font-pas-display text-pas-t2 font-semibold leading-tight tracking-[-0.02em]">
+      <h2 className="font-pas-display text-pas-t2 font-semibold leading-tight tracking-pas-display">
         {series.name_raw}
       </h2>
       <p className="pas-stamp mt-1 opacity-pas-resting">
@@ -30,7 +30,7 @@ export function SpecBar({
 
       {/* the inverted bar itself */}
       <div
-        className={`mt-3 flex h-pas-8 items-center px-3 ${
+        className={`mt-3 flex h-pas-6 items-center px-3 ${
           invertedOnDark ? 'bg-pas-surface text-pas-ink' : 'pas-spec-bar'
         }`}
       >

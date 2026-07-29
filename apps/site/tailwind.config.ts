@@ -104,6 +104,7 @@ const config: Config = {
         'widest-2': '0.08em',
         'widest-3': '0.15em',
         'nav': '0.10em',
+        'pas-display': 'var(--pas-track-display)',
       },
       boxShadow: {
         card: '0 1px 2px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04)',

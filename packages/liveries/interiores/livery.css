@@ -92,8 +92,36 @@
       transparent 3px
     );
 
+  /* --- The inverse ground ---
+     The closing section of the lane page is walnut carrying bone text. It was
+     composing that from --ink-primary used as a BACKGROUND, which works and is
+     a trap: the next hand to retheme the ink repaints a whole section. Same
+     literals, honest names. */
+  --surface-inverse: #2a2118;
+  --ink-inverse: #f5f1e8; /* 14.02:1 on --surface-inverse */
+  --ink-inverse-secondary: rgba(245, 241, 232, 0.8); /* → #CCC7BE · 9.39:1 */
+
+  /* --- El umbral: the drain ---
+     The achromatic catalogue is registered as an exception. It is really this
+     lane's proudest act: when the product IS colour, the lane takes its own
+     colour off rather than falsify a tile. --accent-drained is the achromatic
+     twin of oxblood at equal luminance (L 0.0497 vs 0.0495 — a difference of
+     0.0002), so at the threshold nothing dims and nothing moves; only chroma
+     leaves. 9.34:1 on bone, 9.17:1 on the record ground. */
+  --accent-drained: #3f3f3f;
+  --ground-threshold: #f0efee; /* the aisle's own record ground */
+
   background-color: var(--surface-0);
   color: var(--ink-primary);
+}
+
+/* The focus ring is the lane's, not the house's.
+   globals.css paints *:focus-visible with --color-gold site-wide. On this lane
+   that is the harvest gold the derivation explicitly rejected (brass failed at
+   8.9°; gold is the row it failed against). Oxblood is 9.36:1 on bone, far past
+   the 3:1 an indicator needs. Scoped to the attribute — no other route moves. */
+[data-lane='interiores'] :focus-visible {
+  outline-color: var(--accent);
 }
 
 /* The lane stamp — stencil-marked lane code, container-marking grammar
@@ -105,6 +133,57 @@
   text-transform: uppercase;
   border: 1px solid var(--accent-border);
   color: var(--accent-ink);
+  /* A container marking has a hard edge. Structural 0 is explicitly retained
+     under the macOS amendment's own clause. */
+  border-radius: var(--radius-structural);
+}
+
+/* The check digit — the boxed final cell of a BIC unit number, and the single
+   most recognisable gesture of container marking. It is what makes this a
+   stamp rather than a chip. */
+[data-lane='interiores'] .lane-stamp-check {
+  border: 1px solid var(--accent-border);
+  color: var(--accent-ink);
+  border-radius: var(--radius-structural);
+}
+
+/* ── El umbral ──────────────────────────────────────────────────────────────
+   Crossing into the catalogue, the lane sheds its colour. The stamp drains
+   last, so the final colour on screen is the oxblood seal going grey.
+
+   This NEVER blocks navigation. The route change is issued immediately and the
+   drain plays on the outgoing page while it resolves — making a buyer wait on
+   an animation is exactly the kind of tax a procurement tool must not levy.
+   If the route wins the race, the buyer simply never sees it, which is fine:
+   the moment is a grace note, not a gate. */
+[data-lane='interiores'][data-threshold='crossing'] {
+  --accent: var(--accent-drained);
+  --accent-ink: var(--accent-drained);
+  --accent-hover: var(--accent-drained);
+  --accent-border: rgba(63, 63, 63, 0.28);
+  --surface-0: var(--ground-threshold);
+  --texture: none;
+  transition:
+    background-color var(--lane-switch-duration) var(--ease-gantry),
+    color var(--lane-switch-duration) var(--ease-gantry);
+}
+
+[data-lane='interiores'][data-threshold='crossing'] .lane-stamp,
+[data-lane='interiores'][data-threshold='crossing'] .lane-stamp-check {
+  transition:
+    color var(--lane-switch-duration) var(--ease-gantry) 250ms,
+    border-color var(--lane-switch-duration) var(--ease-gantry) 250ms;
+}
+
+/* Tier-1 law: reduced motion always collapses to a crossfade. Here that means
+   the drain is instantaneous — the buyer still arrives at an achromatic lane,
+   they simply are not shown it happening. */
+@media (prefers-reduced-motion: reduce) {
+  [data-lane='interiores'][data-threshold='crossing'],
+  [data-lane='interiores'][data-threshold='crossing'] .lane-stamp,
+  [data-lane='interiores'][data-threshold='crossing'] .lane-stamp-check {
+    transition: none;
+  }
 }
 
 /* An OPENING discipline is legible, never decorative-only: it drops to the
@@ -114,4 +193,21 @@
 [data-lane='interiores'] [data-status='OPENING'] {
   color: var(--ink-secondary);
   border-color: var(--ink-decoration);
+}
+
+/* The status stamp is the second stamp voice: same type, no plate. A utility
+   class cannot express this — `.border-0` is one class against the two-part
+   `[data-lane] .lane-stamp` selector and loses on specificity, which is how the
+   status ended up boxed like a unit number. It belongs in the livery. */
+[data-lane='interiores'] .lane-stamp[data-status] {
+  border: 0;
+  padding: 0;
+}
+
+/* The lane's closing band is walnut; the site footer beneath it is navy. Two
+   near-black grounds meeting edge to edge lose the boundary. A single hairline
+   in the lane's own paper restores the seam without touching shared chrome. */
+[data-lane='interiores'] + footer,
+[data-lane='interiores'] ~ footer {
+  border-top: 1px solid var(--surface-0);
 }

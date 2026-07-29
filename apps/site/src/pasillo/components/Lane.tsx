@@ -19,9 +19,12 @@
 // filter here while the denser views are free to sort.
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { useDrag } from '@use-gesture/react'
 import { SpecBar } from '@/pasillo/components/SpecBar'
 import { LANE, skusOf } from '@/pasillo/lib/catalogue'
+import { PARAM_SERIES, PARAM_SKU, PASILLO_ROUTES } from '@/pasillo/lib/routes'
 import {
   COMMIT_DISTANCE_RATIO,
   MAX_ROTATION_DEG,
@@ -39,9 +42,13 @@ import type { Series, Sku } from '@/pasillo/types/catalogue'
 /** Faces shown on the booth before the buyer goes to the dense views. */
 const BOOTH_FACES = 12
 
+/** Matches --pas-dur-light. The verdict must read before the booth swaps. */
+const VERDICT_FLASH_MS = 240
+
 export function Lane({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
   const rec = useRecord()
   const reduced = useReducedMotion()
+  const params = useSearchParams()
 
   const [index, setIndex] = useState(0)
   const [swapping, setSwapping] = useState(false)
@@ -68,6 +75,14 @@ export function Lane({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
     return () => ro.disconnect()
   }, [])
 
+  /**
+   * Held while a non-drag verdict flash is on screen. Without it the flash is
+   * invisible: collect() advances the index, the index effect re-runs paint(),
+   * and paint() recomputes the wash from a spring that is already at rest — so
+   * the overlay is wiped in the same frame it was raised.
+   */
+  const flashUntil = useRef(0)
+
   /** Written from the gesture and the spring loop — never from a render. */
   const paint = useCallback(() => {
     const p = clamp(sx.value / commitDistance.current, -1, 1)
@@ -76,6 +91,8 @@ export function Lane({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
         reduced ? 0 : p * MAX_ROTATION_DEG
       }deg)`
     }
+    // The transform always paints; only the wash yields to an in-flight flash.
+    if (performance.now() < flashUntil.current) return
     if (keepRef.current) keepRef.current.style.opacity = String(mapRange(p, WASH_IN, WASH_FULL, 0, 1))
     if (passRef.current) passRef.current.style.opacity = String(mapRange(p, -WASH_IN, -WASH_FULL, 0, 1))
   }, [reduced, sx, sy])
@@ -90,6 +107,29 @@ export function Lane({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
       return false
     })
   }, [paint, sx, sy])
+
+  /**
+   * Deep-link arrival. Procurement is multi-party: the buyer works against a
+   * spec someone else wrote, so "is this the one?" has to be answerable with a
+   * link rather than a screenshot — which carries no code, no coverage and no
+   * carton count. Runs on param change only; it never fights the buyer's own
+   * position afterwards.
+   */
+  useEffect(() => {
+    const serie = params.get(PARAM_SERIES)
+    const code = params.get(PARAM_SKU)
+    if (!serie && !code) return
+    const sku = code
+      ? LANE.flatMap((s) => skusOf(s.series_uid)).find((k) => k.code === code)
+      : undefined
+    const target = sku?.series_uid ?? serie
+    const at = LANE.findIndex((s) => s.series_uid === target)
+    if (at >= 0) setIndex(at)
+    if (sku) onOpenSku(sku)
+    // onOpenSku is a fresh closure each render; depending on it would reopen
+    // the sheet on every parent render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params])
 
   useEffect(() => () => stopLoop.current?.(), [])
   useLayoutEffect(() => {
@@ -108,20 +148,46 @@ export function Lane({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
     [index, reduced],
   )
 
+  /**
+   * The verdict wash, fired for the paths that are not a drag.
+   *
+   * The wash overlays exist and read beautifully — but they were driven purely
+   * by drag progress, so pressing the button or hitting an arrow key advanced
+   * the lane with no confirmation at all. The buyer's only evidence was the
+   * muestrario counter changing somewhere else on screen. This is state
+   * communication, not decoration: same overlay, same duration token, and
+   * reduced motion collapses it to zero because the token does.
+   */
+  const flashVerdict = useCallback(
+    (which: 'collect' | 'pass') => {
+      const el = which === 'collect' ? keepRef.current : passRef.current
+      if (!el || reduced) return
+      flashUntil.current = performance.now() + VERDICT_FLASH_MS
+      el.style.opacity = '1'
+      window.setTimeout(() => {
+        flashUntil.current = 0
+        if (el) el.style.opacity = '0'
+      }, VERDICT_FLASH_MS)
+    },
+    [reduced],
+  )
+
   const collect = useCallback(() => {
     if (!series) return
     haptic('collect')
+    flashVerdict('collect')
     rec.collectSeries(series.series_uid)
     rec.unpass(series.series_uid)
     advance(index + 1)
-  }, [advance, index, rec, series])
+  }, [advance, flashVerdict, index, rec, series])
 
   const pass = useCallback(() => {
     if (!series) return
     haptic('pass')
+    flashVerdict('pass')
     rec.pass(series.series_uid)
     advance(index + 1)
-  }, [advance, index, rec, series])
+  }, [advance, flashVerdict, index, rec, series])
 
   const bind = useDrag(
     ({ down, movement: [mx, my], velocity: [vx], direction: [dx], last, tap }) => {
@@ -189,17 +255,24 @@ export function Lane({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
               passed ? 'opacity-pas-dimmed' : 'opacity-pas-lit'
             }`}
           >
+            {/* max-w-2xl mirrors the sheet-dock. Unconstrained, the booth
+                stretched to 1440px: the 3-col face grid clipped its second row
+                to a sliver, 320px thumbs blew up to ~630px, and the actions
+                became 940px pills. A viewport tool still needs a measure.
+                pt-pas-8 clears the fixed control band (exit stamp + switch). */}
             <div
-              className={`flex h-full flex-col px-pas-5 pt-pas-6 transition-opacity duration-pas-cross ${
+              className={`mx-auto flex h-full w-full max-w-2xl flex-col px-pas-5 pt-pas-8 transition-opacity duration-pas-cross ${
                 swapping ? 'opacity-0' : 'opacity-100'
               }`}
             >
-              <div className="flex items-baseline justify-between">
-                <p className="pas-stamp opacity-pas-resting">
-                  Serie {String(index + 1).padStart(2, '0')} / {LANE.length}
-                </p>
-                {passed && <p className="pas-stamp opacity-pas-resting">Pasada</p>}
-              </div>
+              {/* One left-anchored line. The passed state used to sit at the
+                  right end of this row, directly under the fixed density switch,
+                  so the only textual confirmation that a series had been passed
+                  was fully occluded at 390px. */}
+              <p className="pas-stamp opacity-pas-resting">
+                Serie {String(index + 1).padStart(2, '0')} / {LANE.length}
+                {passed && ' · Pasada'}
+              </p>
 
               <div className="mt-4">
                 <SpecBar series={series} invertedOnDark />
@@ -233,9 +306,15 @@ export function Lane({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
                   ))}
                 </div>
                 {faces.length > BOOTH_FACES && (
-                  <p className="pas-stamp mt-3 opacity-pas-resting">
-                    + {faces.length - BOOTH_FACES} diseños en la lista
-                  </p>
+                  // It named a destination and did nothing. "la lista" was also
+                  // ambiguous between the Lista view and the buyer's own record.
+                  <Link
+                    href={PASILLO_ROUTES.lista}
+                    className="pas-stamp mt-3 inline-block underline-offset-4 opacity-pas-resting
+                               hover:underline hover:opacity-pas-lit focus-visible:underline"
+                  >
+                    + {faces.length - BOOTH_FACES} diseños más — verlos en Lista
+                  </Link>
                 )}
               </div>
             </div>
@@ -247,7 +326,7 @@ export function Lane({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
               style={{ opacity: 0 }}
               className="pointer-events-none absolute inset-0 ring-4 ring-inset ring-pas-surface"
             >
-              <span className="pas-stamp absolute right-pas-5 top-pas-5 bg-pas-surface px-3 py-1.5 text-pas-ink">
+              <span className="pas-stamp absolute right-pas-5 top-pas-5 bg-pas-surface px-3 py-2 text-pas-ink">
                 Guardar serie
               </span>
             </div>
@@ -257,7 +336,7 @@ export function Lane({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
               style={{ opacity: 0 }}
               className="pointer-events-none absolute inset-0"
             >
-              <span className="pas-stamp absolute left-pas-5 top-pas-5 border border-pas-surface/40 px-3 py-1.5">
+              <span className="pas-stamp absolute left-pas-5 top-pas-5 border border-pas-surface/40 px-3 py-2">
                 Pasar
               </span>
             </div>
@@ -282,23 +361,34 @@ function LaneActions({
 }) {
   // Everything interactive stays in the bottom 60% — one-handed, 24 booths.
   return (
-    <div className="flex shrink-0 items-center gap-3 px-pas-5 pb-24 pt-3 pr-12">
-      <button
-        type="button"
-        onClick={onPass}
-        className="flex-1 rounded-pas-chrome border border-pas-surface/30 py-3.5 text-pas-t0"
-      >
-        Pasar
-      </button>
-      <button
-        type="button"
-        onClick={onCollect}
-        className={`flex-1 rounded-pas-chrome py-3.5 text-pas-t0 ${
-          collected ? 'border border-pas-surface/30 opacity-pas-resting' : 'bg-pas-surface text-pas-ink'
-        }`}
-      >
-        {collected ? 'En el muestrario' : 'Guardar serie'}
-      </button>
+    <div className="mx-auto w-full max-w-2xl shrink-0 px-pas-5 pb-24 pt-3 pr-12">
+      {/* Full keyboard parity ships and nothing said so. Pointer-fine only: on
+          a phone the gesture IS the affordance and this would be noise. */}
+      <p className="pas-stamp mb-3 hidden opacity-pas-dimmed [@media(pointer:fine)]:block">
+        → guardar · ← pasar · ↑ ↓ serie
+      </p>
+      <div className="flex items-center gap-3">
+        {/* py-3 lands these at ~47px — past the 44px floor, and on the frozen
+            scale, where py-3.5 (14px) was not. */}
+        <button
+          type="button"
+          onClick={onPass}
+          className="flex-1 rounded-pas-chrome border border-pas-surface/30 py-3 text-pas-t0"
+        >
+          Pasar
+        </button>
+        <button
+          type="button"
+          onClick={onCollect}
+          className={`flex-1 rounded-pas-chrome py-3 text-pas-t0 ${
+            collected
+              ? 'border border-pas-surface/30 opacity-pas-resting'
+              : 'bg-pas-surface text-pas-ink'
+          }`}
+        >
+          {collected ? 'En el muestrario' : 'Guardar serie'}
+        </button>
+      </div>
     </div>
   )
 }
@@ -345,7 +435,11 @@ function EdgeScrubber({ index, onGo }: { index: number; onGo: (i: number) => voi
       // 3px rail, 44px invisible hit area
       className="absolute bottom-0 right-0 top-20 z-10 flex w-11 cursor-ns-resize touch-none justify-end"
     >
-      <div ref={railRef} className="my-pas-6 mr-2 flex w-[3px] flex-col justify-between">
+      {/* The rail stays 3px; the MARKS protrude. At 3px wide and 25% opacity
+          on a near-black ground, collected and passed were indistinguishable —
+          which cost the signature element its entire point: the record and the
+          walk being the same object seen twice. Values stay on the 4/8 steps. */}
+      <div ref={railRef} className="my-pas-6 mr-2 flex w-[3px] flex-col items-end justify-between">
         {LANE.map((s: Series, i) => {
           const isCollected = rec.isCollected(s.series_uid)
           const isPassed = rec.passed.has(s.series_uid)
@@ -353,14 +447,16 @@ function EdgeScrubber({ index, onGo }: { index: number; onGo: (i: number) => voi
             <span
               key={s.series_uid}
               aria-hidden
-              className={`block w-full transition-all duration-pas-light ${
-                i === index ? 'h-4 bg-pas-surface' : 'h-2'
+              className={`block transition-[width,height,background-color,opacity] duration-pas-light ${
+                i === index ? 'h-4' : 'h-2'
               } ${
                 isCollected
-                  ? 'bg-pas-surface'
+                  ? 'w-2 bg-pas-surface'
                   : isPassed
-                    ? 'border border-pas-surface/40 bg-transparent'
-                    : 'bg-pas-surface/25'
+                    ? 'w-full border border-pas-surface/40 bg-transparent'
+                    : i === index
+                      ? 'w-full bg-pas-surface'
+                      : 'w-full bg-pas-surface/25'
               }`}
             />
           )

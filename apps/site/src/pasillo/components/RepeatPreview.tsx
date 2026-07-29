@@ -58,7 +58,7 @@ export function RepeatPreview({ sku, compact = false }: { sku: Sku; compact?: bo
               role="radio"
               aria-checked={mode === m}
               onClick={() => setMode(m)}
-              className={`pas-stamp rounded-pas-chrome px-3 py-1.5 transition-colors ${
+              className={`pas-stamp rounded-pas-chrome px-3 py-2 transition-colors ${
                 mode === m ? 'bg-pas-ink text-pas-surface' : 'opacity-pas-resting'
               }`}
             >
@@ -85,7 +85,8 @@ export function RepeatPreview({ sku, compact = false }: { sku: Sku; compact?: bo
       )}
       {sku.face_kind === 'review' && (
         <p className="mt-2 text-pas-t0 opacity-pas-resting">
-          El catálogo imprime {sku.pattern_count} patrón pero muestra {sku.faces.length} caras.
+          El catálogo imprime {sku.pattern_count}{' '}
+          {sku.pattern_count === 1 ? 'patrón' : 'patrones'} pero muestra {sku.faces.length} caras.
           Confirmar con el proveedor antes de cotizar.
         </p>
       )}

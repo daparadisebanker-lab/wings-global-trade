@@ -15,13 +15,18 @@ interface MobileMenuProps {
 
 const PRIMARY_NAV = [
   { href: '/catalogo',   label: 'Catálogo',       num: '01' },
-  { href: '/repuestos',  label: 'Motores',        num: '02' },
-  { href: '/marcas',     label: 'Marcas',          num: '03' },
-  { href: '/cotizar',    label: 'Cotizar',         num: '04' },
-  { href: '/proceso',    label: 'Cómo importar',   num: '05' },
-  { href: '/mister',     label: 'Mister IA',       num: '06' },
-  { href: '/nosotros',   label: 'Nosotros',        num: '07' },
-  { href: '/contacto',   label: 'Contacto',        num: '08' },
+  // WGT/02. This entry is not optional: the Azulejos catalogue inside this lane
+  // is built thumb-first — swipe grammar, every control in the bottom 60%, one
+  // hand across ten booths — and it shipped unreachable from the phone's own
+  // primary navigation, findable only through the footer.
+  { href: '/interiores', label: 'Interiores',      num: '02' },
+  { href: '/repuestos',  label: 'Motores',        num: '03' },
+  { href: '/marcas',     label: 'Marcas',          num: '04' },
+  { href: '/cotizar',    label: 'Cotizar',         num: '05' },
+  { href: '/proceso',    label: 'Cómo importar',   num: '06' },
+  { href: '/mister',     label: 'Mister IA',       num: '07' },
+  { href: '/nosotros',   label: 'Nosotros',        num: '08' },
+  { href: '/contacto',   label: 'Contacto',        num: '09' },
 ]
 
 // Fix #14 — stagger container drives timing; items use shared variants

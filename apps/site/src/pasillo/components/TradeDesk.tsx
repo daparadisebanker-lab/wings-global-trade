@@ -11,6 +11,7 @@
 // decide which. Below them, unadorned: the promise.
 
 import Link from 'next/link'
+import { LaneExit } from '@/pasillo/components/PasilloShell'
 import { PASILLO_ROUTES } from '@/pasillo/lib/routes'
 import { useMemo, useState } from 'react'
 import { StatusLamp } from '@/pasillo/components/StatusLamp'
@@ -72,8 +73,8 @@ export function TradeDesk() {
       <header className="border-b pas-rule px-4 py-4">
         <div className="mx-auto flex max-w-4xl items-baseline justify-between gap-4">
           <div>
-            <p className="pas-stamp opacity-pas-resting">Mesa de comercio</p>
-            <h1 className="font-pas-display text-pas-t2 font-semibold tracking-[-0.02em]">
+            <LaneExit />
+            <h1 className="font-pas-display text-pas-t2 font-semibold tracking-pas-display">
               {rows.length} {rows.length === 1 ? 'referencia' : 'referencias'}
             </h1>
           </div>
@@ -85,8 +86,11 @@ export function TradeDesk() {
 
       <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-pas-5">
         {rows.length === 0 ? (
-          <p className="border pas-rule px-pas-6 py-14 text-center text-pas-t1 opacity-pas-resting">
-            Elige piezas en el muestrario y aparecerán aquí para cotizar.
+          <p className="border pas-rule px-pas-6 py-pas-7 text-center text-pas-t1 opacity-pas-resting">
+            Marca referencias en el muestrario y aparecerán aquí para cotizar.{' '}
+            <Link href={PASILLO_ROUTES.muestrario} className="underline underline-offset-4">
+              Ir al muestrario
+            </Link>
           </p>
         ) : (
           <>
@@ -126,7 +130,14 @@ export function TradeDesk() {
               </label>
             </section>
 
-            <div className="overflow-x-auto">
+            <p className="pas-stamp mb-2 opacity-pas-dimmed sm:hidden">
+              Desliza la tabla para ver cajas · m² · kg
+            </p>
+            <div
+              className="overflow-x-auto
+                         [mask-image:linear-gradient(90deg,#000_calc(100%-24px),transparent)]
+                         sm:[mask-image:none]"
+            >
               <table className="w-full min-w-[640px] border-collapse">
                 <thead>
                   <tr className="border-b pas-rule-hard">
@@ -147,9 +158,9 @@ export function TradeDesk() {
                 <tbody>
                   {rows.map(({ sku, series, totals: t }) => (
                     <tr key={sku.sku_uid} className="border-b pas-rule align-top">
-                      <td className="pas-mono py-2.5 text-pas-t0">{sku.code}</td>
-                      <td className="py-2.5 text-pas-dense opacity-pas-resting">{series.name_raw}</td>
-                      <td className="py-2.5 text-pas-dense opacity-pas-resting">{finishLabel(sku)}</td>
+                      <td className="pas-mono py-2 text-pas-t0">{sku.code}</td>
+                      <td className="py-2 text-pas-dense opacity-pas-resting">{series.name_raw}</td>
+                      <td className="py-2 text-pas-dense opacity-pas-resting">{finishLabel(sku)}</td>
                       <td className="py-2 text-right">
                         <input
                           type="number"
@@ -170,17 +181,22 @@ export function TradeDesk() {
                           className="pas-mono w-20 border pas-rule bg-pas-surface px-2 py-1 text-right text-pas-t0"
                         />
                       </td>
-                      <td className="pas-mono py-2.5 text-right text-pas-t0">{fmtInt(t.cartons)}</td>
-                      <td className="pas-mono py-2.5 text-right text-pas-t0">{fmtM2(t.m2)}</td>
-                      <td className="pas-mono py-2.5 text-right text-pas-t0">{fmtKg(t.kg)}</td>
-                      <td className="py-2.5 pl-3">
+                      <td className="pas-mono py-2 text-right text-pas-t0">{fmtInt(t.cartons)}</td>
+                      <td className="pas-mono py-2 text-right text-pas-t0">{fmtM2(t.m2)}</td>
+                      <td className="pas-mono py-2 text-right text-pas-t0">{fmtKg(t.kg)}</td>
+                      <td className="py-2 pl-3">
                         <StatusLamp status={series.status} />
                       </td>
                     </tr>
                   ))}
                   <tr className="border-t pas-rule-hard">
                     <td className="py-3 text-pas-t0 font-semibold" colSpan={4}>
-                      TOTAL · {fmtInt(totals.skus)} referencias
+                      {/* Explicitly "con cantidad": the header counts SELECTED
+                          references, this row counts QUANTIFIED ones, and two
+                          different numbers under one label on one screen is how
+                          a buyer stops trusting both. */}
+                      TOTAL · {fmtInt(totals.skus)}{' '}
+                      {totals.skus === 1 ? 'referencia con cantidad' : 'referencias con cantidad'}
                     </td>
                     <td className="pas-mono py-3 text-right text-pas-t0 font-semibold">
                       {fmtInt(totals.cartons)}
@@ -198,8 +214,8 @@ export function TradeDesk() {
             </div>
 
             <section className="mt-pas-8">
-              <h2 className="pas-stamp opacity-pas-resting">Vista previa del mensaje</h2>
-              <pre className="pas-mono mt-2 max-h-64 overflow-auto whitespace-pre-wrap border pas-rule bg-pas-surface-2 p-3 text-pas-micro">
+              <h2 className="pas-stamp opacity-pas-resting">El mensaje, tal como saldrá</h2>
+              <pre className="pas-mono mt-2 max-h-[var(--pas-preview-max)] overflow-auto whitespace-pre-wrap border pas-rule bg-pas-surface-2 p-3 text-pas-micro">
                 {body}
               </pre>
             </section>
@@ -220,22 +236,25 @@ export function TradeDesk() {
           <div className="border-t pas-rule bg-pas-surface px-4 py-4">
             <div className="mx-auto max-w-4xl">
               <div className="flex gap-3">
+                {/* Equal weight is spec law (§4.12), not a preference: the
+                    buyer's counterpart uses one or the other and the tool does
+                    not get to nominate a favourite. Both filled, identically. */}
                 <a
                   href={whatsappHref(body)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 rounded-pas-chrome bg-pas-ink py-3.5 text-center text-pas-t0 text-pas-surface"
+                  className="flex-1 rounded-pas-chrome border border-pas-ink bg-pas-ink py-3 text-center text-pas-t0 text-pas-surface"
                 >
                   WhatsApp
                 </a>
                 <a
-                  href={mailtoHref(body)}
-                  className="flex-1 rounded-pas-chrome border border-pas-ink py-3.5 text-center text-pas-t0"
+                  href={mailtoHref(body, rec.state.buyer.company)}
+                  className="flex-1 rounded-pas-chrome border border-pas-ink bg-pas-ink py-3 text-center text-pas-t0 text-pas-surface"
                 >
                   Email
                 </a>
               </div>
-              <p className="mt-3 text-pas-t0 opacity-pas-resting">Respuesta en 24h hábiles.</p>
+              <p className="mt-3 text-pas-t0 opacity-pas-resting">Respuesta en un día útil.</p>
             </div>
           </div>
         </div>

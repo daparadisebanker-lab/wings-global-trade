@@ -58,7 +58,9 @@ export function VolumeFooter({
             className="pas-mono text-pas-t1 tracking-tight"
             aria-label={`Cambiar base; actualmente ${BASIS_LABEL[basis]}`}
           >
-            {fmtInt(totals.skus)} SKU · {fmtInt(totals.cartons)} cajas · {headline}
+            {totals.skus === 0
+              ? 'Sin cantidades — indica m², cajas o piezas por referencia'
+              : `${fmtInt(totals.skus)} SKU · ${fmtInt(totals.cartons)} cajas · ${headline}`}
           </button>
 
           <div role="radiogroup" aria-label="Contenedor" className="flex gap-1">
@@ -69,7 +71,7 @@ export function VolumeFooter({
                 role="radio"
                 aria-checked={c.kind === kind}
                 onClick={() => onKind(c.kind)}
-                className={`pas-stamp px-2 py-1 ${
+                className={`pas-stamp relative px-3 py-2 before:absolute before:-inset-1 before:content-[''] ${
                   c.kind === kind ? 'bg-pas-ink text-pas-surface' : 'opacity-pas-resting'
                 }`}
               >

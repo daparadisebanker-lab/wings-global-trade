@@ -68,6 +68,8 @@ Root holds only config, README, DECISIONS.md, this file, and the knowledge/progr
 - Motion: `--ease-gantry: cubic-bezier(0.83,0,0.17,1)` (structural moves) · `--ease-settle: cubic-bezier(0.22,1,0.36,1)` (reveals) · **plus the macOS spring set — `--spring-snappy` (0.32,0.72,0,1) · `--spring-settle` (0.16,1,0.3,1) · `--ease-exit` (0.4,0,1,1)** · reduced-motion always collapses to crossfade
 - UI typeface: the shared grotesque (labels, tables, nav, Mister) + tabular mono for all numerals
 - Shared organs: `ManifestTable` · `LaneStamp` · `FillMeter` (container visualizer) · `RFQFlow` · `SpecSheet` (scoped blueprint mode) · `MisterDock` · `TrustFooter`
+  - `LaneStamp` ships in `@wings/trade-ui` (built 2026-07-29). It renders the ISO 6346 unit number with a **computed** check digit — no lane ever types its own. `FillMeter` reads `var(--cargo, …)`, so a lane themes it rather than forking it.
+  - Tier-1 amendments arrive **additively, under new names**. The macOS radii entered as `--radius-control/card-lg/panel/dock/pill`; `--radius-card` keeps 2px because a consumer already binds it. A frozen tier that silently restyles a consumer is not frozen.
 - The lane-switch transition (livery flood + stamp-settle, 600–800ms, interruptible)
 
 If a new lane "needs" to change any of the above, the answer is no. That need is a livery problem or a content problem, never a skeleton problem.
