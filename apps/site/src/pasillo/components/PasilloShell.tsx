@@ -8,7 +8,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { SheetDock } from '@/pasillo/components/SheetDock'
 import { useRecord } from '@/pasillo/lib/record'
 import { PASILLO_ROUTES } from '@/pasillo/lib/routes'
@@ -21,7 +21,12 @@ const VIEWS = [
 
 export function useSheet() {
   const [sku, setSku] = useState<Sku | null>(null)
-  return { sku, open: setSku, close: () => setSku(null) }
+  // Both handles are stable. `close` used to be a fresh closure every render,
+  // which was harmless while only a button called it and is not once the Lane
+  // takes it as a dependency — an unstable callback there rebuilds the whole
+  // advance/collect/pass chain on every render of a route that owns a drag loop.
+  const close = useCallback(() => setSku(null), [])
+  return { sku, open: setSku, close }
 }
 
 export function DensitySwitch() {
