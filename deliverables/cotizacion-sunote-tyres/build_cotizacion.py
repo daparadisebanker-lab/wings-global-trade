@@ -4,14 +4,13 @@ SUNOTE tyre order — issued by the Chilean company (Shining Star), destined for
 ZOFRI / Iquique. Prices are the CLIENT (marked-up) prices, never the supplier's
 cost, and the supplier (SINOTYRE) is never named to the client.
 
-Reuses the proforma's `pdoc` layout (no image column — tyres). Self-contained
-HTML (logo + signature inlined). Run:  python3 build_cotizacion.py
+Reuses the proforma's `pdoc` layout, tightened to sit on a single A4 page.
+Self-contained HTML (logo inlined). Run:  python3 build_cotizacion.py
 """
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 LOGO_SVG = "/home/user/wings-global-trade/apps/tower/public/brand/wings-imagotipo.svg"
-SIGNATURE_SVG = "/home/user/wings-global-trade/deliverables/proforma-saad-muhammad/signature.svg"
 
 # ── Client line items (SELLING prices from the client quotation) ──────────────
 # (marca, medida, modelo, cantidad, precio unit. FOB Qingdao USD)
@@ -50,12 +49,10 @@ def money_rows():
 LOGO = Path(LOGO_SVG).read_text(encoding="utf-8")
 LOGO = LOGO[LOGO.index("<svg"):]
 LOGO = LOGO.replace("<svg ", '<svg class="pdoc-logo" ', 1)
-SIGNATURE = Path(SIGNATURE_SVG).read_text(encoding="utf-8")
 
 ROWS, SUBTOTAL, TOTAL_QTY, subtotal_val = money_rows()
 GRAND = fmt(subtotal_val + FREIGHT)
 FREIGHT_S = fmt(FREIGHT)
-TAIL_SPACER = "24mm"
 
 HTMLDOC = f"""<!doctype html>
 <html lang="es">
@@ -70,97 +67,96 @@ HTMLDOC = f"""<!doctype html>
   }}
   html, body {{ margin: 0; padding: 0; }}
   body {{ background: #52555a; }}
-  .pdoc-page {{ min-height: 100vh; padding: 32px 16px 64px; }}
+  .pdoc-page {{ min-height: 100vh; padding: 28px 16px 48px; }}
   .pdoc-page .pdoc {{ box-shadow: 0 8px 40px rgba(0, 0, 0, 0.35); }}
 
   .pdoc {{
     --pd-ink: #0f1216; --pd-muted: #6b7280; --pd-line: #d1d5db;
     --pd-bar: #ececec; --pd-tint: #f7f8f9;
     box-sizing: border-box; width: 100%; max-width: 820px; margin: 0 auto;
-    padding: 48px 56px 40px; background: #ffffff; color: var(--pd-ink);
-    font-family: var(--font-ui, system-ui, sans-serif); font-size: 13px; line-height: 1.5;
+    padding: 22px 52px 20px; background: #ffffff; color: var(--pd-ink);
+    font-family: var(--font-ui, system-ui, sans-serif); font-size: 12px; line-height: 1.35;
   }}
   .pdoc *, .pdoc *::before, .pdoc *::after {{ box-sizing: border-box; }}
 
   .pdoc-header {{ display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }}
-  .pdoc-title {{ margin: 0; font-size: 44px; font-weight: 600; letter-spacing: -0.01em; line-height: 0.95; }}
-  .pdoc-number {{ margin-top: 12px; font-family: var(--font-mono, monospace); font-size: 13px; letter-spacing: 0.02em; color: var(--pd-ink); }}
-  .pdoc-brand {{ display: flex; flex-direction: column; align-items: flex-end; text-align: right; gap: 8px; flex-shrink: 0; }}
-  .pdoc-logo {{ height: 52px; width: auto; filter: brightness(0); }}
-  .pdoc-tagline {{ font-size: 11px; letter-spacing: 0.02em; color: var(--pd-muted); text-transform: uppercase; }}
+  .pdoc-title {{ margin: 0; font-size: 30px; font-weight: 600; letter-spacing: -0.01em; line-height: 0.95; }}
+  .pdoc-number {{ margin-top: 10px; font-family: var(--font-mono, monospace); font-size: 12.5px; letter-spacing: 0.02em; color: var(--pd-ink); }}
+  .pdoc-brand {{ display: flex; flex-direction: column; align-items: flex-end; text-align: right; gap: 6px; flex-shrink: 0; }}
+  .pdoc-logo {{ height: 46px; width: auto; filter: brightness(0); }}
+  .pdoc-tagline {{ font-size: 10.5px; letter-spacing: 0.02em; color: var(--pd-muted); text-transform: uppercase; }}
 
-  .pdoc-rule {{ position: relative; height: 3px; margin: 14px 0 20px; background: var(--pd-line); }}
+  .pdoc-rule {{ position: relative; height: 3px; margin: 10px 0 12px; background: var(--pd-line); }}
   .pdoc-rule::before {{ content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 168px; background: var(--pd-ink); }}
 
-  .pdoc-dateline {{ display: flex; flex-wrap: wrap; gap: 6px 16px; margin-bottom: 24px; font-size: 12px; color: var(--pd-muted); }}
+  .pdoc-dateline {{ display: flex; flex-wrap: wrap; gap: 5px 16px; margin-bottom: 10px; font-size: 11.5px; color: var(--pd-muted); }}
   .pdoc-dateline span:not(:last-child)::after {{ content: '|'; margin-left: 16px; color: var(--pd-line); }}
 
-  .pdoc-parties {{ display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }}
-  .pdoc-party {{ border: 1px solid var(--pd-line); padding: 14px 16px; }}
-  .pdoc-party-head {{ font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px; }}
-  .pdoc-party-name {{ font-weight: 600; margin-bottom: 8px; }}
-  .pdoc-party-meta {{ display: grid; grid-template-columns: 84px 1fr; gap: 3px 12px; margin: 0; font-size: 12px; }}
+  .pdoc-parties {{ display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; }}
+  .pdoc-party {{ border: 1px solid var(--pd-line); padding: 10px 12px; }}
+  .pdoc-party-head {{ font-size: 10.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 7px; }}
+  .pdoc-party-name {{ font-weight: 600; margin-bottom: 7px; }}
+  .pdoc-party-meta {{ display: grid; grid-template-columns: 80px 1fr; gap: 3px 12px; margin: 0; font-size: 11.5px; }}
   .pdoc-party-meta dt {{ color: var(--pd-muted); }}
   .pdoc-party-meta dd {{ margin: 0; }}
-  .pd-fill {{ color: var(--pd-muted); }}
 
   .pdoc-table {{ width: 100%; border-collapse: collapse; table-layout: fixed; }}
-  .pdoc-table thead th {{ background: var(--pd-bar); font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 10px 10px; text-align: center; border: 1px solid var(--pd-line); }}
+  .pdoc-table thead th {{ background: var(--pd-bar); font-size: 10.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 6px 9px; text-align: center; border: 1px solid var(--pd-line); }}
   .pdoc-table th.pd-col-item {{ width: 7%; }}
   .pdoc-table th.pd-col-brand {{ width: 15%; }}
   .pdoc-table th.pd-col-desc {{ width: 30%; }}
   .pdoc-table th.pd-col-qty {{ width: 12%; }}
   .pdoc-table tbody tr {{ break-inside: avoid; }}
-  .pdoc-table tbody td {{ border: 1px solid var(--pd-line); padding: 8px 10px; vertical-align: middle; font-size: 12px; }}
+  .pdoc-table tbody td {{ border: 1px solid var(--pd-line); padding: 5px 9px; vertical-align: middle; font-size: 11.5px; }}
   .pd-item {{ font-weight: 600; text-align: center; }}
   .pd-brand {{ font-weight: 600; }}
   .pd-desc {{ text-align: left; }}
   .pd-cell-num {{ text-align: right; font-family: var(--font-mono, monospace); font-variant-numeric: tabular-nums; }}
   .pd-row-total td {{ background: var(--pd-tint); font-weight: 700; }}
 
-  .pdoc-totals {{ margin: 0 0 8px auto; width: 360px; }}
-  .pdoc-total-row {{ display: flex; justify-content: space-between; gap: 24px; padding: 9px 6px; border-top: 1px solid var(--pd-line); }}
+  .pdoc-totals {{ margin: 10px 0 4px auto; width: 360px; }}
+  .pdoc-total-row {{ display: flex; justify-content: space-between; gap: 24px; padding: 6px 6px; border-top: 1px solid var(--pd-line); }}
   .pdoc-total-row .pd-total-label {{ font-weight: 600; }}
   .pdoc-total-row .pd-total-value {{ font-family: var(--font-mono, monospace); font-variant-numeric: tabular-nums; }}
   .pdoc-total-row[data-emphasis='true'] {{ border-top: 2px solid var(--pd-ink); }}
-  .pdoc-total-row[data-emphasis='true'] .pd-total-label, .pdoc-total-row[data-emphasis='true'] .pd-total-value {{ font-size: 15px; font-weight: 700; }}
+  .pdoc-total-row[data-emphasis='true'] .pd-total-label, .pdoc-total-row[data-emphasis='true'] .pd-total-value {{ font-size: 14.5px; font-weight: 700; }}
 
-  .pdoc-section-bar {{ background: var(--pd-bar); padding: 8px 12px; margin: 26px 0 14px; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }}
-  .pdoc-terms {{ display: grid; grid-template-columns: 220px 1fr; gap: 8px 16px; padding: 0 4px; font-size: 12px; }}
+  .pdoc-section-bar {{ background: var(--pd-bar); padding: 6px 12px; margin: 8px 0 6px; font-size: 11.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }}
+  .pdoc-terms {{ display: grid; grid-template-columns: 210px 1fr; gap: 4px 16px; padding: 0 4px; font-size: 11.5px; }}
   .pdoc-term-label {{ font-weight: 600; }}
-  .pdoc-observations {{ margin: 0; padding: 0 4px; list-style: none; font-size: 12px; }}
-  .pdoc-observations li {{ position: relative; padding-left: 18px; margin-bottom: 4px; }}
+  .pdoc-observations {{ margin: 0; padding: 0 4px; list-style: none; font-size: 11.5px; }}
+  .pdoc-observations li {{ position: relative; padding-left: 18px; margin-bottom: 2px; }}
   .pdoc-observations li::before {{ content: '•'; position: absolute; left: 4px; }}
 
-  .pdoc-close {{ margin: 24px 0 0; }}
+  /* Sign-off + attended-by sit side by side to save vertical space. */
+  .pdoc-close-row {{ display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; margin-top: 6px; }}
   .pdoc-close-signoff {{ margin-top: 2px; font-weight: 600; }}
-
-  .pdoc-issuedby {{ margin: 16px 0 0; max-width: 300px; break-inside: avoid; }}
-  .pdoc-issuedby-label {{ font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--pd-muted); margin-bottom: 6px; }}
-  .pdoc-signature {{ height: 52px; margin-bottom: 2px; }}
-  .pdoc-signature svg {{ display: block; height: 100%; width: auto; max-width: 260px; }}
+  .pdoc-issuedby {{ min-width: 260px; }}
+  .pdoc-issuedby-label {{ font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--pd-muted); margin-bottom: 4px; }}
+  .pdoc-signature-blank {{ height: 16px; }}
   .pdoc-issuedby-name {{ font-weight: 600; padding-top: 6px; border-top: 1px solid var(--pd-line); }}
-  .pdoc-issuedby-title {{ margin-top: 2px; font-size: 12px; color: var(--pd-muted); }}
+  .pdoc-issuedby-title {{ margin-top: 2px; font-size: 11.5px; color: var(--pd-muted); }}
 
-  .pdoc-footer {{ display: flex; justify-content: space-between; gap: 24px; margin-top: 24px; padding-top: 14px; border-top: 1px solid var(--pd-line); color: var(--pd-muted); font-size: 12px; break-inside: avoid; }}
+  .pdoc-footer {{ display: flex; justify-content: space-between; gap: 24px; margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--pd-line); color: var(--pd-muted); font-size: 11.5px; break-inside: avoid; }}
   .pdoc-footer .pd-foot-right {{ text-align: right; }}
 
   @media (max-width: 640px) {{
-    .pdoc {{ padding: 28px 22px 32px; }}
-    .pdoc-title {{ font-size: 34px; }}
+    .pdoc {{ padding: 26px 20px 28px; }}
+    .pdoc-title {{ font-size: 32px; }}
     .pdoc-parties {{ grid-template-columns: 1fr; }}
     .pdoc-terms {{ grid-template-columns: 1fr; gap: 0; }}
     .pdoc-totals {{ width: 100%; }}
+    .pdoc-close-row {{ flex-direction: column; align-items: flex-start; gap: 16px; }}
     .pdoc-footer {{ flex-direction: column; gap: 12px; }}
   }}
 
   @media print {{
-    @page {{ size: A4 portrait; margin: 12mm; }}
+    @page {{ size: A4 portrait; margin: 8mm; }}
     body {{ background: #ffffff; }}
     .pdoc-page {{ min-height: 0; padding: 0; }}
     .pdoc-page .pdoc {{ box-shadow: none; }}
     .pdoc {{ max-width: none; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }}
-    .pdoc-tailspacer {{ height: {TAIL_SPACER}; }}
+    .pdoc-close-row, .pdoc-footer {{ break-inside: avoid; }}
   }}
 </style>
 </head>
@@ -201,11 +197,10 @@ HTMLDOC = f"""<!doctype html>
     </div>
     <div class="pdoc-party">
       <div class="pdoc-party-head">Comprador / Cliente</div>
-      <div class="pdoc-party-name pd-fill">Por definir</div>
+      <div class="pdoc-party-name">Alejandro</div>
       <dl class="pdoc-party-meta">
-        <dt>Nombre</dt><dd class="pd-fill">—</dd>
-        <dt>País</dt><dd class="pd-fill">—</dd>
-        <dt>Contacto</dt><dd class="pd-fill">—</dd>
+        <dt>País</dt><dd>Chile</dd>
+        <dt>Contacto</dt><dd>Alejandro</dd>
       </dl>
     </div>
   </div>
@@ -263,31 +258,27 @@ HTMLDOC = f"""<!doctype html>
 
   <div class="pdoc-section-bar">Observaciones</div>
   <ul class="pdoc-observations">
-    <li>Los precios unitarios corresponden a términos FOB Qingdao; el flete marítimo hasta ZOFRI (Iquique) se detalla por separado.</li>
-    <li>Todos los importes están expresados en dólares americanos (USD).</li>
+    <li>Precios FOB Qingdao en USD; flete a ZOFRI (Iquique) detallado por separado.</li>
     <li>Garantía de calidad: reposición ante cualquier defecto de fabricación.</li>
-    <li>El flete marítimo se confirma antes del embarque; variaciones logísticas o de tipo de cambio podrían afectar el precio final.</li>
+    <li>El flete se confirma antes del embarque; variaciones logísticas o de tipo de cambio pueden afectar el precio final.</li>
   </ul>
 
-  <div class="pdoc-tailspacer" aria-hidden="true"></div>
-
-  <div class="pdoc-close">
-    <div>Atentamente,</div>
-    <div class="pdoc-close-signoff">WINGS GLOBAL TRADE</div>
-  </div>
-
-  <div class="pdoc-issuedby">
-    <div class="pdoc-issuedby-label">Atendido por</div>
-    <div class="pdoc-signature">{SIGNATURE}</div>
-    <div class="pdoc-issuedby-name">Saad Muhammad</div>
-    <div class="pdoc-issuedby-title">Representante comercial · Wings Global Trade</div>
-    <div class="pdoc-issuedby-title">WhatsApp: +34 674 00 64 38</div>
+  <div class="pdoc-close-row">
+    <div class="pdoc-close">
+      <div>Atentamente,</div>
+      <div class="pdoc-close-signoff">WINGS GLOBAL TRADE</div>
+    </div>
+    <div class="pdoc-issuedby">
+      <div class="pdoc-issuedby-label">Atendido por</div>
+      <div class="pdoc-signature-blank" aria-hidden="true"></div>
+      <div class="pdoc-issuedby-name">Huzaifa Muhammad</div>
+      <div class="pdoc-issuedby-title">Representante comercial · Wings Global Trade</div>
+    </div>
   </div>
 
   <footer class="pdoc-footer">
     <div>
-      <div>¿Consultas?</div>
-      <div>Email: importaciones@wingsglobaltrade.com</div>
+      <div>¿Consultas? · importaciones@wingsglobaltrade.com</div>
       <div>Tel: +507 6025-07</div>
     </div>
     <div class="pd-foot-right">
