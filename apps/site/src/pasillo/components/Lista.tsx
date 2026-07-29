@@ -30,7 +30,7 @@ import {
   seriesName,
   seriesOption,
 } from '@/pasillo/lib/catalogue'
-import { fmtM2 } from '@/pasillo/lib/packing'
+import { fmtInt, fmtKg, fmtM2 } from '@/pasillo/lib/packing'
 import { PARAM_FORMAT, PARAM_SKU, PASILLO_ROUTES } from '@/pasillo/lib/routes'
 import { haptic, useRecord } from '@/pasillo/lib/record'
 import type { Finish, Sku } from '@/pasillo/types/catalogue'
@@ -131,7 +131,7 @@ export function Lista({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
   return (
     <div className="min-h-dvh bg-pas-surface pb-24">
       <header className="sticky top-0 z-20 border-b pas-rule bg-pas-surface px-4 py-3">
-        <div className="mx-auto max-w-4xl">
+        <div className="pas-measure">
           {/* The eyebrow IS the way out. The old right-hand pill duplicated the
               density switch's Recorrido target and sat directly beneath it —
               100% occluded at 390px, invisible and untappable. And it read "Al
@@ -161,8 +161,11 @@ export function Lista({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Código o serie"
             aria-label="Buscar por código, serie o color"
+            // Full width is right on a phone and wrong at 1280, where a search
+            // box the width of the page states that a very long query is
+            // expected — the longest thing typed here is an eight-character SKU.
             className="pas-mono mt-3 w-full rounded-pas-chrome border border-pas-ink/25 bg-pas-surface
-                       px-3 py-2 text-pas-dense placeholder:opacity-pas-dimmed"
+                       px-3 py-2 text-pas-dense placeholder:opacity-pas-dimmed sm:max-w-sm"
           />
 
           {/* ONE SCROLLING RAIL, NOT FOUR WRAPPING ROWS.
@@ -177,6 +180,7 @@ export function Lista({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
           <div
             className="-mx-4 mt-3 flex items-center gap-2 overflow-x-auto px-4 pb-1
                        [mask-image:linear-gradient(90deg,#000_calc(100%-20px),transparent)]
+                       sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0
                        sm:[mask-image:none]"
           >
             {FINISHES.map((f) => (
@@ -253,7 +257,7 @@ export function Lista({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
         </div>
       </header>
 
-      <main className="mx-auto max-w-4xl px-4">
+      <main className="pas-measure px-4">
         {rows.map((sku) => {
           const series = getSeries(sku.series_uid)
           if (!series) return null
@@ -297,7 +301,20 @@ export function Lista({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
                   loading="lazy"
                   decoding="async"
                 />
-                <span className="min-w-0 flex-1">
+                {/* A STACK ON A PHONE, COLUMNS ON A DESKTOP.
+                    The same three facts, laid out for the width they have. At
+                    390px they stack and the lower two elide, because that is the
+                    only honest thing to do with 200px. At lg they become three
+                    aligned columns — which is what turns this from a tall phone
+                    list into the comparison surface it is named for: acabado and
+                    formato now line up down the page, so a buyer scans a column
+                    instead of re-reading every row. It also reclaims the ~350px
+                    of empty ground that sat between the elided text and the
+                    coverage figure at 1440. */}
+                <span
+                  className="min-w-0 flex-1 lg:grid lg:grid-cols-[11ch_26ch_1fr] lg:items-baseline
+                             lg:gap-pas-5"
+                >
                   {/* Never truncate a code: it is the string a buyer pastes
                       into WhatsApp. The lines beneath it may elide. */}
                   <span className="pas-mono block whitespace-nowrap text-pas-dense">{sku.code}</span>
@@ -321,7 +338,22 @@ export function Lista({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
                   repeated 236 times took the space. Swapped: the number that
                   differentiates always shows; the lamp appears only when the
                   status is an exception, and never without its label. */}
-              <span className="pas-mono shrink-0 text-right text-pas-micro opacity-pas-resting">
+              {/* THE DESKTOP GETS THE WHOLE CARTON, NOT A THIRD OF IT.
+                  m²/caja alone left ~350px of empty ground on this row at 1440
+                  while the two figures that decide the rest of a quote — how many
+                  pieces a tiler places and what the carton weighs against a
+                  payload limit — sat two screens away in the Trade Desk. All
+                  three are printed by the supplier and all three are already on
+                  the series, so this is not new data, it is data that had no room.
+                  Below lg only coverage survives, because 390px has room for one
+                  figure and coverage is the one that differentiates. */}
+              <span className="pas-mono hidden shrink-0 text-right text-pas-micro opacity-pas-dimmed lg:block lg:w-24">
+                {fmtInt(series.pcs_per_ctn)} pzas/caja
+              </span>
+              <span className="pas-mono hidden shrink-0 text-right text-pas-micro opacity-pas-dimmed lg:block lg:w-24">
+                {fmtKg(series.kgs_per_ctn)} kg/caja
+              </span>
+              <span className="pas-mono shrink-0 text-right text-pas-micro opacity-pas-resting lg:w-24">
                 {fmtM2(series.m2_per_ctn)} m²/caja
               </span>
               {series.status !== 'available' && <StatusLamp status={series.status} />}

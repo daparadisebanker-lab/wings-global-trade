@@ -109,7 +109,10 @@ function Pano({
   return (
     // Side by side at every width, including 390px: two squares of the same
     // paño only make their argument when the eye can hold both at once.
-    <figure className="min-w-0 flex-1 basis-[136px] sm:max-w-[260px]">
+    // The cap grows at lg, where the two fields had been drawn at 260px inside a
+    // 1280px section — a thumbnail of the comparison the section is built on,
+    // with 700px of empty ground beside it.
+    <figure className="min-w-0 flex-1 basis-[136px] sm:max-w-[260px] lg:max-w-[320px]">
       <svg
         viewBox={`0 0 ${S + PAD} ${S + PAD}`}
         className="w-full"
@@ -312,7 +315,10 @@ function Carga({ cartons, payloadKg, id }: { cartons: number; payloadKg: number;
   return (
     <svg
       viewBox={`0 0 ${W} ${H + 16}`}
-      className="w-full max-w-[34rem]"
+      // The cap is what stops the band spanning a whole desktop while it is the
+      // second of two stacked cells. Once it is a column of its own at lg the
+      // column governs the width, and the marks get to be big enough to count.
+      className="w-full max-w-[34rem] lg:max-w-none"
       role="img"
       aria-label={`${cartons} cajas hasta ${payloadKg} kilos`}
     >
@@ -376,19 +382,27 @@ export function Escala({ rows, payloadKg }: { rows: EscalaRow[]; payloadKg: numb
 
   return (
     <div className="mt-12">
-      {/* ── One paño, two formats ───────────────────────────────────────── */}
-      <TechDraw>
-        <div className="flex flex-wrap gap-8 sm:gap-12">
-          <Pano side={PANO_MM} tileMm={150} label="150×150 mm" />
-          <Pano side={PANO_MM} tileMm={300} label="300×300 mm" />
-        </div>
-      </TechDraw>
-      <p className="mt-6 max-w-[58ch] text-[length:var(--type-0)] leading-[1.5] text-[color:var(--ink-secondary)]">
-        El mismo paño de {dec(PANO_MM / 1000)} × {dec(PANO_MM / 1000)} m —{' '}
-        {fmtM2((PANO_MM / 1000) ** 2)} m² — en los dos formatos del catálogo. El formato no
-        cambia el área: cambia cuántas piezas hay que colocar, y por lo tanto cuántas cajas
-        se embarcan.
-      </p>
+      {/* ── One paño, two formats ─────────────────────────────────────────
+          THE CAPTION SITS BESIDE THE DRAWING, NOT UNDER IT.
+          Stacked, this block spent a desktop's whole width on two 260px squares
+          and then a paragraph starting back at the left margin 400px lower —
+          the reader had to leave the diagram to be told what it showed. At lg
+          the prose becomes what it is: the legend, at the drawing's own height,
+          in the ground the drawing was not using. */}
+      <div className="lg:grid lg:grid-cols-[auto_1fr] lg:items-start lg:gap-16">
+        <TechDraw>
+          <div className="flex flex-wrap gap-8 sm:gap-12">
+            <Pano side={PANO_MM} tileMm={150} label="150×150 mm" />
+            <Pano side={PANO_MM} tileMm={300} label="300×300 mm" />
+          </div>
+        </TechDraw>
+        <p className="mt-6 max-w-[58ch] text-[length:var(--type-0)] leading-[1.5] text-[color:var(--ink-secondary)] lg:mt-0 lg:max-w-[46ch]">
+          El mismo paño de {dec(PANO_MM / 1000)} × {dec(PANO_MM / 1000)} m —{' '}
+          {fmtM2((PANO_MM / 1000) ** 2)} m² — en los dos formatos del catálogo. El formato no
+          cambia el área: cambia cuántas piezas hay que colocar, y por lo tanto cuántas cajas
+          se embarcan.
+        </p>
+      </div>
 
       {/* ── Piece → carton → payload, per packing ───────────────────────── */}
       <ul className="mt-12 space-y-px border-t border-[color:var(--ink-primary)]">
@@ -406,62 +420,80 @@ export function Escala({ rows, payloadKg }: { rows: EscalaRow[]; payloadKg: numb
                 semantics, which is the one thing telling a screen reader there
                 are four packings here. */}
             <TechDraw>
-              <div
-                // items-start, so every pile frame begins at the same y and the
-                // four cartons share one ground line down the page. Stretched,
-                // the left cell took the row's full height and the short
-                // 300×300 pile sank below its own carga band.
-                className="grid items-start gap-6 py-8 md:grid-cols-[auto_1fr] md:gap-10"
-              >
-              {/* items-start, so the carton's figures begin on the same line as
-                  "Cajas hasta …" opposite them. The pile still stands on the
-                  frame's floor — that ground line lives inside the SVG, which is
-                  what lets the text align without lifting the carton off it. */}
-              <div className="flex items-start gap-5">
-                <Pila pcs={r.pcs} tileMm={r.tileMm} thickMm={r.thickMm} frame={frame} />
-                <div>
-                  <p className="font-mono text-mono-sm [font-variant-numeric:var(--numeric-variant)]">
-                    {r.format} mm
-                  </p>
-                  <p className="mt-1 text-[length:var(--lane-type-stamp)] uppercase tracking-[var(--lane-label-tracking)] text-[color:var(--ink-secondary)]">
-                    una caja
-                  </p>
-                  {/* Per-carton coverage keeps its decimals: 0,99 against 1,01
-                      is the difference the carton count turns on. Weight does
-                      not — 17,5 kg, never 17,50. */}
-                  <p className="mt-3 font-mono text-mono-sm [font-variant-numeric:var(--numeric-variant)] text-[color:var(--ink-secondary)]">
-                    {fmtInt(r.pcs)} piezas
-                    <br />
-                    {fmtM2(r.m2PerCtn)} m²
-                    <br />
-                    {r.kgPerCtn.toLocaleString('es-ES')} kg
-                  </p>
-                </div>
-              </div>
+              {/* FOUR PACKINGS BECOME A TABLE WHEN THERE IS ROOM FOR ONE.
+                  Below lg this is two cells stacked into a card, which is the
+                  only readable shape on a phone. At lg the two wrappers go
+                  display:contents and their children become four real columns —
+                  pila · una caja · la carga · el tope — so the four packings
+                  line up down each column and the section's argument (the fine
+                  format covers more m² per container, in far more cartons) is
+                  legible by scanning rather than by remembering four cards.
+                  It also gives back ~400px of scroll per row.
 
-              <div className="min-w-0">
-                <p className="text-[length:var(--lane-type-stamp)] uppercase tracking-[var(--lane-label-tracking)] text-[color:var(--ink-secondary)]">
-                  Cajas hasta {fmtInt(payloadKg)} kg
-                </p>
-                <div className="mt-3">
-                  <Carga
-                    cartons={r.cartons}
-                    payloadKg={payloadKg}
-                    id={`${r.tileMm}-${r.pcs}-${String(r.kgPerCtn).replace('.', '')}`}
-                  />
+                  items-start, so every pile frame begins at the same y and the
+                  four cartons share one ground line down the page. Stretched,
+                  the left cell took the row's full height and the short 300×300
+                  pile sank below its own carga band. */}
+              <div className="grid items-start gap-6 py-8 md:grid-cols-[auto_1fr] md:gap-10 lg:grid-cols-[auto_auto_1fr_auto]">
+                {/* items-start, so the carton's figures begin on the same line as
+                    "Cajas hasta …" opposite them. The pile still stands on the
+                    frame's floor — that ground line lives inside the SVG, which is
+                    what lets the text align without lifting the carton off it. */}
+                <div className="flex items-start gap-5 lg:contents">
+                  <Pila pcs={r.pcs} tileMm={r.tileMm} thickMm={r.thickMm} frame={frame} />
+                  <div>
+                    <p className="font-mono text-mono-sm [font-variant-numeric:var(--numeric-variant)]">
+                      {r.format} mm
+                    </p>
+                    <p className="mt-1 text-[length:var(--lane-type-stamp)] uppercase tracking-[var(--lane-label-tracking)] text-[color:var(--ink-secondary)]">
+                      una caja
+                    </p>
+                    {/* Per-carton coverage keeps its decimals: 0,99 against 1,01
+                        is the difference the carton count turns on. Weight does
+                        not — 17,5 kg, never 17,50. */}
+                    <p className="mt-3 font-mono text-mono-sm [font-variant-numeric:var(--numeric-variant)] text-[color:var(--ink-secondary)]">
+                      {fmtInt(r.pcs)} piezas
+                      <br />
+                      {fmtM2(r.m2PerCtn)} m²
+                      <br />
+                      {r.kgPerCtn.toLocaleString('es-ES')} kg
+                    </p>
+                  </div>
                 </div>
-                {/* Whole m² for a container load. Two decimals here would be
-                    1 631,14 — a centimetre-square claim on a figure the cutting
-                    plan will move by tens. The per-carton figure above carries
-                    the precision that actually decides a carton count. */}
-                <p className="mt-3 font-mono text-mono-sm [font-variant-numeric:var(--numeric-variant)]">
-                  {fmtInt(r.cartons)} cajas
-                  <span className="mx-2 text-[color:var(--ink-decoration)]">·</span>
-                  <span className="text-[color:var(--accent-ink)]">
-                    {fmtInt(Math.round(r.m2))} m²
-                  </span>
-                </p>
-              </div>
+
+                <div className="min-w-0 lg:contents">
+                  <div className="min-w-0">
+                    <p className="text-[length:var(--lane-type-stamp)] uppercase tracking-[var(--lane-label-tracking)] text-[color:var(--ink-secondary)]">
+                      Cajas hasta {fmtInt(payloadKg)} kg
+                    </p>
+                    <div className="mt-3">
+                      <Carga
+                        cartons={r.cartons}
+                        payloadKg={payloadKg}
+                        id={`${r.tileMm}-${r.pcs}-${String(r.kgPerCtn).replace('.', '')}`}
+                      />
+                    </div>
+                  </div>
+
+                  {/* The row's conclusion, and at lg its own column, so the four
+                      totals read as the comparison they are. */}
+                  <div className="mt-3 lg:mt-0 lg:text-right">
+                    <p className="hidden text-[length:var(--lane-type-stamp)] uppercase tracking-[var(--lane-label-tracking)] text-[color:var(--ink-secondary)] lg:block">
+                      Al tope de peso
+                    </p>
+                    {/* Whole m² for a container load. Two decimals here would be
+                        1 631,14 — a centimetre-square claim on a figure the cutting
+                        plan will move by tens. The per-carton figure above carries
+                        the precision that actually decides a carton count. */}
+                    <p className="whitespace-nowrap font-mono text-mono-sm [font-variant-numeric:var(--numeric-variant)] lg:mt-3">
+                      {fmtInt(r.cartons)} cajas
+                      <span className="mx-2 text-[color:var(--ink-decoration)]">·</span>
+                      <span className="text-[color:var(--accent-ink)]">
+                        {fmtInt(Math.round(r.m2))} m²
+                      </span>
+                    </p>
+                  </div>
+                </div>
               </div>
             </TechDraw>
           </li>

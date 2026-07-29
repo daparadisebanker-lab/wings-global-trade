@@ -184,6 +184,32 @@ the page grid, so the grid has no opinion about them:
 - `h-[3px]` / `w-[3px]` — the partial-state bar and the scrubber rail. A hairline
   reads as a border and 4px reads as a block; 3px is the only width that reads as
   a rail. The rail's HIT area is `w-11` above, which is the part that matters.
+- `lg:w-24` (96px, a frozen-scale step) — the Lista's three packing figures at
+  desktop. Right-aligned numerals only form a column if the column has a width;
+  96px is the widest of the three strings (`1.024 kg/caja`) with air, and one
+  width for all three is what makes them scan down the page.
+- `max-w-md` (448px) — the cap on every send/verdict button pair in the aisle
+  (Lane actions, Trade Desk WhatsApp+Email, muestrario CTA). `flex-1` is correct
+  at 390px and absurd at 1280, where it drew 620px slabs. It is a control width,
+  not a page width, which is why it does not follow the measure.
+- `11ch` / `26ch` / `46ch` / `34ch` / `42ch` / `58ch` — text measures, sized to
+  the longest string or to a reading line. A `ch` is not a layout value: it is
+  typography, and it re-measures itself if the typeface ever changes.
+
+**The measure is `.pas-measure`, and it is not a utility.** Every screen in the
+aisle rides that one class (`pasillo.css`) — 896 / 1152 at lg / 1280 at 2xl — so
+the content column cannot shift between recorrido, lista, muestrario and mesa,
+and the next screen inherits it instead of picking a fifth max-width. Two
+consequences that are easy to get wrong:
+
+- It is scoped (`[data-app='pasillo'] .pas-measure`), so it **outranks a
+  `max-w-*` utility on the same element**. A cap belongs on a child, never
+  alongside it.
+- Fixed chrome rides it through a `pointer-events-none` positioning wrapper with
+  a `pointer-events-auto` child — the density switch, the fixed lane exit and the
+  edge scrubber all use that pattern. Without the wrapper a full-width band eats
+  taps across the whole screen; without the measure the control floats 330px
+  outside the column it belongs to at 1920.
 
 **Reserved space** — a measured minimum that stops a specific collapse, each one
 the fix for a bug that shipped:

@@ -42,7 +42,7 @@ export function Formatos() {
   return (
     <div className="flex min-h-dvh flex-col bg-pas-surface">
       <header className="border-b pas-rule px-4 py-4">
-        <div className="mx-auto flex max-w-3xl items-baseline justify-between gap-4">
+        <div className="pas-measure flex items-baseline justify-between gap-4">
           <div>
             <LaneExit />
             <h1 className="font-pas-display text-pas-t2 font-semibold tracking-pas-display">
@@ -58,7 +58,7 @@ export function Formatos() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-pas-5">
+      <main className="pas-measure flex-1 px-4 py-pas-5">
         <p className="max-w-[58ch] text-pas-t1">
           El catálogo trae dos formatos. El diseño lo decide el proyecto; lo que cambia con
           el formato son las piezas que hay que colocar, las cajas que hay que mover y los m²

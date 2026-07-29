@@ -86,7 +86,7 @@ export function Muestrario({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
   return (
     <div className="flex min-h-dvh flex-col bg-pas-surface">
       <header className="border-b pas-rule px-4 py-4">
-        <div className="mx-auto flex max-w-3xl items-baseline justify-between gap-4">
+        <div className="pas-measure flex items-baseline justify-between gap-4">
           <div>
             <LaneExit />
             <h1 className="font-pas-display text-pas-t2 font-semibold tracking-pas-display">
@@ -108,7 +108,7 @@ export function Muestrario({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-pas-5">
+      <main className="pas-measure flex-1 px-4 py-pas-5">
         {rec.degraded && (
           <p className="mb-4 border pas-rule px-3 py-2 text-pas-t0 opacity-pas-resting">
             Este navegador bloquea el almacenamiento local. El muestrario se perderá al cerrar
@@ -161,10 +161,15 @@ export function Muestrario({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
           />
           {/* Two send actions, equal weight. Parity is mandatory. */}
           <div className="border-t pas-rule bg-pas-surface px-4 py-3">
-            <div className="mx-auto flex max-w-3xl gap-3">
+            {/* The row keeps the record's measure so the action starts where the
+                rows above it start; the button caps itself, because a 1280px-wide
+                "Preparar la cotización" is not a stronger call to action, it is a
+                banner. .pas-measure outranks a max-w-* utility on the same
+                element, so the cap has to live on the child. */}
+            <div className="pas-measure flex gap-3">
               <Link
                 href={PASILLO_ROUTES.mesa}
-                className="flex-1 rounded-pas-chrome border border-pas-ink/30 py-3 text-center text-pas-t0"
+                className="max-w-md flex-1 rounded-pas-chrome border border-pas-ink/30 py-3 text-center text-pas-t0"
               >
                 Preparar la cotización
               </Link>
@@ -176,7 +181,10 @@ export function Muestrario({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
       {rec.undo && (
         <div
           role="status"
-          className="fixed inset-x-4 bottom-24 z-50 mx-auto flex max-w-3xl items-center
+          // A toast is not a page: it takes a toast's width at every size, not
+          // the aisle measure. inset-x-4 with auto margins keeps it centred and
+          // lets it be edge-to-edge on a phone, where 448px does not exist.
+          className="fixed inset-x-4 bottom-24 z-50 mx-auto flex max-w-md items-center
                      justify-between gap-4 rounded-pas-chrome bg-pas-ink px-pas-5 py-3 text-pas-surface"
         >
           <span className="text-pas-t0">

@@ -166,6 +166,46 @@
   color: rgb(var(--pas-surface));
 }
 
+/* ── THE MEASURE, STATED ONCE ───────────────────────────────────────────────
+   Every screen in the aisle had picked its own max-width — 2xl on the Lane, 3xl
+   on the muestrario and the formats panel, 4xl on the Lista and the Trade Desk —
+   and not one of them grew. So a 1920px window rendered a 768px phone with
+   ~570px of empty ground on either side, and the widths disagreed with each
+   other besides: walking recorrido → lista → muestrario shifted the content
+   column three times for no reason a buyer could see.
+
+   One class, so the aisle has ONE measure and the next screen inherits it
+   instead of guessing again. The steps:
+
+     · base 896  — the phone-and-tablet measure. Below 896px of viewport this
+                   is inert; the row rhythm and the thumb zone govern there.
+     · lg  1152  — the first width where a desktop is actually a desktop. The
+                   Lista's printed facts stop truncating into three stacked
+                   lines and lay out as columns; the Trade Desk's eight columns
+                   of figures stop needing a horizontal scroll.
+     · 2xl 1280  — capped at the frozen --grid-max-width, deliberately. The
+                   aisle is a reading and comparison surface, and a 1900px row
+                   whose left end is a checkbox and whose right end is a figure
+                   is not comparison, it is a saccade. The ground takes the rest.
+
+   It sets width:100% as well, because every consumer paired mx-auto with a
+   max-width and half of them needed w-full to fill below the cap. */
+[data-app='pasillo'] .pas-measure {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 56rem;
+}
+@media (min-width: 1024px) {
+  [data-app='pasillo'] .pas-measure {
+    max-width: 72rem;
+  }
+}
+@media (min-width: 1536px) {
+  [data-app='pasillo'] .pas-measure {
+    max-width: 80rem;
+  }
+}
+
 [data-app='pasillo'] .pas-rule {
   border-color: rgb(var(--pas-ink) / 0.14);
 }
