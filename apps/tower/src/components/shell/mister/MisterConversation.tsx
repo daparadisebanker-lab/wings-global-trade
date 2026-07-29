@@ -13,6 +13,7 @@ import { t, type Locale, type Localized } from '@/lib/i18n'
 import { MisterMark } from '../MisterMark'
 import { MISTER_RENDERERS } from '../mister-renderers'
 import { useMister, type Pending } from './MisterProvider'
+import { DOWNSCALED_MEDIA_TYPE, fitWithin, IMAGE_QUALITY } from '@/lib/copilot/image-prep'
 import { artifactLabel } from './handoffs'
 import '../mister-dock.css'
 
@@ -28,15 +29,53 @@ const SUGGESTIONS: { label: Localized; prefill?: Localized; attach?: boolean }[]
   { label: { es: 'Leer una captura', en: 'Read a screenshot' }, attach: true },
 ]
 
+/** Split a data: URL into the wire pair, or null if it isn't one. */
+function splitDataUrl(dataUrl: string, mediaType: string): Pending | null {
+  const comma = dataUrl.indexOf(',')
+  return comma >= 0 ? { mediaType, dataBase64: dataUrl.slice(comma + 1), preview: dataUrl } : null
+}
+
+/**
+ * Downscale a screenshot to MAX_IMAGE_EDGE_PX before it becomes a payload.
+ * A full-resolution phone capture used to blow past Next's server-action body
+ * limit, so the action never ran and the operator saw the dock's generic failure
+ * (see lib/copilot/image-prep.ts for the three mismatched ceilings behind that).
+ *
+ * Resolves null when the browser can't do it — no canvas context, a decode
+ * failure — so the caller falls back to the original bytes rather than losing
+ * the operator's screenshot over an optimisation.
+ */
+function downscale(dataUrl: string): Promise<Pending | null> {
+  return new Promise((resolve) => {
+    const img = new Image()
+    img.onload = () => {
+      try {
+        const { width, height, scaled } = fitWithin(img.naturalWidth, img.naturalHeight)
+        if (!scaled) return resolve(null) // already small — send the original
+        const canvas = document.createElement('canvas')
+        canvas.width = width
+        canvas.height = height
+        const ctx = canvas.getContext('2d')
+        if (!ctx) return resolve(null)
+        ctx.drawImage(img, 0, 0, width, height)
+        resolve(splitDataUrl(canvas.toDataURL(DOWNSCALED_MEDIA_TYPE, IMAGE_QUALITY), DOWNSCALED_MEDIA_TYPE))
+      } catch {
+        resolve(null) // tainted canvas / OOM on a huge image
+      }
+    }
+    img.onerror = () => resolve(null)
+    img.src = dataUrl
+  })
+}
+
 /** Read a File into a Pending: strip the data: prefix off for the wire, keep it for preview. */
 function fileToPending(file: File): Promise<Pending | null> {
   if (!ALLOWED_IMAGE_TYPES.includes(file.type)) return Promise.resolve(null)
   return new Promise((resolve) => {
     const reader = new FileReader()
-    reader.onload = () => {
+    reader.onload = async () => {
       const dataUrl = String(reader.result)
-      const comma = dataUrl.indexOf(',')
-      resolve(comma >= 0 ? { mediaType: file.type, dataBase64: dataUrl.slice(comma + 1), preview: dataUrl } : null)
+      resolve((await downscale(dataUrl)) ?? splitDataUrl(dataUrl, file.type))
     }
     reader.onerror = () => resolve(null)
     reader.readAsDataURL(file)

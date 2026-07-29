@@ -15,9 +15,17 @@ import { textResult, type Attachment, type CanvasContext, type CopilotResult } f
 import { ok, fail, type ActionResult } from './result'
 
 // Vision guardrails: accepted image types and a cap on the decoded payload so a
-// pasted screenshot can't balloon the request. 5 MB of base64 ≈ 3.75 MB image.
+// pasted screenshot can't balloon the request.
+//
+// This cap has to sit UNDER the server-action body limit (next.config.mjs, 4 MB),
+// which itself sits under Vercel's 4.5 MB request-body cap — otherwise the
+// framework rejects the request before this validator ever runs and the operator
+// gets an opaque client-side failure instead of the clear message below. It used
+// to be 5 MB of base64 against a 1 MB default limit, so the advertised maximum
+// was a fiction. 3.5 M base64 chars ≈ 2.5 MB of image, leaving room for the
+// text, the conversation and encoding overhead.
 const ALLOWED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/gif']
-const MAX_IMAGE_BASE64 = 5_000_000
+const MAX_IMAGE_BASE64 = 3_500_000
 
 export async function askMister(
   text: string,
@@ -39,7 +47,7 @@ export async function askMister(
       attachment.dataBase64.length === 0 ||
       attachment.dataBase64.length > MAX_IMAGE_BASE64
     ) {
-      return fail('VALIDATION', 'Imagen demasiado grande / Image too large (máx. ~3.5 MB)')
+      return fail('VALIDATION', 'Imagen demasiado grande / Image too large (máx. ~2.5 MB)')
     }
   }
 

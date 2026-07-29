@@ -221,8 +221,26 @@ export function MisterProvider({
       clearTimeout(watchdog)
       finish(coerceResult(result.error ? textResult(result.error.message) : result.data, locale))
     } catch {
+      // The server action itself failed to run — the request never reached
+      // askMister, so its own graceful catch never fired. In production the
+      // overwhelming cause is DEPLOYMENT SKEW: server-action ids change with each
+      // build, so a tab loaded from the previous deploy posts an id the new one
+      // rejects ("Failed to find Server Action"). The old message said only "no
+      // pude procesarlo", which reads as a model failure and invites a retry that
+      // cannot work. Name the fix instead — and say the conversation survives it,
+      // because it now does (thread-store.ts).
       clearTimeout(watchdog)
-      finish(textResult(t({ es: 'No pude procesarlo ahora.', en: 'Could not process that.' }, locale)))
+      finish(
+        textResult(
+          t(
+            {
+              es: 'No pude procesarlo. Si la app se actualizó, recarga la página — tu conversación se conserva.',
+              en: 'Could not process that. If the app was updated, reload the page — your conversation is kept.',
+            },
+            locale,
+          ),
+        ),
+      )
     }
   }, [draft, pending, busy, locale, skipCanvasContext, thread])
 
