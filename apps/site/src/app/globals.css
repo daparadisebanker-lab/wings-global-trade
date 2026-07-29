@@ -14,6 +14,36 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   THE NAVIGATION SYSTEM — universal, and deliberately achromatic
+   ============================================================
+   The mobile drawer is the one surface that spans every world on this site:
+   machinery, Interiores, the represented brands, and whatever opens next. It
+   is where a buyer goes precisely BECAUSE they are not where they want to be.
+
+   So it wears no world's identity. It was reading --chrome-*, which made it
+   walnut inside /interiores and navy everywhere else — a navigation panel that
+   changed colour depending on where you happened to be standing, which is the
+   opposite of what navigation is for.
+
+   These live at :root and are NEVER redefined under [data-lane] or
+   [data-brand]. A livery that themes the drawer has broken it. The header bar
+   and the footer stay lane-aware — they are page chrome and they belong to the
+   page. The drawer belongs to the site.
+
+   Contrast, measured against #0B0B0B: ink 19.6:1, ink-2 6.5:1, ink-3 5.0:1 —
+   all three carry text. --nav-rule is decoration and carries none. */
+:root {
+  --nav-ground: #0b0b0b;
+  --nav-ink: #ffffff;
+  --nav-ink-2: rgba(255, 255, 255, 0.56);
+  --nav-ink-3: rgba(255, 255, 255, 0.48);
+  --nav-rule: rgba(255, 255, 255, 0.12);
+  --nav-rule-strong: rgba(255, 255, 255, 0.24);
+  --nav-cta: #ffffff;
+  --nav-cta-ink: #0b0b0b;
+}
+
 
 /* ============================================================
    NissanOpti — brand display face

@@ -262,7 +262,8 @@ function ScrollTopButton({ hasBar }: { hasBar: boolean }) {
           transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           className={cn(
-            'fixed left-4 z-40 flex h-10 w-10 items-center justify-center border border-[rgba(0,30,80,0.12)] bg-warm-white text-navy shadow-[0_4px_20px_rgba(0,0,0,0.10)] transition-all duration-200 hover:border-gold hover:bg-gold md:left-auto md:right-8',
+            // z-30 — the floating-tool layer, under the navigation drawer.
+            'fixed left-4 z-30 flex h-10 w-10 items-center justify-center border border-[rgba(0,30,80,0.12)] bg-warm-white text-navy shadow-[0_4px_20px_rgba(0,0,0,0.10)] transition-all duration-200 hover:border-gold hover:bg-gold md:left-auto md:right-8',
             hasBar ? 'bottom-24 md:bottom-[72px]' : 'bottom-8',
           )}
           aria-label="Volver arriba"

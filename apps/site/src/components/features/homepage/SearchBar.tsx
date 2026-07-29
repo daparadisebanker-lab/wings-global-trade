@@ -7,6 +7,13 @@ import { resolveSearchUrl } from '@/lib/routing'
 
 interface SearchBarProps {
   onNavy?: boolean
+  /**
+   * Achromatic variant for the navigation drawer. The drawer is a universal
+   * black-and-white system (globals.css --nav-*), and gold is the machinery
+   * brand — inside the drawer it is the one world's colour on the surface that
+   * belongs to all of them. Everywhere else the gold stays.
+   */
+  mono?: boolean
   /** Focus the input as soon as it mounts — used when rendered inside a just-opened panel. */
   autoFocus?: boolean
   placeholder?: string
@@ -16,6 +23,7 @@ interface SearchBarProps {
 
 export function SearchBar({
   onNavy = true,
+  mono = false,
   autoFocus = false,
   placeholder = 'Busca maquinaria, camiones, equipos industriales...',
   onNavigate,
@@ -42,14 +50,22 @@ export function SearchBar({
     <form onSubmit={handleSubmit} className="w-full">
       <div
         className={`relative flex items-center border transition-shadow focus-within:shadow-[0_0_0_2px_rgba(196,147,63,0.25)] ${
-          onNavy
+          mono
+            ? 'border-[color:var(--nav-rule)] bg-transparent'
+            : onNavy
             ? 'border-warm-white/[0.15] bg-warm-white/[0.05]'
             : 'border-[rgba(0,30,80,0.12)] bg-transparent'
         }`}
       >
         <svg
           viewBox="0 0 20 20"
-          className={`ml-4 h-4 w-4 shrink-0 ${onNavy ? 'text-gold/60' : 'text-navy/30'}`}
+          className={`ml-4 h-4 w-4 shrink-0 ${
+            mono
+              ? 'text-[color:var(--nav-ink-3)]'
+              : onNavy
+                ? 'text-gold/60'
+                : 'text-navy/30'
+          }`}
           fill="none"
           stroke="currentColor"
           strokeWidth="1.5"
@@ -75,7 +91,9 @@ export function SearchBar({
           type="submit"
           disabled={isLoading}
           className={`shrink-0 self-stretch border-l px-4 sm:px-6 font-mono text-[11px] uppercase tracking-[0.10em] transition-colors disabled:opacity-50 ${
-            onNavy
+            mono
+              ? 'border-[color:var(--nav-rule-strong)] text-[color:var(--nav-ink-2)] hover:bg-[var(--nav-cta)] hover:border-[color:var(--nav-cta)] hover:text-[color:var(--nav-cta-ink)]'
+              : onNavy
               ? 'border-warm-white/[0.12] text-warm-white/50 hover:bg-gold hover:border-gold hover:text-navy'
               : 'border-[rgba(0,30,80,0.08)] text-navy/40 hover:bg-gold hover:border-gold hover:text-navy'
           }`}

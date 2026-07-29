@@ -1,8 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useMultiInquiry } from '@/hooks/useMultiInquiry'
+import { isMachineryPath } from '@/lib/scope'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/toast'
 
@@ -26,6 +28,7 @@ const EMPTY_FORM: FormState = {
 
 export function MultiInquiryPanel() {
   const { items, remove, clear } = useMultiInquiry()
+  const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const [form, setForm] = useState<FormState>(EMPTY_FORM)
   const [submitting, setSubmitting] = useState(false)
@@ -65,6 +68,12 @@ export function MultiInquiryPanel() {
     }
   }
 
+  // Same scope as the compare tray, and for the same reason: this panel
+  // collects `products`, which only exist in the machinery world. Selecting
+  // three tractors and walking into Interiores used to leave a machinery
+  // inquiry trigger floating over the tile aisle. The selection survives in
+  // its provider; only the surface is scoped.
+  if (!isMachineryPath(pathname)) return null
   if (count === 0) return null
 
   return (
@@ -73,7 +82,7 @@ export function MultiInquiryPanel() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 left-6 z-40 flex items-center gap-2 bg-navy px-4 py-3 font-mono text-[11px] uppercase tracking-nav text-warm-white shadow-card-hover transition-all hover:bg-navy-light"
+        className="fixed bottom-6 left-6 z-30 flex items-center gap-2 bg-navy px-4 py-3 font-mono text-[11px] uppercase tracking-nav text-warm-white shadow-card-hover transition-all hover:bg-navy-light"
       >
         <span className="flex h-5 w-5 items-center justify-center rounded-full bg-gold font-mono text-[10px] font-medium text-navy">
           {count}
