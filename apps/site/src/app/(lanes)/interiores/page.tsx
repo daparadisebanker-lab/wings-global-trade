@@ -20,17 +20,20 @@ import Link from 'next/link'
 // The lane config is the Phase-0 record, not a copy of it. Every figure this
 // page states about the lane's identity is read from there, so the page cannot
 // drift from the registration.
-import { LaneStamp } from '@wings/trade-ui/lane-stamp'
 import { lane } from '@wings/liveries/interiores/lane.config'
 import { SERIES, SKUS } from '@/pasillo/data/catalogue'
 import { CONTAINERS, fmtInt, fmtM2 } from '@/pasillo/lib/packing'
 import { PASILLO_ROUTES } from '@/pasillo/lib/routes'
+import { Escala } from './Escala'
 import { Umbral } from './Umbral'
 
 export const metadata: Metadata = {
   title: 'Interiores — WGT/02',
+  // Says what ships. The old description listed five disciplines with nothing
+  // behind them — the same overclaim the page itself no longer makes, except
+  // this one was the version that reached a search result.
   description:
-    'Acabados duros, mobiliario, iluminación, textiles, baño y OS&E para proyectos de hospitalidad y residenciales. Cobertura en m², cajas y llenado de contenedor declarados antes de cotizar.',
+    'Azulejo de arte cerámico esmaltado para proyectos de hospitalidad y residenciales: 236 referencias en 150×150 y 300×300 mm, con m², cajas y peso por caja declarados antes de cotizar.',
   alternates: { canonical: '/interiores' },
 }
 
@@ -45,6 +48,9 @@ const FORMATS = [...new Set(SERIES.map((s) => s.format_mm.join('×')))]
  *  statement below quotes the real span rather than a convenient midpoint. */
 const PACKINGS = SERIES.map((s) => ({
   format: s.format_mm.join('×'),
+  tileMm: s.format_mm[0],
+  thickMm: s.thickness_mm,
+  pcs: s.pcs_per_ctn,
   m2PerCtn: s.m2_per_ctn,
   kgPerCtn: s.kgs_per_ctn,
 }))
@@ -53,7 +59,7 @@ const PAYLOAD_KG = CONTAINERS[0].payload
 
 /** m² that reach the payload limit, per distinct packing. Floor, not ceil:
  *  this is what fits, and a carton you cannot load is not coverage. */
-const FILL_ROWS = [...new Map(PACKINGS.map((p) => [`${p.format}|${p.kgPerCtn}`, p])).values()]
+const FILL_ROWS = [...new Map(PACKINGS.map((p) => [`${p.format}|${p.pcs}|${p.kgPerCtn}`, p])).values()]
   .map((p) => {
     const cartons = Math.floor(PAYLOAD_KG / p.kgPerCtn)
     return { ...p, cartons, m2: cartons * p.m2PerCtn }
@@ -62,7 +68,6 @@ const FILL_ROWS = [...new Map(PACKINGS.map((p) => [`${p.format}|${p.kgPerCtn}`, 
 
 export default function InterioresPage() {
   const active = lane.taxonomy.filter((t) => t.status === 'ACTIVE')
-  const opening = lane.taxonomy.filter((t) => t.status === 'OPENING')
 
   return (
     // pt offsets the fixed site header, same as the (brands) group: this ground
@@ -72,24 +77,15 @@ export default function InterioresPage() {
     <div className="pt-16 md:pt-16" style={{ backgroundImage: 'var(--texture)' }}>
       {/* ── Lane header ──────────────────────────────────────────────────── */}
       <header className="mx-auto max-w-[var(--grid-max-width)] px-6 pb-12 pt-12 md:px-8 md:pb-16 md:pt-24">
-        {/* The mark and its status are one block, on their own line, with the
-            status on a rule beneath rather than jammed against a two-line unit
-            number. The identity reads as a stamped plate, not as debris above a
-            headline. */}
-        <div className="flex flex-col items-start gap-3">
-          {/* The full BIC unit number, its check digit computed from the lane
-              code rather than typed. "Lane" was internal framework English on a
-              buyer-facing page — to the person reading it, this is a división. */}
-          <LaneStamp code={lane.code} name={lane.name} archetype={lane.archetype} variant="full" />
-          <span
-            className="lane-stamp text-[length:var(--lane-type-stamp)] leading-none"
-            data-status={lane.status}
-          >
-            {lane.status === 'OPENING' ? 'División en apertura' : 'División activa'}
-          </span>
-        </div>
-
-        <h1 className="mt-12 max-w-[16ch] text-[length:var(--type-6)] font-normal leading-[1.05] tracking-[var(--lane-display-tracking)] md:text-[length:var(--type-7)]">
+        {/* NO STAMP PLATE HERE.
+            WGTU 000002 · INTERIORES · PROJECT · DIVISIÓN EN APERTURA was four
+            lines of internal registration language above the headline: an ISO
+            container check digit, an archetype name out of the framework, and a
+            status that tells a buyer the thing they are looking at is not ready.
+            None of it is what a procurement buyer opened this page for. The
+            lane code still governs the routes, the livery and the footer — it
+            just no longer introduces the page. */}
+        <h1 className=" max-w-[16ch] text-[length:var(--type-6)] font-normal leading-[1.05] tracking-[var(--lane-display-tracking)] md:text-[length:var(--type-7)]">
           Interiores
         </h1>
 
@@ -124,67 +120,37 @@ export default function InterioresPage() {
         </div>
       </section>
 
-      {/* ── Category architecture ────────────────────────────────────────── */}
+      {/* ── The catalogue ────────────────────────────────────────────────
+          NO DISCIPLINE INDEX. This section used to open with "Seis disciplinas,
+          declaradas completas desde el primer día" and then list five of them
+          under EN APERTURA stamps. It was an argument about the architecture of
+          the lane, addressed to whoever built it, on a page whose reader is
+          trying to price a floor. Five rows that go nowhere are five rows of
+          noise, and the honesty they were reaching for is better served by
+          simply not claiming the five. One catalogue ships; it gets the page. */}
       <section className="mx-auto max-w-[var(--grid-max-width)] px-6 py-12 md:px-8 md:py-24">
-        <SectionLabel>Disciplinas</SectionLabel>
-        <p className="mt-4 max-w-[60ch] text-[length:var(--type-1)] leading-[1.55] text-[color:var(--ink-secondary)]">
-          Seis disciplinas, declaradas completas desde el primer día. Hoy solo una tiene catálogo
-          embarcable; las demás llevan sello de apertura en lugar de una página vacía. Preferimos
-          declarar lo que aún no está antes que aparentar profundidad que no existe.
-        </p>
-
-        <div className="mt-12 space-y-4">
-          {active.map((d) => (
-            <article
-              key={d.slug}
-              className="border border-[color:var(--accent-border)] bg-[color:var(--surface-1)]"
-            >
-              <div className="flex flex-wrap items-baseline justify-between gap-4 border-b border-[color:var(--ink-decoration)] px-6 py-4">
-                <h3 className="text-[length:var(--type-3)] tracking-[var(--lane-display-tracking)]">
-                  {d.name.es}
-                </h3>
-                <span className="lane-stamp px-2 py-1 text-[length:var(--lane-type-stamp)] leading-none">Activa</span>
-              </div>
-
-              <div className="flex flex-wrap items-end justify-between gap-6 px-6 py-6">
-                <div>
-                  <h4 className="text-[length:var(--type-2)] tracking-[var(--lane-display-tracking)]">
-                    Azulejos
-                  </h4>
-                  <p className="mt-2 max-w-[46ch] text-[length:var(--type-0)] leading-[1.5] text-[color:var(--ink-secondary)]">
-                    {fmtInt(SERIES.length)} series · {fmtInt(SKUS.length)} referencias ·{' '}
-                    {FORMATS.join(' y ')} mm. Azulejo de arte cerámico esmaltado.
-                  </p>
-                </div>
-
-                {/* One primary action for this card, and it is not "comprar". */}
-                <Umbral>
-                  <Link
-                    href={PASILLO_ROUTES.lane}
-                    className="inline-block border border-[color:var(--accent)] bg-[color:var(--accent)] px-6 py-3 text-[length:var(--type-0)] uppercase tracking-[var(--lane-label-tracking)] text-[color:var(--surface-0)] transition-colors hover:bg-[color:var(--accent-hover)]"
-                  >
-                    Recorrer el catálogo
-                  </Link>
-                </Umbral>
-              </div>
-            </article>
-          ))}
-
-          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {opening.map((d) => (
-              <li
-                key={d.slug}
-                data-status="OPENING"
-                className="flex items-center justify-between border px-4 py-4"
+        <SectionLabel>El catálogo</SectionLabel>
+        {active.map((d) => (
+          <div key={d.slug} className="mt-8">
+            <h2 className="max-w-[20ch] text-[length:var(--type-5)] leading-[1.1] tracking-[var(--lane-display-tracking)]">
+              Azulejos
+            </h2>
+            <p className="mt-6 max-w-[58ch] text-[length:var(--type-1)] leading-[1.55] text-[color:var(--ink-secondary)]">
+              Azulejo de arte cerámico esmaltado, {fmtInt(SERIES.length)} series y{' '}
+              {fmtInt(SKUS.length)} referencias en {FORMATS.join(' y ')} mm. Cada referencia
+              declara piezas por caja, m² por caja y kilos por caja — las cifras con las que
+              se arma una cotización.
+            </p>
+            <Umbral>
+              <Link
+                href={PASILLO_ROUTES.lane}
+                className="mt-8 inline-block border border-[color:var(--accent)] bg-[color:var(--accent)] px-8 py-4 text-[length:var(--type-0)] uppercase tracking-[var(--lane-label-tracking)] text-[color:var(--surface-0)] transition-colors hover:bg-[color:var(--accent-hover)]"
               >
-                <span className="text-[length:var(--type-1)]">{d.name.es}</span>
-                <span className="text-[length:var(--lane-type-stamp)] uppercase tracking-[var(--lane-label-tracking)]">
-                  En apertura
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
+                Recorrer el catálogo
+              </Link>
+            </Umbral>
+          </div>
+        ))}
       </section>
 
       {/* ── Container logic ──────────────────────────────────────────────── */}
@@ -202,43 +168,7 @@ export default function InterioresPage() {
             del empaque impreso del proveedor, no de un promedio.
           </p>
 
-          <div className="mt-12 overflow-x-auto">
-            <table className="w-full min-w-[34rem] border-collapse text-left">
-              <caption className="sr-only">
-                Cobertura máxima por formato antes de alcanzar la carga útil de {fmtInt(PAYLOAD_KG)}{' '}
-                kg
-              </caption>
-              <thead>
-                <tr className="border-b border-[color:var(--ink-primary)]">
-                  {['Formato', 'm² / caja', 'kg / caja', 'Cajas al tope', 'Cobertura'].map((h) => (
-                    <th
-                      key={h}
-                      scope="col"
-                      className="py-3 pr-6 text-[length:var(--lane-type-stamp)] font-medium uppercase tracking-[var(--lane-label-tracking)] text-[color:var(--ink-secondary)] last:pr-0"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="[font-variant-numeric:var(--numeric-variant)]">
-                {FILL_ROWS.map((r) => (
-                  <tr
-                    key={`${r.format}-${r.kgPerCtn}`}
-                    className="border-b border-[color:var(--ink-decoration)]"
-                  >
-                    <td className="py-4 pr-6 font-mono text-mono-sm">{r.format} mm</td>
-                    <td className="py-4 pr-6 font-mono text-mono-sm">{fmtM2(r.m2PerCtn)}</td>
-                    <td className="py-4 pr-6 font-mono text-mono-sm">{fmtM2(r.kgPerCtn)}</td>
-                    <td className="py-4 pr-6 font-mono text-mono-sm">{fmtInt(r.cartons)}</td>
-                    <td className="py-4 font-mono text-mono-sm">
-                      <span className="text-[color:var(--accent-ink)]">{fmtM2(r.m2)} m²</span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <Escala rows={FILL_ROWS} payloadKg={PAYLOAD_KG} />
 
           <p className="mt-6 max-w-[62ch] text-[length:var(--type-0)] leading-[1.5] text-[color:var(--ink-secondary)]">
             Cobertura de tope de carga, sin merma. La merma por corte y rotura se define contra el

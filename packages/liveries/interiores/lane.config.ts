@@ -13,12 +13,15 @@ export const lane = {
   slug: 'interiores',
   name: 'Interiores',
 
-  // Ordered by what actually ships. Leading on FF&E and OS&E — the two
-  // disciplines with nothing behind them yet — put the least shippable words
-  // first on a page whose whole argument is that it declares what it has.
+  // SAYS WHAT SHIPS, and stops. The scope used to list six disciplines — FF&E,
+  // lighting, textiles, bath, OS&E — of which exactly one has a catalogue a
+  // buyer can order from. Naming the other five in the first sentence a buyer
+  // reads is a claim about depth the lane cannot honour, on a page whose whole
+  // argument is that it declares only what it has. When a second discipline
+  // ships, it earns its way back into this line.
   scope: {
-    es: 'Acabados duros, mobiliario (FF&E), iluminación, textiles, baño y OS&E para proyectos de hospitalidad y residenciales.',
-    en: 'Hard finishes, furniture (FF&E), lighting, textiles, bath and OS&E for hospitality and residential projects.',
+    es: 'Acabados duros cerámicos para proyectos de hospitalidad y residenciales: cobertura en m², cajas y peso declarados antes de cotizar.',
+    en: 'Ceramic hard finishes for hospitality and residential projects: coverage in m², cartons and weight declared before pricing.',
   },
 
   // §3 decision tree: the buyer (procurement / construction) and the unit math
