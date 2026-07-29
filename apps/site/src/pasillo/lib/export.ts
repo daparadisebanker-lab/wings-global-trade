@@ -27,7 +27,14 @@
 //  · A `review` face_kind travels with its line, because a known data
 //    discrepancy reaching Wings ops silently is how it reaches a factory.
 
-import { getSeries, getSku } from '@/pasillo/lib/catalogue'
+import { getSeries, getSku, seriesName, seriesNameRaw } from '@/pasillo/lib/catalogue'
+import type { Series } from '@/pasillo/types/catalogue'
+
+/** "Mar de Flores · Flower Sea Series" — collapses to one name when untranslated. */
+const seriesLine = (s: Series): string => {
+  const raw = seriesNameRaw(s)
+  return raw ? `${seriesName(s)} · ${raw}` : seriesName(s)
+}
 import {
   containerFill,
   fmtFcl,
@@ -99,9 +106,14 @@ export function requestBody({ folders, qty, notes, buyer, kind, dateISO }: Reque
     const series = getSeries(folder.series_uid)
     if (!series || folder.selected.length === 0) continue
     L.push(
+      // BOTH names, buyer's first. Ops reads this against a conversation held
+      // in Spanish and then quotes a factory that only knows its own English
+      // series name; a document carrying one of the two makes somebody
+      // translate under time pressure, which is how the wrong series ships.
+      //
       // Thickness carries a decimal on several series (8.8 mm) and must go
       // through the same comma rule as every other figure in this document.
-      `${series.name_raw} — ${series.format_mm[0]}×${series.format_mm[1]}×${dec(series.thickness_mm, 1)} mm` +
+      `${seriesLine(series)} — ${series.format_mm[0]}×${series.format_mm[1]}×${dec(series.thickness_mm, 1)} mm` +
         ` · ${series.pcs_per_ctn} PCS/CTN · ${dec(series.kgs_per_ctn, 1)} KGS/CTN` +
         ` · ${dec(series.m2_per_ctn, 2)} m²/caja`,
     )

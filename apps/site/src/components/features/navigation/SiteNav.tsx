@@ -16,6 +16,13 @@ interface SiteNavProps {
   categories: Category[]
 }
 
+// TAILWIND CANNOT APPLY AN OPACITY MODIFIER TO AN ARBITRARY var() COLOUR:
+// `text-[color:var(--chrome-ink,#F8F6F0)]/35` emits NO RULE AT ALL, so the
+// element silently inherits and only looks right while the inherited ink
+// happens to be near-white. color-mix() survives compilation, and Tailwind's
+// scanner only sees string literals, so the ladder lives here.
+const INK_70 = 'text-[color:color-mix(in_srgb,var(--chrome-ink,#F8F6F0)_70%,transparent)]'
+
 const LINKS = [
   { href: '/proceso',    label: 'Cómo importar' },
   // WGT/02 — the lane, not the catalogue. "Azulejos" is what sits inside it;
@@ -180,8 +187,8 @@ export function SiteNav({ categories }: SiteNavProps) {
                   setMenuHovered((o) => !o)
                 }}
                 className={cn(
-                  'flex items-center gap-1 font-mono text-[11px] uppercase tracking-nav text-warm-white/70 transition-colors hover:text-warm-white',
-                  (pathname?.startsWith('/catalogo')) && 'text-warm-white after:absolute after:bottom-[-2px] after:left-0 after:w-full after:h-px after:bg-gold',
+                  `flex items-center gap-1 font-mono text-[11px] uppercase tracking-nav ${INK_70} transition-colors hover:text-[color:var(--chrome-ink,#F8F6F0)]`,
+                  (pathname?.startsWith('/catalogo')) && 'text-[color:var(--chrome-ink,#F8F6F0)] after:absolute after:bottom-[-2px] after:left-0 after:w-full after:h-px after:bg-[var(--chrome-accent,var(--color-gold))]',
                 )}
               >
                 Catálogo
@@ -225,7 +232,7 @@ export function SiteNav({ categories }: SiteNavProps) {
                 setMenuHovered(false)
                 setSearchOpen((o) => !o)
               }}
-              className="flex h-8 w-8 items-center justify-center text-warm-white/70 transition-colors duration-200 hover:text-warm-white"
+              className={`flex h-8 w-8 items-center justify-center ${INK_70} transition-colors duration-200 hover:text-[color:var(--chrome-ink,#F8F6F0)]`}
             >
               <svg
                 viewBox="0 0 20 20"
@@ -241,18 +248,18 @@ export function SiteNav({ categories }: SiteNavProps) {
             </button>
             <Link
               href="/contacto"
-              className="font-mono text-[11px] uppercase tracking-nav text-warm-white/70 transition-colors duration-200 hover:text-warm-white"
+              className={`font-mono text-[11px] uppercase tracking-nav ${INK_70} transition-colors duration-200 hover:text-[color:var(--chrome-ink,#F8F6F0)]`}
             >
               Contacto
             </Link>
             <Link
               href="/cotizar"
-              className="inline-flex items-center gap-2 border border-gold/30 px-4 py-2 font-mono text-[11px] uppercase tracking-nav text-gold transition-all duration-200 hover:bg-gold hover:text-navy"
+              className="inline-flex items-center gap-2 border border-[var(--chrome-label,rgba(196,147,63,0.30))] px-4 py-2 font-mono text-[11px] uppercase tracking-nav text-[var(--chrome-accent,var(--color-gold))] transition-all duration-200 hover:bg-[var(--chrome-accent,var(--color-gold))] hover:text-[color:var(--chrome-accent-ink,var(--color-navy))]"
             >
               Cotizar
             </Link>
             <WhatsAppButton
-              variant={solid ? 'gold' : 'green'}
+              variant={solid ? 'chrome' : 'green'}
               label="WhatsApp"
               message="Hola, estoy revisando el catálogo de Wings Global Trade y me gustaría más información."
             />
@@ -263,7 +270,7 @@ export function SiteNav({ categories }: SiteNavProps) {
             aria-label="Abrir menú"
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((o) => !o)}
-            className="relative z-50 flex h-10 w-10 items-center justify-center text-warm-white lg:hidden"
+            className="relative z-50 flex h-10 w-10 items-center justify-center text-[color:var(--chrome-ink,#F8F6F0)] lg:hidden"
           >
             <div className="flex flex-col gap-1.5">
               <span
@@ -293,7 +300,7 @@ export function SiteNav({ categories }: SiteNavProps) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.2, ease: [0.25, 1, 0.5, 1] }}
-                className="border-t border-[rgba(196,147,63,0.12)] bg-[#000C1F] px-10 py-6 shadow-card-hover"
+                className="border-t border-[var(--chrome-hairline,rgba(196,147,63,0.12))] bg-[var(--chrome-ground,#000C1F)] px-10 py-6 shadow-card-hover"
               >
                 <div className="mx-auto max-w-xl">
                   <SearchBar
@@ -311,7 +318,7 @@ export function SiteNav({ categories }: SiteNavProps) {
         {/* Scroll progress indicator — transform-driven, updated via ref (no re-render per pixel) */}
         <div
           ref={progressBarRef}
-          className="absolute bottom-0 left-0 z-10 h-px w-full origin-left bg-gold"
+          className="absolute bottom-0 left-0 z-10 h-px w-full origin-left bg-[var(--chrome-accent,var(--color-gold))]"
           style={{ transform: 'scaleX(0)' }}
           aria-hidden
         />
@@ -327,8 +334,8 @@ function NavLink({ href, label, active }: { href: string; label: string; active:
     <Link
       href={href}
       className={cn(
-        'font-mono text-[11px] uppercase tracking-nav text-warm-white/70 transition-colors duration-200 hover:text-warm-white relative',
-        active && 'text-warm-white after:absolute after:bottom-[-2px] after:left-0 after:w-full after:h-px after:bg-gold',
+        `font-mono text-[11px] uppercase tracking-nav ${INK_70} transition-colors duration-200 hover:text-[color:var(--chrome-ink,#F8F6F0)] relative`,
+        active && 'text-[color:var(--chrome-ink,#F8F6F0)] after:absolute after:bottom-[-2px] after:left-0 after:w-full after:h-px after:bg-[var(--chrome-accent,var(--color-gold))]',
       )}
     >
       {label}

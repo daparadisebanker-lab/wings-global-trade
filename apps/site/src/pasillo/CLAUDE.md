@@ -126,20 +126,79 @@ mark would vanish on some tiles and clash with others.
   it, never fake a rotation), `review` (they disagree; the UI says so).
   One SKU is currently flagged: `PM3001`.
 
+## 4-ter · Two languages, and which one goes where
+
+The supplier prints everything in English — ten series names, six colour names,
+every finish string. **The buyer reads Spanish; the factory reads its own
+catalogue back.** Both are true at once, so both are carried.
+
+- The Spanish vocabulary lives in `lib/catalogue.ts` (`SERIES_ES`, `COLOUR_ES`),
+  **never in `data/catalogue.ts`** — that file is generated, and a name written
+  into it is lost on the next pipeline run.
+- `seriesName()` is what every buyer-facing surface renders. `seriesNameRaw()`
+  is the printed name, shown beside it wherever a buyer might quote the series
+  back to us, and carried into the RFQ so ops can order without translating
+  under time pressure.
+- The Lista searches **both** names. A buyer with the supplier's PDF open types
+  "Flower Sea" and must not come up empty.
+- `finish_raw` stays English everywhere it reaches a supplier: it is the
+  evidence when a spec is disputed, and a translated finish would have to be
+  translated back.
+- Two series are both "Esmalte Macizo" (150 and 300). That is deliberate — every
+  surface showing a name also shows the format, except the Lista's series
+  filter, which is exactly why `seriesOption()` exists. `catalogue.test.ts`
+  holds this, including the rule that every series is renamed at all: a uid the
+  pipeline adds and nobody translates falls back to English **silently**, and
+  that test is what catches it.
+
 ## 4-bis · The token lint, and what legitimately fails it
 
-Zero raw values means zero LAYOUT values. Four component-intrinsic dimensions are
-not on the frozen spacing scale and must stay off it:
+Zero raw values means zero LAYOUT values. **Everything below is the complete
+allowlist** — if the lint flags something not on this list, it is a bug, and if
+you add a value here you owe it the same one-line argument the others carry.
+"It looked right" is not one.
 
-- `w-11 / h-11 / pl-11` (44px) — the touch-target floor. An accessibility
-  constant, not a spacing step; rounding it to 48 to please a lint is the wrong
-  direction and rounding it to 32 is a regression.
-- `w-3.5 h-3.5` (14px) — the checkmark glyph, sized to its 32px box, not to the
-  page grid.
+**44px — the accessibility constant**, and everything measured against it. Not a
+spacing step: rounding it up to 48 to please a lint is the wrong direction and
+rounding it down to 32 is a regression.
+
+- `w-11` — the scrubber's invisible grab band (the rail it wraps is 3px).
+- `h-11` — the qty inputs in the Trade Desk and the muestrario. They were 30px.
+- `pl-11` — the indent that hangs a SKU's detail under its own checkbox.
+- `right-11` — the scrubber label, cleared past the grab band.
+- `h-11 w-11` — the series-cover thumbnails, sized to the row's touch rhythm so
+  the image and the target it sits in are one rectangle.
+
+**Component-intrinsic dimensions** — sized to the thing they are inside, not to
+the page grid, so the grid has no opinion about them:
+
+- `w-3.5 h-3.5` (14px) — the checkmark glyph, sized to its 32px (`pas-6`) box.
+- `-inset-1.5` (6px) — the invisible expansion that buys that 32px checkbox its
+  44px target without costing the Lista its density.
 - `h-1.5` (6px) — the fill bar's stroke weight.
+- `w-10 h-10` (40px) — the SKU-row thumbnail, deliberately under the 44px series
+  cover above it (leaf vs folder), and the sheet-dock drag handle.
+- `w-[11px] h-[11px]` + `bottom-[3px] left-[3px]` — the collected corner's check,
+  positioned inside a triangle drawn in CSS. It is bound to that triangle's
+  geometry; changing it to a scale step puts the check outside the mark.
+- `h-[3px]` / `w-[3px]` — the partial-state bar and the scrubber rail. A hairline
+  reads as a border and 4px reads as a block; 3px is the only width that reads as
+  a rail. The rail's HIT area is `w-11` above, which is the part that matters.
 
-Everything else in this directory is on the scale or is a declared `--pas-*`
-token. If you find a bare px anywhere else, it is a bug.
+**Reserved space** — a measured minimum that stops a specific collapse, each one
+the fix for a bug that shipped:
+
+- `min-h-[1.25rem]` — the Lane's control row, which is empty at the first booth.
+  Without it the header jumps 20px on the first swipe.
+- `pr-[11.5rem]` — the Lista header's reserve for the fixed density switch. The
+  availability note used to truncate mid-word beneath it.
+- `min-w-[640px]` — the Trade Desk table's floor before it scrolls horizontally.
+  Eight columns of figures below this stop being comparable.
+- `h-[92dvh]` — the sheet-dock's height, leaving the 8% that tells a buyer there
+  is a page behind it.
+
+Everything else in this directory is on the frozen scale or is a declared
+`--pas-*` token.
 
 ## 5 · Stack
 

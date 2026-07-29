@@ -17,7 +17,17 @@ import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { LaneExit } from '@/pasillo/components/PasilloShell'
 import { StatusLamp } from '@/pasillo/components/StatusLamp'
-import { SERIES, SKUS, finishLabel, getSeries, patternLabel } from '@/pasillo/lib/catalogue'
+import {
+  SERIES,
+  SKUS,
+  colourLabel,
+  finishLabel,
+  formatLabel,
+  getSeries,
+  patternLabel,
+  seriesName,
+  seriesOption,
+} from '@/pasillo/lib/catalogue'
 import { fmtM2 } from '@/pasillo/lib/packing'
 import { PARAM_SKU } from '@/pasillo/lib/routes'
 import { haptic, useRecord } from '@/pasillo/lib/record'
@@ -33,6 +43,12 @@ const FINISHES: { id: Finish; label: string }[] = [
   { id: 'glossy', label: 'Brillante' },
   { id: 'massed_glaze', label: 'Esmalte macizo' },
 ]
+
+/** The series' Spanish name from a SKU's uid — resolved once per lookup. */
+const seriesLabel = (uid: string): string => {
+  const s = getSeries(uid)
+  return s ? seriesName(s) : ''
+}
 
 export function Lista({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
   const rec = useRecord()
@@ -53,6 +69,10 @@ export function Lista({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
     // 236 rows in memory need a filter box, not a search engine — and it matches
     // only fields the supplier actually printed: the code, the series name, and
     // the colour name where one exists. Nothing inferred, nothing fuzzy.
+    //
+    // BOTH names are searchable, Spanish and printed. The aisle shows "Mar de
+    // Flores"; the supplier's PDF says "Flower Sea Series", and a buyer with
+    // that PDF open must not come up empty.
     const q = query.trim().toLowerCase()
     let out = SKUS.filter(
       (s) =>
@@ -62,15 +82,17 @@ export function Lista({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
           formats.has(getSeries(s.series_uid)?.format_mm.join('×') ?? '')) &&
         (!q ||
           s.code.toLowerCase().includes(q) ||
+          seriesLabel(s.series_uid).toLowerCase().includes(q) ||
           (getSeries(s.series_uid)?.name_raw ?? '').toLowerCase().includes(q) ||
+          (colourLabel(s) ?? '').toLowerCase().includes(q) ||
           (s.colour_name ?? '').toLowerCase().includes(q)),
     )
     if (sort === 'code') out = [...out].sort((a, b) => a.code.localeCompare(b.code))
     else if (sort === 'series')
       out = [...out].sort(
         (a, b) =>
-          (getSeries(a.series_uid)?.name_raw ?? '').localeCompare(
-            getSeries(b.series_uid)?.name_raw ?? '',
+          seriesLabel(a.series_uid).localeCompare(
+            seriesLabel(b.series_uid),
           ) || a.code.localeCompare(b.code),
       )
     else if (sort === 'coverage')
@@ -137,16 +159,27 @@ export function Lista({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
                        px-3 py-2 text-pas-dense placeholder:opacity-pas-dimmed"
           />
 
-          {/* finish is a text chip, never a swatch: finish is tactile and cannot
-              be shown at 40px without lying about it */}
-          <div className="mt-3 flex flex-wrap items-center gap-2">
+          {/* ONE SCROLLING RAIL, NOT FOUR WRAPPING ROWS.
+              flex-wrap put finish, format and the two selects on four stacked
+              lines: ~450px of controls before the first row of the thing the
+              buyer came to compare, which on a 844px phone is two visible rows.
+              A single rail that scrolls sideways holds every filter, costs one
+              line, and gives back four rows above the fold. The rail keeps its
+              own overflow so the sticky header never grows.
+              finish is a text chip, never a swatch: finish is tactile and
+              cannot be shown at 40px without lying about it. */}
+          <div
+            className="-mx-4 mt-3 flex items-center gap-2 overflow-x-auto px-4 pb-1
+                       [mask-image:linear-gradient(90deg,#000_calc(100%-20px),transparent)]
+                       sm:[mask-image:none]"
+          >
             {FINISHES.map((f) => (
               <button
                 key={f.id}
                 type="button"
                 aria-pressed={finishes.has(f.id)}
                 onClick={() => toggleFinish(f.id)}
-                className={`pas-stamp rounded-pas-chrome border px-3 py-2 ${
+                className={`pas-stamp shrink-0 whitespace-nowrap rounded-pas-chrome border px-3 py-2 ${
                   finishes.has(f.id) ? 'border-pas-ink bg-pas-ink text-pas-surface' : 'border-pas-ink/25'
                 }`}
               >
@@ -163,24 +196,24 @@ export function Lista({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
                 type="button"
                 aria-pressed={formats.has(f)}
                 onClick={() => toggleFormat(f)}
-                className={`pas-stamp rounded-pas-chrome border px-3 py-2 ${
+                className={`pas-stamp shrink-0 whitespace-nowrap rounded-pas-chrome border px-3 py-2 ${
                   formats.has(f) ? 'border-pas-ink bg-pas-ink text-pas-surface' : 'border-pas-ink/25'
                 }`}
               >
                 {f}
               </button>
             ))}
-            <span aria-hidden className="mx-1 h-pas-5 w-px bg-pas-ink/15" />
+            <span aria-hidden className="mx-1 h-pas-5 w-px shrink-0 bg-pas-ink/15" />
             <select
               value={seriesFilter}
               onChange={(e) => setSeriesFilter(e.target.value)}
               aria-label="Serie"
-              className="pas-stamp rounded-pas-chrome border border-pas-ink/25 bg-pas-surface px-2 py-2"
+              className="pas-stamp shrink-0 rounded-pas-chrome border border-pas-ink/25 bg-pas-surface px-2 py-2"
             >
               <option value="">Todas las series</option>
               {SERIES.map((s) => (
                 <option key={s.series_uid} value={s.series_uid}>
-                  {s.name_raw}
+                  {seriesOption(s)}
                 </option>
               ))}
             </select>
@@ -188,7 +221,7 @@ export function Lista({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
               value={sort}
               onChange={(e) => setSort(e.target.value as Sort)}
               aria-label="Ordenar"
-              className="pas-stamp rounded-pas-chrome border border-pas-ink/25 bg-pas-surface px-2 py-2"
+              className="pas-stamp shrink-0 rounded-pas-chrome border border-pas-ink/25 bg-pas-surface px-2 py-2"
             >
               <option value="catalogue">Orden del catálogo</option>
               <option value="code">Código</option>
@@ -248,10 +281,16 @@ export function Lista({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
                       into WhatsApp. The lines beneath it may elide. */}
                   <span className="pas-mono block whitespace-nowrap text-pas-dense">{sku.code}</span>
                   <span className="block truncate text-pas-label opacity-pas-resting">
-                    {series.name_raw} · {finishLabel(sku)}
+                    {seriesName(series)} · {finishLabel(sku)}
                   </span>
+                  {/* THE FORMAT BELONGS ON A COMPARISON ROW.
+                      Two series are both "Esmalte Macizo", one at 150 and one
+                      at 300, so without it two rows here read identically for
+                      products a buyer would never confuse in person. It is also
+                      the axis they compare on first — tile size decides the
+                      room before pattern does. */}
                   <span className="block truncate text-pas-label opacity-pas-dimmed">
-                    {patternLabel(sku)}
+                    {formatLabel(series)} · {patternLabel(sku)}
                   </span>
                 </span>
               </button>

@@ -25,6 +25,15 @@ interface FooterProps {
   categories: Category[]
 }
 
+// TAILWIND CANNOT APPLY AN OPACITY MODIFIER TO AN ARBITRARY var() COLOUR:
+// `text-[color:var(--chrome-ink,#F8F6F0)]/35` emits NO RULE AT ALL, so the
+// element silently inherits and only looks right while the inherited ink
+// happens to be near-white. color-mix() survives compilation, and Tailwind's
+// scanner only sees string literals, so the ladder lives here.
+const INK_50 = 'text-[color:color-mix(in_srgb,var(--chrome-ink,#F8F6F0)_50%,transparent)]'
+const INK_30 = 'text-[color:color-mix(in_srgb,var(--chrome-ink,#F8F6F0)_30%,transparent)]'
+const INK_20 = 'text-[color:color-mix(in_srgb,var(--chrome-ink,#F8F6F0)_20%,transparent)]'
+
 const SERVICES = [
   { href: '/cotizar', label: 'Solicitar cotización' },
   { href: '/proceso', label: 'Cómo importar' },
@@ -89,10 +98,10 @@ export function Footer({ categories }: FooterProps) {
           <ul className="flex flex-col gap-2">
             {FREE_ZONES.map((z) => (
               <li key={z.name} className="flex flex-col gap-0.5">
-                <span className="font-mono text-[11px] text-[color:var(--chrome-ink,#F8F6F0)]/50">
+                <span className={`font-mono text-[11px] ${INK_50}`}>
                   {z.name}
                 </span>
-                <span className="font-mono text-[10px] text-[color:var(--chrome-ink,#F8F6F0)]/30">
+                <span className={`font-mono text-[10px] ${INK_30}`}>
                   {z.location}
                 </span>
               </li>
@@ -102,21 +111,21 @@ export function Footer({ categories }: FooterProps) {
             <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.15em] text-[var(--chrome-label,rgba(196,147,63,0.35))]">
               Mercados
             </p>
-            <p className="font-mono text-[10px] leading-loose text-[color:var(--chrome-ink,#F8F6F0)]/30">
+            <p className={`font-mono text-[10px] leading-loose ${INK_30}`}>
               {MARKETS_SERVED.join(' · ')}
             </p>
           </div>
           <div>
-            <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[color:var(--chrome-ink,#F8F6F0)]/20">
+            <p className={`mb-2 font-mono text-[10px] uppercase tracking-[0.12em] ${INK_20}`}>
               Origen
             </p>
-            <p className="font-mono text-[10px] leading-loose text-[color:var(--chrome-ink,#F8F6F0)]/30">
+            <p className={`font-mono text-[10px] leading-loose ${INK_30}`}>
               China · Tailandia · Japón · Dubai
             </p>
           </div>
           <a
             href={`mailto:${WINGS_PUBLIC_EMAIL}`}
-            className="font-mono text-[11px] text-[color:var(--chrome-ink,#F8F6F0)]/50 transition-colors duration-150 hover:text-[color:var(--chrome-ink,#F8F6F0)]"
+            className={`font-mono text-[11px] ${INK_50} transition-colors duration-150 hover:text-[color:var(--chrome-ink,#F8F6F0)]`}
           >
             {WINGS_PUBLIC_EMAIL}
           </a>

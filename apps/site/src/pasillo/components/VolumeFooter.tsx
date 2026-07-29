@@ -51,17 +51,30 @@ export function VolumeFooter({
     <section className="border-t pas-rule-hard bg-pas-surface px-4 py-3">
       <div className="mx-auto max-w-3xl">
         <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-          {/* tap the figure to change what the record is counted in */}
-          <button
-            type="button"
-            onClick={() => onBasis(BASIS_CYCLE[(BASIS_CYCLE.indexOf(basis) + 1) % BASIS_CYCLE.length])}
-            className="pas-mono text-pas-t1 tracking-tight"
-            aria-label={`Cambiar base; actualmente ${BASIS_LABEL[basis]}`}
-          >
-            {totals.skus === 0
-              ? 'Sin cantidades — indica m², cajas o piezas por referencia'
-              : `${fmtInt(totals.skus)} SKU · ${fmtInt(totals.cartons)} cajas · ${headline}`}
-          </button>
+          {/* EMPTY IS PROSE, NOT A TOTAL.
+              This slot used to render the empty state inside the basis button,
+              in the same large mono as a real figure — so "Sin cantidades —
+              indica m², cajas o piezas por referencia" arrived as two wrapped
+              lines of shouting where a number belongs, on a control that had
+              nothing to cycle yet. */}
+          {totals.skus === 0 ? (
+            <p className="max-w-[34ch] text-pas-t0 opacity-pas-resting">
+              Indica una cantidad por referencia — en m², cajas o piezas.
+            </p>
+          ) : (
+            // tap the figure to change what the record is counted in
+            <button
+              type="button"
+              onClick={() =>
+                onBasis(BASIS_CYCLE[(BASIS_CYCLE.indexOf(basis) + 1) % BASIS_CYCLE.length])
+              }
+              className="pas-mono text-pas-t1 tracking-tight underline decoration-transparent
+                         underline-offset-4 transition-colors hover:decoration-current"
+              aria-label={`Cambiar base; actualmente ${BASIS_LABEL[basis]}`}
+            >
+              {fmtInt(totals.skus)} SKU · {fmtInt(totals.cartons)} cajas · {headline}
+            </button>
+          )}
 
           <div role="radiogroup" aria-label="Contenedor" className="flex gap-1">
             {CONTAINERS.map((c) => (
@@ -92,15 +105,26 @@ export function VolumeFooter({
               style={{ width: `${fill.pct}%` }}
             />
           </div>
+          {/* "0,0 × 20' FCL" read like a failed calculation. An em dash says
+              "not yet" — which is what zero quantities actually mean. */}
           <p className="pas-mono shrink-0 text-pas-t0">
-            {fmtFcl(fill.fcl)} × {fill.kind === '20GP' ? "20'" : "40'"} FCL
+            {totals.skus === 0 ? '—' : fmtFcl(fill.fcl)} × {fill.kind === '20GP' ? "20'" : "40'"} FCL
           </p>
         </div>
 
-        <p className="pas-stamp mt-1.5 opacity-pas-resting">
-          {fmtKg(fill.loadedKg)} / {fmtKg(fill.payloadKg)} kg — los azulejos llenan por peso
-          antes que por volumen
-          {fill.containersNeeded > 1 ? ` · ${fill.containersNeeded} contenedores` : ''}
+        {/* THE FIGURES ARE A STAMP; THE REASON IS A SENTENCE.
+            Both used to run together in uppercase mono, so the one line on this
+            screen that explains WHY the bar measures weight arrived as
+            "LOS AZULEJOS LLENAN POR PESO ANTES QUE POR VOLUMEN" — a caps
+            sentence nobody reads. Caps is for the numbers. */}
+        <p className="mt-1 flex flex-wrap items-baseline gap-x-2 opacity-pas-resting">
+          <span className="pas-stamp">
+            {fmtKg(fill.loadedKg)} / {fmtKg(fill.payloadKg)} kg
+            {fill.containersNeeded > 1 ? ` · ${fill.containersNeeded} contenedores` : ''}
+          </span>
+          <span className="text-pas-micro">
+            los azulejos llenan por peso antes que por volumen
+          </span>
         </p>
       </div>
     </section>

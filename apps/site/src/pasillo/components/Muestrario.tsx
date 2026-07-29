@@ -17,7 +17,7 @@ import { PASILLO_ROUTES } from '@/pasillo/lib/routes'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import { VolumeFooter } from '@/pasillo/components/VolumeFooter'
 import { StatusLamp } from '@/pasillo/components/StatusLamp'
-import { finishLabel, getSeries, skusOf } from '@/pasillo/lib/catalogue'
+import { finishLabel, getSeries, seriesName, skusOf } from '@/pasillo/lib/catalogue'
 import {
   BASIS_LABEL,
   containerFill,
@@ -90,7 +90,10 @@ export function Muestrario({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
           <div>
             <LaneExit />
             <h1 className="font-pas-display text-pas-t2 font-semibold tracking-pas-display">
-              {folders.length} {folders.length === 1 ? 'serie' : 'series'}
+              {/* "series" is invariant in Spanish, so the count alone read as
+                  the English word. The participle is what makes it Spanish —
+                  and it agrees, so it has to be part of the same branch. */}
+              {folders.length} {folders.length === 1 ? 'serie guardada' : 'series guardadas'}
             </h1>
           </div>
           {/* "Al recorrido", not "Al catálogo": Catálogo in the global nav is
@@ -174,7 +177,7 @@ export function Muestrario({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
         <div
           role="status"
           className="fixed inset-x-4 bottom-24 z-50 mx-auto flex max-w-3xl items-center
-                     justify-between gap-4 rounded-pas-chrome bg-pas-ink px-pas-5 py-3.5 text-pas-surface"
+                     justify-between gap-4 rounded-pas-chrome bg-pas-ink px-pas-5 py-3 text-pas-surface"
         >
           <span className="text-pas-t0">
             <span className="pas-mono">{rec.undo.label}</span> fuera del muestrario
@@ -216,13 +219,15 @@ function FolderRow({
   const skus = skusOf(folder.series_uid)
   const tri = rec.triState(folder.series_uid)
   const cover = skus[0]
+  // The chosen faces, in catalogue order — the strip below the row.
+  const chosen = skus.filter((s) => folder.selected.includes(s.sku_uid))
 
   return (
     <div data-folder={folder.series_uid} className={dragging ? 'opacity-pas-resting' : undefined}>
       <div className="flex h-pas-row items-center gap-3 border-b pas-rule">
         <TriBox
           state={tri}
-          label={`Seleccionar ${series.name_raw}`}
+          label={`Seleccionar ${seriesName(series)}`}
           onChange={() => {
             haptic('check')
             rec.setSeriesAll(folder.series_uid, tri !== 'all')
@@ -265,29 +270,81 @@ function FolderRow({
           className="flex min-w-0 flex-1 items-center justify-between gap-3 py-2 text-left"
         >
           <span className="min-w-0">
-            <span className="block truncate text-pas-t0">{series.name_raw}</span>
+            {/* No longer truncated. The Spanish names are short enough to fit,
+                and "Flat And Matt…" told a buyer nothing about a series they
+                were being asked to price. */}
+            <span className="block text-pas-t0">{seriesName(series)}</span>
             <span className="block truncate text-pas-micro opacity-pas-resting">
               {series.format_mm[0]}×{series.format_mm[1]} · {fmtM2(series.m2_per_ctn)} m²/caja
             </span>
           </span>
-          <span className="shrink-0 text-right">
-            <span className="pas-mono block text-pas-micro">{skus.length} SKU</span>
-            <span className="pas-mono block text-pas-micro opacity-pas-resting">
-              {folder.selected.length} elegidos
-            </span>
+          {/* One line, not two. "6 SKU" above "6 elegidos" made the buyer read
+              two numbers and work out the relationship; the relationship IS
+              the information. */}
+          <span className="pas-mono shrink-0 text-right text-pas-micro">
+            {folder.selected.length} de {skus.length}
+            <span className="block opacity-pas-resting">elegidos</span>
           </span>
         </button>
 
         <button
           type="button"
           onClick={onToggleOpen}
-          aria-label={expanded ? 'Contraer' : 'Expandir'}
+          aria-label={expanded ? `Contraer ${seriesName(series)}` : `Expandir ${seriesName(series)}`}
           aria-expanded={expanded}
-          className="w-pas-8 shrink-0 text-center opacity-pas-resting"
+          className="grid h-11 w-11 shrink-0 place-items-center opacity-pas-resting"
         >
-          {expanded ? '▾' : '▸'}
+          {/* A drawn chevron, not the glyph "▸". The character rendered at the
+              body size in whatever the font had, sat off the optical centre,
+              and read as punctuation rather than a control. */}
+          <svg
+            viewBox="0 0 12 12"
+            className={`h-3.5 w-3.5 transition-transform duration-pas-light ${
+              expanded ? 'rotate-90' : ''
+            }`}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden
+          >
+            <path d="M4.5 2 L8.5 6 L4.5 10" />
+          </svg>
         </button>
       </div>
+
+      {/* THE MUESTRARIO IS A SAMPLE BOARD.
+          Collapsed, each series showed one cover thumbnail and two counts — a
+          list of filenames for a decision made entirely on colour. The faces
+          the buyer actually chose are the record; show them. Scrolls sideways
+          when a series carries more than fits, and disappears once the folder
+          is open, where every face is already on screen at full size. */}
+      {!expanded && folder.selected.length > 0 && (
+        <div
+          className="flex gap-1 overflow-x-auto border-b pas-rule px-3 pb-3 pl-11
+                     [mask-image:linear-gradient(90deg,#000_calc(100%-24px),transparent)]"
+        >
+          {chosen.map((sku) => (
+            <button
+              key={sku.sku_uid}
+              type="button"
+              onClick={() => onOpenSku(sku)}
+              aria-label={`Ver ${sku.code}`}
+              className="h-pas-8 w-pas-8 shrink-0 overflow-hidden"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={sku.thumb}
+                alt=""
+                className="h-full w-full object-cover"
+                loading="lazy"
+                decoding="async"
+              />
+            </button>
+          ))}
+        </div>
+      )}
 
       {expanded && (
         <div className="pl-4">
@@ -297,7 +354,7 @@ function FolderRow({
           <div className="flex h-pas-row items-center gap-3 border-b pas-rule pl-4">
             <button
               type="button"
-              onClick={() => rec.removeSeries(folder.series_uid, series.name_raw)}
+              onClick={() => rec.removeSeries(folder.series_uid, seriesName(series))}
               className="pas-stamp opacity-pas-resting underline"
             >
               Quitar la serie
@@ -362,6 +419,10 @@ function SkuRow({ sku, onOpen }: { sku: Sku; onOpen: () => void }) {
               step="0.01"
               value={qty?.value ?? ''}
               placeholder="0"
+              // The visible label reads "Cantidad" on every row, so on its own
+              // it names nothing — a screen reader lands on the fourth of them
+              // with no idea which reference it is editing.
+              aria-label={`Cantidad para ${sku.code} en ${BASIS_LABEL[basis]}`}
               onChange={(e) =>
                 rec.setQty(
                   sku.sku_uid,
@@ -370,7 +431,7 @@ function SkuRow({ sku, onOpen }: { sku: Sku; onOpen: () => void }) {
                     : { value: Math.max(0, Number(e.target.value)), basis },
                 )
               }
-              className="pas-mono w-24 border pas-rule bg-pas-surface px-2 py-1 text-pas-t0"
+              className="pas-mono h-11 w-24 border pas-rule bg-pas-surface px-2 text-pas-t0"
             />
             <span className="pas-stamp opacity-pas-resting">{BASIS_LABEL[basis]}</span>
           </label>

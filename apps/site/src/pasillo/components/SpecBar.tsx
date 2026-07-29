@@ -8,7 +8,7 @@
 // tile carries only what differs.
 
 import { StatusLamp } from '@/pasillo/components/StatusLamp'
-import { formatLabel } from '@/pasillo/lib/catalogue'
+import { formatLabel, seriesName, seriesNameRaw } from '@/pasillo/lib/catalogue'
 import { fmtM2 } from '@/pasillo/lib/packing'
 import type { Series } from '@/pasillo/types/catalogue'
 
@@ -23,10 +23,13 @@ export function SpecBar({
   return (
     <header className={invertedOnDark ? 'text-pas-surface' : 'text-pas-ink'}>
       <h2 className="font-pas-display text-pas-t2 font-semibold leading-tight tracking-pas-display">
-        {series.name_raw}
+        {seriesName(series)}
       </h2>
       <p className="pas-stamp mt-1 opacity-pas-resting">
         {formatLabel(series)}×{series.thickness_mm}MM
+        {/* The factory's own name, kept visible: a buyer who calls Wings about
+            this series will be quoting whichever name they saw. */}
+        {seriesNameRaw(series) && <span> · {seriesNameRaw(series)}</span>}
       </p>
 
       {/* the inverted bar itself */}

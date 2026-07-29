@@ -102,7 +102,7 @@ export function SkuTile({
       </button>
 
       {showCaption && (
-        <figcaption className="pt-1.5">
+        <figcaption className="pt-1">
           {/* the code is what a buyer pastes into WhatsApp at 11pm — pas-mono, always */}
           <p className="pas-mono text-pas-label leading-tight opacity-pas-lit">{sku.code}</p>
           <p className="text-pas-label leading-tight opacity-pas-resting">{finishLabel(sku)}</p>

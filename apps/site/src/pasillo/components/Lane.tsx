@@ -255,13 +255,18 @@ export function Lane({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
               passed ? 'opacity-pas-dimmed' : 'opacity-pas-lit'
             }`}
           >
-            {/* max-w-2xl mirrors the sheet-dock. Unconstrained, the booth
-                stretched to 1440px: the 3-col face grid clipped its second row
-                to a sliver, 320px thumbs blew up to ~630px, and the actions
-                became 940px pills. A viewport tool still needs a measure.
+            {/* The booth needs a measure, but not the same one at every size.
+                Unconstrained it stretched to 1440px: the face grid clipped its
+                second row to a sliver, thumbs blew up to ~630px and the actions
+                became 940px pills. Pinned at max-w-2xl it did the opposite on a
+                desktop — a 672px column of six tiles inside 1440px of empty
+                ground, on a screen where a buyer opens this precisely to see the
+                colour big. So the measure grows with the grid: 2xl through the
+                2- and 3-column steps, 5xl at lg where the grid is 4 across and
+                each face lands near 250px.
                 pt-pas-8 clears the fixed control band (exit stamp + switch). */}
             <div
-              className={`mx-auto flex h-full w-full max-w-2xl flex-col px-pas-5 pt-pas-8 transition-opacity duration-pas-cross ${
+              className={`mx-auto flex h-full w-full max-w-2xl flex-col px-pas-5 pt-pas-8 transition-opacity duration-pas-cross lg:max-w-5xl ${
                 swapping ? 'opacity-0' : 'opacity-100'
               }`}
             >
@@ -279,7 +284,15 @@ export function Lane({ onOpenSku }: { onOpenSku: (sku: Sku) => void }) {
               </div>
 
               <div className="mt-pas-5 min-h-0 flex-1 overflow-y-auto pb-4">
-                <div className="grid grid-cols-3 gap-2">
+                {/* TWO COLUMNS ON A PHONE, not three.
+                    At 390px a 3-col grid drew 112px faces — and this is a
+                    colour purchase, judged on a glaze that varies across a
+                    kiln. 112px is a swatch you cannot read, and a six-SKU
+                    series left half the aisle empty below it. Two columns put
+                    the face at ~167px, and the same six SKUs now fill the
+                    booth instead of floating at the top of a void.
+                    Three from sm, four from lg, where width is not scarce. */}
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
                   {faces.slice(0, BOOTH_FACES).map((sku) => (
                     <button
                       key={sku.sku_uid}

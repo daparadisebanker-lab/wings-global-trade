@@ -5,6 +5,7 @@
 import { describe, expect, it } from 'vitest'
 import { requestBody } from '@/pasillo/lib/export'
 import { SERIES, SKUS } from '@/pasillo/data/catalogue'
+import { seriesName } from '@/pasillo/lib/catalogue'
 import type { Buyer, Folder } from '@/pasillo/lib/record'
 
 const series = SERIES[0]
@@ -114,6 +115,16 @@ describe('outbound RFQ · asks for what the catalogue cannot answer', () => {
   it('quotes the supplier’s own printed finish, not our translation', () => {
     const body = build()
     expect(body).toContain(skus[0].finish_raw)
+  })
+
+  it('names each series twice — the buyer’s Spanish and the factory’s English', () => {
+    // Ops holds the conversation in Spanish and places the order in English.
+    // A document with only one of the two names makes someone translate a
+    // series under time pressure, which is how the wrong series ships.
+    const body = build()
+    expect(body).toContain(seriesName(series))
+    expect(body).toContain(series.name_raw)
+    expect(seriesName(series)).not.toBe(series.name_raw)
   })
 
   it('carries a review flag to the supplier instead of hiding it', () => {

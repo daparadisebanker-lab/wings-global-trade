@@ -17,7 +17,16 @@ import { Drawer } from 'vaul'
 import { useEffect, useState } from 'react'
 import { RepeatPreview } from '@/pasillo/components/RepeatPreview'
 import { StatusLamp } from '@/pasillo/components/StatusLamp'
-import { finishLabel, formatLabel, getSeries, patternLabel, skusOf } from '@/pasillo/lib/catalogue'
+import {
+  colourLabel,
+  finishLabel,
+  formatLabel,
+  getSeries,
+  patternLabel,
+  seriesName,
+  seriesNameRaw,
+  skusOf,
+} from '@/pasillo/lib/catalogue'
 import { fmtM2 } from '@/pasillo/lib/packing'
 import { haptic, useRecord } from '@/pasillo/lib/record'
 import type { Sku } from '@/pasillo/types/catalogue'
@@ -96,7 +105,7 @@ export function SheetDock({
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
                   <p className="pas-mono text-pas-t2 leading-tight">{active.code}</p>
-                  <p className="text-pas-t0 opacity-pas-resting">{series.name_raw}</p>
+                  <p className="text-pas-t0 opacity-pas-resting">{seriesName(series)}</p>
                 </div>
                 <button
                   type="button"
@@ -119,7 +128,15 @@ export function SheetDock({
 
               <dl className="mt-pas-6">
                 <Row label="Código" value={active.code} />
-                <Row label="Serie" value={series.name_raw} />
+                <Row label="Serie" value={seriesName(series)} />
+                {/* The printed name, so a buyer can match this sheet back to
+                    the supplier's own PDF without leaving it. */}
+                {seriesNameRaw(series) && (
+                  <Row label="Serie (fábrica)" value={seriesNameRaw(series)} />
+                )}
+                {colourLabel(active) && (
+                  <Row label="Color" value={colourLabel(active)} />
+                )}
                 <Row
                   label="Formato"
                   value={`${formatLabel(series)}×${series.thickness_mm} mm`}

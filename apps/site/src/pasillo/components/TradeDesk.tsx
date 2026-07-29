@@ -16,7 +16,7 @@ import { PASILLO_ROUTES } from '@/pasillo/lib/routes'
 import { useMemo, useState } from 'react'
 import { StatusLamp } from '@/pasillo/components/StatusLamp'
 import { VolumeFooter } from '@/pasillo/components/VolumeFooter'
-import { finishLabel, getSeries, getSku } from '@/pasillo/lib/catalogue'
+import { finishLabel, getSeries, getSku, seriesName } from '@/pasillo/lib/catalogue'
 import { mailtoHref, requestBody, whatsappHref } from '@/pasillo/lib/export'
 import {
   BASIS_LABEL,
@@ -94,51 +94,87 @@ export function TradeDesk() {
           </p>
         ) : (
           <>
-            <section className="mb-pas-6 grid gap-3 sm:grid-cols-3">
-              {(
-                [
-                  ['name', 'Nombre'],
-                  ['company', 'Empresa'],
-                  ['project', 'Proyecto'],
-                  ['port', 'Puerto de destino'],
-                  ['target', 'Fecha objetivo'],
-                ] as const
-              ).map(([key, label]) => (
-                <label key={key}>
-                  <span className="pas-stamp block opacity-pas-resting">{label}</span>
-                  <input
-                    type="text"
-                    value={rec.state.buyer[key]}
-                    onChange={(e) => rec.setBuyer({ [key]: e.target.value })}
-                    className="mt-1 w-full border pas-rule bg-pas-surface px-3 py-2 text-pas-t0"
-                  />
-                </label>
+            {/* THE TABLE COMES FIRST.
+                Six full-width contact fields ran ~900px on a phone, so the
+                quantity inputs — the only reason this screen exists — began
+                below the fold behind a sticky footer. The buyer arrives here
+                having already chosen the references; the first thing they owe
+                is a number, and the last is their own name. */}
+            {/* A PHONE GETS CARDS, NOT A SIDEWAYS TABLE.
+                min-w-[640px] on a 390px screen put the quantity input — the one
+                control this screen exists for — entirely off the right edge,
+                behind a "slide the table" hint. A buyer had to scroll right to
+                type, then left to read what they had typed. Below sm each
+                reference is a card: identity on top, the field under it, the
+                derived figures beneath that, in the order they are decided. */}
+            <ul className="sm:hidden">
+              {rows.map(({ sku, series, totals: t }) => (
+                <li key={sku.sku_uid} className="flex items-start gap-3 border-b pas-rule py-3">
+                  {/* Identity left, the number right, on the same two lines.
+                      Stacked they ran 215px per reference — a buyer with
+                      twenty of them scrolled a screen and a half to type
+                      twenty numbers. */}
+                  <div className="min-w-0 flex-1">
+                    <p className="pas-mono text-pas-t0">{sku.code}</p>
+                    <p className="truncate text-pas-label opacity-pas-resting">
+                      {seriesName(series)} · {finishLabel(sku)}
+                    </p>
+                    {series.status !== 'available' && (
+                      <div className="mt-1">
+                        <StatusLamp status={series.status} />
+                      </div>
+                    )}
+                  </div>
+                  <div className="shrink-0 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        min={0}
+                        step="0.01"
+                        value={rec.state.qty[sku.sku_uid]?.value ?? ''}
+                        placeholder="0"
+                        aria-label={`Cantidad para ${sku.code} en ${BASIS_LABEL[basis]}`}
+                        onChange={(e) =>
+                          rec.setQty(
+                            sku.sku_uid,
+                            e.target.value === ''
+                              ? null
+                              : { value: Math.max(0, Number(e.target.value)), basis },
+                          )
+                        }
+                        className="pas-mono h-11 w-24 border pas-rule bg-pas-surface px-2 text-right text-pas-t0"
+                      />
+                      {/* The unit sits on the field, so the label does not need
+                          a line of its own. The input still carries the full
+                          name for anyone not reading the layout. */}
+                      <span aria-hidden className="pas-stamp w-8 text-left opacity-pas-resting">
+                        {BASIS_LABEL[basis]}
+                      </span>
+                    </div>
+                    {/* The consequence of the number, under the number. It is
+                        cartons that get quoted, and cartons round up. */}
+                    <p className="pas-mono mt-1 text-pas-micro opacity-pas-resting">
+                      {t.cartons > 0
+                        ? `${fmtInt(t.cartons)} cajas · ${fmtM2(t.m2)} m² · ${fmtKg(t.kg)} kg`
+                        : 'sin cantidad'}
+                    </p>
+                  </div>
+                </li>
               ))}
-              <label>
-                <span className="pas-stamp block opacity-pas-resting">Incoterm</span>
-                <select
-                  value={rec.state.buyer.incoterm}
-                  onChange={(e) => rec.setBuyer({ incoterm: e.target.value })}
-                  className="mt-1 w-full border pas-rule bg-pas-surface px-3 py-2 text-pas-t0"
-                >
-                  {INCOTERMS.map((t) => (
-                    <option key={t} value={t}>
-                      {t}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </section>
+              <li className="flex flex-wrap items-baseline justify-between gap-x-4 border-t pas-rule-hard py-3">
+                <span className="text-pas-t0 font-semibold">
+                  TOTAL · {fmtInt(totals.skus)}{' '}
+                  {totals.skus === 1 ? 'referencia con cantidad' : 'referencias con cantidad'}
+                </span>
+                <span className="pas-mono text-pas-t0 font-semibold">
+                  {fmtInt(totals.cartons)} cajas · {fmtM2(totals.m2)} m² · {fmtKg(totals.kg)} kg
+                </span>
+              </li>
+            </ul>
 
-            <p className="pas-stamp mb-2 opacity-pas-dimmed sm:hidden">
-              Desliza la tabla para ver cajas · m² · kg
-            </p>
-            <div
-              className="overflow-x-auto
-                         [mask-image:linear-gradient(90deg,#000_calc(100%-24px),transparent)]
-                         sm:[mask-image:none]"
-            >
-              <table className="w-full min-w-[640px] border-collapse">
+            <div className="hidden sm:block">
+              <table className="w-full border-collapse">
                 <thead>
                   <tr className="border-b pas-rule-hard">
                     {['Código', 'Serie', 'Acabado', `Cant. (${BASIS_LABEL[basis]})`, 'Cajas', 'm²', 'kg', ''].map(
@@ -159,7 +195,7 @@ export function TradeDesk() {
                   {rows.map(({ sku, series, totals: t }) => (
                     <tr key={sku.sku_uid} className="border-b pas-rule align-top">
                       <td className="pas-mono py-2 text-pas-t0">{sku.code}</td>
-                      <td className="py-2 text-pas-dense opacity-pas-resting">{series.name_raw}</td>
+                      <td className="py-2 text-pas-dense opacity-pas-resting">{seriesName(series)}</td>
                       <td className="py-2 text-pas-dense opacity-pas-resting">{finishLabel(sku)}</td>
                       <td className="py-2 text-right">
                         <input
@@ -178,7 +214,11 @@ export function TradeDesk() {
                                 : { value: Math.max(0, Number(e.target.value)), basis },
                             )
                           }
-                          className="pas-mono w-20 border pas-rule bg-pas-surface px-2 py-1 text-right text-pas-t0"
+                          // h-11 is the 44px touch floor (§4-bis), not a
+                          // spacing step. This is the one control a buyer
+                          // retypes a dozen times in a row; at 30px it was
+                          // below the floor the rest of the aisle holds.
+                          className="pas-mono h-11 w-24 border pas-rule bg-pas-surface px-2 text-right text-pas-t0"
                         />
                       </td>
                       <td className="pas-mono py-2 text-right text-pas-t0">{fmtInt(t.cartons)}</td>
@@ -212,6 +252,43 @@ export function TradeDesk() {
                 </tbody>
               </table>
             </div>
+
+            <section className="mt-pas-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              <h2 className="pas-stamp col-span-full opacity-pas-resting">Para la cotización</h2>
+              {(
+                [
+                  ['name', 'Nombre'],
+                  ['company', 'Empresa'],
+                  ['project', 'Proyecto'],
+                  ['port', 'Puerto de destino'],
+                  ['target', 'Fecha objetivo'],
+                ] as const
+              ).map(([key, label]) => (
+                <label key={key} className={key === 'project' || key === 'port' ? 'col-span-2 sm:col-span-1' : undefined}>
+                  <span className="pas-stamp block opacity-pas-resting">{label}</span>
+                  <input
+                    type="text"
+                    value={rec.state.buyer[key]}
+                    onChange={(e) => rec.setBuyer({ [key]: e.target.value })}
+                    className="mt-1 w-full border pas-rule bg-pas-surface px-3 py-2 text-pas-t0"
+                  />
+                </label>
+              ))}
+              <label>
+                <span className="pas-stamp block opacity-pas-resting">Incoterm</span>
+                <select
+                  value={rec.state.buyer.incoterm}
+                  onChange={(e) => rec.setBuyer({ incoterm: e.target.value })}
+                  className="mt-1 w-full border pas-rule bg-pas-surface px-3 py-2 text-pas-t0"
+                >
+                  {INCOTERMS.map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </section>
 
             <section className="mt-pas-8">
               <h2 className="pas-stamp opacity-pas-resting">El mensaje, tal como saldrá</h2>

@@ -64,10 +64,23 @@ export interface TrustFooterProps {
   colophon: ReactNode
 }
 
+// TAILWIND CANNOT APPLY AN OPACITY MODIFIER TO AN ARBITRARY var() COLOUR.
+// `text-[color:var(--chrome-ink,#F8F6F0)]/50` compiles to NOTHING — no rule is
+// emitted, the element inherits, and on a near-white inherited ink it looks
+// close enough to pass a glance. color-mix() is the only form that survives,
+// and it must be written as a literal for Tailwind's scanner to see it, so the
+// ladder is hoisted here rather than repeated inline.
+const INK_60 = 'text-[color:color-mix(in_srgb,var(--chrome-ink,#F8F6F0)_60%,transparent)]'
+const INK_50 = 'text-[color:color-mix(in_srgb,var(--chrome-ink,#F8F6F0)_50%,transparent)]'
+const INK_30 = 'text-[color:color-mix(in_srgb,var(--chrome-ink,#F8F6F0)_30%,transparent)]'
+const INK_25 = 'text-[color:color-mix(in_srgb,var(--chrome-ink,#F8F6F0)_25%,transparent)]'
+const INK_20 = 'text-[color:color-mix(in_srgb,var(--chrome-ink,#F8F6F0)_20%,transparent)]'
+const RULE_7 = 'border-[color:color-mix(in_srgb,var(--chrome-ink,#F8F6F0)_7%,transparent)]'
+const RULE_5 = 'border-[color:color-mix(in_srgb,var(--chrome-ink,#F8F6F0)_5%,transparent)]'
+
 const LABEL =
   'font-mono text-[10px] uppercase tracking-[0.15em] text-[var(--chrome-label,rgba(196,147,63,0.35))]'
-const ITEM =
-  'font-mono text-[11px] text-[color:var(--chrome-ink,#F8F6F0)]/50 transition-colors duration-150 hover:text-[color:var(--chrome-ink,#F8F6F0)]'
+const ITEM = `font-mono text-[11px] ${INK_50} transition-colors duration-150 hover:text-[color:var(--chrome-ink,#F8F6F0)]`
 
 export function TrustFooter({
   renderLink,
@@ -84,7 +97,7 @@ export function TrustFooter({
   return (
     <footer className="bg-[var(--chrome-ground,#000C1F)] text-[color:var(--chrome-ink,#F8F6F0)]">
       {/* Brand strip */}
-      <div className="border-b border-[color:var(--chrome-ink,#F8F6F0)]/[0.05] px-6 py-16 md:px-10">
+      <div className={`border-b ${RULE_5} px-6 py-16 md:px-10`}>
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 md:flex-row md:items-end md:justify-between">
           <div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -93,7 +106,7 @@ export function TrustFooter({
               alt={logoAlt}
               className="h-14 w-auto opacity-90 brightness-0 invert"
             />
-            <p className="mt-4 max-w-xs font-body text-sm font-light leading-relaxed tracking-wide text-[color:var(--chrome-ink,#F8F6F0)]/30">
+            <p className={`mt-4 max-w-xs font-body text-sm font-light leading-relaxed tracking-wide ${INK_30}`}>
               {tagline}
             </p>
           </div>
@@ -103,7 +116,7 @@ export function TrustFooter({
               href={whatsappHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-3 border border-[var(--chrome-label,rgba(196,147,63,0.20))] px-6 py-3 font-mono text-[11px] uppercase tracking-[0.10em] text-[color:var(--chrome-ink,#F8F6F0)]/60 transition-all duration-200 hover:border-[var(--chrome-accent,var(--color-gold))] hover:text-[color:var(--chrome-ink,#F8F6F0)]"
+              className={`inline-flex items-center gap-3 border border-[var(--chrome-label,rgba(196,147,63,0.20))] px-6 py-3 font-mono text-[11px] uppercase tracking-[0.10em] ${INK_60} transition-all duration-200 hover:border-[var(--chrome-accent,var(--color-gold))] hover:text-[color:var(--chrome-ink,#F8F6F0)]`}
             >
               <span
                 className="h-px w-4 bg-[var(--chrome-accent,var(--color-gold))] opacity-40"
@@ -153,7 +166,7 @@ export function TrustFooter({
                         // one that plainly says "not yet".
                         <li
                           key={l.href}
-                          className="flex flex-wrap items-baseline gap-x-2 font-mono text-[11px] text-[color:var(--chrome-ink,#F8F6F0)]/25"
+                          className={`flex flex-wrap items-baseline gap-x-2 font-mono text-[11px] ${INK_25}`}
                         >
                           {l.code && <span>{l.code}</span>}
                           <span>{l.label}</span>
@@ -168,7 +181,7 @@ export function TrustFooter({
                                 `${ITEM} inline-flex items-baseline gap-2`,
                                 <>
                                   {l.code && (
-                                    <span className="text-[color:var(--chrome-ink,#F8F6F0)]/30">
+                                    <span className={INK_30}>
                                       {l.code}
                                     </span>
                                   )}
@@ -188,7 +201,7 @@ export function TrustFooter({
               <div key={s.id}>
                 {/* Phone: a real disclosure. Keyboard and screen-reader
                     behaviour comes from the browser, not from us. */}
-                <details className="group border-b border-[color:var(--chrome-ink,#F8F6F0)]/[0.07] md:hidden">
+                <details className={`group border-b ${RULE_7} md:hidden`}>
                   <summary
                     className={`${LABEL} flex cursor-pointer list-none items-center justify-between py-4
                                 marker:content-none [&::-webkit-details-marker]:hidden`}
@@ -220,9 +233,9 @@ export function TrustFooter({
       </div>
 
       {/* Bottom bar */}
-      <div className="border-t border-[color:var(--chrome-ink,#F8F6F0)]/[0.05] px-6 py-6 md:px-10">
+      <div className={`border-t ${RULE_5} px-6 py-6 md:px-10`}>
         <div className="mx-auto w-full max-w-6xl">
-          <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[color:var(--chrome-ink,#F8F6F0)]/20">
+          <p className={`font-mono text-[10px] uppercase tracking-[0.12em] ${INK_20}`}>
             {colophon}
           </p>
         </div>

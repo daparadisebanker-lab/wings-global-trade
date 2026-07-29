@@ -64,10 +64,75 @@ export function specBarLine(s: Series): string {
   return `${s.pcs_per_ctn} PCS/CTN · ${s.kgs_per_ctn} KGS/CTN · ${fmtM2(s.m2_per_ctn)} m²`
 }
 
+// ── The series names ───────────────────────────────────────────────────────
+// These are the CATEGORIES a buyer navigates by, and the supplier prints all
+// ten in English. A Peruvian contractor scanning an aisle for terracotta does
+// not read "Flat And Matte Series".
+//
+// The translation lives HERE and not in the data, for two reasons that are not
+// stylistic. data/catalogue.ts is generated — a name written into it is lost on
+// the next pipeline run. And `name_raw` still has a job: it is what the factory
+// calls the series, so it is what the outbound RFQ must say. The buyer reads
+// Spanish; the supplier reads their own catalogue back.
+//
+// Two series are both printed "Massed Glaze", at 150 and at 300 — and they get
+// the SAME Spanish name, deliberately. The format sits directly beneath the
+// name on every surface that shows one, so a numeric suffix ("Esmalte Macizo
+// 15") would repeat the format in worse words. The one place that shows a name
+// with no format is the Lista's series filter, and that dropdown states the
+// format itself — see seriesOption().
+const SERIES_ES: Record<string, string> = {
+  'WGT-HUAZHUAN-FLATANDMATTESERIES-150': 'Liso Mate',
+  'WGT-HUAZHUAN-COLOREDGEOMETRICSERIES-150': 'Geométrico en Color',
+  'WGT-HUAZHUAN-HANDPAINTEDSERIES-150': 'Pintado a Mano',
+  'WGT-HUAZHUAN-MASSEDGLAZE-150': 'Esmalte Macizo',
+  'WGT-HUAZHUAN-FLOWERSEASERIES-300': 'Mar de Flores',
+  'WGT-HUAZHUAN-MASSEDGLAZESERIES-300': 'Esmalte Macizo',
+  'WGT-HUAZHUAN-BLACKWHITESERIES-300': 'Blanco y Negro',
+  'WGT-HUAZHUAN-PURECOLORSERIES-300': 'Color Puro',
+  'WGT-HUAZHUAN-WOODENTILE-300': 'Símil Madera',
+  'WGT-HUAZHUAN-MIXEDSERIES-300': 'Mixta',
+}
+
+/**
+ * "Esmalte Macizo · 150×150 · 22 diseños" — for the Lista's series filter,
+ * the only surface that shows a series name with nothing else beside it. Two
+ * series share the name "Esmalte Macizo"; without the format the dropdown
+ * would offer the same option twice.
+ */
+export function seriesOption(s: Series): string {
+  return `${seriesName(s)} · ${formatLabel(s)} · ${s.sku_count} diseños`
+}
+
+/** What the buyer reads. Falls back to the printed name, never to a blank. */
 export function seriesName(s: Series): string {
-  // The supplier prints "Massed Glaze" and "Massed Glaze Series" as two
-  // different series at two different formats. Keep both readable.
-  return s.name_raw
+  return SERIES_ES[s.series_uid] ?? s.name_raw
+}
+
+/**
+ * What the FACTORY calls it — shown beside the Spanish name wherever a buyer
+ * might quote the series back to a supplier, and used verbatim in the RFQ.
+ * Null when we have not renamed it, so nothing renders the same string twice.
+ */
+export function seriesNameRaw(s: Series): string | null {
+  return SERIES_ES[s.series_uid] ? s.name_raw : null
+}
+
+// The supplier printed six colour names, all English. Same rule: the buyer
+// reads Spanish, the RFQ keeps the printed string.
+const COLOUR_ES: Record<string, string> = {
+  'Blue Green': 'Verde Azulado',
+  'Dark Gray': 'Gris Oscuro',
+  'Deep Yellow': 'Amarillo Intenso',
+  'Earthy Yellow': 'Amarillo Tierra',
+  'White Gray': 'Gris Blanco',
+  'Zirconium Red': 'Rojo Circonio',
+}
+
+/** The supplier's colour name, in Spanish. Null when they printed none. */
+export function colourLabel(sku: Sku): string | null {
+  if (!sku.colour_name) return null
+  return COLOUR_ES[sku.colour_name] ?? sku.colour_name
 }
 
 /**
