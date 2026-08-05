@@ -1,0 +1,17 @@
+categoria,pregunta,respuesta,requiere_escalamiento
+empresa,¿Wings vende directo con precio en el catálogo?,"No. Wings es mayorista, sin carrito ni precio en línea. Cada cotización la prepara un especialista contra volumen, destino e incoterm.",no
+empresa,¿Cuál es el pedido mínimo (MOQ)?,"Depende del producto y la línea; no hay cifra única para toda la empresa. Preguntar al especialista con producto y destino.",si
+empresa,¿Cuánto tarda la entrega?,"El plazo lo confirma el equipo contra el pedido real; un asistente automatizado no puede dar fecha ni rango de días.",si
+empresa,¿Tienen stock disponible ahora?,"El catálogo no es un feed de stock en vivo; la disponibilidad se confirma manualmente tras la consulta.",si
+empresa,¿Qué incoterms manejan?,"EXW, FOB, CFR, CIF, DAP, DDP entre otros; cuál aplica depende del destino y del acuerdo comercial.",no
+empresa,¿Qué zonas francas usa Wings?,"ZOFRATACNA (Tacna, Perú) y ZOFRI (Iquique, Chile).",no
+empresa,¿A qué países envían?,"Principalmente Perú y Chile; también Colombia, Panamá, Costa Rica, Bolivia y República Dominicana.",no
+empresa,¿Qué categorías de producto manejan hoy?,"Maquinaria agrícola, camiones y vehículos comerciales, buses, equipo industrial, repuestos, y la línea Interiores (Azulejos).",no
+empresa,¿Puedo comprar una sola pieza o unidad suelta?,"No. Wings opera exclusivamente al por mayor; la unidad mínima depende de la línea (caja, m², contenedor, cupo).",no
+empresa,¿Cómo hago una cotización?,"Escribe qué necesitas, cuánto y para dónde; un especialista prepara la cotización formal.",si
+empresa,¿El asistente puede dar precio final ahora?,"No. Ningún asistente automatizado de Wings da precio, disponibilidad ni fecha de entrega en el chat.",si
+interiores,¿Qué es la línea Interiores / Azulejos?,"Catálogo de mosaico cerámico organizado en series; cada serie tiene formato, empaque y cobertura propios. Ver /interiores/azulejos.",no
+interiores,¿Cómo se calcula la cantidad de cajas?,"La cantidad siempre se resuelve primero a cajas enteras (redondeando hacia arriba); m², piezas y kilos se derivan de esa cifra.",no
+interiores,¿El llenado del contenedor se mide en volumen o en peso?,"En kilos: la cerámica llega al límite de peso mucho antes que al de volumen.",no
+interiores,¿Qué formatos hay disponibles?,"150×150 y 300×300 mm, según la serie.",no
+interiores,¿Dan datos de PEI, resistencia al deslizamiento o absorción de agua?,"No están impresos por el proveedor en estos catálogos; se responde 'pendiente de confirmar con el proveedor'.",si
