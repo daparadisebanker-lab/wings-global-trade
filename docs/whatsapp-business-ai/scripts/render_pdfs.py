@@ -81,7 +81,7 @@ class Renderer:
         self.mode = None          # None | 'para' | 'bullets' | 'numbered' | 'quote' | 'table'
         self.para_lines = []
         self.list_items = []      # list[list[str]] — each item's wrapped lines
-        self.quote_paras = []     # list[list[str]] — each quote paragraph's wrapped lines
+        self.quote_paras = []     # list[(marker|None, list[str])] — each quote paragraph's wrapped lines
         self.table_rows = []
 
     def flush(self):
@@ -97,8 +97,27 @@ class Renderer:
             ))
             self.story.append(Spacer(1, 8))
         elif self.mode == "quote" and self.quote_paras:
-            paras = [" ".join(p) for p in self.quote_paras if p]
-            text = "<br/><br/>".join(inline(p) for p in paras)
+            # Quoted WhatsApp messages often contain their own bullet lists.
+            # Those must keep one line per item — joining them into a running
+            # paragraph is what made the PDF read as mangled prose.
+            chunks = []
+            for marker, lines in self.quote_paras:
+                if not lines:
+                    continue
+                body = inline(" ".join(lines))
+                if marker:
+                    chunks.append(("item", f"{marker}&nbsp;{body}"))
+                else:
+                    chunks.append(("para", body))
+            text = ""
+            for i, (kind, body) in enumerate(chunks):
+                if i == 0:
+                    sep = ""
+                elif kind == "item" and chunks[i - 1][0] == "item":
+                    sep = "<br/>"
+                else:
+                    sep = "<br/><br/>"
+                text += sep + body
             self.story.append(Paragraph(text, styles["Quote"]))
             self.story.append(Spacer(1, 8))
         elif self.mode == "table" and self.table_rows:
@@ -148,15 +167,25 @@ class Renderer:
         self.list_items.append([content])
 
     def quote_line(self, content):
+        """Collect one '>' line. Entries are (marker, lines): marker is None for
+        a normal quote paragraph, or the bullet/number glyph for a list item
+        inside the quoted message."""
         if self.mode != "quote":
             self.flush()
             self.mode = "quote"
-            self.quote_paras = [[]]
+            self.quote_paras = [(None, [])]
         if content == "":
-            if self.quote_paras[-1]:
-                self.quote_paras.append([])
+            if self.quote_paras[-1][1]:
+                self.quote_paras.append((None, []))
+            return
+        m_bullet = re.match(r"^[-*]\s+(.*)$", content)
+        m_num = re.match(r"^(\d+)\.\s+(.*)$", content)
+        if m_bullet:
+            self.quote_paras.append(("•", [m_bullet.group(1)]))
+        elif m_num:
+            self.quote_paras.append((f"{m_num.group(1)}.", [m_num.group(2)]))
         else:
-            self.quote_paras[-1].append(content)
+            self.quote_paras[-1][1].append(content)
 
     def plain_line(self, stripped, indented):
         if indented and self.mode in ("bullets", "numbered") and self.list_items:
@@ -164,7 +193,7 @@ class Renderer:
         elif indented and self.mode == "para" and self.para_lines:
             self.para_lines.append(stripped)
         elif indented and self.mode == "quote" and self.quote_paras:
-            self.quote_paras[-1].append(stripped)
+            self.quote_paras[-1][1].append(stripped)
         else:
             if self.mode != "para":
                 self.flush()

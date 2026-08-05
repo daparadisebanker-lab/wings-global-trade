@@ -21,7 +21,7 @@ interiores,¿Qué es la línea Interiores / Azulejos?,"Catálogo de mosaico cer�
 interiores,¿Cómo se calcula la cantidad de cajas?,"La cantidad siempre se resuelve primero a cajas enteras (redondeando hacia arriba); m², piezas y kilos se derivan de esa cifra.",no
 interiores,¿El llenado del contenedor se mide en volumen o en peso?,"En kilos: la cerámica llega al límite de peso mucho antes que al de volumen.",no
 interiores,¿Qué formatos hay disponibles?,"150×150 y 300×300 mm, según la serie.",no
-interiores,¿Dan datos de PEI, resistencia al deslizamiento o absorción de agua?,"No están impresos por el proveedor en estos catálogos; se responde 'pendiente de confirmar con el proveedor'.",si
+interiores,"¿Dan datos de PEI, resistencia al deslizamiento o absorción de agua?","No están impresos por el proveedor en estos catálogos; se responde 'pendiente de confirmar con el proveedor'.",si
 proceso,¿Necesito mi propio agente de aduana?,"No. Wings gestiona todo el proceso documental y aduanal; solo se necesita el RUC (o equivalente) activo en el país destino.",no
 proceso,¿Puedo inspeccionar la mercancía antes de recibirla?,"Sí. La zona franca permite inspección de calidad antes de la nacionalización; se puede rechazar la carga sin haberla importado al territorio nacional.",no
 proceso,¿Qué incluye el precio CIF?,"Costo FOB, flete internacional, seguro de carga y arancel estimado, más el cargo de zona franca; la cifra exacta la confirma un especialista.",no
