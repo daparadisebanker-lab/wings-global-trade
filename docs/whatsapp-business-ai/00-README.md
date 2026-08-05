@@ -32,7 +32,8 @@ copy by hand.
 3. `03-faq.md` — buyer-facing Q&A pairs (FAQ mode is the token-efficient, higher-accuracy structure over raw-response mode on every platform surveyed).
 4. `04-reglas-y-escalamiento.md` — the forbidden claims and the exact escalation script, ported from Mister's live guardrails so a second AI can't contradict the first one.
 5. `05-interiores-azulejos.md` — the one active lane's product knowledge (WGT/02), unit math and vocabulary.
-6. `faq-estructurado.csv` — the same FAQ set as a structured table, for platforms that want tabular training data.
+6. `06-proceso-de-importacion.md` — the import process end to end (origin verification, CIF breakdown, free zone, documentation, delivery, shared container), sourced from the live `/proceso` page.
+7. `faq-estructurado.csv` — the same FAQ set as a structured table, for platforms that want tabular training data.
 
 ## Source of truth — this stack drifts if you don't watch it
 
@@ -47,6 +48,7 @@ any of its sources change. Re-derive it from:
 - `apps/site/src/lib/lanes/interioresMisterPack.ts` — Interiores/Azulejos facts
 - `apps/site/src/lib/rb/misterPack.ts` — represented-brand facts
 - `spec/vision.md` — company positioning and markets
+- `apps/site/src/app/proceso/page.tsx` — the published import process (phases, CIF breakdown, free zones, documentation, timeline ranges)
 
 Treat a stale WhatsApp AI knowledge base the same way the codebase treats a
 stale carton count: a wrong answer here reaches a buyer directly, with no
