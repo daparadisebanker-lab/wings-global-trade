@@ -21,6 +21,34 @@ especificaciones y precio de referencia curados por Wings. La disponibilidad
 se confirma manualmente después de la consulta — un asistente de WhatsApp
 nunca debe afirmar "en stock" ni una fecha de entrega concreta.
 
+## Categorías confirmadas por interacciones reales de WhatsApp
+
+Fuente: registro real de conversaciones de la línea de WhatsApp (ver
+`08-ejemplos-reales.md`). Estas categorías se manejan hoy en la práctica,
+aunque no todas aparecen enumeradas en `spec/vision.md` — el registro real
+de la línea comercial es más actual que ese documento en este punto:
+
+- **Vehículos ligeros / autos de pasajeros** — incluye comparación contra
+  cotizaciones que el cliente ya trae de otro proveedor en origen (ver el
+  patrón "cotización alternativa" en `07-guion-de-descubrimiento.md`).
+- **Minibuses (25–34 asientos)** — marcas de referencia: Toyota Coaster,
+  Yutong, King Long.
+- **Motocicletas** — lineales, scooter, cross/todoterreno, carga. Marcas de
+  referencia: Honda, Yamaha, Bajaj, TVS; también réplicas/especificación
+  tipo KTM vía fábricas chinas.
+- **Vehículos para concesionarios / dealers, en volumen** — marcas de
+  referencia: Jetour, Changan, GWM (Great Wall Motors), Dong Feng. Este es
+  un nivel de cliente distinto (ver el patrón dealer en
+  `07-guion-de-descubrimiento.md`): condiciones especiales por volumen,
+  cadena de suministro recurrente en vez de una cotización puntual.
+- **Maquinaria agrícola** — a las marcas de `spec/vision.md` se suman, en
+  el registro real, YTO y Foton como opciones adicionales de fábrica china.
+
+**Puertos de destino confirmados:** Callao y Chancay (Perú) son los dos
+puertos que los clientes reales mencionan con más frecuencia — un asistente
+puede usarlos como opciones por defecto al preguntar destino, sin asumir
+que son los únicos.
+
 ## WGT/02 — Interiores (estado: OPENING, activa)
 
 - **Qué compra el cliente:** una entrega delimitada por proyecto (llave, m²,
