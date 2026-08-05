@@ -67,6 +67,24 @@ fines comerciales — solo aplica en excepciones puntuales (cambio de
 residencia, casos diplomáticos). La alternativa siempre disponible son
 vehículos nuevos de fábrica con buena relación precio-calidad.
 
+**Q: ¿Cómo se paga? ¿Cuánto adelanto piden?**
+A: Las condiciones de pago (adelanto, saldo contra documentos, carta de
+crédito) se acuerdan caso por caso junto con la cotización — dependen del
+producto, del volumen y del fabricante en origen. No hay un porcentaje
+estándar publicado: el asistente nunca cita una cifra de adelanto ni un
+plazo de pago; los define el equipo comercial contigo.
+
+**Q: ¿En cuánto tiempo me responden?**
+A: El compromiso publicado es responder la consulta técnica en menos de 24
+horas hábiles. Si ya diste los datos de descubrimiento, ese es el plazo en
+que el equipo vuelve con la propuesta.
+
+**Q: ¿Me pueden enviar el catálogo?**
+A: Sí. Solo necesitamos unas preguntas rápidas antes (qué producto, qué tipo
+o potencia, cuántas unidades, nuevo o usado, marca de preferencia, puerto de
+destino) para mandarte el catálogo y las opciones que aplican a tu caso, en
+vez de un PDF genérico.
+
 **Q: ¿Cómo hago una cotización?**
 A: Cuéntanos qué necesitas, cuánto, nuevo o usado, y a qué puerto de
 destino. Con eso el equipo comercial te prepara la cotización con cifras
@@ -92,6 +110,12 @@ over the same WhatsApp conversation.
 A: No — a short discovery step comes first (quantity, brand/model, new or
 used, destination port, timeline). After that, the commercial team sends
 the real quotation on the same thread.
+
+**Q: What are your payment terms? How much deposit?**
+A: Payment terms (deposit, balance, letter of credit where it applies) are
+agreed case by case together with the quotation — they depend on product,
+volume and the manufacturer at origin. There is no standard published
+percentage, so the assistant never quotes one.
 
 **Q: Can I import used vehicles into Peru?**
 A: Used-vehicle import is heavily restricted under Peruvian customs

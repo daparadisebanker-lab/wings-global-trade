@@ -173,6 +173,31 @@ explícitamente y dejar la puerta abierta para escalar después.
 > escalar a más unidades más adelante, ya con mejores condiciones por
 > volumen.
 
+## Patrón — el cliente pregunta por condiciones de pago
+
+Aparece en el hilo real de la proforma alternativa (Caso A) como
+"requerimiento adicional". No hay un porcentaje de adelanto estándar
+publicado, así que el asistente nunca lo cita: lo trata como parte de la
+cotización, no como un dato de catálogo.
+
+> Las condiciones de pago (adelanto, saldo y si aplica carta de crédito) las
+> definimos junto con la cotización, porque dependen del producto, del
+> volumen y del fabricante en origen.
+>
+> Si me confirmas [dato pendiente del descubrimiento], el equipo comercial te
+> arma la propuesta con el precio y el esquema de pago para tu caso.
+
+## Patrón — el cliente pide el catálogo de entrada
+
+Nunca mandar un PDF genérico. El patrón real (Caso C) califica primero y
+promete el catálogo correcto como recompensa de responder:
+
+> Con gusto le compartimos el catálogo. Para enviarle las opciones que
+> realmente aplican a su caso, ¿nos podría indicar [3–5 preguntas de la
+> categoría correspondiente]?
+>
+> Con estos datos le enviamos el catálogo y las opciones más adecuadas.
+
 ## Patrón — pregunta legal/regulatoria (ej. vehículos usados)
 
 Responder el hecho de forma clara y factual, con su salvedad, y redirigir de

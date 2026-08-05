@@ -1,7 +1,7 @@
 categoria,pregunta,respuesta,requiere_escalamiento
-empresa,¿Wings vende directo con precio en el catálogo?,"No. Wings es mayorista, sin carrito ni precio en línea. Cada cotización la prepara un especialista contra volumen, destino e incoterm.",no
-empresa,¿Cuál es el pedido mínimo (MOQ)?,"Depende del producto y la línea; no hay cifra única para toda la empresa. Preguntar al especialista con producto y destino.",si
-empresa,¿Cuánto tarda la entrega?,"El plazo lo confirma el equipo contra el pedido real; un asistente automatizado no puede dar fecha ni rango de días.",si
+empresa,¿Wings vende directo con precio en el catálogo?,"No hay carrito ni precio en línea. La cotización la prepara el equipo comercial contra volumen, destino e incoterm y sí se envía por WhatsApp, una vez completado el descubrimiento.",no
+empresa,¿Cuál es el pedido mínimo (MOQ)?,"Depende del producto y la línea; no hay cifra única para toda la empresa. En vehículos, maquinaria y motos se puede empezar con una unidad. Confirmar con el especialista según producto y destino.",si
+empresa,¿Cuánto tarda la entrega?,"Hay rangos generales publicados por categoría (ver la pregunta de proceso más abajo) que sí se pueden citar como referencia; la fecha real del pedido la confirma el equipo comercial, nunca el asistente.",si
 empresa,¿Tienen stock disponible ahora?,"El catálogo no es un feed de stock en vivo; la disponibilidad se confirma manualmente tras la consulta.",si
 empresa,¿Qué incoterms manejan?,"EXW, FOB, CFR, CIF, DAP, DDP entre otros; cuál aplica depende del destino y del acuerdo comercial.",no
 empresa,¿Qué zonas francas usa Wings?,"ZOFRATACNA (Tacna, Perú) y ZOFRI (Iquique, Chile).",no
@@ -10,6 +10,9 @@ empresa,¿Qué categorías de producto manejan hoy?,"Vehículos de pasajeros, ca
 empresa,¿Puedo comprar una sola unidad de un vehículo o moto?,"Sí, en vehículos, maquinaria y motos se puede empezar con una unidad. En líneas por contenedor (interiores, marcas representadas) la unidad mínima es caja, m² o cupo, no la pieza suelta.",no
 empresa,¿Cómo hago una cotización?,"Escribe qué necesitas, cantidad, nuevo o usado y puerto de destino; el equipo comercial prepara la cotización real por la misma conversación.",si
 empresa,¿El asistente puede dar precio en el primer mensaje?,"No. Primero completa el descubrimiento (cantidad, marca/modelo, nuevo o usado, destino, plazo); luego el equipo comercial envía la cotización real por WhatsApp.",si
+empresa,¿Cómo se paga? ¿Cuánto adelanto piden?,"Las condiciones de pago (adelanto, saldo, carta de crédito) se acuerdan caso por caso con el equipo comercial junto con la cotización. El asistente nunca cita un porcentaje de adelanto ni un plazo de pago: no hay una cifra estándar publicada.",si
+empresa,¿En cuánto tiempo responden una consulta?,"El compromiso publicado es responder la consulta técnica en menos de 24 horas hábiles.",no
+empresa,¿Me pueden enviar el catálogo?,"Sí, pero primero unas preguntas rápidas (producto, potencia o tipo, cantidad, nuevo o usado, marca de preferencia, destino) para enviar el catálogo correcto y no un PDF genérico.",no
 empresa,¿Puedo importar vehículos usados a Perú?,"Restringido por normativa aduanera para fines comerciales, salvo excepciones puntuales (cambio de residencia, casos diplomáticos). Alternativa: vehículos nuevos de fábrica.",no
 vehiculos,¿Qué marcas manejan para importación en volumen (dealers)?,"Jetour, Changan, GWM, Dong Feng entre otras; también importación personalizada de cualquier marca según especificación del dealer.",si
 vehiculos,¿Qué marcas de motocicleta manejan?,"Honda, Yamaha, Bajaj, TVS, y opciones de fábrica china para especificaciones tipo cross/enduro (incluida réplica tipo KTM).",no

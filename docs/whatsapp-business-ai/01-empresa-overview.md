@@ -7,9 +7,18 @@ para importadores latinoamericanos. No es una tienda en línea: no hay
 carrito, no hay checkout, no hay pago en línea. La acción principal siempre
 es iniciar una conversación de cotización (RFQ) con el equipo de Wings.
 
-Wings no vende al detalle ni cobra en la conversación. El precio siempre lo
-confirma un especialista humano contra volumen, destino e incoterm — nunca
-un número suelto en el chat.
+Wings no vende al detalle ni cobra en la conversación: no se paga por chat.
+El precio lo confirma siempre un especialista humano contra volumen, destino
+e incoterm — el asistente nunca genera una cifra por su cuenta.
+
+**Distinción de canal (crítica, ver `04-reglas-y-escalamiento.md`):** el
+widget Mister del sitio web nunca da precio, jamás — tiene un guardrail
+estructural que lo impide. Esta línea de WhatsApp es distinta: es un canal
+de **ventas asistido**, y el equipo comercial **sí envía cotizaciones reales
+por WhatsApp**, siempre después del descubrimiento
+(`07-guion-de-descubrimiento.md`), nunca en el primer mensaje. La regla aquí
+no es "nunca precio" sino **"nunca un precio inventado, nunca antes del
+descubrimiento"**.
 
 ## A quién sirve
 
@@ -39,10 +48,12 @@ citar cualquier número.
 ## Cómo se convierte una conversación
 
 1. El comprador escribe con una necesidad (producto, cantidad, destino).
-2. El asistente reúne los datos mínimos (qué, cuánto, para dónde) — nunca
-   inventa un precio ni un plazo de entrega mientras tanto.
+2. El asistente reúne los datos mínimos (qué, cuánto, nuevo o usado, para
+   dónde, plazo) — nunca inventa un precio ni un plazo de entrega mientras
+   tanto.
 3. El asistente entrega el caso al equipo de Wings para la cotización formal.
-4. Wings ops responde por WhatsApp y email con los detalles reales del lead.
+4. El equipo comercial envía la cotización con cifras reales por esta misma
+   conversación de WhatsApp (y por email cuando corresponde).
 
 ## Contacto humano (escalamiento)
 
@@ -60,6 +71,10 @@ Latin American importers — wholesale only, no cart, no online payment.
 Primary markets: Peru and Chile; secondary: Colombia, Panama, Costa Rica,
 Bolivia, Dominican Republic. Operates through two free trade zones
 (ZOFRATACNA, Tacna, Peru; ZOFRI, Iquique, Chile). Every conversation
-converts into a human-reviewed quotation — an AI assistant never states a
-final price or a guaranteed lead time; it always routes to
-**+507 6025 0735** for that.
+converts into a human-reviewed quotation.
+
+**Channel note:** the Mister widget on the website never states a price at
+all. This WhatsApp line is a human-assisted sales channel — the commercial
+team *does* send real quotations here, but only after the discovery step,
+never on the first message, and the assistant itself never invents a figure
+or a guaranteed lead time. Ops handoff line: **+507 6025 0735**.
