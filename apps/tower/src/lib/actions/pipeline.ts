@@ -460,6 +460,48 @@ export async function listRfqs(input: ListRfqsInput): Promise<ActionResult<{ row
   return ok({ rows, nextCursor: null })
 }
 
+/** RFQs for one client, across whatever lanes it touches — the client window's
+ *  pipeline history. RLS on tower.rfqs (lane-scoped) still applies per row. */
+export async function listRfqsForAccount(accountId: string): Promise<ActionResult<RfqRow[]>> {
+  const gate = await requireUser()
+  if (!gate.ok) return gate.error
+  const { supabase } = gate
+
+  const parsed = uuidSchema.safeParse(accountId)
+  if (!parsed.success) return fail('VALIDATION', 'ID inválido / Invalid id')
+
+  const { data, error } = await supabase
+    .from('rfqs')
+    .select(RFQ_SELECT_COLS)
+    .eq('account_id', parsed.data)
+    .order('created_at', { ascending: false })
+    .limit(100)
+
+  if (error) return fail('VALIDATION', 'No se pudieron listar los RFQ / Could not list RFQs')
+  return ok(((data ?? []) as unknown as RawRfqRow[]).map(mapRfqRow))
+}
+
+/** Orders (contracted deals) for one client — the client window's "performance"
+ *  history. RLS on tower.orders (lane-scoped) still applies per row. */
+export async function listOrdersForAccount(accountId: string): Promise<ActionResult<OrderRow[]>> {
+  const gate = await requireUser()
+  if (!gate.ok) return gate.error
+  const { supabase } = gate
+
+  const parsed = uuidSchema.safeParse(accountId)
+  if (!parsed.success) return fail('VALIDATION', 'ID inválido / Invalid id')
+
+  const { data, error } = await supabase
+    .from('orders')
+    .select('id,quote_id,brand_id,lane_id,account_id,status,incoterm,created_at')
+    .eq('account_id', parsed.data)
+    .order('created_at', { ascending: false })
+    .limit(100)
+
+  if (error) return fail('VALIDATION', 'No se pudieron listar los pedidos / Could not list orders')
+  return ok(((data ?? []) as unknown as RawOrderRow[]).map(mapOrderRow))
+}
+
 export async function getRfq(id: string): Promise<ActionResult<RfqRow>> {
   const gate = await requireUser()
   if (!gate.ok) return gate.error
