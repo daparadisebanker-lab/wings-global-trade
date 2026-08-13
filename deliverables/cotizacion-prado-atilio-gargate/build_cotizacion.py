@@ -21,15 +21,20 @@ LOGO_SVG = HERE / "wings-icon.svg"  # icon-only mark — the full lockup SVG spe
 # wing icon with the wordmark portion of the source SVG excluded.
 
 # ── Source: FORMULA_DE_COSTOS.xlsx, sheet "PRADO", column D ───────────────
-# Costo total de importación (landed cost, pre-nationalization IGV) = D60.
+# Costo total de importación (landed cost, pre-nationalization IGV) = D60,
+# already a PER-UNIT figure: the sheet allocates the 40'HQ container freight
+# (A10=6000 / B10=2 units) down to a per-unit share before summing, so this
+# is "what one of two units sharing a container costs" — exactly this order.
 # Internal only — never shown to the client, per house rule.
-COSTO_IMPORTACION = 82250.00
+COSTO_IMPORTACION_UNIT = 82250.00
+UNITS = 2
 MARKUP_PCT = 0.12
 IGV_PCT = 0.18
 TIPO_CAMBIO = 3.5  # referencial, S/ por USD (D18 en la hoja de costos)
 
-MARGEN = round(COSTO_IMPORTACION * MARKUP_PCT, 2)
-VALOR_VENTA = round(COSTO_IMPORTACION + MARGEN, 2)
+MARGEN_UNIT = round(COSTO_IMPORTACION_UNIT * MARKUP_PCT, 2)
+VALOR_VENTA_UNIT = round(COSTO_IMPORTACION_UNIT + MARGEN_UNIT, 2)
+VALOR_VENTA = round(VALOR_VENTA_UNIT * UNITS, 2)
 IGV = round(VALOR_VENTA * IGV_PCT, 2)
 PRECIO_TOTAL = round(VALOR_VENTA + IGV, 2)
 PRECIO_TOTAL_SOLES = round(PRECIO_TOTAL * TIPO_CAMBIO, 2)
@@ -189,14 +194,14 @@ HTMLDOC = f"""<!doctype html>
     </div>
   </div>
 
-  <div class="pdoc-section-bar">Vehículo cotizado</div>
+  <div class="pdoc-section-bar">Vehículos cotizados</div>
   <table class="pdoc-table">
     <thead>
       <tr>
         <th class="pd-col-item">Ítem</th>
         <th class="pd-col-desc">Descripción</th>
         <th class="pd-col-qty">Cantidad</th>
-        <th>Valor de venta (USD)</th>
+        <th>Valor unit. (USD)</th>
         <th>Importe (USD)</th>
       </tr>
     </thead>
@@ -207,14 +212,14 @@ HTMLDOC = f"""<!doctype html>
           <span class="pd-model">Toyota Land Cruiser Prado 2026 — FULL (tope de gama, Flagship VX)</span>
           <span class="pd-spec">2.4T Híbrido · Origen: China · Nacionalizado, puesto en Callao</span>
         </td>
-        <td class="pd-cell-num">1 unidad</td>
-        <td class="pd-cell-num">{fmt(VALOR_VENTA)}</td>
+        <td class="pd-cell-num">{UNITS} unidades</td>
+        <td class="pd-cell-num">{fmt(VALOR_VENTA_UNIT)}</td>
         <td class="pd-cell-num">{fmt(VALOR_VENTA)}</td>
       </tr>
       <tr class="pd-row-total">
         <td class="pd-item"></td>
         <td class="pd-desc">Valor de venta</td>
-        <td class="pd-cell-num">1 unidad</td>
+        <td class="pd-cell-num">{UNITS} unidades</td>
         <td class="pd-cell-num"></td>
         <td class="pd-cell-num">{fmt(VALOR_VENTA)}</td>
       </tr>
@@ -251,7 +256,7 @@ HTMLDOC = f"""<!doctype html>
   <ul class="pdoc-observations">
     <li>Precio final nacionalizado en Perú, incluye IGV (18%); no incluye trámites de placa/registro posteriores a la entrega.</li>
     <li>Tipo de cambio referencial S/ {TIPO_CAMBIO} por USD; el precio final se factura en la moneda acordada al momento del pago.</li>
-    <li>Precio sujeto a confirmación de disponibilidad de la unidad y variaciones de tipo de cambio o tributos aduaneros vigentes a la fecha de nacionalización.</li>
+    <li>Precio sujeto a confirmación de disponibilidad de las unidades y variaciones de tipo de cambio o tributos aduaneros vigentes a la fecha de nacionalización.</li>
   </ul>
 
   <div class="pdoc-tail">
@@ -281,5 +286,5 @@ HTMLDOC = f"""<!doctype html>
 out = HERE / "cotizacion.html"
 out.write_text(HTMLDOC, encoding="utf-8")
 print(f"wrote {out} ({len(HTMLDOC):,} bytes)")
-print(f"costo_interno={fmt(COSTO_IMPORTACION)} margen_12%={fmt(MARGEN)}")
-print(f"valor_venta={fmt(VALOR_VENTA)} igv={fmt(IGV)} precio_total={fmt(PRECIO_TOTAL)}")
+print(f"units={UNITS} costo_interno_unit={fmt(COSTO_IMPORTACION_UNIT)} margen_12%_unit={fmt(MARGEN_UNIT)}")
+print(f"valor_venta_unit={fmt(VALOR_VENTA_UNIT)} valor_venta_total={fmt(VALOR_VENTA)} igv={fmt(IGV)} precio_total={fmt(PRECIO_TOTAL)}")
