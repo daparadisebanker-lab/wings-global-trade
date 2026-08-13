@@ -27,7 +27,7 @@ const BY_RENDERER: Record<string, HandoffLink[]> = {
     { href: '/quotations', label: { es: 'Abrir Cotizaciones', en: 'Open Quotations' } },
     { href: '/pipeline', label: { es: 'Ver Pipeline', en: 'View Pipeline' } },
   ],
-  'supplier-extract': [{ href: '/catalog', label: { es: 'Abrir Catálogo', en: 'Open Catalog' } }],
+  'supplier-extract': [{ href: '/suppliers', label: { es: 'Abrir Proveedores', en: 'Open Suppliers' } }],
   documents: [{ href: '/documents', label: { es: 'Abrir Documentos', en: 'Open Documents' } }],
 }
 
@@ -37,6 +37,7 @@ export const DEFAULT_HANDOFFS: HandoffLink[] = [
   { href: '/costing', label: { es: 'Costeo', en: 'Costing' } },
   { href: '/quotations', label: { es: 'Cotizaciones', en: 'Quotations' } },
   { href: '/catalog', label: { es: 'Catálogo', en: 'Catalog' } },
+  { href: '/suppliers', label: { es: 'Proveedores', en: 'Suppliers' } },
 ]
 
 /** Hand-offs for a given renderer, or the default starting set. */

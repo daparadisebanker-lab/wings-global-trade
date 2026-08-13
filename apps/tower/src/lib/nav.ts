@@ -10,6 +10,7 @@ export type ModuleId =
   | 'pipeline'
   | 'quotations'
   | 'clients'
+  | 'suppliers'
   | 'containers'
   | 'costing'
   | 'marcas'
