@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { t, type Locale } from '@/lib/i18n'
 import { type ClientListItem, sourceLabel, stageLabel, archetypeLabel } from '@/lib/actions/clients-logic'
 
@@ -43,13 +44,18 @@ export function ClientList({
         {items.map((c) => (
           <li key={c.id} className="flex flex-col gap-2 rounded-card border border-line-hairline bg-surface-1 p-4">
             <div className="flex items-start justify-between gap-3">
-              <button
-                type="button"
-                onClick={() => onEdit(c)}
-                className="text-left font-medium text-ink-primary hover:text-lane-accent"
-              >
-                {c.name}
-              </button>
+              <div className="flex items-baseline gap-2">
+                <Link href={`/clients/${c.id}`} className="text-left font-medium text-ink-primary hover:text-lane-accent">
+                  {c.name}
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => onEdit(c)}
+                  className="font-mono text-label uppercase tracking-[0.06em] text-ink-secondary hover:text-lane-accent"
+                >
+                  {t({ es: 'Editar', en: 'Edit' }, locale)}
+                </button>
+              </div>
               <StageChip stage={c.stage} locale={locale} />
             </div>
             <div className="flex flex-wrap gap-x-4 gap-y-1 font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
@@ -93,13 +99,18 @@ export function ClientList({
               return (
                 <tr key={c.id} className="border-b border-line-hairline last:border-0 hover:bg-surface-2">
                   <Cell className="text-ink-primary">
-                    <button
-                      type="button"
-                      onClick={() => onEdit(c)}
-                      className="text-left font-medium hover:text-lane-accent"
-                    >
-                      {c.name}
-                    </button>
+                    <div className="flex items-baseline gap-2">
+                      <Link href={`/clients/${c.id}`} className="text-left font-medium hover:text-lane-accent">
+                        {c.name}
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => onEdit(c)}
+                        className="font-mono text-label uppercase tracking-[0.06em] text-ink-secondary hover:text-lane-accent"
+                      >
+                        {t({ es: 'Editar', en: 'Edit' }, locale)}
+                      </button>
+                    </div>
                     {c.primaryContact ? (
                       <span className="mt-0.5 block font-ui text-label text-ink-secondary">
                         {c.primaryContact.name}

@@ -52,6 +52,27 @@ export async function listClients(): Promise<ActionResult<ClientListItem[]>> {
   return ok(((data ?? []) as unknown as RawClientRow[]).map(mapClientRow))
 }
 
+/** One client by id — the client window's profile fetch. RLS-scoped like listClients. */
+export async function getClient(id: string): Promise<ActionResult<ClientListItem>> {
+  const parsed = z.string().uuid().safeParse(id)
+  if (!parsed.success) return fail('VALIDATION', 'ID inválido / Invalid id')
+
+  const auth = await requireUser()
+  if (!auth.ok) return auth.error
+
+  const { data, error } = await auth.supabase
+    .schema('tower')
+    .from('accounts')
+    .select(CLIENT_SELECT)
+    .eq('id', parsed.data)
+    .maybeSingle()
+
+  if (error) return fail('VALIDATION', 'No se pudo leer el cliente / Could not read the client')
+  if (!data) return fail('FORBIDDEN_LANE', 'Cliente no encontrado o sin acceso / Client not found or no access')
+
+  return ok(mapClientRow(data as unknown as RawClientRow))
+}
+
 /** The brands the caller can file a client under (RLS read = has_brand_access). */
 export async function listClientBrands(): Promise<ActionResult<ClientBrandOption[]>> {
   const auth = await requireUser()

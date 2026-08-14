@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { t, type Locale } from '@/lib/i18n'
 import {
   groupClientsByStage,
@@ -84,13 +85,9 @@ export function ClientBoard({
                 className="flex cursor-grab flex-col gap-1.5 rounded-card border border-line-hairline bg-surface-0 p-2.5 active:cursor-grabbing"
               >
                 <div className="flex items-start justify-between gap-2">
-                  <button
-                    type="button"
-                    onClick={() => onEdit(c)}
-                    className="text-left text-t0 font-medium text-ink-primary hover:text-lane-accent"
-                  >
+                  <Link href={`/clients/${c.id}`} className="text-left text-t0 font-medium text-ink-primary hover:text-lane-accent">
                     {c.name}
-                  </button>
+                  </Link>
                   <span className="shrink-0 font-mono text-label tabular-nums text-ink-secondary" data-numeric>
                     {c.score}
                   </span>
@@ -105,6 +102,13 @@ export function ClientBoard({
                 {c.primaryContact ? (
                   <span className="truncate text-label text-ink-secondary">{c.primaryContact.name}</span>
                 ) : null}
+                <button
+                  type="button"
+                  onClick={() => onEdit(c)}
+                  className="w-fit font-mono text-label uppercase tracking-[0.06em] text-ink-secondary hover:text-lane-accent"
+                >
+                  {t({ es: 'Editar', en: 'Edit' }, locale)}
+                </button>
                 {/* Keyboard-accessible move (never mouse-only). */}
                 <label className="mt-1 flex items-center gap-1.5">
                   <span className="sr-only">{t({ es: 'Mover a etapa', en: 'Move to stage' }, locale)}</span>

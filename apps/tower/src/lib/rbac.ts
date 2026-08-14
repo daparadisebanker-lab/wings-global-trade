@@ -20,10 +20,10 @@ export type Role = 'LANE_DIRECTOR' | 'CATALOG_EDITOR' | 'TRADE_OPS' | 'SALES' | 
 const ALL_MODULES: ModuleId[] = MODULES.map((m) => m.id)
 
 const ROLE_MODULES: Record<Role, ModuleId[]> = {
-  LANE_DIRECTOR: ['catalog', 'pipeline', 'quotations', 'clients', 'containers', 'costing', 'signals', 'intelligence', 'documents'],
-  CATALOG_EDITOR: ['catalog', 'documents', 'signals'],
-  TRADE_OPS: ['containers', 'costing', 'catalog', 'documents', 'signals'],
-  SALES: ['pipeline', 'quotations', 'clients', 'signals'],
+  LANE_DIRECTOR: ['catalog', 'pipeline', 'quotations', 'clients', 'suppliers', 'backlog', 'containers', 'costing', 'signals', 'intelligence', 'documents'],
+  CATALOG_EDITOR: ['catalog', 'backlog', 'documents', 'signals'],
+  TRADE_OPS: ['containers', 'costing', 'catalog', 'suppliers', 'backlog', 'documents', 'signals'],
+  SALES: ['pipeline', 'quotations', 'clients', 'suppliers', 'backlog', 'signals'],
   VIEWER: ['signals'],
 }
 
