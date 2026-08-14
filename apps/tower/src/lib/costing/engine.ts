@@ -14,6 +14,15 @@
 //  · Bloque 2 (neto real) == Bloque 1 (bruto) by design (recoverable taxes)
 //  · Margen Neto de Caja is normally negative during the IGV recovery window
 //  · percent-mode marginRate and margenNetoCajaPct are deliberately unrounded
+//
+// 2026-08-14 — DELIBERATE DIVERGENCE from the wings-operations baseline (Muaaz,
+// against FORMULA_DE_COSTOS.xlsx §PRADO): margenNetoCaja now also deducts Pago a
+// Cuenta del Impuesto a la Renta (paCuentaRenta, statutory default 1.77% of the
+// pre-IGV sale price) — a real cash outflow the ported engine never modeled.
+// Percepción's base intentionally still includes IGV importación (real SUNAT law
+// + the original engine); the Excel workbook's own percepción formula omits IGV
+// from that base and was judged a spreadsheet simplification, not the reference
+// to port — flagged for whoever maintains that sheet, not replicated here.
 import Decimal from 'decimal.js'
 import type { FuelType, ImportInputs, ImportResult } from './types'
 
@@ -74,6 +83,7 @@ export function computeImportCost(inputs: ImportInputs): ImportResult {
   const adVal = d(inputs.adValoremRate)
   const igv = d(igvRate)
   const perc = d(percepcionRate)
+  const paCuentaRentaRate = d(inputs.paCuentaRentaRate ?? 0.0177)
   const tc = d(exchangeRate)
 
   // ── CIF base per Incoterm ────────────────────────────────────────────────
@@ -142,6 +152,12 @@ export function computeImportCost(inputs: ImportInputs): ImportResult {
   const salePriceFinal = r2(salePrice.plus(igvVentas))
   const igvNetPayable = r2(igvVentas.minus(igvImportacion).times(tc))
 
+  // ── Pago a Cuenta del Impuesto a la Renta (soles → USD round-trip, same
+  // discipline as IGV importación/percepción above) ────────────────────────
+  const paCuentaRentaBaseSoles = r2(salePrice.times(tc))
+  const paCuentaRenta = r2(paCuentaRentaBaseSoles.times(paCuentaRentaRate).dividedBy(tc))
+  const paCuentaRentaPEN = r2(paCuentaRenta.times(tc))
+
   // ── Módulo 7 — tres bloques de margen ────────────────────────────────────
   const margenBruto = n(marginUSD)
   const margenBrutoPct = marginRate
@@ -152,7 +168,7 @@ export function computeImportCost(inputs: ImportInputs): ImportResult {
   const margenNetoReal = margenBruto
   const margenNetoRealPct = margenBrutoPct
 
-  const margenNetoCaja = n(r2(marginUSD.minus(impuestosRecuperablesUSD)))
+  const margenNetoCaja = n(r2(marginUSD.minus(impuestosRecuperablesUSD).minus(paCuentaRenta)))
   const margenNetoCajaPct = n(landedCost) > 0 ? margenNetoCaja / n(landedCost) : 0
 
   return {
@@ -179,6 +195,8 @@ export function computeImportCost(inputs: ImportInputs): ImportResult {
     impuestosRecuperablesPEN: n(impuestosRecuperablesPEN),
     margenNetoReal,
     margenNetoRealPct,
+    paCuentaRenta: n(paCuentaRenta),
+    paCuentaRentaPEN: n(paCuentaRentaPEN),
     margenNetoCaja,
     margenNetoCajaPct,
   }
@@ -205,6 +223,7 @@ export const DEFAULT_INPUTS: ImportInputs = {
   igvRate: 0.18,
   percepcionRate: 0.035,
   insuranceRate: 0.015,
+  paCuentaRentaRate: 0.0177,
   exchangeRate: 3.7,
   marginMode: 'percent',
   marginPercent: 0.1,

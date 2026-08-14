@@ -12,6 +12,8 @@ import { cn } from '@wings/trade-ui'
 import { CostCalculator } from './CostCalculator'
 import { ExportCostCalculator } from './ExportCostCalculator'
 import type { CostCalculationRow, CostingLane } from '@/lib/actions/costing'
+import type { SupplierOfferListItem } from '@/lib/actions/suppliers-logic'
+import type { ProductRow } from '@/lib/actions/catalog'
 import { DEFAULT_LOCALE, t, type Locale, type Localized } from '@/lib/i18n'
 
 type Mode = 'import' | 'export'
@@ -54,10 +56,19 @@ const MODES: ModeCard[] = [
 export function CostingWorkbench({
   lanes,
   initialHistory,
+  prefillOffer = null,
+  prefillProduct = null,
+  prefillCalc = null,
   locale = DEFAULT_LOCALE,
 }: {
   lanes: CostingLane[]
   initialHistory: CostCalculationRow[]
+  /** A Suppliers price-book offer to prefill the form from (the "Costear" hand-off). */
+  prefillOffer?: SupplierOfferListItem | null
+  /** A Catalog product to prefill the form from (its own "Costear" hand-off). */
+  prefillProduct?: ProductRow | null
+  /** A saved calculation to reopen for revision (the /costing/history "Revisar →" link). */
+  prefillCalc?: CostCalculationRow | null
   locale?: Locale
 }) {
   const [mode, setMode] = useState<Mode>('import')
@@ -96,7 +107,13 @@ export function CostingWorkbench({
       </fieldset>
 
       {mode === 'import' ? (
-        <CostCalculator lanes={lanes} initialHistory={initialHistory} />
+        <CostCalculator
+          lanes={lanes}
+          initialHistory={initialHistory}
+          prefillOffer={prefillOffer}
+          prefillProduct={prefillProduct}
+          prefillCalc={prefillCalc}
+        />
       ) : (
         <ExportCostCalculator locale={locale} />
       )}

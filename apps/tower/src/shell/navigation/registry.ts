@@ -66,6 +66,7 @@ export const SELF_DESTINATIONS: PaletteDestination[] = [
   // Palette-only for now; a rail slot awaits its bespoke icon (visual-QA-gated follow-up).
   { id: 'brief', href: '/brief', label: { es: 'Brief del día', en: 'Morning Brief' }, tag: 'REP', keywords: ['brief', 'reporte', 'report', 'resumen', 'summary', 'día', 'day', 'mañana', 'morning', 'productividad', 'productivity', 'reportar', 'hoy', 'today'] },
   { id: 'perfil', href: '/perfil', label: { es: 'Mi perfil', en: 'My profile' }, tag: 'PRF', keywords: ['perfil', 'profile', 'cuenta', 'account', 'firma', 'signature'] },
+  { id: 'costing-history', href: '/costing/history', label: { es: 'Historial de cálculos', en: 'Saved calculations' }, tag: 'CST', keywords: ['costeo', 'costing', 'historial', 'history', 'cálculos', 'calculations', 'flota', 'fleet', 'guardados', 'saved'] },
 ]
 
 /** Admin ⌘K destinations (group-admin only). */
@@ -98,6 +99,7 @@ export interface PaletteAction {
 export const EVERYONE_ACTIONS: PaletteAction[] = [
   { id: 'act-publish', href: '/catalog', label: { es: 'Publicar producto…', en: 'Publish product…' }, keywords: ['publicar', 'publish', 'producto', 'product'] },
   { id: 'act-new-rfq', href: '/pipeline', label: { es: 'Nuevo RFQ…', en: 'New RFQ…' }, keywords: ['nuevo', 'new', 'rfq', 'cotización'] },
+  { id: 'act-new-quotation', href: '/quotations', label: { es: 'Nueva cotización…', en: 'New quotation…' }, keywords: ['nueva', 'new', 'cotización', 'quotation', 'quote', 'proforma', 'propuesta', 'proposal'] },
   { id: 'act-new-offer', href: '/suppliers', label: { es: 'Nueva oferta de proveedor…', en: 'New supplier offer…' }, keywords: ['proveedor', 'supplier', 'fob', 'oferta', 'offer', 'precio', 'price'] },
   { id: 'act-new-task', href: '/backlog', label: { es: 'Nueva tarea…', en: 'New task…' }, keywords: ['tarea', 'task', 'backlog', 'pendiente', 'seguimiento', 'follow up'] },
 ]

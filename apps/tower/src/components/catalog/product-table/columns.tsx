@@ -77,4 +77,18 @@ export const productColumns = [
     ),
     size: 140,
   }),
+  columnHelper.display({
+    id: 'costear',
+    header: '',
+    enableSorting: false,
+    cell: (info) => (
+      <Link
+        href={`/costing?productId=${info.row.original.id}`}
+        className="font-mono text-label uppercase tracking-[0.08em] text-lane-accent hover:underline"
+      >
+        Costear →
+      </Link>
+    ),
+    size: 110,
+  }),
 ]

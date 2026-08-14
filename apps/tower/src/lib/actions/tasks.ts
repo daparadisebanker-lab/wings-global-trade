@@ -84,14 +84,20 @@ const createTaskSchema = z.object({
   dueDate: nz(10),
   assigneeId: z.string().uuid().nullish(),
   accountId: z.string().uuid().nullish(),
+  /** Link to a Pipeline deal instead of (or alongside) a bare client — this is
+   *  the Backlog→Pipeline hand-off: a task tied to an RFQ opens straight onto
+   *  its Kanban card, not just the client window. When set, it wins over
+   *  accountId for brand derivation and the polymorphic ref. */
+  rfqId: z.string().uuid().nullish(),
 })
 export type CreateTaskInput = z.input<typeof createTaskSchema>
 
 /**
  * Create a task (RLS: tasks_ins — brand-scoped since lane_id is always null
- * here). When linked to a client, brand_id is derived server-side from that
- * account — never trusted from the caller — so a task can't land under a
- * brand its client doesn't belong to. A brandId is required otherwise.
+ * here). When linked to a client or an RFQ, brand_id is derived server-side
+ * from that record — never trusted from the caller — so a task can't land
+ * under a brand its client/deal doesn't belong to. A brandId is required
+ * otherwise.
  */
 export async function createTask(input: CreateTaskInput): Promise<ActionResult<TaskListItem>> {
   const parsed = createTaskSchema.safeParse(input)
@@ -104,12 +110,23 @@ export async function createTask(input: CreateTaskInput): Promise<ActionResult<T
 
   let brandId = d.brandId ?? null
   let accountName: string | null = null
-  if (d.accountId) {
+  let refTable: string | null = null
+  let refId: string | null = null
+
+  if (d.rfqId) {
+    const { data: rfq, error } = await db.from('rfqs').select('id,brand_id').eq('id', d.rfqId).maybeSingle()
+    if (error || !rfq) return fail('FORBIDDEN_LANE', 'RFQ no encontrado o sin acceso / RFQ not found or no access')
+    brandId = (rfq as { id: string; brand_id: string }).brand_id
+    refTable = 'rfqs'
+    refId = d.rfqId
+  } else if (d.accountId) {
     const { data: account, error } = await db.from('accounts').select('id,brand_id,name').eq('id', d.accountId).maybeSingle()
     if (error || !account) return fail('FORBIDDEN_LANE', 'Cliente no encontrado o sin acceso / Client not found or no access')
     const row = account as { id: string; brand_id: string; name: string }
     brandId = row.brand_id
     accountName = row.name
+    refTable = 'accounts'
+    refId = d.accountId
   }
   if (!brandId) return fail('VALIDATION', 'Falta la marca o el cliente / Missing brand or client')
 
@@ -120,8 +137,8 @@ export async function createTask(input: CreateTaskInput): Promise<ActionResult<T
       title: d.title,
       due_date: d.dueDate ?? null,
       assignee_id: d.assigneeId ?? auth.user.id,
-      ref_table: d.accountId ? 'accounts' : null,
-      ref_id: d.accountId ?? null,
+      ref_table: refTable,
+      ref_id: refId,
       status: 'OPEN',
     })
     .select(TASK_SELECT)

@@ -4,6 +4,7 @@ import { t, type Locale } from '@/lib/i18n'
 import { formatMinor } from '@/lib/money'
 import type { QuotationListItem } from '@/lib/actions/quotations-logic'
 import { IssueButton } from './IssueButton'
+import { NewQuotationForm } from './NewQuotationForm'
 
 // The Quotations window — a standalone list of every quotation the caller can
 // see (draft + issued), each opening its printable proforma. Responsive: a table
@@ -36,33 +37,38 @@ function Cell({ children, className = '' }: { children: React.ReactNode; classNa
 export function QuotationsWindow({ items, locale }: { items: QuotationListItem[]; locale: Locale }) {
   return (
     <div className="flex flex-col gap-6 p-6">
-      <header className="flex flex-col gap-1">
-        <span className="font-mono text-label uppercase tracking-[0.15em] text-lane-accent" data-numeric>
-          {TAG}
-        </span>
-        <div className="flex items-baseline justify-between gap-4">
-          <h1 className="font-display text-t3 text-ink-primary">{t(TITLE, locale)}</h1>
-          <span className="font-mono text-label text-ink-secondary" data-numeric>
-            {items.length}
+      <header className="flex flex-col gap-3">
+        <div className="flex flex-col gap-1">
+          <span className="font-mono text-label uppercase tracking-[0.15em] text-lane-accent" data-numeric>
+            {TAG}
           </span>
+          <div className="flex flex-wrap items-baseline justify-between gap-4">
+            <h1 className="font-display text-t3 text-ink-primary">{t(TITLE, locale)}</h1>
+            <span className="font-mono text-label text-ink-secondary" data-numeric>
+              {items.length}
+            </span>
+          </div>
+          <p className="max-w-prose text-t0 text-ink-secondary">
+            {t(
+              {
+                es: 'Cotizaciones borrador y emitidas. Ábrelas para imprimir, o crea una nueva ahora mismo — sin pasar por Mister.',
+                en: 'Draft and issued quotations. Open one to print, or start a new one right now — no Mister round-trip required.',
+              },
+              locale,
+            )}
+          </p>
         </div>
-        <p className="max-w-prose text-t0 text-ink-secondary">
-          {t(
-            {
-              es: 'Cotizaciones borrador y emitidas. Ábrelas para imprimir. Pídele a Mister “ármame una cotización” para crear una nueva.',
-              en: 'Draft and issued quotations. Open one to print. Ask Mister “build me a quote” to create a new one.',
-            },
-            locale,
-          )}
-        </p>
+        <div>
+          <NewQuotationForm locale={locale} />
+        </div>
       </header>
 
       {items.length === 0 ? (
         <div className="rounded-card border border-line-hairline bg-surface-1 p-8 text-center text-t0 text-ink-secondary">
           {t(
             {
-              es: 'Todavía no hay cotizaciones. Genera la primera con Mister.',
-              en: 'No quotations yet. Create the first one with Mister.',
+              es: 'Todavía no hay cotizaciones. Crea la primera con el botón de arriba.',
+              en: 'No quotations yet. Create the first one with the button above.',
             },
             locale,
           )}

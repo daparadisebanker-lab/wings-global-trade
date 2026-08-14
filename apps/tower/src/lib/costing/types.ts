@@ -40,6 +40,11 @@ export interface ImportInputs {
   igvRate: number
   percepcionRate: number
   insuranceRate: number
+  /** Pago a Cuenta del Impuesto a la Renta — the monthly income-tax advance
+   *  (statutory default 1.77% of the pre-IGV sale price). A real cash outflow at
+   *  sale time, distinct from the recoverable IGV/percepción advanced at import.
+   *  Optional — defaults to 0.0177 in the engine when omitted (legacy inputs/fixtures). */
+  paCuentaRentaRate?: number
   exchangeRate: number
   marginMode: 'percent' | 'target_price'
   marginPercent: number
@@ -71,6 +76,10 @@ export interface ImportResult {
   impuestosRecuperablesPEN: number
   margenNetoReal: number
   margenNetoRealPct: number
+  /** Pago a Cuenta del Impuesto a la Renta on the pre-IGV sale price (USD/PEN) —
+   *  deducted from margenNetoCaja below (2026-08-14 addition; see engine.ts). */
+  paCuentaRenta: number
+  paCuentaRentaPEN: number
   margenNetoCaja: number
   margenNetoCajaPct: number
 }

@@ -7,8 +7,10 @@
 // wave. Rates are entered as percentages for the operator and converted to the
 // engine's fractions.
 import { useEffect, useMemo, useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { computeImportCost, DEFAULT_INPUTS } from '@/lib/costing/engine'
 import type { ImportInputs } from '@/lib/costing/types'
+import { toMinor } from '@/lib/costing/persistence'
 import {
   getCostingReference,
   listCostingContainers,
@@ -18,6 +20,8 @@ import {
   type CostingLane,
   type CostingReference,
 } from '@/lib/actions/costing'
+import { listAccountsForBrand, createRFQ, upsertLines, type AccountOption } from '@/lib/actions/pipeline'
+import { getDefaultUnit, type Archetype } from '@/lib/archetypes'
 import { resolveAdValoremRate } from '@/lib/costing/ad-valorem'
 import {
   GOODS_PROFILES,
@@ -26,7 +30,9 @@ import {
   inferProfileFromInputs,
   type GoodsProfileId,
 } from '@/lib/costing/profiles'
-import { exportCostSheetXlsx } from './export'
+import type { SupplierOfferListItem } from '@/lib/actions/suppliers-logic'
+import type { ProductRow } from '@/lib/actions/catalog'
+import { exportCostSheetXlsx, exportFleetCostingXlsx } from './export'
 import { CostWaterfall } from './CostWaterfall'
 
 const LABEL = 'font-mono text-label uppercase tracking-[0.08em] text-ink-secondary'
@@ -93,34 +99,98 @@ function Group({ title, children }: { title: string; children: React.ReactNode }
   )
 }
 
+const VALID_INCOTERMS = new Set(['EXW', 'FOB', 'CFR', 'CIF'])
+
 export function CostCalculator({
   lanes,
   initialHistory,
+  prefillOffer = null,
+  prefillProduct = null,
+  prefillCalc = null,
 }: {
   lanes: CostingLane[]
   initialHistory: CostCalculationRow[]
+  /** A Suppliers price-book offer to prefill the form from (the "Costear" hand-off). */
+  prefillOffer?: SupplierOfferListItem | null
+  /** A Catalog product to prefill the form from (its own "Costear" hand-off) — no
+   *  FOB (products don't carry price), but identity, HS code, and the product's own
+   *  lane/archetype prefill the profile. */
+  prefillProduct?: ProductRow | null
+  /** A saved calculation to reopen for revision (the /costing/history "Revisar →"
+   *  link) — wins over the offer/product prefills, same as clicking a row in the
+   *  in-calculator history list (reopen()), just arriving via URL instead of state. */
+  prefillCalc?: CostCalculationRow | null
 }) {
+  const router = useRouter()
+
   // Goods-type profile — the lane-logic layer. Defaults from the first lane's
   // archetype (never vehicles unless explicitly picked); the operator overrides
-  // per calculation. It decides which driver fields show + how ISC is set.
-  const initialProfile = defaultProfileForArchetype(lanes[0]?.archetype)
+  // per calculation. It decides which driver fields show + how ISC is set. A
+  // Suppliers price-book hand-off always opens on `vehiculos` — every offer in
+  // the catalog today is a vehicle. A Catalog product hand-off opens on ITS OWN
+  // lane's archetype instead — products span every archetype, not just vehicles.
+  const initialProfile: GoodsProfileId = prefillCalc
+    ? inferProfileFromInputs(prefillCalc.inputs)
+    : prefillOffer
+      ? 'vehiculos'
+      : prefillProduct
+        ? defaultProfileForArchetype(prefillProduct.laneArchetype)
+        : defaultProfileForArchetype(lanes[0]?.archetype)
   const [profileId, setProfileId] = useState<GoodsProfileId>(initialProfile)
-  const [inputs, setInputs] = useState<ImportInputs>(() => ({
-    ...DEFAULT_INPUTS,
-    // Non-vehicle profiles carry an explicit ISC (0) so the preview + saved sheet
-    // agree; vehicles leave it unset so the fuel/CC rule (and its parity) runs.
-    iscRate: GOODS_PROFILES[initialProfile].isc === 'auto_fuel_cc' ? undefined : 0,
-  }))
-  const [laneId, setLaneId] = useState(lanes[0]?.id ?? '')
-  const [label, setLabel] = useState('')
-  const [hsCode, setHsCode] = useState('')
+  const [inputs, setInputs] = useState<ImportInputs>(() => {
+    if (prefillCalc) return prefillCalc.inputs
+    return {
+      ...DEFAULT_INPUTS,
+      // Non-vehicle profiles carry an explicit ISC (0) so the preview + saved sheet
+      // agree; vehicles leave it unset so the fuel/CC rule (and its parity) runs.
+      iscRate: GOODS_PROFILES[initialProfile].isc === 'auto_fuel_cc' ? undefined : 0,
+      ...(prefillOffer
+        ? {
+            productName: prefillOffer.productLabel,
+            origin: 'china' as const,
+            incoterm: (prefillOffer.incoterm && VALID_INCOTERMS.has(prefillOffer.incoterm)
+              ? prefillOffer.incoterm
+              : 'FOB') as ImportInputs['incoterm'],
+            fob: prefillOffer.unitPriceMinor !== null ? prefillOffer.unitPriceMinor / 100 : 0,
+          }
+        : {}),
+      ...(prefillProduct
+        ? {
+            productName: prefillProduct.name.es || prefillProduct.name.en || '',
+          }
+        : {}),
+    }
+  })
+  const [laneId, setLaneId] = useState(() => {
+    if (prefillCalc && lanes.some((l) => l.id === prefillCalc.laneId)) return prefillCalc.laneId
+    // Prefer the product's own lane when the operator has costing access to it —
+    // that's the lane whose IGV/percepción/Ad Valorem config actually applies.
+    if (prefillProduct && lanes.some((l) => l.id === prefillProduct.laneId)) return prefillProduct.laneId
+    return lanes[0]?.id ?? ''
+  })
+  const [label, setLabel] = useState(
+    prefillCalc
+      ? (prefillCalc.label ?? prefillCalc.inputs.productName)
+      : prefillOffer
+        ? prefillOffer.productLabel
+        : prefillProduct
+          ? (prefillProduct.name.es || prefillProduct.name.en)
+          : '',
+  )
+  const [hsCode, setHsCode] = useState(prefillProduct?.hsCode ?? '')
+  const [supplierOfferId, setSupplierOfferId] = useState<string | null>(
+    prefillCalc ? prefillCalc.supplierOfferId : (prefillOffer?.id ?? null),
+  )
   const [reference, setReference] = useState<CostingReference | null>(null)
   const [containers, setContainers] = useState<CostingContainer[]>([])
   const [containerId, setContainerId] = useState('')
+  const [accounts, setAccounts] = useState<AccountOption[]>([])
+  const [accountId, setAccountId] = useState('')
   const [history, setHistory] = useState(initialHistory)
   const [error, setError] = useState<string | null>(null)
   const [saved, setSaved] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
+  const [isQuotePending, startQuoteTransition] = useTransition()
 
   // Config-sourced rate defaults per lane's brand (G5): IGV / percepción /
   // insurance come from versioned costing_config; the Ad Valorem table is used
@@ -145,6 +215,7 @@ export function CostCalculator({
         igvRate: res.data.igvRate,
         percepcionRate: res.data.percepcionRate,
         insuranceRate: res.data.insuranceRate,
+        paCuentaRentaRate: res.data.paCuentaRentaRate,
         adValoremRate: resolveAdValoremRate(res.data.adValoremRates, hsCode),
       }))
     })
@@ -152,6 +223,14 @@ export function CostCalculator({
     listCostingContainers(laneId).then((res) => {
       if (active && res.data) setContainers(res.data)
     })
+    setAccountId('')
+    if (lane?.brandId) {
+      listAccountsForBrand(lane.brandId).then((res) => {
+        if (active && res.data) setAccounts(res.data)
+      })
+    } else {
+      setAccounts([])
+    }
     return () => {
       active = false
     }
@@ -162,6 +241,7 @@ export function CostCalculator({
     setInputs(row.inputs)
     setProfileId(inferProfileFromInputs(row.inputs))
     setLabel(row.label ?? '')
+    setSupplierOfferId(row.supplierOfferId)
     setSaved(null)
     if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -209,6 +289,7 @@ export function CostCalculator({
       const result = await saveCostCalculation({
         laneId,
         containerId: containerId || null,
+        supplierOfferId,
         label: label.trim() || null,
         inputs,
       })
@@ -221,8 +302,61 @@ export function CostCalculator({
     })
   }
 
+  // Costing → Client → Quotation, one sequenced dynamic: pick who this landed
+  // cost is for, open an RFQ against them (createRFQ), seed it with a single
+  // line at this calculation's final sale price (upsertLines), then hand off to
+  // the Pipeline card where QuoteComposer turns it into the formal quotation —
+  // the existing RFQ → quote → send flow, not a second one.
+  function handleCreateQuote() {
+    if (!laneId || !accountId || !preview) {
+      setError('Selecciona un lane y un cliente / Select a lane and a client')
+      return
+    }
+    setError(null)
+    startQuoteTransition(async () => {
+      const rfqRes = await createRFQ(laneId, { accountId, source: 'MANUAL', currency: 'USD' })
+      if (rfqRes.error) {
+        setError(rfqRes.error.message)
+        return
+      }
+      const archetype = lanes.find((l) => l.id === laneId)?.archetype as Archetype | undefined
+      const unit = archetype ? getDefaultUnit(archetype).id : 'unit'
+      const linesRes = await upsertLines(rfqRes.data.id, [
+        {
+          description: label.trim() || inputs.productName || 'Cotización',
+          qty: 1,
+          unit,
+          targetPriceMinor: toMinor(preview.salePriceFinal),
+          currency: 'USD',
+        },
+      ])
+      if (linesRes.error) {
+        setError(linesRes.error.message)
+        return
+      }
+      router.push(`/pipeline/${rfqRes.data.id}`)
+    })
+  }
+
   return (
     <div className="flex flex-col gap-6">
+      {prefillOffer ? (
+        <p className="rounded-card border border-lane-accent bg-surface-2 px-4 py-2 font-mono text-label uppercase tracking-[0.08em] text-lane-accent">
+          Precargado desde Proveedores / Prefilled from Suppliers: {prefillOffer.productLabel} ·{' '}
+          {prefillOffer.supplierName || '—'}
+        </p>
+      ) : null}
+      {prefillProduct ? (
+        <p className="rounded-card border border-lane-accent bg-surface-2 px-4 py-2 font-mono text-label uppercase tracking-[0.08em] text-lane-accent">
+          Precargado desde Catálogo / Prefilled from Catalog: {prefillProduct.name.es || prefillProduct.name.en}
+        </p>
+      ) : null}
+      {prefillCalc ? (
+        <p className="rounded-card border border-lane-accent bg-surface-2 px-4 py-2 font-mono text-label uppercase tracking-[0.08em] text-lane-accent">
+          Revisando cálculo guardado / Revising saved calculation: {prefillCalc.label || prefillCalc.inputs.productName} ·{' '}
+          {prefillCalc.createdAt.slice(0, 10)}
+        </p>
+      ) : null}
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,420px)_1fr]">
         {/* Inputs */}
         <div className="flex flex-col gap-3">
@@ -325,6 +459,12 @@ export function CostCalculator({
             <Num label="IGV" value={pct(inputs.igvRate)} onChange={(v) => set('igvRate', v / 100)} />
             <Num label="Percepción" value={pct(inputs.percepcionRate)} onChange={(v) => set('percepcionRate', v / 100)} />
             <Num label="Seguro" value={pct(inputs.insuranceRate)} onChange={(v) => set('insuranceRate', v / 100)} />
+            <Num
+              label="Pago a cuenta IR"
+              hint="renta"
+              value={pct(inputs.paCuentaRentaRate ?? 0.0177)}
+              onChange={(v) => set('paCuentaRentaRate', v / 100)}
+            />
             <Num label="Tipo de cambio" hint="PEN/USD" value={inputs.exchangeRate} onChange={(v) => set('exchangeRate', v)} />
           </Group>
 
@@ -401,6 +541,40 @@ export function CostCalculator({
             </button>
             {saved ? <span className="font-mono text-label uppercase tracking-[0.08em] text-positive">Guardado</span> : null}
           </div>
+
+          {/* Costing → Client → Quotation, one sequenced dynamic: pick who this
+              is for and open the formal quotation directly from the calculation —
+              no separate re-entry of the sale price into the pipeline. */}
+          <div className="flex flex-wrap items-end gap-3 rounded-card border border-line bg-surface-1 p-4">
+            <label className="flex flex-1 flex-col gap-1">
+              <span className={LABEL}>Cliente / Client</span>
+              <select
+                value={accountId}
+                onChange={(e) => setAccountId(e.target.value)}
+                disabled={accounts.length === 0}
+                className={`${INPUT} disabled:opacity-40`}
+              >
+                <option value="">
+                  {accounts.length === 0 ? '— sin clientes en este lane —' : '— selecciona cliente / select client —'}
+                </option>
+                {accounts.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.name}
+                    {a.country ? ` · ${a.country}` : ''}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button
+              type="button"
+              onClick={handleCreateQuote}
+              disabled={isQuotePending || !preview || !accountId}
+              title="Abre un RFQ para este cliente con una línea a este precio de venta / Opens an RFQ for this client with one line at this sale price"
+              className="rounded-card bg-accent px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-surface-0 disabled:opacity-40"
+            >
+              Crear cotización →
+            </button>
+          </div>
           {error ? (
             <p role="alert" className="font-ui text-t0 text-negative">
               {error}
@@ -411,9 +585,26 @@ export function CostCalculator({
 
       {/* History */}
       <section className="flex flex-col gap-2">
-        <h3 className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
-          Historial / Saved calculations
-        </h3>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h3 className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
+            Historial / Saved calculations
+          </h3>
+          {history.length > 1 ? (
+            <button
+              type="button"
+              onClick={() =>
+                void exportFleetCostingXlsx(
+                  history.map((h) => ({ label: h.label || h.inputs.productName, inputs: h.inputs, result: h.result })),
+                  `Costeo de flota — ${history.length} modelos`,
+                )
+              }
+              className="rounded-card border border-line px-3 py-1.5 font-mono text-label uppercase tracking-[0.1em] text-ink-primary hover:border-lane-accent"
+              title="Un archivo con todos los cálculos guardados, uno por fila / One file with every saved calculation, one row each"
+            >
+              Exportar flota ({history.length}) ↓
+            </button>
+          ) : null}
+        </div>
         {history.length === 0 ? (
           <p className="font-ui text-t0 text-ink-secondary">Sin cálculos guardados / No saved calculations.</p>
         ) : (
