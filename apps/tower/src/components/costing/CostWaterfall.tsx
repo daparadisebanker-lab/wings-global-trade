@@ -1,9 +1,15 @@
-// SUNAT cost cascade + margin blocks — pure presentational. Renders an
-// ImportResult as the operator sees it in the reference workbook: the cost
-// waterfall (CIF → Ad Valorem → ISC → IGV imp → percepción → landed → cash) and
-// Módulo 7's three margin blocks. Money is tabular-mono; the negative
-// caja margin is rendered in accounting parentheses (it is normally negative
-// during the IGV recovery window — capital inmovilizado, not a loss).
+'use client'
+
+// SUNAT cost cascade + margin blocks. Renders an ImportResult as the operator
+// sees it in the reference workbook: the cost waterfall (CIF → Ad Valorem →
+// ISC → IGV imp → percepción → landed → cash) and Módulo 7's three margin
+// blocks. Money is tabular-mono; the negative caja margin is rendered in
+// accounting parentheses (it is normally negative during the IGV recovery
+// window — capital inmovilizado, not a loss). The itemized cascade collapses
+// behind a toggle — an operator adjusting margin wants the answer to "how
+// much is this costing me, all in" always in view, not nine line items to
+// scan past on every keystroke.
+import { useState } from 'react'
 import type { ImportResult } from '@/lib/costing/types'
 import { formatAccounting } from '@/lib/money'
 
@@ -64,6 +70,8 @@ function Row({
 }
 
 export function CostWaterfall({ result, currency = 'USD' }: { result: ImportResult; currency?: string }) {
+  const [showDetail, setShowDetail] = useState(false)
+
   // Section max drives the proportion rules — every cost line reads against the
   // largest one (normally the landed cost), so the cascade is scannable as
   // magnitude, not just a column of numbers.
@@ -82,20 +90,57 @@ export function CostWaterfall({ result, currency = 'USD' }: { result: ImportResu
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
       <section className="flex flex-col rounded-card border border-line bg-surface-1 p-4">
-        <h3 className="mb-2 font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
-          Cascada de costos ({currency})
-        </h3>
-        {result.insurance > 0 ? (
-          <Row label="Seguro" value={money(result.insurance)} bar={result.insurance / cascadeMax} />
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <h3 className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
+            Cascada de costos ({currency})
+          </h3>
+          <button
+            type="button"
+            onClick={() => setShowDetail((v) => !v)}
+            aria-expanded={showDetail}
+            className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:text-lane-accent"
+          >
+            {showDetail ? 'Ocultar detalle ↑' : 'Ver detalle ↓'}
+          </button>
+        </div>
+
+        {/* Always visible — the unambiguous answer to "how much is this
+            costing me, all in," independent of whether the itemized
+            breakdown below is expanded. */}
+        <div className="rounded-control border border-line bg-surface-2 p-3">
+          <div className="flex items-baseline justify-between gap-4">
+            <span className="font-ui text-t0 text-ink-primary">Costo total puesto en almacén</span>
+            <span className="font-mono text-t2 tabular-nums text-ink-primary" data-numeric>
+              {money(result.landedCost)}
+            </span>
+          </div>
+          <div className="mt-1 flex items-baseline justify-between gap-4">
+            <span className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary">
+              Desembolso de caja al despacho
+            </span>
+            <span className="font-mono text-t0 tabular-nums text-ink-secondary" data-numeric>
+              {money(result.cashOutlay)}
+            </span>
+          </div>
+        </div>
+
+        {showDetail ? (
+          <div className="mt-3 flex flex-col">
+            {result.insurance > 0 ? (
+              <Row label="Seguro" value={money(result.insurance)} bar={result.insurance / cascadeMax} />
+            ) : null}
+            <Row label="CIF" value={money(result.cif)} bar={result.cif / cascadeMax} />
+            <Row label="Ad Valorem" value={money(result.adValorem)} bar={result.adValorem / cascadeMax} />
+            <Row label="ISC" sub={pct(result.iscRate)} value={money(result.isc)} bar={result.isc / cascadeMax} />
+            <Row label="IGV importación" value={money(result.igvImportacion)} bar={result.igvImportacion / cascadeMax} />
+            <Row label="Percepción" value={money(result.percepcion)} bar={result.percepcion / cascadeMax} />
+            <Row
+              label="Gastos vinculados"
+              value={money(result.gastosVinculados)}
+              bar={result.gastosVinculados / cascadeMax}
+            />
+          </div>
         ) : null}
-        <Row label="CIF" value={money(result.cif)} bar={result.cif / cascadeMax} />
-        <Row label="Ad Valorem" value={money(result.adValorem)} bar={result.adValorem / cascadeMax} />
-        <Row label="ISC" sub={pct(result.iscRate)} value={money(result.isc)} bar={result.isc / cascadeMax} />
-        <Row label="IGV importación" value={money(result.igvImportacion)} bar={result.igvImportacion / cascadeMax} />
-        <Row label="Percepción" value={money(result.percepcion)} bar={result.percepcion / cascadeMax} />
-        <Row label="Gastos vinculados" value={money(result.gastosVinculados)} bar={result.gastosVinculados / cascadeMax} />
-        <Row label="Costo puesto en almacén (landed)" value={money(result.landedCost)} emphasis bar={result.landedCost / cascadeMax} />
-        <Row label="Desembolso de caja" value={money(result.cashOutlay)} emphasis bar={result.cashOutlay / cascadeMax} />
       </section>
 
       <section className="flex flex-col rounded-card border border-line bg-surface-1 p-4">

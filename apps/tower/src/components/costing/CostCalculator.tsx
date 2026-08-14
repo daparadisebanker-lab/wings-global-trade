@@ -497,7 +497,13 @@ export function CostCalculator({
             />
             <Num label="Tipo de cambio" hint="PEN/USD" value={inputs.exchangeRate} onChange={(v) => set('exchangeRate', v)} />
           </Group>
+        </div>
 
+        {/* Preview + save */}
+        <div className="flex flex-col gap-4">
+          {/* Margin control sits directly above the result so raising the target
+              and watching the real profit move is one glance, not a scroll back
+              up to the inputs column. */}
           <Group title="Margen">
             <label className="flex flex-col gap-1">
               <span className={LABEL}>Modo</span>
@@ -516,10 +522,6 @@ export function CostCalculator({
               <Num label="Precio objetivo" value={inputs.targetSalePrice} onChange={(v) => set('targetSalePrice', v)} />
             )}
           </Group>
-        </div>
-
-        {/* Preview + save */}
-        <div className="flex flex-col gap-4">
           {preview ? (
             <CostWaterfall result={preview} />
           ) : (
