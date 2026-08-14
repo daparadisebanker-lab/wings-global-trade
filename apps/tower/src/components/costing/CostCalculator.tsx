@@ -21,6 +21,7 @@ import {
   type CostingReference,
 } from '@/lib/actions/costing'
 import { listAccountsForBrand, createRFQ, upsertLines, type AccountOption } from '@/lib/actions/pipeline'
+import { createClient } from '@/lib/actions/clients'
 import { getDefaultUnit, type Archetype } from '@/lib/archetypes'
 import { resolveAdValoremRate } from '@/lib/costing/ad-valorem'
 import {
@@ -186,6 +187,9 @@ export function CostCalculator({
   const [containerId, setContainerId] = useState('')
   const [accounts, setAccounts] = useState<AccountOption[]>([])
   const [accountId, setAccountId] = useState('')
+  const [newClientOpen, setNewClientOpen] = useState(false)
+  const [newClientName, setNewClientName] = useState('')
+  const [isCreatingClient, startClientTransition] = useTransition()
   const [history, setHistory] = useState(initialHistory)
   const [error, setError] = useState<string | null>(null)
   const [saved, setSaved] = useState<string | null>(null)
@@ -335,6 +339,32 @@ export function CostCalculator({
         return
       }
       router.push(`/pipeline/${rfqRes.data.id}`)
+    })
+  }
+
+  // Not every client is already in the CRM by the time a rep is costing for
+  // them — a quick-add right here (name only; the full profile can be filled
+  // in later from the Clients window) so the sequenced Costing → Client →
+  // Quotation dynamic never stalls on "go create the account first, then come
+  // back." Filed under this lane's brand; owner defaults to the creator.
+  function handleCreateClient() {
+    const lane = lanes.find((l) => l.id === laneId)
+    if (!lane?.brandId || !newClientName.trim()) return
+    setError(null)
+    startClientTransition(async () => {
+      const result = await createClient({ brandId: lane.brandId, name: newClientName.trim() })
+      if (result.error) {
+        setError(result.error.message)
+        return
+      }
+      setAccounts((prev) =>
+        [...prev, { id: result.data.id, name: result.data.name, country: result.data.country, region: result.data.region }].sort(
+          (a, b) => a.name.localeCompare(b.name),
+        ),
+      )
+      setAccountId(result.data.id)
+      setNewClientName('')
+      setNewClientOpen(false)
     })
   }
 
@@ -544,36 +574,72 @@ export function CostCalculator({
 
           {/* Costing → Client → Quotation, one sequenced dynamic: pick who this
               is for and open the formal quotation directly from the calculation —
-              no separate re-entry of the sale price into the pipeline. */}
-          <div className="flex flex-wrap items-end gap-3 rounded-card border border-line bg-surface-1 p-4">
-            <label className="flex flex-1 flex-col gap-1">
-              <span className={LABEL}>Cliente / Client</span>
-              <select
-                value={accountId}
-                onChange={(e) => setAccountId(e.target.value)}
-                disabled={accounts.length === 0}
-                className={`${INPUT} disabled:opacity-40`}
-              >
-                <option value="">
-                  {accounts.length === 0 ? '— sin clientes en este lane —' : '— selecciona cliente / select client —'}
-                </option>
-                {accounts.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {a.name}
-                    {a.country ? ` · ${a.country}` : ''}
+              no separate re-entry of the sale price into the pipeline. Not every
+              buyer is in the CRM yet, so a quick-add sits right next to the
+              picker instead of forcing a detour through the Clients window. */}
+          <div className="flex flex-col gap-3 rounded-card border border-line bg-surface-1 p-4">
+            <div className="flex flex-wrap items-end gap-3">
+              <label className="flex flex-1 flex-col gap-1">
+                <span className={LABEL}>Cliente / Client</span>
+                <select
+                  value={accountId}
+                  onChange={(e) => setAccountId(e.target.value)}
+                  disabled={accounts.length === 0}
+                  className={`${INPUT} disabled:opacity-40`}
+                >
+                  <option value="">
+                    {accounts.length === 0 ? '— sin clientes en este lane —' : '— selecciona cliente / select client —'}
                   </option>
-                ))}
-              </select>
-            </label>
-            <button
-              type="button"
-              onClick={handleCreateQuote}
-              disabled={isQuotePending || !preview || !accountId}
-              title="Abre un RFQ para este cliente con una línea a este precio de venta / Opens an RFQ for this client with one line at this sale price"
-              className="rounded-card bg-accent px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-surface-0 disabled:opacity-40"
-            >
-              Crear cotización →
-            </button>
+                  {accounts.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.name}
+                      {a.country ? ` · ${a.country}` : ''}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button
+                type="button"
+                onClick={() => setNewClientOpen((v) => !v)}
+                disabled={!laneId}
+                className="rounded-card border border-line px-3 py-2 font-mono text-label uppercase tracking-[0.1em] text-ink-primary hover:border-lane-accent disabled:opacity-40"
+              >
+                {newClientOpen ? 'Cancelar' : '+ Nuevo cliente'}
+              </button>
+              <button
+                type="button"
+                onClick={handleCreateQuote}
+                disabled={isQuotePending || !preview || !accountId}
+                title="Abre un RFQ para este cliente con una línea a este precio de venta / Opens an RFQ for this client with one line at this sale price"
+                className="rounded-card bg-accent px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-surface-0 disabled:opacity-40"
+              >
+                Crear cotización →
+              </button>
+            </div>
+            {newClientOpen ? (
+              <div className="flex flex-wrap items-end gap-3 border-t border-line pt-3">
+                <label className="flex flex-1 flex-col gap-1">
+                  <span className={LABEL}>Nombre del cliente / Client name</span>
+                  <input
+                    value={newClientName}
+                    onChange={(e) => setNewClientName(e.target.value)}
+                    placeholder="Ej. Comercial Andina SAC"
+                    className={`${INPUT} font-ui`}
+                  />
+                </label>
+                <button
+                  type="button"
+                  onClick={handleCreateClient}
+                  disabled={isCreatingClient || !newClientName.trim()}
+                  className="rounded-card bg-accent px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-surface-0 disabled:opacity-40"
+                >
+                  Crear cliente / Create
+                </button>
+                <p className="w-full font-ui text-label text-ink-secondary">
+                  Se archiva con el perfil mínimo; completa país, contacto y demás desde Clientes cuando puedas.
+                </p>
+              </div>
+            ) : null}
           </div>
           {error ? (
             <p role="alert" className="font-ui text-t0 text-negative">
@@ -610,17 +676,17 @@ export function CostCalculator({
         ) : (
           <ul className="flex flex-col divide-y divide-line rounded-card border border-line">
             {history.map((h) => (
-              <li key={h.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-2">
+              <li key={h.id} className="flex flex-col gap-1.5 px-4 py-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-3">
                 <button
                   type="button"
                   onClick={() => reopen(h)}
                   title="Reabrir en la calculadora / Re-open in the calculator"
-                  className="text-left font-ui text-t0 text-ink-primary hover:text-lane-accent"
+                  className="min-w-0 text-left font-ui text-t0 text-ink-primary hover:text-lane-accent"
                 >
                   {h.label || h.inputs.productName || h.inputs.brand || 'Cálculo'}
                   <span className="ml-2 font-mono text-label text-ink-secondary">{h.incoterm}</span>
                 </button>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                   <span className="font-mono text-t0 tabular-nums text-ink-secondary" data-numeric>
                     landed {money(h.landedMinor / 100)} · venta {money(h.salePriceMinor / 100)}
                   </span>
