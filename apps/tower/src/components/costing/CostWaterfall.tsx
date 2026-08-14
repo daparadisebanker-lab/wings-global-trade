@@ -105,23 +105,51 @@ export function CostWaterfall({ result, currency = 'USD' }: { result: ImportResu
         <Row label="Precio de venta (ex-IGV)" value={money(result.salePrice)} />
         <Row label="IGV ventas" value={money(result.igvVentas)} />
         <Row label="Precio final" value={money(result.salePriceFinal)} emphasis />
-        <div className="mt-3" />
-        <Row label="Margen bruto" sub={pct(result.margenBrutoPct)} value={money(result.margenBruto)} emphasis />
-        <Row label="Impuestos recuperables (USD)" value={money(result.impuestosRecuperablesUSD)} />
-        <Row label="Impuestos recuperables (PEN)" value={money(result.impuestosRecuperablesPEN)} />
-        <Row label="Pago a cuenta IR (1.77%)" value={money(result.paCuentaRenta)} negative />
-        <Row
-          label="Margen neto de caja"
-          sub={pct(result.margenNetoCajaPct)}
-          value={money(result.margenNetoCaja)}
-          emphasis
-          negative={result.margenNetoCaja < 0}
-        />
-        {result.margenNetoCaja < 0 ? (
+
+        {/* The unambiguous bottom line: what the operation actually earns once
+            recoverable taxes are back. Rendered as its own callout — gold, never
+            red — so it can't be mistaken for the cash-timing figure below it. */}
+        <div className="mt-4 rounded-control border border-gold/40 bg-gold/10 p-3">
+          <div className="flex items-baseline justify-between gap-4">
+            <span className="font-ui text-t0 text-ink-primary">Ganancia real esperada</span>
+            <span className="font-mono text-t2 tabular-nums text-ink-primary" data-numeric>
+              {money(result.margenBruto)}
+            </span>
+          </div>
+          <div className="mt-0.5 flex items-baseline justify-between gap-4">
+            <span className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary">
+              Margen bruto sobre venta
+            </span>
+            <span className="font-mono text-t0 tabular-nums text-ink-secondary" data-numeric>
+              {pct(result.margenBrutoPct)}
+            </span>
+          </div>
           <p className="mt-2 font-ui text-label text-ink-secondary">
-            Negativo = capital inmovilizado durante la recuperación del IGV, no una pérdida.
+            Esta es la rentabilidad real de la operación, una vez recuperados el IGV y la percepción. Es la cifra
+            que decide si el precio es correcto.
           </p>
-        ) : null}
+        </div>
+
+        {/* Cash-timing block, visually separated from the profit callout above so
+            a negative caja figure never reads as a second, competing loss. */}
+        <div className="mt-4 border-t border-line pt-3">
+          <h4 className="mb-1 font-mono text-label uppercase tracking-[0.1em] text-ink-tertiary">
+            Posición de caja al despacho (no es utilidad)
+          </h4>
+          <Row label="Impuestos recuperables (USD)" value={money(result.impuestosRecuperablesUSD)} />
+          <Row label="Impuestos recuperables (PEN)" value={money(result.impuestosRecuperablesPEN)} />
+          <Row label="Pago a cuenta IR (1.77%)" value={money(result.paCuentaRenta)} negative />
+          <Row
+            label="Caja disponible hoy"
+            sub={pct(result.margenNetoCajaPct)}
+            value={money(result.margenNetoCaja)}
+          />
+          <p className="mt-2 font-ui text-label text-ink-secondary">
+            {result.margenNetoCaja < 0
+              ? 'Negativo = capital inmovilizado mientras se recupera el IGV y la percepción, no una pérdida. La ganancia real es la cifra de arriba.'
+              : 'Efectivo disponible antes de recuperar IGV y percepción. La ganancia real de la operación es la cifra de arriba.'}
+          </p>
+        </div>
       </section>
     </div>
   )
