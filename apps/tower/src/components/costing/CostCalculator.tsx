@@ -191,6 +191,7 @@ export function CostCalculator({
   const [newClientName, setNewClientName] = useState('')
   const [isCreatingClient, startClientTransition] = useTransition()
   const [history, setHistory] = useState(initialHistory)
+  const [selectedHistory, setSelectedHistory] = useState<Set<string>>(new Set())
   const [error, setError] = useState<string | null>(null)
   const [saved, setSaved] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
@@ -248,6 +249,31 @@ export function CostCalculator({
     setSupplierOfferId(row.supplierOfferId)
     setSaved(null)
     if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  function toggleHistorySelection(id: string) {
+    setSelectedHistory((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const allHistorySelected = history.length > 0 && history.every((h) => selectedHistory.has(h.id))
+  function toggleAllHistorySelection() {
+    setSelectedHistory(allHistorySelected ? new Set() : new Set(history.map((h) => h.id)))
+  }
+
+  // Exports the checked rows when any are checked; otherwise the whole
+  // visible history, so the button stays useful with zero clicks (the prior
+  // behavior) while a rep who wants to share a subset can narrow it down.
+  function handleExportFleet() {
+    const chosen = selectedHistory.size > 0 ? history.filter((h) => selectedHistory.has(h.id)) : history
+    void exportFleetCostingXlsx(
+      chosen.map((h) => ({ label: h.label || h.inputs.productName, inputs: h.inputs, result: h.result })),
+      selectedHistory.size > 0 ? `Costeo seleccionado — ${chosen.length} modelo(s)` : `Costeo de flota — ${chosen.length} modelos`,
+    )
   }
 
   // Switch the goods profile: reconcile ISC to the profile's rule — vehicles hand
@@ -658,19 +684,27 @@ export function CostCalculator({
             Historial / Saved calculations
           </h3>
           {history.length > 1 ? (
-            <button
-              type="button"
-              onClick={() =>
-                void exportFleetCostingXlsx(
-                  history.map((h) => ({ label: h.label || h.inputs.productName, inputs: h.inputs, result: h.result })),
-                  `Costeo de flota — ${history.length} modelos`,
-                )
-              }
-              className="rounded-card border border-line px-3 py-1.5 font-mono text-label uppercase tracking-[0.1em] text-ink-primary hover:border-lane-accent"
-              title="Un archivo con todos los cálculos guardados, uno por fila / One file with every saved calculation, one row each"
-            >
-              Exportar flota ({history.length}) ↓
-            </button>
+            <div className="flex items-center gap-3">
+              <label className="flex items-center gap-1.5 font-mono text-label uppercase tracking-[0.08em] text-ink-secondary">
+                <input
+                  type="checkbox"
+                  checked={allHistorySelected}
+                  onChange={toggleAllHistorySelection}
+                  className="h-4 w-4 accent-lane-accent"
+                />
+                Todos / All
+              </label>
+              <button
+                type="button"
+                onClick={handleExportFleet}
+                className="rounded-card border border-line px-3 py-1.5 font-mono text-label uppercase tracking-[0.1em] text-ink-primary hover:border-lane-accent"
+                title="Marca filas para exportar solo esas; sin marcar, exporta todo el historial visible / Check rows to export only those; unchecked exports the whole visible history"
+              >
+                {selectedHistory.size > 0
+                  ? `Exportar seleccionados (${selectedHistory.size}) ↓`
+                  : `Exportar flota (${history.length}) ↓`}
+              </button>
+            </div>
           ) : null}
         </div>
         {history.length === 0 ? (
@@ -679,15 +713,24 @@ export function CostCalculator({
           <ul className="flex flex-col divide-y divide-line rounded-card border border-line">
             {history.map((h) => (
               <li key={h.id} className="flex flex-col gap-1.5 px-4 py-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-3">
-                <button
-                  type="button"
-                  onClick={() => reopen(h)}
-                  title="Reabrir en la calculadora / Re-open in the calculator"
-                  className="min-w-0 text-left font-ui text-t0 text-ink-primary hover:text-lane-accent"
-                >
-                  {h.label || h.inputs.productName || h.inputs.brand || 'Cálculo'}
-                  <span className="ml-2 font-mono text-label text-ink-secondary">{h.incoterm}</span>
-                </button>
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <input
+                    type="checkbox"
+                    checked={selectedHistory.has(h.id)}
+                    onChange={() => toggleHistorySelection(h.id)}
+                    aria-label={`Seleccionar ${h.label || h.inputs.productName}`}
+                    className="h-4 w-4 shrink-0 accent-lane-accent"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => reopen(h)}
+                    title="Reabrir en la calculadora / Re-open in the calculator"
+                    className="min-w-0 text-left font-ui text-t0 text-ink-primary hover:text-lane-accent"
+                  >
+                    {h.label || h.inputs.productName || h.inputs.brand || 'Cálculo'}
+                    <span className="ml-2 font-mono text-label text-ink-secondary">{h.incoterm}</span>
+                  </button>
+                </div>
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                   <span className="font-mono text-t0 tabular-nums text-ink-secondary" data-numeric>
                     landed {money(h.landedMinor / 100)} · venta {money(h.salePriceMinor / 100)}

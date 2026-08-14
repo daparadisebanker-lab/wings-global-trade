@@ -11,7 +11,15 @@ function slug(s: string): string {
   return (s || 'costeo').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'costeo'
 }
 
-/** Build the section rows shared by the print sheet (CostSheetDocument). */
+/** Build the section rows shared by the print sheet (CostSheetDocument).
+ *  Same grouping and bridging logic as the CostWaterfall UI (2026-08-14): the
+ *  landed-cost buildup (FOB → Gastos vinculados → landed) is its own group;
+ *  IGV importación + Percepción are a SEPARATE "recoverable" group that
+ *  bridges to the cash outlay, never interleaved with the landed buildup
+ *  (they don't feed it — see engine.ts's landedCost/cashOutlay comment). The
+ *  real profit (margen bruto) gets its own headline group, separate from the
+ *  cash-timing group, so the same "which number is the actual answer"
+ *  ambiguity that was fixed on screen doesn't reappear in the exported file. */
 export function costSheetRows(inputs: ImportInputs, result: ImportResult): [string, string | number][] {
   return [
     ['Producto', inputs.productName],
@@ -22,28 +30,35 @@ export function costSheetRows(inputs: ImportInputs, result: ImportResult): [stri
     ['Incoterm', inputs.incoterm],
     ['Tipo de cambio (PEN/USD)', inputs.exchangeRate],
     ['—', ''],
-    ['CASCADA DE COSTOS (USD)', ''],
+    ['COSTO ADUANERO — COMPONE EL LANDED (USD)', ''],
     ['FOB / valor', inputs.fob],
     ['Seguro', result.insurance],
     ['CIF', result.cif],
     ['Ad Valorem', result.adValorem],
     ['ISC', result.isc],
+    ['Gastos vinculados', result.gastosVinculados],
+    ['Costo puesto en almacén (landed)', result.landedCost],
+    ['—', ''],
+    ['IMPUESTOS RECUPERABLES — SE SUMAN AL DESEMBOLSO, NO AL LANDED (USD)', ''],
     ['IGV importación', result.igvImportacion],
     ['Percepción', result.percepcion],
-    ['Gastos vinculados', result.gastosVinculados],
-    ['Landed cost', result.landedCost],
-    ['Desembolso de caja', result.cashOutlay],
+    ['+ Impuestos recuperables', result.impuestosRecuperablesUSD],
+    ['= Desembolso de caja al despacho', result.cashOutlay],
     ['—', ''],
     ['PRECIO Y MÁRGENES (USD)', ''],
     ['Precio de venta (ex-IGV)', result.salePrice],
     ['IGV ventas', result.igvVentas],
     ['Precio final', result.salePriceFinal],
-    ['Margen bruto', result.margenBruto],
+    ['—', ''],
+    ['GANANCIA REAL ESPERADA (USD)', ''],
+    ['Margen bruto (ganancia real)', result.margenBruto],
     ['Margen bruto %', `${(result.margenBrutoPct * 100).toFixed(1)}%`],
-    ['Impuestos recuperables USD', result.impuestosRecuperablesUSD],
+    ['—', ''],
+    ['POSICIÓN DE CAJA AL DESPACHO — NO ES UTILIDAD (USD)', ''],
+    ['Impuestos recuperables', result.impuestosRecuperablesUSD],
     ['Pago a cuenta IR (1.77%)', result.paCuentaRenta],
-    ['Margen neto de caja', result.margenNetoCaja],
-    ['Margen neto de caja %', `${(result.margenNetoCajaPct * 100).toFixed(1)}%`],
+    ['Caja disponible hoy', result.margenNetoCaja],
+    ['Caja disponible hoy %', `${(result.margenNetoCajaPct * 100).toFixed(1)}%`],
   ]
 }
 
@@ -58,6 +73,10 @@ const HEAD_BG = 'FFF1F1F2'
 const RULE = 'FFD6D8DB'
 const EMPHASIS_BG = 'FFEFEFEF'
 const NEGATIVE = 'FFB3261E'
+// The real-profit callout's fill — matches the UI's gold "Ganancia real
+// esperada" card, so the exported file singles out the same number.
+const GOLD_BG = 'FFF3E6BE'
+const GOLD_RULE = 'FFCBA94F'
 
 const USD = '#,##0.00" USD"'
 const PCT = '0.0%'
@@ -73,6 +92,9 @@ interface SheetRow {
   numFmt?: string
   emphasis?: boolean
   negative?: boolean
+  /** The real-profit headline (margen bruto) — gold fill, distinct from a
+   *  plain subtotal, so it reads as THE answer rather than one more row. */
+  gold?: boolean
 }
 
 /** Build the branded single-sheet cost-sheet workbook (identity + both cascades). */
@@ -90,7 +112,8 @@ async function buildCostSheetWorkbook(
     views: [{ state: 'frozen', ySplit: 4 }],
     pageSetup: { fitToPage: true, fitToWidth: 1, fitToHeight: 0, orientation: 'portrait' },
   })
-  ws.columns = [{ key: 'label', width: 34 }, { key: 'value', width: 26 }]
+  ws.columns = [{ key: 'label', width: 40 }, { key: 'value', width: 28 }]
+  ws.properties.defaultRowHeight = 17
   const merge = (row: number) => ws.mergeCells(row, 1, row, 2)
 
   // ── Header ──────────────────────────────────────────────────────────────
@@ -116,74 +139,110 @@ async function buildCostSheetWorkbook(
   ]
   for (const r of identity) addDataRow(ws, r)
 
-  // ── Cascada de costos ──────────────────────────────────────────────────
-  addSectionBar(ws, 'Cascada de costos (USD)')
-  const cascade: SheetRow[] = [
+  // ── Costo aduanero — compone el landed ───────────────────────────────────
+  // Same grouping as CostWaterfall: only these lines sum to the landed cost.
+  // IGV importación and Percepción live in the NEXT group deliberately — they
+  // are excluded from landed and only bridge into the cash outlay below.
+  addSectionBar(ws, 'Costo aduanero — compone el landed (USD)')
+  const customsCost: SheetRow[] = [
     { label: 'FOB / valor', value: inputs.fob, numFmt: USD },
     { label: 'Seguro', value: result.insurance, numFmt: USD },
     { label: 'CIF', value: result.cif, numFmt: USD },
     { label: 'Ad Valorem', value: result.adValorem, numFmt: USD },
     { label: `ISC (${(result.iscRate * 100).toFixed(1)}%)`, value: result.isc, numFmt: USD },
-    { label: 'IGV importación', value: result.igvImportacion, numFmt: USD },
-    { label: 'Percepción', value: result.percepcion, numFmt: USD },
     { label: 'Gastos vinculados', value: result.gastosVinculados, numFmt: USD },
     { label: 'Costo puesto en almacén (landed)', value: result.landedCost, numFmt: USD, emphasis: true },
-    { label: 'Desembolso de caja', value: result.cashOutlay, numFmt: USD, emphasis: true },
   ]
-  for (const r of cascade) addDataRow(ws, r)
+  for (const r of customsCost) addDataRow(ws, r)
 
-  // ── Precio y márgenes ───────────────────────────────────────────────────
+  // ── Impuestos recuperables — bridges to the cash outlay ──────────────────
+  addSectionBar(ws, 'Impuestos recuperables — se suman al desembolso, no al landed (USD)')
+  const recoverable: SheetRow[] = [
+    { label: 'IGV importación', value: result.igvImportacion, numFmt: USD },
+    { label: 'Percepción', value: result.percepcion, numFmt: USD },
+    { label: '+ Impuestos recuperables', value: result.impuestosRecuperablesUSD, numFmt: USD },
+    { label: '= Desembolso de caja al despacho', value: result.cashOutlay, numFmt: USD, emphasis: true },
+  ]
+  for (const r of recoverable) addDataRow(ws, r)
+
+  // ── Precio y márgenes ─────────────────────────────────────────────────────
   addSectionBar(ws, 'Precio y márgenes (USD)')
   const pricing: SheetRow[] = [
     { label: 'Precio de venta (ex-IGV)', value: result.salePrice, numFmt: USD },
     { label: 'IGV ventas', value: result.igvVentas, numFmt: USD },
     { label: 'Precio final', value: result.salePriceFinal, numFmt: USD, emphasis: true },
-    { label: 'Margen bruto', value: result.margenBruto, numFmt: USD, emphasis: true },
-    { label: 'Margen bruto %', value: result.margenBrutoPct, numFmt: PCT },
-    { label: 'Impuestos recuperables', value: result.impuestosRecuperablesUSD, numFmt: USD },
-    { label: 'Pago a cuenta IR (1.77%)', value: result.paCuentaRenta, numFmt: USD, negative: true },
-    {
-      label: 'Margen neto de caja',
-      value: result.margenNetoCaja,
-      numFmt: USD,
-      emphasis: true,
-      negative: result.margenNetoCaja < 0,
-    },
-    { label: 'Margen neto de caja %', value: result.margenNetoCajaPct, numFmt: PCT, negative: result.margenNetoCajaPct < 0 },
   ]
   for (const r of pricing) addDataRow(ws, r)
 
+  // ── Ganancia real esperada — the unambiguous bottom line ─────────────────
+  addSectionBar(ws, 'Ganancia real esperada (USD)')
+  const realProfit: SheetRow[] = [
+    { label: 'Margen bruto (ganancia real)', value: result.margenBruto, numFmt: USD, gold: true },
+    { label: 'Margen bruto %', value: result.margenBrutoPct, numFmt: PCT, gold: true },
+  ]
+  for (const r of realProfit) addDataRow(ws, r)
+
+  // ── Posición de caja — a timing figure, never a second "profit" ─────────
+  addSectionBar(ws, 'Posición de caja al despacho — no es utilidad (USD)')
+  const cashPosition: SheetRow[] = [
+    { label: 'Impuestos recuperables', value: result.impuestosRecuperablesUSD, numFmt: USD },
+    { label: 'Pago a cuenta IR (1.77%)', value: result.paCuentaRenta, numFmt: USD, negative: true },
+    {
+      label: 'Caja disponible hoy',
+      value: result.margenNetoCaja,
+      numFmt: USD,
+      negative: result.margenNetoCaja < 0,
+    },
+    { label: 'Caja disponible hoy %', value: result.margenNetoCajaPct, numFmt: PCT, negative: result.margenNetoCajaPct < 0 },
+  ]
+  for (const r of cashPosition) addDataRow(ws, r)
+
   ws.addRow([])
-  const note = ws.addRow(['Cifras SUNAT (Perú) — incoterm, ISC por combustible/cilindrada, IGV + percepción, margen configurado por el operador.'])
+  const note = ws.addRow([
+    'Cifras SUNAT (Perú). El landed excluye IGV importación y percepción — se suman solo al desembolso de caja porque se ' +
+      'recuperan después. La ganancia real de la operación es el margen bruto; el desembolso/caja es una posición de ' +
+      'caja, no una segunda utilidad.',
+  ])
   merge(note.number)
   note.font = { italic: true, size: 9, color: { argb: SECONDARY } }
   note.alignment = { wrapText: true, vertical: 'top' }
-  note.height = 24
+  note.height = 32
 
   return wb
 }
 
 function addSectionBar(ws: import('exceljs').Worksheet, title: string): void {
+  // Two blank rows (not one) ahead of every section bar — the "more spacing"
+  // pass: a print/share artifact reads as more professional with visible air
+  // between groups, not rows packed edge to edge.
+  ws.addRow([])
   ws.addRow([])
   const bar = ws.addRow([title])
   ws.mergeCells(bar.number, 1, bar.number, 2)
   bar.font = { bold: true, size: 11, color: { argb: BAR_INK } }
   bar.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: BAR_BG } }
   bar.getCell(1).alignment = { vertical: 'middle' }
-  bar.height = 20
+  bar.height = 22
 }
 
 function addDataRow(ws: import('exceljs').Worksheet, r: SheetRow): void {
   const row = ws.addRow([r.label, r.value])
+  row.height = 17
   const labelCell = row.getCell(1)
   const valueCell = row.getCell(2)
-  labelCell.font = { size: 10, bold: !!r.emphasis, color: { argb: INK } }
-  valueCell.font = { size: 10, bold: !!r.emphasis, color: { argb: r.negative ? NEGATIVE : INK } }
+  const bold = !!(r.emphasis || r.gold)
+  labelCell.font = { size: 10, bold, color: { argb: INK } }
+  valueCell.font = { size: 10, bold, color: { argb: r.negative ? NEGATIVE : INK } }
   valueCell.alignment = { horizontal: 'right' }
   labelCell.border = thinBottom()
   valueCell.border = thinBottom()
   if (r.numFmt) valueCell.numFmt = r.numFmt
-  if (r.emphasis) {
+  if (r.gold) {
+    labelCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: GOLD_BG } }
+    valueCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: GOLD_BG } }
+    labelCell.border = { bottom: { style: 'thin', color: { argb: GOLD_RULE } } }
+    valueCell.border = { bottom: { style: 'thin', color: { argb: GOLD_RULE } } }
+  } else if (r.emphasis) {
     labelCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: EMPHASIS_BG } }
     valueCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: EMPHASIS_BG } }
   }
@@ -220,10 +279,19 @@ export interface FleetRow {
   result: ImportResult
 }
 
+// Column order follows the SAME buildup → bridge → margin sequence as the
+// CostWaterfall UI and the single-sheet export: the landed-cost columns run
+// together and land on "Landed cost" (shaded), then IGV importación +
+// Percepción bridge to "Desembolso caja" (shaded) — never interleaved, so a
+// reader scanning left to right doesn't hit the "30 → 35 → 29 → 40" jump.
+// "Ganancia real (margen bruto)" gets the same gold shading as the UI's real-
+// profit callout so it reads as the answer, not one more column.
 const FLEET_COLUMNS: {
   header: string
   width: number
   numFmt?: string
+  emphasis?: boolean
+  gold?: boolean
   get: (r: FleetRow) => string | number
 }[] = [
   { header: 'Modelo', width: 44, get: (r) => r.label },
@@ -234,20 +302,37 @@ const FLEET_COLUMNS: {
   { header: 'FOB', width: 14, numFmt: USD, get: (r) => r.inputs.fob },
   { header: 'Flete intl.', width: 12, numFmt: USD, get: (r) => r.inputs.freightInternational },
   { header: 'CIF', width: 14, numFmt: USD, get: (r) => r.result.cif },
+  { header: 'Ad Valorem', width: 12, numFmt: USD, get: (r) => r.result.adValorem },
   { header: 'ISC %', width: 8, numFmt: PCT, get: (r) => r.result.iscRate },
   { header: 'ISC', width: 12, numFmt: USD, get: (r) => r.result.isc },
+  { header: 'Gastos vinculados', width: 14, numFmt: USD, get: (r) => r.result.gastosVinculados },
+  { header: 'Landed cost', width: 14, numFmt: USD, emphasis: true, get: (r) => r.result.landedCost },
   { header: 'IGV importación', width: 14, numFmt: USD, get: (r) => r.result.igvImportacion },
   { header: 'Percepción', width: 12, numFmt: USD, get: (r) => r.result.percepcion },
-  { header: 'Landed cost', width: 14, numFmt: USD, get: (r) => r.result.landedCost },
-  { header: 'Desembolso caja', width: 15, numFmt: USD, get: (r) => r.result.cashOutlay },
-  { header: 'Margen %', width: 10, numFmt: PCT, get: (r) => r.result.marginRate },
-  { header: 'Margen USD', width: 12, numFmt: USD, get: (r) => r.result.marginUSD },
+  { header: 'Desembolso caja', width: 15, numFmt: USD, emphasis: true, get: (r) => r.result.cashOutlay },
   { header: 'Precio final (con IGV)', width: 16, numFmt: USD, get: (r) => r.result.salePriceFinal },
+  { header: 'Ganancia real (margen bruto)', width: 18, numFmt: USD, gold: true, get: (r) => r.result.margenBruto },
+  { header: 'Margen %', width: 10, numFmt: PCT, get: (r) => r.result.marginRate },
   { header: 'Pago a cuenta IR', width: 14, numFmt: USD, get: (r) => r.result.paCuentaRenta },
-  { header: 'Margen neto de caja', width: 16, numFmt: USD, get: (r) => r.result.margenNetoCaja },
+  { header: 'Caja disponible hoy', width: 16, numFmt: USD, get: (r) => r.result.margenNetoCaja },
 ]
 
-/** Build the branded fleet-manifest workbook — one row per costed model. */
+/** Bucket rows by brand (fallback "Sin marca"), A→Z by brand, then by model
+ *  label within each brand — the fleet export's brand-wise organization. */
+function groupByBrand(rows: FleetRow[]): [string, FleetRow[]][] {
+  const map = new Map<string, FleetRow[]>()
+  for (const r of rows) {
+    const key = r.inputs.brand?.trim() || 'Sin marca'
+    if (!map.has(key)) map.set(key, [])
+    map.get(key)!.push(r)
+  }
+  for (const group of map.values()) group.sort((a, b) => a.label.localeCompare(b.label))
+  return [...map.entries()].sort((a, b) => a[0].localeCompare(b[0]))
+}
+
+/** Build the branded fleet-manifest workbook — one row per costed model,
+ *  grouped into a labeled band per brand so a multi-brand export reads as an
+ *  organized manifest instead of one long undifferentiated list. */
 async function buildFleetWorkbook(rows: FleetRow[], title: string): Promise<import('exceljs').Workbook> {
   const ExcelJS = (await import('exceljs')).default
   const wb = new ExcelJS.Workbook()
@@ -259,8 +344,11 @@ async function buildFleetWorkbook(rows: FleetRow[], title: string): Promise<impo
     pageSetup: { fitToPage: true, fitToWidth: 1, orientation: 'landscape' },
   })
   ws.columns = FLEET_COLUMNS.map((c) => ({ width: c.width }))
+  ws.properties.defaultRowHeight = 17
   const lastCol = FLEET_COLUMNS.length
   const merge = (row: number) => ws.mergeCells(row, 1, row, lastCol)
+
+  const brandGroups = groupByBrand(rows)
 
   const kicker = ws.addRow(['CST · Costeo SUNAT — Wings Global Trade'])
   merge(kicker.number)
@@ -271,13 +359,16 @@ async function buildFleetWorkbook(rows: FleetRow[], title: string): Promise<impo
   titleRow.font = { size: 18, bold: true, color: { argb: INK } }
   titleRow.height = 26
 
-  const meta = ws.addRow([`${rows.length} modelo(s) · margen por defecto 10% · costos landed puesto en almacén Lima`])
+  const meta = ws.addRow([
+    `${rows.length} modelo(s) · ${brandGroups.length} marca(s) · costos landed puesto en almacén Lima`,
+  ])
   merge(meta.number)
   meta.font = { size: 11, color: { argb: SECONDARY } }
 
   ws.addRow([])
 
   const captionRow = ws.addRow(FLEET_COLUMNS.map((c) => c.header))
+  captionRow.height = 30
   captionRow.font = { bold: true, size: 10, color: { argb: INK } }
   captionRow.eachCell((c) => {
     c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: HEAD_BG } }
@@ -285,25 +376,49 @@ async function buildFleetWorkbook(rows: FleetRow[], title: string): Promise<impo
     c.alignment = { horizontal: 'left', vertical: 'middle', wrapText: true }
   })
 
-  for (const r of rows) {
-    const row = ws.addRow(FLEET_COLUMNS.map((c) => c.get(r)))
-    FLEET_COLUMNS.forEach((c, i) => {
-      const cell = row.getCell(i + 1)
-      cell.font = { size: 10, color: { argb: INK } }
-      cell.border = thinBottom()
-      if (c.numFmt) {
-        cell.numFmt = c.numFmt
-        cell.alignment = { horizontal: 'right' }
-      }
-    })
+  for (const [brand, brandRows] of brandGroups) {
+    // One dark band per brand, same posture as the single-sheet's section
+    // bars — the "brand-wise organized" ask: a reader scanning a 76-row
+    // export can find a brand's block at a glance instead of scrolling a
+    // flat list and cross-checking the Marca column row by row.
+    ws.addRow([])
+    const band = ws.addRow([`${brand} — ${brandRows.length} modelo(s)`])
+    merge(band.number)
+    band.font = { bold: true, size: 11, color: { argb: BAR_INK } }
+    band.getCell(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: BAR_BG } }
+    band.getCell(1).alignment = { vertical: 'middle' }
+    band.height = 22
+
+    for (const r of brandRows) {
+      const row = ws.addRow(FLEET_COLUMNS.map((c) => c.get(r)))
+      row.height = 17
+      FLEET_COLUMNS.forEach((c, i) => {
+        const cell = row.getCell(i + 1)
+        const bold = !!(c.emphasis || c.gold)
+        cell.font = { size: 10, bold, color: { argb: INK } }
+        cell.border = thinBottom()
+        if (c.numFmt) {
+          cell.numFmt = c.numFmt
+          cell.alignment = { horizontal: 'right' }
+        }
+        if (c.gold) {
+          cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: GOLD_BG } }
+        } else if (c.emphasis) {
+          cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: EMPHASIS_BG } }
+        }
+      })
+    }
   }
 
   return wb
 }
 
-/** Export every saved cost calculation as one branded fleet manifest — the
- *  "share with the team" deliverable (one row per model, sortable/filterable
- *  in Excel), rather than 76 separate single-model files. */
+/** Export a chosen set of saved cost calculations as one branded fleet
+ *  manifest, grouped by brand — the "share with the team" deliverable (one
+ *  row per model, sortable/filterable in Excel), rather than a file per
+ *  model. Callers (CostCalculator's history list, /costing/history) pass
+ *  whichever rows the operator selected — this never assumes "export
+ *  everything." */
 export async function exportFleetCostingXlsx(rows: FleetRow[], title = 'Costeo de flota'): Promise<void> {
   const wb = await buildFleetWorkbook(rows, title)
   await downloadWorkbook(wb, `wings-costeo-flota-${new Date().toISOString().slice(0, 10)}.xlsx`)
