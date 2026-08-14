@@ -106,6 +106,7 @@ export function CostCalculator({
   initialHistory,
   prefillOffer = null,
   prefillProduct = null,
+  prefillCalc = null,
 }: {
   lanes: CostingLane[]
   initialHistory: CostCalculationRow[]
@@ -115,6 +116,10 @@ export function CostCalculator({
    *  FOB (products don't carry price), but identity, HS code, and the product's own
    *  lane/archetype prefill the profile. */
   prefillProduct?: ProductRow | null
+  /** A saved calculation to reopen for revision (the /costing/history "Revisar →"
+   *  link) — wins over the offer/product prefills, same as clicking a row in the
+   *  in-calculator history list (reopen()), just arriving via URL instead of state. */
+  prefillCalc?: CostCalculationRow | null
 }) {
   const router = useRouter()
 
@@ -124,44 +129,58 @@ export function CostCalculator({
   // Suppliers price-book hand-off always opens on `vehiculos` — every offer in
   // the catalog today is a vehicle. A Catalog product hand-off opens on ITS OWN
   // lane's archetype instead — products span every archetype, not just vehicles.
-  const initialProfile: GoodsProfileId = prefillOffer
-    ? 'vehiculos'
-    : prefillProduct
-      ? defaultProfileForArchetype(prefillProduct.laneArchetype)
-      : defaultProfileForArchetype(lanes[0]?.archetype)
+  const initialProfile: GoodsProfileId = prefillCalc
+    ? inferProfileFromInputs(prefillCalc.inputs)
+    : prefillOffer
+      ? 'vehiculos'
+      : prefillProduct
+        ? defaultProfileForArchetype(prefillProduct.laneArchetype)
+        : defaultProfileForArchetype(lanes[0]?.archetype)
   const [profileId, setProfileId] = useState<GoodsProfileId>(initialProfile)
-  const [inputs, setInputs] = useState<ImportInputs>(() => ({
-    ...DEFAULT_INPUTS,
-    // Non-vehicle profiles carry an explicit ISC (0) so the preview + saved sheet
-    // agree; vehicles leave it unset so the fuel/CC rule (and its parity) runs.
-    iscRate: GOODS_PROFILES[initialProfile].isc === 'auto_fuel_cc' ? undefined : 0,
-    ...(prefillOffer
-      ? {
-          productName: prefillOffer.productLabel,
-          origin: 'china' as const,
-          incoterm: (prefillOffer.incoterm && VALID_INCOTERMS.has(prefillOffer.incoterm)
-            ? prefillOffer.incoterm
-            : 'FOB') as ImportInputs['incoterm'],
-          fob: prefillOffer.unitPriceMinor !== null ? prefillOffer.unitPriceMinor / 100 : 0,
-        }
-      : {}),
-    ...(prefillProduct
-      ? {
-          productName: prefillProduct.name.es || prefillProduct.name.en || '',
-        }
-      : {}),
-  }))
+  const [inputs, setInputs] = useState<ImportInputs>(() => {
+    if (prefillCalc) return prefillCalc.inputs
+    return {
+      ...DEFAULT_INPUTS,
+      // Non-vehicle profiles carry an explicit ISC (0) so the preview + saved sheet
+      // agree; vehicles leave it unset so the fuel/CC rule (and its parity) runs.
+      iscRate: GOODS_PROFILES[initialProfile].isc === 'auto_fuel_cc' ? undefined : 0,
+      ...(prefillOffer
+        ? {
+            productName: prefillOffer.productLabel,
+            origin: 'china' as const,
+            incoterm: (prefillOffer.incoterm && VALID_INCOTERMS.has(prefillOffer.incoterm)
+              ? prefillOffer.incoterm
+              : 'FOB') as ImportInputs['incoterm'],
+            fob: prefillOffer.unitPriceMinor !== null ? prefillOffer.unitPriceMinor / 100 : 0,
+          }
+        : {}),
+      ...(prefillProduct
+        ? {
+            productName: prefillProduct.name.es || prefillProduct.name.en || '',
+          }
+        : {}),
+    }
+  })
   const [laneId, setLaneId] = useState(() => {
+    if (prefillCalc && lanes.some((l) => l.id === prefillCalc.laneId)) return prefillCalc.laneId
     // Prefer the product's own lane when the operator has costing access to it —
     // that's the lane whose IGV/percepción/Ad Valorem config actually applies.
     if (prefillProduct && lanes.some((l) => l.id === prefillProduct.laneId)) return prefillProduct.laneId
     return lanes[0]?.id ?? ''
   })
   const [label, setLabel] = useState(
-    prefillOffer ? prefillOffer.productLabel : prefillProduct ? (prefillProduct.name.es || prefillProduct.name.en) : '',
+    prefillCalc
+      ? (prefillCalc.label ?? prefillCalc.inputs.productName)
+      : prefillOffer
+        ? prefillOffer.productLabel
+        : prefillProduct
+          ? (prefillProduct.name.es || prefillProduct.name.en)
+          : '',
   )
   const [hsCode, setHsCode] = useState(prefillProduct?.hsCode ?? '')
-  const [supplierOfferId, setSupplierOfferId] = useState<string | null>(prefillOffer?.id ?? null)
+  const [supplierOfferId, setSupplierOfferId] = useState<string | null>(
+    prefillCalc ? prefillCalc.supplierOfferId : (prefillOffer?.id ?? null),
+  )
   const [reference, setReference] = useState<CostingReference | null>(null)
   const [containers, setContainers] = useState<CostingContainer[]>([])
   const [containerId, setContainerId] = useState('')
@@ -330,6 +349,12 @@ export function CostCalculator({
       {prefillProduct ? (
         <p className="rounded-card border border-lane-accent bg-surface-2 px-4 py-2 font-mono text-label uppercase tracking-[0.08em] text-lane-accent">
           Precargado desde Catálogo / Prefilled from Catalog: {prefillProduct.name.es || prefillProduct.name.en}
+        </p>
+      ) : null}
+      {prefillCalc ? (
+        <p className="rounded-card border border-lane-accent bg-surface-2 px-4 py-2 font-mono text-label uppercase tracking-[0.08em] text-lane-accent">
+          Revisando cálculo guardado / Revising saved calculation: {prefillCalc.label || prefillCalc.inputs.productName} ·{' '}
+          {prefillCalc.createdAt.slice(0, 10)}
         </p>
       ) : null}
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,420px)_1fr]">

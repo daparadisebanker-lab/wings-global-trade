@@ -66,6 +66,7 @@ export const SELF_DESTINATIONS: PaletteDestination[] = [
   // Palette-only for now; a rail slot awaits its bespoke icon (visual-QA-gated follow-up).
   { id: 'brief', href: '/brief', label: { es: 'Brief del día', en: 'Morning Brief' }, tag: 'REP', keywords: ['brief', 'reporte', 'report', 'resumen', 'summary', 'día', 'day', 'mañana', 'morning', 'productividad', 'productivity', 'reportar', 'hoy', 'today'] },
   { id: 'perfil', href: '/perfil', label: { es: 'Mi perfil', en: 'My profile' }, tag: 'PRF', keywords: ['perfil', 'profile', 'cuenta', 'account', 'firma', 'signature'] },
+  { id: 'costing-history', href: '/costing/history', label: { es: 'Historial de cálculos', en: 'Saved calculations' }, tag: 'CST', keywords: ['costeo', 'costing', 'historial', 'history', 'cálculos', 'calculations', 'flota', 'fleet', 'guardados', 'saved'] },
 ]
 
 /** Admin ⌘K destinations (group-admin only). */

@@ -58,6 +58,7 @@ export function CostingWorkbench({
   initialHistory,
   prefillOffer = null,
   prefillProduct = null,
+  prefillCalc = null,
   locale = DEFAULT_LOCALE,
 }: {
   lanes: CostingLane[]
@@ -66,6 +67,8 @@ export function CostingWorkbench({
   prefillOffer?: SupplierOfferListItem | null
   /** A Catalog product to prefill the form from (its own "Costear" hand-off). */
   prefillProduct?: ProductRow | null
+  /** A saved calculation to reopen for revision (the /costing/history "Revisar →" link). */
+  prefillCalc?: CostCalculationRow | null
   locale?: Locale
 }) {
   const [mode, setMode] = useState<Mode>('import')
@@ -109,6 +112,7 @@ export function CostingWorkbench({
           initialHistory={initialHistory}
           prefillOffer={prefillOffer}
           prefillProduct={prefillProduct}
+          prefillCalc={prefillCalc}
         />
       ) : (
         <ExportCostCalculator locale={locale} />

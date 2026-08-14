@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { CostingWorkbench } from '@/components/costing'
-import { listCostCalculations, listCostingLanes } from '@/lib/actions/costing'
+import { getCostCalculation, listCostCalculations, listCostingLanes } from '@/lib/actions/costing'
 import { getSupplierOffer } from '@/lib/actions/suppliers'
 import { getProduct } from '@/lib/actions/catalog'
 
@@ -14,12 +14,14 @@ import { getProduct } from '@/lib/actions/catalog'
 // from a full landed cost" hand-off. `?productId=` does the same from a PIM
 // product (Catalog's "Costear" action) — no FOB (products don't carry price),
 // but identity + HS code + the product's own archetype/profile prefill.
+// `?calcId=` reopens a specific saved calculation for revision (the "Revisar →"
+// link on /costing/history) — the full saved inputs, not just an identity prefill.
 export default async function CostingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ offerId?: string; productId?: string }>
+  searchParams: Promise<{ offerId?: string; productId?: string; calcId?: string }>
 }) {
-  const { offerId, productId } = await searchParams
+  const { offerId, productId, calcId } = await searchParams
   const lanesResult = await listCostingLanes()
 
   if (lanesResult.error) {
@@ -46,6 +48,9 @@ export default async function CostingPage({
   const productResult = productId ? await getProduct(productId) : null
   const prefillProduct = productResult && !productResult.error ? productResult.data : null
 
+  const calcResult = calcId ? await getCostCalculation(calcId) : null
+  const prefillCalc = calcResult && !calcResult.error ? calcResult.data : null
+
   return (
     <div className="flex h-full flex-col gap-4 overflow-y-auto p-4 sm:p-6">
       <header className="flex flex-wrap items-end justify-between gap-4 border-b border-line pb-4">
@@ -67,9 +72,21 @@ export default async function CostingPage({
           >
             Prorrateo
           </Link>
+          <Link
+            href="/costing/history"
+            className="inline-flex items-center rounded-control border border-line bg-surface-1 px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-ink-primary transition-colors hover:border-lane-accent hover:text-lane-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lane-accent"
+          >
+            Historial completo →
+          </Link>
         </nav>
       </header>
-      <CostingWorkbench lanes={lanes} initialHistory={initialHistory} prefillOffer={prefillOffer} prefillProduct={prefillProduct} />
+      <CostingWorkbench
+        lanes={lanes}
+        initialHistory={initialHistory}
+        prefillOffer={prefillOffer}
+        prefillProduct={prefillProduct}
+        prefillCalc={prefillCalc}
+      />
     </div>
   )
 }

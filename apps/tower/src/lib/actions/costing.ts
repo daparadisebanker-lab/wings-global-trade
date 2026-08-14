@@ -456,6 +456,42 @@ export async function listCostCalculations(laneId: string): Promise<ActionResult
   return ok(((data ?? []) as unknown as RawCostRow[]).map(mapRow))
 }
 
+export interface CostCalculationSummary extends CostCalculationRow {
+  laneCode: string
+  laneName: string
+}
+
+/**
+ * Every saved cost calculation the caller can read (RLS-scoped via
+ * cost_calc_read — has_lane_role across ALL their lanes, not just one), newest
+ * first. The dedicated /costing/history browse-and-filter surface: unlike
+ * listCostCalculations (one lane, feeds the in-calculator "reopen to revise"
+ * list), this crosses lanes so a fleet-sized batch (76+ vehicles today) is
+ * never silently short. Filtering (brand, date range, lane) happens client-side
+ * against this set — fine at hundreds of rows; if this ever needs to paginate,
+ * that's a sign to add server-side keyset pagination here, not to raise the cap
+ * again (SPEC note, tower_62 follow-up).
+ */
+export async function listAllCostCalculations(): Promise<ActionResult<CostCalculationSummary[]>> {
+  const auth = await requireUser()
+  if (!auth.ok) return auth.error
+
+  const { data, error } = await auth.supabase
+    .from('cost_calculations')
+    .select(`${COST_COLS},lanes(code,name)`)
+    .order('created_at', { ascending: false })
+    .limit(500)
+  if (error) return fail('FORBIDDEN_LANE', 'No se pudo leer el historial / Could not read history')
+
+  return ok(
+    ((data ?? []) as unknown as (RawCostRow & { lanes: { code: string; name: string } | null })[]).map((r) => ({
+      ...mapRow(r),
+      laneCode: r.lanes?.code ?? '—',
+      laneName: r.lanes?.name ?? '—',
+    })),
+  )
+}
+
 export async function getCostCalculation(id: string): Promise<ActionResult<CostCalculationRow>> {
   const parsed = uuidSchema.safeParse(id)
   if (!parsed.success) return fail('VALIDATION', 'ID inválido / Invalid id')
