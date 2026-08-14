@@ -451,7 +451,7 @@ export async function listCostCalculations(laneId: string): Promise<ActionResult
     .select(COST_COLS)
     .eq('lane_id', parsed.data)
     .order('created_at', { ascending: false })
-    .limit(50)
+    .limit(300)
   if (error) return fail('FORBIDDEN_LANE', 'No se pudo leer el historial / Could not read history')
   return ok(((data ?? []) as unknown as RawCostRow[]).map(mapRow))
 }

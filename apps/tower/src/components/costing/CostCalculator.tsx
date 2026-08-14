@@ -32,7 +32,7 @@ import {
 } from '@/lib/costing/profiles'
 import type { SupplierOfferListItem } from '@/lib/actions/suppliers-logic'
 import type { ProductRow } from '@/lib/actions/catalog'
-import { exportCostSheetXlsx } from './export'
+import { exportCostSheetXlsx, exportFleetCostingXlsx } from './export'
 import { CostWaterfall } from './CostWaterfall'
 
 const LABEL = 'font-mono text-label uppercase tracking-[0.08em] text-ink-secondary'
@@ -560,9 +560,26 @@ export function CostCalculator({
 
       {/* History */}
       <section className="flex flex-col gap-2">
-        <h3 className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
-          Historial / Saved calculations
-        </h3>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h3 className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
+            Historial / Saved calculations
+          </h3>
+          {history.length > 1 ? (
+            <button
+              type="button"
+              onClick={() =>
+                void exportFleetCostingXlsx(
+                  history.map((h) => ({ label: h.label || h.inputs.productName, inputs: h.inputs, result: h.result })),
+                  `Costeo de flota — ${history.length} modelos`,
+                )
+              }
+              className="rounded-card border border-line px-3 py-1.5 font-mono text-label uppercase tracking-[0.1em] text-ink-primary hover:border-lane-accent"
+              title="Un archivo con todos los cálculos guardados, uno por fila / One file with every saved calculation, one row each"
+            >
+              Exportar flota ({history.length}) ↓
+            </button>
+          ) : null}
+        </div>
         {history.length === 0 ? (
           <p className="font-ui text-t0 text-ink-secondary">Sin cálculos guardados / No saved calculations.</p>
         ) : (
