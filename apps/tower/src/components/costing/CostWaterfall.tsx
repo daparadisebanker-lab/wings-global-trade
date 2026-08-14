@@ -106,39 +106,65 @@ export function CostWaterfall({ result, currency = 'USD' }: { result: ImportResu
 
         {/* Always visible — the unambiguous answer to "how much is this
             costing me, all in," independent of whether the itemized
-            breakdown below is expanded. */}
+            breakdown below is expanded. Landed and cash outlay are DIFFERENT
+            totals (landed excludes IGV importación + percepción; cash outlay
+            adds them back because SUNAT collects them at the port even though
+            they're recovered later) — the bridging line makes that jump an
+            explicit +, never two bold numbers with nothing between them. */}
         <div className="rounded-control border border-line bg-surface-2 p-3">
           <div className="flex items-baseline justify-between gap-4">
-            <span className="font-ui text-t0 text-ink-primary">Costo total puesto en almacén</span>
+            <span className="font-ui text-t0 text-ink-primary">Costo puesto en almacén (landed)</span>
             <span className="font-mono text-t2 tabular-nums text-ink-primary" data-numeric>
               {money(result.landedCost)}
             </span>
           </div>
-          <div className="mt-1 flex items-baseline justify-between gap-4">
-            <span className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary">
-              Desembolso de caja al despacho
+          <div className="mt-1.5 flex items-baseline justify-between gap-4 text-ink-secondary">
+            <span className="font-ui text-t0">+ Impuestos recuperables (IGV importación + Percepción)</span>
+            <span className="font-mono text-t0 tabular-nums" data-numeric>
+              {money(result.impuestosRecuperablesUSD)}
             </span>
-            <span className="font-mono text-t0 tabular-nums text-ink-secondary" data-numeric>
+          </div>
+          <div className="mt-1.5 flex items-baseline justify-between gap-4 border-t border-line pt-1.5">
+            <span className="font-ui text-t0 text-ink-primary">= Desembolso de caja al despacho</span>
+            <span className="font-mono text-t1 tabular-nums text-ink-primary" data-numeric>
               {money(result.cashOutlay)}
             </span>
           </div>
+          <p className="mt-2 font-ui text-label text-ink-secondary">
+            SUNAT cobra el IGV y la percepción en la aduana aunque se recuperan después — por eso el desembolso es
+            mayor que el landed, no un costo adicional.
+          </p>
         </div>
 
         {showDetail ? (
-          <div className="mt-3 flex flex-col">
-            {result.insurance > 0 ? (
-              <Row label="Seguro" value={money(result.insurance)} bar={result.insurance / cascadeMax} />
-            ) : null}
-            <Row label="CIF" value={money(result.cif)} bar={result.cif / cascadeMax} />
-            <Row label="Ad Valorem" value={money(result.adValorem)} bar={result.adValorem / cascadeMax} />
-            <Row label="ISC" sub={pct(result.iscRate)} value={money(result.isc)} bar={result.isc / cascadeMax} />
-            <Row label="IGV importación" value={money(result.igvImportacion)} bar={result.igvImportacion / cascadeMax} />
-            <Row label="Percepción" value={money(result.percepcion)} bar={result.percepcion / cascadeMax} />
-            <Row
-              label="Gastos vinculados"
-              value={money(result.gastosVinculados)}
-              bar={result.gastosVinculados / cascadeMax}
-            />
+          <div className="mt-3 flex flex-col gap-3">
+            <div>
+              <h4 className="mb-1 font-mono text-label uppercase tracking-[0.1em] text-ink-tertiary">
+                Costo aduanero — compone el landed
+              </h4>
+              {result.insurance > 0 ? (
+                <Row label="Seguro" value={money(result.insurance)} bar={result.insurance / cascadeMax} />
+              ) : null}
+              <Row label="CIF" value={money(result.cif)} bar={result.cif / cascadeMax} />
+              <Row label="Ad Valorem" value={money(result.adValorem)} bar={result.adValorem / cascadeMax} />
+              <Row label="ISC" sub={pct(result.iscRate)} value={money(result.isc)} bar={result.isc / cascadeMax} />
+              <Row
+                label="Gastos vinculados"
+                value={money(result.gastosVinculados)}
+                bar={result.gastosVinculados / cascadeMax}
+              />
+            </div>
+            <div>
+              <h4 className="mb-1 font-mono text-label uppercase tracking-[0.1em] text-ink-tertiary">
+                Impuestos recuperables — se suman al desembolso, no al landed
+              </h4>
+              <Row
+                label="IGV importación"
+                value={money(result.igvImportacion)}
+                bar={result.igvImportacion / cascadeMax}
+              />
+              <Row label="Percepción" value={money(result.percepcion)} bar={result.percepcion / cascadeMax} />
+            </div>
           </div>
         ) : null}
       </section>
