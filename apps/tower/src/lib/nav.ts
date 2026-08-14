@@ -11,6 +11,7 @@ export type ModuleId =
   | 'quotations'
   | 'clients'
   | 'suppliers'
+  | 'backlog'
   | 'containers'
   | 'costing'
   | 'marcas'

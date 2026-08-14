@@ -5,6 +5,7 @@ import { listAccountSuppliers } from '@/lib/actions/account-suppliers'
 import { listRfqsForAccount, listOrdersForAccount } from '@/lib/actions/pipeline'
 import { listQuotationsForAccount } from '@/lib/actions/quotations'
 import { listSuppliers } from '@/lib/actions/suppliers'
+import { listTasksForAccount } from '@/lib/actions/tasks'
 import { DEFAULT_LOCALE } from '@/lib/i18n'
 
 // The client window — one client's profile plus everything running against it
@@ -16,7 +17,7 @@ export const dynamic = 'force-dynamic'
 export default async function ClientDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
 
-  const [clientRes, brandsRes, rosterRes, suppliersRes, assignedRes, rfqsRes, quotationsRes, ordersRes] =
+  const [clientRes, brandsRes, rosterRes, suppliersRes, assignedRes, rfqsRes, quotationsRes, ordersRes, tasksRes] =
     await Promise.all([
       getClient(id),
       listClientBrands(),
@@ -26,6 +27,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
       listRfqsForAccount(id),
       listQuotationsForAccount(id),
       listOrdersForAccount(id),
+      listTasksForAccount(id),
     ])
 
   if (clientRes.error) {
@@ -57,6 +59,7 @@ export default async function ClientDetailPage({ params }: { params: Promise<{ i
       initialRfqs={rfqsRes.error ? [] : rfqsRes.data}
       initialQuotations={quotationsRes.error ? [] : quotationsRes.data}
       initialOrders={ordersRes.error ? [] : ordersRes.data}
+      initialTasks={tasksRes.error ? [] : tasksRes.data}
       locale={DEFAULT_LOCALE}
     />
   )

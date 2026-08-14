@@ -16,6 +16,8 @@ import type { AccountSupplierListItem } from '@/lib/actions/account-suppliers-lo
 import type { RfqRow, OrderRow } from '@/lib/actions/pipeline'
 import type { QuotationListItem } from '@/lib/actions/quotations-logic'
 import type { SupplierOption } from '@/lib/actions/suppliers-logic'
+import { createTask, updateTaskStatus } from '@/lib/actions/tasks'
+import type { TaskListItem } from '@/lib/actions/tasks-logic'
 import { formatMinor } from '@/lib/money'
 
 function SectionCard({
@@ -66,6 +68,7 @@ export function ClientDetail({
   initialRfqs,
   initialQuotations,
   initialOrders,
+  initialTasks,
   locale,
 }: {
   client: ClientListItem
@@ -77,6 +80,7 @@ export function ClientDetail({
   initialRfqs: RfqRow[]
   initialQuotations: QuotationListItem[]
   initialOrders: OrderRow[]
+  initialTasks: TaskListItem[]
   locale: Locale
 }) {
   const [client, setClient] = useState(initialClient)
@@ -85,6 +89,11 @@ export function ClientDetail({
   const [assigning, setAssigning] = useState(false)
   const [pickSupplierId, setPickSupplierId] = useState('')
   const [assignError, setAssignError] = useState<string | null>(null)
+  const [tasks, setTasks] = useState(initialTasks)
+  const [addingTask, setAddingTask] = useState(false)
+  const [taskTitle, setTaskTitle] = useState('')
+  const [taskDue, setTaskDue] = useState('')
+  const [taskError, setTaskError] = useState<string | null>(null)
   const [pending, startPending] = useTransition()
 
   const availableSuppliers = suppliers.filter((s) => !assigned.some((a) => a.supplierId === s.id))
@@ -117,6 +126,37 @@ export function ClientDetail({
       }
     })
   }
+
+  function onAddTask() {
+    if (!taskTitle.trim()) return
+    setTaskError(null)
+    startPending(async () => {
+      const res = await createTask({ title: taskTitle.trim(), dueDate: taskDue || null, accountId: client.id })
+      if (res.error) {
+        setTaskError(res.error.message)
+        return
+      }
+      setTasks((xs) => [res.data, ...xs])
+      setTaskTitle('')
+      setTaskDue('')
+      setAddingTask(false)
+    })
+  }
+
+  function onSetTaskStatus(id: string, status: 'DONE' | 'CANCELLED') {
+    setTaskError(null)
+    const prev = tasks
+    setTasks((xs) => xs.map((tk) => (tk.id === id ? { ...tk, status } : tk)))
+    startPending(async () => {
+      const res = await updateTaskStatus(id, status)
+      if (res.error) {
+        setTasks(prev)
+        setTaskError(res.error.message)
+      }
+    })
+  }
+
+  const openTasks = tasks.filter((tk) => tk.status === 'OPEN')
 
   const field =
     'rounded-card border border-line bg-surface-0 px-3 py-2 font-ui text-t0 text-ink-primary outline-none focus-visible:border-lane-accent'
@@ -246,6 +286,87 @@ export function ClientDetail({
                   >
                     {t({ es: 'Quitar', en: 'Remove' }, locale)}
                   </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </SectionCard>
+
+        <SectionCard
+          title={t({ es: 'Tareas', en: 'Tasks' }, locale)}
+          action={
+            !addingTask ? (
+              <button
+                type="button"
+                onClick={() => setAddingTask(true)}
+                className="font-mono text-label uppercase tracking-[0.08em] text-lane-accent hover:underline"
+              >
+                {t({ es: '+ Nueva', en: '+ New' }, locale)}
+              </button>
+            ) : null
+          }
+        >
+          {addingTask ? (
+            <div className="flex flex-wrap items-center gap-2">
+              <input
+                className={`${field} flex-1`}
+                value={taskTitle}
+                onChange={(e) => setTaskTitle(e.target.value)}
+                placeholder={t({ es: 'Título de la tarea', en: 'Task title' }, locale)}
+              />
+              <input type="date" className={field} value={taskDue} onChange={(e) => setTaskDue(e.target.value)} />
+              <button
+                type="button"
+                disabled={!taskTitle.trim() || pending}
+                onClick={onAddTask}
+                className="rounded-card bg-accent px-3 py-2 font-mono text-label uppercase tracking-[0.1em] text-surface-0 disabled:opacity-40"
+              >
+                {t({ es: 'Guardar', en: 'Save' }, locale)}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setAddingTask(false)
+                  setTaskTitle('')
+                  setTaskDue('')
+                }}
+                className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:text-ink-primary"
+              >
+                {t({ es: 'Cancelar', en: 'Cancel' }, locale)}
+              </button>
+            </div>
+          ) : null}
+          {taskError ? <p className="font-ui text-t0 text-negative">{taskError}</p> : null}
+          {openTasks.length === 0 ? (
+            <Empty>{t({ es: 'Nada pendiente.', en: 'Nothing pending.' }, locale)}</Empty>
+          ) : (
+            <ul className="flex flex-col gap-2">
+              {openTasks.map((tk) => (
+                <li key={tk.id} className="flex items-center justify-between gap-3 rounded-card border border-line-hairline p-3">
+                  <div className="flex flex-col">
+                    <span className="font-medium text-ink-primary">{tk.title}</span>
+                    {tk.dueDate ? (
+                      <span className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary" data-numeric>
+                        {tk.dueDate}
+                      </span>
+                    ) : null}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => onSetTaskStatus(tk.id, 'DONE')}
+                      className="rounded-control border border-line px-2 py-1 font-mono text-label uppercase tracking-[0.06em] text-ink-secondary hover:border-positive hover:text-positive"
+                    >
+                      {t({ es: 'Hecho', en: 'Done' }, locale)}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onSetTaskStatus(tk.id, 'CANCELLED')}
+                      className="font-mono text-label uppercase tracking-[0.06em] text-ink-secondary hover:text-negative"
+                    >
+                      {t({ es: 'Cancelar', en: 'Cancel' }, locale)}
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>

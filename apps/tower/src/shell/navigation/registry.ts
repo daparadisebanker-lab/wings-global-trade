@@ -34,13 +34,14 @@ export const TOOLS: TowerTool[] = [
   { id: 'quotations', href: '/quotations', label: { es: 'Cotizaciones', en: 'Quotations' }, tag: 'COT', group: 'operate', icon: 'quotations', section: core, order: 2, keywords: ['cotizaciones', 'quotations', 'proforma', 'quote', 'factura'] },
   { id: 'clients', href: '/clients', label: { es: 'Clientes', en: 'Clients' }, tag: 'CLI', group: 'operate', icon: 'clients', section: core, order: 3, keywords: ['clientes', 'clients', 'cuentas', 'accounts', 'compradores', 'buyers'] },
   { id: 'suppliers', href: '/suppliers', label: { es: 'Proveedores', en: 'Suppliers' }, tag: 'SUP', group: 'operate', icon: 'suppliers', section: core, order: 4, keywords: ['proveedores', 'suppliers', 'fob', 'precio', 'price', 'china', 'cotización proveedor', 'sourcing', 'price book'] },
-  { id: 'containers', href: '/containers', label: { es: 'Contenedores', en: 'Containers' }, tag: 'CTN', group: 'operate', icon: 'containers', section: core, order: 5, keywords: ['contenedores', 'containers', 'consolidación', 'cbm', 'carga', 'shipments'] },
-  { id: 'costing', href: '/costing', label: { es: 'Costeo', en: 'Costing' }, tag: 'CST', group: 'operate', icon: 'costing', section: core, order: 6, keywords: ['costeo', 'costing', 'sunat', 'landed', 'arancel', 'margen', 'import cost'] },
-  { id: 'marcas', href: '/marcas', label: { es: 'Marcas', en: 'Brands' }, tag: 'MRC', group: 'intel', icon: 'marcas', section: core, order: 7, keywords: ['marcas', 'brands', 'representadas', 'represented', 'rb', 'allocation', 'slots'] },
-  { id: 'signals', href: '/signals', label: { es: 'Señales', en: 'Signals' }, tag: 'SIG', group: 'intel', icon: 'signals', section: core, order: 8, keywords: ['señales', 'signals', 'analítica', 'analytics', 'métricas', 'metrics', 'dashboard'] },
-  { id: 'intelligence', href: '/intelligence', label: { es: 'Mister', en: 'Mister' }, tag: 'INT', group: 'intel', icon: 'intelligence', section: core, order: 9, keywords: ['mister', 'inteligencia', 'intelligence', 'ia', 'ai', 'copiloto', 'copilot', 'cotización', 'contenedor', 'triage', 'spec extract', 'revisión'] },
-  { id: 'documents', href: '/documents', label: { es: 'Documentos', en: 'Documents' }, tag: 'DOC', group: 'intel', icon: 'documents', section: core, order: 10, keywords: ['documentos', 'documents', 'drive', 'archivos', 'files', 'certificados'] },
-  { id: 'admin', href: '/admin', label: { es: 'Administración', en: 'Admin' }, tag: 'ADM', group: 'system', icon: 'admin', section: utility, order: 11, keywords: ['administración', 'admin', 'usuarios', 'users', 'lanes', 'auditoría', 'webhooks'] },
+  { id: 'backlog', href: '/backlog', label: { es: 'Backlog', en: 'Backlog' }, tag: 'BKL', group: 'operate', icon: 'backlog', section: core, order: 5, keywords: ['backlog', 'tareas', 'tasks', 'pendientes', 'seguimiento', 'follow up', 'to do', 'próximas acciones', 'next actions'] },
+  { id: 'containers', href: '/containers', label: { es: 'Contenedores', en: 'Containers' }, tag: 'CTN', group: 'operate', icon: 'containers', section: core, order: 6, keywords: ['contenedores', 'containers', 'consolidación', 'cbm', 'carga', 'shipments'] },
+  { id: 'costing', href: '/costing', label: { es: 'Costeo', en: 'Costing' }, tag: 'CST', group: 'operate', icon: 'costing', section: core, order: 7, keywords: ['costeo', 'costing', 'sunat', 'landed', 'arancel', 'margen', 'import cost'] },
+  { id: 'marcas', href: '/marcas', label: { es: 'Marcas', en: 'Brands' }, tag: 'MRC', group: 'intel', icon: 'marcas', section: core, order: 8, keywords: ['marcas', 'brands', 'representadas', 'represented', 'rb', 'allocation', 'slots'] },
+  { id: 'signals', href: '/signals', label: { es: 'Señales', en: 'Signals' }, tag: 'SIG', group: 'intel', icon: 'signals', section: core, order: 9, keywords: ['señales', 'signals', 'analítica', 'analytics', 'métricas', 'metrics', 'dashboard'] },
+  { id: 'intelligence', href: '/intelligence', label: { es: 'Mister', en: 'Mister' }, tag: 'INT', group: 'intel', icon: 'intelligence', section: core, order: 10, keywords: ['mister', 'inteligencia', 'intelligence', 'ia', 'ai', 'copiloto', 'copilot', 'cotización', 'contenedor', 'triage', 'spec extract', 'revisión'] },
+  { id: 'documents', href: '/documents', label: { es: 'Documentos', en: 'Documents' }, tag: 'DOC', group: 'intel', icon: 'documents', section: core, order: 11, keywords: ['documentos', 'documents', 'drive', 'archivos', 'files', 'certificados'] },
+  { id: 'admin', href: '/admin', label: { es: 'Administración', en: 'Admin' }, tag: 'ADM', group: 'system', icon: 'admin', section: utility, order: 12, keywords: ['administración', 'admin', 'usuarios', 'users', 'lanes', 'auditoría', 'webhooks'] },
 ]
 
 /** Palette-only destinations (NOT in the rail today — behavior preserved). */
@@ -98,6 +99,7 @@ export const EVERYONE_ACTIONS: PaletteAction[] = [
   { id: 'act-publish', href: '/catalog', label: { es: 'Publicar producto…', en: 'Publish product…' }, keywords: ['publicar', 'publish', 'producto', 'product'] },
   { id: 'act-new-rfq', href: '/pipeline', label: { es: 'Nuevo RFQ…', en: 'New RFQ…' }, keywords: ['nuevo', 'new', 'rfq', 'cotización'] },
   { id: 'act-new-offer', href: '/suppliers', label: { es: 'Nueva oferta de proveedor…', en: 'New supplier offer…' }, keywords: ['proveedor', 'supplier', 'fob', 'oferta', 'offer', 'precio', 'price'] },
+  { id: 'act-new-task', href: '/backlog', label: { es: 'Nueva tarea…', en: 'New task…' }, keywords: ['tarea', 'task', 'backlog', 'pendiente', 'seguimiento', 'follow up'] },
 ]
 
 /** Client-only palette actions — they run a shell callback (theme, dock) rather
