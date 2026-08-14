@@ -86,6 +86,26 @@ export async function createSupplier(input: CreateSupplierInput): Promise<Action
   return ok(data as SupplierOption)
 }
 
+/** One offer by id — feeds the "Costear" hand-off into the Costing calculator. */
+export async function getSupplierOffer(id: string): Promise<ActionResult<SupplierOfferListItem>> {
+  const parsed = z.string().uuid().safeParse(id)
+  if (!parsed.success) return fail('VALIDATION', 'ID inválido / Invalid id')
+
+  const auth = await requireUser()
+  if (!auth.ok) return auth.error
+
+  const { data, error } = await auth.supabase
+    .schema('tower')
+    .from('supplier_offers')
+    .select(SUPPLIER_OFFER_SELECT)
+    .eq('id', parsed.data)
+    .maybeSingle()
+
+  if (error) return fail('VALIDATION', 'No se pudo leer la oferta / Could not read the offer')
+  if (!data) return fail('FORBIDDEN_LANE', 'Oferta no encontrada o sin acceso / Offer not found or no access')
+  return ok(mapSupplierOfferRow(data as unknown as RawSupplierOfferRow))
+}
+
 /**
  * Offers the caller can see, newest first — optionally scoped to one supplier
  * or filtered by a free-text search across the product label (the "regardless

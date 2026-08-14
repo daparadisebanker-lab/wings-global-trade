@@ -2,12 +2,21 @@ import Link from 'next/link'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { CostingWorkbench } from '@/components/costing'
 import { listCostCalculations, listCostingLanes } from '@/lib/actions/costing'
+import { getSupplierOffer } from '@/lib/actions/suppliers'
 
 // Costing module (peru-costing Wave 6.2) — the Peru SUNAT landed-cost desk.
 // Server-fetches the lanes the user can cost for + the initial lane's saved
 // history, then hands to the client CostCalculator (live preview + append-only
 // save). The calculator itself works standalone; a lane is required only to save.
-export default async function CostingPage() {
+// `?offerId=` (from the Suppliers price book's "Costear" link) prefills the
+// form from that FOB offer — the "any of the 76+ catalog models is one click
+// from a full landed cost" hand-off.
+export default async function CostingPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ offerId?: string }>
+}) {
+  const { offerId } = await searchParams
   const lanesResult = await listCostingLanes()
 
   if (lanesResult.error) {
@@ -27,6 +36,9 @@ export default async function CostingPage() {
   const firstLane = lanes[0]?.id
   const historyResult = firstLane ? await listCostCalculations(firstLane) : null
   const initialHistory = historyResult && historyResult.data ? historyResult.data : []
+
+  const offerResult = offerId ? await getSupplierOffer(offerId) : null
+  const prefillOffer = offerResult && !offerResult.error ? offerResult.data : null
 
   return (
     <div className="flex h-full flex-col gap-4 overflow-y-auto p-4 sm:p-6">
@@ -51,7 +63,7 @@ export default async function CostingPage() {
           </Link>
         </nav>
       </header>
-      <CostingWorkbench lanes={lanes} initialHistory={initialHistory} />
+      <CostingWorkbench lanes={lanes} initialHistory={initialHistory} prefillOffer={prefillOffer} />
     </div>
   )
 }

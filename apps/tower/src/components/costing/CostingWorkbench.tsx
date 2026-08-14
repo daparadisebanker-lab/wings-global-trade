@@ -12,6 +12,7 @@ import { cn } from '@wings/trade-ui'
 import { CostCalculator } from './CostCalculator'
 import { ExportCostCalculator } from './ExportCostCalculator'
 import type { CostCalculationRow, CostingLane } from '@/lib/actions/costing'
+import type { SupplierOfferListItem } from '@/lib/actions/suppliers-logic'
 import { DEFAULT_LOCALE, t, type Locale, type Localized } from '@/lib/i18n'
 
 type Mode = 'import' | 'export'
@@ -54,10 +55,13 @@ const MODES: ModeCard[] = [
 export function CostingWorkbench({
   lanes,
   initialHistory,
+  prefillOffer = null,
   locale = DEFAULT_LOCALE,
 }: {
   lanes: CostingLane[]
   initialHistory: CostCalculationRow[]
+  /** A Suppliers price-book offer to prefill the form from (the "Costear" hand-off). */
+  prefillOffer?: SupplierOfferListItem | null
   locale?: Locale
 }) {
   const [mode, setMode] = useState<Mode>('import')
@@ -96,7 +100,7 @@ export function CostingWorkbench({
       </fieldset>
 
       {mode === 'import' ? (
-        <CostCalculator lanes={lanes} initialHistory={initialHistory} />
+        <CostCalculator lanes={lanes} initialHistory={initialHistory} prefillOffer={prefillOffer} />
       ) : (
         <ExportCostCalculator locale={locale} />
       )}

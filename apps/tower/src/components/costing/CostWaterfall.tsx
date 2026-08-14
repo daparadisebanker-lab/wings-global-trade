@@ -109,6 +109,7 @@ export function CostWaterfall({ result, currency = 'USD' }: { result: ImportResu
         <Row label="Margen bruto" sub={pct(result.margenBrutoPct)} value={money(result.margenBruto)} emphasis />
         <Row label="Impuestos recuperables (USD)" value={money(result.impuestosRecuperablesUSD)} />
         <Row label="Impuestos recuperables (PEN)" value={money(result.impuestosRecuperablesPEN)} />
+        <Row label="Pago a cuenta IR (1.77%)" value={money(result.paCuentaRenta)} negative />
         <Row
           label="Margen neto de caja"
           sub={pct(result.margenNetoCajaPct)}

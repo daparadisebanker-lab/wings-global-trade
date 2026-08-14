@@ -26,6 +26,7 @@ import {
   inferProfileFromInputs,
   type GoodsProfileId,
 } from '@/lib/costing/profiles'
+import type { SupplierOfferListItem } from '@/lib/actions/suppliers-logic'
 import { exportCostSheetXlsx } from './export'
 import { CostWaterfall } from './CostWaterfall'
 
@@ -93,27 +94,45 @@ function Group({ title, children }: { title: string; children: React.ReactNode }
   )
 }
 
+const VALID_INCOTERMS = new Set(['EXW', 'FOB', 'CFR', 'CIF'])
+
 export function CostCalculator({
   lanes,
   initialHistory,
+  prefillOffer = null,
 }: {
   lanes: CostingLane[]
   initialHistory: CostCalculationRow[]
+  /** A Suppliers price-book offer to prefill the form from (the "Costear" hand-off). */
+  prefillOffer?: SupplierOfferListItem | null
 }) {
   // Goods-type profile — the lane-logic layer. Defaults from the first lane's
   // archetype (never vehicles unless explicitly picked); the operator overrides
-  // per calculation. It decides which driver fields show + how ISC is set.
-  const initialProfile = defaultProfileForArchetype(lanes[0]?.archetype)
+  // per calculation. It decides which driver fields show + how ISC is set. A
+  // Suppliers price-book hand-off always opens on `vehiculos` — every offer in
+  // the catalog today is a vehicle.
+  const initialProfile: GoodsProfileId = prefillOffer ? 'vehiculos' : defaultProfileForArchetype(lanes[0]?.archetype)
   const [profileId, setProfileId] = useState<GoodsProfileId>(initialProfile)
   const [inputs, setInputs] = useState<ImportInputs>(() => ({
     ...DEFAULT_INPUTS,
     // Non-vehicle profiles carry an explicit ISC (0) so the preview + saved sheet
     // agree; vehicles leave it unset so the fuel/CC rule (and its parity) runs.
     iscRate: GOODS_PROFILES[initialProfile].isc === 'auto_fuel_cc' ? undefined : 0,
+    ...(prefillOffer
+      ? {
+          productName: prefillOffer.productLabel,
+          origin: 'china' as const,
+          incoterm: (prefillOffer.incoterm && VALID_INCOTERMS.has(prefillOffer.incoterm)
+            ? prefillOffer.incoterm
+            : 'FOB') as ImportInputs['incoterm'],
+          fob: prefillOffer.unitPriceMinor !== null ? prefillOffer.unitPriceMinor / 100 : 0,
+        }
+      : {}),
   }))
   const [laneId, setLaneId] = useState(lanes[0]?.id ?? '')
-  const [label, setLabel] = useState('')
+  const [label, setLabel] = useState(prefillOffer ? prefillOffer.productLabel : '')
   const [hsCode, setHsCode] = useState('')
+  const [supplierOfferId, setSupplierOfferId] = useState<string | null>(prefillOffer?.id ?? null)
   const [reference, setReference] = useState<CostingReference | null>(null)
   const [containers, setContainers] = useState<CostingContainer[]>([])
   const [containerId, setContainerId] = useState('')
@@ -145,6 +164,7 @@ export function CostCalculator({
         igvRate: res.data.igvRate,
         percepcionRate: res.data.percepcionRate,
         insuranceRate: res.data.insuranceRate,
+        paCuentaRentaRate: res.data.paCuentaRentaRate,
         adValoremRate: resolveAdValoremRate(res.data.adValoremRates, hsCode),
       }))
     })
@@ -162,6 +182,7 @@ export function CostCalculator({
     setInputs(row.inputs)
     setProfileId(inferProfileFromInputs(row.inputs))
     setLabel(row.label ?? '')
+    setSupplierOfferId(row.supplierOfferId)
     setSaved(null)
     if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -209,6 +230,7 @@ export function CostCalculator({
       const result = await saveCostCalculation({
         laneId,
         containerId: containerId || null,
+        supplierOfferId,
         label: label.trim() || null,
         inputs,
       })
@@ -223,6 +245,12 @@ export function CostCalculator({
 
   return (
     <div className="flex flex-col gap-6">
+      {prefillOffer ? (
+        <p className="rounded-card border border-lane-accent bg-surface-2 px-4 py-2 font-mono text-label uppercase tracking-[0.08em] text-lane-accent">
+          Precargado desde Proveedores / Prefilled from Suppliers: {prefillOffer.productLabel} ·{' '}
+          {prefillOffer.supplierName || '—'}
+        </p>
+      ) : null}
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,420px)_1fr]">
         {/* Inputs */}
         <div className="flex flex-col gap-3">
@@ -325,6 +353,12 @@ export function CostCalculator({
             <Num label="IGV" value={pct(inputs.igvRate)} onChange={(v) => set('igvRate', v / 100)} />
             <Num label="Percepción" value={pct(inputs.percepcionRate)} onChange={(v) => set('percepcionRate', v / 100)} />
             <Num label="Seguro" value={pct(inputs.insuranceRate)} onChange={(v) => set('insuranceRate', v / 100)} />
+            <Num
+              label="Pago a cuenta IR"
+              hint="renta"
+              value={pct(inputs.paCuentaRentaRate ?? 0.0177)}
+              onChange={(v) => set('paCuentaRentaRate', v / 100)}
+            />
             <Num label="Tipo de cambio" hint="PEN/USD" value={inputs.exchangeRate} onChange={(v) => set('exchangeRate', v)} />
           </Group>
 

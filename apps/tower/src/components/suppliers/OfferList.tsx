@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { t, type Locale } from '@/lib/i18n'
 import { offerSourceLabel, offerStatusLabel, type SupplierOfferListItem } from '@/lib/actions/suppliers-logic'
 import { formatMinor } from '@/lib/money'
@@ -22,7 +23,7 @@ function StatusChip({ status, locale }: { status: SupplierOfferListItem['status'
   )
 }
 
-function Cell({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+function Cell({ children, className = '' }: { children?: React.ReactNode; className?: string }) {
   return <td className={`px-3 py-3 align-top ${className}`}>{children}</td>
 }
 
@@ -55,6 +56,12 @@ export function OfferList({ items, locale }: { items: SupplierOfferListItem[]; l
             <span className="font-mono text-label text-ink-secondary" data-numeric>
               {o.createdAt.slice(0, 10)}
             </span>
+            <Link
+              href={`/costing?offerId=${o.id}`}
+              className="w-fit font-mono text-label uppercase tracking-[0.08em] text-lane-accent hover:underline"
+            >
+              {t({ es: 'Costear →', en: 'Cost this →' }, locale)}
+            </Link>
           </li>
         ))}
       </ul>
@@ -74,6 +81,7 @@ export function OfferList({ items, locale }: { items: SupplierOfferListItem[]; l
               <Cell>{t({ es: 'Origen', en: 'Source' }, locale)}</Cell>
               <Cell>{t({ es: 'Estado', en: 'Status' }, locale)}</Cell>
               <Cell className="text-right">{t({ es: 'Captura', en: 'Captured' }, locale)}</Cell>
+              <Cell />
             </tr>
           </thead>
           <tbody>
@@ -112,6 +120,14 @@ export function OfferList({ items, locale }: { items: SupplierOfferListItem[]; l
                 </Cell>
                 <Cell className="text-right font-mono text-ink-secondary tabular-nums" data-numeric>
                   {o.createdAt.slice(0, 10)}
+                </Cell>
+                <Cell className="text-right">
+                  <Link
+                    href={`/costing?offerId=${o.id}`}
+                    className="font-mono text-label uppercase tracking-[0.08em] text-lane-accent hover:underline"
+                  >
+                    {t({ es: 'Costear →', en: 'Cost this →' }, locale)}
+                  </Link>
                 </Cell>
               </tr>
             ))}

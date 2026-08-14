@@ -59,6 +59,7 @@ const importInputsSchema = z.object({
   igvRate: z.number().min(0).max(1),
   percepcionRate: z.number().min(0).max(1),
   insuranceRate: z.number().min(0).max(1),
+  paCuentaRentaRate: z.number().min(0).max(1).optional(),
   exchangeRate: z.number().gt(0).max(100),
   marginMode: z.enum(['percent', 'target_price']),
   marginPercent: z.number().min(0).max(10),
@@ -70,6 +71,7 @@ const saveSchema = z.object({
   containerId: uuidSchema.nullish(),
   orderId: uuidSchema.nullish(),
   productId: uuidSchema.nullish(),
+  supplierOfferId: uuidSchema.nullish(),
   label: z.string().trim().max(200).nullish(),
   inputs: importInputsSchema,
 })
@@ -84,6 +86,7 @@ export interface CostCalculationRow {
   salePriceMinor: number
   marginMinor: number
   label: string | null
+  supplierOfferId: string | null
   createdAt: string
   result: ImportResult
   inputs: ImportInputs
@@ -104,6 +107,7 @@ export interface CostingReference {
   igvRate: number
   percepcionRate: number
   insuranceRate: number
+  paCuentaRentaRate: number
   adValoremRates: AdValoremRate[]
 }
 
@@ -119,12 +123,14 @@ export async function getCostingReference(laneId: string): Promise<ActionResult<
 
   const { data: config } = await auth.supabase
     .from('costing_config')
-    .select('igv_bps,percepcion_bps,insurance_bps,version')
+    .select('igv_bps,percepcion_bps,insurance_bps,pa_cuenta_renta_bps,version')
     .eq('brand_id', brandId)
     .order('version', { ascending: false })
     .limit(1)
     .maybeSingle()
-  const c = config as { igv_bps: number; percepcion_bps: number; insurance_bps: number } | null
+  const c = config as
+    | { igv_bps: number; percepcion_bps: number; insurance_bps: number; pa_cuenta_renta_bps: number }
+    | null
 
   const { data: rates } = await auth.supabase
     .from('ad_valorem_rates')
@@ -135,6 +141,7 @@ export async function getCostingReference(laneId: string): Promise<ActionResult<
     igvRate: (c?.igv_bps ?? 1800) / 10_000,
     percepcionRate: (c?.percepcion_bps ?? 350) / 10_000,
     insuranceRate: (c?.insurance_bps ?? 150) / 10_000,
+    paCuentaRentaRate: (c?.pa_cuenta_renta_bps ?? 177) / 10_000,
     adValoremRates: ((rates ?? []) as { hs_prefix: string; bps: number; label: string | null }[]).map((r) => ({
       hsPrefix: r.hs_prefix,
       bps: r.bps,
@@ -231,6 +238,7 @@ export async function saveCostCalculation(
       container_id: parsed.data.containerId ?? null,
       order_id: parsed.data.orderId ?? null,
       product_id: parsed.data.productId ?? null,
+      supplier_offer_id: parsed.data.supplierOfferId ?? null,
       inputs,
       result,
       incoterm: money.incoterm,
@@ -241,7 +249,7 @@ export async function saveCostCalculation(
       margin_minor: money.margin_minor,
       label: parsed.data.label ?? null,
     })
-    .select('id,lane_id,incoterm,landed_minor,cash_outlay_minor,sale_price_minor,margin_minor,label,created_at,result,inputs')
+    .select(COST_COLS)
     .single()
   if (error || !data) return fail('FORBIDDEN_LANE', 'No se pudo guardar / Could not save')
 
@@ -294,10 +302,7 @@ export async function saveBulkCostCalculations(
     }
   })
 
-  const { data, error } = await supabase
-    .from('cost_calculations')
-    .insert(payload)
-    .select('id,lane_id,incoterm,landed_minor,cash_outlay_minor,sale_price_minor,margin_minor,label,created_at,result,inputs')
+  const { data, error } = await supabase.from('cost_calculations').insert(payload).select(COST_COLS)
   if (error || !data) return fail('FORBIDDEN_LANE', 'No se pudo guardar el lote / Could not save the batch')
 
   return ok((data as unknown as RawCostRow[]).map(mapRow))
@@ -392,6 +397,7 @@ interface RawCostRow {
   sale_price_minor: number | string
   margin_minor: number | string
   label: string | null
+  supplier_offer_id: string | null
   created_at: string
   result: ImportResult
   inputs: ImportInputs
@@ -411,6 +417,7 @@ function mapRow(r: RawCostRow): CostCalculationRow {
     salePriceMinor: toNum(r.sale_price_minor),
     marginMinor: toNum(r.margin_minor),
     label: r.label,
+    supplierOfferId: r.supplier_offer_id,
     createdAt: r.created_at,
     result: r.result,
     inputs: r.inputs,
@@ -418,7 +425,7 @@ function mapRow(r: RawCostRow): CostCalculationRow {
 }
 
 const COST_COLS =
-  'id,lane_id,incoterm,landed_minor,cash_outlay_minor,sale_price_minor,margin_minor,label,created_at,result,inputs'
+  'id,lane_id,incoterm,landed_minor,cash_outlay_minor,sale_price_minor,margin_minor,label,supplier_offer_id,created_at,result,inputs'
 
 // ── History: saved cost sheets for a lane ────────────────────────────────────
 export async function listCostCalculations(laneId: string): Promise<ActionResult<CostCalculationRow[]>> {

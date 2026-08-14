@@ -39,6 +39,7 @@ export function costSheetRows(inputs: ImportInputs, result: ImportResult): [stri
     ['Margen bruto', result.margenBruto],
     ['Margen bruto %', `${(result.margenBrutoPct * 100).toFixed(1)}%`],
     ['Impuestos recuperables USD', result.impuestosRecuperablesUSD],
+    ['Pago a cuenta IR (1.77%)', result.paCuentaRenta],
     ['Margen neto de caja', result.margenNetoCaja],
     ['Margen neto de caja %', `${(result.margenNetoCajaPct * 100).toFixed(1)}%`],
   ]

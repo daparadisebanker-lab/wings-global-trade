@@ -2,7 +2,8 @@
   "meta": {
     "engine": "lib/calculations.ts + lib/prorrateo.ts",
     "commit": "c74b60e",
-    "generatedAt": "2026-07-09T19:36:23.019Z"
+    "generatedAt": "2026-07-09T19:36:23.019Z",
+    "note": "margenNetoCaja/margenNetoCajaPct updated 2026-08-14 to deduct paCuentaRenta (Pago a Cuenta del Impuesto a la Renta, 1.77%) — deliberate divergence from the wings-operations baseline (engine.ts header). All other fields unchanged from commit c74b60e."
   },
   "importCases": {
     "A": {
@@ -57,8 +58,10 @@
         "impuestosRecuperablesPEN": 14294.8,
         "margenNetoReal": 1863.3,
         "margenNetoRealPct": 0.1,
-        "margenNetoCaja": -2000.16,
-        "margenNetoCajaPct": -0.10734503300595717
+        "paCuentaRenta": 362.78,
+        "paCuentaRentaPEN": 1342.29,
+        "margenNetoCaja": -2362.94,
+        "margenNetoCajaPct": -0.12681479096227125
       }
     },
     "B": {
@@ -113,8 +116,10 @@
         "impuestosRecuperablesPEN": 11463.34,
         "margenNetoReal": 1517.5,
         "margenNetoRealPct": 0.1,
-        "margenNetoCaja": -1580.7,
-        "margenNetoCajaPct": -0.10416474464579902
+        "paCuentaRenta": 295.46,
+        "paCuentaRentaPEN": 1093.2,
+        "margenNetoCaja": -1876.16,
+        "margenNetoCajaPct": -0.1236349258649094
       }
     },
     "C": {
@@ -169,8 +174,10 @@
         "impuestosRecuperablesPEN": 13962.36,
         "margenNetoReal": 1822.7,
         "margenNetoRealPct": 0.1,
-        "margenNetoCaja": -1950.91,
-        "margenNetoCajaPct": -0.10703407033521699
+        "paCuentaRenta": 354.88,
+        "paCuentaRentaPEN": 1313.06,
+        "margenNetoCaja": -2305.79,
+        "margenNetoCajaPct": -0.12650408734295276
       }
     },
     "C2": {
@@ -225,8 +232,10 @@
         "impuestosRecuperablesPEN": 13962.36,
         "margenNetoReal": 1822.7,
         "margenNetoRealPct": 0.1,
-        "margenNetoCaja": -1950.91,
-        "margenNetoCajaPct": -0.10703407033521699
+        "paCuentaRenta": 354.88,
+        "paCuentaRentaPEN": 1313.06,
+        "margenNetoCaja": -2305.79,
+        "margenNetoCajaPct": -0.12650408734295276
       }
     },
     "D": {
@@ -281,8 +290,10 @@
         "impuestosRecuperablesPEN": 14294.8,
         "margenNetoReal": 2553.44,
         "margenNetoRealPct": 0.137039,
-        "margenNetoCaja": -1310.02,
-        "margenNetoCajaPct": -0.07030644555358773
+        "paCuentaRenta": 375,
+        "paCuentaRentaPEN": 1387.5,
+        "margenNetoCaja": -1685.02,
+        "margenNetoCajaPct": -0.09043202919551334
       }
     },
     "E": {
@@ -337,8 +348,10 @@
         "impuestosRecuperablesPEN": 3126.98,
         "margenNetoReal": 1000,
         "margenNetoRealPct": 0.2342501885714018,
-        "margenNetoCaja": 154.87,
-        "margenNetoCajaPct": 0.036278326704053
+        "paCuentaRenta": 93.26,
+        "paCuentaRentaPEN": 345.06,
+        "margenNetoCaja": 61.61,
+        "margenNetoCajaPct": 0.014432154117884066
       }
     }
   },
