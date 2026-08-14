@@ -4,6 +4,7 @@
 // active lane's archetype stage set — never configurable per-user, never
 // hardcoded here. Cards are RFQs; a lightweight inline form creates a new one.
 import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
+import Link from 'next/link'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getStages } from '@/lib/archetypes'
 import type { EditableLane } from '@/lib/actions/catalog'
@@ -162,15 +163,24 @@ export function PipelineBoard({ lanes, initialLaneId }: { lanes: EditableLane[];
           </p>
         )}
 
-        {capabilities?.canCreateRfq ? (
-          <button
-            type="button"
-            onClick={() => setShowNewForm((s) => !s)}
-            className="rounded-card bg-accent px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-surface-0"
+        <div className="flex items-center gap-2">
+          <Link
+            href="/backlog"
+            title="Triaje de tareas antes de abrir el Kanban / Task triage before opening the Kanban"
+            className="rounded-card border border-line px-3 py-2 font-mono text-label uppercase tracking-[0.1em] text-ink-secondary hover:border-lane-accent hover:text-lane-accent"
           >
-            Nuevo RFQ / New RFQ
-          </button>
-        ) : null}
+            Backlog →
+          </Link>
+          {capabilities?.canCreateRfq ? (
+            <button
+              type="button"
+              onClick={() => setShowNewForm((s) => !s)}
+              className="rounded-card bg-accent px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-surface-0"
+            >
+              Nuevo RFQ / New RFQ
+            </button>
+          ) : null}
+        </div>
       </div>
 
       {showNewForm ? (

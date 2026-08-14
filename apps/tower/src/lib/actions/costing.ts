@@ -97,6 +97,9 @@ export interface CostingLane {
   code: string
   name: string
   archetype: string
+  /** The lane's brand — lets the calculator load that brand's accounts for the
+   *  "Crear cotización" hand-off (createRFQ) without a second round-trip. */
+  brandId: string
 }
 
 /** Config-sourced rate defaults (fractions) + the brand's Ad Valorem table (G5).
@@ -162,11 +165,20 @@ export async function listCostingLanes(): Promise<ActionResult<CostingLane[]>> {
     .eq('id', user.id)
     .maybeSingle()
 
-  const select = 'id,code,name,archetype'
+  const select = 'id,code,name,archetype,brand_id'
+  type RawLane = { id: string; code: string; name: string; archetype: string; brand_id: string }
+  const mapLane = (r: RawLane): CostingLane => ({
+    id: r.id,
+    code: r.code,
+    name: r.name,
+    archetype: r.archetype,
+    brandId: r.brand_id,
+  })
+
   if ((profile as { is_group_admin?: boolean } | null)?.is_group_admin) {
     const { data, error } = await supabase.from('lanes').select(select).order('code')
     if (error) return fail('FORBIDDEN_LANE', 'No se pudieron leer los lanes / Could not read lanes')
-    return ok((data ?? []) as unknown as CostingLane[])
+    return ok(((data ?? []) as unknown as RawLane[]).map(mapLane))
   }
 
   const { data: memberships } = await supabase
@@ -179,7 +191,7 @@ export async function listCostingLanes(): Promise<ActionResult<CostingLane[]>> {
 
   const { data, error } = await supabase.from('lanes').select(select).in('id', laneIds).order('code')
   if (error) return fail('FORBIDDEN_LANE', 'No se pudieron leer los lanes / Could not read lanes')
-  return ok((data ?? []) as unknown as CostingLane[])
+  return ok(((data ?? []) as unknown as RawLane[]).map(mapLane))
 }
 
 export interface CostingContainer {

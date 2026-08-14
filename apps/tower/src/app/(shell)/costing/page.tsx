@@ -3,6 +3,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { CostingWorkbench } from '@/components/costing'
 import { listCostCalculations, listCostingLanes } from '@/lib/actions/costing'
 import { getSupplierOffer } from '@/lib/actions/suppliers'
+import { getProduct } from '@/lib/actions/catalog'
 
 // Costing module (peru-costing Wave 6.2) — the Peru SUNAT landed-cost desk.
 // Server-fetches the lanes the user can cost for + the initial lane's saved
@@ -10,13 +11,15 @@ import { getSupplierOffer } from '@/lib/actions/suppliers'
 // save). The calculator itself works standalone; a lane is required only to save.
 // `?offerId=` (from the Suppliers price book's "Costear" link) prefills the
 // form from that FOB offer — the "any of the 76+ catalog models is one click
-// from a full landed cost" hand-off.
+// from a full landed cost" hand-off. `?productId=` does the same from a PIM
+// product (Catalog's "Costear" action) — no FOB (products don't carry price),
+// but identity + HS code + the product's own archetype/profile prefill.
 export default async function CostingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ offerId?: string }>
+  searchParams: Promise<{ offerId?: string; productId?: string }>
 }) {
-  const { offerId } = await searchParams
+  const { offerId, productId } = await searchParams
   const lanesResult = await listCostingLanes()
 
   if (lanesResult.error) {
@@ -39,6 +42,9 @@ export default async function CostingPage({
 
   const offerResult = offerId ? await getSupplierOffer(offerId) : null
   const prefillOffer = offerResult && !offerResult.error ? offerResult.data : null
+
+  const productResult = productId ? await getProduct(productId) : null
+  const prefillProduct = productResult && !productResult.error ? productResult.data : null
 
   return (
     <div className="flex h-full flex-col gap-4 overflow-y-auto p-4 sm:p-6">
@@ -63,7 +69,7 @@ export default async function CostingPage({
           </Link>
         </nav>
       </header>
-      <CostingWorkbench lanes={lanes} initialHistory={initialHistory} prefillOffer={prefillOffer} />
+      <CostingWorkbench lanes={lanes} initialHistory={initialHistory} prefillOffer={prefillOffer} prefillProduct={prefillProduct} />
     </div>
   )
 }

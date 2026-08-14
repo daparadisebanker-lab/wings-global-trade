@@ -12,7 +12,7 @@ export interface TaskListItem {
   dueDate: string | null
   assigneeId: string | null
   status: TaskStatus
-  /** Polymorphic link (Directive-free reuse of tower.tasks' ref_table/ref_id) — today always 'accounts'. */
+  /** Polymorphic link (Directive-free reuse of tower.tasks' ref_table/ref_id) — 'accounts' (a client) or 'rfqs' (a Pipeline deal, the Backlog→Pipeline hand-off). */
   refTable: string | null
   refId: string | null
   accountName: string | null

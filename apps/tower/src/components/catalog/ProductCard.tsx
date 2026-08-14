@@ -88,6 +88,12 @@ export function ProductCard({
           {formatUpdated(row.updatedAt)}
         </span>
       </div>
+      <Link
+        href={`/costing?productId=${row.id}`}
+        className="w-fit font-mono text-label uppercase tracking-[0.08em] text-lane-accent hover:underline"
+      >
+        Costear →
+      </Link>
     </li>
   )
 }

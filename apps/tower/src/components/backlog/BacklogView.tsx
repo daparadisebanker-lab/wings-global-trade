@@ -1,11 +1,12 @@
 'use client'
 
-import { useMemo, useState, useTransition } from 'react'
+import { useEffect, useMemo, useState, useTransition } from 'react'
 import Link from 'next/link'
 import { t, type Locale } from '@/lib/i18n'
 import { createTask, updateTaskStatus, type CreateTaskInput } from '@/lib/actions/tasks'
 import { groupByUrgency, type TaskListItem, type UrgencyBucket } from '@/lib/actions/tasks-logic'
 import type { ClientBrandOption, ClientOwnerOption } from '@/lib/actions/clients'
+import { listRfqsForAccount, type RfqRow } from '@/lib/actions/pipeline'
 
 const TAG = 'BKL · Backlog'
 const TITLE = { es: 'Backlog', en: 'Backlog' }
@@ -61,6 +62,26 @@ export function BacklogView({
   const [accountId, setAccountId] = useState('')
   const [brandId, setBrandId] = useState(brands.length === 1 ? brands[0].id : '')
   const [assigneeId, setAssigneeId] = useState(currentUserId)
+  // Backlog → Pipeline hand-off: once a client is picked, offer their open
+  // deals so the task can point straight at a Kanban card instead of just the
+  // client window — "entry point of the pipeline."
+  const [rfqOptions, setRfqOptions] = useState<RfqRow[]>([])
+  const [rfqId, setRfqId] = useState('')
+
+  useEffect(() => {
+    setRfqId('')
+    if (!accountId) {
+      setRfqOptions([])
+      return
+    }
+    let active = true
+    listRfqsForAccount(accountId).then((res) => {
+      if (active && res.data) setRfqOptions(res.data)
+    })
+    return () => {
+      active = false
+    }
+  }, [accountId])
 
   const ownerName = useMemo(() => {
     const byId = new Map(roster.map((o) => [o.id, o.name]))
@@ -82,6 +103,7 @@ export function BacklogView({
         dueDate: dueDate || null,
         assigneeId: assigneeId || null,
         accountId: accountId || null,
+        rfqId: rfqId || null,
         brandId: accountId ? null : brandId || null,
       }
       const res = await createTask(input)
@@ -93,6 +115,7 @@ export function BacklogView({
       setTitle('')
       setDueDate('')
       setAccountId('')
+      setRfqId('')
       setCreating(false)
     })
   }
@@ -124,6 +147,11 @@ export function BacklogView({
             {task.refTable === 'accounts' && task.refId && task.accountName ? (
               <Link href={`/clients/${task.refId}`} className="hover:text-lane-accent">
                 {task.accountName}
+              </Link>
+            ) : null}
+            {task.refTable === 'rfqs' && task.refId ? (
+              <Link href={`/pipeline/${task.refId}`} className="text-lane-accent hover:underline">
+                {t({ es: 'Ver en Pipeline →', en: 'Open in Pipeline →' }, locale)}
               </Link>
             ) : null}
           </div>
@@ -171,13 +199,19 @@ export function BacklogView({
         <p className="max-w-prose text-t0 text-ink-secondary">
           {t(
             {
-              es: 'Lo pendiente en cada relación con cliente — vencido primero. Crea una tarea aquí o desde la ficha del cliente.',
-              en: 'What is pending on each client relationship — overdue first. Create a task here or from the client window.',
+              es: 'Lo pendiente en cada relación con cliente — vencido primero. Crea una tarea aquí o desde la ficha del cliente. El punto de entrada al Pipeline: vincula una tarea a un RFQ y ábrela directo en el Kanban.',
+              en: 'What is pending on each client relationship — overdue first. Create a task here or from the client window. The entry point into Pipeline: link a task to an RFQ and open it straight on the Kanban.',
             },
             locale,
           )}
         </p>
         <div className="mt-2 flex flex-wrap items-center gap-2">
+          <Link
+            href="/pipeline"
+            className="rounded-control border border-line px-3 py-1.5 font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:border-lane-accent hover:text-lane-accent"
+          >
+            {t({ es: 'Pipeline →', en: 'Pipeline →' }, locale)}
+          </Link>
           <div className="flex items-center gap-1">
             <button
               type="button"
@@ -233,6 +267,21 @@ export function BacklogView({
                 ))}
               </select>
             </label>
+            {accountId && rfqOptions.length > 0 ? (
+              <label className="flex flex-col gap-1">
+                <span className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary">
+                  {t({ es: 'Vincular a RFQ', en: 'Link to RFQ' }, locale)}
+                </span>
+                <select className={field} value={rfqId} onChange={(e) => setRfqId(e.target.value)}>
+                  <option value="">{t({ es: '— Solo el cliente —', en: '— Client only —' }, locale)}</option>
+                  {rfqOptions.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.stage} · {r.source}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
             {!accountId ? (
               <label className="flex flex-col gap-1">
                 <span className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary">

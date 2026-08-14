@@ -12,7 +12,7 @@
 // would render unstyled under `[data-app="tower"]`, so this table uses raw
 // elements styled directly against DESIGN_SYSTEM tokens instead.
 import { useMemo, useRef, useState, useTransition } from 'react'
-import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { flexRender, getCoreRowModel, getSortedRowModel, useReactTable, type SortingState } from '@tanstack/react-table'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import Link from 'next/link'
 import { retireProduct, type EditableLane, type ProductRow } from '@/lib/actions/catalog'
@@ -63,6 +63,10 @@ export function ProductTable({
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [banner, setBanner] = useState<{ tone: 'positive' | 'negative'; text: string } | null>(null)
   const [isPending, startTransition] = useTransition()
+  // Sorts the current page only — the server keeps its own updated_at/id
+  // keyset order for cursor pagination (listProducts). Click a header to sort
+  // what's on screen; it resets when you page or refilter.
+  const [sorting, setSorting] = useState<SortingState>([])
 
   const query = useProductsQuery({
     laneId,
@@ -77,7 +81,10 @@ export function ProductTable({
   const table = useReactTable({
     data: rows,
     columns: productColumns,
+    state: { sorting },
+    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     getRowId: (row) => row.id,
   })
 
@@ -327,15 +334,32 @@ export function ProductTable({
                     onChange={toggleAll}
                   />
                 </th>
-                {hg.headers.slice(1).map((header) => (
-                  <th
-                    key={header.id}
-                    className="px-3 py-2 text-left font-mono text-label uppercase tracking-[0.1em] text-ink-secondary"
-                    style={{ width: header.getSize() }}
-                  >
-                    {flexRender(header.column.columnDef.header, header.getContext())}
-                  </th>
-                ))}
+                {hg.headers.slice(1).map((header) => {
+                  const sortable = header.column.getCanSort()
+                  const dir = header.column.getIsSorted()
+                  return (
+                    <th
+                      key={header.id}
+                      className="px-3 py-2 text-left font-mono text-label uppercase tracking-[0.1em] text-ink-secondary"
+                      style={{ width: header.getSize() }}
+                    >
+                      {sortable ? (
+                        <button
+                          type="button"
+                          onClick={header.column.getToggleSortingHandler()}
+                          className="inline-flex items-center gap-1 hover:text-ink-primary"
+                        >
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          <span aria-hidden className="text-ink-tertiary">
+                            {dir === 'asc' ? '↑' : dir === 'desc' ? '↓' : '↕'}
+                          </span>
+                        </button>
+                      ) : (
+                        flexRender(header.column.columnDef.header, header.getContext())
+                      )}
+                    </th>
+                  )
+                })}
               </tr>
             ))}
           </thead>

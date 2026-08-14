@@ -7,8 +7,10 @@
 // wave. Rates are entered as percentages for the operator and converted to the
 // engine's fractions.
 import { useEffect, useMemo, useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { computeImportCost, DEFAULT_INPUTS } from '@/lib/costing/engine'
 import type { ImportInputs } from '@/lib/costing/types'
+import { toMinor } from '@/lib/costing/persistence'
 import {
   getCostingReference,
   listCostingContainers,
@@ -18,6 +20,8 @@ import {
   type CostingLane,
   type CostingReference,
 } from '@/lib/actions/costing'
+import { listAccountsForBrand, createRFQ, upsertLines, type AccountOption } from '@/lib/actions/pipeline'
+import { getDefaultUnit, type Archetype } from '@/lib/archetypes'
 import { resolveAdValoremRate } from '@/lib/costing/ad-valorem'
 import {
   GOODS_PROFILES,
@@ -27,6 +31,7 @@ import {
   type GoodsProfileId,
 } from '@/lib/costing/profiles'
 import type { SupplierOfferListItem } from '@/lib/actions/suppliers-logic'
+import type { ProductRow } from '@/lib/actions/catalog'
 import { exportCostSheetXlsx } from './export'
 import { CostWaterfall } from './CostWaterfall'
 
@@ -100,18 +105,30 @@ export function CostCalculator({
   lanes,
   initialHistory,
   prefillOffer = null,
+  prefillProduct = null,
 }: {
   lanes: CostingLane[]
   initialHistory: CostCalculationRow[]
   /** A Suppliers price-book offer to prefill the form from (the "Costear" hand-off). */
   prefillOffer?: SupplierOfferListItem | null
+  /** A Catalog product to prefill the form from (its own "Costear" hand-off) — no
+   *  FOB (products don't carry price), but identity, HS code, and the product's own
+   *  lane/archetype prefill the profile. */
+  prefillProduct?: ProductRow | null
 }) {
+  const router = useRouter()
+
   // Goods-type profile — the lane-logic layer. Defaults from the first lane's
   // archetype (never vehicles unless explicitly picked); the operator overrides
   // per calculation. It decides which driver fields show + how ISC is set. A
   // Suppliers price-book hand-off always opens on `vehiculos` — every offer in
-  // the catalog today is a vehicle.
-  const initialProfile: GoodsProfileId = prefillOffer ? 'vehiculos' : defaultProfileForArchetype(lanes[0]?.archetype)
+  // the catalog today is a vehicle. A Catalog product hand-off opens on ITS OWN
+  // lane's archetype instead — products span every archetype, not just vehicles.
+  const initialProfile: GoodsProfileId = prefillOffer
+    ? 'vehiculos'
+    : prefillProduct
+      ? defaultProfileForArchetype(prefillProduct.laneArchetype)
+      : defaultProfileForArchetype(lanes[0]?.archetype)
   const [profileId, setProfileId] = useState<GoodsProfileId>(initialProfile)
   const [inputs, setInputs] = useState<ImportInputs>(() => ({
     ...DEFAULT_INPUTS,
@@ -128,18 +145,33 @@ export function CostCalculator({
           fob: prefillOffer.unitPriceMinor !== null ? prefillOffer.unitPriceMinor / 100 : 0,
         }
       : {}),
+    ...(prefillProduct
+      ? {
+          productName: prefillProduct.name.es || prefillProduct.name.en || '',
+        }
+      : {}),
   }))
-  const [laneId, setLaneId] = useState(lanes[0]?.id ?? '')
-  const [label, setLabel] = useState(prefillOffer ? prefillOffer.productLabel : '')
-  const [hsCode, setHsCode] = useState('')
+  const [laneId, setLaneId] = useState(() => {
+    // Prefer the product's own lane when the operator has costing access to it —
+    // that's the lane whose IGV/percepción/Ad Valorem config actually applies.
+    if (prefillProduct && lanes.some((l) => l.id === prefillProduct.laneId)) return prefillProduct.laneId
+    return lanes[0]?.id ?? ''
+  })
+  const [label, setLabel] = useState(
+    prefillOffer ? prefillOffer.productLabel : prefillProduct ? (prefillProduct.name.es || prefillProduct.name.en) : '',
+  )
+  const [hsCode, setHsCode] = useState(prefillProduct?.hsCode ?? '')
   const [supplierOfferId, setSupplierOfferId] = useState<string | null>(prefillOffer?.id ?? null)
   const [reference, setReference] = useState<CostingReference | null>(null)
   const [containers, setContainers] = useState<CostingContainer[]>([])
   const [containerId, setContainerId] = useState('')
+  const [accounts, setAccounts] = useState<AccountOption[]>([])
+  const [accountId, setAccountId] = useState('')
   const [history, setHistory] = useState(initialHistory)
   const [error, setError] = useState<string | null>(null)
   const [saved, setSaved] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
+  const [isQuotePending, startQuoteTransition] = useTransition()
 
   // Config-sourced rate defaults per lane's brand (G5): IGV / percepción /
   // insurance come from versioned costing_config; the Ad Valorem table is used
@@ -172,6 +204,14 @@ export function CostCalculator({
     listCostingContainers(laneId).then((res) => {
       if (active && res.data) setContainers(res.data)
     })
+    setAccountId('')
+    if (lane?.brandId) {
+      listAccountsForBrand(lane.brandId).then((res) => {
+        if (active && res.data) setAccounts(res.data)
+      })
+    } else {
+      setAccounts([])
+    }
     return () => {
       active = false
     }
@@ -243,12 +283,53 @@ export function CostCalculator({
     })
   }
 
+  // Costing → Client → Quotation, one sequenced dynamic: pick who this landed
+  // cost is for, open an RFQ against them (createRFQ), seed it with a single
+  // line at this calculation's final sale price (upsertLines), then hand off to
+  // the Pipeline card where QuoteComposer turns it into the formal quotation —
+  // the existing RFQ → quote → send flow, not a second one.
+  function handleCreateQuote() {
+    if (!laneId || !accountId || !preview) {
+      setError('Selecciona un lane y un cliente / Select a lane and a client')
+      return
+    }
+    setError(null)
+    startQuoteTransition(async () => {
+      const rfqRes = await createRFQ(laneId, { accountId, source: 'MANUAL', currency: 'USD' })
+      if (rfqRes.error) {
+        setError(rfqRes.error.message)
+        return
+      }
+      const archetype = lanes.find((l) => l.id === laneId)?.archetype as Archetype | undefined
+      const unit = archetype ? getDefaultUnit(archetype).id : 'unit'
+      const linesRes = await upsertLines(rfqRes.data.id, [
+        {
+          description: label.trim() || inputs.productName || 'Cotización',
+          qty: 1,
+          unit,
+          targetPriceMinor: toMinor(preview.salePriceFinal),
+          currency: 'USD',
+        },
+      ])
+      if (linesRes.error) {
+        setError(linesRes.error.message)
+        return
+      }
+      router.push(`/pipeline/${rfqRes.data.id}`)
+    })
+  }
+
   return (
     <div className="flex flex-col gap-6">
       {prefillOffer ? (
         <p className="rounded-card border border-lane-accent bg-surface-2 px-4 py-2 font-mono text-label uppercase tracking-[0.08em] text-lane-accent">
           Precargado desde Proveedores / Prefilled from Suppliers: {prefillOffer.productLabel} ·{' '}
           {prefillOffer.supplierName || '—'}
+        </p>
+      ) : null}
+      {prefillProduct ? (
+        <p className="rounded-card border border-lane-accent bg-surface-2 px-4 py-2 font-mono text-label uppercase tracking-[0.08em] text-lane-accent">
+          Precargado desde Catálogo / Prefilled from Catalog: {prefillProduct.name.es || prefillProduct.name.en}
         </p>
       ) : null}
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,420px)_1fr]">
@@ -434,6 +515,40 @@ export function CostCalculator({
               Guardar cálculo / Save
             </button>
             {saved ? <span className="font-mono text-label uppercase tracking-[0.08em] text-positive">Guardado</span> : null}
+          </div>
+
+          {/* Costing → Client → Quotation, one sequenced dynamic: pick who this
+              is for and open the formal quotation directly from the calculation —
+              no separate re-entry of the sale price into the pipeline. */}
+          <div className="flex flex-wrap items-end gap-3 rounded-card border border-line bg-surface-1 p-4">
+            <label className="flex flex-1 flex-col gap-1">
+              <span className={LABEL}>Cliente / Client</span>
+              <select
+                value={accountId}
+                onChange={(e) => setAccountId(e.target.value)}
+                disabled={accounts.length === 0}
+                className={`${INPUT} disabled:opacity-40`}
+              >
+                <option value="">
+                  {accounts.length === 0 ? '— sin clientes en este lane —' : '— selecciona cliente / select client —'}
+                </option>
+                {accounts.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.name}
+                    {a.country ? ` · ${a.country}` : ''}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button
+              type="button"
+              onClick={handleCreateQuote}
+              disabled={isQuotePending || !preview || !accountId}
+              title="Abre un RFQ para este cliente con una línea a este precio de venta / Opens an RFQ for this client with one line at this sale price"
+              className="rounded-card bg-accent px-4 py-2 font-mono text-label uppercase tracking-[0.1em] text-surface-0 disabled:opacity-40"
+            >
+              Crear cotización →
+            </button>
           </div>
           {error ? (
             <p role="alert" className="font-ui text-t0 text-negative">
