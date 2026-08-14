@@ -1,9 +1,15 @@
-// SUNAT cost cascade + margin blocks — pure presentational. Renders an
-// ImportResult as the operator sees it in the reference workbook: the cost
-// waterfall (CIF → Ad Valorem → ISC → IGV imp → percepción → landed → cash) and
-// Módulo 7's three margin blocks. Money is tabular-mono; the negative
-// caja margin is rendered in accounting parentheses (it is normally negative
-// during the IGV recovery window — capital inmovilizado, not a loss).
+'use client'
+
+// SUNAT cost cascade + margin blocks. Renders an ImportResult as the operator
+// sees it in the reference workbook: the cost waterfall (CIF → Ad Valorem →
+// ISC → IGV imp → percepción → landed → cash) and Módulo 7's three margin
+// blocks. Money is tabular-mono; the negative caja margin is rendered in
+// accounting parentheses (it is normally negative during the IGV recovery
+// window — capital inmovilizado, not a loss). The itemized cascade collapses
+// behind a toggle — an operator adjusting margin wants the answer to "how
+// much is this costing me, all in" always in view, not nine line items to
+// scan past on every keystroke.
+import { useState } from 'react'
 import type { ImportResult } from '@/lib/costing/types'
 import { formatAccounting } from '@/lib/money'
 
@@ -64,6 +70,8 @@ function Row({
 }
 
 export function CostWaterfall({ result, currency = 'USD' }: { result: ImportResult; currency?: string }) {
+  const [showDetail, setShowDetail] = useState(false)
+
   // Section max drives the proportion rules — every cost line reads against the
   // largest one (normally the landed cost), so the cascade is scannable as
   // magnitude, not just a column of numbers.
@@ -82,20 +90,83 @@ export function CostWaterfall({ result, currency = 'USD' }: { result: ImportResu
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
       <section className="flex flex-col rounded-card border border-line bg-surface-1 p-4">
-        <h3 className="mb-2 font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
-          Cascada de costos ({currency})
-        </h3>
-        {result.insurance > 0 ? (
-          <Row label="Seguro" value={money(result.insurance)} bar={result.insurance / cascadeMax} />
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <h3 className="font-mono text-label uppercase tracking-[0.1em] text-ink-secondary">
+            Cascada de costos ({currency})
+          </h3>
+          <button
+            type="button"
+            onClick={() => setShowDetail((v) => !v)}
+            aria-expanded={showDetail}
+            className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary hover:text-lane-accent"
+          >
+            {showDetail ? 'Ocultar detalle ↑' : 'Ver detalle ↓'}
+          </button>
+        </div>
+
+        {/* Always visible — the unambiguous answer to "how much is this
+            costing me, all in," independent of whether the itemized
+            breakdown below is expanded. Landed and cash outlay are DIFFERENT
+            totals (landed excludes IGV importación + percepción; cash outlay
+            adds them back because SUNAT collects them at the port even though
+            they're recovered later) — the bridging line makes that jump an
+            explicit +, never two bold numbers with nothing between them. */}
+        <div className="rounded-control border border-line bg-surface-2 p-3">
+          <div className="flex items-baseline justify-between gap-4">
+            <span className="font-ui text-t0 text-ink-primary">Costo puesto en almacén (landed)</span>
+            <span className="font-mono text-t2 tabular-nums text-ink-primary" data-numeric>
+              {money(result.landedCost)}
+            </span>
+          </div>
+          <div className="mt-1.5 flex items-baseline justify-between gap-4 text-ink-secondary">
+            <span className="font-ui text-t0">+ Impuestos recuperables (IGV importación + Percepción)</span>
+            <span className="font-mono text-t0 tabular-nums" data-numeric>
+              {money(result.impuestosRecuperablesUSD)}
+            </span>
+          </div>
+          <div className="mt-1.5 flex items-baseline justify-between gap-4 border-t border-line pt-1.5">
+            <span className="font-ui text-t0 text-ink-primary">= Desembolso de caja al despacho</span>
+            <span className="font-mono text-t1 tabular-nums text-ink-primary" data-numeric>
+              {money(result.cashOutlay)}
+            </span>
+          </div>
+          <p className="mt-2 font-ui text-label text-ink-secondary">
+            SUNAT cobra el IGV y la percepción en la aduana aunque se recuperan después — por eso el desembolso es
+            mayor que el landed, no un costo adicional.
+          </p>
+        </div>
+
+        {showDetail ? (
+          <div className="mt-3 flex flex-col gap-3">
+            <div>
+              <h4 className="mb-1 font-mono text-label uppercase tracking-[0.1em] text-ink-tertiary">
+                Costo aduanero — compone el landed
+              </h4>
+              {result.insurance > 0 ? (
+                <Row label="Seguro" value={money(result.insurance)} bar={result.insurance / cascadeMax} />
+              ) : null}
+              <Row label="CIF" value={money(result.cif)} bar={result.cif / cascadeMax} />
+              <Row label="Ad Valorem" value={money(result.adValorem)} bar={result.adValorem / cascadeMax} />
+              <Row label="ISC" sub={pct(result.iscRate)} value={money(result.isc)} bar={result.isc / cascadeMax} />
+              <Row
+                label="Gastos vinculados"
+                value={money(result.gastosVinculados)}
+                bar={result.gastosVinculados / cascadeMax}
+              />
+            </div>
+            <div>
+              <h4 className="mb-1 font-mono text-label uppercase tracking-[0.1em] text-ink-tertiary">
+                Impuestos recuperables — se suman al desembolso, no al landed
+              </h4>
+              <Row
+                label="IGV importación"
+                value={money(result.igvImportacion)}
+                bar={result.igvImportacion / cascadeMax}
+              />
+              <Row label="Percepción" value={money(result.percepcion)} bar={result.percepcion / cascadeMax} />
+            </div>
+          </div>
         ) : null}
-        <Row label="CIF" value={money(result.cif)} bar={result.cif / cascadeMax} />
-        <Row label="Ad Valorem" value={money(result.adValorem)} bar={result.adValorem / cascadeMax} />
-        <Row label="ISC" sub={pct(result.iscRate)} value={money(result.isc)} bar={result.isc / cascadeMax} />
-        <Row label="IGV importación" value={money(result.igvImportacion)} bar={result.igvImportacion / cascadeMax} />
-        <Row label="Percepción" value={money(result.percepcion)} bar={result.percepcion / cascadeMax} />
-        <Row label="Gastos vinculados" value={money(result.gastosVinculados)} bar={result.gastosVinculados / cascadeMax} />
-        <Row label="Costo puesto en almacén (landed)" value={money(result.landedCost)} emphasis bar={result.landedCost / cascadeMax} />
-        <Row label="Desembolso de caja" value={money(result.cashOutlay)} emphasis bar={result.cashOutlay / cascadeMax} />
       </section>
 
       <section className="flex flex-col rounded-card border border-line bg-surface-1 p-4">
@@ -105,23 +176,51 @@ export function CostWaterfall({ result, currency = 'USD' }: { result: ImportResu
         <Row label="Precio de venta (ex-IGV)" value={money(result.salePrice)} />
         <Row label="IGV ventas" value={money(result.igvVentas)} />
         <Row label="Precio final" value={money(result.salePriceFinal)} emphasis />
-        <div className="mt-3" />
-        <Row label="Margen bruto" sub={pct(result.margenBrutoPct)} value={money(result.margenBruto)} emphasis />
-        <Row label="Impuestos recuperables (USD)" value={money(result.impuestosRecuperablesUSD)} />
-        <Row label="Impuestos recuperables (PEN)" value={money(result.impuestosRecuperablesPEN)} />
-        <Row label="Pago a cuenta IR (1.77%)" value={money(result.paCuentaRenta)} negative />
-        <Row
-          label="Margen neto de caja"
-          sub={pct(result.margenNetoCajaPct)}
-          value={money(result.margenNetoCaja)}
-          emphasis
-          negative={result.margenNetoCaja < 0}
-        />
-        {result.margenNetoCaja < 0 ? (
+
+        {/* The unambiguous bottom line: what the operation actually earns once
+            recoverable taxes are back. Rendered as its own callout — gold, never
+            red — so it can't be mistaken for the cash-timing figure below it. */}
+        <div className="mt-4 rounded-control border border-gold/40 bg-gold/10 p-3">
+          <div className="flex items-baseline justify-between gap-4">
+            <span className="font-ui text-t0 text-ink-primary">Ganancia real esperada</span>
+            <span className="font-mono text-t2 tabular-nums text-ink-primary" data-numeric>
+              {money(result.margenBruto)}
+            </span>
+          </div>
+          <div className="mt-0.5 flex items-baseline justify-between gap-4">
+            <span className="font-mono text-label uppercase tracking-[0.08em] text-ink-secondary">
+              Margen bruto sobre venta
+            </span>
+            <span className="font-mono text-t0 tabular-nums text-ink-secondary" data-numeric>
+              {pct(result.margenBrutoPct)}
+            </span>
+          </div>
           <p className="mt-2 font-ui text-label text-ink-secondary">
-            Negativo = capital inmovilizado durante la recuperación del IGV, no una pérdida.
+            Esta es la rentabilidad real de la operación, una vez recuperados el IGV y la percepción. Es la cifra
+            que decide si el precio es correcto.
           </p>
-        ) : null}
+        </div>
+
+        {/* Cash-timing block, visually separated from the profit callout above so
+            a negative caja figure never reads as a second, competing loss. */}
+        <div className="mt-4 border-t border-line pt-3">
+          <h4 className="mb-1 font-mono text-label uppercase tracking-[0.1em] text-ink-tertiary">
+            Posición de caja al despacho (no es utilidad)
+          </h4>
+          <Row label="Impuestos recuperables (USD)" value={money(result.impuestosRecuperablesUSD)} />
+          <Row label="Impuestos recuperables (PEN)" value={money(result.impuestosRecuperablesPEN)} />
+          <Row label="Pago a cuenta IR (1.77%)" value={money(result.paCuentaRenta)} negative />
+          <Row
+            label="Caja disponible hoy"
+            sub={pct(result.margenNetoCajaPct)}
+            value={money(result.margenNetoCaja)}
+          />
+          <p className="mt-2 font-ui text-label text-ink-secondary">
+            {result.margenNetoCaja < 0
+              ? 'Negativo = capital inmovilizado mientras se recupera el IGV y la percepción, no una pérdida. La ganancia real es la cifra de arriba.'
+              : 'Efectivo disponible antes de recuperar IGV y percepción. La ganancia real de la operación es la cifra de arriba.'}
+          </p>
+        </div>
       </section>
     </div>
   )
