@@ -12,14 +12,13 @@ function slug(s: string): string {
 }
 
 /** Build the section rows shared by the print sheet (CostSheetDocument).
- *  Same grouping and bridging logic as the CostWaterfall UI (2026-08-14): the
- *  landed-cost buildup (FOB → Gastos vinculados → landed) is its own group;
- *  IGV importación + Percepción are a SEPARATE "recoverable" group that
- *  bridges to the cash outlay, never interleaved with the landed buildup
- *  (they don't feed it — see engine.ts's landedCost/cashOutlay comment). The
- *  real profit (margen bruto) gets its own headline group, separate from the
- *  cash-timing group, so the same "which number is the actual answer"
- *  ambiguity that was fixed on screen doesn't reappear in the exported file. */
+ *  Follows how the price is actually BUILT (2026-08-14): landed cost → the
+ *  margin applied on top of it → the resulting sale/final price — margin
+ *  comes BEFORE the price it produces, never after (landedCost + marginUSD =
+ *  salePrice, per engine.ts). The recoverable-tax bridge (IGV importación +
+ *  Percepción → desembolso de caja) is a SEPARATE, parallel concern — it does
+ *  not feed the price at all — so it trails at the end next to the other
+ *  cash-timing figures instead of interrupting the cost→margin→price read. */
 export function costSheetRows(inputs: ImportInputs, result: ImportResult): [string, string | number][] {
   return [
     ['Producto', inputs.productName],
@@ -39,20 +38,20 @@ export function costSheetRows(inputs: ImportInputs, result: ImportResult): [stri
     ['Gastos vinculados', result.gastosVinculados],
     ['Costo puesto en almacén (landed)', result.landedCost],
     ['—', ''],
-    ['IMPUESTOS RECUPERABLES — SE SUMAN AL DESEMBOLSO, NO AL LANDED (USD)', ''],
-    ['IGV importación', result.igvImportacion],
-    ['Percepción', result.percepcion],
-    ['+ Impuestos recuperables', result.impuestosRecuperablesUSD],
-    ['= Desembolso de caja al despacho', result.cashOutlay],
+    ['GANANCIA REAL ESPERADA — SE APLICA SOBRE EL LANDED (USD)', ''],
+    ['Margen bruto (ganancia real)', result.margenBruto],
+    ['Margen bruto %', `${(result.margenBrutoPct * 100).toFixed(1)}%`],
     ['—', ''],
-    ['PRECIO Y MÁRGENES (USD)', ''],
+    ['PRECIO PARA EL CLIENTE — LANDED + GANANCIA (USD)', ''],
     ['Precio de venta (ex-IGV)', result.salePrice],
     ['IGV ventas', result.igvVentas],
     ['Precio final', result.salePriceFinal],
     ['—', ''],
-    ['GANANCIA REAL ESPERADA (USD)', ''],
-    ['Margen bruto (ganancia real)', result.margenBruto],
-    ['Margen bruto %', `${(result.margenBrutoPct * 100).toFixed(1)}%`],
+    ['IMPUESTOS RECUPERABLES — SE SUMAN AL DESEMBOLSO, NO AL LANDED NI AL PRECIO (USD)', ''],
+    ['IGV importación', result.igvImportacion],
+    ['Percepción', result.percepcion],
+    ['+ Impuestos recuperables', result.impuestosRecuperablesUSD],
+    ['= Desembolso de caja al despacho', result.cashOutlay],
     ['—', ''],
     ['POSICIÓN DE CAJA AL DESPACHO — NO ES UTILIDAD (USD)', ''],
     ['Impuestos recuperables', result.impuestosRecuperablesUSD],
@@ -155,18 +154,17 @@ async function buildCostSheetWorkbook(
   ]
   for (const r of customsCost) addDataRow(ws, r)
 
-  // ── Impuestos recuperables — bridges to the cash outlay ──────────────────
-  addSectionBar(ws, 'Impuestos recuperables — se suman al desembolso, no al landed (USD)')
-  const recoverable: SheetRow[] = [
-    { label: 'IGV importación', value: result.igvImportacion, numFmt: USD },
-    { label: 'Percepción', value: result.percepcion, numFmt: USD },
-    { label: '+ Impuestos recuperables', value: result.impuestosRecuperablesUSD, numFmt: USD },
-    { label: '= Desembolso de caja al despacho', value: result.cashOutlay, numFmt: USD, emphasis: true },
+  // ── Ganancia real esperada — the margin applied ON TOP of the landed cost,
+  // BEFORE the price it produces (landedCost + marginUSD = salePrice) ──────
+  addSectionBar(ws, 'Ganancia real esperada — se aplica sobre el landed (USD)')
+  const realProfit: SheetRow[] = [
+    { label: 'Margen bruto (ganancia real)', value: result.margenBruto, numFmt: USD, gold: true },
+    { label: 'Margen bruto %', value: result.margenBrutoPct, numFmt: PCT, gold: true },
   ]
-  for (const r of recoverable) addDataRow(ws, r)
+  for (const r of realProfit) addDataRow(ws, r)
 
-  // ── Precio y márgenes ─────────────────────────────────────────────────────
-  addSectionBar(ws, 'Precio y márgenes (USD)')
+  // ── Precio para el cliente — landed + ganancia ───────────────────────────
+  addSectionBar(ws, 'Precio para el cliente — landed + ganancia (USD)')
   const pricing: SheetRow[] = [
     { label: 'Precio de venta (ex-IGV)', value: result.salePrice, numFmt: USD },
     { label: 'IGV ventas', value: result.igvVentas, numFmt: USD },
@@ -174,13 +172,16 @@ async function buildCostSheetWorkbook(
   ]
   for (const r of pricing) addDataRow(ws, r)
 
-  // ── Ganancia real esperada — the unambiguous bottom line ─────────────────
-  addSectionBar(ws, 'Ganancia real esperada (USD)')
-  const realProfit: SheetRow[] = [
-    { label: 'Margen bruto (ganancia real)', value: result.margenBruto, numFmt: USD, gold: true },
-    { label: 'Margen bruto %', value: result.margenBrutoPct, numFmt: PCT, gold: true },
+  // ── Impuestos recuperables — a SEPARATE bridge to the cash outlay; never
+  // part of the landed cost or the price above ────────────────────────────
+  addSectionBar(ws, 'Impuestos recuperables — se suman al desembolso, no al landed ni al precio (USD)')
+  const recoverable: SheetRow[] = [
+    { label: 'IGV importación', value: result.igvImportacion, numFmt: USD },
+    { label: 'Percepción', value: result.percepcion, numFmt: USD },
+    { label: '+ Impuestos recuperables', value: result.impuestosRecuperablesUSD, numFmt: USD },
+    { label: '= Desembolso de caja al despacho', value: result.cashOutlay, numFmt: USD, emphasis: true },
   ]
-  for (const r of realProfit) addDataRow(ws, r)
+  for (const r of recoverable) addDataRow(ws, r)
 
   // ── Posición de caja — a timing figure, never a second "profit" ─────────
   addSectionBar(ws, 'Posición de caja al despacho — no es utilidad (USD)')
@@ -279,13 +280,18 @@ export interface FleetRow {
   result: ImportResult
 }
 
-// Column order follows the SAME buildup → bridge → margin sequence as the
-// CostWaterfall UI and the single-sheet export: the landed-cost columns run
-// together and land on "Landed cost" (shaded), then IGV importación +
-// Percepción bridge to "Desembolso caja" (shaded) — never interleaved, so a
-// reader scanning left to right doesn't hit the "30 → 35 → 29 → 40" jump.
-// "Ganancia real (margen bruto)" gets the same gold shading as the UI's real-
-// profit callout so it reads as the answer, not one more column.
+// Column order follows how a price is actually BUILT, not the tax mechanics:
+// landed cost → margin applied on top of it → sale price → final price for
+// the client. That's the sequence a rep reads left to right when asking
+// "what did we pay, what do we add, what do we charge" — margin sits BEFORE
+// the price it produces, never after. The recoverable-tax bridge (IGV
+// importación/Percepción → desembolso de caja) is a SEPARATE, parallel
+// concern — it does not feed the price at all (see engine.ts: cashOutlay is
+// derived from landedCost, salePrice is derived from landedCost + margin,
+// independently) — so it trails at the end next to the other cash-timing
+// columns instead of interrupting the cost→margin→price read.
+// "Ganancia real (margen bruto)" keeps the UI's gold shading so it reads as
+// the answer, not one more column.
 const FLEET_COLUMNS: {
   header: string
   width: number
@@ -307,12 +313,14 @@ const FLEET_COLUMNS: {
   { header: 'ISC', width: 12, numFmt: USD, get: (r) => r.result.isc },
   { header: 'Gastos vinculados', width: 14, numFmt: USD, get: (r) => r.result.gastosVinculados },
   { header: 'Landed cost', width: 14, numFmt: USD, emphasis: true, get: (r) => r.result.landedCost },
+  { header: 'Margen %', width: 10, numFmt: PCT, get: (r) => r.result.marginRate },
+  { header: 'Ganancia real (margen bruto)', width: 18, numFmt: USD, gold: true, get: (r) => r.result.margenBruto },
+  { header: 'Precio de venta (ex-IGV)', width: 16, numFmt: USD, get: (r) => r.result.salePrice },
+  { header: 'IGV ventas', width: 12, numFmt: USD, get: (r) => r.result.igvVentas },
+  { header: 'Precio final (con IGV)', width: 16, numFmt: USD, emphasis: true, get: (r) => r.result.salePriceFinal },
   { header: 'IGV importación', width: 14, numFmt: USD, get: (r) => r.result.igvImportacion },
   { header: 'Percepción', width: 12, numFmt: USD, get: (r) => r.result.percepcion },
   { header: 'Desembolso caja', width: 15, numFmt: USD, emphasis: true, get: (r) => r.result.cashOutlay },
-  { header: 'Precio final (con IGV)', width: 16, numFmt: USD, get: (r) => r.result.salePriceFinal },
-  { header: 'Ganancia real (margen bruto)', width: 18, numFmt: USD, gold: true, get: (r) => r.result.margenBruto },
-  { header: 'Margen %', width: 10, numFmt: PCT, get: (r) => r.result.marginRate },
   { header: 'Pago a cuenta IR', width: 14, numFmt: USD, get: (r) => r.result.paCuentaRenta },
   { header: 'Caja disponible hoy', width: 16, numFmt: USD, get: (r) => r.result.margenNetoCaja },
 ]
