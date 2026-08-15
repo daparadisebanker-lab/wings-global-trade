@@ -299,3 +299,55 @@
 
 /* ── Print ──────────────────────────────────────────────────────────────── */
 /* Print @page + margins now live in the shared document-grid.css (doc-grid class). */
+
+/* ── Small screens (screen only — the approved A4 print/PDF layout above is
+   untouched) ───────────────────────────────────────────────────────────────
+   The sheet is sized in pt for A4 and was never meant to reflow — on a phone
+   browser several elements have a fixed intrinsic width wider than the
+   viewport (the header's non-shrinking brand block, the two-column meta/terms
+   grids, the totals block's fixed 320px), which pushes the whole sheet into
+   horizontal overflow instead of wrapping. This stacks those elements on
+   narrow screens so "Documento oficial ↗" is actually readable when a rep
+   opens it on their phone, without changing a single pixel of the PDF. */
+@media screen and (max-width: 640px) {
+  .qdoc-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .qdoc-title {
+    font-size: 34px;
+  }
+  .qdoc-brand {
+    align-items: flex-start;
+    text-align: left;
+  }
+  .qdoc-meta {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .qdoc-terms {
+    grid-template-columns: 1fr;
+    gap: 2px 16px;
+  }
+  .qdoc-terms > .qdoc-term-label {
+    margin-top: 8px;
+  }
+  .qdoc-totals {
+    width: 100%;
+    max-width: 320px;
+  }
+  .qd-desc-img,
+  .qd-desc-placeholder {
+    max-width: 96px;
+    width: 96px;
+    height: 48px;
+  }
+  .qdoc-footer {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .qdoc-footer .qd-foot-right {
+    text-align: left;
+  }
+}
