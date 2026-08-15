@@ -12,6 +12,21 @@ export type FuelType = 'hybrid' | 'gasoline' | 'diesel' | 'electric'
 export type Origin = 'china' | 'other'
 export type Incoterm = 'EXW' | 'FOB' | 'CFR' | 'CIF'
 
+/** How `freightInternational` was derived from container fill (container-freight.ts).
+ *  Persisted alongside the plain number so a reopened calculation shows its own
+ *  working, not just the resulting figure — optional, backward compatible. */
+export interface ContainerFreightConfig {
+  itemLengthMm: number
+  itemWidthMm: number
+  itemHeightMm: number
+  weightEachKg?: number | null
+  containerKind: '20GP' | '40GP' | '40HC'
+  rotatable: boolean
+  stackable: boolean
+  containerRateUsd: number
+  quantity: number
+}
+
 export interface ImportInputs {
   productName: string
   brand: string
@@ -32,6 +47,10 @@ export interface ImportInputs {
   fob: number // EXW=factory price, FOB=fob, CFR=cfr value, CIF=cif value
   transportOrigin: number // EXW only: transporte fábrica → puerto origen
   freightInternational: number // EXW + FOB only
+  /** Present when `freightInternational` was derived from container fill rather
+   *  than typed by hand — see ContainerFreightConfig. Null/undefined when the
+   *  operator entered the number directly. */
+  containerFreight?: ContainerFreightConfig | null
   freightZofratacna: number
   portExpenses: number
   customsAgency: number
