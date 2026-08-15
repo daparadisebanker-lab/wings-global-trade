@@ -43,6 +43,9 @@ export interface IssuerEntity {
   key: string
   /** ISO-3166 alpha-2 of the entity's domicile. */
   country: string
+  /** Display name of the domicile country, e.g. "Perú" — printed on the seller
+   *  party card. */
+  countryName: string
   /** Tax-id label shown on the party block (RUC · PE, RUT · CL, NIT · CO…). */
   taxIdLabel: string
   /** Doc-number infix — PF-{docPrefix}-YYYY-NNNN. Shared 'WGT' series today. */
@@ -77,6 +80,7 @@ export const WINGS_PE: IssuerEntity = {
   id: 'wgt-pe',
   key: 'WGT-PE',
   country: 'PE',
+  countryName: 'Perú',
   taxIdLabel: 'RUC',
   docPrefix: 'WGT',
   issuer: WINGS_ISSUER,
@@ -100,6 +104,7 @@ export const SHINING_STAR_CL: IssuerEntity = {
   id: 'shining-star-cl',
   key: 'SHINING-CL',
   country: 'CL',
+  countryName: 'Chile',
   taxIdLabel: 'RUT',
   docPrefix: 'WGT',
   issuer: {

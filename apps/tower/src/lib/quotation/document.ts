@@ -11,7 +11,7 @@
 import { addMinor, applyBps } from '@/lib/money'
 import type { CompanyInfo } from './company'
 
-// ── Bill-to (the "Señores" block) ────────────────────────────────────────────
+// ── Bill-to (the "Comprador / Cliente" card) ─────────────────────────────────
 export interface BillTo {
   /** Company / consignee — the "Señores" line. */
   company: string
@@ -21,6 +21,16 @@ export interface BillTo {
   attention?: string | null
   /** CONTACTO — email or phone. */
   contact?: string | null
+}
+
+// ── Seller (the "Vendedor" card, paired beside Comprador) ───────────────────
+// Deliberately minimal (name/taxId/country only, not the full TradeParty used
+// by the proforma document) — this is a compact party card, not an address
+// block. Sourced from the resolved IssuerEntity.exporter at render time.
+export interface QuotationSeller {
+  name: string
+  taxId?: string | null
+  country?: string | null
 }
 
 // ── Commercial conditions (CONDICIONES COMERCIALES) ──────────────────────────
@@ -97,7 +107,11 @@ export interface QuotationDocument {
   validUntil: string | null
   /** Human validity, e.g. "15 días" — derived from validUntil when absent. */
   validityLabel: string | null
+  /** City the document is dated from — the resolved entity's defaultIssueCity. */
+  issueCity?: string | null
   billTo: BillTo
+  /** The issuing entity's own party card, paired beside billTo. */
+  seller?: QuotationSeller | null
   lines: QuotationLine[]
   totals: QuotationTotals
   terms: CommercialTerms
