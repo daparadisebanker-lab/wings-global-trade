@@ -37,10 +37,14 @@ export interface QuotationLine {
   /** Zero-padded item number, e.g. "01". */
   itemNo: string
   description: string
+  /** Free-text brand label. The renderer only shows it when the document has
+   *  more than one distinct brand across its lines — a single-brand quote
+   *  renders unchanged. */
+  brand?: string | null
   quantity: number
   unitPriceMinor: number
   lineTotalMinor: number
-  /** Optional product image (hero). Renderer shows a placeholder when absent. */
+  /** Optional product image (hero). No placeholder is drawn when absent. */
   imageUrl?: string | null
 }
 

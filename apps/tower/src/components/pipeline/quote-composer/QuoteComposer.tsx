@@ -27,6 +27,9 @@ interface DraftQuoteLine {
   key: string
   rfqLineId: string | null
   description: string
+  /** Carried through silently from the RFQ line — not an editable field here,
+   *  just threaded to composeQuote so the issued document can tag it. */
+  brand: string | null
   unitId: string
   quantity: string
   unitPriceMajor: string
@@ -39,6 +42,7 @@ function draftsFromRfqLines(lines: RfqLineRow[], fallbackUnit: string): DraftQuo
     key: l.id,
     rfqLineId: l.id,
     description: l.description ?? l.productName?.es ?? 'Línea / Line',
+    brand: l.brand,
     unitId: l.unit || fallbackUnit,
     quantity: String(l.qty),
     unitPriceMajor: l.targetPriceMinor !== null ? (l.targetPriceMinor / 100).toFixed(2) : '0',
@@ -79,6 +83,9 @@ export function QuoteComposer({
   const units = getUnits(archetype)
   const [drafts, setDrafts] = useState<DraftQuoteLine[]>(() => draftsFromRfqLines(rfqLines, units[0]?.id ?? ''))
   const [validUntil, setValidUntil] = useState('')
+  // Floor for the "valid until" picker — a past date would compute a
+  // negative validity window on the issued document.
+  const todayISO = new Date().toISOString().slice(0, 10)
   const [editingDoc, setEditingDoc] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
@@ -92,6 +99,7 @@ export function QuoteComposer({
         drafts.map((d) => ({
           rfqLineId: d.rfqLineId,
           description: d.description,
+          brand: d.brand,
           unitId: d.unitId,
           quantity: Number(d.quantity) || 0,
           unitPriceMinor: Math.round((Number(d.unitPriceMajor) || 0) * 100),
@@ -124,6 +132,7 @@ export function QuoteComposer({
         drafts.map((d) => ({
           rfqLineId: d.rfqLineId,
           description: d.description,
+          brand: d.brand,
           unitId: d.unitId,
           quantity: Number(d.quantity) || 0,
           unitPriceMinor: Math.round((Number(d.unitPriceMajor) || 0) * 100),
@@ -347,6 +356,8 @@ export function QuoteComposer({
                       <input
                         type="date"
                         value={validUntil}
+                        min={todayISO}
+                        title="Válida hasta / Valid until — una fecha futura, o el documento no mostrará un plazo de validez / a future date, or the document won't show a validity window"
                         onChange={(e) => setValidUntil(e.target.value)}
                         className="rounded-card border border-line bg-surface-0 px-2 py-1.5 font-mono text-label text-ink-primary outline-none focus-visible:border-lane-accent"
                       />

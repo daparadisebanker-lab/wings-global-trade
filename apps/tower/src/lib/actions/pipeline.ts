@@ -66,6 +66,9 @@ export interface RfqLineRow {
   productId: string | null
   productName: { es: string; en: string } | null
   description: string | null
+  /** Free-text brand label — set on lines bundled from saved cost calculations
+   *  (their inputs.brand), so a multi-brand quote can tag each line. */
+  brand: string | null
   qty: number
   unit: string
   targetPriceMinor: number | null
@@ -134,6 +137,7 @@ interface RawRfqLineRow {
   rfq_id: string
   product_id: string | null
   description: string | null
+  brand: string | null
   qty: number | string
   unit: string
   target_price_minor: number | string | null
@@ -202,7 +206,8 @@ function mapRfqRow(row: RawRfqRow): RfqRow {
   }
 }
 
-const RFQ_LINE_SELECT_COLS = 'id,rfq_id,product_id,description,qty,unit,target_price_minor,currency,products(name)'
+const RFQ_LINE_SELECT_COLS =
+  'id,rfq_id,product_id,description,brand,qty,unit,target_price_minor,currency,products(name)'
 
 function mapRfqLineRow(row: RawRfqLineRow): RfqLineRow {
   const product = firstOf(row.products)
@@ -212,6 +217,7 @@ function mapRfqLineRow(row: RawRfqLineRow): RfqLineRow {
     productId: row.product_id,
     productName: product?.name ?? null,
     description: row.description,
+    brand: row.brand,
     qty: toNumber(row.qty),
     unit: row.unit,
     targetPriceMinor: toNumberOrNull(row.target_price_minor),
@@ -281,6 +287,7 @@ const lineInputSchema = z.object({
   id: z.string().uuid().optional(),
   productId: z.string().uuid().nullable().optional(),
   description: z.string().trim().max(500).nullable().optional(),
+  brand: z.string().trim().max(120).nullable().optional(),
   qty: z.number().positive(),
   unit: z.string().min(1),
   targetPriceMinor: z.number().int().nullable().optional(),
@@ -291,6 +298,7 @@ export type RfqLineInput = z.input<typeof lineInputSchema>
 const quoteLineInputSchema = z.object({
   rfqLineId: z.string().uuid().nullable().optional(),
   description: z.string().trim().min(1).max(500),
+  brand: z.string().trim().max(120).nullable().optional(),
   unitId: z.string().min(1),
   quantity: z.number().positive(),
   unitPriceMinor: z.number().int().nonnegative(),
@@ -671,6 +679,7 @@ export async function upsertLines(rfqId: string, lines: RfqLineInput[]): Promise
       rfq_id: rfqParsed.data,
       product_id: line.productId ?? null,
       description: line.description ?? null,
+      brand: line.brand ?? null,
       qty: line.qty,
       unit: line.unit,
       target_price_minor: line.targetPriceMinor ?? null,

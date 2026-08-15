@@ -163,6 +163,7 @@ export function CostingHistoryView({ rows, lanes: laneOptions }: { rows: CostCal
       const unit = getDefaultUnit(bundleLane.archetype as Archetype).id
       const lines: RfqLineInput[] = selectedRows.map((r) => ({
         description: r.label || r.inputs.productName || 'Cálculo',
+        brand: r.inputs.brand || null,
         qty: bundleQty[r.id] ?? 1,
         unit,
         targetPriceMinor: r.salePriceMinor,
