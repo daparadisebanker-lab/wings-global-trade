@@ -156,6 +156,8 @@
   text-align: center;
   font-family: var(--font-mono, monospace);
   font-variant-numeric: tabular-nums;
+  font-size: 15px;
+  font-weight: 500;
 }
 .qd-item {
   font-weight: 600;
@@ -202,10 +204,11 @@
 .qdoc-total-row .qd-total-value {
   font-family: var(--font-mono, monospace);
   font-variant-numeric: tabular-nums;
+  font-size: 15px;
 }
 .qdoc-total-row[data-emphasis='true'] .qd-total-label,
 .qdoc-total-row[data-emphasis='true'] .qd-total-value {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 700;
 }
 
