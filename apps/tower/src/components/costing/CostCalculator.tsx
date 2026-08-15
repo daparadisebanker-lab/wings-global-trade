@@ -354,6 +354,7 @@ export function CostCalculator({
       const linesRes = await upsertLines(rfqRes.data.id, [
         {
           description: label.trim() || inputs.productName || 'Cotización',
+          brand: inputs.brand || null,
           qty: 1,
           unit,
           targetPriceMinor: toMinor(preview.salePriceFinal),

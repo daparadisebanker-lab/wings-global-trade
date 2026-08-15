@@ -9,7 +9,6 @@
   --qd-muted: #6b7280;
   --qd-line: #d1d5db;
   --qd-bar: #ececec;
-  --qd-placeholder: #f3f4f6;
 
   box-sizing: border-box;
   /* Frame (width / margins / @page) comes from the shared .doc-grid layer. */
@@ -172,13 +171,14 @@
   max-width: 160px;
   object-fit: contain;
 }
-.qd-desc-placeholder {
+.qd-desc-brand {
   display: block;
-  margin: 0 auto 8px;
-  height: 72px;
-  width: 150px;
-  background: var(--qd-placeholder);
-  border: 1px solid var(--qd-line);
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--qd-muted);
+  margin-bottom: 2px;
 }
 .qd-desc-caption {
   font-size: 13px;
@@ -337,8 +337,7 @@
     width: 100%;
     max-width: 320px;
   }
-  .qd-desc-img,
-  .qd-desc-placeholder {
+  .qd-desc-img {
     max-width: 96px;
     width: 96px;
     height: 48px;

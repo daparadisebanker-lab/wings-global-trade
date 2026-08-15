@@ -31,6 +31,10 @@ function MetaRow({ label, value }: { label: string; value: string }) {
 export function QuotationDocument({ doc }: { doc: QuotationDocument }) {
   const { billTo, totals, terms, issuer } = doc
   const currencyTag = `(${doc.currency})`
+  // Only tag brand per line when the quote actually spans more than one —
+  // a single-brand quote (still the common case) renders unchanged.
+  const distinctBrands = new Set(doc.lines.map((l) => l.brand).filter((b): b is string => Boolean(b)))
+  const showBrand = distinctBrands.size > 1
 
   return (
     <article className="qdoc doc-grid">
@@ -87,9 +91,8 @@ export function QuotationDocument({ doc }: { doc: QuotationDocument }) {
                 {line.imageUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img className="qd-desc-img" src={line.imageUrl} alt="" />
-                ) : (
-                  <span className="qd-desc-placeholder" aria-hidden />
-                )}
+                ) : null}
+                {showBrand && line.brand ? <span className="qd-desc-brand">{line.brand}</span> : null}
                 <span className="qd-desc-caption">{line.description}</span>
               </td>
               <td className="qd-cell-num">{line.quantity}</td>

@@ -104,6 +104,8 @@ export function canConvertToOrder(status: QuoteStatus): boolean {
 export interface QuoteLineInput {
   rfqLineId?: string | null
   description: string
+  /** Free-text brand label, carried through from the RFQ line when bundled. */
+  brand?: string | null
   unitId: string
   /** May be fractional for area/mass units (m², MT) — mirrors LineInput. */
   quantity: number

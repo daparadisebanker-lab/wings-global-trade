@@ -188,6 +188,7 @@ function toDocument(
   const docLines: QuotationLine[] = lines.map((l, i) => ({
     itemNo: itemNo(i),
     description: l.description,
+    brand: l.brand ?? null,
     quantity: l.quantity,
     unitPriceMinor: l.unitPriceMinor,
     lineTotalMinor: l.totalMinor,
@@ -208,7 +209,12 @@ function toDocument(
     currency,
     issuedOn: row.issued_on,
     validUntil: row.valid_until,
-    validityLabel: validDays !== null ? `${validDays} días` : null,
+    // A same-day or past valid_until (rep picked "today" or earlier when
+    // sending) computes to 0 or negative — never a meaningful validity window
+    // to print on an official document. Fall back to terms.validityText the
+    // same way an unset valid_until already does, rather than showing
+    // "0 días" or a negative count.
+    validityLabel: validDays !== null && validDays > 0 ? `${validDays} días` : null,
     billTo,
     lines: docLines,
     totals: { subtotalMinor, taxLabel, taxBps, taxMinor, totalMinor: subtotalMinor + taxMinor },
