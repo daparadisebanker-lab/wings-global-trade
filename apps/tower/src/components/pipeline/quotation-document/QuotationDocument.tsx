@@ -4,7 +4,7 @@
 // observations, close + footer. No data access, no money math (both happen
 // server-side in lib/actions/quotation); this component only formats what it's
 // handed. Styling is scoped in quotation-document.css (a light, print-first surface).
-import { formatAmount, type QuotationDocument } from '@/lib/quotation/document'
+import { formatAmount, unitPriceWithTaxMinor, type QuotationDocument } from '@/lib/quotation/document'
 import '../document-grid.css'
 import './quotation-document.css'
 
@@ -103,7 +103,14 @@ export function QuotationDocument({ doc }: { doc: QuotationDocument }) {
                 <span className="qd-desc-caption">{line.description}</span>
               </td>
               <td className="qd-cell-num">{line.quantity}</td>
-              <td className="qd-cell-num">{formatAmount(line.unitPriceMinor)}</td>
+              <td className="qd-cell-num">
+                {formatAmount(line.unitPriceMinor)}
+                {line.quantity > 1 && totals.taxBps > 0 ? (
+                  <span className="qd-cell-subnote">
+                    {formatAmount(unitPriceWithTaxMinor(line.unitPriceMinor, totals.taxBps))} c/u con {totals.taxLabel}
+                  </span>
+                ) : null}
+              </td>
               <td className="qd-cell-num">{formatAmount(line.lineTotalMinor)}</td>
             </tr>
           ))}

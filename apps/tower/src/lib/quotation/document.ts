@@ -159,6 +159,19 @@ export function itemNo(index: number): string {
 }
 
 /**
+ * A single line's unit price with tax folded in — the figure a buyer actually
+ * pays for ONE unit, which otherwise never appears anywhere on the document
+ * (the table's "Precio unit." column is ex-IGV by design; the totals block
+ * only ever shows aggregates across the whole line, never a per-unit tax-
+ * inclusive number). Only meaningful — and only rendered — when a line's
+ * quantity is more than one; at qty 1 it's identical to the line total already
+ * shown, so the renderer skips it there.
+ */
+export function unitPriceWithTaxMinor(unitPriceMinor: number, taxBps: number): number {
+  return Math.round(unitPriceMinor * (1 + taxBps / 10_000))
+}
+
+/**
  * Plain grouped amount for the document — no currency symbol (the column header
  * already reads "(USD)"). Two decimals, comma thousands. Never used for math.
  */
