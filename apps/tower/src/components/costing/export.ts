@@ -6,6 +6,35 @@
 // dump. jsPDF-free: a client PDF is available via the print route
 // (/costing/[id]/sheet → browser print), consistent with the quotation document.
 import type { ImportInputs, ImportResult } from '@/lib/costing/types'
+import { computeContainerFreight } from '@/lib/costing/container-freight'
+
+/** Generic (label, value, optional Excel number format) row — the shared shape
+ *  behind the freight-decision explanation so the PDF (costSheetRows) and the
+ *  XLSX (buildCostSheetWorkbook) never tell two different stories about how
+ *  Flete internacional was arrived at. Empty when the calculation didn't use
+ *  the container-fit path (a manually-typed freight number, same as before
+ *  container-freight.ts existed) — nothing to explain, nothing rendered. */
+function freightDecisionRows(inputs: ImportInputs): Array<{ label: string; value: string | number; numFmt?: string }> {
+  const cf = inputs.containerFreight
+  if (!cf) return []
+  const freight = computeContainerFreight(cf)
+  if (!freight) return []
+  const rows: Array<{ label: string; value: string | number; numFmt?: string }> = [
+    { label: 'Contenedor', value: freight.containerLabel },
+    { label: 'Dimensiones de la unidad (L×A×H)', value: `${cf.itemLengthMm} × ${cf.itemWidthMm} × ${cf.itemHeightMm} mm` },
+  ]
+  if (cf.weightEachKg) rows.push({ label: 'Peso por unidad', value: `${cf.weightEachKg} kg` })
+  rows.push(
+    { label: 'Disposición (largo × ancho × capas)', value: `${freight.grid.alongL} × ${freight.grid.alongW} × ${freight.grid.layers}` },
+    { label: 'Unidades por contenedor', value: freight.unitsPerContainer, numFmt: '#,##0' },
+    { label: 'Límite', value: freight.limitedBy === 'weight' ? 'peso' : 'volumen' },
+    { label: 'Cantidad del lote', value: cf.quantity, numFmt: '#,##0' },
+    { label: 'Contenedores necesarios', value: freight.containersNeeded, numFmt: '#,##0' },
+    { label: 'Tarifa por contenedor', value: cf.containerRateUsd, numFmt: USD },
+    { label: 'Flete total del lote', value: freight.totalFreightUsd, numFmt: USD },
+  )
+  return rows
+}
 
 function slug(s: string): string {
   return (s || 'costeo').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'costeo'
@@ -20,6 +49,7 @@ function slug(s: string): string {
  *  not feed the price at all — so it trails at the end next to the other
  *  cash-timing figures instead of interrupting the cost→margin→price read. */
 export function costSheetRows(inputs: ImportInputs, result: ImportResult): [string, string | number][] {
+  const freightRows = freightDecisionRows(inputs)
   return [
     ['Producto', inputs.productName],
     ['Marca', inputs.brand],
@@ -31,12 +61,21 @@ export function costSheetRows(inputs: ImportInputs, result: ImportResult): [stri
     ['—', ''],
     ['COSTO ADUANERO — COMPONE EL LANDED (USD)', ''],
     ['FOB / valor', inputs.fob],
+    ['Flete internacional', inputs.freightInternational],
     ['Seguro', result.insurance],
     ['CIF', result.cif],
     ['Ad Valorem', result.adValorem],
     ['ISC', result.isc],
     ['Gastos vinculados', result.gastosVinculados],
     ['Costo puesto en almacén (landed)', result.landedCost],
+    ...(freightRows.length > 0
+      ? ([
+          ['—', ''],
+          ['CÓMO SE CALCULÓ EL FLETE INTERNACIONAL — POR CONTENEDOR', ''],
+          ...freightRows.map((r): [string, string | number] => [r.label, r.value]),
+          ['→ Flete internacional por unidad', inputs.freightInternational],
+        ] as [string, string | number][])
+      : []),
     ['—', ''],
     ['GANANCIA REAL ESPERADA — SE APLICA SOBRE EL LANDED (USD)', ''],
     ['Margen bruto (ganancia real)', result.margenBruto],
@@ -145,6 +184,7 @@ async function buildCostSheetWorkbook(
   addSectionBar(ws, 'Costo aduanero — compone el landed (USD)')
   const customsCost: SheetRow[] = [
     { label: 'FOB / valor', value: inputs.fob, numFmt: USD },
+    { label: 'Flete internacional', value: inputs.freightInternational, numFmt: USD },
     { label: 'Seguro', value: result.insurance, numFmt: USD },
     { label: 'CIF', value: result.cif, numFmt: USD },
     { label: 'Ad Valorem', value: result.adValorem, numFmt: USD },
@@ -153,6 +193,20 @@ async function buildCostSheetWorkbook(
     { label: 'Costo puesto en almacén (landed)', value: result.landedCost, numFmt: USD, emphasis: true },
   ]
   for (const r of customsCost) addDataRow(ws, r)
+
+  // ── Cómo se calculó el flete — only when the calculation used the
+  // container-fit path (container-freight.ts), not a manually-typed number.
+  const freightRows = freightDecisionRows(inputs)
+  if (freightRows.length > 0) {
+    addSectionBar(ws, 'Cómo se calculó el flete internacional — por contenedor')
+    for (const r of freightRows) addDataRow(ws, { label: r.label, value: r.value, numFmt: r.numFmt })
+    addDataRow(ws, {
+      label: '→ Flete internacional por unidad',
+      value: inputs.freightInternational,
+      numFmt: USD,
+      emphasis: true,
+    })
+  }
 
   // ── Ganancia real esperada — the margin applied ON TOP of the landed cost,
   // BEFORE the price it produces (landedCost + marginUSD = salePrice) ──────
