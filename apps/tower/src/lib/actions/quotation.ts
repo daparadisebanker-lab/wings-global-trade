@@ -215,7 +215,9 @@ function toDocument(
     // same way an unset valid_until already does, rather than showing
     // "0 días" or a negative count.
     validityLabel: validDays !== null && validDays > 0 ? `${validDays} días` : null,
+    issueCity: entity.defaultIssueCity,
     billTo,
+    seller: { name: entity.exporter.name, taxId: entity.exporter.taxId, country: entity.countryName },
     lines: docLines,
     totals: { subtotalMinor, taxLabel, taxBps, taxMinor, totalMinor: subtotalMinor + taxMinor },
     terms,

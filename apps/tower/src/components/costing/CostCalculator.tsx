@@ -9,7 +9,8 @@
 import { useEffect, useMemo, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { computeImportCost, DEFAULT_INPUTS } from '@/lib/costing/engine'
-import type { ImportInputs } from '@/lib/costing/types'
+import type { ImportInputs, ContainerFreightConfig } from '@/lib/costing/types'
+import { computeContainerFreight } from '@/lib/costing/container-freight'
 import { toMinor } from '@/lib/costing/persistence'
 import {
   getCostingReference,
@@ -304,6 +305,46 @@ export function CostCalculator({
     }
   }, [inputs])
 
+  // Freight-per-unit, derived from real container fill instead of a typed
+  // guess: how many units of THIS item actually fit the chosen container
+  // (grid-packed, same method as the public cubicaje tool) times the booked
+  // container rate, split across the batch quantity. "Usar este flete →"
+  // copies the result into `freightInternational`, which is the number the
+  // engine actually reads — this panel never feeds the engine directly.
+  const containerFreightResult = useMemo(
+    () => (inputs.containerFreight ? computeContainerFreight(inputs.containerFreight) : null),
+    [inputs.containerFreight],
+  )
+  const hasContainerDims =
+    (inputs.containerFreight?.itemLengthMm ?? 0) > 0 &&
+    (inputs.containerFreight?.itemWidthMm ?? 0) > 0 &&
+    (inputs.containerFreight?.itemHeightMm ?? 0) > 0
+
+  function setContainerFreight<K extends keyof ContainerFreightConfig>(key: K, value: ContainerFreightConfig[K]) {
+    setInputs((p) => ({
+      ...p,
+      containerFreight: {
+        itemLengthMm: 0,
+        itemWidthMm: 0,
+        itemHeightMm: 0,
+        weightEachKg: null,
+        containerKind: '40HC',
+        rotatable: false,
+        stackable: false,
+        containerRateUsd: 0,
+        quantity: 1,
+        ...p.containerFreight,
+        [key]: value,
+      },
+    }))
+    setSaved(null)
+  }
+
+  function applyContainerFreight() {
+    if (!containerFreightResult) return
+    set('freightInternational', containerFreightResult.freightPerUnitUsd)
+  }
+
   function set<K extends keyof ImportInputs>(key: K, value: ImportInputs[K]) {
     setInputs((p) => ({ ...p, [key]: value }))
     setSaved(null)
@@ -334,9 +375,13 @@ export function CostCalculator({
 
   // Costing → Client → Quotation, one sequenced dynamic: pick who this landed
   // cost is for, open an RFQ against them (createRFQ), seed it with a single
-  // line at this calculation's final sale price (upsertLines), then hand off to
-  // the Pipeline card where QuoteComposer turns it into the formal quotation —
-  // the existing RFQ → quote → send flow, not a second one.
+  // line at this calculation's sale price (upsertLines), then hand off to the
+  // Pipeline card where QuoteComposer turns it into the formal quotation — the
+  // existing RFQ → quote → send flow, not a second one. The RFQ/quote line price
+  // is always ex-IGV (targetPriceMinor here, unitPriceMinor downstream) — the
+  // quote's own totals math adds tax on top (subtotal → +IGV → total, matching
+  // the approved reference document). salePriceFinal is already IGV-inclusive;
+  // using it here would double-count IGV once the quote's tax line is added.
   function handleCreateQuote() {
     if (!laneId || !accountId || !preview) {
       setError('Selecciona un lane y un cliente / Select a lane and a client')
@@ -357,7 +402,7 @@ export function CostCalculator({
           brand: inputs.brand || null,
           qty: 1,
           unit,
-          targetPriceMinor: toMinor(preview.salePriceFinal),
+          targetPriceMinor: toMinor(preview.salePrice),
           currency: 'USD',
         },
       ])
@@ -489,6 +534,119 @@ export function CostCalculator({
               value={inputs.freightInternational}
               onChange={(v) => set('freightInternational', v)}
             />
+
+            {/* Container-fit-driven freight: a flat per-unit guess doesn't know
+                how many units of THIS item fit the container being booked.
+                Computes the split live; "Usar este flete →" copies it into
+                Flete internacional above — it never overwrites silently. */}
+            <div className="flex flex-col gap-2 rounded-card border border-line bg-surface-0 p-3 sm:col-span-2">
+              <span className={LABEL}>
+                Flete por contenedor
+                <span className="ml-1 lowercase text-ink-secondary">
+                  · calcula el flete/unidad desde el llenado real
+                </span>
+              </span>
+              <div className="grid grid-cols-3 gap-2">
+                <Num
+                  label="Largo"
+                  hint="mm"
+                  value={inputs.containerFreight?.itemLengthMm ?? 0}
+                  onChange={(v) => setContainerFreight('itemLengthMm', v)}
+                />
+                <Num
+                  label="Ancho"
+                  hint="mm"
+                  value={inputs.containerFreight?.itemWidthMm ?? 0}
+                  onChange={(v) => setContainerFreight('itemWidthMm', v)}
+                />
+                <Num
+                  label="Alto"
+                  hint="mm"
+                  value={inputs.containerFreight?.itemHeightMm ?? 0}
+                  onChange={(v) => setContainerFreight('itemHeightMm', v)}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <Num
+                  label="Peso / unidad"
+                  hint="kg, opcional"
+                  value={inputs.containerFreight?.weightEachKg ?? 0}
+                  onChange={(v) => setContainerFreight('weightEachKg', v > 0 ? v : null)}
+                />
+                <label className="flex flex-col gap-1">
+                  <span className={LABEL}>Contenedor</span>
+                  <select
+                    value={inputs.containerFreight?.containerKind ?? '40HC'}
+                    onChange={(e) =>
+                      setContainerFreight(
+                        'containerKind',
+                        e.target.value as ContainerFreightConfig['containerKind'],
+                      )
+                    }
+                    className={INPUT}
+                  >
+                    <option value="20GP">20GP</option>
+                    <option value="40GP">40GP</option>
+                    <option value="40HC">40HC</option>
+                  </select>
+                </label>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <Num
+                  label="Tarifa / contenedor"
+                  hint="USD"
+                  value={inputs.containerFreight?.containerRateUsd ?? 0}
+                  onChange={(v) => setContainerFreight('containerRateUsd', v)}
+                />
+                <Num
+                  label="Cantidad"
+                  hint="unidades del lote"
+                  step="1"
+                  value={inputs.containerFreight?.quantity ?? 1}
+                  onChange={(v) => setContainerFreight('quantity', v)}
+                />
+              </div>
+              <div className="flex flex-wrap gap-4">
+                <label className="flex items-center gap-1.5 font-mono text-label text-ink-secondary">
+                  <input
+                    type="checkbox"
+                    checked={inputs.containerFreight?.rotatable ?? false}
+                    onChange={(e) => setContainerFreight('rotatable', e.target.checked)}
+                    className="h-4 w-4 accent-lane-accent"
+                  />
+                  Se puede girar en planta
+                </label>
+                <label className="flex items-center gap-1.5 font-mono text-label text-ink-secondary">
+                  <input
+                    type="checkbox"
+                    checked={inputs.containerFreight?.stackable ?? false}
+                    onChange={(e) => setContainerFreight('stackable', e.target.checked)}
+                    className="h-4 w-4 accent-lane-accent"
+                  />
+                  Se puede apilar
+                </label>
+              </div>
+              {containerFreightResult ? (
+                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-line pt-2">
+                  <p className="font-mono text-t0 tabular-nums text-ink-secondary" data-numeric>
+                    {containerFreightResult.unitsPerContainer} unid./contenedor ·{' '}
+                    {containerFreightResult.containersNeeded} contenedor(es) ·{' '}
+                    {money(containerFreightResult.freightPerUnitUsd)}/unidad
+                  </p>
+                  <button
+                    type="button"
+                    onClick={applyContainerFreight}
+                    className="rounded-card border border-line px-3 py-1.5 font-mono text-label uppercase tracking-[0.1em] text-ink-primary hover:border-lane-accent"
+                  >
+                    Usar este flete →
+                  </button>
+                </div>
+              ) : hasContainerDims ? (
+                <p className="font-ui text-t0 text-negative">
+                  La unidad no entra en este contenedor con estos supuestos.
+                </p>
+              ) : null}
+            </div>
           </Group>
 
           <Group title="Gastos locales">

@@ -47,6 +47,22 @@ const importInputsSchema = z.object({
   fob: z.number().min(0),
   transportOrigin: z.number().min(0),
   freightInternational: z.number().min(0),
+  // Present when freightInternational was derived from container fill rather
+  // than typed by hand (container-freight.ts) — optional, purely for audit /
+  // reopening a saved calculation; the engine only ever reads freightInternational.
+  containerFreight: z
+    .object({
+      itemLengthMm: z.number().min(0),
+      itemWidthMm: z.number().min(0),
+      itemHeightMm: z.number().min(0),
+      weightEachKg: z.number().min(0).nullish(),
+      containerKind: z.enum(['20GP', '40GP', '40HC']),
+      rotatable: z.boolean(),
+      stackable: z.boolean(),
+      containerRateUsd: z.number().min(0),
+      quantity: z.number().min(0),
+    })
+    .nullish(),
   freightZofratacna: z.number().min(0),
   portExpenses: z.number().min(0),
   customsAgency: z.number().min(0),

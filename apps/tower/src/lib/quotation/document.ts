@@ -11,7 +11,7 @@
 import { addMinor, applyBps } from '@/lib/money'
 import type { CompanyInfo } from './company'
 
-// ── Bill-to (the "Señores" block) ────────────────────────────────────────────
+// ── Bill-to (the "Comprador / Cliente" card) ─────────────────────────────────
 export interface BillTo {
   /** Company / consignee — the "Señores" line. */
   company: string
@@ -21,6 +21,16 @@ export interface BillTo {
   attention?: string | null
   /** CONTACTO — email or phone. */
   contact?: string | null
+}
+
+// ── Seller (the "Vendedor" card, paired beside Comprador) ───────────────────
+// Deliberately minimal (name/taxId/country only, not the full TradeParty used
+// by the proforma document) — this is a compact party card, not an address
+// block. Sourced from the resolved IssuerEntity.exporter at render time.
+export interface QuotationSeller {
+  name: string
+  taxId?: string | null
+  country?: string | null
 }
 
 // ── Commercial conditions (CONDICIONES COMERCIALES) ──────────────────────────
@@ -97,7 +107,11 @@ export interface QuotationDocument {
   validUntil: string | null
   /** Human validity, e.g. "15 días" — derived from validUntil when absent. */
   validityLabel: string | null
+  /** City the document is dated from — the resolved entity's defaultIssueCity. */
+  issueCity?: string | null
   billTo: BillTo
+  /** The issuing entity's own party card, paired beside billTo. */
+  seller?: QuotationSeller | null
   lines: QuotationLine[]
   totals: QuotationTotals
   terms: CommercialTerms
@@ -142,6 +156,19 @@ export function formatQuoteNo(year: number, seq: number): string {
 /** Zero-padded item number for display ("01", "02", … "12"). */
 export function itemNo(index: number): string {
   return String(index + 1).padStart(2, '0')
+}
+
+/**
+ * A single line's unit price with tax folded in — the figure a buyer actually
+ * pays for ONE unit, which otherwise never appears anywhere on the document
+ * (the table's "Precio unit." column is ex-IGV by design; the totals block
+ * only ever shows aggregates across the whole line, never a per-unit tax-
+ * inclusive number). Only meaningful — and only rendered — when a line's
+ * quantity is more than one; at qty 1 it's identical to the line total already
+ * shown, so the renderer skips it there.
+ */
+export function unitPriceWithTaxMinor(unitPriceMinor: number, taxBps: number): number {
+  return Math.round(unitPriceMinor * (1 + taxBps / 10_000))
 }
 
 /**

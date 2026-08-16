@@ -1,10 +1,10 @@
 // Official "Cotización" renderer — pure presentational. Draws a QuotationDocument
-// exactly to the approved reference layout: header + bill-to, line-item table,
-// subtotal/tax/total, commercial conditions, observations, close + footer. No
-// data access, no money math (both happen server-side in lib/actions/quotation);
-// this component only formats what it's handed. Styling is scoped in
-// quotation-document.css (a light, print-first surface).
-import { formatAmount, type QuotationDocument } from '@/lib/quotation/document'
+// exactly to the approved reference layout: header + dateline + Vendedor/Comprador
+// party cards, line-item table, subtotal/tax/total, commercial conditions,
+// observations, close + footer. No data access, no money math (both happen
+// server-side in lib/actions/quotation); this component only formats what it's
+// handed. Styling is scoped in quotation-document.css (a light, print-first surface).
+import { formatAmount, unitPriceWithTaxMinor, type QuotationDocument } from '@/lib/quotation/document'
 import '../document-grid.css'
 import './quotation-document.css'
 
@@ -19,17 +19,8 @@ function monedaLabel(currency: string): string {
   return currency === 'USD' ? 'USD Dólares' : currency
 }
 
-function MetaRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="qdoc-meta-row">
-      <span className="qdoc-meta-label">{label}</span>
-      <span className="qdoc-meta-value">{value}</span>
-    </div>
-  )
-}
-
 export function QuotationDocument({ doc }: { doc: QuotationDocument }) {
-  const { billTo, totals, terms, issuer } = doc
+  const { billTo, totals, terms, issuer, seller } = doc
   const currencyTag = `(${doc.currency})`
   // Only tag brand per line when the quote actually spans more than one —
   // a single-brand quote (still the common case) renders unchanged.
@@ -54,19 +45,35 @@ export function QuotationDocument({ doc }: { doc: QuotationDocument }) {
       </header>
       <div className="qdoc-rule" aria-hidden />
 
-      {/* Bill-to */}
-      <section>
-        <div className="qdoc-billto-lead">Señores:</div>
-        <div className="qdoc-billto-company">{billTo.company || '—'}</div>
-        <div className="qdoc-meta">
-          <MetaRow label="RUC:" value={billTo.taxId || '—'} />
-          <MetaRow label="FECHA:" value={formatDate(doc.issuedOn)} />
-          <MetaRow label="ATENCIÓN:" value={billTo.attention || '—'} />
-          <MetaRow label="VALIDEZ:" value={doc.validityLabel || terms.validityText || '—'} />
-          <MetaRow label="CONTACTO:" value={billTo.contact || '—'} />
-          <MetaRow label="MONEDA:" value={monedaLabel(doc.currency)} />
+      {/* Dateline */}
+      <div className="qdoc-dateline">
+        {doc.issueCity || '—'}, {formatDate(doc.issuedOn)}
+        <span className="qdoc-dateline-sep" aria-hidden>
+          ·
+        </span>
+        Validez: {doc.validityLabel || terms.validityText || '—'}
+        <span className="qdoc-dateline-sep" aria-hidden>
+          ·
+        </span>
+        Moneda: {monedaLabel(doc.currency)}
+      </div>
+
+      {/* Parties */}
+      <div className="qdoc-parties">
+        <div className="qdoc-party-card">
+          <div className="qdoc-party-label">Vendedor</div>
+          <div className="qdoc-party-name">{seller?.name || issuer.name}</div>
+          {seller?.taxId ? <div className="qdoc-party-row">RUC: {seller.taxId}</div> : null}
+          {seller?.country ? <div className="qdoc-party-row">País: {seller.country}</div> : null}
         </div>
-      </section>
+        <div className="qdoc-party-card">
+          <div className="qdoc-party-label">Comprador / Cliente</div>
+          <div className="qdoc-party-name">{billTo.company || '—'}</div>
+          {billTo.taxId ? <div className="qdoc-party-row">RUC: {billTo.taxId}</div> : null}
+          {billTo.attention ? <div className="qdoc-party-row">Atención: {billTo.attention}</div> : null}
+          {billTo.contact ? <div className="qdoc-party-row">Contacto: {billTo.contact}</div> : null}
+        </div>
+      </div>
 
       <p className="qdoc-intro">
         Por medio de la presente, nos es grato presentar nuestra propuesta económica:
@@ -96,7 +103,14 @@ export function QuotationDocument({ doc }: { doc: QuotationDocument }) {
                 <span className="qd-desc-caption">{line.description}</span>
               </td>
               <td className="qd-cell-num">{line.quantity}</td>
-              <td className="qd-cell-num">{formatAmount(line.unitPriceMinor)}</td>
+              <td className="qd-cell-num">
+                {formatAmount(line.unitPriceMinor)}
+                {line.quantity > 1 && totals.taxBps > 0 ? (
+                  <span className="qd-cell-subnote">
+                    {formatAmount(unitPriceWithTaxMinor(line.unitPriceMinor, totals.taxBps))} c/u con {totals.taxLabel}
+                  </span>
+                ) : null}
+              </td>
               <td className="qd-cell-num">{formatAmount(line.lineTotalMinor)}</td>
             </tr>
           ))}

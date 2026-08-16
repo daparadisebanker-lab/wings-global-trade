@@ -119,7 +119,7 @@ export const WINGS_EXPORTER: TradeParty = {
   address: 'Ctra. Panamericana Sur Km. 1303  Mz. Q  Lt. 8-9',
   city: 'Tacna, Perú',
   phone: '+507 6025-07',
-  email: 'comercial@wingsglobaltrade.com',
+  email: 'importaciones@wingsglobaltrade.com',
   website: 'wingsglobaltrade.com',
 }
 

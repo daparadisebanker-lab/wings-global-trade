@@ -18,7 +18,7 @@ export interface CompanyInfo {
 export const WINGS_ISSUER: CompanyInfo = {
   name: 'WINGS GLOBAL TRADE',
   tagline: 'SOLUCIONES INTEGRALES EN IMPORTACIÓN',
-  email: 'comercial@wingsglobaltrade.com',
+  email: 'importaciones@wingsglobaltrade.com',
   whatsapp: '+507 6025-07',
   address: 'Ctra. Panamericana Sur Km. 1303  Mz. Q  Lt. 8-9',
   website: 'wingsglobaltrade.com',
