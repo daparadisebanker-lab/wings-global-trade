@@ -375,9 +375,13 @@ export function CostCalculator({
 
   // Costing → Client → Quotation, one sequenced dynamic: pick who this landed
   // cost is for, open an RFQ against them (createRFQ), seed it with a single
-  // line at this calculation's final sale price (upsertLines), then hand off to
-  // the Pipeline card where QuoteComposer turns it into the formal quotation —
-  // the existing RFQ → quote → send flow, not a second one.
+  // line at this calculation's sale price (upsertLines), then hand off to the
+  // Pipeline card where QuoteComposer turns it into the formal quotation — the
+  // existing RFQ → quote → send flow, not a second one. The RFQ/quote line price
+  // is always ex-IGV (targetPriceMinor here, unitPriceMinor downstream) — the
+  // quote's own totals math adds tax on top (subtotal → +IGV → total, matching
+  // the approved reference document). salePriceFinal is already IGV-inclusive;
+  // using it here would double-count IGV once the quote's tax line is added.
   function handleCreateQuote() {
     if (!laneId || !accountId || !preview) {
       setError('Selecciona un lane y un cliente / Select a lane and a client')
@@ -398,7 +402,7 @@ export function CostCalculator({
           brand: inputs.brand || null,
           qty: 1,
           unit,
-          targetPriceMinor: toMinor(preview.salePriceFinal),
+          targetPriceMinor: toMinor(preview.salePrice),
           currency: 'USD',
         },
       ])
