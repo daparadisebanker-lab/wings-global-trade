@@ -1,6 +1,65 @@
 # Automóviles — scope & perspective (car-first direction)
 
-**Status: PHASE-0 TACTICAL BUILD SHIPPED · strategic pivot PROPOSAL, pending Muaaz**
+**Status: WGT/07 — Phase 0 (qualification) and Phase 1 (lane registration)
+COMPLETE, 2026-08-23. Phase 2 (livery) pending.**
+
+## 0 · Phase 0 — qualification interview (run 2026-08-23)
+
+Run one question at a time per §4, after the tactical catalog build (§1
+below) had already shipped and after redirecting first into broader
+competitive research (§2) rather than answering from assumption. Answers,
+verbatim in substance:
+
+1. **Buyer** — mixed; no single dominant profile. Car dealers/lots, fleet
+   and corporate buyers, and independent resellers/importers all plausible,
+   none ruled out at this stage.
+2. **Archetype** — EQUIPMENT, confirmed explicitly against the decision
+   tree (not defaulted to). Same archetype as the not-yet-onboarded WGT/01
+   Machinery; see §3 below for why that didn't collapse this into a
+   sub-category instead of a new lane.
+3. **Unit math** — per unit (configured trim) **and** per container/fleet
+   slot — a fleet buyer orders N of one trim, which is a different RFQ shape
+   than a single dealer unit. Dual math, not per-unit-only.
+4. **Taxonomy** — dual, confirmed explicitly. Segment is canonical (≤8 rule,
+   five stable entries); brand is the curated overlay (11 today, will grow
+   past what ≤8 canonical URLs could hold). Detail in `lane.config.ts`.
+5. **Photography feasibility** — not ready (established in the tactical
+   build, §4 below). Typography-and-spec-led launch, `INTERIM_TYPOGRAPHIC`.
+6. **Mister knowledge source** — the Rowe fleet sheet is the durable source
+   of truth for the `wgt-07-automoviles` pack, once built (not yet built).
+7. **Commercial readiness** — yes. 76 trims across 11 brands are already
+   costed in Rowe today; this lane opens on real inventory, not a promise.
+
+**Lane-vs-category fork, run explicitly rather than assumed:** because
+automóviles shares its archetype and unit math with WGT/01 Machinery
+(not yet onboarded, but already covering camiones/buses/equipo-industrial/
+maquinaria-agrícola in the pre-lane catalog), the decision tree's default
+answer is "sub-category of WGT/01," not a new lane. Offered as an explicit
+choice; the account owner chose **own new code (WGT/07)** — the car-first
+prominence direction outweighs the cheaper "fold into Machinery" path. Codes
+01 and 03–06 stay reserved for the archetype table's named six; WGT/07 is a
+deliberate seventh, not a gap-filler.
+
+**Gate met.** `packages/liveries/automoviles/lane.config.ts` now carries all
+seven answers. `packages/liveries/registry.md` carries the WGT/07 row
+(Phase 1 facts only — code/slug/name/status; livery columns explicitly
+blank pending Phase 2, not backfilled with an undeliberated color).
+
+**Registration checklist (§4 Phase 1) — status per this codebase's actual
+structure, not the spec's idealized one:** this site has no literal
+"Manifest lane index" page; the equivalent surfaces are the homepage
+`CategoryGrid` (leads with automóviles — done, §1), the footer colophon and
+`sitemap.ts` (both DB-driven off `categories`, automóviles included and
+first — done, §1). Analytics lane dimension not yet wired — flagged as
+outstanding in §6.
+
+**What Phase 1 deliberately does NOT include yet:** the lane still renders
+on `/catalogo/automoviles` under the shared house chrome (navy/gold), not a
+dedicated `/automoviles` route with its own livery. That's Phase 2 (livery
+derivation) and Phase 3 (IA — route migration) — both real, undone work, not
+implied by "lane code assigned." See §5 for the proposed next steps.
+
+---
 
 This is the scope log requested when the automobiles catalog was populated and
 promoted to the front of the site (2026-08-23). It records what shipped, what
@@ -101,28 +160,54 @@ What that implies here, and what's deferred:
   and individual VIN listings. None of that applies here — wholesale-only
   holds, and a car-first Wings is still B2B, not a marketplace.
 
-## 3 · Where this sits in the framework — honestly
+## 2b · Broader comparable set — what actually decided the archetype
 
-Automóviles is **not** onboarded through the §4 protocol as a numbered lane.
-It is one of the site's five pre-lane categories (`maquinaria-agricola`,
-`camiones`, `buses`, `equipo-industrial`, `repuestos`, now `automoviles`),
-the same pre-lane single-site form the root `CLAUDE.md` §0 describes for
-everything `apps/site` hasn't split yet. Promoting it to first position in
-the nav is a **prominence decision**, not a lane-onboarding decision, and the
-two shouldn't be conflated:
+dubicars is a UAE consumer resale marketplace — not the same shape as a
+factory-to-distributor catalog. Asked to broaden before answering the
+archetype question (Phase 0 · Q2, §0), which surfaced two genuinely distinct
+shapes and clarified where Wings actually sits:
 
-- If automóviles stays a category, today's build is the complete Phase-0
-  answer — no further ceremony required, and this is the cheaper path.
-- If "car-first" means automóviles becomes a proper coded lane (own livery,
-  own Mister knowledge pack, its own archetype-driven IA depth per §3), that
-  is a **framework amendment-free but protocol-required** move: it maps
-  cleanly to **EQUIPMENT** (buyer buys a specified unit + after-sale
-  confidence; unit math per unit / per crate CBM — the same archetype WGT/01
-  machinery already uses), so no new archetype is needed, but Phase 0's seven
-  questions (buyer, archetype, unit math, taxonomy, photography feasibility,
-  Mister knowledge sources, commercial readiness) still have to be answered
-  with Muaaz before a `lane.config.ts` gets written. This program proposes
-  running that interview next; it does not pre-empt it.
+- **Shape A — China export marketplaces** (AutoCango, AutoFromChina,
+  BeForward, SBT Japan): huge multi-brand inventory, filterable by
+  brand/model/year/**price**, unit-level VIN listings, price shown openly,
+  buyer ranges from an individual to a small reseller. AutoCango in
+  particular is close in *content* shape — multilingual spec database across
+  Chinese OEMs including several brands Wings also carries (Changan, Audi,
+  BYD, Toyota) — but sells on visible price, which the wholesale-only
+  directive rules out here.
+- **Shape B — OEM international/export sites** (Chery International, Jetour
+  International): single-brand, model lineup organized by segment, **no
+  price shown anywhere**, spec-sheet led, drives to "find a distributor /
+  contact us," buyer is a wholesale/distributor prospect.
+
+Wings' build (no price, RFQ-only, spec-led) is architecturally shape B — but
+its *content* has shape A's breadth: eleven brands under one roof, which
+neither comparable set actually does (an OEM export site is one brand by
+definition; a China export marketplace doesn't withhold price). That
+combination is what "one storefront, eleven factories" in the lane's scope
+line is naming on purpose, not defaulting into. It's also what confirmed
+EQUIPMENT over folding into WGT/01 or reaching for a COMMODITY/PROGRAM
+read: every one of these comparables, on both sides of the shape divide,
+sells a *specified configured unit*, never a fungible grade or a recurring
+assortment.
+
+## 3 · Where this sits in the framework — resolved
+
+**Superseded by §0 above — kept for the record of how the question was
+originally framed, before the interview closed it.** Automóviles is now
+onboarded through the §4 protocol as **WGT/07**, a numbered lane, not a
+pre-lane category — the account owner chose that explicitly over the
+cheaper "stay a category" or "fold into WGT/01 Machinery" paths (§0). What
+follows is what that resolution does and does not change:
+
+- The lane code, archetype (EQUIPMENT), unit math (dual), and taxonomy
+  (segment-canonical, brand-overlay) are now fixed in
+  `packages/liveries/automoviles/lane.config.ts` — Phase 0 and Phase 1 are
+  done.
+- The **rendering** hasn't caught up yet: `/catalogo/automoviles` still
+  serves the page today, on shared house chrome, because Phase 2 (livery)
+  and Phase 3 (IA / route migration to `/automoviles`) are separate,
+  undone gates — see §5.
 
 **One naming collision to flag before it becomes a redirect problem:**
 `/marcas` is already live and means something specific — RB/xx Represented
@@ -175,25 +260,35 @@ address bar.
 
 ## 5 · Recommended next steps, in order
 
-1. **Verify the shipped build in a real browser** — desktop nav, mobile
-   drawer, `/catalogo/automoviles` filtered by brand and by fuel, one product
-   detail page, one catalog-inquiry submission (non-prod, so it logs to
-   console rather than sending WhatsApp/email).
-2. **Decide, with Muaaz, whether "car-first" means prominence (done) or lane
-   status (Phase 0 interview, §3 above).** This single decision determines
-   whether the next work is content depth on the existing category or a
-   `packages/liveries/automoviles/` livery + `lane.config.ts`.
+1. **Phase 2 — derive the livery.** Ground/ink/accent/texture per §Phase-2
+   rules, contrast-audited and hue-checked against the registry (house
+   ~38°, Interiores 0°, RB/01 ~83°) the same way WGT/02's oxblood derivation
+   is documented. Not done yet, and not done silently in this pass — a
+   proposal with 2–3 measured candidates is the right shape for this,
+   parallel to how Interiores' derivation table reads. Blocks nothing else
+   below; can happen in parallel with §5.2.
+2. **Phase 3 — IA / route migration.** Move the lane off `/catalogo/
+   automoviles` onto its own `/automoviles` route (`src/app/(lanes)/
+   automoviles/`, matching Interiores), with the five segment slugs as the
+   canonical taxonomy and brand as a `?brand=` overlay carried forward from
+   today's build. Needs 301s from every `/catalogo/automoviles*` URL already
+   indexed/linked (MegaMenu, SiteNav, MobileMenu, sitemap all point there
+   today) — a real migration, not a rename.
 3. **Commission photography** per nameplate, or confirm the interim
    typography-led launch is acceptable for longer — same choice Interiores
    made and logged.
 4. **Sync to Supabase deliberately** (`seed-supabase.ts` or equivalent), once
-   someone has reviewed the 31 rows against Rowe and is ready for
-   `/catalogo/automoviles` to carry real inventory in production.
-5. **Add the `segment` facet** to `FilterSidebar`/`filter_attrs` so the
+   someone has reviewed the 31 rows against Rowe and is ready for the lane
+   to carry real inventory in production.
+5. **Build the `wgt-07-automoviles` Mister pack** from the Rowe fleet sheet
+   (Phase 0 · Q6) — vocabulary, unit-math formulas for both the per-unit and
+   per-container paths, diagnosis set, handoff, register, forbidden claims.
+6. **Add the `segment` facet** to `FilterSidebar`/`filter_attrs` so the
    dubicars-style body-type browse (§2) becomes a real filter, not just a
-   spec-table row.
-6. If the pivot proceeds toward homepage-level "car-first" (hero imagery,
-   homepage copy, header art), scope that as its own follow-up — this
-   program covers the catalog and navigation only, and a homepage rewrite
-   touches shared chrome that other categories depend on too (swap-test
-   applies, §4 Phase 2 gate).
+   spec-table row — and becomes the canonical taxonomy's filter once §5.2 ships.
+7. **Wire the analytics lane dimension** (§0 registration checklist) — not
+   done in this pass, flagged rather than skipped silently.
+8. If the pivot proceeds toward homepage-level "car-first" (hero imagery,
+   homepage copy, header art), scope that as its own follow-up — swap-test
+   applies (§4 Phase 2 gate) since a homepage rewrite touches shared chrome
+   every other category still depends on.

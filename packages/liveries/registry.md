@@ -9,8 +9,23 @@ reorder existing rows; lane codes are permanent.**
 |------|------|------|--------|--------|-----------|---------|--------|
 | —    | wings | Wings Global Trade (house) | `#001E50` navy | `#C4933F` harvest gold | ~38° | none/high-key | HOUSE (pre-onboarding) |
 | WGT/02 | interiores | Interiores | `#F5F1E8` bone | `#6B2A2A` oxblood | 0.0° (37.9° vs house) | linen-paper | OPENING |
+| WGT/07 | automoviles | Automóviles | *pending Phase 2* | *pending Phase 2* | *pending Phase 2* | *pending Phase 2* | OPENING (Phase 1 only) |
 
 Notes:
+- **WGT/07's code jumps from 02 to 07 on purpose, not a gap to fill.** §3's
+  archetype table pre-names WGT/01 Machinery, /03 Provisions, /04 Living,
+  /05 Representation, /06 Export as the ecosystem's planned six; automóviles
+  isn't one of them; it earned a new code specifically because the decision
+  tree's default answer (fold into WGT/01 Machinery, same EQUIPMENT archetype
+  and unit math) was overridden — see `packages/liveries/automoviles/
+  lane.config.ts` header for the recorded rationale. Codes 01, 03–06 stay
+  reserved for their named lanes; nothing should ever claim them for
+  something else.
+- **Livery columns intentionally blank.** Phase 1 (lane registration) closed
+  2026-08-23; Phase 2 (livery derivation — ground/ink/accent/texture per the
+  §Phase-2 rules, contrast + hue-separation audit against this table) has not
+  run. The lane renders on the shared house chrome (navy/gold) until it does.
+  Do not backfill this row with a color that hasn't been derived and audited.
 - `wings` is the ecosystem **host**, not yet a registered WGT/NN lane. It holds the
   first accent hue (~38°, harvest gold on navy). Future lane accents register their
   ≥30° separation against this row.
