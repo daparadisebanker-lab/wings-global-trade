@@ -1,7 +1,39 @@
 # Automóviles — scope & perspective (car-first direction)
 
-**Status: WGT/07 — Phase 0 (qualification) and Phase 1 (lane registration)
-COMPLETE, 2026-08-23. Phase 2 (livery) pending.**
+**Status: WGT/07 — Phase 0 (qualification), Phase 1 (lane registration) and
+Phase 2 (livery derivation) COMPLETE, 2026-08-23. Phase 3 (IA / route
+migration) pending — the lane still renders at `/catalogo/automoviles` on
+shared house chrome; nothing stamps `[data-lane="automoviles"]` yet.**
+
+## 0b · Phase 2 — livery derivation (closed 2026-08-23, same day)
+
+Full measured derivation lives in `packages/liveries/registry.md` (candidate
+table + rationale) and the token file itself is
+`packages/liveries/automoviles/livery.css`. Short form:
+
+- **Ground** `#15161B` asphalt — the environment the cargo lives in (Phase-2
+  step 1), distinct from house navy rather than a reuse of it.
+- **Ink** `#EEF0F3` cool white, matching the ground's cool temperature (step
+  2). 15.82:1 on ground, checked against both surfaces the lane uses.
+- **Accent** `#5590FF` ion blue — the material signal every trim in the
+  catalogue shares regardless of brand (LED DRL / xenon HID glow), not a
+  paint colour (step 3). 178.8° from house gold, well past every other
+  registered lane accent (step 4). A first-pass `#3D7FFF` cleared the base
+  ground at 4.88:1 but fell to 4.45:1 on the raised card — rejected on that
+  technicality and re-derived with margin (5.87:1 / 5.34:1) rather than
+  shipped short, the same "measure every ground it renders on" discipline
+  WGT/02's ink-secondary note sets.
+- **Texture** `blueprint-grid` (step 5) — faint accent-hue grid lines,
+  literally an engineering-drawing motif.
+- **Type posture** `compressed-caps` (step 6) — EQUIPMENT's fixed posture,
+  not chosen freely.
+
+**What Phase 2 does NOT do:** wire the route. The livery file exists and is
+verified against the shared `LaneStamp` organ's actual token reads (confirmed
+by grep — `--lane-type-stamp`, `--lane-label-tracking`, `--ink-secondary`,
+the `.lane-stamp`/`.lane-stamp-check` classes are all covered), but no page
+in the app sets `data-lane="automoviles"` yet, so nothing visibly changes on
+the live site from this commit alone. That's Phase 3.
 
 ## 0 · Phase 0 — qualification interview (run 2026-08-23)
 
@@ -260,13 +292,7 @@ address bar.
 
 ## 5 · Recommended next steps, in order
 
-1. **Phase 2 — derive the livery.** Ground/ink/accent/texture per §Phase-2
-   rules, contrast-audited and hue-checked against the registry (house
-   ~38°, Interiores 0°, RB/01 ~83°) the same way WGT/02's oxblood derivation
-   is documented. Not done yet, and not done silently in this pass — a
-   proposal with 2–3 measured candidates is the right shape for this,
-   parallel to how Interiores' derivation table reads. Blocks nothing else
-   below; can happen in parallel with §5.2.
+1. ~~**Phase 2 — derive the livery.**~~ **DONE, §0b.**
 2. **Phase 3 — IA / route migration.** Move the lane off `/catalogo/
    automoviles` onto its own `/automoviles` route (`src/app/(lanes)/
    automoviles/`, matching Interiores), with the five segment slugs as the
