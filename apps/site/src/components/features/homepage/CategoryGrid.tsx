@@ -15,13 +15,16 @@ const CATEGORY_IMAGES: Record<string, { src: string; objectPosition?: string }> 
   repuestos:             { src: '/images/categories/repuestos-desktop.png' },
 }
 
+// Automóviles leads — the category with the strongest commercial traction,
+// promoted to first position across every nav/grid surface (site direction,
+// 2026-08-23 — see programs/automobiles/SCOPE.md).
 const ORDERED_SLUGS = [
+  'automoviles',
   'maquinaria-agricola',
   'buses',
   'equipo-industrial',
   'camiones',
   'utv',
-  'automoviles',
   'repuestos',
 ]
 

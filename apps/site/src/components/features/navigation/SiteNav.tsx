@@ -24,6 +24,12 @@ interface SiteNavProps {
 const INK_70 = 'text-[color:color-mix(in_srgb,var(--chrome-ink,#F8F6F0)_70%,transparent)]'
 
 const LINKS = [
+  // Automóviles leads the menu — the category with the strongest commercial
+  // traction, promoted ahead of Catálogo itself (site direction, 2026-08-23 —
+  // see programs/automobiles/SCOPE.md). It gets its own top-level link rather
+  // than living only inside the Catálogo mega-menu, matching how Interiores
+  // earned one when it became a named destination.
+  { href: '/catalogo/automoviles', label: 'Automóviles' },
   { href: '/proceso',    label: 'Cómo importar' },
   // WGT/02 — the lane, not the catalogue. "Azulejos" is what sits inside it;
   // a buyer scanning a menu for finishes looks for the discipline first.

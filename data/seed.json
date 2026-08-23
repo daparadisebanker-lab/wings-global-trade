@@ -1,75 +1,2649 @@
 {
   "categories": [
-    { "id": "11111111-1111-1111-1111-111111111101", "slug": "maquinaria-agricola", "name_es": "Maquinaria Agrícola", "name_en": "Agricultural Machinery", "description_es": "Tractores, cosechadoras y equipos de labranza de origen certificado.", "icon_key": "tractor", "sort_order": 1, "is_active": true },
-    { "id": "11111111-1111-1111-1111-111111111102", "slug": "camiones", "name_es": "Camiones", "name_en": "Trucks", "description_es": "Camiones de carga, volquetes y furgones para transporte pesado.", "icon_key": "truck", "sort_order": 2, "is_active": true },
-    { "id": "11111111-1111-1111-1111-111111111103", "slug": "buses", "name_es": "Buses", "name_en": "Buses", "description_es": "Autobuses urbanos, coaches de carretera, eléctricos e hidrógeno ASIASTAR para transporte de pasajeros.", "icon_key": "bus", "sort_order": 3, "is_active": true },
-    { "id": "11111111-1111-1111-1111-111111111104", "slug": "equipo-industrial", "name_es": "Equipo Industrial", "name_en": "Industrial Equipment", "description_es": "Generadores, compresores, montacargas y maquinaria de planta.", "icon_key": "gear", "sort_order": 4, "is_active": true },
-    { "id": "11111111-1111-1111-1111-111111111105", "slug": "repuestos", "name_es": "Repuestos", "name_en": "Spare Parts", "description_es": "Repuestos originales y compatibles para maquinaria y vehículos.", "icon_key": "part", "sort_order": 5, "is_active": true }
+    {
+      "id": "11111111-1111-1111-1111-111111111106",
+      "slug": "automoviles",
+      "name_es": "Automóviles",
+      "name_en": "Automobiles",
+      "description_es": "Autos de pasajeros 0 km importados desde China: sedanes, SUV, MPV e híbridos de 11 marcas, en catálogo directo de fábrica.",
+      "icon_key": "car",
+      "sort_order": 1,
+      "is_active": true
+    },
+    {
+      "id": "11111111-1111-1111-1111-111111111101",
+      "slug": "maquinaria-agricola",
+      "name_es": "Maquinaria Agrícola",
+      "name_en": "Agricultural Machinery",
+      "description_es": "Tractores, cosechadoras y equipos de labranza de origen certificado.",
+      "icon_key": "tractor",
+      "sort_order": 2,
+      "is_active": true
+    },
+    {
+      "id": "11111111-1111-1111-1111-111111111102",
+      "slug": "camiones",
+      "name_es": "Camiones",
+      "name_en": "Trucks",
+      "description_es": "Camiones de carga, volquetes y furgones para transporte pesado.",
+      "icon_key": "truck",
+      "sort_order": 3,
+      "is_active": true
+    },
+    {
+      "id": "11111111-1111-1111-1111-111111111103",
+      "slug": "buses",
+      "name_es": "Buses",
+      "name_en": "Buses",
+      "description_es": "Autobuses urbanos, coaches de carretera, eléctricos e hidrógeno ASIASTAR para transporte de pasajeros.",
+      "icon_key": "bus",
+      "sort_order": 4,
+      "is_active": true
+    },
+    {
+      "id": "11111111-1111-1111-1111-111111111104",
+      "slug": "equipo-industrial",
+      "name_es": "Equipo Industrial",
+      "name_en": "Industrial Equipment",
+      "description_es": "Generadores, compresores, montacargas y maquinaria de planta.",
+      "icon_key": "gear",
+      "sort_order": 5,
+      "is_active": true
+    },
+    {
+      "id": "11111111-1111-1111-1111-111111111105",
+      "slug": "repuestos",
+      "name_es": "Repuestos",
+      "name_en": "Spare Parts",
+      "description_es": "Repuestos originales y compatibles para maquinaria y vehículos.",
+      "icon_key": "part",
+      "sort_order": 6,
+      "is_active": true
+    }
   ],
   "products": [
-    { "id": "22222222-0000-0000-0000-000000000001", "category_id": "11111111-1111-1111-1111-111111111101", "slug": "tractor-snh504", "name_es": "Tractor SNH504", "name_en": "SNH504 Tractor", "description_es": "Tractor agrícola profesional con motor de 50 HP y tracción 4WD, ideal para operaciones de campo intensivas. Transmisión 8+2 y peso operativo de 2.370 kg.", "description_en": null, "specs": { "Potencia del motor": "50 HP", "Tipo de tracción": "4WD", "Transmisión": "8+2", "Peso operativo": "2370 kg", "Toma de fuerza": "766 RPM", "Norma de emisiones": "Stage II" }, "source_markets": ["China"], "images": ["/Desktop Home/Agricola Desktop.png"], "models": [], "is_active": true, "sort_order": 1, "meta_title_es": null, "meta_desc_es": null },
-    { "id": "22222222-0000-0000-0000-000000000002", "category_id": "11111111-1111-1111-1111-111111111101", "slug": "tractor-snh704", "name_es": "Tractor SNH704", "name_en": "SNH704 Tractor", "description_es": "Tractor de potencia media con motor de 70 HP, diseñado para labranza y transporte agrícola. Tracción 4WD y cabina opcional.", "description_en": null, "specs": { "Potencia del motor": "70 HP", "Tipo de tracción": "4WD", "Transmisión": "8+2", "Peso operativo": "2980 kg", "Norma de emisiones": "Stage II" }, "source_markets": ["China"], "images": ["/Desktop Home/Agricola Desktop.png"], "models": [], "is_active": true, "sort_order": 2, "meta_title_es": null, "meta_desc_es": null },
-    { "id": "22222222-0000-0000-0000-000000000003", "category_id": "11111111-1111-1111-1111-111111111101", "slug": "tractor-jd-5e1104", "name_es": "Tractor John Deere 5E-1104", "name_en": "John Deere 5E-1104 Tractor", "description_es": "Tractor de alta potencia con motor de 110 HP para uso agrícola intensivo. Tracción 4WD y elevada capacidad de levante hidráulico.", "description_en": null, "specs": { "Potencia del motor": "110 HP", "Tipo de tracción": "4WD", "Capacidad de levante": "3200 kg", "Peso operativo": "4100 kg", "Norma de emisiones": "Stage III" }, "source_markets": ["China", "Japón"], "images": ["/Desktop Home/Agricola Desktop.png"], "models": [], "is_active": true, "sort_order": 3, "meta_title_es": null, "meta_desc_es": null },
-    { "id": "22222222-0000-0000-0000-000000000004", "category_id": "11111111-1111-1111-1111-111111111101", "slug": "cosechadora-grano-4lz", "name_es": "Cosechadora de Grano 4LZ", "name_en": "4LZ Grain Harvester", "description_es": "Cosechadora de grano autopropulsada con cabezal de corte de 2,75 m y tanque de grano de 1.800 L. Apta para arroz, trigo y maíz.", "description_en": null, "specs": { "Potencia del motor": "102 HP", "Ancho de corte": "2.75 m", "Capacidad del tanque": "1800 L", "Tipo de trilla": "Flujo axial", "Peso operativo": "5200 kg" }, "source_markets": ["China"], "images": ["/Desktop Home/Agricola Desktop.png"], "models": [{ "name": "4LZ Estándar", "specs_override": {} }, { "name": "4LZ Cabinado", "specs_override": { "Cabina": "Cerrada con A/C" } }], "is_active": true, "sort_order": 4, "meta_title_es": null, "meta_desc_es": null },
-    { "id": "22222222-0000-0000-0000-000000000011", "category_id": "11111111-1111-1111-1111-111111111102", "slug": "volquete-howo-8x4", "name_es": "Volquete HOWO 8x4", "name_en": "HOWO 8x4 Dump Truck", "description_es": "Volquete minero de servicio pesado con configuración 8x4 y capacidad de tolva de 30 m³. Motor diésel de 400 HP.", "description_en": null, "specs": { "Potencia del motor": "400 HP", "Configuración": "8x4", "Capacidad de tolva": "30 m³", "Carga útil": "40 toneladas", "Transmisión": "Manual 12 velocidades" }, "source_markets": ["China"], "images": ["/Desktop Home/Camiones Desktop.png"], "models": [], "is_active": true, "sort_order": 1, "meta_title_es": null, "meta_desc_es": null },
-    { "id": "22222222-0000-0000-0000-000000000012", "category_id": "11111111-1111-1111-1111-111111111102", "slug": "camion-carga-6x4", "name_es": "Camión de Carga 6x4", "name_en": "6x4 Cargo Truck", "description_es": "Camión de carga 6x4 para transporte de larga distancia. Cabina con litera y motor diésel de 380 HP con norma Euro V.", "description_en": null, "specs": { "Potencia del motor": "380 HP", "Configuración": "6x4", "Norma de emisiones": "Euro V", "Capacidad de carga": "25 toneladas", "Tanque de combustible": "400 L" }, "source_markets": ["China"], "images": ["/Desktop Home/Camiones Desktop.png"], "models": [], "is_active": true, "sort_order": 2, "meta_title_es": null, "meta_desc_es": null },
-    { "id": "22222222-0000-0000-0000-000000000013", "category_id": "11111111-1111-1111-1111-111111111102", "slug": "furgon-refrigerado-4x2", "name_es": "Furgón Refrigerado 4x2", "name_en": "4x2 Refrigerated Van", "description_es": "Furgón refrigerado para cadena de frío con unidad de refrigeración de -18 °C. Caja de 6,2 m y motor diésel de 180 HP.", "description_en": null, "specs": { "Potencia del motor": "180 HP", "Configuración": "4x2", "Temperatura mínima": "-18 °C", "Volumen de caja": "34 m³", "Largo de caja": "6.2 m" }, "source_markets": ["China", "Tailandia"], "images": ["/Desktop Home/Camiones Desktop.png"], "models": [], "is_active": true, "sort_order": 3, "meta_title_es": null, "meta_desc_es": null },
-
-    { "id": "33333333-0000-0000-0000-000000000001", "category_id": "11111111-1111-1111-1111-111111111103", "slug": "asiastar-ybl6120h", "name_es": "ASIASTAR YBL6120H", "name_en": "ASIASTAR YBL6120H City Bus", "description_es": "Bus urbano diésel de 12 m, piso bajo y capacidad para 90 pasajeros. Motor Yuchai de 210 HP con norma China VI. Transmisión automática Voith disponible. Apto para operación BRT y sistemas de tránsito masivo.", "description_en": null, "specs": { "Longitud": "12,000 mm", "Capacidad": "90 pasajeros", "Potencia del motor": "210 HP", "Norma de emisiones": "China VI", "Transmisión": "Manual / Automática Voith", "Tipo de piso": "Bajo (Low-floor)" }, "source_markets": ["China"], "images": [], "models": [{ "name": "YBL6120H Estándar", "specs_override": {} }, { "name": "YBL6120H BRT", "specs_override": { "Puertas": "3 puertas dobles", "Carrocería": "Aluminio reforzado" } }], "filter_attrs": { "brand": "ASIASTAR", "fuel": "diesel", "usage": "pasajeros" }, "is_active": true, "sort_order": 1, "meta_title_es": null, "meta_desc_es": null },
-
-    { "id": "33333333-0000-0000-0000-000000000002", "category_id": "11111111-1111-1111-1111-111111111103", "slug": "asiastar-ybl6110h", "name_es": "ASIASTAR YBL6110H", "name_en": "ASIASTAR YBL6110H City Bus", "description_es": "Bus urbano diésel de 11 m con capacidad para 75 pasajeros. Configuración ideal para rutas secundarias urbanas e interurbanas cortas. Motor diésel de 180 HP con norma China VI.", "description_en": null, "specs": { "Longitud": "11,000 mm", "Capacidad": "75 pasajeros", "Potencia del motor": "180 HP", "Norma de emisiones": "China VI", "Transmisión": "Manual 6 velocidades", "Tipo de piso": "Alto" }, "source_markets": ["China"], "images": [], "models": [], "filter_attrs": { "brand": "ASIASTAR", "fuel": "diesel", "usage": "pasajeros" }, "is_active": true, "sort_order": 2, "meta_title_es": null, "meta_desc_es": null },
-
-    { "id": "33333333-0000-0000-0000-000000000003", "category_id": "11111111-1111-1111-1111-111111111103", "slug": "asiastar-ybl6100h", "name_es": "ASIASTAR YBL6100H", "name_en": "ASIASTAR YBL6100H City Bus", "description_es": "Bus urbano diésel de 10 m para 65 pasajeros. Versátil y económico para redes urbanas de mediana densidad. Motor diésel de 162 HP, norma China VI.", "description_en": null, "specs": { "Longitud": "10,000 mm", "Capacidad": "65 pasajeros", "Potencia del motor": "162 HP", "Norma de emisiones": "China VI", "Transmisión": "Manual 6 velocidades" }, "source_markets": ["China"], "images": [], "models": [], "filter_attrs": { "brand": "ASIASTAR", "fuel": "diesel", "usage": "pasajeros" }, "is_active": true, "sort_order": 3, "meta_title_es": null, "meta_desc_es": null },
-
-    { "id": "33333333-0000-0000-0000-000000000004", "category_id": "11111111-1111-1111-1111-111111111103", "slug": "asiastar-a6", "name_es": "ASIASTAR A6", "name_en": "ASIASTAR A6 Coach", "description_es": "Coach de carretera de 10,5 m con 45 asientos reclinables y bodega de equipaje de 7 m³. Motor diésel de 290 HP. Diseño aerodinámico, ideal para turismo y transporte interprovincial.", "description_en": null, "specs": { "Longitud": "10,500 mm", "Asientos": "45", "Potencia del motor": "290 HP", "Bodega de equipaje": "7 m³", "Norma de emisiones": "China VI", "Aire acondicionado": "Sí" }, "source_markets": ["China"], "images": [], "models": [{ "name": "A6 Turismo", "specs_override": { "Asientos": "45", "Reclinación": "160°" } }, { "name": "A6 Ejecutivo", "specs_override": { "Asientos": "39", "Reclinación": "175°", "USB por asiento": "Sí" } }], "filter_attrs": { "brand": "ASIASTAR", "fuel": "diesel", "usage": "pasajeros" }, "is_active": true, "sort_order": 4, "meta_title_es": null, "meta_desc_es": null },
-
-    { "id": "33333333-0000-0000-0000-000000000005", "category_id": "11111111-1111-1111-1111-111111111103", "slug": "asiastar-a6-plus", "name_es": "ASIASTAR A6+", "name_en": "ASIASTAR A6+ Premium Coach", "description_es": "Versión premium del A6 con acabados de lujo, asientos VIP de cuero y sistema de entretenimiento individual. 49 asientos, suspensión neumática y carrocería de acero de alta resistencia.", "description_en": null, "specs": { "Longitud": "10,500 mm", "Asientos": "49", "Potencia del motor": "290 HP", "Suspensión": "Neumática", "Norma de emisiones": "China VI", "Entretenimiento": "Pantallas individuales" }, "source_markets": ["China"], "images": [], "models": [{ "name": "A6+ Standard", "specs_override": {} }, { "name": "A6+ VIP", "specs_override": { "Asientos": "34", "Tipo de asiento": "Cama 180°" } }], "filter_attrs": { "brand": "ASIASTAR", "fuel": "diesel", "usage": "pasajeros" }, "is_active": true, "sort_order": 5, "meta_title_es": null, "meta_desc_es": null },
-
-    { "id": "33333333-0000-0000-0000-000000000006", "category_id": "11111111-1111-1111-1111-111111111103", "slug": "asiastar-a8", "name_es": "ASIASTAR A8", "name_en": "ASIASTAR A8 Long-haul Coach", "description_es": "Coach de larga distancia de 13,7 m con 57 asientos reclinables y bodega de 12 m³. Motor Yuchai YC6L de 380 HP, transmisión ZF automática. Referencia para rutas interprovinciales de alta demanda.", "description_en": null, "specs": { "Longitud": "13,700 mm", "Asientos": "57", "Potencia del motor": "380 HP", "Motor": "Yuchai YC6L380-51", "Transmisión": "ZF Automática 6AT", "Bodega de equipaje": "12 m³", "Norma de emisiones": "China VI" }, "source_markets": ["China"], "images": [], "models": [{ "name": "A8 Turismo", "specs_override": {} }, { "name": "A8 VIP Cama", "specs_override": { "Asientos": "28", "Tipo": "Cama doble" } }], "filter_attrs": { "brand": "ASIASTAR", "fuel": "diesel", "usage": "pasajeros" }, "is_active": true, "sort_order": 6, "meta_title_es": null, "meta_desc_es": null },
-
-    { "id": "33333333-0000-0000-0000-000000000007", "category_id": "11111111-1111-1111-1111-111111111103", "slug": "asiastar-a8-articulado", "name_es": "ASIASTAR A8 Articulado", "name_en": "ASIASTAR A8 Articulated Bus", "description_es": "Bus articulado de 18 m con capacidad para 120 pasajeros. Diseñado para corredores BRT de alto volumen. Motor diésel trasero de 380 HP y articulación central de acero estructural.", "description_en": null, "specs": { "Longitud": "18,000 mm", "Capacidad": "120 pasajeros", "Potencia del motor": "380 HP", "Configuración": "Articulado", "Puertas": "4 puertas dobles", "Norma de emisiones": "China VI" }, "source_markets": ["China"], "images": [], "models": [], "filter_attrs": { "brand": "ASIASTAR", "fuel": "diesel", "usage": "pasajeros" }, "is_active": true, "sort_order": 7, "meta_title_es": null, "meta_desc_es": null },
-
-    { "id": "33333333-0000-0000-0000-000000000008", "category_id": "11111111-1111-1111-1111-111111111103", "slug": "asiastar-ybl6120gbev", "name_es": "ASIASTAR YBL6120GBEV", "name_en": "ASIASTAR YBL6120GBEV Electric Bus", "description_es": "Bus urbano eléctrico de 12 m para 80 pasajeros. Batería de 324 kWh con autonomía de 250 km. Motor eléctrico permanente de 160 kW. Carga rápida en 2 horas mediante cargador de 120 kW.", "description_en": null, "specs": { "Longitud": "12,000 mm", "Capacidad": "80 pasajeros", "Batería": "324 kWh", "Autonomía": "250 km", "Motor eléctrico": "160 kW", "Tiempo de carga": "~2 h (120 kW)" }, "source_markets": ["China"], "images": [], "models": [], "filter_attrs": { "brand": "ASIASTAR", "fuel": "electrico", "usage": "pasajeros" }, "is_active": true, "sort_order": 8, "meta_title_es": null, "meta_desc_es": null },
-
-    { "id": "33333333-0000-0000-0000-000000000009", "category_id": "11111111-1111-1111-1111-111111111103", "slug": "asiastar-ybl6110gbev", "name_es": "ASIASTAR YBL6110GBEV", "name_en": "ASIASTAR YBL6110GBEV Electric Bus", "description_es": "Bus urbano eléctrico de 11 m para 70 pasajeros. Batería de 280 kWh, autonomía de 220 km. Propulsión 100% eléctrica con regeneración de energía en frenado.", "description_en": null, "specs": { "Longitud": "11,000 mm", "Capacidad": "70 pasajeros", "Batería": "280 kWh", "Autonomía": "220 km", "Motor eléctrico": "140 kW", "Tiempo de carga": "~2 h (120 kW)" }, "source_markets": ["China"], "images": [], "models": [], "filter_attrs": { "brand": "ASIASTAR", "fuel": "electrico", "usage": "pasajeros" }, "is_active": true, "sort_order": 9, "meta_title_es": null, "meta_desc_es": null },
-
-    { "id": "33333333-0000-0000-0000-000000000010", "category_id": "11111111-1111-1111-1111-111111111103", "slug": "asiastar-ybl6100gbev", "name_es": "ASIASTAR YBL6100GBEV", "name_en": "ASIASTAR YBL6100GBEV Electric Bus", "description_es": "Bus urbano eléctrico de 10 m para 60 pasajeros. Batería de 232 kWh y autonomía de 200 km. Versión más compacta de la gama eléctrica ASIASTAR, ideal para rutas urbanas de mediana demanda.", "description_en": null, "specs": { "Longitud": "10,000 mm", "Capacidad": "60 pasajeros", "Batería": "232 kWh", "Autonomía": "200 km", "Motor eléctrico": "120 kW", "Tiempo de carga": "~2 h (100 kW)" }, "source_markets": ["China"], "images": [], "models": [], "filter_attrs": { "brand": "ASIASTAR", "fuel": "electrico", "usage": "pasajeros" }, "is_active": true, "sort_order": 10, "meta_title_es": null, "meta_desc_es": null },
-
-    { "id": "33333333-0000-0000-0000-000000000011", "category_id": "11111111-1111-1111-1111-111111111103", "slug": "asiastar-a6e", "name_es": "ASIASTAR A6E", "name_en": "ASIASTAR A6E Electric Coach", "description_es": "Coach eléctrico de 10,5 m con 45 asientos. Batería de 350 kWh y autonomía de 350 km. Versión cero emisiones del popular A6, ideal para operadores de turismo y transporte ejecutivo sostenible.", "description_en": null, "specs": { "Longitud": "10,500 mm", "Asientos": "45", "Batería": "350 kWh", "Autonomía": "350 km", "Motor eléctrico": "180 kW", "Tiempo de carga": "~2 h (160 kW)" }, "source_markets": ["China"], "images": [], "models": [{ "name": "A6E Turismo", "specs_override": {} }, { "name": "A6E Ejecutivo", "specs_override": { "Asientos": "39", "USB por asiento": "Sí" } }], "filter_attrs": { "brand": "ASIASTAR", "fuel": "electrico", "usage": "pasajeros" }, "is_active": true, "sort_order": 11, "meta_title_es": null, "meta_desc_es": null },
-
-    { "id": "33333333-0000-0000-0000-000000000012", "category_id": "11111111-1111-1111-1111-111111111103", "slug": "asiastar-ybl6800gbev", "name_es": "ASIASTAR YBL6800GBEV", "name_en": "ASIASTAR YBL6800GBEV Electric Minibus", "description_es": "Minibús eléctrico de 8,5 m para 40 pasajeros. Ideal para rutas de baja demanda, transporte escolar o lanzadera de aeropuerto. Batería de 180 kWh y autonomía de 180 km.", "description_en": null, "specs": { "Longitud": "8,500 mm", "Capacidad": "40 pasajeros", "Batería": "180 kWh", "Autonomía": "180 km", "Motor eléctrico": "90 kW", "Tiempo de carga": "~1.5 h (120 kW)" }, "source_markets": ["China"], "images": [], "models": [], "filter_attrs": { "brand": "ASIASTAR", "fuel": "electrico", "usage": "pasajeros" }, "is_active": true, "sort_order": 12, "meta_title_es": null, "meta_desc_es": null },
-
-    { "id": "33333333-0000-0000-0000-000000000013", "category_id": "11111111-1111-1111-1111-111111111103", "slug": "asiastar-a8h", "name_es": "ASIASTAR A8H (Hidrógeno)", "name_en": "ASIASTAR A8H Hydrogen Coach", "description_es": "Coach de hidrógeno de 13,7 m con 57 asientos. Pila de combustible de hidrógeno de 100 kW + batería auxiliar de 30 kWh. Autonomía de 500 km con cero emisiones directas. Tecnología de última generación para operadores con metas de descarbonización.", "description_en": null, "specs": { "Longitud": "13,700 mm", "Asientos": "57", "Pila de combustible": "100 kW (H₂)", "Batería auxiliar": "30 kWh", "Autonomía": "500 km", "Tanque de hidrógeno": "38 kg H₂" }, "source_markets": ["China"], "images": [], "models": [], "filter_attrs": { "brand": "ASIASTAR", "fuel": "hidrogeno", "usage": "pasajeros" }, "is_active": true, "sort_order": 13, "meta_title_es": null, "meta_desc_es": null },
-
-    { "id": "33333333-0000-0000-0000-000000000014", "category_id": "11111111-1111-1111-1111-111111111103", "slug": "asiastar-chasis-12m", "name_es": "ASIASTAR Chasis 12 m", "name_en": "ASIASTAR 12m Bare Chassis", "description_es": "Chasis desnudo de 12 m para carrozado local. Incluye motor, transmisión, sistema de frenos y ejes. Permite carrocería personalizada según normativa del país destino.", "description_en": null, "specs": { "Longitud de chasis": "12,000 mm", "Motor": "Diésel 210 HP", "Norma de emisiones": "China VI", "Frenos": "Neumático de disco ABS", "Dirección": "Hidráulica asistida" }, "source_markets": ["China"], "images": [], "models": [], "filter_attrs": { "brand": "ASIASTAR", "fuel": "chasis", "usage": "pasajeros" }, "is_active": true, "sort_order": 14, "meta_title_es": null, "meta_desc_es": null },
-
-    { "id": "33333333-0000-0000-0000-000000000015", "category_id": "11111111-1111-1111-1111-111111111103", "slug": "asiastar-chasis-11m", "name_es": "ASIASTAR Chasis 11 m", "name_en": "ASIASTAR 11m Bare Chassis", "description_es": "Chasis desnudo de 11 m para carrozado local. Motor diésel de 180 HP con norma China VI. Estructura en acero de alta resistencia, apto para carrocería urbana o interurbana.", "description_en": null, "specs": { "Longitud de chasis": "11,000 mm", "Motor": "Diésel 180 HP", "Norma de emisiones": "China VI", "Frenos": "Neumático de disco ABS", "Dirección": "Hidráulica asistida" }, "source_markets": ["China"], "images": [], "models": [], "filter_attrs": { "brand": "ASIASTAR", "fuel": "chasis", "usage": "pasajeros" }, "is_active": true, "sort_order": 15, "meta_title_es": null, "meta_desc_es": null },
-
-    { "id": "33333333-0000-0000-0000-000000000016", "category_id": "11111111-1111-1111-1111-111111111103", "slug": "asiastar-chasis-10m", "name_es": "ASIASTAR Chasis 10 m", "name_en": "ASIASTAR 10m Bare Chassis", "description_es": "Chasis desnudo de 10 m para carrozado local. Solución flexible para operadores que requieren carrocería adaptada a normativa local o diseño propio.", "description_en": null, "specs": { "Longitud de chasis": "10,000 mm", "Motor": "Diésel 162 HP", "Norma de emisiones": "China VI", "Frenos": "Neumático de disco ABS", "Dirección": "Hidráulica asistida" }, "source_markets": ["China"], "images": [], "models": [], "filter_attrs": { "brand": "ASIASTAR", "fuel": "chasis", "usage": "pasajeros" }, "is_active": true, "sort_order": 16, "meta_title_es": null, "meta_desc_es": null },
-
-    { "id": "33333333-0000-0000-0000-000000000017", "category_id": "11111111-1111-1111-1111-111111111103", "slug": "asiastar-chasis-8m", "name_es": "ASIASTAR Chasis 8,5 m", "name_en": "ASIASTAR 8.5m Bare Chassis", "description_es": "Chasis desnudo de 8,5 m para minibús de carrozado local. Ideal para transporte escolar, lanzadera o rutas rurales. Motor diésel de 150 HP.", "description_en": null, "specs": { "Longitud de chasis": "8,500 mm", "Motor": "Diésel 150 HP", "Norma de emisiones": "China VI", "Frenos": "Hidráulico de disco", "Dirección": "Hidráulica asistida" }, "source_markets": ["China"], "images": [], "models": [], "filter_attrs": { "brand": "ASIASTAR", "fuel": "chasis", "usage": "pasajeros" }, "is_active": true, "sort_order": 17, "meta_title_es": null, "meta_desc_es": null },
-
-    { "id": "33333333-0000-0000-0000-000000000018", "category_id": "11111111-1111-1111-1111-111111111103", "slug": "asiastar-chasis-escolar", "name_es": "ASIASTAR Chasis Escolar", "name_en": "ASIASTAR School Bus Chassis", "description_es": "Chasis de 9 m especialmente reforzado para carrozado escolar. Incluye barras anti-vuelco adicionales y puntos de anclaje para asientos infantiles. Motor diésel de 160 HP, norma China VI.", "description_en": null, "specs": { "Longitud de chasis": "9,000 mm", "Motor": "Diésel 160 HP", "Norma de emisiones": "China VI", "Estructura": "Reforzada anti-vuelco", "Anclajes para asientos": "ECE R14" }, "source_markets": ["China"], "images": [], "models": [], "filter_attrs": { "brand": "ASIASTAR", "fuel": "chasis", "usage": "pasajeros" }, "is_active": true, "sort_order": 18, "meta_title_es": null, "meta_desc_es": null },
-
-    { "id": "33333333-0000-0000-0000-000000000019", "category_id": "11111111-1111-1111-1111-111111111103", "slug": "asiastar-chasis-piso-bajo", "name_es": "ASIASTAR Chasis Piso Bajo", "name_en": "ASIASTAR Low-Floor Chassis", "description_es": "Chasis de piso bajo de 12 m para carrozado accesible. Diseño sin escalones en todo el pasillo, con rampa para silla de ruedas. Cumple normativa de accesibilidad universal.", "description_en": null, "specs": { "Longitud de chasis": "12,000 mm", "Motor": "Diésel 210 HP", "Tipo de piso": "Bajo (Low-floor)", "Rampa": "Rampa eléctrica incluida", "Norma de emisiones": "China VI", "Accesibilidad": "Universal" }, "source_markets": ["China"], "images": [], "models": [], "filter_attrs": { "brand": "ASIASTAR", "fuel": "chasis", "usage": "pasajeros" }, "is_active": true, "sort_order": 19, "meta_title_es": null, "meta_desc_es": null },
-
-    { "id": "33333333-0000-0000-0000-000000000020", "category_id": "11111111-1111-1111-1111-111111111103", "slug": "isuzu-chasis-4175-sin-cabina", "name_es": "ISUZU Chasis 4175 Sin Cabina", "name_en": "ISUZU Bus Chassis 4175 No Cabin", "description_es": "Chasis ISUZU para bus de 4x2 con batalla de 4175 mm, sin cabina. Motor diésel common rail 4HK1-TCG61 de 139 kW (186 HP) Euro VI. Frenos de aire con ABS, apto para carrozado local urbano o interurbano.", "description_en": null, "specs": { "Modelo de motor": "ISUZU 4HK1-TCG61", "Desplazamiento": "5.139 L", "Potencia": "139 kW (186 HP) / 2600 rpm", "Torque máx.": "507 N·m / 1600–2600 rpm", "Norma de emisiones": "Euro VI", "Transmisión": "Manual MLD 6+1", "Batalla": "4175 mm", "Tracción": "4x2", "PBV": "10,500 kg", "Tara (sin cabina)": "2,600 kg", "Frenos": "Aire — tambor delantero y trasero, ABS", "Neumáticos": "235/75R17.5", "Depósito de combustible": "100 L", "Velocidad máxima": "110 km/h" }, "source_markets": ["China"], "images": [], "models": [], "filter_attrs": { "brand": "ISUZU", "fuel": "chasis", "usage": "pasajeros" }, "is_active": true, "sort_order": 20, "meta_title_es": null, "meta_desc_es": null },
-
-    { "id": "33333333-0000-0000-0000-000000000021", "category_id": "11111111-1111-1111-1111-111111111103", "slug": "isuzu-chasis-4175-cabina-corta", "name_es": "ISUZU Chasis 4175 Cabina Corta", "name_en": "ISUZU Bus Chassis 4175 Cut Cabin", "description_es": "Chasis ISUZU para bus de 4x2 con batalla de 4175 mm y cabina corta recortada. Motor diésel common rail 4HK1-TCG61 de 139 kW (186 HP) Euro VI. Ideal para carrozados que requieren integración frontal con cabina del conductor.", "description_en": null, "specs": { "Modelo de motor": "ISUZU 4HK1-TCG61", "Desplazamiento": "5.139 L", "Potencia": "139 kW (186 HP) / 2600 rpm", "Torque máx.": "507 N·m / 1600–2600 rpm", "Norma de emisiones": "Euro VI", "Transmisión": "Manual MLD 6+1", "Batalla": "4175 mm", "Configuración de cabina": "Cabina corta (Cut cabin)", "Tracción": "4x2", "PBV": "10,500 kg", "Tara (con cabina)": "3,005 kg", "Frenos": "Aire — tambor delantero y trasero, ABS", "Neumáticos": "235/75R17.5", "Depósito de combustible": "100 L", "Velocidad máxima": "110 km/h" }, "source_markets": ["China"], "images": [], "models": [], "filter_attrs": { "brand": "ISUZU", "fuel": "chasis", "usage": "pasajeros" }, "is_active": true, "sort_order": 21, "meta_title_es": null, "meta_desc_es": null },
-
-    { "id": "33333333-0000-0000-0000-000000000022", "category_id": "11111111-1111-1111-1111-111111111103", "slug": "isuzu-chasis-4475-sin-cabina", "name_es": "ISUZU Chasis 4475 Sin Cabina", "name_en": "ISUZU Bus Chassis 4475 No Cabin", "description_es": "Chasis ISUZU 4x2 con batalla de 4475 mm, sin cabina. Motor diésel 4HK1-TCG61 de 139 kW Euro VI. Dimensión intermedia adecuada para buses de 9–10 m. Frenos de aire con ABS y barra estabilizadora delantera y trasera.", "description_en": null, "specs": { "Modelo de motor": "ISUZU 4HK1-TCG61", "Desplazamiento": "5.139 L", "Potencia": "139 kW (186 HP) / 2600 rpm", "Torque máx.": "507 N·m / 1600–2600 rpm", "Norma de emisiones": "Euro VI", "Transmisión": "Manual MLD 6+1", "Batalla": "4475 mm", "Tracción": "4x2", "PBV": "10,500 kg", "Tara (sin cabina)": "2,795 kg", "Frenos": "Aire — tambor delantero y trasero, ABS", "Neumáticos": "235/75R17.5", "Depósito de combustible": "100 L", "Velocidad máxima": "110 km/h" }, "source_markets": ["China"], "images": [], "models": [], "filter_attrs": { "brand": "ISUZU", "fuel": "chasis", "usage": "pasajeros" }, "is_active": true, "sort_order": 22, "meta_title_es": null, "meta_desc_es": null },
-
-    { "id": "33333333-0000-0000-0000-000000000023", "category_id": "11111111-1111-1111-1111-111111111103", "slug": "isuzu-chasis-4475-cabina-corta", "name_es": "ISUZU Chasis 4475 Cabina Corta", "name_en": "ISUZU Bus Chassis 4475 Cut Cabin", "description_es": "Chasis ISUZU 4x2 con batalla de 4475 mm y cabina corta integrada. Motor 4HK1-TCG61 de 139 kW Euro VI. Versión con cabina del conductor prediseñada para reducir tiempo de carrozado y cumplir normativas de seguridad frontal.", "description_en": null, "specs": { "Modelo de motor": "ISUZU 4HK1-TCG61", "Desplazamiento": "5.139 L", "Potencia": "139 kW (186 HP) / 2600 rpm", "Torque máx.": "507 N·m / 1600–2600 rpm", "Norma de emisiones": "Euro VI", "Transmisión": "Manual MLD 6+1", "Batalla": "4475 mm", "Configuración de cabina": "Cabina corta (Cut cabin)", "Tracción": "4x2", "PBV": "10,500 kg", "Tara (con cabina)": "3,025 kg", "Frenos": "Aire — tambor delantero y trasero, ABS", "Neumáticos": "235/75R17.5", "Depósito de combustible": "100 L", "Velocidad máxima": "110 km/h" }, "source_markets": ["China"], "images": [], "models": [], "filter_attrs": { "brand": "ISUZU", "fuel": "chasis", "usage": "pasajeros" }, "is_active": true, "sort_order": 23, "meta_title_es": null, "meta_desc_es": null },
-
-    { "id": "33333333-0000-0000-0000-000000000024", "category_id": "11111111-1111-1111-1111-111111111103", "slug": "isuzu-chasis-5200-sin-cabina", "name_es": "ISUZU Chasis 5200 Sin Cabina", "name_en": "ISUZU Bus Chassis 5200 No Cabin", "description_es": "Chasis ISUZU 4x2 de batalla larga 5200 mm, sin cabina. El mayor formato de la gama, para buses de 11–12 m. Motor 4HK1-TCG61 de 139 kW Euro VI con frenos de aire ABS y suspensión de 8/10+6 ballestas.", "description_en": null, "specs": { "Modelo de motor": "ISUZU 4HK1-TCG61", "Desplazamiento": "5.139 L", "Potencia": "139 kW (186 HP) / 2600 rpm", "Torque máx.": "507 N·m / 1600–2600 rpm", "Norma de emisiones": "Euro VI", "Transmisión": "Manual MLD 6+1", "Batalla": "5200 mm", "Tracción": "4x2", "PBV": "10,500 kg", "Tara (sin cabina)": "2,980 kg", "Frenos": "Aire — tambor delantero y trasero, ABS", "Suspensión": "8/10+6 ballestas", "Neumáticos": "235/75R17.5", "Depósito de combustible": "100 L", "Velocidad máxima": "110 km/h" }, "source_markets": ["China"], "images": [], "models": [], "filter_attrs": { "brand": "ISUZU", "fuel": "chasis", "usage": "pasajeros" }, "is_active": true, "sort_order": 24, "meta_title_es": null, "meta_desc_es": null },
-
-    { "id": "33333333-0000-0000-0000-000000000025", "category_id": "11111111-1111-1111-1111-111111111103", "slug": "isuzu-chasis-5200-cabina-corta", "name_es": "ISUZU Chasis 5200 Cabina Corta", "name_en": "ISUZU Bus Chassis 5200 Cut Cabin", "description_es": "Chasis ISUZU 4x2 de batalla larga 5200 mm con cabina corta integrada. La plataforma más completa de la gama ISUZU para carrozado de bus grande. Motor 4HK1-TCG61 de 139 kW Euro VI, frenos de aire ABS.", "description_en": null, "specs": { "Modelo de motor": "ISUZU 4HK1-TCG61", "Desplazamiento": "5.139 L", "Potencia": "139 kW (186 HP) / 2600 rpm", "Torque máx.": "507 N·m / 1600–2600 rpm", "Norma de emisiones": "Euro VI", "Transmisión": "Manual MLD 6+1", "Batalla": "5200 mm", "Configuración de cabina": "Cabina corta (Cut cabin)", "Tracción": "4x2", "PBV": "10,500 kg", "Tara (con cabina)": "3,445 kg", "Frenos": "Aire — tambor delantero y trasero, ABS", "Suspensión": "8/10+6 ballestas", "Neumáticos": "235/75R17.5", "Depósito de combustible": "100 L", "Velocidad máxima": "110 km/h" }, "source_markets": ["China"], "images": [], "models": [], "filter_attrs": { "brand": "ISUZU", "fuel": "chasis", "usage": "pasajeros" }, "is_active": true, "sort_order": 25, "meta_title_es": null, "meta_desc_es": null },
-
-    { "id": "22222222-0000-0000-0000-000000000031", "category_id": "11111111-1111-1111-1111-111111111104", "slug": "generador-diesel-250kva", "name_es": "Generador Diésel 250 kVA", "name_en": "250 kVA Diesel Generator", "description_es": "Grupo electrógeno diésel de 250 kVA con tablero de transferencia automática y cabina insonorizada.", "description_en": null, "specs": { "Potencia": "250 kVA", "Voltaje": "380/220 V", "Frecuencia": "60 Hz", "Consumo": "48 L/h", "Nivel de ruido": "75 dB" }, "source_markets": ["China"], "images": ["/Desktop Home/Indutrial Desktop.png"], "models": [], "is_active": true, "sort_order": 1, "meta_title_es": null, "meta_desc_es": null },
-    { "id": "22222222-0000-0000-0000-000000000032", "category_id": "11111111-1111-1111-1111-111111111104", "slug": "montacargas-3ton", "name_es": "Montacargas 3 Toneladas", "name_en": "3 Ton Forklift", "description_es": "Montacargas diésel de 3 toneladas con torre de elevación de 3 m y desplazador lateral. Apto para operación en almacén y patio.", "description_en": null, "specs": { "Capacidad de carga": "3000 kg", "Altura de elevación": "3 m", "Tipo de motor": "Diésel", "Tipo de transmisión": "Hidrodinámica", "Peso operativo": "4200 kg" }, "source_markets": ["China", "Japón"], "images": ["/Desktop Home/Indutrial Desktop.png"], "models": [], "is_active": true, "sort_order": 2, "meta_title_es": null, "meta_desc_es": null },
-    { "id": "22222222-0000-0000-0000-000000000033", "category_id": "11111111-1111-1111-1111-111111111104", "slug": "compresor-tornillo-50hp", "name_es": "Compresor de Tornillo 50 HP", "name_en": "50 HP Screw Compressor", "description_es": "Compresor de tornillo rotativo de 50 HP con caudal de 7 m³/min y presión de 8 bar. Operación continua de bajo mantenimiento.", "description_en": null, "specs": { "Potencia": "50 HP", "Caudal": "7 m³/min", "Presión máxima": "8 bar", "Voltaje": "380 V trifásico", "Certificación IP": "IP54" }, "source_markets": ["China"], "images": ["/Desktop Home/Indutrial Desktop.png"], "models": [], "is_active": true, "sort_order": 3, "meta_title_es": null, "meta_desc_es": null },
-    { "id": "22222222-0000-0000-0000-000000000041", "category_id": "11111111-1111-1111-1111-111111111105", "slug": "filtro-aceite-universal", "name_es": "Filtro de Aceite Universal", "name_en": "Universal Oil Filter", "description_es": "Filtro de aceite de alto flujo compatible con motores diésel de maquinaria agrícola y camiones. Vendido por lote.", "description_en": null, "specs": { "Tipo": "Roscado", "Compatibilidad": "Diésel multimarca", "Material": "Acero estampado", "Presentación": "Caja x 50 unidades" }, "source_markets": ["China"], "images": ["/Desktop Home/Repuestos Desktop.png"], "models": [], "is_active": true, "sort_order": 1, "meta_title_es": null, "meta_desc_es": null },
-    { "id": "22222222-0000-0000-0000-000000000042", "category_id": "11111111-1111-1111-1111-111111111105", "slug": "kit-embrague-tractor", "name_es": "Kit de Embrague para Tractor", "name_en": "Tractor Clutch Kit", "description_es": "Kit de embrague completo para tractores de 70 a 120 HP. Incluye disco, plato y rodamiento de empuje.", "description_en": null, "specs": { "Aplicación": "Tractores 70-120 HP", "Diámetro del disco": "310 mm", "Incluye": "Disco, plato, rodamiento", "Material": "Cerámico reforzado" }, "source_markets": ["China"], "images": ["/Desktop Home/Repuestos Desktop.png"], "models": [], "is_active": true, "sort_order": 2, "meta_title_es": null, "meta_desc_es": null },
-    { "id": "22222222-0000-0000-0000-000000000043", "category_id": "11111111-1111-1111-1111-111111111105", "slug": "neumatico-agricola-r1", "name_es": "Neumático Agrícola R1", "name_en": "R1 Agricultural Tire", "description_es": "Neumático agrícola con dibujo R1 para alta tracción en campo. Medida 18.4-30, construcción diagonal.", "description_en": null, "specs": { "Medida": "18.4-30", "Dibujo": "R1", "Construcción": "Diagonal", "Capas": "12 PR", "Aplicación": "Tractores agrícolas" }, "source_markets": ["China", "Tailandia"], "images": ["/Desktop Home/Repuestos Desktop.png"], "models": [], "is_active": true, "sort_order": 3, "meta_title_es": null, "meta_desc_es": null }
+    {
+      "id": "22222222-0000-0000-0000-000000000001",
+      "category_id": "11111111-1111-1111-1111-111111111101",
+      "slug": "tractor-snh504",
+      "name_es": "Tractor SNH504",
+      "name_en": "SNH504 Tractor",
+      "description_es": "Tractor agrícola profesional con motor de 50 HP y tracción 4WD, ideal para operaciones de campo intensivas. Transmisión 8+2 y peso operativo de 2.370 kg.",
+      "description_en": null,
+      "specs": {
+        "Potencia del motor": "50 HP",
+        "Tipo de tracción": "4WD",
+        "Transmisión": "8+2",
+        "Peso operativo": "2370 kg",
+        "Toma de fuerza": "766 RPM",
+        "Norma de emisiones": "Stage II"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [
+        "/Desktop Home/Agricola Desktop.png"
+      ],
+      "models": [],
+      "is_active": true,
+      "sort_order": 1,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000002",
+      "category_id": "11111111-1111-1111-1111-111111111101",
+      "slug": "tractor-snh704",
+      "name_es": "Tractor SNH704",
+      "name_en": "SNH704 Tractor",
+      "description_es": "Tractor de potencia media con motor de 70 HP, diseñado para labranza y transporte agrícola. Tracción 4WD y cabina opcional.",
+      "description_en": null,
+      "specs": {
+        "Potencia del motor": "70 HP",
+        "Tipo de tracción": "4WD",
+        "Transmisión": "8+2",
+        "Peso operativo": "2980 kg",
+        "Norma de emisiones": "Stage II"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [
+        "/Desktop Home/Agricola Desktop.png"
+      ],
+      "models": [],
+      "is_active": true,
+      "sort_order": 2,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000003",
+      "category_id": "11111111-1111-1111-1111-111111111101",
+      "slug": "tractor-jd-5e1104",
+      "name_es": "Tractor John Deere 5E-1104",
+      "name_en": "John Deere 5E-1104 Tractor",
+      "description_es": "Tractor de alta potencia con motor de 110 HP para uso agrícola intensivo. Tracción 4WD y elevada capacidad de levante hidráulico.",
+      "description_en": null,
+      "specs": {
+        "Potencia del motor": "110 HP",
+        "Tipo de tracción": "4WD",
+        "Capacidad de levante": "3200 kg",
+        "Peso operativo": "4100 kg",
+        "Norma de emisiones": "Stage III"
+      },
+      "source_markets": [
+        "China",
+        "Japón"
+      ],
+      "images": [
+        "/Desktop Home/Agricola Desktop.png"
+      ],
+      "models": [],
+      "is_active": true,
+      "sort_order": 3,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000004",
+      "category_id": "11111111-1111-1111-1111-111111111101",
+      "slug": "cosechadora-grano-4lz",
+      "name_es": "Cosechadora de Grano 4LZ",
+      "name_en": "4LZ Grain Harvester",
+      "description_es": "Cosechadora de grano autopropulsada con cabezal de corte de 2,75 m y tanque de grano de 1.800 L. Apta para arroz, trigo y maíz.",
+      "description_en": null,
+      "specs": {
+        "Potencia del motor": "102 HP",
+        "Ancho de corte": "2.75 m",
+        "Capacidad del tanque": "1800 L",
+        "Tipo de trilla": "Flujo axial",
+        "Peso operativo": "5200 kg"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [
+        "/Desktop Home/Agricola Desktop.png"
+      ],
+      "models": [
+        {
+          "name": "4LZ Estándar",
+          "specs_override": {}
+        },
+        {
+          "name": "4LZ Cabinado",
+          "specs_override": {
+            "Cabina": "Cerrada con A/C"
+          }
+        }
+      ],
+      "is_active": true,
+      "sort_order": 4,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000011",
+      "category_id": "11111111-1111-1111-1111-111111111102",
+      "slug": "volquete-howo-8x4",
+      "name_es": "Volquete HOWO 8x4",
+      "name_en": "HOWO 8x4 Dump Truck",
+      "description_es": "Volquete minero de servicio pesado con configuración 8x4 y capacidad de tolva de 30 m³. Motor diésel de 400 HP.",
+      "description_en": null,
+      "specs": {
+        "Potencia del motor": "400 HP",
+        "Configuración": "8x4",
+        "Capacidad de tolva": "30 m³",
+        "Carga útil": "40 toneladas",
+        "Transmisión": "Manual 12 velocidades"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [
+        "/Desktop Home/Camiones Desktop.png"
+      ],
+      "models": [],
+      "is_active": true,
+      "sort_order": 1,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000012",
+      "category_id": "11111111-1111-1111-1111-111111111102",
+      "slug": "camion-carga-6x4",
+      "name_es": "Camión de Carga 6x4",
+      "name_en": "6x4 Cargo Truck",
+      "description_es": "Camión de carga 6x4 para transporte de larga distancia. Cabina con litera y motor diésel de 380 HP con norma Euro V.",
+      "description_en": null,
+      "specs": {
+        "Potencia del motor": "380 HP",
+        "Configuración": "6x4",
+        "Norma de emisiones": "Euro V",
+        "Capacidad de carga": "25 toneladas",
+        "Tanque de combustible": "400 L"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [
+        "/Desktop Home/Camiones Desktop.png"
+      ],
+      "models": [],
+      "is_active": true,
+      "sort_order": 2,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000013",
+      "category_id": "11111111-1111-1111-1111-111111111102",
+      "slug": "furgon-refrigerado-4x2",
+      "name_es": "Furgón Refrigerado 4x2",
+      "name_en": "4x2 Refrigerated Van",
+      "description_es": "Furgón refrigerado para cadena de frío con unidad de refrigeración de -18 °C. Caja de 6,2 m y motor diésel de 180 HP.",
+      "description_en": null,
+      "specs": {
+        "Potencia del motor": "180 HP",
+        "Configuración": "4x2",
+        "Temperatura mínima": "-18 °C",
+        "Volumen de caja": "34 m³",
+        "Largo de caja": "6.2 m"
+      },
+      "source_markets": [
+        "China",
+        "Tailandia"
+      ],
+      "images": [
+        "/Desktop Home/Camiones Desktop.png"
+      ],
+      "models": [],
+      "is_active": true,
+      "sort_order": 3,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "33333333-0000-0000-0000-000000000001",
+      "category_id": "11111111-1111-1111-1111-111111111103",
+      "slug": "asiastar-ybl6120h",
+      "name_es": "ASIASTAR YBL6120H",
+      "name_en": "ASIASTAR YBL6120H City Bus",
+      "description_es": "Bus urbano diésel de 12 m, piso bajo y capacidad para 90 pasajeros. Motor Yuchai de 210 HP con norma China VI. Transmisión automática Voith disponible. Apto para operación BRT y sistemas de tránsito masivo.",
+      "description_en": null,
+      "specs": {
+        "Longitud": "12,000 mm",
+        "Capacidad": "90 pasajeros",
+        "Potencia del motor": "210 HP",
+        "Norma de emisiones": "China VI",
+        "Transmisión": "Manual / Automática Voith",
+        "Tipo de piso": "Bajo (Low-floor)"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "YBL6120H Estándar",
+          "specs_override": {}
+        },
+        {
+          "name": "YBL6120H BRT",
+          "specs_override": {
+            "Puertas": "3 puertas dobles",
+            "Carrocería": "Aluminio reforzado"
+          }
+        }
+      ],
+      "filter_attrs": {
+        "brand": "ASIASTAR",
+        "fuel": "diesel",
+        "usage": "pasajeros"
+      },
+      "is_active": true,
+      "sort_order": 1,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "33333333-0000-0000-0000-000000000002",
+      "category_id": "11111111-1111-1111-1111-111111111103",
+      "slug": "asiastar-ybl6110h",
+      "name_es": "ASIASTAR YBL6110H",
+      "name_en": "ASIASTAR YBL6110H City Bus",
+      "description_es": "Bus urbano diésel de 11 m con capacidad para 75 pasajeros. Configuración ideal para rutas secundarias urbanas e interurbanas cortas. Motor diésel de 180 HP con norma China VI.",
+      "description_en": null,
+      "specs": {
+        "Longitud": "11,000 mm",
+        "Capacidad": "75 pasajeros",
+        "Potencia del motor": "180 HP",
+        "Norma de emisiones": "China VI",
+        "Transmisión": "Manual 6 velocidades",
+        "Tipo de piso": "Alto"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [],
+      "filter_attrs": {
+        "brand": "ASIASTAR",
+        "fuel": "diesel",
+        "usage": "pasajeros"
+      },
+      "is_active": true,
+      "sort_order": 2,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "33333333-0000-0000-0000-000000000003",
+      "category_id": "11111111-1111-1111-1111-111111111103",
+      "slug": "asiastar-ybl6100h",
+      "name_es": "ASIASTAR YBL6100H",
+      "name_en": "ASIASTAR YBL6100H City Bus",
+      "description_es": "Bus urbano diésel de 10 m para 65 pasajeros. Versátil y económico para redes urbanas de mediana densidad. Motor diésel de 162 HP, norma China VI.",
+      "description_en": null,
+      "specs": {
+        "Longitud": "10,000 mm",
+        "Capacidad": "65 pasajeros",
+        "Potencia del motor": "162 HP",
+        "Norma de emisiones": "China VI",
+        "Transmisión": "Manual 6 velocidades"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [],
+      "filter_attrs": {
+        "brand": "ASIASTAR",
+        "fuel": "diesel",
+        "usage": "pasajeros"
+      },
+      "is_active": true,
+      "sort_order": 3,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "33333333-0000-0000-0000-000000000004",
+      "category_id": "11111111-1111-1111-1111-111111111103",
+      "slug": "asiastar-a6",
+      "name_es": "ASIASTAR A6",
+      "name_en": "ASIASTAR A6 Coach",
+      "description_es": "Coach de carretera de 10,5 m con 45 asientos reclinables y bodega de equipaje de 7 m³. Motor diésel de 290 HP. Diseño aerodinámico, ideal para turismo y transporte interprovincial.",
+      "description_en": null,
+      "specs": {
+        "Longitud": "10,500 mm",
+        "Asientos": "45",
+        "Potencia del motor": "290 HP",
+        "Bodega de equipaje": "7 m³",
+        "Norma de emisiones": "China VI",
+        "Aire acondicionado": "Sí"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "A6 Turismo",
+          "specs_override": {
+            "Asientos": "45",
+            "Reclinación": "160°"
+          }
+        },
+        {
+          "name": "A6 Ejecutivo",
+          "specs_override": {
+            "Asientos": "39",
+            "Reclinación": "175°",
+            "USB por asiento": "Sí"
+          }
+        }
+      ],
+      "filter_attrs": {
+        "brand": "ASIASTAR",
+        "fuel": "diesel",
+        "usage": "pasajeros"
+      },
+      "is_active": true,
+      "sort_order": 4,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "33333333-0000-0000-0000-000000000005",
+      "category_id": "11111111-1111-1111-1111-111111111103",
+      "slug": "asiastar-a6-plus",
+      "name_es": "ASIASTAR A6+",
+      "name_en": "ASIASTAR A6+ Premium Coach",
+      "description_es": "Versión premium del A6 con acabados de lujo, asientos VIP de cuero y sistema de entretenimiento individual. 49 asientos, suspensión neumática y carrocería de acero de alta resistencia.",
+      "description_en": null,
+      "specs": {
+        "Longitud": "10,500 mm",
+        "Asientos": "49",
+        "Potencia del motor": "290 HP",
+        "Suspensión": "Neumática",
+        "Norma de emisiones": "China VI",
+        "Entretenimiento": "Pantallas individuales"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "A6+ Standard",
+          "specs_override": {}
+        },
+        {
+          "name": "A6+ VIP",
+          "specs_override": {
+            "Asientos": "34",
+            "Tipo de asiento": "Cama 180°"
+          }
+        }
+      ],
+      "filter_attrs": {
+        "brand": "ASIASTAR",
+        "fuel": "diesel",
+        "usage": "pasajeros"
+      },
+      "is_active": true,
+      "sort_order": 5,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "33333333-0000-0000-0000-000000000006",
+      "category_id": "11111111-1111-1111-1111-111111111103",
+      "slug": "asiastar-a8",
+      "name_es": "ASIASTAR A8",
+      "name_en": "ASIASTAR A8 Long-haul Coach",
+      "description_es": "Coach de larga distancia de 13,7 m con 57 asientos reclinables y bodega de 12 m³. Motor Yuchai YC6L de 380 HP, transmisión ZF automática. Referencia para rutas interprovinciales de alta demanda.",
+      "description_en": null,
+      "specs": {
+        "Longitud": "13,700 mm",
+        "Asientos": "57",
+        "Potencia del motor": "380 HP",
+        "Motor": "Yuchai YC6L380-51",
+        "Transmisión": "ZF Automática 6AT",
+        "Bodega de equipaje": "12 m³",
+        "Norma de emisiones": "China VI"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "A8 Turismo",
+          "specs_override": {}
+        },
+        {
+          "name": "A8 VIP Cama",
+          "specs_override": {
+            "Asientos": "28",
+            "Tipo": "Cama doble"
+          }
+        }
+      ],
+      "filter_attrs": {
+        "brand": "ASIASTAR",
+        "fuel": "diesel",
+        "usage": "pasajeros"
+      },
+      "is_active": true,
+      "sort_order": 6,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "33333333-0000-0000-0000-000000000007",
+      "category_id": "11111111-1111-1111-1111-111111111103",
+      "slug": "asiastar-a8-articulado",
+      "name_es": "ASIASTAR A8 Articulado",
+      "name_en": "ASIASTAR A8 Articulated Bus",
+      "description_es": "Bus articulado de 18 m con capacidad para 120 pasajeros. Diseñado para corredores BRT de alto volumen. Motor diésel trasero de 380 HP y articulación central de acero estructural.",
+      "description_en": null,
+      "specs": {
+        "Longitud": "18,000 mm",
+        "Capacidad": "120 pasajeros",
+        "Potencia del motor": "380 HP",
+        "Configuración": "Articulado",
+        "Puertas": "4 puertas dobles",
+        "Norma de emisiones": "China VI"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [],
+      "filter_attrs": {
+        "brand": "ASIASTAR",
+        "fuel": "diesel",
+        "usage": "pasajeros"
+      },
+      "is_active": true,
+      "sort_order": 7,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "33333333-0000-0000-0000-000000000008",
+      "category_id": "11111111-1111-1111-1111-111111111103",
+      "slug": "asiastar-ybl6120gbev",
+      "name_es": "ASIASTAR YBL6120GBEV",
+      "name_en": "ASIASTAR YBL6120GBEV Electric Bus",
+      "description_es": "Bus urbano eléctrico de 12 m para 80 pasajeros. Batería de 324 kWh con autonomía de 250 km. Motor eléctrico permanente de 160 kW. Carga rápida en 2 horas mediante cargador de 120 kW.",
+      "description_en": null,
+      "specs": {
+        "Longitud": "12,000 mm",
+        "Capacidad": "80 pasajeros",
+        "Batería": "324 kWh",
+        "Autonomía": "250 km",
+        "Motor eléctrico": "160 kW",
+        "Tiempo de carga": "~2 h (120 kW)"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [],
+      "filter_attrs": {
+        "brand": "ASIASTAR",
+        "fuel": "electrico",
+        "usage": "pasajeros"
+      },
+      "is_active": true,
+      "sort_order": 8,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "33333333-0000-0000-0000-000000000009",
+      "category_id": "11111111-1111-1111-1111-111111111103",
+      "slug": "asiastar-ybl6110gbev",
+      "name_es": "ASIASTAR YBL6110GBEV",
+      "name_en": "ASIASTAR YBL6110GBEV Electric Bus",
+      "description_es": "Bus urbano eléctrico de 11 m para 70 pasajeros. Batería de 280 kWh, autonomía de 220 km. Propulsión 100% eléctrica con regeneración de energía en frenado.",
+      "description_en": null,
+      "specs": {
+        "Longitud": "11,000 mm",
+        "Capacidad": "70 pasajeros",
+        "Batería": "280 kWh",
+        "Autonomía": "220 km",
+        "Motor eléctrico": "140 kW",
+        "Tiempo de carga": "~2 h (120 kW)"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [],
+      "filter_attrs": {
+        "brand": "ASIASTAR",
+        "fuel": "electrico",
+        "usage": "pasajeros"
+      },
+      "is_active": true,
+      "sort_order": 9,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "33333333-0000-0000-0000-000000000010",
+      "category_id": "11111111-1111-1111-1111-111111111103",
+      "slug": "asiastar-ybl6100gbev",
+      "name_es": "ASIASTAR YBL6100GBEV",
+      "name_en": "ASIASTAR YBL6100GBEV Electric Bus",
+      "description_es": "Bus urbano eléctrico de 10 m para 60 pasajeros. Batería de 232 kWh y autonomía de 200 km. Versión más compacta de la gama eléctrica ASIASTAR, ideal para rutas urbanas de mediana demanda.",
+      "description_en": null,
+      "specs": {
+        "Longitud": "10,000 mm",
+        "Capacidad": "60 pasajeros",
+        "Batería": "232 kWh",
+        "Autonomía": "200 km",
+        "Motor eléctrico": "120 kW",
+        "Tiempo de carga": "~2 h (100 kW)"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [],
+      "filter_attrs": {
+        "brand": "ASIASTAR",
+        "fuel": "electrico",
+        "usage": "pasajeros"
+      },
+      "is_active": true,
+      "sort_order": 10,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "33333333-0000-0000-0000-000000000011",
+      "category_id": "11111111-1111-1111-1111-111111111103",
+      "slug": "asiastar-a6e",
+      "name_es": "ASIASTAR A6E",
+      "name_en": "ASIASTAR A6E Electric Coach",
+      "description_es": "Coach eléctrico de 10,5 m con 45 asientos. Batería de 350 kWh y autonomía de 350 km. Versión cero emisiones del popular A6, ideal para operadores de turismo y transporte ejecutivo sostenible.",
+      "description_en": null,
+      "specs": {
+        "Longitud": "10,500 mm",
+        "Asientos": "45",
+        "Batería": "350 kWh",
+        "Autonomía": "350 km",
+        "Motor eléctrico": "180 kW",
+        "Tiempo de carga": "~2 h (160 kW)"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "A6E Turismo",
+          "specs_override": {}
+        },
+        {
+          "name": "A6E Ejecutivo",
+          "specs_override": {
+            "Asientos": "39",
+            "USB por asiento": "Sí"
+          }
+        }
+      ],
+      "filter_attrs": {
+        "brand": "ASIASTAR",
+        "fuel": "electrico",
+        "usage": "pasajeros"
+      },
+      "is_active": true,
+      "sort_order": 11,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "33333333-0000-0000-0000-000000000012",
+      "category_id": "11111111-1111-1111-1111-111111111103",
+      "slug": "asiastar-ybl6800gbev",
+      "name_es": "ASIASTAR YBL6800GBEV",
+      "name_en": "ASIASTAR YBL6800GBEV Electric Minibus",
+      "description_es": "Minibús eléctrico de 8,5 m para 40 pasajeros. Ideal para rutas de baja demanda, transporte escolar o lanzadera de aeropuerto. Batería de 180 kWh y autonomía de 180 km.",
+      "description_en": null,
+      "specs": {
+        "Longitud": "8,500 mm",
+        "Capacidad": "40 pasajeros",
+        "Batería": "180 kWh",
+        "Autonomía": "180 km",
+        "Motor eléctrico": "90 kW",
+        "Tiempo de carga": "~1.5 h (120 kW)"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [],
+      "filter_attrs": {
+        "brand": "ASIASTAR",
+        "fuel": "electrico",
+        "usage": "pasajeros"
+      },
+      "is_active": true,
+      "sort_order": 12,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "33333333-0000-0000-0000-000000000013",
+      "category_id": "11111111-1111-1111-1111-111111111103",
+      "slug": "asiastar-a8h",
+      "name_es": "ASIASTAR A8H (Hidrógeno)",
+      "name_en": "ASIASTAR A8H Hydrogen Coach",
+      "description_es": "Coach de hidrógeno de 13,7 m con 57 asientos. Pila de combustible de hidrógeno de 100 kW + batería auxiliar de 30 kWh. Autonomía de 500 km con cero emisiones directas. Tecnología de última generación para operadores con metas de descarbonización.",
+      "description_en": null,
+      "specs": {
+        "Longitud": "13,700 mm",
+        "Asientos": "57",
+        "Pila de combustible": "100 kW (H₂)",
+        "Batería auxiliar": "30 kWh",
+        "Autonomía": "500 km",
+        "Tanque de hidrógeno": "38 kg H₂"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [],
+      "filter_attrs": {
+        "brand": "ASIASTAR",
+        "fuel": "hidrogeno",
+        "usage": "pasajeros"
+      },
+      "is_active": true,
+      "sort_order": 13,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "33333333-0000-0000-0000-000000000014",
+      "category_id": "11111111-1111-1111-1111-111111111103",
+      "slug": "asiastar-chasis-12m",
+      "name_es": "ASIASTAR Chasis 12 m",
+      "name_en": "ASIASTAR 12m Bare Chassis",
+      "description_es": "Chasis desnudo de 12 m para carrozado local. Incluye motor, transmisión, sistema de frenos y ejes. Permite carrocería personalizada según normativa del país destino.",
+      "description_en": null,
+      "specs": {
+        "Longitud de chasis": "12,000 mm",
+        "Motor": "Diésel 210 HP",
+        "Norma de emisiones": "China VI",
+        "Frenos": "Neumático de disco ABS",
+        "Dirección": "Hidráulica asistida"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [],
+      "filter_attrs": {
+        "brand": "ASIASTAR",
+        "fuel": "chasis",
+        "usage": "pasajeros"
+      },
+      "is_active": true,
+      "sort_order": 14,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "33333333-0000-0000-0000-000000000015",
+      "category_id": "11111111-1111-1111-1111-111111111103",
+      "slug": "asiastar-chasis-11m",
+      "name_es": "ASIASTAR Chasis 11 m",
+      "name_en": "ASIASTAR 11m Bare Chassis",
+      "description_es": "Chasis desnudo de 11 m para carrozado local. Motor diésel de 180 HP con norma China VI. Estructura en acero de alta resistencia, apto para carrocería urbana o interurbana.",
+      "description_en": null,
+      "specs": {
+        "Longitud de chasis": "11,000 mm",
+        "Motor": "Diésel 180 HP",
+        "Norma de emisiones": "China VI",
+        "Frenos": "Neumático de disco ABS",
+        "Dirección": "Hidráulica asistida"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [],
+      "filter_attrs": {
+        "brand": "ASIASTAR",
+        "fuel": "chasis",
+        "usage": "pasajeros"
+      },
+      "is_active": true,
+      "sort_order": 15,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "33333333-0000-0000-0000-000000000016",
+      "category_id": "11111111-1111-1111-1111-111111111103",
+      "slug": "asiastar-chasis-10m",
+      "name_es": "ASIASTAR Chasis 10 m",
+      "name_en": "ASIASTAR 10m Bare Chassis",
+      "description_es": "Chasis desnudo de 10 m para carrozado local. Solución flexible para operadores que requieren carrocería adaptada a normativa local o diseño propio.",
+      "description_en": null,
+      "specs": {
+        "Longitud de chasis": "10,000 mm",
+        "Motor": "Diésel 162 HP",
+        "Norma de emisiones": "China VI",
+        "Frenos": "Neumático de disco ABS",
+        "Dirección": "Hidráulica asistida"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [],
+      "filter_attrs": {
+        "brand": "ASIASTAR",
+        "fuel": "chasis",
+        "usage": "pasajeros"
+      },
+      "is_active": true,
+      "sort_order": 16,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "33333333-0000-0000-0000-000000000017",
+      "category_id": "11111111-1111-1111-1111-111111111103",
+      "slug": "asiastar-chasis-8m",
+      "name_es": "ASIASTAR Chasis 8,5 m",
+      "name_en": "ASIASTAR 8.5m Bare Chassis",
+      "description_es": "Chasis desnudo de 8,5 m para minibús de carrozado local. Ideal para transporte escolar, lanzadera o rutas rurales. Motor diésel de 150 HP.",
+      "description_en": null,
+      "specs": {
+        "Longitud de chasis": "8,500 mm",
+        "Motor": "Diésel 150 HP",
+        "Norma de emisiones": "China VI",
+        "Frenos": "Hidráulico de disco",
+        "Dirección": "Hidráulica asistida"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [],
+      "filter_attrs": {
+        "brand": "ASIASTAR",
+        "fuel": "chasis",
+        "usage": "pasajeros"
+      },
+      "is_active": true,
+      "sort_order": 17,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "33333333-0000-0000-0000-000000000018",
+      "category_id": "11111111-1111-1111-1111-111111111103",
+      "slug": "asiastar-chasis-escolar",
+      "name_es": "ASIASTAR Chasis Escolar",
+      "name_en": "ASIASTAR School Bus Chassis",
+      "description_es": "Chasis de 9 m especialmente reforzado para carrozado escolar. Incluye barras anti-vuelco adicionales y puntos de anclaje para asientos infantiles. Motor diésel de 160 HP, norma China VI.",
+      "description_en": null,
+      "specs": {
+        "Longitud de chasis": "9,000 mm",
+        "Motor": "Diésel 160 HP",
+        "Norma de emisiones": "China VI",
+        "Estructura": "Reforzada anti-vuelco",
+        "Anclajes para asientos": "ECE R14"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [],
+      "filter_attrs": {
+        "brand": "ASIASTAR",
+        "fuel": "chasis",
+        "usage": "pasajeros"
+      },
+      "is_active": true,
+      "sort_order": 18,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "33333333-0000-0000-0000-000000000019",
+      "category_id": "11111111-1111-1111-1111-111111111103",
+      "slug": "asiastar-chasis-piso-bajo",
+      "name_es": "ASIASTAR Chasis Piso Bajo",
+      "name_en": "ASIASTAR Low-Floor Chassis",
+      "description_es": "Chasis de piso bajo de 12 m para carrozado accesible. Diseño sin escalones en todo el pasillo, con rampa para silla de ruedas. Cumple normativa de accesibilidad universal.",
+      "description_en": null,
+      "specs": {
+        "Longitud de chasis": "12,000 mm",
+        "Motor": "Diésel 210 HP",
+        "Tipo de piso": "Bajo (Low-floor)",
+        "Rampa": "Rampa eléctrica incluida",
+        "Norma de emisiones": "China VI",
+        "Accesibilidad": "Universal"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [],
+      "filter_attrs": {
+        "brand": "ASIASTAR",
+        "fuel": "chasis",
+        "usage": "pasajeros"
+      },
+      "is_active": true,
+      "sort_order": 19,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "33333333-0000-0000-0000-000000000020",
+      "category_id": "11111111-1111-1111-1111-111111111103",
+      "slug": "isuzu-chasis-4175-sin-cabina",
+      "name_es": "ISUZU Chasis 4175 Sin Cabina",
+      "name_en": "ISUZU Bus Chassis 4175 No Cabin",
+      "description_es": "Chasis ISUZU para bus de 4x2 con batalla de 4175 mm, sin cabina. Motor diésel common rail 4HK1-TCG61 de 139 kW (186 HP) Euro VI. Frenos de aire con ABS, apto para carrozado local urbano o interurbano.",
+      "description_en": null,
+      "specs": {
+        "Modelo de motor": "ISUZU 4HK1-TCG61",
+        "Desplazamiento": "5.139 L",
+        "Potencia": "139 kW (186 HP) / 2600 rpm",
+        "Torque máx.": "507 N·m / 1600–2600 rpm",
+        "Norma de emisiones": "Euro VI",
+        "Transmisión": "Manual MLD 6+1",
+        "Batalla": "4175 mm",
+        "Tracción": "4x2",
+        "PBV": "10,500 kg",
+        "Tara (sin cabina)": "2,600 kg",
+        "Frenos": "Aire — tambor delantero y trasero, ABS",
+        "Neumáticos": "235/75R17.5",
+        "Depósito de combustible": "100 L",
+        "Velocidad máxima": "110 km/h"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [],
+      "filter_attrs": {
+        "brand": "ISUZU",
+        "fuel": "chasis",
+        "usage": "pasajeros"
+      },
+      "is_active": true,
+      "sort_order": 20,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "33333333-0000-0000-0000-000000000021",
+      "category_id": "11111111-1111-1111-1111-111111111103",
+      "slug": "isuzu-chasis-4175-cabina-corta",
+      "name_es": "ISUZU Chasis 4175 Cabina Corta",
+      "name_en": "ISUZU Bus Chassis 4175 Cut Cabin",
+      "description_es": "Chasis ISUZU para bus de 4x2 con batalla de 4175 mm y cabina corta recortada. Motor diésel common rail 4HK1-TCG61 de 139 kW (186 HP) Euro VI. Ideal para carrozados que requieren integración frontal con cabina del conductor.",
+      "description_en": null,
+      "specs": {
+        "Modelo de motor": "ISUZU 4HK1-TCG61",
+        "Desplazamiento": "5.139 L",
+        "Potencia": "139 kW (186 HP) / 2600 rpm",
+        "Torque máx.": "507 N·m / 1600–2600 rpm",
+        "Norma de emisiones": "Euro VI",
+        "Transmisión": "Manual MLD 6+1",
+        "Batalla": "4175 mm",
+        "Configuración de cabina": "Cabina corta (Cut cabin)",
+        "Tracción": "4x2",
+        "PBV": "10,500 kg",
+        "Tara (con cabina)": "3,005 kg",
+        "Frenos": "Aire — tambor delantero y trasero, ABS",
+        "Neumáticos": "235/75R17.5",
+        "Depósito de combustible": "100 L",
+        "Velocidad máxima": "110 km/h"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [],
+      "filter_attrs": {
+        "brand": "ISUZU",
+        "fuel": "chasis",
+        "usage": "pasajeros"
+      },
+      "is_active": true,
+      "sort_order": 21,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "33333333-0000-0000-0000-000000000022",
+      "category_id": "11111111-1111-1111-1111-111111111103",
+      "slug": "isuzu-chasis-4475-sin-cabina",
+      "name_es": "ISUZU Chasis 4475 Sin Cabina",
+      "name_en": "ISUZU Bus Chassis 4475 No Cabin",
+      "description_es": "Chasis ISUZU 4x2 con batalla de 4475 mm, sin cabina. Motor diésel 4HK1-TCG61 de 139 kW Euro VI. Dimensión intermedia adecuada para buses de 9–10 m. Frenos de aire con ABS y barra estabilizadora delantera y trasera.",
+      "description_en": null,
+      "specs": {
+        "Modelo de motor": "ISUZU 4HK1-TCG61",
+        "Desplazamiento": "5.139 L",
+        "Potencia": "139 kW (186 HP) / 2600 rpm",
+        "Torque máx.": "507 N·m / 1600–2600 rpm",
+        "Norma de emisiones": "Euro VI",
+        "Transmisión": "Manual MLD 6+1",
+        "Batalla": "4475 mm",
+        "Tracción": "4x2",
+        "PBV": "10,500 kg",
+        "Tara (sin cabina)": "2,795 kg",
+        "Frenos": "Aire — tambor delantero y trasero, ABS",
+        "Neumáticos": "235/75R17.5",
+        "Depósito de combustible": "100 L",
+        "Velocidad máxima": "110 km/h"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [],
+      "filter_attrs": {
+        "brand": "ISUZU",
+        "fuel": "chasis",
+        "usage": "pasajeros"
+      },
+      "is_active": true,
+      "sort_order": 22,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "33333333-0000-0000-0000-000000000023",
+      "category_id": "11111111-1111-1111-1111-111111111103",
+      "slug": "isuzu-chasis-4475-cabina-corta",
+      "name_es": "ISUZU Chasis 4475 Cabina Corta",
+      "name_en": "ISUZU Bus Chassis 4475 Cut Cabin",
+      "description_es": "Chasis ISUZU 4x2 con batalla de 4475 mm y cabina corta integrada. Motor 4HK1-TCG61 de 139 kW Euro VI. Versión con cabina del conductor prediseñada para reducir tiempo de carrozado y cumplir normativas de seguridad frontal.",
+      "description_en": null,
+      "specs": {
+        "Modelo de motor": "ISUZU 4HK1-TCG61",
+        "Desplazamiento": "5.139 L",
+        "Potencia": "139 kW (186 HP) / 2600 rpm",
+        "Torque máx.": "507 N·m / 1600–2600 rpm",
+        "Norma de emisiones": "Euro VI",
+        "Transmisión": "Manual MLD 6+1",
+        "Batalla": "4475 mm",
+        "Configuración de cabina": "Cabina corta (Cut cabin)",
+        "Tracción": "4x2",
+        "PBV": "10,500 kg",
+        "Tara (con cabina)": "3,025 kg",
+        "Frenos": "Aire — tambor delantero y trasero, ABS",
+        "Neumáticos": "235/75R17.5",
+        "Depósito de combustible": "100 L",
+        "Velocidad máxima": "110 km/h"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [],
+      "filter_attrs": {
+        "brand": "ISUZU",
+        "fuel": "chasis",
+        "usage": "pasajeros"
+      },
+      "is_active": true,
+      "sort_order": 23,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "33333333-0000-0000-0000-000000000024",
+      "category_id": "11111111-1111-1111-1111-111111111103",
+      "slug": "isuzu-chasis-5200-sin-cabina",
+      "name_es": "ISUZU Chasis 5200 Sin Cabina",
+      "name_en": "ISUZU Bus Chassis 5200 No Cabin",
+      "description_es": "Chasis ISUZU 4x2 de batalla larga 5200 mm, sin cabina. El mayor formato de la gama, para buses de 11–12 m. Motor 4HK1-TCG61 de 139 kW Euro VI con frenos de aire ABS y suspensión de 8/10+6 ballestas.",
+      "description_en": null,
+      "specs": {
+        "Modelo de motor": "ISUZU 4HK1-TCG61",
+        "Desplazamiento": "5.139 L",
+        "Potencia": "139 kW (186 HP) / 2600 rpm",
+        "Torque máx.": "507 N·m / 1600–2600 rpm",
+        "Norma de emisiones": "Euro VI",
+        "Transmisión": "Manual MLD 6+1",
+        "Batalla": "5200 mm",
+        "Tracción": "4x2",
+        "PBV": "10,500 kg",
+        "Tara (sin cabina)": "2,980 kg",
+        "Frenos": "Aire — tambor delantero y trasero, ABS",
+        "Suspensión": "8/10+6 ballestas",
+        "Neumáticos": "235/75R17.5",
+        "Depósito de combustible": "100 L",
+        "Velocidad máxima": "110 km/h"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [],
+      "filter_attrs": {
+        "brand": "ISUZU",
+        "fuel": "chasis",
+        "usage": "pasajeros"
+      },
+      "is_active": true,
+      "sort_order": 24,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "33333333-0000-0000-0000-000000000025",
+      "category_id": "11111111-1111-1111-1111-111111111103",
+      "slug": "isuzu-chasis-5200-cabina-corta",
+      "name_es": "ISUZU Chasis 5200 Cabina Corta",
+      "name_en": "ISUZU Bus Chassis 5200 Cut Cabin",
+      "description_es": "Chasis ISUZU 4x2 de batalla larga 5200 mm con cabina corta integrada. La plataforma más completa de la gama ISUZU para carrozado de bus grande. Motor 4HK1-TCG61 de 139 kW Euro VI, frenos de aire ABS.",
+      "description_en": null,
+      "specs": {
+        "Modelo de motor": "ISUZU 4HK1-TCG61",
+        "Desplazamiento": "5.139 L",
+        "Potencia": "139 kW (186 HP) / 2600 rpm",
+        "Torque máx.": "507 N·m / 1600–2600 rpm",
+        "Norma de emisiones": "Euro VI",
+        "Transmisión": "Manual MLD 6+1",
+        "Batalla": "5200 mm",
+        "Configuración de cabina": "Cabina corta (Cut cabin)",
+        "Tracción": "4x2",
+        "PBV": "10,500 kg",
+        "Tara (con cabina)": "3,445 kg",
+        "Frenos": "Aire — tambor delantero y trasero, ABS",
+        "Suspensión": "8/10+6 ballestas",
+        "Neumáticos": "235/75R17.5",
+        "Depósito de combustible": "100 L",
+        "Velocidad máxima": "110 km/h"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [],
+      "filter_attrs": {
+        "brand": "ISUZU",
+        "fuel": "chasis",
+        "usage": "pasajeros"
+      },
+      "is_active": true,
+      "sort_order": 25,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000031",
+      "category_id": "11111111-1111-1111-1111-111111111104",
+      "slug": "generador-diesel-250kva",
+      "name_es": "Generador Diésel 250 kVA",
+      "name_en": "250 kVA Diesel Generator",
+      "description_es": "Grupo electrógeno diésel de 250 kVA con tablero de transferencia automática y cabina insonorizada.",
+      "description_en": null,
+      "specs": {
+        "Potencia": "250 kVA",
+        "Voltaje": "380/220 V",
+        "Frecuencia": "60 Hz",
+        "Consumo": "48 L/h",
+        "Nivel de ruido": "75 dB"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [
+        "/Desktop Home/Indutrial Desktop.png"
+      ],
+      "models": [],
+      "is_active": true,
+      "sort_order": 1,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000032",
+      "category_id": "11111111-1111-1111-1111-111111111104",
+      "slug": "montacargas-3ton",
+      "name_es": "Montacargas 3 Toneladas",
+      "name_en": "3 Ton Forklift",
+      "description_es": "Montacargas diésel de 3 toneladas con torre de elevación de 3 m y desplazador lateral. Apto para operación en almacén y patio.",
+      "description_en": null,
+      "specs": {
+        "Capacidad de carga": "3000 kg",
+        "Altura de elevación": "3 m",
+        "Tipo de motor": "Diésel",
+        "Tipo de transmisión": "Hidrodinámica",
+        "Peso operativo": "4200 kg"
+      },
+      "source_markets": [
+        "China",
+        "Japón"
+      ],
+      "images": [
+        "/Desktop Home/Indutrial Desktop.png"
+      ],
+      "models": [],
+      "is_active": true,
+      "sort_order": 2,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000033",
+      "category_id": "11111111-1111-1111-1111-111111111104",
+      "slug": "compresor-tornillo-50hp",
+      "name_es": "Compresor de Tornillo 50 HP",
+      "name_en": "50 HP Screw Compressor",
+      "description_es": "Compresor de tornillo rotativo de 50 HP con caudal de 7 m³/min y presión de 8 bar. Operación continua de bajo mantenimiento.",
+      "description_en": null,
+      "specs": {
+        "Potencia": "50 HP",
+        "Caudal": "7 m³/min",
+        "Presión máxima": "8 bar",
+        "Voltaje": "380 V trifásico",
+        "Certificación IP": "IP54"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [
+        "/Desktop Home/Indutrial Desktop.png"
+      ],
+      "models": [],
+      "is_active": true,
+      "sort_order": 3,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000041",
+      "category_id": "11111111-1111-1111-1111-111111111105",
+      "slug": "filtro-aceite-universal",
+      "name_es": "Filtro de Aceite Universal",
+      "name_en": "Universal Oil Filter",
+      "description_es": "Filtro de aceite de alto flujo compatible con motores diésel de maquinaria agrícola y camiones. Vendido por lote.",
+      "description_en": null,
+      "specs": {
+        "Tipo": "Roscado",
+        "Compatibilidad": "Diésel multimarca",
+        "Material": "Acero estampado",
+        "Presentación": "Caja x 50 unidades"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [
+        "/Desktop Home/Repuestos Desktop.png"
+      ],
+      "models": [],
+      "is_active": true,
+      "sort_order": 1,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000042",
+      "category_id": "11111111-1111-1111-1111-111111111105",
+      "slug": "kit-embrague-tractor",
+      "name_es": "Kit de Embrague para Tractor",
+      "name_en": "Tractor Clutch Kit",
+      "description_es": "Kit de embrague completo para tractores de 70 a 120 HP. Incluye disco, plato y rodamiento de empuje.",
+      "description_en": null,
+      "specs": {
+        "Aplicación": "Tractores 70-120 HP",
+        "Diámetro del disco": "310 mm",
+        "Incluye": "Disco, plato, rodamiento",
+        "Material": "Cerámico reforzado"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [
+        "/Desktop Home/Repuestos Desktop.png"
+      ],
+      "models": [],
+      "is_active": true,
+      "sort_order": 2,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000043",
+      "category_id": "11111111-1111-1111-1111-111111111105",
+      "slug": "neumatico-agricola-r1",
+      "name_es": "Neumático Agrícola R1",
+      "name_en": "R1 Agricultural Tire",
+      "description_es": "Neumático agrícola con dibujo R1 para alta tracción en campo. Medida 18.4-30, construcción diagonal.",
+      "description_en": null,
+      "specs": {
+        "Medida": "18.4-30",
+        "Dibujo": "R1",
+        "Construcción": "Diagonal",
+        "Capas": "12 PR",
+        "Aplicación": "Tractores agrícolas"
+      },
+      "source_markets": [
+        "China",
+        "Tailandia"
+      ],
+      "images": [
+        "/Desktop Home/Repuestos Desktop.png"
+      ],
+      "models": [],
+      "is_active": true,
+      "sort_order": 3,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000044",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "toyota-camry",
+      "name_es": "Toyota Camry",
+      "name_en": "Toyota Camry",
+      "description_es": "Sedán ejecutivo de referencia de Toyota, con versiones a gasolina 2.0/2.5 y versiones híbridas 2.5 de mayor eficiencia.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "Sedán ejecutivo",
+        "Motor": "2.0 / 2.5 / 2.5 híbrido",
+        "Transmisión": "Automática / e-CVT",
+        "Tracción": "Delantera",
+        "Plazas": "5",
+        "Versiones disponibles": "2.0 Elite, 2.0 Sport, 2.5 Flagship, 2.5 Premium, Hybrid 2.5 Premium, Hybrid 2.5 Sport PLUS"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "2.0 Elite",
+          "specs_override": {}
+        },
+        {
+          "name": "2.0 Sport",
+          "specs_override": {}
+        },
+        {
+          "name": "2.5 Flagship",
+          "specs_override": {}
+        },
+        {
+          "name": "2.5 Premium",
+          "specs_override": {}
+        },
+        {
+          "name": "Hybrid 2.5 Premium",
+          "specs_override": {}
+        },
+        {
+          "name": "Hybrid 2.5 Sport PLUS",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Toyota",
+        "fuel": [
+          "gasolina",
+          "hibrido"
+        ],
+        "transmission": "Automática / e-CVT",
+        "traction": "Delantera"
+      },
+      "is_active": true,
+      "sort_order": 1,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000045",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "toyota-corolla",
+      "name_es": "Toyota Corolla",
+      "name_en": "Toyota Corolla",
+      "description_es": "Sedán compacto de mayor volumen de ventas de Toyota, con versión turbo 1.2T y versión híbrida de doble motor 1.8L.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "Sedán compacto",
+        "Motor": "1.2T / 1.8 híbrido",
+        "Transmisión": "CVT / E-CVT",
+        "Tracción": "Delantera",
+        "Plazas": "5",
+        "Versiones disponibles": "1.2T S-CVT Pioneer Edition, Smart Hybrid Dual Engine 1.8L E-CVT Elite Edition, Smart Hybrid Dual Engine 1.8L E-CVT Pioneer Edition"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "1.2T S-CVT Pioneer Edition",
+          "specs_override": {}
+        },
+        {
+          "name": "Smart Hybrid Dual Engine 1.8L E-CVT Elite Edition",
+          "specs_override": {}
+        },
+        {
+          "name": "Smart Hybrid Dual Engine 1.8L E-CVT Pioneer Edition",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Toyota",
+        "fuel": [
+          "gasolina",
+          "hibrido"
+        ],
+        "transmission": "CVT / E-CVT",
+        "traction": "Delantera"
+      },
+      "is_active": true,
+      "sort_order": 2,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000046",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "toyota-corolla-cross",
+      "name_es": "Toyota Corolla Cross",
+      "name_en": "Toyota Corolla Cross",
+      "description_es": "SUV compacto basado en la plataforma Corolla, con versiones a gasolina y versiones Intelligent Hybrid.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "SUV compacto",
+        "Motor": "2.0",
+        "Transmisión": "CVT",
+        "Tracción": "Delantera",
+        "Plazas": "5",
+        "Versiones disponibles": "2.0L CVT Elite Edition, 2.0L CVT Luxury Edition, 2.0L CVT Pioneer Edition, 2.0L Intelligent Hybrid Elite Edition, 2.0L Intelligent Hybrid Pioneer Edition"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "2.0L CVT Elite Edition",
+          "specs_override": {}
+        },
+        {
+          "name": "2.0L CVT Luxury Edition",
+          "specs_override": {}
+        },
+        {
+          "name": "2.0L CVT Pioneer Edition",
+          "specs_override": {}
+        },
+        {
+          "name": "2.0L Intelligent Hybrid Elite Edition",
+          "specs_override": {}
+        },
+        {
+          "name": "2.0L Intelligent Hybrid Pioneer Edition",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Toyota",
+        "fuel": [
+          "gasolina",
+          "hibrido"
+        ],
+        "transmission": "CVT",
+        "traction": "Delantera"
+      },
+      "is_active": true,
+      "sort_order": 3,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000047",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "toyota-rav4",
+      "name_es": "Toyota RAV4",
+      "name_en": "Toyota RAV4",
+      "description_es": "SUV mediano insignia de Toyota, con versión a gasolina AWD y versiones híbridas de dos y cuatro ruedas motrices.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "SUV mediano",
+        "Motor": "2.0 / 2.5 híbrido",
+        "Transmisión": "Automática / e-CVT",
+        "Tracción": "Integral AWD (2WD en versiones híbridas de entrada)",
+        "Plazas": "5",
+        "Versiones disponibles": "2.0L AWD Luxury Edition, Hybrid Dual Turbo 2.5L 4WD Flagship Edition, Hybrid Twin Turbo 2.0L 2WD Deluxe Edition, Hybrid Twin Turbo 2.0L 2WD Elite Edition, Hybrid Twin Turbo 2.5L 4WD Deluxe Edition"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "2.0L AWD Luxury Edition",
+          "specs_override": {}
+        },
+        {
+          "name": "Hybrid Dual Turbo 2.5L 4WD Flagship Edition",
+          "specs_override": {}
+        },
+        {
+          "name": "Hybrid Twin Turbo 2.0L 2WD Deluxe Edition",
+          "specs_override": {}
+        },
+        {
+          "name": "Hybrid Twin Turbo 2.0L 2WD Elite Edition",
+          "specs_override": {}
+        },
+        {
+          "name": "Hybrid Twin Turbo 2.5L 4WD Deluxe Edition",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Toyota",
+        "fuel": [
+          "gasolina",
+          "hibrido"
+        ],
+        "transmission": "Automática / e-CVT",
+        "traction": "Integral AWD (2WD en versiones híbridas de entrada)"
+      },
+      "is_active": true,
+      "sort_order": 4,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000048",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "toyota-prado",
+      "name_es": "Toyota Prado",
+      "name_en": "Toyota Prado",
+      "description_es": "SUV todoterreno de chasis robusto, motor 2.4T híbrido y tracción integral 4x4, acabado tope de gama Flagship VX.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "SUV todoterreno grande",
+        "Motor": "2.4T híbrido",
+        "Transmisión": "Automática",
+        "Tracción": "Integral 4x4",
+        "Plazas": "5",
+        "Versiones disponibles": "2.4T Hybrid Flagship VX · 5 plazas"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "2.4T Hybrid Flagship VX · 5 plazas",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Toyota",
+        "fuel": "hibrido",
+        "transmission": "Automática",
+        "traction": "Integral 4x4"
+      },
+      "is_active": true,
+      "sort_order": 5,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000049",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "jetour-dasheng",
+      "name_es": "Jetour Dasheng",
+      "name_en": "Jetour Dasheng",
+      "description_es": "SUV compacto de Jetour (conocido internacionalmente como Jetour Dashing), motor 1.5T de 197 HP y caja DCT automática. Cinco acabados dentro de la línea.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "SUV compacto",
+        "Motor": "1.5T DCT",
+        "Transmisión": "DCT",
+        "Tracción": "Delantera",
+        "Plazas": "5",
+        "Versiones disponibles": "Black Warrior, Flagship, Luxury, Youth Elite, Youth Luxury"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "Black Warrior",
+          "specs_override": {}
+        },
+        {
+          "name": "Flagship",
+          "specs_override": {}
+        },
+        {
+          "name": "Luxury",
+          "specs_override": {}
+        },
+        {
+          "name": "Youth Elite",
+          "specs_override": {}
+        },
+        {
+          "name": "Youth Luxury",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Jetour",
+        "fuel": "gasolina",
+        "transmission": "DCT",
+        "traction": "Delantera"
+      },
+      "is_active": true,
+      "sort_order": 6,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000050",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "jetour-traveler",
+      "name_es": "Jetour Traveler",
+      "name_en": "Jetour Traveler",
+      "description_es": "SUV todoterreno de diseño robusto tipo utilitario, con versiones 1.5T de tracción delantera y 2.0T con tracción integral XWD. Configuración de 5 o 7 plazas según mercado.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "SUV todoterreno mediano",
+        "Motor": "1.5T / 2.0T",
+        "Transmisión": "Automática 8 velocidades",
+        "Tracción": "Integral (XWD) en versiones 2.0T",
+        "Plazas": "5",
+        "Versiones disponibles": "1.5TD Explore+, 2.0TD XWD Conqueror, 2.0TD XWD Crossover, 2.0TD XWD Discovery, Pony Edition 2.0TD XWD Crossover, Pony Edition 2.0TD XWD Discovery"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "1.5TD Explore+",
+          "specs_override": {}
+        },
+        {
+          "name": "2.0TD XWD Conqueror",
+          "specs_override": {}
+        },
+        {
+          "name": "2.0TD XWD Crossover",
+          "specs_override": {}
+        },
+        {
+          "name": "2.0TD XWD Discovery",
+          "specs_override": {}
+        },
+        {
+          "name": "Pony Edition 2.0TD XWD Crossover",
+          "specs_override": {}
+        },
+        {
+          "name": "Pony Edition 2.0TD XWD Discovery",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Jetour",
+        "fuel": "gasolina",
+        "transmission": "Automática 8 velocidades",
+        "traction": "Integral (XWD) en versiones 2.0T"
+      },
+      "is_active": true,
+      "sort_order": 7,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000051",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "jetour-x70l",
+      "name_es": "Jetour X70L",
+      "name_en": "Jetour X70L",
+      "description_es": "SUV mediano de tres filas, motor 1.5T con caja DCT de 7 velocidades.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "SUV mediano 7 plazas",
+        "Motor": "1.5T",
+        "Transmisión": "DCT 7 velocidades",
+        "Tracción": "Delantera",
+        "Plazas": "7",
+        "Versiones disponibles": "Comfort · 7 plazas, Luxury · 7 plazas"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "Comfort · 7 plazas",
+          "specs_override": {}
+        },
+        {
+          "name": "Luxury · 7 plazas",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Jetour",
+        "fuel": "gasolina",
+        "transmission": "DCT 7 velocidades",
+        "traction": "Delantera"
+      },
+      "is_active": true,
+      "sort_order": 8,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000052",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "jetour-x70plus",
+      "name_es": "Jetour X70Plus",
+      "name_en": "Jetour X70Plus",
+      "description_es": "SUV mediano de cinco plazas, motor 1.5T con caja DCT de 6 velocidades.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "SUV mediano",
+        "Motor": "1.5T",
+        "Transmisión": "DCT 6 velocidades",
+        "Tracción": "Delantera",
+        "Plazas": "5",
+        "Versiones disponibles": "Comfort, Luxury"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "Comfort",
+          "specs_override": {}
+        },
+        {
+          "name": "Luxury",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Jetour",
+        "fuel": "gasolina",
+        "transmission": "DCT 6 velocidades",
+        "traction": "Delantera"
+      },
+      "is_active": true,
+      "sort_order": 9,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000053",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "kia-k3",
+      "name_es": "KIA K3",
+      "name_en": "KIA K3",
+      "description_es": "Sedán compacto de volumen (Kia Yueda), motor 1.5L atmosférico.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "Sedán compacto",
+        "Motor": "1.5L",
+        "Transmisión": "Automática / CVT",
+        "Tracción": "Delantera",
+        "Plazas": "5",
+        "Versiones disponibles": "Comfort, Luxury"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "Comfort",
+          "specs_override": {}
+        },
+        {
+          "name": "Luxury",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "KIA",
+        "fuel": "gasolina",
+        "transmission": "Automática / CVT",
+        "traction": "Delantera"
+      },
+      "is_active": true,
+      "sort_order": 10,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000054",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "kia-kx1",
+      "name_es": "KIA KX1",
+      "name_en": "KIA KX1",
+      "description_es": "Crossover urbano de entrada, motor 1.4L de 100 HP y caja CVT, exclusivo del mercado chino.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "Crossover subcompacto",
+        "Motor": "1.4L",
+        "Transmisión": "CVT",
+        "Tracción": "Delantera",
+        "Plazas": "5",
+        "Versiones disponibles": "1.4L CVT Sunroof"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "1.4L CVT Sunroof",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "KIA",
+        "fuel": "gasolina",
+        "transmission": "CVT",
+        "traction": "Delantera"
+      },
+      "is_active": true,
+      "sort_order": 11,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000055",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "kia-seltos",
+      "name_es": "KIA Seltos",
+      "name_en": "KIA Seltos",
+      "description_es": "SUV compacto de mayor volumen de la marca, motor 1.5L. Techo bicolor disponible en el acabado Luxury.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "SUV compacto",
+        "Motor": "1.5L",
+        "Transmisión": "CVT / Automática",
+        "Tracción": "Delantera",
+        "Plazas": "5",
+        "Versiones disponibles": "Comfort, Luxury, Luxury + techo negro, Premium"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "Comfort",
+          "specs_override": {}
+        },
+        {
+          "name": "Luxury",
+          "specs_override": {}
+        },
+        {
+          "name": "Luxury + techo negro",
+          "specs_override": {}
+        },
+        {
+          "name": "Premium",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "KIA",
+        "fuel": "gasolina",
+        "transmission": "CVT / Automática",
+        "traction": "Delantera"
+      },
+      "is_active": true,
+      "sort_order": 12,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000056",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "kia-sportage",
+      "name_es": "KIA Sportage",
+      "name_en": "KIA Sportage",
+      "description_es": "SUV compacto insignia de KIA en el segmento C, con versiones 1.5T de tracción simple y 2.0T con tracción integral.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "SUV compacto",
+        "Motor": "1.5T / 2.0T",
+        "Transmisión": "DCT / Automática",
+        "Tracción": "Delantera (4WD en versión 2.0T)",
+        "Plazas": "5",
+        "Versiones disponibles": "1.5T Smart Premium, 1.5T Two-wheels Luxury, 1.5T Two-wheels Luxury Comfort, 1.5T Two-wheels Premium, 2.0T Four-wheels Premium"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "1.5T Smart Premium",
+          "specs_override": {}
+        },
+        {
+          "name": "1.5T Two-wheels Luxury",
+          "specs_override": {}
+        },
+        {
+          "name": "1.5T Two-wheels Luxury Comfort",
+          "specs_override": {}
+        },
+        {
+          "name": "1.5T Two-wheels Premium",
+          "specs_override": {}
+        },
+        {
+          "name": "2.0T Four-wheels Premium",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "KIA",
+        "fuel": "gasolina",
+        "transmission": "DCT / Automática",
+        "traction": "Delantera (4WD en versión 2.0T)"
+      },
+      "is_active": true,
+      "sort_order": 13,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000057",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "audi-a3-sportback",
+      "name_es": "Audi A3 Sportback",
+      "name_en": "Audi A3 Sportback",
+      "description_es": "Hatchback premium de acceso a la gama Audi, motor 1.5T y caja doble embrague. Producción de la joint venture china para el mercado de exportación.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "Hatchback premium",
+        "Motor": "1.5T",
+        "Transmisión": "DCT 7 velocidades",
+        "Tracción": "Delantera",
+        "Plazas": "5",
+        "Versiones disponibles": "35TFSI Sportback Premium, 35TFSI Sportback Prestige Luxury"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "35TFSI Sportback Premium",
+          "specs_override": {}
+        },
+        {
+          "name": "35TFSI Sportback Prestige Luxury",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Audi",
+        "fuel": "gasolina",
+        "transmission": "DCT 7 velocidades",
+        "traction": "Delantera"
+      },
+      "is_active": true,
+      "sort_order": 14,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000058",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "audi-a5l",
+      "name_es": "Audi A5L",
+      "name_en": "Audi A5L",
+      "description_es": "Versión sedán de batalla larga del A5, exclusiva del mercado chino (SAIC-Audi), sucesora del A4L. Motor 2.0 TFSI de 201 HP.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "Sedán ejecutivo",
+        "Motor": "2.0T EA888",
+        "Transmisión": "DCT 7 velocidades",
+        "Tracción": "Delantera (4WD quattro opcional)",
+        "Plazas": "5",
+        "Versiones disponibles": "2.0 Sport"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "2.0 Sport",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Audi",
+        "fuel": "gasolina",
+        "transmission": "DCT 7 velocidades",
+        "traction": "Delantera (4WD quattro opcional)"
+      },
+      "is_active": true,
+      "sort_order": 15,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000059",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "audi-a7l",
+      "name_es": "Audi A7L",
+      "name_en": "Audi A7L",
+      "description_es": "Berlina de cuatro puertas de techo fastback y batalla extendida, producción SAIC-Audi exclusiva para China. Versión 45TFSI con el 2.0T de 245 HP.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "Sedán ejecutivo grand tourer",
+        "Motor": "2.0T",
+        "Transmisión": "DCT 7 velocidades",
+        "Tracción": "Delantera (quattro en versiones superiores)",
+        "Plazas": "5",
+        "Versiones disponibles": "45TFSI Luxury"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "45TFSI Luxury",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Audi",
+        "fuel": "gasolina",
+        "transmission": "DCT 7 velocidades",
+        "traction": "Delantera (quattro en versiones superiores)"
+      },
+      "is_active": true,
+      "sort_order": 16,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000060",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "audi-e5-sportback",
+      "name_es": "Audi E5 Sportback",
+      "name_en": "Audi E5 Sportback",
+      "description_es": "Fastback de cuatro puertas de la gama AUDI para el mercado chino. Especificación registrada en el costeo como motor 2.0 a gasolina — confirmar contra la ficha del proveedor, dado que la nomenclatura E5 corresponde a la subserie eléctrica de Audi en otros catálogos.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "Fastback ejecutivo",
+        "Motor": "2.0",
+        "Transmisión": "Automática",
+        "Tracción": "Delantera",
+        "Plazas": "5",
+        "Versiones disponibles": "Pioneer"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "Pioneer",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Audi",
+        "fuel": "gasolina",
+        "transmission": "Automática",
+        "traction": "Delantera"
+      },
+      "is_active": true,
+      "sort_order": 17,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000061",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "audi-e7x",
+      "name_es": "Audi E7X",
+      "name_en": "Audi E7X",
+      "description_es": "Buque insignia de cuatro puertas de la gama AUDI para el mercado chino. Especificación registrada en el costeo como motor 2.0 a gasolina — confirmar contra la ficha del proveedor, misma nota que E5 Sportback.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "Sedán ejecutivo grand tourer",
+        "Motor": "2.0",
+        "Transmisión": "Automática",
+        "Tracción": "Delantera",
+        "Plazas": "5",
+        "Versiones disponibles": "Pioneer Pro"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "Pioneer Pro",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Audi",
+        "fuel": "gasolina",
+        "transmission": "Automática",
+        "traction": "Delantera"
+      },
+      "is_active": true,
+      "sort_order": 18,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000062",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "audi-q3",
+      "name_es": "Audi Q3",
+      "name_en": "Audi Q3",
+      "description_es": "SUV compacto de entrada a la gama Audi, motor 1.5T y caja doble embrague.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "SUV compacto premium",
+        "Motor": "1.5T",
+        "Transmisión": "DCT 7 velocidades",
+        "Tracción": "Delantera",
+        "Plazas": "5",
+        "Versiones disponibles": "35TFSI Style"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "35TFSI Style",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Audi",
+        "fuel": "gasolina",
+        "transmission": "DCT 7 velocidades",
+        "traction": "Delantera"
+      },
+      "is_active": true,
+      "sort_order": 19,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000063",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "audi-q5",
+      "name_es": "Audi Q5",
+      "name_en": "Audi Q5",
+      "description_es": "SUV mediano de referencia de Audi, motor 2.0T. Ediciones conmemorativas de aniversario dentro de la gama.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "SUV mediano premium",
+        "Motor": "2.0T",
+        "Transmisión": "DCT 7 velocidades",
+        "Tracción": "Delantera (quattro disponible)",
+        "Plazas": "5",
+        "Versiones disponibles": "40TFSI Commemorative Edition, 45 Anniversary Collectible Edition"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "40TFSI Commemorative Edition",
+          "specs_override": {}
+        },
+        {
+          "name": "45 Anniversary Collectible Edition",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Audi",
+        "fuel": "gasolina",
+        "transmission": "DCT 7 velocidades",
+        "traction": "Delantera (quattro disponible)"
+      },
+      "is_active": true,
+      "sort_order": 20,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000064",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "bmw-serie-3-325li",
+      "name_es": "BMW Serie 3 (325Li)",
+      "name_en": "BMW Serie 3 (325Li)",
+      "description_es": "Versión de batalla larga del Serie 3 (G20), exclusiva del mercado chino, producida por BMW Brilliance. Motor 2.0T de 184 HP con propulsión trasera.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "Sedán ejecutivo de batalla larga",
+        "Motor": "2.0T",
+        "Transmisión": "Automática 8 velocidades",
+        "Tracción": "Trasera",
+        "Plazas": "5",
+        "Versiones disponibles": "325Li"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "325Li",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "BMW",
+        "fuel": "gasolina",
+        "transmission": "Automática 8 velocidades",
+        "traction": "Trasera"
+      },
+      "is_active": true,
+      "sort_order": 21,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000065",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "bmw-x1",
+      "name_es": "BMW X1",
+      "name_en": "BMW X1",
+      "description_es": "SUV compacto de entrada a la gama BMW, motor 2.0T.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "SUV compacto premium",
+        "Motor": "2.0T",
+        "Transmisión": "Automática",
+        "Tracción": "Delantera (xDrive disponible)",
+        "Plazas": "5",
+        "Versiones disponibles": "Sport"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "Sport",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "BMW",
+        "fuel": "gasolina",
+        "transmission": "Automática",
+        "traction": "Delantera (xDrive disponible)"
+      },
+      "is_active": true,
+      "sort_order": 22,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000066",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "bmw-x3",
+      "name_es": "BMW X3",
+      "name_en": "BMW X3",
+      "description_es": "SUV mediano de batalla larga (30L) para el mercado chino, tracción integral xDrive y paquete estético SportNight.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "SUV mediano premium",
+        "Motor": "2.0T",
+        "Transmisión": "Automática 8 velocidades",
+        "Tracción": "Integral xDrive",
+        "Plazas": "5",
+        "Versiones disponibles": "30L Xdrive Leading SportNight Package, 30L Xdrive Premium SportNight Package"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "30L Xdrive Leading SportNight Package",
+          "specs_override": {}
+        },
+        {
+          "name": "30L Xdrive Premium SportNight Package",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "BMW",
+        "fuel": "gasolina",
+        "transmission": "Automática 8 velocidades",
+        "traction": "Integral xDrive"
+      },
+      "is_active": true,
+      "sort_order": 23,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000067",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "hyundai-elantra",
+      "name_es": "Hyundai Elantra",
+      "name_en": "Hyundai Elantra",
+      "description_es": "Sedán compacto de volumen, motor 1.5L atmosférico y caja CVT.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "Sedán compacto",
+        "Motor": "1.5L",
+        "Transmisión": "CVT",
+        "Tracción": "Delantera",
+        "Plazas": "5",
+        "Versiones disponibles": "1.5L CVT GLX Elite Edition, 1.5L CVT GLX Luxury Edition"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "1.5L CVT GLX Elite Edition",
+          "specs_override": {}
+        },
+        {
+          "name": "1.5L CVT GLX Luxury Edition",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Hyundai",
+        "fuel": "gasolina",
+        "transmission": "CVT",
+        "traction": "Delantera"
+      },
+      "is_active": true,
+      "sort_order": 24,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000068",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "hyundai-ix35",
+      "name_es": "Hyundai ix35",
+      "name_en": "Hyundai ix35",
+      "description_es": "SUV compacto de producción China (Beijing-Hyundai), nameplate que se mantiene en el mercado chino en paralelo al Tucson.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "SUV compacto",
+        "Motor": "2.0L",
+        "Transmisión": "Automática",
+        "Tracción": "Delantera",
+        "Plazas": "5",
+        "Versiones disponibles": "2.0L Luxury Edition DLX"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "2.0L Luxury Edition DLX",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Hyundai",
+        "fuel": "gasolina",
+        "transmission": "Automática",
+        "traction": "Delantera"
+      },
+      "is_active": true,
+      "sort_order": 25,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000069",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "hyundai-tucson",
+      "name_es": "Hyundai Tucson",
+      "name_en": "Hyundai Tucson",
+      "description_es": "SUV compacto de batalla larga (L) para el mercado chino, motor 1.5T y acabado deportivo N-Line.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "SUV compacto",
+        "Motor": "1.5T",
+        "Transmisión": "DCT / Automática",
+        "Tracción": "Delantera",
+        "Plazas": "5",
+        "Versiones disponibles": "L 1.5T GLX Elite Edition N-Line"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "L 1.5T GLX Elite Edition N-Line",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Hyundai",
+        "fuel": "gasolina",
+        "transmission": "DCT / Automática",
+        "traction": "Delantera"
+      },
+      "is_active": true,
+      "sort_order": 26,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000070",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "mercedes-benz-clase-c",
+      "name_es": "Mercedes-Benz Clase C",
+      "name_en": "Mercedes-Benz Clase C",
+      "description_es": "Sedán ejecutivo de batalla larga (L) para el mercado chino (BBAC), motor 1.5T mild-hybrid en C200L y 2.0T en C260L.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "Sedán ejecutivo de batalla larga",
+        "Motor": "1.5T / 2.0T",
+        "Transmisión": "Automática 9G-Tronic",
+        "Tracción": "Trasera",
+        "Plazas": "5",
+        "Versiones disponibles": "C200L Sport Sedan, C260L Classical Sport Sedan, C260L Sedan"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "C200L Sport Sedan",
+          "specs_override": {}
+        },
+        {
+          "name": "C260L Classical Sport Sedan",
+          "specs_override": {}
+        },
+        {
+          "name": "C260L Sedan",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Mercedes-Benz",
+        "fuel": "gasolina",
+        "transmission": "Automática 9G-Tronic",
+        "traction": "Trasera"
+      },
+      "is_active": true,
+      "sort_order": 27,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000071",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "star-5-star-5",
+      "name_es": "Star 5 Star 5",
+      "name_en": "Star 5 Star 5",
+      "description_es": "Nameplate compacto urbano del grupo Changan (Star 5), motor 1.5L de acceso, orientado a flotas y uso urbano intensivo.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "Compacto urbano",
+        "Motor": "1.5L",
+        "Transmisión": "Manual / Automática",
+        "Tracción": "Delantera",
+        "Plazas": "5",
+        "Versiones disponibles": "Classic Edition, Classic Edition (A/C), Value Edition"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "Classic Edition",
+          "specs_override": {}
+        },
+        {
+          "name": "Classic Edition (A/C)",
+          "specs_override": {}
+        },
+        {
+          "name": "Value Edition",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Star 5",
+        "fuel": "gasolina",
+        "transmission": "Manual / Automática",
+        "traction": "Delantera"
+      },
+      "is_active": true,
+      "sort_order": 28,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000072",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "mg-mg5",
+      "name_es": "MG MG5",
+      "name_en": "MG MG5",
+      "description_es": "Sedán compacto de posicionamiento deportivo, motor 1.5T turboalimentado.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "Sedán deportivo compacto",
+        "Motor": "1.5T",
+        "Transmisión": "Automática",
+        "Tracción": "Delantera",
+        "Plazas": "5",
+        "Versiones disponibles": "Flagship, Flagship Max"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "Flagship",
+          "specs_override": {}
+        },
+        {
+          "name": "Flagship Max",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "MG",
+        "fuel": "gasolina",
+        "transmission": "Automática",
+        "traction": "Delantera"
+      },
+      "is_active": true,
+      "sort_order": 29,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000073",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "changan-m60",
+      "name_es": "Changan M60",
+      "name_en": "Changan M60",
+      "description_es": "MPV comercial de configuración flexible (Changan Ruixing/Kaicene M60), motor 1.5L. Versión de la ficha de costeo con capacidad de 11 plazas.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "Furgoneta / MPV comercial",
+        "Motor": "1.5L",
+        "Transmisión": "Manual 5 velocidades",
+        "Tracción": "Trasera (motor central)",
+        "Plazas": "11",
+        "Versiones disponibles": "11 plazas"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "11 plazas",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Changan",
+        "fuel": "gasolina",
+        "transmission": "Manual 5 velocidades",
+        "traction": "Trasera (motor central)"
+      },
+      "is_active": true,
+      "sort_order": 30,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "22222222-0000-0000-0000-000000000074",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "wuling-hongguang-v",
+      "name_es": "Wuling Hongguang V",
+      "name_en": "Wuling Hongguang V",
+      "description_es": "Furgoneta comercial de puertas correderas, motor 1.5L, configurable como van de carga o minivan de hasta 8 plazas.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "Furgoneta / minivan comercial",
+        "Motor": "1.5L",
+        "Transmisión": "Manual 5 velocidades",
+        "Tracción": "Trasera",
+        "Plazas": "8",
+        "Versiones disponibles": "Panel Van 1.5L · 8 plazas"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [],
+      "models": [
+        {
+          "name": "Panel Van 1.5L · 8 plazas",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Wuling",
+        "fuel": "gasolina",
+        "transmission": "Manual 5 velocidades",
+        "traction": "Trasera"
+      },
+      "is_active": true,
+      "sort_order": 31,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    }
   ]
 }

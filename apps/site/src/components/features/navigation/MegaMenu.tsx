@@ -27,7 +27,21 @@ interface MegaColumn {
   items: SubItem[]
 }
 
+// Automóviles leads the mega-menu — the category with the strongest
+// commercial traction, promoted to first position (site direction,
+// 2026-08-23 — see programs/automobiles/SCOPE.md).
 const COLUMNS: MegaColumn[] = [
+  {
+    categorySlug: 'automoviles',
+    heading: 'Automóviles',
+    items: [
+      { label: 'Toyota', href: '/catalogo/automoviles?brand=Toyota' },
+      { label: 'Jetour', href: '/catalogo/automoviles?brand=Jetour' },
+      { label: 'KIA', href: '/catalogo/automoviles?brand=KIA' },
+      { label: 'Audi', href: '/catalogo/automoviles?brand=Audi' },
+      { label: 'Híbridos', href: '/catalogo/automoviles?fuel=hibrido' },
+    ],
+  },
   {
     categorySlug: 'maquinaria-agricola',
     heading: 'Maquinaria Agrícola',
@@ -69,17 +83,6 @@ const COLUMNS: MegaColumn[] = [
       { label: 'Compactadores', sub: 'compactadores' },
       { label: 'Generadores', sub: 'generadores' },
       { label: 'Motores JDM', href: '/repuestos' },
-    ],
-  },
-  {
-    categorySlug: 'automoviles',
-    heading: 'Automóviles',
-    items: [
-      { label: 'Changan', href: '/catalogo/automoviles?brand=Changan' },
-      { label: 'Toyota', href: '/catalogo/automoviles?brand=Toyota' },
-      { label: 'Hyundai', href: '/catalogo/automoviles?brand=Hyundai' },
-      { label: 'Jetour', href: '/catalogo/automoviles?brand=Jetour' },
-      { label: 'Híbridos', href: '/catalogo/automoviles?fuel=hibrido' },
     ],
   },
 ]

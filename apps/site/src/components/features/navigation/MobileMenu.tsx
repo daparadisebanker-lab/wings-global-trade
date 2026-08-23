@@ -83,6 +83,17 @@ export function MobileMenu({ open, onClose, categories }: MobileMenuProps) {
             </p>
 
             <nav aria-label="Categorías" className="mt-3">
+              {/* Automóviles leads the drawer — the category with the strongest
+                  commercial traction, promoted ahead of Maquinaria (site
+                  direction, 2026-08-23 — see programs/automobiles/SCOPE.md).
+                  One catalogue behind it, so it is a link and not a tree. */}
+              <World
+                label="Automóviles"
+                note="76 versiones · 11 marcas"
+                href="/catalogo/automoviles"
+                onClose={onClose}
+              />
+
               <World
                 label="Maquinaria"
                 note="Tractores, camiones, buses y equipo"
@@ -91,14 +102,16 @@ export function MobileMenu({ open, onClose, categories }: MobileMenuProps) {
                   setOpenWorld((w) => (w === 'maquinaria' ? null : 'maquinaria'))
                 }
               >
-                {categories.map((c) => (
-                  <Leaf
-                    key={c.id}
-                    href={`/catalogo/${c.slug}`}
-                    label={c.name_es}
-                    onClose={onClose}
-                  />
-                ))}
+                {categories
+                  .filter((c) => c.slug !== 'automoviles')
+                  .map((c) => (
+                    <Leaf
+                      key={c.id}
+                      href={`/catalogo/${c.slug}`}
+                      label={c.name_es}
+                      onClose={onClose}
+                    />
+                  ))}
                 <Leaf href="/catalogo" label="Todo el catálogo" onClose={onClose} />
                 <Leaf href="/repuestos" label="Motores JDM" onClose={onClose} />
               </World>
