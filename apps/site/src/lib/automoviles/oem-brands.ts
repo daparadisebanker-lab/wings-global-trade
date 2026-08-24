@@ -33,3 +33,10 @@ export const OEM_BRANDS: OemBrand[] = [
 export function getOemBrand(slug: string): OemBrand | undefined {
   return OEM_BRANDS.find((b) => b.slug === slug)
 }
+
+/** Reverse lookup — a product's filter_attrs.brand (plain name) back to its
+ * OEM slug, for cross-brand views (segment pages) that need to stamp each
+ * card with its own [data-oem] to show its brand's real accent color. */
+export function getOemBrandByName(filterBrand: string): OemBrand | undefined {
+  return OEM_BRANDS.find((b) => b.filterBrand === filterBrand)
+}

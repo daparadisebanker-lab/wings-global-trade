@@ -1,10 +1,69 @@
 # Automóviles — scope & perspective (car-first direction)
 
 **Status: WGT/07 — Phase 0, 1, 2 COMPLETE. Phase 2 re-derived 2026-08-24
-(showroom pivot). Phase 3 (IA / route migration) now PARTIALLY LIVE: new
-`(lanes)/automoviles/` routes exist and stamp `[data-lane="automoviles"]`
-for real (lane root, brand roster, per-brand pages) — `/catalogo/automoviles`
-still exists in parallel and is not yet redirected.**
+(showroom pivot). Phase 3 (IA / route migration) SUBSTANTIALLY LIVE: the
+lane now has both taxonomy axes as real pages (5 segment drill-downs + 11
+brand pages), a persistent in-lane nav, and a comprehensive landing page —
+`(lanes)/automoviles/` stamps `[data-lane="automoviles"]` for real.
+`/catalogo/automoviles` still exists in parallel and is not yet redirected.**
+
+## 0d · In-lane navigation + segment IA (2026-08-24, same day)
+
+Run through `/information-architecture-audit` at the account owner's
+request ("navigation system for it to be a proper site in itself... the
+comprehensive landing page"). The core finding: the dual taxonomy
+lane.config.ts declares (segment canonical, brand overlay) was only half
+real — 11 brand pages existed, zero segment pages did, so the "canonical"
+axis was decorative cards with no destination. Fixed:
+
+- **`AutoLaneNav`** (`components/features/automoviles/AutoLaneNav.tsx`) —
+  one persistent sticky bar, mounted once in the lane layout, self-detecting
+  its mode from the URL rather than requiring every page to prop-drill a
+  brand down from the layout (which doesn't have easy access to the nested
+  `[oem]` param). Default mode: segment links + Marcas + Cotizar, in the
+  lane's own ion-blue. Brand mode (on `/automoviles/marcas/{oem}`):
+  collapses to a breadcrumb in the brand's own `--oem-accent`, so the
+  curtain flood's color carries through into persistent chrome instead of
+  fading after the arrival animation. Replaces the brand sub-page's earlier
+  standalone sticky header — two stacked sticky bars under the site header
+  was real, avoidable mobile clutter.
+- **Five segment drill-down pages** (`(lanes)/automoviles/[segment]/`,
+  `generateStaticParams` over `lane.taxonomy`) — cross-brand by design (one
+  segment, all 11 brands), the natural place the "multiple brand colors"
+  brief actually shows up in one grid: each card is individually
+  `data-oem`-scoped to its own brand's accent, not a single lane color.
+  Reverse brand lookup (`getOemBrandByName`) added to `oem-brands.ts` for
+  this — the forward lookup (`getOemBrand`, slug→brand) already existed,
+  the reverse (plain filter_attrs.brand name → OEM record) didn't.
+- **Brand pages now cross-link back to their segment** — a real gap the
+  audit named specifically ("brand pages have no cross-links to segments"),
+  fixed with one `<Link>` per card's Segmento field.
+  `segments.ts`'s explicit map was already built for the lane-root count
+  fix; reused here rather than duplicating segment-name logic.
+- **Lane root rebuilt comprehensively**: segment cards are now real links
+  (previously informational only); added a "Cómo se compra" section
+  explaining the dual unit math (`lane.unitMath` from Phase 0 — per unit
+  vs. per container — was declared in the config but never surfaced in any
+  UI copy until now); the brand strip expanded from a 6-brand preview to
+  all 11 with real per-brand counts.
+
+**A real bug caught by screenshot comparison, not assumed correct:**
+`oem-canvas.css`'s selectors were written as compound
+(`[data-lane='automoviles'][data-oem='toyota']`, both attributes on the
+SAME element) but the actual DOM has `data-lane` on the layout's wrapper
+and `data-oem` on a nested descendant — never the same element. The rules
+silently matched nothing. Caught by comparing Audi's expected pure-black
+accent against a screenshot rendering it grey instead; fixed by changing
+every rule to a descendant combinator (a space). Documented in
+`oem-canvas.css` itself so the mistake doesn't recur.
+
+**Still not done — the honest remainder:** `/catalogo/automoviles` is not
+yet redirected to `/automoviles` (both live in parallel; nothing indexed
+against the old URL breaks, but nothing forces traffic to the new one
+either). No OEM logo/photo assets exist anywhere in this repo — every page
+in this section is still typography-and-spec-led. The roster page's
+"cotizar" flow and the segment/brand pages all point at the same generic
+`/cotizar` form, not a lane-aware or brand-aware prefill.
 
 ## 0c · Showroom pivot (2026-08-24) — Phase 2 re-derived, Phase 3 begun
 

@@ -1,15 +1,18 @@
 // src/app/(lanes)/automoviles/marcas/[oem]/page.tsx
 // WGT/07 brand sub-page — the arrival moment BrandCurtain floods in
-// [data-oem]'s --oem-accent for. Mirrors (brands)/marcas/[brand]/page.tsx
-// structurally (sticky brand header with accent progress line, real
-// catalog data below), but the content is the real fleet catalog — segment,
-// engine, transmission, trims — not fabricated brand-story copy, since no
-// OEM brand kit (photography, isologo, claim) exists in this repo yet.
+// [data-oem]'s --oem-accent for. The content is the real fleet catalog —
+// segment, engine, transmission, trims — not fabricated brand-story copy,
+// since no OEM brand kit (photography, isologo, claim) exists in this repo
+// yet. Orientation (breadcrumb, sticky accent bar) comes from AutoLaneNav
+// in the shared layout — this page no longer carries its own separate
+// sticky header, which would have stacked two sticky bars under the site
+// header on mobile.
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getProducts } from '@/lib/catalog-data'
 import { getOemBrand, OEM_BRANDS } from '@/lib/automoviles/oem-brands'
+import { segmentSlug } from '@/lib/automoviles/segments'
 
 interface PageProps {
   params: Promise<{ oem: string }>
@@ -38,28 +41,14 @@ export default async function AutomovilesBrandPage({ params }: PageProps) {
 
   return (
     <div data-oem={brand.slug}>
-      {/* Brand header — accent progress line is a static hairline here
-          (RB's version drives it off scroll via a ref; this page is short
-          enough per brand that the motion adds noise, not signal — the
-          curtain flood already carried the arrival moment). */}
-      <header className="sticky top-16 z-20 border-b border-[color:var(--ink-decoration)] bg-[color:var(--surface-0)]/95 backdrop-blur md:top-18">
-        <div aria-hidden className="h-[2px] w-full bg-[color:var(--oem-accent)]" />
-        <div className="mx-auto flex max-w-6xl items-center gap-4 px-5 py-4 md:px-8">
-          <Link
-            href="/automoviles/marcas"
-            className="shrink-0 font-mono text-[11px] uppercase tracking-widest-2 text-[color:var(--ink-decoration)] transition-colors"
-          >
-            ← Marcas
-          </Link>
-          <h1 className="text-xl font-medium text-[color:var(--ink-primary)]">{brand.name}</h1>
-          <span className="ml-auto hidden font-mono text-[11px] uppercase tracking-widest-2 text-[color:var(--ink-decoration)] md:block">
+      <div className="mx-auto max-w-6xl px-5 pb-12 pt-10 md:px-8 md:pb-16 md:pt-14">
+        <div className="flex flex-wrap items-baseline justify-between gap-3">
+          <h1 className="text-3xl font-medium text-[color:var(--ink-primary)] md:text-4xl">{brand.name}</h1>
+          <span className="font-mono text-[11px] uppercase tracking-widest-2 text-[color:var(--ink-decoration)]">
             {products.length} {products.length === 1 ? 'línea de modelo' : 'líneas de modelo'}
           </span>
         </div>
-      </header>
-
-      <div className="mx-auto max-w-6xl px-5 py-12 md:px-8 md:py-16">
-        <p data-reveal className="max-w-2xl text-body-lg text-[color:var(--ink-secondary)]">
+        <p data-reveal className="mt-4 max-w-2xl text-body-lg text-[color:var(--ink-secondary)]">
           {brand.note}. Catálogo directo de fábrica — especificaciones básicas de referencia;
           la configuración final se confirma al cotizar.
         </p>
@@ -84,7 +73,18 @@ export default async function AutomovilesBrandPage({ params }: PageProps) {
                   {p.specs?.['Segmento'] && (
                     <div className="flex justify-between gap-3">
                       <dt className="text-[color:var(--ink-decoration)]">Segmento</dt>
-                      <dd className="text-right">{p.specs['Segmento']}</dd>
+                      <dd className="text-right">
+                        {segmentSlug(p.specs['Segmento']) ? (
+                          <Link
+                            href={`/automoviles/${segmentSlug(p.specs['Segmento'])}`}
+                            className="underline decoration-[color:var(--ink-decoration)] underline-offset-2 transition-colors hover:text-[color:var(--oem-accent)]"
+                          >
+                            {p.specs['Segmento']}
+                          </Link>
+                        ) : (
+                          p.specs['Segmento']
+                        )}
+                      </dd>
                     </div>
                   )}
                   {p.specs?.['Motor'] && (

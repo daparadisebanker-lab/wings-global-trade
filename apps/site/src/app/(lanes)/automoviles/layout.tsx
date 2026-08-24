@@ -23,6 +23,7 @@
 // every other lane's livery.css follows) — not re-imported here.
 import type { Metadata } from 'next'
 import { BrandChoreography, BrandCurtain } from '@/components/features/brands/BrandChoreography'
+import { AutoLaneNav } from '@/components/features/automoviles/AutoLaneNav'
 
 export const metadata: Metadata = {
   title: 'Automóviles — WGT/07',
@@ -39,6 +40,10 @@ export default function AutomovilesLaneLayout({ children }: { children: React.Re
         markDataKey="oemMark"
         fallbackColor="var(--chrome-ground)"
       />
+      {/* Persistent lane nav — outside BrandChoreography's scroll-reveal
+          scope on purpose: it's chrome, not page content, and shouldn't
+          fade in/out with the rest of the page. */}
+      <AutoLaneNav />
       <BrandChoreography>{children}</BrandChoreography>
     </div>
   )
