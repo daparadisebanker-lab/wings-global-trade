@@ -16,6 +16,10 @@ export const metadata: Metadata = {
   title: 'Automóviles — Once marcas, un solo escritorio | Wings Global Trade',
   description:
     'Sedanes, SUV, MPV e híbridos de 11 marcas: Toyota, Jetour, KIA, Audi, BMW, Hyundai, Mercedes-Benz, MG, Star 5, Changan y Wuling. Catálogo directo de fábrica, por unidad configurada o por contenedor.',
+  // The old /catalogo/automoviles?fuel=hibrido redirect (next.config.mjs)
+  // forwards that query string here by default — canonical keeps it out of
+  // search results as a separate URL.
+  alternates: { canonical: '/automoviles' },
 }
 
 const UNIT_MATH = [

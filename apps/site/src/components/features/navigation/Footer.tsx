@@ -19,6 +19,7 @@ import {
 } from '@/lib/constants'
 import { buildWhatsAppLink } from '@/lib/utils'
 import { LANES } from '@/lib/lanes/registry'
+import { categoryHref } from '@/lib/category-href'
 import { TrustFooter, type FooterSection } from '@wings/trade-ui'
 
 interface FooterProps {
@@ -56,13 +57,12 @@ const DIVISIONS: { code: string; slug: string; label: string; href?: string }[] 
   { code: 'WGT/04', slug: 'living', label: 'Living' },
   { code: 'WGT/05', slug: 'representacion', label: 'Representación' },
   { code: 'WGT/06', slug: 'exportacion', label: 'Exportación' },
-  // WGT/07 registered 2026-08-23. `slug: 'automoviles'` is the registry lookup
-  // key (must match lane.config.ts so the status resolves correctly) — but
-  // its route still lives at /catalogo/automoviles pending Phase 3, so `href`
-  // is pinned explicitly rather than falling through to the generic
-  // `/${slug}` build below, which would point at a route that doesn't exist
-  // yet and 404.
-  { code: 'WGT/07', slug: 'automoviles', label: 'Automóviles', href: '/catalogo/automoviles' },
+  // WGT/07 registered 2026-08-23, route migration landed 2026-08-24 — the
+  // generic `/${slug}` build below now resolves correctly to the real live
+  // /automoviles route, so no href override is needed (it was pinned to
+  // /catalogo/automoviles here for one commit while that migration was
+  // pending).
+  { code: 'WGT/07', slug: 'automoviles', label: 'Automóviles' },
 ]
 
 export function Footer({ categories }: FooterProps) {
@@ -93,7 +93,7 @@ export function Footer({ categories }: FooterProps) {
       label: 'Catálogo',
       links: [
         { href: '/catalogo', label: 'Todo el catálogo' },
-        ...categories.map((c) => ({ href: `/catalogo/${c.slug}`, label: c.name_es })),
+        ...categories.map((c) => ({ href: categoryHref(c.slug), label: c.name_es })),
       ],
     },
     { id: 'servicios', label: 'Servicios', links: SERVICES },

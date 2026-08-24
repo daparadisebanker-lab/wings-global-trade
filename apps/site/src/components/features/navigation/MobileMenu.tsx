@@ -90,7 +90,7 @@ export function MobileMenu({ open, onClose, categories }: MobileMenuProps) {
               <World
                 label="Automóviles"
                 note="76 versiones · 11 marcas"
-                href="/catalogo/automoviles"
+                href="/automoviles"
                 onClose={onClose}
               />
 

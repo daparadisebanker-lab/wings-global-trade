@@ -29,6 +29,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: `${brand.name} — Automóviles | Wings Global Trade`,
     description: `Catálogo ${brand.name}: ${brand.note}. Consulta técnica sin registro, cotización por unidad configurada o por contenedor.`,
+    // The old /catalogo/automoviles?brand=X redirect (next.config.mjs)
+    // forwards its query string by default (documented Next.js redirect
+    // behavior — a destination with no matching capture group doesn't
+    // consume it), landing here as .../toyota?brand=Toyota. Canonical
+    // points search engines at the clean URL regardless.
+    alternates: { canonical: `/automoviles/marcas/${brand.slug}` },
   }
 }
 

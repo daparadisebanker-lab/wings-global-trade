@@ -29,7 +29,7 @@ const LINKS = [
   // see programs/automobiles/SCOPE.md). It gets its own top-level link rather
   // than living only inside the Catálogo mega-menu, matching how Interiores
   // earned one when it became a named destination.
-  { href: '/catalogo/automoviles', label: 'Automóviles' },
+  { href: '/automoviles', label: 'Automóviles' },
   { href: '/proceso',    label: 'Cómo importar' },
   // WGT/02 — the lane, not the catalogue. "Azulejos" is what sits inside it;
   // a buyer scanning a menu for finishes looks for the discipline first.

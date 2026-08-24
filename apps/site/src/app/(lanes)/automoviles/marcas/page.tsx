@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   title: 'Marcas — Automóviles | Wings Global Trade',
   description:
     'Once fabricantes, un solo escritorio: Toyota, Jetour, KIA, Audi, BMW, Hyundai, Mercedes-Benz, MG, Star 5, Changan y Wuling. Catálogo directo de fábrica, consulta técnica sin registro.',
+  alternates: { canonical: '/automoviles/marcas' },
 }
 
 export default async function AutomovilesMarcasPage() {

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import type { Category } from '@/types/database'
+import { categoryHref } from '@/lib/category-href'
 
 const CATEGORY_IMAGES: Record<string, { src: string; objectPosition?: string }> = {
   'maquinaria-agricola': { src: '/images/categories/agricola-desktop.png' },
@@ -47,7 +48,7 @@ function CategoryCard({ category, index, priority, sizes }: CardProps) {
   const num  = String(index + 1).padStart(2, '0')
 
   return (
-    <Link href={`/catalogo/${category.slug}`} className="block h-full">
+    <Link href={categoryHref(category.slug)} className="block h-full">
       <motion.article
         whileHover="hover"
         className="group relative h-full overflow-hidden cursor-pointer"

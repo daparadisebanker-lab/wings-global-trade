@@ -1,11 +1,57 @@
 # Automóviles — scope & perspective (car-first direction)
 
 **Status: WGT/07 — Phase 0, 1, 2 COMPLETE. Phase 2 re-derived 2026-08-24
-(showroom pivot). Phase 3 (IA / route migration) SUBSTANTIALLY LIVE: the
-lane now has both taxonomy axes as real pages (5 segment drill-downs + 11
-brand pages), a persistent in-lane nav, and a comprehensive landing page —
-`(lanes)/automoviles/` stamps `[data-lane="automoviles"]` for real.
-`/catalogo/automoviles` still exists in parallel and is not yet redirected.**
+(showroom pivot). Phase 3 (IA / route migration) COMPLETE: both taxonomy
+axes are real pages (5 segment drill-downs + 11 brand pages), a persistent
+in-lane nav, a comprehensive landing page, and `/catalogo/automoviles` now
+308-redirects to `/automoviles` (verified live — every first-party link on
+the site points directly at the new URL; only external/indexed links to the
+old one round-trip through the redirect).**
+
+## 0e · Redirect (2026-08-24, same day)
+
+`next.config.mjs` now 308-redirects `/catalogo/automoviles` → `/automoviles`,
+including 11 brand-specific `?brand=X` redirects to the real brand pages
+(matched by exact `has` query value, checked before the bare fallback since
+Next.js resolves `redirects()` in array order) and a `?fuel=hibrido`
+fallback to the lane root (no dedicated hybrid view exists yet — MegaMenu's
+own "Híbridos" link carries the identical honest caveat). Individual
+product-detail pages (`/catalogo/automoviles/{slug}`) are **deliberately
+NOT redirected** — the new lane has no per-model detail route yet (brand
+pages show a card grid, not a drill-down), and the old generic
+`/catalogo/[category]/[slug]` page still renders full, correct specs;
+redirecting those would have traded a working page for a worse one.
+
+All nine first-party call sites that built `/catalogo/${slug}` inline
+(SiteNav, MegaMenu ×2, MobileMenu, Footer ×2, CategoryGrid, CategoryNav,
+NavCategoryDropdown — the last unused in production, fixed anyway since it
+cost one line) now route through one helper, `@/lib/category-href.ts`,
+rather than duplicating the automóviles special-case nine times. `sitemap.ts`
+gained entries for `/automoviles`, the 5 segment pages and 11 brand pages,
+and its generic category loop excludes automóviles (already listed with its
+own priority) so the redirect's origin URL never appears in the sitemap.
+`catalogo/page.tsx`'s bare-`/catalogo` redirect goes straight to
+`/automoviles` now too, avoiding a double-hop through the new redirect.
+
+**A real, verified-not-assumed finding:** the brand-specific redirects
+forward their query string by default (documented Next.js behavior — a
+`has` match on a literal value, not a named capture group, doesn't get
+"consumed"), so `?brand=Toyota` lands as `/automoviles/marcas/toyota
+?brand=Toyota`, not a clean URL. Confirmed live with `curl -L`, not assumed.
+Fixed with `alternates.canonical` on the lane root, roster, segment and
+brand pages, so search engines treat the query-string variant as the same
+page rather than flagging duplicate content — also confirmed live, the
+canonical tag renders correctly stripped.
+
+**A second, genuinely positive side effect, also verified:** adding
+automóviles to `@/lib/lanes/registry.ts`'s `LANES` array — done in the
+earlier navigation pass, before this route existed — was inert until this
+redirect shipped. Now that `/automoviles` is a real top-level route,
+`laneFromPath()` resolves it and the existing `LaneScope` mechanism (root
+`<html data-lane="...">`, the same one Interiores already uses) themes the
+*global* SiteNav and Footer chrome — not just the lane's own content — on
+every automóviles page. This was always the intended behavior once the
+migration landed; it needed no additional code, just the route to exist.
 
 ## 0d · In-lane navigation + segment IA (2026-08-24, same day)
 

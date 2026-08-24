@@ -31,6 +31,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: `${segment.name.es} — Automóviles | Wings Global Trade`,
     description: `Modelos ${segment.name.es.toLowerCase()} de las 11 marcas en catálogo. Consulta técnica sin registro, cotización por unidad configurada o por contenedor.`,
+    alternates: { canonical: `/automoviles/${segment.slug}` },
   }
 }
 

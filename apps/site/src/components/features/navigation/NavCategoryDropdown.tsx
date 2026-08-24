@@ -5,6 +5,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Category } from '@/types/database'
+import { categoryHref } from '@/lib/category-href'
 
 interface NavCategoryDropdownProps {
   categories: Category[]
@@ -39,7 +40,7 @@ export function NavCategoryDropdown({ categories }: NavCategoryDropdownProps) {
               {categories.map((c) => (
                 <li key={c.id}>
                   <Link
-                    href={`/catalogo/${c.slug}`}
+                    href={categoryHref(c.slug)}
                     className="block rounded-wings px-3 py-2 font-body text-sm text-navy transition-colors hover:bg-warm-white"
                   >
                     {c.name_es}
