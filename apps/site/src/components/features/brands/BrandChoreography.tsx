@@ -137,19 +137,46 @@ export function BrandChoreography({ children }: { children: React.ReactNode }) {
   return <div ref={rootRef}>{children}</div>
 }
 
+export interface BrandCurtainProps {
+  /**
+   * CSS selector for the scope element the incoming page stamps — e.g.
+   * `[data-brand]` (RB) or `[data-oem]` (WGT/07 automóviles). Defaults to
+   * RB's original selector so every existing call site is unaffected.
+   */
+  scopeSelector?: string
+  /** Custom property read off that scope element for the flood color. */
+  accentVar?: string
+  /** `dataset` key (camelCase) carrying the mark image URL, if any. */
+  markDataKey?: string
+  /** Fallback flood color when no scope element is present on arrival. */
+  fallbackColor?: string
+}
+
 /**
  * Route curtain (SPEC §2.6): Barba's curtain is an MPA technique — the App
  * Router equivalent is an arrival wipe on route change WITHIN the canvas.
  *
- * Color + mark resolve AT TRANSITION TIME from the [data-brand] scope the
- * page is arriving into (the curtain itself mounts outside that scope, so
- * a static var() lookup always fell back to navy — the bug Muaaz caught).
- * Inside a brand space the flood is the brand accent and carries the
- * brand's isotipo centered near the top edge of the block (the odd-ritual
- * image-wrapped wipe): «right now, you are in an Áladín space». On the
- * /marcas roster (no brand scope) it stays Wings navy, mark-less.
+ * Color + mark resolve AT TRANSITION TIME from the scope the page is
+ * arriving into (the curtain itself mounts outside that scope, so a static
+ * var() lookup always fell back to navy — the bug Muaaz caught). Inside a
+ * brand space the flood is the brand accent and carries the brand's mark
+ * centered near the top edge of the block (the odd-ritual image-wrapped
+ * wipe): «right now, you are in an Áladín space». Outside any scope it
+ * stays the fallback color, mark-less.
+ *
+ * GENERALIZED 2026-08-24 for WGT/07 Automóviles (see programs/automobiles/
+ * SCOPE.md): every prop defaults to RB's exact original behavior, so this
+ * change is additive-only — no existing call site (apps/site/src/app/
+ * (brands)/layout.tsx) needed to change. A second mount in (lanes)/
+ * automoviles/layout.tsx passes scopeSelector="[data-oem]",
+ * accentVar="--oem-accent" to flood in each OEM brand's own color instead.
  */
-export function BrandCurtain() {
+export function BrandCurtain({
+  scopeSelector = '[data-brand]',
+  accentVar = '--rb-accent',
+  markDataKey = 'brandIsotipo',
+  fallbackColor = 'var(--livery-navy)',
+}: BrandCurtainProps = {}) {
   const pathname = usePathname()
   const curtainRef = useRef<HTMLDivElement>(null)
   const markRef = useRef<HTMLImageElement>(null)
@@ -165,17 +192,17 @@ export function BrandCurtain() {
       const el = curtainRef.current
       if (!el) return
 
-      // The new page has committed by effect time — read ITS brand scope.
-      const brandEl = document.querySelector<HTMLElement>('[data-brand]')
-      const accent = brandEl
-        ? getComputedStyle(brandEl).getPropertyValue('--rb-accent').trim()
+      // The new page has committed by effect time — read ITS scope.
+      const scopeEl = document.querySelector<HTMLElement>(scopeSelector)
+      const accent = scopeEl
+        ? getComputedStyle(scopeEl).getPropertyValue(accentVar).trim()
         : ''
-      el.style.background = accent || 'var(--livery-navy)'
+      el.style.background = accent || fallbackColor
 
-      const isotipo = brandEl?.dataset.brandIsotipo ?? ''
+      const mark = scopeEl?.dataset[markDataKey] ?? ''
       if (markRef.current) {
-        if (isotipo) {
-          markRef.current.src = isotipo
+        if (mark) {
+          markRef.current.src = mark
           markRef.current.style.display = 'block'
         } else {
           markRef.current.style.display = 'none'
@@ -203,7 +230,7 @@ export function BrandCurtain() {
       ref={curtainRef}
       aria-hidden
       className="pointer-events-none fixed inset-0 z-40 opacity-0"
-      style={{ background: 'var(--livery-navy)', transform: 'translateY(101%)' }}
+      style={{ background: fallbackColor, transform: 'translateY(101%)' }}
     >
       {/* The mark rides the flood — dead center, generously sized */}
       {/* eslint-disable-next-line @next/next/no-img-element */}

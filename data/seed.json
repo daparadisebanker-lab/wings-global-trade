@@ -1367,7 +1367,8 @@
           "hibrido"
         ],
         "transmission": "Automática / e-CVT",
-        "traction": "Delantera"
+        "traction": "Delantera",
+        "segment": "sedan"
       },
       "is_active": true,
       "sort_order": 1,
@@ -1415,7 +1416,8 @@
           "hibrido"
         ],
         "transmission": "CVT / E-CVT",
-        "traction": "Delantera"
+        "traction": "Delantera",
+        "segment": "sedan"
       },
       "is_active": true,
       "sort_order": 2,
@@ -1471,7 +1473,8 @@
           "hibrido"
         ],
         "transmission": "CVT",
-        "traction": "Delantera"
+        "traction": "Delantera",
+        "segment": "suv-compacto"
       },
       "is_active": true,
       "sort_order": 3,
@@ -1527,7 +1530,8 @@
           "hibrido"
         ],
         "transmission": "Automática / e-CVT",
-        "traction": "Integral AWD (2WD en versiones híbridas de entrada)"
+        "traction": "Integral AWD (2WD en versiones híbridas de entrada)",
+        "segment": "suv-mediano-grande"
       },
       "is_active": true,
       "sort_order": 4,
@@ -1564,7 +1568,8 @@
         "brand": "Toyota",
         "fuel": "hibrido",
         "transmission": "Automática",
-        "traction": "Integral 4x4"
+        "traction": "Integral 4x4",
+        "segment": "suv-todoterreno"
       },
       "is_active": true,
       "sort_order": 5,
@@ -1617,7 +1622,8 @@
         "brand": "Jetour",
         "fuel": "gasolina",
         "transmission": "DCT",
-        "traction": "Delantera"
+        "traction": "Delantera",
+        "segment": "suv-compacto"
       },
       "is_active": true,
       "sort_order": 6,
@@ -1674,7 +1680,8 @@
         "brand": "Jetour",
         "fuel": "gasolina",
         "transmission": "Automática 8 velocidades",
-        "traction": "Integral (XWD) en versiones 2.0T"
+        "traction": "Integral (XWD) en versiones 2.0T",
+        "segment": "suv-todoterreno"
       },
       "is_active": true,
       "sort_order": 7,
@@ -1715,7 +1722,8 @@
         "brand": "Jetour",
         "fuel": "gasolina",
         "transmission": "DCT 7 velocidades",
-        "traction": "Delantera"
+        "traction": "Delantera",
+        "segment": "suv-mediano-grande"
       },
       "is_active": true,
       "sort_order": 8,
@@ -1756,7 +1764,8 @@
         "brand": "Jetour",
         "fuel": "gasolina",
         "transmission": "DCT 6 velocidades",
-        "traction": "Delantera"
+        "traction": "Delantera",
+        "segment": "suv-mediano-grande"
       },
       "is_active": true,
       "sort_order": 9,
@@ -1797,7 +1806,8 @@
         "brand": "KIA",
         "fuel": "gasolina",
         "transmission": "Automática / CVT",
-        "traction": "Delantera"
+        "traction": "Delantera",
+        "segment": "sedan"
       },
       "is_active": true,
       "sort_order": 10,
@@ -1834,7 +1844,8 @@
         "brand": "KIA",
         "fuel": "gasolina",
         "transmission": "CVT",
-        "traction": "Delantera"
+        "traction": "Delantera",
+        "segment": "suv-compacto"
       },
       "is_active": true,
       "sort_order": 11,
@@ -1883,7 +1894,8 @@
         "brand": "KIA",
         "fuel": "gasolina",
         "transmission": "CVT / Automática",
-        "traction": "Delantera"
+        "traction": "Delantera",
+        "segment": "suv-compacto"
       },
       "is_active": true,
       "sort_order": 12,
@@ -1936,7 +1948,8 @@
         "brand": "KIA",
         "fuel": "gasolina",
         "transmission": "DCT / Automática",
-        "traction": "Delantera (4WD en versión 2.0T)"
+        "traction": "Delantera (4WD en versión 2.0T)",
+        "segment": "suv-compacto"
       },
       "is_active": true,
       "sort_order": 13,
@@ -1977,7 +1990,8 @@
         "brand": "Audi",
         "fuel": "gasolina",
         "transmission": "DCT 7 velocidades",
-        "traction": "Delantera"
+        "traction": "Delantera",
+        "segment": "sedan"
       },
       "is_active": true,
       "sort_order": 14,
@@ -2014,7 +2028,8 @@
         "brand": "Audi",
         "fuel": "gasolina",
         "transmission": "DCT 7 velocidades",
-        "traction": "Delantera (4WD quattro opcional)"
+        "traction": "Delantera (4WD quattro opcional)",
+        "segment": "sedan"
       },
       "is_active": true,
       "sort_order": 15,
@@ -2051,7 +2066,8 @@
         "brand": "Audi",
         "fuel": "gasolina",
         "transmission": "DCT 7 velocidades",
-        "traction": "Delantera (quattro en versiones superiores)"
+        "traction": "Delantera (quattro en versiones superiores)",
+        "segment": "sedan"
       },
       "is_active": true,
       "sort_order": 16,
@@ -2088,7 +2104,8 @@
         "brand": "Audi",
         "fuel": "gasolina",
         "transmission": "Automática",
-        "traction": "Delantera"
+        "traction": "Delantera",
+        "segment": "sedan"
       },
       "is_active": true,
       "sort_order": 17,
@@ -2125,7 +2142,8 @@
         "brand": "Audi",
         "fuel": "gasolina",
         "transmission": "Automática",
-        "traction": "Delantera"
+        "traction": "Delantera",
+        "segment": "sedan"
       },
       "is_active": true,
       "sort_order": 18,
@@ -2162,7 +2180,8 @@
         "brand": "Audi",
         "fuel": "gasolina",
         "transmission": "DCT 7 velocidades",
-        "traction": "Delantera"
+        "traction": "Delantera",
+        "segment": "suv-compacto"
       },
       "is_active": true,
       "sort_order": 19,
@@ -2203,7 +2222,8 @@
         "brand": "Audi",
         "fuel": "gasolina",
         "transmission": "DCT 7 velocidades",
-        "traction": "Delantera (quattro disponible)"
+        "traction": "Delantera (quattro disponible)",
+        "segment": "suv-mediano-grande"
       },
       "is_active": true,
       "sort_order": 20,
@@ -2240,7 +2260,8 @@
         "brand": "BMW",
         "fuel": "gasolina",
         "transmission": "Automática 8 velocidades",
-        "traction": "Trasera"
+        "traction": "Trasera",
+        "segment": "sedan"
       },
       "is_active": true,
       "sort_order": 21,
@@ -2277,7 +2298,8 @@
         "brand": "BMW",
         "fuel": "gasolina",
         "transmission": "Automática",
-        "traction": "Delantera (xDrive disponible)"
+        "traction": "Delantera (xDrive disponible)",
+        "segment": "suv-compacto"
       },
       "is_active": true,
       "sort_order": 22,
@@ -2318,7 +2340,8 @@
         "brand": "BMW",
         "fuel": "gasolina",
         "transmission": "Automática 8 velocidades",
-        "traction": "Integral xDrive"
+        "traction": "Integral xDrive",
+        "segment": "suv-mediano-grande"
       },
       "is_active": true,
       "sort_order": 23,
@@ -2359,7 +2382,8 @@
         "brand": "Hyundai",
         "fuel": "gasolina",
         "transmission": "CVT",
-        "traction": "Delantera"
+        "traction": "Delantera",
+        "segment": "sedan"
       },
       "is_active": true,
       "sort_order": 24,
@@ -2396,7 +2420,8 @@
         "brand": "Hyundai",
         "fuel": "gasolina",
         "transmission": "Automática",
-        "traction": "Delantera"
+        "traction": "Delantera",
+        "segment": "suv-compacto"
       },
       "is_active": true,
       "sort_order": 25,
@@ -2433,7 +2458,8 @@
         "brand": "Hyundai",
         "fuel": "gasolina",
         "transmission": "DCT / Automática",
-        "traction": "Delantera"
+        "traction": "Delantera",
+        "segment": "suv-compacto"
       },
       "is_active": true,
       "sort_order": 26,
@@ -2478,7 +2504,8 @@
         "brand": "Mercedes-Benz",
         "fuel": "gasolina",
         "transmission": "Automática 9G-Tronic",
-        "traction": "Trasera"
+        "traction": "Trasera",
+        "segment": "sedan"
       },
       "is_active": true,
       "sort_order": 27,
@@ -2523,7 +2550,8 @@
         "brand": "Star 5",
         "fuel": "gasolina",
         "transmission": "Manual / Automática",
-        "traction": "Delantera"
+        "traction": "Delantera",
+        "segment": "sedan"
       },
       "is_active": true,
       "sort_order": 28,
@@ -2564,7 +2592,8 @@
         "brand": "MG",
         "fuel": "gasolina",
         "transmission": "Automática",
-        "traction": "Delantera"
+        "traction": "Delantera",
+        "segment": "sedan"
       },
       "is_active": true,
       "sort_order": 29,
@@ -2601,7 +2630,8 @@
         "brand": "Changan",
         "fuel": "gasolina",
         "transmission": "Manual 5 velocidades",
-        "traction": "Trasera (motor central)"
+        "traction": "Trasera (motor central)",
+        "segment": "mpv-furgoneta"
       },
       "is_active": true,
       "sort_order": 30,
@@ -2638,7 +2668,8 @@
         "brand": "Wuling",
         "fuel": "gasolina",
         "transmission": "Manual 5 velocidades",
-        "traction": "Trasera"
+        "traction": "Trasera",
+        "segment": "mpv-furgoneta"
       },
       "is_active": true,
       "sort_order": 31,

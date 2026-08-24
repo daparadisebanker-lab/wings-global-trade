@@ -1,0 +1,131 @@
+/* ============================================================
+   WGT/07 Automóviles — per-OEM-brand token contract
+   ------------------------------------------------------------
+   Same mechanism as apps/site/src/app/(brands)/rb-canvas.css, deliberately
+   NOT the same namespace: RB's [data-brand] means a Represented Brand
+   Wings hosts (RB/xx, ALLOCATION archetype, its own white canvas). These
+   are OEM manufacturers Wings imports FROM — a different concept that
+   must never collide with RB's in a selector or a buyer's mental model
+   (flagged in programs/automobiles/SCOPE.md §3). Hence [data-oem], and
+   every rule below is compound-scoped under [data-lane="automoviles"] so
+   it can never leak outside the lane or shadow an RB brand page.
+
+   Ground stays the lane's own white (livery.css) — this file ONLY adds
+   the --oem-accent pair per brand. A brand page doesn't get a different
+   ground, it gets its own color layered onto the same showroom floor.
+
+   RESEARCHED, NOT INVENTED. Sourced where an official hex exists;
+   flagged honestly where it doesn't (Changan, Star 5) rather than
+   presented with false precision. See programs/automobiles/SCOPE.md for
+   the full sourcing notes. Deliberately NOT hue-separated from each
+   other, unlike WGT lane accents against the registry: several of these
+   manufacturers are authentically red or authentically blue in real
+   life, and forcing artificial separation would be less honest than
+   accepting that logo + name label — not hue — disambiguate a real
+   showroom floor, same as any dealer site carrying Toyota and KIA on
+   the same page.
+
+   Every one of the 11 clears 4.5:1 on white directly (measured), so
+   unlike the lane's own ion-blue accent, none needed a separate darker
+   --oem-accent-ink split — the authentic brand color IS the text-safe
+   color here. The pair is still declared for both, matching every other
+   lane's "organs read -ink unconditionally" convention.
+   ============================================================ */
+
+/* Toyota — 4.57:1 on white. Confirmed: Toyota Red. */
+[data-lane='automoviles'][data-oem='toyota'] {
+  --oem-accent: #eb0a1e;
+  --oem-accent-ink: #eb0a1e;
+  --oem-accent-soft: rgba(235, 10, 30, 0.08);
+  --oem-accent-border: rgba(235, 10, 30, 0.3);
+}
+
+/* Jetour — 17.40:1 on white. Sourced: primary identity is black/white per
+   brand guidelines (red is a secondary badge variant only) — using the
+   confirmed primary rather than an unconfirmed red hex. */
+[data-lane='automoviles'][data-oem='jetour'] {
+  --oem-accent: #1a1a1a;
+  --oem-accent-ink: #1a1a1a;
+  --oem-accent-soft: rgba(26, 26, 26, 0.06);
+  --oem-accent-border: rgba(26, 26, 26, 0.25);
+}
+
+/* KIA — 6.43:1 on white. Confirmed: "Kia Live Red", 2021 rebrand. */
+[data-lane='automoviles'][data-oem='kia'] {
+  --oem-accent: #bb162c;
+  --oem-accent-ink: #bb162c;
+  --oem-accent-soft: rgba(187, 22, 44, 0.08);
+  --oem-accent-border: rgba(187, 22, 44, 0.3);
+}
+
+/* Audi — 21.00:1 on white. Confirmed: four-rings identity is monochrome
+   black/silver by design — no saturated brand color exists to source. */
+[data-lane='automoviles'][data-oem='audi'] {
+  --oem-accent: #000000;
+  --oem-accent-ink: #000000;
+  --oem-accent-soft: rgba(0, 0, 0, 0.06);
+  --oem-accent-border: rgba(0, 0, 0, 0.25);
+}
+
+/* BMW — 5.94:1 on white. Confirmed: roundel blue. */
+[data-lane='automoviles'][data-oem='bmw'] {
+  --oem-accent: #0066b1;
+  --oem-accent-ink: #0066b1;
+  --oem-accent-soft: rgba(0, 102, 177, 0.08);
+  --oem-accent-border: rgba(0, 102, 177, 0.3);
+}
+
+/* Hyundai — 13.77:1 on white. Confirmed: "Hyundai Blue". */
+[data-lane='automoviles'][data-oem='hyundai'] {
+  --oem-accent: #002c5f;
+  --oem-accent-ink: #002c5f;
+  --oem-accent-soft: rgba(0, 44, 95, 0.08);
+  --oem-accent-border: rgba(0, 44, 95, 0.3);
+}
+
+/* Mercedes-Benz — 15.73:1 on white. Sourced heritage: silver-arrow /
+   anthracite, no saturated brand color, same reasoning as Audi. */
+[data-lane='automoviles'][data-oem='mercedes-benz'] {
+  --oem-accent: #20232a;
+  --oem-accent-ink: #20232a;
+  --oem-accent-soft: rgba(32, 35, 42, 0.06);
+  --oem-accent-border: rgba(32, 35, 42, 0.25);
+}
+
+/* MG — 4.85:1 on white. Confirmed: British racing red heritage. */
+[data-lane='automoviles'][data-oem='mg'] {
+  --oem-accent: #e4002b;
+  --oem-accent-ink: #e4002b;
+  --oem-accent-soft: rgba(228, 0, 43, 0.08);
+  --oem-accent-border: rgba(228, 0, 43, 0.3);
+}
+
+/* Changan — 9.50:1 on white. APPROXIMATE: sources confirm "deep blue" as
+   core brand color but no single official hex was found — pending an
+   official brand kit. */
+[data-lane='automoviles'][data-oem='changan'] {
+  --oem-accent: #003da5;
+  --oem-accent-ink: #003da5;
+  --oem-accent-soft: rgba(0, 61, 165, 0.08);
+  --oem-accent-border: rgba(0, 61, 165, 0.3);
+}
+
+/* Star 5 — 6.40:1 on white. APPROXIMATE: no independently published brand
+   palette found (a Changan-family nameplate) — using a lighter tint of
+   the Changan family blue rather than an invented unrelated hue, pending
+   confirmation. */
+[data-lane='automoviles'][data-oem='star-5'] {
+  --oem-accent: #2e5fa3;
+  --oem-accent-ink: #2e5fa3;
+  --oem-accent-soft: rgba(46, 95, 163, 0.08);
+  --oem-accent-border: rgba(46, 95, 163, 0.3);
+}
+
+/* Wuling — 5.88:1 on white. Confirmed: "Wuling Red" classic badge (a
+   silver badge exists as an alt for newer global models). */
+[data-lane='automoviles'][data-oem='wuling'] {
+  --oem-accent: #c8102e;
+  --oem-accent-ink: #c8102e;
+  --oem-accent-soft: rgba(200, 16, 46, 0.08);
+  --oem-accent-border: rgba(200, 16, 46, 0.3);
+}

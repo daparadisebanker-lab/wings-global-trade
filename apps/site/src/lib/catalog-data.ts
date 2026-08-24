@@ -76,6 +76,9 @@ export interface ProductQuery {
   brand?: string
   /** Fuel type — gasolina | diesel | gnc | electrico | multi. Migration 0009. */
   fuel?: string
+  /** Body-type segment slug (WGT/07 Automóviles canonical taxonomy — see
+   * packages/liveries/automoviles/lane.config.ts) — e.g. "suv-compacto". */
+  segment?: string
   /** Payload/tonnage bucket — mini | ligero | mediano | pesado. Migration 0009. */
   payload?: string
   /** Usage type — carga | volteo | pasajeros. Migration 0009. */
@@ -145,6 +148,10 @@ export async function getProducts(
 
   if (query.fuel) {
     builder = builder.eq('filter_attrs->>fuel', query.fuel)
+  }
+
+  if (query.segment) {
+    builder = builder.eq('filter_attrs->>segment', query.segment)
   }
 
   if (query.payload) {
@@ -483,6 +490,9 @@ function filterSeedProducts(
   }
   if (query.fuel) {
     list = list.filter((p) => (p.filter_attrs as Record<string, unknown> | undefined)?.fuel === query.fuel)
+  }
+  if (query.segment) {
+    list = list.filter((p) => (p.filter_attrs as Record<string, unknown> | undefined)?.segment === query.segment)
   }
   if (query.payload) {
     list = list.filter((p) => (p.filter_attrs as Record<string, unknown> | undefined)?.payload === query.payload)

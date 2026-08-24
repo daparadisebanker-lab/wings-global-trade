@@ -9,9 +9,18 @@ reorder existing rows; lane codes are permanent.**
 |------|------|------|--------|--------|-----------|---------|--------|
 | —    | wings | Wings Global Trade (house) | `#001E50` navy | `#C4933F` harvest gold | ~38° | none/high-key | HOUSE (pre-onboarding) |
 | WGT/02 | interiores | Interiores | `#F5F1E8` bone | `#6B2A2A` oxblood | 0.0° (37.9° vs house) | linen-paper | OPENING |
-| WGT/07 | automoviles | Automóviles | `#15161B` asphalt | `#5590FF` ion blue | 219.2° (178.8° vs house) | blueprint-grid | OPENING |
+| WGT/07 | automoviles | Automóviles | `#FFFFFF` white *(amended 2026-08-24)* | `#5590FF` ion blue / `#2F5BC7` ink | 219.2° (178.8° vs house) | blueprint-grid | OPENING |
 
 Notes:
+- **WGT/07's ground was amended 2026-08-24 — showroom pivot.** The row
+  above reflects current state; the original dark-asphalt derivation is
+  NOT deleted, it's preserved in full below (### WGT/07 accent derivation)
+  with a note explaining the supersession, same as any other amendment in
+  this codebase (e.g. root `CLAUDE.md`'s macOS material amendment). Accent
+  hue is unchanged by the ground flip — only its role changed, and it
+  gained an `--accent-ink` split it didn't need on the dark ground (full
+  ion blue measures only 3.08:1 on white). Full re-derivation below the
+  original.
 - **WGT/07's code jumps from 02 to 07 on purpose, not a gap to fill.** §3's
   archetype table pre-names WGT/01 Machinery, /03 Provisions, /04 Living,
   /05 Representation, /06 Export as the ecosystem's planned six; automóviles
@@ -103,6 +112,86 @@ motif, apt for a catalogue whose whole pitch is a configured, specified unit.
 
 **Type posture, step 6.** `compressed-caps` — EQUIPMENT's fixed posture (§2 step
 6), not a choice. Same variable family as every lane; no new typeface.
+
+**SUPERSEDED 2026-08-24 — see below.** The derivation above was correct for
+the brief it was given (a single-vendor EQUIPMENT lane). The brief changed:
+automóviles is a multi-brand showroom, and this record stays exactly as
+measured — nothing here was wrong, the ground it was answering changed.
+
+### WGT/07 ground re-derivation — showroom pivot (measured 2026-08-24)
+
+Account owner's redirect: "centered into a light and elegant white
+background... proper multi brand dealer... brand imagery, multiple colors."
+Run through `/visual-audit`: a single dark identity fights the thing an
+11-brand showroom needs to showcase — each brand's own color and imagery.
+Re-derived against the same §Phase-2 rules, not re-chosen by taste:
+
+**Ground, step 1 — reversed.** `#FFFFFF` white. EQUIPMENT's "may go dark"
+was always permissive, never mandatory — and the identical argument RB's
+`(brands)` white canvas already documents applies here with equal force
+once automóviles became a multi-palette context: "multiple partner palettes
+need a neutral ground, or [a single identity] tints/fights them."
+
+**Ink, step 2.** `#15161B` — the *original ground*, reused as ink. 18.06:1
+on white. Continuity, not coincidence: the industrial read didn't disappear,
+it moved from background to text.
+
+**Accent, steps 3–4 — re-measured, not re-chosen.** Ion blue's rationale is
+unchanged (every trim's LED DRL/xenon glow, the one signal every brand
+shares) and its hue is unchanged (219.2°, same 178.8°/140.8°/136.2°
+separation from house/Interiores/RB/01). What changed: on white, full
+saturation (`#5590FF`) measures only **3.08:1** — fails the 4.5:1 text
+gate it cleared easily on the dark ground. Rather than abandon the hue,
+split it the way RB's Áladín green already had to (4.10:1 on white, needing
+`--rb-accent-ink` at 5.78:1): `--accent` stays `#5590FF` for decoration/large
+graphics only (≥3:1, WCAG's large-text floor); `--accent-ink` is `#2F5BC7`
+— same hue family, 6.10:1 on white — carries links, labels, borders-as-signal.
+The lane's own accent now plays a deliberately quiet role (roster page,
+focus rings, the lane stamp) — the showroom's loud voice belongs to each
+OEM brand's own color, registered separately below.
+
+**Texture, step 5 — unchanged mechanism, more authentic register.** Same
+two crossed repeating-linear-gradients, inverted for the new ground: pale
+ion-blue lines on white is the more universally recognized "blueprint"
+register (pale blue linework on white/cream paper) than the dark-ground
+version was.
+
+**Type posture, step 6.** Unchanged — `compressed-caps` is independent of
+ground color.
+
+Full token set: `packages/liveries/automoviles/livery.css`.
+
+### OEM brand accents (WGT/07 showroom layer, registered 2026-08-24)
+
+Not a lane accent and not subject to the ≥30° hue-separation rule above —
+these are the 11 manufacturers Wings imports FROM, layered onto the lane's
+white ground via `[data-oem="{slug}"]`, compound-scoped under
+`[data-lane="automoviles"]` so the selector can never collide with RB's own
+`[data-brand]` namespace. Researched, not invented; flagged where no
+official hex was found rather than presented with false precision. All 11
+clear 4.5:1 on white directly:
+
+| Brand | Accent | On white | Source |
+|-------|--------|----------|--------|
+| Toyota | `#EB0A1E` | 4.57:1 | confirmed — Toyota Red |
+| Jetour | `#1A1A1A` | 17.40:1 | confirmed primary (black/white); red is a secondary badge variant only, not guessed |
+| KIA | `#BB162C` | 6.43:1 | confirmed — "Kia Live Red," 2021 rebrand |
+| Audi | `#000000` | 21.00:1 | confirmed — four-rings identity is monochrome by design |
+| BMW | `#0066B1` | 5.94:1 | confirmed — roundel blue |
+| Hyundai | `#002C5F` | 13.77:1 | confirmed — "Hyundai Blue" |
+| Mercedes-Benz | `#20232A` | 15.73:1 | sourced heritage — silver-arrow/anthracite, no saturated brand color, same reasoning as Audi |
+| MG | `#E4002B` | 4.85:1 | confirmed — British racing red heritage |
+| Changan | `#003DA5` | 9.50:1 | **APPROXIMATE** — "deep blue" confirmed as core color, no single official hex found |
+| Star 5 | `#2E5FA3` | 6.40:1 | **APPROXIMATE** — no independent brand palette published (Changan-family nameplate); lighter tint of the Changan-family blue rather than an invented unrelated hue |
+| Wuling | `#C8102E` | 5.88:1 | confirmed — "Wuling Red" classic badge |
+
+Deliberately NOT hue-separated from each other: several are authentically
+red or authentically blue in real life (Toyota/KIA/MG/Wuling; BMW/Hyundai/
+Changan/Star 5), and forcing artificial separation would be less honest
+than accepting that logo + name label — not hue — disambiguate a real
+showroom floor, the same way any multi-brand dealer site carries Toyota
+and KIA on one page. Full token set: `packages/liveries/automoviles/
+oem-canvas.css`.
 
 ## Represented brands (RB/xx — append-only, same law as lane codes)
 

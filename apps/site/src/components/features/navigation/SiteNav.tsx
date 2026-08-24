@@ -128,9 +128,11 @@ export function SiteNav({ categories }: SiteNavProps) {
     pathname?.startsWith('/contenedor') ||
     // Brand shelves sit on the pure-white canvas — transparent nav is illegible there
     pathname?.startsWith('/marcas') ||
-    // Lane grounds are light (bone). A transparent nav over them needs a scrim,
-    // and a navy scrim on bone reads as grey mud — go solid immediately.
-    pathname?.startsWith('/interiores')
+    // Lane grounds are light (bone / white). A transparent nav over them
+    // needs a scrim, and a navy scrim on a light ground reads as grey mud —
+    // go solid immediately.
+    pathname?.startsWith('/interiores') ||
+    pathname?.startsWith('/automoviles')
   const solid = scrolled || forceSolid
 
   return (

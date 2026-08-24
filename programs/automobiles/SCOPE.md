@@ -1,9 +1,78 @@
 # Automóviles — scope & perspective (car-first direction)
 
-**Status: WGT/07 — Phase 0 (qualification), Phase 1 (lane registration) and
-Phase 2 (livery derivation) COMPLETE, 2026-08-23. Phase 3 (IA / route
-migration) pending — the lane still renders at `/catalogo/automoviles` on
-shared house chrome; nothing stamps `[data-lane="automoviles"]` yet.**
+**Status: WGT/07 — Phase 0, 1, 2 COMPLETE. Phase 2 re-derived 2026-08-24
+(showroom pivot). Phase 3 (IA / route migration) now PARTIALLY LIVE: new
+`(lanes)/automoviles/` routes exist and stamp `[data-lane="automoviles"]`
+for real (lane root, brand roster, per-brand pages) — `/catalogo/automoviles`
+still exists in parallel and is not yet redirected.**
+
+## 0c · Showroom pivot (2026-08-24) — Phase 2 re-derived, Phase 3 begun
+
+The account owner reviewed the dark asphalt/ion-blue direction and redirected
+it: WGT/07 is a **multi-brand showroom** (11 OEM factories under one desk),
+not a single-vendor EQUIPMENT lane, and a single dark identity fights the
+thing it needs to showcase — eleven brands' own colors. Run through
+`/visual-audit`, `/creativity-engineer` and `/engineering-quality-audit`
+explicitly at the account owner's request; findings and the resulting build:
+
+- **Ground flipped to white** (`#FFFFFF`), superseding the dark asphalt
+  derivation — not deleted, amended in place in `packages/liveries/
+  registry.md` (append-only discipline: the old derivation table stays
+  readable, a new one explains what changed and why). Same argument RB's
+  `(brands)` white canvas already uses: multiple palettes need a neutral
+  ground.
+- **The lane's own ion-blue accent stays**, but its role shrank: it's now
+  the *lane's* quiet signature (roster page, segment browsing, focus rings,
+  the lane stamp) rather than the dominant color of every product. It also
+  needed a genuine re-derivation once the ground flipped — full ion-blue on
+  white measures only 3.08:1 (fails text contrast), so it split into
+  `--accent` (decorative/large-graphics, ≥3:1) and `--accent-ink` (a deeper
+  cobalt in the same hue family, 6.10:1, text-safe) — the exact pattern
+  RB's Áladín green already uses for the identical reason.
+- **11 OEM brands got their own researched, sourced accent colors** —
+  `packages/liveries/automoviles/oem-canvas.css`, `[data-oem="{slug}"]`,
+  compound-scoped under `[data-lane="automoviles"]` so it can never collide
+  with RB's own `[data-brand]` namespace (flagged in §3 below since before
+  this build existed). Sourced where an official hex exists (Toyota,
+  KIA, Audi, BMW, Hyundai, MG, Wuling all confirmed); flagged honestly as
+  approximate where it doesn't (Changan's exact blue, and Star 5 — a
+  Changan-family nameplate with no independently published palette). All 11
+  clear 4.5:1 on white directly — none needed the ink-split ion-blue did.
+  Deliberately **not** hue-separated from each other the way WGT lane
+  accents are against the registry: several are authentically red or
+  authentically blue in real life, and logo + name label — not hue —
+  disambiguate a real showroom floor.
+- **Reused RB's motion machinery rather than forking it** (prime directive
+  #1): `BrandChoreography` (scroll reveals) is fully brand-agnostic already
+  and reused verbatim, zero changes. `BrandCurtain` (the route-entry color
+  flood — the actual "one thing," the moment a buyer knows which brand's
+  world they just entered) was generalized with additive, default-preserving
+  props (`scopeSelector`, `accentVar`, `markDataKey`, `fallbackColor`) so
+  Áladín's live page needed zero changes and carries zero risk — verified
+  by re-typechecking and re-screenshotting `/marcas/aladin` after the change,
+  not just asserted. `BrandHero` and `BrandShelfNav` were **not** forced into
+  reuse: both are tightly coupled to RB's brand-kit data shape (hero
+  slides, isologo, claim copy) that doesn't exist for OEM car brands — no
+  logo or photo assets exist in this repo for any of the 11, same gap
+  already logged for car photography. Building lightweight,
+  automóviles-specific headers instead of fabricating placeholder brand
+  story content was the honest call.
+- **New routes, real data, no fabricated content:** `(lanes)/automoviles/
+  page.tsx` (segment-led lane root), `.../marcas/page.tsx` (the 11-brand
+  roster), `.../marcas/[oem]/page.tsx` (per-brand catalog, generated
+  statically for all 11 slugs). Brand pages show the real fleet catalog
+  (segment, engine, transmission, trims from `data/seed.json`) rather than
+  invented "about the brand" marketing copy — a buyer wants the model
+  lineup, not fabricated brand mythology Wings has no source for.
+- **Convention fixes caught by self-review, not assumed clean:**
+  `SiteNav`'s `forceSolid` list was missing `/automoviles` — the
+  transparent-over-hero nav default would have been illegible over the new
+  white-ground pages, the exact failure mode Interiores' own code comments
+  warn about. Fixed. The first draft of the three new pages also used
+  inline `style={{}}` props for dynamic token colors — `apps/site/CLAUDE.md`
+  explicitly forbids inline styles ("Tailwind utilities only") — rewritten
+  to Tailwind arbitrary-value bracket syntax (`text-[color:var(--ink-primary)]`)
+  throughout before this was called done.
 
 ## 0b · Phase 2 — livery derivation (closed 2026-08-23, same day)
 
