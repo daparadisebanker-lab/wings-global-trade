@@ -9,8 +9,16 @@
 // Append a slug here when a lane opens. Codes and slugs are permanent.
 
 import { lane as interiores } from '@wings/liveries/interiores/lane.config'
+import { lane as automoviles } from '@wings/liveries/automoviles/lane.config'
 
-export const LANES = [interiores] as const
+// WGT/07 registered but not yet path-resolvable: its route still lives at
+// /catalogo/automoviles (Phase 3, route migration, pending — see
+// programs/automobiles/SCOPE.md §5). laneFromPath() below only matches a
+// lane living at its own top-level /{slug}, so this entry is inert for
+// chrome-theming purposes until that migration ships; it's added now so the
+// footer's Divisiones column (which reads this array directly, not the
+// path resolver) states the lane truthfully in the meantime.
+export const LANES = [interiores, automoviles] as const
 
 /** `/interiores/azulejos` → `interiores`. Null on every non-lane route. */
 export function laneFromPath(path: string | null | undefined): string | null {

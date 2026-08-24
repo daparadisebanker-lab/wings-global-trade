@@ -9,6 +9,11 @@
    declaration is scoped under [data-lane="interiores"], so importing it here
    costs the rest of the site nothing. */
 @import '../../../../packages/liveries/interiores/livery.css';
+/* WGT/07 Automóviles — Phase 2 closed 2026-08-23. Scoped under
+   [data-lane="automoviles"]; no route stamps that attribute yet (Phase 3,
+   see programs/automobiles/SCOPE.md), so importing it here changes nothing
+   for any existing page. */
+@import '../../../../packages/liveries/automoviles/livery.css';
 
 @tailwind base;
 @tailwind components;

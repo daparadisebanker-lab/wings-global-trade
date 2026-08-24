@@ -49,13 +49,20 @@ const SERVICES = [
  * whole architecture from day one — the same argument the lane page makes for
  * showing six disciplines with one open.
  */
-const DIVISIONS: { code: string; slug: string; label: string }[] = [
+const DIVISIONS: { code: string; slug: string; label: string; href?: string }[] = [
   { code: 'WGT/01', slug: 'catalogo', label: 'Maquinaria y automotriz' },
   { code: 'WGT/02', slug: 'interiores', label: 'Interiores' },
   { code: 'WGT/03', slug: 'provisiones', label: 'Provisiones' },
   { code: 'WGT/04', slug: 'living', label: 'Living' },
   { code: 'WGT/05', slug: 'representacion', label: 'Representación' },
   { code: 'WGT/06', slug: 'exportacion', label: 'Exportación' },
+  // WGT/07 registered 2026-08-23. `slug: 'automoviles'` is the registry lookup
+  // key (must match lane.config.ts so the status resolves correctly) — but
+  // its route still lives at /catalogo/automoviles pending Phase 3, so `href`
+  // is pinned explicitly rather than falling through to the generic
+  // `/${slug}` build below, which would point at a route that doesn't exist
+  // yet and 404.
+  { code: 'WGT/07', slug: 'automoviles', label: 'Automóviles', href: '/catalogo/automoviles' },
 ]
 
 export function Footer({ categories }: FooterProps) {
@@ -72,7 +79,7 @@ export function Footer({ categories }: FooterProps) {
     const lane = registered.get(d.slug)
     const isLive = d.slug === 'catalogo' || lane?.status === 'ACTIVE' || lane?.status === 'OPENING'
     return {
-      href: isLive ? `/${d.slug}` : '#',
+      href: d.href ?? (isLive ? `/${d.slug}` : '#'),
       label: d.label,
       code: d.code,
       status: (isLive ? 'ACTIVE' : 'OPENING') as 'ACTIVE' | 'OPENING',
