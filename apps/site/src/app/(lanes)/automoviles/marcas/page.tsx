@@ -9,6 +9,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getProducts } from '@/lib/catalog-data'
 import { OEM_BRANDS } from '@/lib/automoviles/oem-brands'
+import { MotionCard } from '@/components/features/automoviles/MotionCard'
 
 export const metadata: Metadata = {
   title: 'Marcas — Automóviles | Wings Global Trade',
@@ -51,20 +52,20 @@ export default async function AutomovilesMarcasPage() {
           {OEM_BRANDS.map((brand) => {
             const count = counts.get(brand.filterBrand) ?? 0
             return (
-              <Link
+              <MotionCard
                 key={brand.slug}
-                href={`/automoviles/marcas/${brand.slug}`}
-                data-oem={brand.slug}
-                data-reveal
-                className="group border border-[color:var(--ink-decoration)] bg-[color:var(--surface-1)] p-8 transition-colors"
+                dataOem={brand.slug}
+                className="group border border-[color:var(--ink-decoration)] bg-[color:var(--surface-1)] transition-colors"
               >
-                <p className="font-mono text-[11px] uppercase tracking-widest-2 text-[color:var(--ink-decoration)]">
-                  {count} {count === 1 ? 'línea de modelo' : 'líneas de modelo'}
-                </p>
-                <p className="mt-3 font-display text-2xl text-[color:var(--ink-primary)]">{brand.name}</p>
-                <div className="mt-5 h-[3px] w-12 bg-[color:var(--oem-accent,_var(--accent-ink))] transition-all group-hover:w-20" />
-                <p className="mt-4 text-body-sm text-[color:var(--ink-secondary)]">{brand.note}</p>
-              </Link>
+                <Link href={`/automoviles/marcas/${brand.slug}`} className="block p-8">
+                  <p className="font-mono text-[11px] uppercase tracking-widest-2 text-[color:var(--ink-decoration)]">
+                    {count} {count === 1 ? 'línea de modelo' : 'líneas de modelo'}
+                  </p>
+                  <p className="mt-3 font-display text-2xl text-[color:var(--ink-primary)]">{brand.name}</p>
+                  <div className="mt-5 h-[3px] w-12 bg-[color:var(--oem-accent,_var(--accent-ink))] transition-all group-hover:w-20" />
+                  <p className="mt-4 text-body-sm text-[color:var(--ink-secondary)]">{brand.note}</p>
+                </Link>
+              </MotionCard>
             )
           })}
         </div>

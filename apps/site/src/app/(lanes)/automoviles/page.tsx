@@ -11,6 +11,7 @@ import Link from 'next/link'
 import { getProducts } from '@/lib/catalog-data'
 import { OEM_BRANDS } from '@/lib/automoviles/oem-brands'
 import { lane } from '@wings/liveries/automoviles/lane.config'
+import { MotionCard } from '@/components/features/automoviles/MotionCard'
 
 export const metadata: Metadata = {
   title: 'Automóviles — Once marcas, un solo escritorio | Wings Global Trade',
@@ -100,19 +101,20 @@ export default async function AutomovilesLaneRootPage() {
             Por segmento
           </h2>
         </div>
-        <div data-reveal className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {lane.taxonomy.map((seg) => (
-            <Link
+            <MotionCard
               key={seg.slug}
-              href={`/automoviles/${seg.slug}`}
-              className="group border border-[color:var(--ink-decoration)] bg-[color:var(--surface-1)] p-6 transition-colors hover:border-[color:var(--accent-border)]"
+              className="group border border-[color:var(--ink-decoration)] bg-[color:var(--surface-1)] transition-colors hover:border-[color:var(--accent-border)]"
             >
-              <p className="text-base font-medium text-[color:var(--ink-primary)]">{seg.name.es}</p>
-              <p className="mt-2 font-mono text-[11px] uppercase text-[color:var(--ink-decoration)]">
-                {segmentCounts.get(seg.slug) ?? 0} modelos
-              </p>
-              <div className="mt-4 h-[2px] w-8 bg-[color:var(--accent-ink)] transition-all group-hover:w-12" aria-hidden />
-            </Link>
+              <Link href={`/automoviles/${seg.slug}`} className="block p-6">
+                <p className="text-base font-medium text-[color:var(--ink-primary)]">{seg.name.es}</p>
+                <p className="mt-2 font-mono text-[11px] uppercase text-[color:var(--ink-decoration)]">
+                  {segmentCounts.get(seg.slug) ?? 0} modelos
+                </p>
+                <div className="mt-4 h-[2px] w-8 bg-[color:var(--accent-ink)] transition-all group-hover:w-12" aria-hidden />
+              </Link>
+            </MotionCard>
           ))}
         </div>
       </section>
@@ -175,17 +177,21 @@ export default async function AutomovilesLaneRootPage() {
           </div>
           <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
             {OEM_BRANDS.map((b) => (
-              <Link
+              <MotionCard
                 key={b.slug}
-                href={`/automoviles/marcas/${b.slug}`}
-                data-oem={b.slug}
-                className="group flex h-24 flex-col items-center justify-center gap-1 border border-[color:var(--ink-decoration)] bg-[color:var(--surface-0)] px-2 text-center transition-colors hover:border-[color:var(--oem-accent,_var(--accent-border))]"
+                dataOem={b.slug}
+                className="border border-[color:var(--ink-decoration)] bg-[color:var(--surface-0)] transition-colors hover:border-[color:var(--oem-accent,_var(--accent-border))]"
               >
-                <span className="text-sm font-medium text-[color:var(--ink-primary)]">{b.name}</span>
-                <span className="font-mono text-[10px] uppercase text-[color:var(--ink-decoration)]">
-                  {brandCounts.get(b.filterBrand) ?? 0} modelos
-                </span>
-              </Link>
+                <Link
+                  href={`/automoviles/marcas/${b.slug}`}
+                  className="flex h-24 flex-col items-center justify-center gap-1 px-2 text-center"
+                >
+                  <span className="text-sm font-medium text-[color:var(--ink-primary)]">{b.name}</span>
+                  <span className="font-mono text-[10px] uppercase text-[color:var(--ink-decoration)]">
+                    {brandCounts.get(b.filterBrand) ?? 0} modelos
+                  </span>
+                </Link>
+              </MotionCard>
             ))}
           </div>
         </div>

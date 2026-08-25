@@ -16,16 +16,20 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import { AnimatePresence, motion } from 'framer-motion'
 import type { Product } from '@/types/database'
 import { getOemBrandByName } from '@/lib/automoviles/oem-brands'
-import { segmentSlug } from '@/lib/automoviles/segments'
 import { lane } from '@wings/liveries/automoviles/lane.config'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
+
+const EASE_SETTLE = [0.22, 1, 0.36, 1] as const
 
 interface ExplorarFeedProps {
   products: Product[]
 }
 
 export function ExplorarFeed({ products }: ExplorarFeedProps) {
+  const reduced = useReducedMotion()
   const scrollerRef = useRef<HTMLDivElement>(null)
   const cardRefs = useRef<(HTMLElement | null)[]>([])
   // True while a programmatic scroll is animating — see goTo/onKeyDown.
@@ -103,9 +107,21 @@ export function ExplorarFeed({ products }: ExplorarFeedProps) {
           the house's existing pattern for "where am I" in a long scroll. */}
       <div
         aria-hidden
-        className="pointer-events-none absolute right-5 top-4 z-10 font-mono text-[11px] uppercase tracking-widest-2 tabular-nums text-[color:var(--ink-secondary)] md:right-8"
+        className="pointer-events-none absolute right-5 top-4 z-10 overflow-hidden font-mono text-[11px] uppercase tracking-widest-2 tabular-nums text-[color:var(--ink-secondary)] md:right-8"
       >
-        {String(activeIndex + 1).padStart(2, '0')} / {String(products.length).padStart(2, '0')}
+        <AnimatePresence mode="popLayout" initial={false}>
+          <motion.span
+            key={activeIndex}
+            initial={reduced ? false : { y: 8, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={reduced ? undefined : { y: -8, opacity: 0 }}
+            transition={{ duration: 0.2, ease: EASE_SETTLE }}
+            className="inline-block"
+          >
+            {String(activeIndex + 1).padStart(2, '0')}
+          </motion.span>
+        </AnimatePresence>{' '}
+        / {String(products.length).padStart(2, '0')}
       </div>
 
       <div
@@ -139,7 +155,11 @@ export function ExplorarFeed({ products }: ExplorarFeedProps) {
               data-oem={oem?.slug}
               className="flex h-full snap-start flex-col justify-center border-b border-[color:var(--ink-decoration)] px-5 py-10 md:px-8"
             >
-              <div className="mx-auto flex w-full max-w-2xl flex-col">
+              <motion.div
+                animate={reduced ? undefined : { opacity: activeIndex === i ? 1 : 0.35, scale: activeIndex === i ? 1 : 0.97 }}
+                transition={{ duration: 0.3, ease: EASE_SETTLE }}
+                className="mx-auto flex w-full max-w-2xl flex-col"
+              >
                 <div className="flex items-center gap-2">
                   <span
                     aria-hidden
@@ -204,16 +224,14 @@ export function ExplorarFeed({ products }: ExplorarFeedProps) {
                   >
                     Solicitar cotización — {oem ? p.name_es.replace(`${oem.name} `, '') : p.name_es}
                   </Link>
-                  {oem && (
-                    <Link
-                      href={`/automoviles/marcas/${oem.slug}`}
-                      className="font-mono text-[11px] uppercase tracking-widest-2 text-[color:var(--ink-secondary)] transition-colors hover:text-[color:var(--ink-primary)]"
-                    >
-                      Ver ficha de {oem.name} →
-                    </Link>
-                  )}
+                  <Link
+                    href={`/automoviles/ficha/${p.slug}`}
+                    className="font-mono text-[11px] uppercase tracking-widest-2 text-[color:var(--ink-secondary)] transition-colors hover:text-[color:var(--ink-primary)]"
+                  >
+                    Ficha técnica ↓
+                  </Link>
                 </div>
-              </div>
+              </motion.div>
 
               {i === 0 && (
                 <p

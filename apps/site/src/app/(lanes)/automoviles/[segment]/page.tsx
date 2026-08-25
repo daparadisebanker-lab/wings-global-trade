@@ -11,6 +11,7 @@ import { notFound } from 'next/navigation'
 import { getProducts } from '@/lib/catalog-data'
 import { getOemBrandByName } from '@/lib/automoviles/oem-brands'
 import { lane } from '@wings/liveries/automoviles/lane.config'
+import { MotionCard } from '@/components/features/automoviles/MotionCard'
 
 interface PageProps {
   params: Promise<{ segment: string }>
@@ -70,34 +71,42 @@ export default async function AutomovilesSegmentPage({ params }: PageProps) {
             const brandName = typeof rawBrand === 'string' ? rawBrand : undefined
             const oem = brandName ? getOemBrandByName(brandName) : undefined
             return (
-              <Link
+              <MotionCard
                 key={p.id}
-                href={oem ? `/automoviles/marcas/${oem.slug}` : '/automoviles/marcas'}
-                data-oem={oem?.slug}
-                data-reveal
+                dataOem={oem?.slug}
                 className="border border-[color:var(--ink-decoration)] bg-[color:var(--surface-1)] p-6 transition-colors hover:border-[color:var(--oem-accent,_var(--accent-border))]"
               >
-                <div className="flex items-center gap-2">
-                  <span
-                    aria-hidden
-                    className="h-2 w-2 shrink-0 rounded-[2px] bg-[color:var(--oem-accent,_var(--accent-ink))]"
-                  />
-                  <p className="font-mono text-[10px] uppercase tracking-widest-2 text-[color:var(--oem-accent,_var(--accent-ink))]">
-                    {oem?.name ?? brandName}
+                <Link href={oem ? `/automoviles/marcas/${oem.slug}` : '/automoviles/marcas'} className="block">
+                  <div className="flex items-center gap-2">
+                    <span
+                      aria-hidden
+                      className="h-2 w-2 shrink-0 rounded-[2px] bg-[color:var(--oem-accent,_var(--accent-ink))]"
+                    />
+                    <p className="font-mono text-[10px] uppercase tracking-widest-2 text-[color:var(--oem-accent,_var(--accent-ink))]">
+                      {oem?.name ?? brandName}
+                    </p>
+                  </div>
+                  <p className="mt-2 font-display text-xl text-[color:var(--ink-primary)]">
+                    {oem ? p.name_es.replace(`${oem.name} `, '') : p.name_es}
                   </p>
-                </div>
-                <p className="mt-2 font-display text-xl text-[color:var(--ink-primary)]">
-                  {oem ? p.name_es.replace(`${oem.name} `, '') : p.name_es}
-                </p>
-                <p className="mt-2 font-mono text-[12px] text-[color:var(--ink-secondary)]">
-                  {p.specs?.['Motor']}
-                  {p.specs?.['Transmisión'] ? ` · ${p.specs['Transmisión']}` : ''}
-                </p>
+                  <p className="mt-2 font-mono text-[12px] text-[color:var(--ink-secondary)]">
+                    {p.specs?.['Motor']}
+                    {p.specs?.['Transmisión'] ? ` · ${p.specs['Transmisión']}` : ''}
+                  </p>
+                </Link>
                 <div aria-hidden className="mt-4 h-px w-full bg-[color:var(--ink-decoration)]" />
-                <p className="mt-4 font-mono text-[10px] uppercase text-[color:var(--oem-accent,_var(--accent-ink))]">
-                  {p.models?.length ?? 0} {p.models?.length === 1 ? 'versión' : 'versiones'}
-                </p>
-              </Link>
+                <div className="mt-4 flex items-center justify-between gap-3">
+                  <p className="font-mono text-[10px] uppercase text-[color:var(--oem-accent,_var(--accent-ink))]">
+                    {p.models?.length ?? 0} {p.models?.length === 1 ? 'versión' : 'versiones'}
+                  </p>
+                  <Link
+                    href={`/automoviles/ficha/${p.slug}`}
+                    className="font-mono text-[10px] uppercase tracking-widest-2 text-[color:var(--ink-secondary)] transition-colors hover:text-[color:var(--ink-primary)]"
+                  >
+                    Ficha técnica ↓
+                  </Link>
+                </div>
+              </MotionCard>
             )
           })}
         </div>

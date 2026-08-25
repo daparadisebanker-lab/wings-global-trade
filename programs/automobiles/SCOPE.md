@@ -691,3 +691,103 @@ manipulation) works correctly, and `proximity` is the safer default either
 way — but this is the one thing in this feature that should get a real
 five-second sanity check on an actual trackpad/mouse before calling it
 fully shipped.
+
+## 0i · Motion pass + downloadable ficha técnica (2026-08-25)
+
+Two requests handled together: run motion-and-soul over the lane's
+navigation/browsing, and add a professional, downloadable technical spec
+sheet reusing "the mechanism already used for TOWER."
+
+**The TOWER mechanism, actually investigated, not assumed.** Read
+`apps/tower/src/lib/quotation/ficha.ts` + `.../actions/ficha.ts` +
+`.../components/pipeline/ficha-document` + `.../app/ficha/[id]/document`.
+The real mechanism: no PDF library — a pure document model, a
+presentational renderer, and `window.print()` on a dedicated print-only
+route with `[data-print-hidden]` hiding the toolbar and an `@media print`
+`@page` block. **Not imported directly** — apps/site and apps/tower are
+separate Next apps with no shared import path (apps/site's own CLAUDE.md:
+`packages/` is the only shared layer), and TOWER's ficha reads an
+authenticated `tower.products` schema this public, no-auth site has no
+business touching. Re-derived the same disciplined pattern instead, sized
+to this site's actual public `Product` shape:
+
+- `src/lib/automoviles/ficha.ts` — pure `FichaDocument` builder from a
+  catalog `Product` (specs, trims, source markets). No sequential mint
+  (TOWER's `mint_ficha_no` RPC has no equivalent here — no registry, no
+  auth); the reference is a deterministic `FT-WGT07-{SLUG}` instead,
+  stable for the product's life without inventing a fake persisted number.
+- `/automoviles/ficha/[slug]` — new route, SSG over all 31 nameplates.
+  `FichaAutomovilDocument.tsx` (presentational) + `PrintBar.tsx` (client
+  island, `window.print()`) + `ficha-document.css` (A4, Teko/NissanOpti,
+  the lane's own ink/accent hex copied at authoring time — same reasoning
+  TOWER's own ficha CSS gives for not reading tokens live in a print
+  stylesheet). `data-oem` on the document root reuses the *existing*
+  `[data-lane='automoviles'] [data-oem]` mechanism (oem-canvas.css) for
+  the brand accent dot/rule — not a parallel token system.
+- **A real gap found and closed**: this route is nested under the lane
+  (so `--oem-accent` keeps resolving), which meant it also inherited the
+  global SiteNav, AutoLaneNav, site Footer, and the Mister launcher — none
+  of which belong on a printed document, and apps/site has no chrome-drop
+  mechanism outside `src/pasillo` (apps/site/CLAUDE.md) to fall back on.
+  Hid exactly four elements via precise selectors scoped to `@media
+  print` only (verified via print-media emulation, not assumed): the
+  SiteNav header (`header.fixed.top-0.z-50`), AutoLaneNav (its own
+  `aria-label`), the site footer (`footer[class*='chrome-ground']`, since
+  the document's own `<footer class="fdoc-footer">` must NOT match), and
+  the Mister launcher (`button[aria-label*='Mister']`). First screenshot
+  attempt caught the footer and launcher still bleeding into the printed
+  page below the sheet — fixed, then re-verified clean.
+- "Ficha técnica ↓" wired into every place a model already appears: the
+  `[segment]` cross-brand cards, the `[oem]` brand page cards, and each
+  Explorar card (replacing its "Ver ficha de {brand}" link, since the
+  ficha itself now links back to the brand page — one action, not two
+  overlapping ones).
+
+**Motion (motion-and-soul, BUILD mode).** No separate in-repo animation
+package existed beyond what's already installed (`gsap`, `framer-motion`,
+`lenis` — all in `apps/site/package.json` and `packages/ui`); the "package
+in the repo" was this existing dependency set plus the site's own
+established idioms (`BrandCurtain`/`BrandChoreography`'s GSAP
+ScrollTrigger reveals, `MotionLink = motion(Link)` in
+`SubcategoryGateway.tsx`), not a separate library to fetch.
+
+- `MotionCard.tsx` — one shared hover-lift primitive (`whileHover={{y:
+  -4}}`, `--ease-settle`'s cubic-bezier — root CLAUDE.md §2's frozen
+  "reveals" curve, the semantically correct one for a hover micro-
+  interaction) instead of four copies of the same block. Applied to every
+  model/segment/brand tile across the lane root, `[segment]`, `[oem]`,
+  and the `marcas` roster.
+- `AutoLaneNav` — the active segment tab's static `border-b-2` swap
+  became a `layoutId` shared-element underline that slides between tabs
+  (Linear/Vercel-style premium tab pattern). Uses a real spring
+  (`stiffness:380, damping:32`), not a bezier tween — a `layoutId`
+  animation tracks a variable slide distance, which a fixed-duration
+  curve handles poorly; a spring is the primitive the frozen token names
+  (`--spring-snappy` etc.) were approximating in the first place.
+  `useReducedMotion` collapses it to `{duration:0}`.
+- `ExplorarFeed` — the active card's content block now emphasizes itself
+  (`opacity`/`scale` tied to `activeIndex === i`) instead of every card
+  looking identical regardless of focus; the register counter
+  (`01 / 31`) crossfades on change via `AnimatePresence` instead of an
+  instant text swap. Both skip their animated variant under
+  `useReducedMotion`.
+
+**A real risk checked, not assumed safe.** `MotionCard` and GSAP's
+`data-reveal` scroll-fade-up (`BrandChoreography.tsx`) both write to the
+same element's `transform`/`opacity` — GSAP owns the one-time scroll
+reveal, Framer Motion owns hover-only. Traced through: GSAP's reveal
+settles on mount/scroll before any hover is likely, and Framer Motion
+only writes a transform when `whileHover` is actively engaged, so there's
+no persistent competing state at rest. Confirmed empirically with a
+scroll-then-hover screenshot (`[segment]` page, Camry card) — reveal
+settled correctly, hover lift + border-color engaged correctly, no
+flicker or stuck state.
+
+Verified: `pnpm typecheck` + `pnpm build` green (31 ficha pages built via
+`generateStaticParams`, alongside every existing route); a full overflow
+sweep (mobile/desktop × 5 URLs including the new ficha and explorar
+routes) came back clean; screenshots confirm the sliding nav underline
+actually slides, card hover engages the right brand color, the register
+counter crossfades, and the print output — re-checked after the
+chrome-hiding fix — renders as a single clean A4 sheet with no site
+chrome anywhere in it.

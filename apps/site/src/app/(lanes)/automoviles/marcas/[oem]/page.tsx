@@ -13,6 +13,7 @@ import { notFound } from 'next/navigation'
 import { getProducts } from '@/lib/catalog-data'
 import { getOemBrand, OEM_BRANDS } from '@/lib/automoviles/oem-brands'
 import { segmentSlug } from '@/lib/automoviles/segments'
+import { MotionCard } from '@/components/features/automoviles/MotionCard'
 
 interface PageProps {
   params: Promise<{ oem: string }>
@@ -67,9 +68,9 @@ export default async function AutomovilesBrandPage({ params }: PageProps) {
         ) : (
           <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {products.map((p) => (
-              <article
+              <MotionCard
                 key={p.id}
-                data-reveal
+                dataOem={brand.slug}
                 className="border border-[color:var(--ink-decoration)] bg-[color:var(--surface-1)] p-6"
               >
                 <p className="font-display text-xl text-[color:var(--ink-primary)]">
@@ -113,10 +114,18 @@ export default async function AutomovilesBrandPage({ params }: PageProps) {
                   )}
                 </dl>
                 <div aria-hidden className="mt-4 h-px w-full bg-[color:var(--ink-decoration)]" />
-                <p className="mt-4 font-mono text-[10px] uppercase text-[color:var(--oem-accent)]">
-                  {p.models?.length ?? 0} {p.models?.length === 1 ? 'versión' : 'versiones'}
-                </p>
-              </article>
+                <div className="mt-4 flex items-center justify-between gap-3">
+                  <p className="font-mono text-[10px] uppercase text-[color:var(--oem-accent)]">
+                    {p.models?.length ?? 0} {p.models?.length === 1 ? 'versión' : 'versiones'}
+                  </p>
+                  <Link
+                    href={`/automoviles/ficha/${p.slug}`}
+                    className="font-mono text-[10px] uppercase tracking-widest-2 text-[color:var(--ink-secondary)] transition-colors hover:text-[color:var(--ink-primary)]"
+                  >
+                    Ficha técnica ↓
+                  </Link>
+                </div>
+              </MotionCard>
             ))}
           </div>
         )}

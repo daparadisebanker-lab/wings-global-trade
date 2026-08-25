@@ -19,14 +19,26 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { lane } from '@wings/liveries/automoviles/lane.config'
 import { getOemBrand } from '@/lib/automoviles/oem-brands'
+import { useReducedMotion } from '@/hooks/useReducedMotion'
+
+// A shared-layout spring, not a bezier tween: the frozen Tier-1 spring set
+// (--spring-snappy etc., root CLAUDE.md §2) approximates spring *feel* in
+// CSS, where real spring physics aren't available — Framer Motion's
+// layoutId animation natively supports true springs, which track a variable
+// slide distance far better than any fixed-duration curve. Stiffness/damping
+// tuned for the same "snappy, controlled" character the token name implies.
+const UNDERLINE_SPRING = { type: 'spring' as const, stiffness: 380, damping: 32 }
 
 export function AutoLaneNav() {
   const pathname = usePathname()
+  const reduced = useReducedMotion()
   const oemMatch = pathname?.match(/^\/automoviles\/marcas\/([^/]+)$/)
   const brand = oemMatch ? getOemBrand(oemMatch[1]) : undefined
+  const underlineTransition = reduced ? { duration: 0 } : UNDERLINE_SPRING
 
   return (
     <nav
@@ -82,13 +94,20 @@ export function AutoLaneNav() {
                       href={href}
                       aria-current={active ? 'page' : undefined}
                       className={cn(
-                        'shrink-0 border-b-2 px-3 py-3.5 font-mono text-[11px] uppercase tracking-widest-2 transition-colors',
+                        'relative shrink-0 px-3 py-3.5 font-mono text-[11px] uppercase tracking-widest-2 transition-colors',
                         active
-                          ? 'border-[color:var(--accent-ink)] text-[color:var(--accent-ink)]'
-                          : 'border-transparent text-[color:var(--ink-secondary)] hover:text-[color:var(--ink-primary)]',
+                          ? 'text-[color:var(--accent-ink)]'
+                          : 'text-[color:var(--ink-secondary)] hover:text-[color:var(--ink-primary)]',
                       )}
                     >
                       {seg.name.es}
+                      {active && (
+                        <motion.div
+                          layoutId="auto-nav-underline"
+                          transition={underlineTransition}
+                          className="absolute inset-x-0 -bottom-px h-[2px] bg-[color:var(--accent-ink)]"
+                        />
+                      )}
                     </Link>
                   )
                 })}
@@ -96,13 +115,20 @@ export function AutoLaneNav() {
                   href="/automoviles/marcas"
                   aria-current={pathname?.startsWith('/automoviles/marcas') ? 'page' : undefined}
                   className={cn(
-                    'shrink-0 border-b-2 px-3 py-3.5 font-mono text-[11px] uppercase tracking-widest-2 transition-colors',
+                    'relative shrink-0 px-3 py-3.5 font-mono text-[11px] uppercase tracking-widest-2 transition-colors',
                     pathname?.startsWith('/automoviles/marcas')
-                      ? 'border-[color:var(--accent-ink)] text-[color:var(--accent-ink)]'
-                      : 'border-transparent text-[color:var(--ink-secondary)] hover:text-[color:var(--ink-primary)]',
+                      ? 'text-[color:var(--accent-ink)]'
+                      : 'text-[color:var(--ink-secondary)] hover:text-[color:var(--ink-primary)]',
                   )}
                 >
                   Marcas
+                  {pathname?.startsWith('/automoviles/marcas') && (
+                    <motion.div
+                      layoutId="auto-nav-underline"
+                      transition={underlineTransition}
+                      className="absolute inset-x-0 -bottom-px h-[2px] bg-[color:var(--accent-ink)]"
+                    />
+                  )}
                 </Link>
               </div>
               <div
