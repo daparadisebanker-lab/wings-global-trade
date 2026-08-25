@@ -61,7 +61,7 @@ export default async function AutomovilesMarcasPage() {
                 <p className="font-mono text-[11px] uppercase tracking-widest-2 text-[color:var(--ink-decoration)]">
                   {count} {count === 1 ? 'línea de modelo' : 'líneas de modelo'}
                 </p>
-                <p className="mt-3 text-2xl font-medium text-[color:var(--ink-primary)]">{brand.name}</p>
+                <p className="mt-3 font-display text-2xl text-[color:var(--ink-primary)]">{brand.name}</p>
                 <div className="mt-5 h-[3px] w-12 bg-[color:var(--oem-accent,_var(--accent-ink))] transition-all group-hover:w-20" />
                 <p className="mt-4 text-body-sm text-[color:var(--ink-secondary)]">{brand.note}</p>
               </Link>
@@ -83,7 +83,7 @@ export default async function AutomovilesMarcasPage() {
           </div>
           <Link
             href="/cotizar"
-            className="inline-flex h-12 shrink-0 items-center justify-center bg-[color:var(--chrome-accent)] px-8 text-label-lg font-semibold text-[color:var(--chrome-accent-ink)] transition-opacity hover:opacity-90"
+            className="inline-flex h-12 shrink-0 items-center justify-center rounded-[var(--radius-control)] bg-[color:var(--btn-primary-bg)] px-8 font-mono text-sm uppercase tracking-wide text-[color:var(--btn-primary-ink)] transition-colors hover:bg-[color:var(--btn-primary-bg-hover)]"
           >
             Solicitar cotización
           </Link>

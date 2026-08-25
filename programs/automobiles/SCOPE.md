@@ -492,3 +492,67 @@ address bar.
    homepage copy, header art), scope that as its own follow-up — swap-test
    applies (§4 Phase 2 gate) since a homepage rewrite touches shared chrome
    every other category still depends on.
+
+## 0f · UI direction study + "Ficha Técnica" implementation (2026-08-25)
+
+The lane read as flat once the showroom pivot (§0c) was live — real content,
+but every control was the same weight. Rather than iterate blind, three
+distinct button/type/spacing systems were built as a comparison artifact
+(real content, real OEM hex values, no lorem) and reviewed before touching
+code: **A "Ficha Técnica"** (document-forward, restrained, structural),
+**B "Vitrina"** (macOS-material showroom — spends the root CLAUDE.md's
+2026-07-22 radii/blur amendment nothing in this lane used yet), **C
+"Cotización Directa"** (Stripe/Linear confidence, one CTA per view). Chosen:
+**A**.
+
+**What A actually fixed, not just restyled.** Building the buttons surfaced
+a real bug: every on-page CTA (`Solicitar cotización`, `Ver las 11 marcas`,
+the closing-band CTAs) was styled with `--chrome-accent`/`--chrome-accent-ink`
+— tokens this livery defines for a control sitting *on* the dark overlay
+chrome (SiteNav's hero state, `WhatsAppButton`; those tokens are white-fill/
+asphalt-text by design). On the lane's actual page ground (`--surface-0`,
+white) that rendered a **white button on a white card** — legible only via
+the hover-opacity dim, never as a filled shape. That is very plausibly the
+"flat" the visual complaint was naming, not just an absence of shadow/radius.
+
+Fixed with a new button-token pair in `livery.css` (`--btn-primary-bg` =
+`--ink-primary`, `--btn-primary-bg-hover` = `#2c2d33`, `--btn-primary-ink` =
+white; `--btn-outline-ink`/`--btn-outline-border` = `--accent-ink`,
+`--btn-outline-bg-hover` = `--accent-soft`) — the chrome pair is untouched
+and stays reserved for controls literally on the dark nav overlay.
+
+**Also fixed while in there:** the lane-root hero had `Ver las 11 marcas`
+as the visually primary (filled) button and `Solicitar cotización` as the
+outline — backwards against root CLAUDE.md §1.2 ("the primary action of
+every lane is always: start a quote conversation"). Swapped the *fill*,
+kept browse-first reading order (quote is still second in the DOM, first
+in weight is what the directive actually asks for).
+
+**Typography:** product/model names on cards (`[segment]`, `[oem]` pages,
+the brand roster tiles) now render in `.font-display` (NissanOpti — the
+existing house display face, not a new import; `<h1>`–`<h4>` already got
+it for free via the base layer, `<p>`-tag model names didn't). Buttons and
+CTAs moved to `font-mono` (Teko, already the lane's label face throughout)
+uppercase, replacing unstyled Flexo body weight — this is reuse of tokens
+already in the codebase, not a new typeface.
+
+**Radius:** Direction A's mockup used a bespoke 4px; the frozen Tier-1
+scale (`packages/ui/tokens/skeleton.css`) only offers `0` (structural) or
+`8px` (`--radius-control`) at that end. Buttons take `--radius-control`;
+document surfaces (model cards, flow blocks) stay `0` — closer to the
+mockup's own "estructural" thesis than inventing an off-scale value would
+have been.
+
+**`[segment]` page cards** (the one view that mixes brands, so the one
+place a "brandline" device earns its place) gained: a small brand-accent
+swatch dot before the Teko brand label, and a hairline-rule + "N versiones"
+footer matching the pattern the `[oem]` page already had (`p.models?.length`
+— real trim counts already available, not fabricated).
+
+Verified: `pnpm typecheck` and `pnpm build` both green across every
+automóviles route (static + the 5 segment + 11 brand SSG params);
+Playwright screenshots of the hero, the Sedán cross-brand grid, and the
+Toyota brand page confirm the fill/outline swap, the multi-brand dot+footer
+pattern, and the display-face model names render as intended. Not
+attempted: B or C's patterns, or a hybrid — A was the direction chosen, not
+a blend.

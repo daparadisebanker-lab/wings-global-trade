@@ -73,17 +73,21 @@ export default async function AutomovilesLaneRootPage() {
             {lane.scope.es}
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-4">
-            <Link
-              href="/automoviles/marcas"
-              className="inline-flex h-12 items-center justify-center bg-[color:var(--chrome-accent)] px-8 text-label-lg font-semibold text-[color:var(--chrome-accent-ink)] transition-opacity hover:opacity-90"
-            >
-              Ver las 11 marcas
-            </Link>
+            {/* Primary = the quote conversation (root CLAUDE.md §1.2: "the
+                primary action of every lane is always: start a quote
+                conversation"), not the browse link — the fill follows that
+                rule regardless of reading order. */}
             <Link
               href="/cotizar"
-              className="inline-flex h-12 items-center justify-center border border-[color:var(--accent-border)] px-8 text-label-lg font-semibold text-[color:var(--accent-ink)] transition-colors"
+              className="inline-flex h-12 items-center justify-center rounded-[var(--radius-control)] bg-[color:var(--btn-primary-bg)] px-8 font-mono text-sm uppercase tracking-wide text-[color:var(--btn-primary-ink)] transition-colors hover:bg-[color:var(--btn-primary-bg-hover)]"
             >
               Solicitar cotización
+            </Link>
+            <Link
+              href="/automoviles/marcas"
+              className="inline-flex h-12 items-center justify-center rounded-[var(--radius-control)] border border-[color:var(--btn-outline-border)] px-8 font-mono text-sm uppercase tracking-wide text-[color:var(--btn-outline-ink)] transition-colors hover:bg-[color:var(--btn-outline-bg-hover)]"
+            >
+              Ver las 11 marcas
             </Link>
           </div>
         </div>
@@ -175,7 +179,7 @@ export default async function AutomovilesLaneRootPage() {
           </div>
           <Link
             href="/cotizar"
-            className="inline-flex h-12 shrink-0 items-center justify-center bg-[color:var(--chrome-accent)] px-8 text-label-lg font-semibold text-[color:var(--chrome-accent-ink)] transition-opacity hover:opacity-90"
+            className="inline-flex h-12 shrink-0 items-center justify-center rounded-[var(--radius-control)] bg-[color:var(--btn-primary-bg)] px-8 font-mono text-sm uppercase tracking-wide text-[color:var(--btn-primary-ink)] transition-colors hover:bg-[color:var(--btn-primary-bg-hover)]"
           >
             Solicitar cotización
           </Link>

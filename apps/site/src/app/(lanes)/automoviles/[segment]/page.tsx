@@ -75,22 +75,28 @@ export default async function AutomovilesSegmentPage({ params }: PageProps) {
                 href={oem ? `/automoviles/marcas/${oem.slug}` : '/automoviles/marcas'}
                 data-oem={oem?.slug}
                 data-reveal
-                className="group border border-[color:var(--ink-decoration)] bg-[color:var(--surface-1)] p-6 transition-colors"
+                className="border border-[color:var(--ink-decoration)] bg-[color:var(--surface-1)] p-6 transition-colors hover:border-[color:var(--oem-accent,_var(--accent-border))]"
               >
-                <p className="font-mono text-[10px] uppercase tracking-widest-2 text-[color:var(--oem-accent,_var(--accent-ink))]">
-                  {oem?.name ?? brandName}
-                </p>
-                <p className="mt-2 text-lg font-medium text-[color:var(--ink-primary)]">
+                <div className="flex items-center gap-2">
+                  <span
+                    aria-hidden
+                    className="h-2 w-2 shrink-0 rounded-[2px] bg-[color:var(--oem-accent,_var(--accent-ink))]"
+                  />
+                  <p className="font-mono text-[10px] uppercase tracking-widest-2 text-[color:var(--oem-accent,_var(--accent-ink))]">
+                    {oem?.name ?? brandName}
+                  </p>
+                </div>
+                <p className="mt-2 font-display text-xl text-[color:var(--ink-primary)]">
                   {oem ? p.name_es.replace(`${oem.name} `, '') : p.name_es}
                 </p>
                 <p className="mt-2 font-mono text-[12px] text-[color:var(--ink-secondary)]">
                   {p.specs?.['Motor']}
                   {p.specs?.['Transmisión'] ? ` · ${p.specs['Transmisión']}` : ''}
                 </p>
-                <div
-                  className="mt-4 h-[3px] w-10 bg-[color:var(--oem-accent,_var(--accent-ink))] transition-all group-hover:w-16"
-                  aria-hidden
-                />
+                <div aria-hidden className="mt-4 h-px w-full bg-[color:var(--ink-decoration)]" />
+                <p className="mt-4 font-mono text-[10px] uppercase text-[color:var(--oem-accent,_var(--accent-ink))]">
+                  {p.models?.length ?? 0} {p.models?.length === 1 ? 'versión' : 'versiones'}
+                </p>
               </Link>
             )
           })}
@@ -104,7 +110,7 @@ export default async function AutomovilesSegmentPage({ params }: PageProps) {
         </p>
         <Link
           href="/cotizar"
-          className="inline-flex h-12 shrink-0 items-center justify-center bg-[color:var(--chrome-accent)] px-8 text-label-lg font-semibold text-[color:var(--chrome-accent-ink)] transition-opacity hover:opacity-90"
+          className="inline-flex h-12 shrink-0 items-center justify-center rounded-[var(--radius-control)] bg-[color:var(--btn-primary-bg)] px-8 font-mono text-sm uppercase tracking-wide text-[color:var(--btn-primary-ink)] transition-colors hover:bg-[color:var(--btn-primary-bg-hover)]"
         >
           Solicitar cotización
         </Link>

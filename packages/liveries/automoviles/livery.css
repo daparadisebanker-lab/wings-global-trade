@@ -84,6 +84,23 @@
   --accent-soft: rgba(85, 144, 255, 0.08);
   --accent-border: rgba(85, 144, 255, 0.32);
 
+  /* --- Button system — "Ficha Técnica" direction (2026-08-25) ---
+     Fixes a real bug this pass surfaced: every on-page CTA in the lane was
+     built with --chrome-accent/--chrome-accent-ink (white fill, asphalt
+     text) — tokens meant for a control sitting ON the dark overlay chrome
+     (SiteNav's hero state, WhatsAppButton; see those files). On this lane's
+     actual page ground (white, --surface-0) that rendered a white button on
+     a white card: legible only via the hover dim, never as a filled shape.
+     The primary CTA now fills with the lane's own ink, the way a printed
+     document's signature plate would — never the chrome pair, which stays
+     reserved for controls literally on the dark nav overlay. */
+  --btn-primary-bg: var(--ink-primary);
+  --btn-primary-bg-hover: #2c2d33; /* one step off asphalt; white text stays >15:1 */
+  --btn-primary-ink: #ffffff;
+  --btn-outline-ink: var(--accent-ink);
+  --btn-outline-border: var(--accent-ink);
+  --btn-outline-bg-hover: var(--accent-soft);
+
   /* --- Cargo tint — FillMeter reads this for the lane's cargo set --- */
   --cargo: #5590ff; /* the accent itself, at full saturation — decoration only, never text */
 

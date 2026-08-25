@@ -72,7 +72,7 @@ export default async function AutomovilesBrandPage({ params }: PageProps) {
                 data-reveal
                 className="border border-[color:var(--ink-decoration)] bg-[color:var(--surface-1)] p-6"
               >
-                <p className="text-lg font-medium text-[color:var(--ink-primary)]">
+                <p className="font-display text-xl text-[color:var(--ink-primary)]">
                   {p.name_es.replace(`${brand.name} `, '')}
                 </p>
                 <dl className="mt-3 space-y-1 font-mono text-[12px] text-[color:var(--ink-secondary)]">
@@ -128,7 +128,7 @@ export default async function AutomovilesBrandPage({ params }: PageProps) {
           </p>
           <Link
             href="/cotizar"
-            className="inline-flex h-12 shrink-0 items-center justify-center bg-[color:var(--oem-accent)] px-8 text-label-lg font-semibold text-white transition-opacity hover:opacity-90"
+            className="inline-flex h-12 shrink-0 items-center justify-center rounded-[var(--radius-control)] bg-[color:var(--oem-accent)] px-8 font-mono text-sm uppercase tracking-wide text-white transition-opacity hover:opacity-90"
           >
             Solicitar cotización — {brand.name}
           </Link>
