@@ -65,7 +65,7 @@ export default async function AutomovilesSegmentPage({ params }: PageProps) {
           Sin modelos activos en este segmento por el momento.
         </p>
       ) : (
-        <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((p) => {
             const rawBrand = (p.filter_attrs as Record<string, unknown> | undefined)?.brand
             const brandName = typeof rawBrand === 'string' ? rawBrand : undefined
@@ -74,6 +74,8 @@ export default async function AutomovilesSegmentPage({ params }: PageProps) {
               <MotionCard
                 key={p.id}
                 dataOem={oem?.slug}
+                imageUrl={p.images?.[0]}
+                imageAlt={p.name_es}
                 className="border border-[color:var(--ink-decoration)] bg-[color:var(--surface-1)] p-6 transition-colors hover:border-[color:var(--oem-accent,_var(--accent-border))]"
               >
                 <Link href={oem ? `/automoviles/marcas/${oem.slug}` : '/automoviles/marcas'} className="block">

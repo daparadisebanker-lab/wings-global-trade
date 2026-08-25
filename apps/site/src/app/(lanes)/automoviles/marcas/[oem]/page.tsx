@@ -66,11 +66,13 @@ export default async function AutomovilesBrandPage({ params }: PageProps) {
             pedido más allá del catálogo publicado.
           </p>
         ) : (
-          <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
             {products.map((p) => (
               <MotionCard
                 key={p.id}
                 dataOem={brand.slug}
+                imageUrl={p.images?.[0]}
+                imageAlt={p.name_es}
                 className="border border-[color:var(--ink-decoration)] bg-[color:var(--surface-1)] p-6"
               >
                 <p className="font-display text-xl text-[color:var(--ink-primary)]">

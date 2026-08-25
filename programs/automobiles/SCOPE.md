@@ -791,3 +791,45 @@ actually slides, card hover engages the right brand color, the register
 counter crossfades, and the print output — re-checked after the
 chrome-hiding fix — renders as a single clean A4 sheet with no site
 chrome anywhere in it.
+
+## 0j · Model-card image treatment — prepped ahead of photography (2026-08-25)
+
+Client sent a reference (a Toyota configurator card): the vehicle cutout
+breaks out over the card's top edge, drop-shadowed, rather than sitting
+boxed inside the padding. Confirmed with the client first — the incoming
+photography will be transparent-background cutouts, the format this
+treatment actually needs (a rectangular photo can't "break the frame"
+the same way; that would have meant a different treatment entirely).
+
+Built the mechanics into `MotionCard` now, dormant until real assets
+land, rather than waiting:
+
+- New optional `imageUrl`/`imageAlt` props. Absolutely positioned
+  (`-top-6`, i.e. 24px above the card's own border) so it never affects
+  the card's own grid-track height — only the caller's row gap needs to
+  give it clearance from the row above.
+- Wired to `p.images?.[0]` on the `[segment]` and `[oem]` model cards
+  (the two true "one card = one vehicle" views — brand/segment tiles on
+  the roster and lane root don't represent a specific model, so they
+  don't get this prop). Every product's `images` array is empty today
+  (§4·1), so this is a no-op in production right now — confirmed via
+  screenshot that the grid renders byte-for-byte the same as before this
+  change.
+- Bumped both grids from `gap-4` to `gap-x-4 gap-y-8` — the breakout
+  needs more vertical clearance between rows than the original 16px gave;
+  32px comfortably clears a 24px breakout with margin to spare.
+- **Verified the mechanics with a placeholder, not fabricated product
+  photography**: temporarily patched one product's `images[0]` in the
+  local dev copy of `seed.json` to a plain "TEST PLACEHOLDER" dashed-box
+  SVG data URI (never a fake car image — root CLAUDE.md's refusal on
+  stock/fabricated photography applies here too), screenshotted the real
+  grid to confirm no clipping, no cross-row overlap, and that surrounding
+  imageless cards render untouched, then reverted `seed.json` to its
+  original state (`git diff` confirms zero net change there).
+
+Not done, on purpose: no placeholder styling for a *missing* image once
+real photography exists for *some* but not all nameplates (a mixed state
+this catalog will likely pass through tomorrow) — worth a quick look once
+the real files arrive, since a card with no image should probably keep
+today's typography-only layout rather than reserve dead space for one
+that never comes.
