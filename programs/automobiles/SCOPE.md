@@ -556,3 +556,47 @@ Toyota brand page confirm the fill/outline swap, the multi-brand dot+footer
 pattern, and the display-face model names render as intended. Not
 attempted: B or C's patterns, or a hybrid — A was the direction chosen, not
 a blend.
+
+## 0g · Engineering-quality pass — overflow/overlap audit (2026-08-25)
+
+Ran a real responsive sweep (Playwright, 4 pages × 4 breakpoints: 375 / 768
+/ 1440 / 1920) with an in-page `scrollWidth > innerWidth` detector, not just
+eyeballed screenshots. Result: **zero horizontal-overflow offenders** across
+all 16 combinations, both before and after the fix below.
+
+**What looked like an overlap and wasn't.** Full-page Playwright screenshots
+showed the floating Mister launcher pill sitting on top of hero buttons and
+mid-page cards. Traced with `getBoundingClientRect()` on the live, scrolled
+page: the launcher is `position: fixed`, pinned bottom-right with a genuine
+gap above whatever content is in view — the appearance of overlap is a
+known Playwright quirk (a `fullPage` capture temporarily resizes the
+viewport to document height, and a fixed element renders relative to *that*
+tall viewport, landing "mid-page" in the flattened image). Confirmed with a
+real-scroll, viewport-only screenshot: no overlap. No fix needed here —
+logged so the next person doesn't re-diagnose it.
+
+**What was real.** `AutoLaneNav`'s segment-tab row (`overflow-x-auto`, every
+tab `shrink-0`) had `Cotizar →` as the last flex child *inside* the
+scrollable row. At 768px the row doesn't fit, so `Cotizar` — the row's one
+conversion action — was the item that scrolled off-screen, rendering as a
+clipped "COT" at the viewport edge with no visual hint the row scrolls at
+all. Same clipping, smaller stakes, on mobile (a segment label mid-word).
+
+Fixed in `AutoLaneNav.tsx`: `Cotizar` now sits *outside* the scrollable
+zone (`shrink-0`, always fully visible); the scrollable zone gets a
+`pointer-events-none` right-edge fade (`bg-gradient-to-l from-surface-0 to-
+transparent`) so a still-scrollable row reads as one instead of looking cut
+off. At desktop widths where nothing overflows, the fade sits over empty
+space and is invisible — no regression there.
+
+Verified via a second Playwright pass at 375px/768px (both the default and
+brand-breadcrumb nav modes) after a rebuild: `Cotizar` is fully visible at
+both widths, the fade renders correctly, breadcrumb mode (3 short segments,
+never overflows in practice) is unaffected. One real gotcha hit along the
+way: `pnpm start -p 3100` failed silently with `EADDRINUSE` after a stale
+server from before the edit was left running — the first two "verification"
+screenshots were unknowingly taken against the *old* build and came back
+completely unstyled (stale server, rebuilt static-asset hashes mismatched).
+Caught by checking `ps`/`ss` rather than trusting the screenshot; worth
+remembering that a silent restart failure looks like a real CSS bug until
+you check the process actually changed.
