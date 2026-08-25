@@ -600,3 +600,94 @@ completely unstyled (stale server, rebuilt static-asset hashes mismatched).
 Caught by checking `ps`/`ss` rather than trusting the screenshot; worth
 remembering that a silent restart failure looks like a real CSS bug until
 you check the process actually changed.
+
+## 0h · Explorar — vertical discovery feed (2026-08-25)
+
+Requested as a TikTok/Reels-style scroll-snap browsing mode. Scoped via a
+short interview (product-spec-engine's rapid mode, adapted — its generic
+8-file greenfield package doesn't fit an existing, heavily-governed
+codebase, so the output here is this log entry plus the build itself, not
+a separate spec folder) before writing any code:
+
+1. **Alongside the grid, not replacing it.** New route `/automoviles/
+   explorar`. The roster/segment/brand pages are unchanged — this is a
+   second entry point, not a migration. No swap-test surface, no IA risk.
+2. **Card = nameplate, not trim (31 cards, not 76).** Each `Product` row
+   already models one nameplate with its trims nested in `models[]` — no
+   data reshaping needed, and it avoids swiping past 5 near-identical
+   trims of the same car in a row.
+3. **Inline quote CTA per card.** `Solicitar cotización — {model}` sits on
+   the card itself (root CLAUDE.md §1.2 — quote is always the primary
+   action), oem-accent filled, plus a secondary `Ver ficha de {marca} →`
+   to the existing brand page. Both link exactly like every other CTA in
+   this lane (`/cotizar`, no prefill plumbing — none exists elsewhere in
+   the lane either, so this doesn't invent a one-off pattern).
+4. **Built now, typography-led**, same interim mode as the rest of the
+   lane — swapping in real photography later is a styling change to one
+   card component, not a rebuild.
+
+**Mechanics.** `ExplorarFeed.tsx` (client) owns its own scroll region
+(`h-[calc(100svh-8rem)]`, `snap-y snap-proximity`) below the persistent
+SiteNav/AutoLaneNav — this is *not* the pasillo pattern (dropping site
+chrome); chrome stays exactly where it is on every other lane page, the
+feed just gets its own scrollable box beneath it. `IntersectionObserver`
+(the same pattern `JumpNavigation.tsx` already uses elsewhere in the
+codebase) drives a `01 / 31` position register — reusing the house's own
+existing "document position" idiom rather than inventing a dot-rail. Entry
+point is a promotional banner on the lane root page (between segments and
+"Cómo se compra"), deliberately *not* another `AutoLaneNav` tab — that row
+was just fixed for overflow in §0g and adding an item risked reintroducing
+exactly that.
+
+**Three real bugs found and fixed during build, not just claimed fixed:**
+
+1. **Footer bleed on keyboard nav.** `target.scrollIntoView()` walks up
+   *every* scrollable ancestor to bring the target into view — including
+   the outer page — which nudged the whole document down and bled the
+   site footer into frame beneath the second card. Fixed by scrolling the
+   container directly (`scroller.scrollTo({ top: target.offsetTop })`)
+   instead, which never touches anything outside the feed.
+2. **Rapid keyboard presses silently stalled.** First fix attempt (a ref
+   tracking the "last requested index" so fast presses chain correctly)
+   didn't address the actual cause: repeatedly retargeting
+   `scroller.scrollTo({behavior:'smooth'})` while a previous call is still
+   animating fights the container's own `scroll-snap-mandatory` — verified
+   by reading `scrollTop` directly after a rapid-press burst: it had
+   genuinely stopped advancing, not just lagging on-screen. Real fix is a
+   550ms debounce lock: a press mid-transition is ignored rather than
+   queued or raced. Verified two ways — 30 presses at a deliberate pace
+   (650ms apart) reach card 31/31 cleanly; a rapid 32-press burst at
+   120ms intervals is correctly rate-limited (~1 advance per lock window)
+   rather than getting stuck, which is also just the right feel for a
+   paginated feed, not merely a workaround.
+3. **`snap-mandatory` → `snap-proximity`.** While investigating the above,
+   tested real mouse-wheel scrolling and could not get it to register in
+   this sandboxed Playwright/headless-Chromium environment — but isolated
+   this precisely: plain document scroll (`window.scrollY`) responds
+   correctly to the same synthetic wheel events (0 → 2264px), while the
+   identical events over the feed's nested `overflow-y-auto` container
+   produce zero movement, with computed CSS and programmatic `scrollTo`
+   both verified correct. This matches a well-documented Playwright
+   limitation (synthetic wheel events don't reliably reach nested scroll
+   containers in headless mode) rather than a component bug — but since it
+   couldn't be *proven* safe in a real browser here, and `mandatory`
+   snapping is independently a known friction point against discrete
+   mouse-wheel ticks (vs. a continuous trackpad gesture) even outside any
+   testing artifact, switched to `proximity`: strictly more forgiving,
+   still snaps cleanly on settle, no downside identified.
+
+**Verified:** `pnpm typecheck` + `pnpm build` green; a full 3-breakpoint ×
+overflow/footer-bleed sweep (mobile/tablet/desktop) after every change,
+clean throughout; keyboard navigation confirmed correct at both a
+deliberate pace and under stress; screenshots of cards 1, 2, 3, 10, and 12
+confirm brand accent, segment badge, spec grid, trim chips, and the
+register counter all update correctly card-to-card.
+
+**Not verified — flagged, not silently assumed:** real mouse-wheel/
+trackpad scroll behavior in an actual browser, for the reason in bug #3
+above. Everything else (keyboard, the underlying scroll-snap mechanics
+that wheel/touch would also drive, touch-simulated direct scroll
+manipulation) works correctly, and `proximity` is the safer default either
+way — but this is the one thing in this feature that should get a real
+five-second sanity check on an actual trackpad/mouse before calling it
+fully shipped.

@@ -117,6 +117,32 @@ export default async function AutomovilesLaneRootPage() {
         </div>
       </section>
 
+      {/* Explorar — the vertical discovery feed, a second way to browse the
+          same 31 nameplates. A banner, not a nav item: keeps AutoLaneNav's
+          tab row from getting crowded again (see SCOPE.md §0g) and reads as
+          an optional deeper mode rather than competing with the grid IA. */}
+      <section className="border-t border-[color:var(--ink-decoration)] bg-[color:var(--surface-2)]">
+        <Link
+          href="/automoviles/explorar"
+          className="group mx-auto flex max-w-6xl flex-col gap-4 px-5 py-10 transition-colors md:flex-row md:items-center md:justify-between md:px-8"
+        >
+          <div>
+            <p className="font-mono text-mono-sm uppercase tracking-[var(--lane-label-tracking)] text-[color:var(--accent-ink)]">
+              Modo vertical
+            </p>
+            <p className="mt-2 text-xl text-[color:var(--ink-primary)]">
+              Recorra las 31 líneas de modelo una a la vez, con teclado, mouse o dedo.
+            </p>
+          </div>
+          <span className="inline-flex shrink-0 items-center gap-2 font-mono text-[11px] uppercase tracking-widest-2 text-[color:var(--ink-primary)]">
+            Empezar
+            <span aria-hidden className="transition-transform group-hover:translate-x-1">
+              →
+            </span>
+          </span>
+        </Link>
+      </section>
+
       {/* Unit math — the dual RFQ shape the hero promises but never explained */}
       <section className="border-t border-[color:var(--ink-decoration)]">
         <div className="mx-auto max-w-6xl px-5 py-16 md:px-8 md:py-20">

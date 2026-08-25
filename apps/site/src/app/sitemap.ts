@@ -62,6 +62,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: buildDate,
     },
     {
+      // Vertical discovery feed — an alternate entry point, not indexed as
+      // aggressively as the roster/segment pages it draws from.
+      url: `${BASE}/automoviles/explorar`,
+      priority: 0.5,
+      changeFrequency: 'monthly',
+      lastModified: buildDate,
+    },
+    {
       url: `${BASE}/nosotros`,
       priority: 0.5,
       changeFrequency: 'monthly',
