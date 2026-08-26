@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Costo de importación · Hilux Travo Overland</title>
+<style>
+  :root {
+    --cs-ink: #0f1216;
+    --cs-ink-mid: #374151;
+    --cs-ink-soft: #6b7280;
+    --cs-surface: #ffffff;
+    --cs-line: #e5e7eb;
+    --cs-mat: #52555a;
+    --cs-accent: #c4933f;
+  }
+  html, body { margin: 0; padding: 0; }
+  .csheet-page { min-height: 100vh; background: var(--cs-mat); padding: 32px 16px 64px; }
+  .csheet-page .csheet { box-shadow: 0 8px 40px rgba(0, 0, 0, 0.35); }
+
+  .csheet {
+    box-sizing: border-box; width: 100%; max-width: 720px; margin: 0 auto;
+    padding: 40px 48px; background: var(--cs-surface); color: var(--cs-ink);
+    font-family: system-ui, sans-serif; font-size: 13px; line-height: 1.5;
+  }
+  .csheet * { box-sizing: border-box; }
+  .csheet-title { margin: 0; font-size: 30px; font-weight: 600; letter-spacing: -0.01em; }
+  .csheet-sub { margin-top: 4px; font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 12px; color: var(--cs-ink-soft); }
+  .csheet-rule { height: 2px; background: var(--cs-ink); margin: 14px 0 22px; }
+  .csheet-table { width: 100%; border-collapse: collapse; }
+  .csheet-table td { padding: 6px 4px; border-bottom: 1px solid var(--cs-line); }
+  .csheet-table tr { break-inside: avoid; }
+  .csheet-table td.csheet-val { text-align: right; font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-variant-numeric: tabular-nums; }
+  .csheet-table tr.csheet-section td { border-bottom: none; padding-top: 16px; font-weight: 700; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--cs-ink-mid); }
+  .csheet-table tr.csheet-spacer td { border-bottom: none; padding: 2px; }
+  .csheet-foot { margin-top: 28px; padding-top: 12px; border-top: 1px solid var(--cs-line); color: var(--cs-ink-soft); font-size: 11px; }
+  .csheet-note { margin-top: 10px; padding: 10px 12px; background: #f7f8f9; border: 1px dashed var(--cs-line); font-size: 11px; color: var(--cs-ink-soft); }
+  .csheet-note b { color: var(--cs-ink-mid); }
+
+  @media print {
+    @page { size: A4 portrait; margin: 14mm; }
+    .csheet { max-width: none; padding: 0; }
+    .csheet-page { background: var(--cs-surface); padding: 0; }
+    .csheet-page .csheet { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+<div class="csheet-page">
+<article class="csheet">
+  <h1 class="csheet-title">Costo de importación</h1>
+  <p class="csheet-sub">Toyota Hilux Travo Overland · 26-08-2026 · Perú (SUNAT)</p>
+  <div class="csheet-rule" aria-hidden="true"></div>
+
+  <table class="csheet-table">
+    <tbody>
+      <tr><td>Producto</td><td class="csheet-val">Hilux Travo Overland</td></tr>
+          <tr><td>Marca</td><td class="csheet-val">Toyota</td></tr>
+          <tr><td>Modelo</td><td class="csheet-val">Travo Overland (2.8 Turbodiésel 4x4 AT)</td></tr>
+          <tr><td>Combustible</td><td class="csheet-val">diésel</td></tr>
+          <tr><td>Cilindrada CC</td><td class="csheet-val">2755</td></tr>
+          <tr><td>Incoterm</td><td class="csheet-val">FOB</td></tr>
+          <tr><td>Tipo de cambio (PEN/USD)</td><td class="csheet-val">3.7</td></tr>
+          <tr class="csheet-spacer"><td colspan="2"></td></tr>
+          <tr class="csheet-section"><td colspan="2">CASCADA DE COSTOS (USD)</td></tr>
+          <tr><td>FOB / valor</td><td class="csheet-val">46,000.00</td></tr>
+          <tr><td>Seguro</td><td class="csheet-val">750.00</td></tr>
+          <tr><td>CIF</td><td class="csheet-val">50,750.00</td></tr>
+          <tr><td>Ad Valorem</td><td class="csheet-val">0.00</td></tr>
+          <tr><td>ISC</td><td class="csheet-val">0.00</td></tr>
+          <tr><td>IGV importación</td><td class="csheet-val">9,135.00</td></tr>
+          <tr><td>Percepción</td><td class="csheet-val">2,095.98</td></tr>
+          <tr><td>Gastos vinculados</td><td class="csheet-val">1,175.00</td></tr>
+          <tr><td>Landed cost</td><td class="csheet-val">51,925.00</td></tr>
+          <tr><td>Desembolso de caja</td><td class="csheet-val">63,155.98</td></tr>
+          <tr class="csheet-spacer"><td colspan="2"></td></tr>
+          <tr class="csheet-section"><td colspan="2">PRECIO Y MÁRGENES (USD)</td></tr>
+          <tr><td>Precio de venta (ex-IGV)</td><td class="csheet-val">57,117.50</td></tr>
+          <tr><td>IGV ventas</td><td class="csheet-val">10,281.15</td></tr>
+          <tr><td>Precio final</td><td class="csheet-val">67,398.65</td></tr>
+          <tr><td>Margen bruto</td><td class="csheet-val">5,192.50</td></tr>
+          <tr><td>Margen bruto %</td><td class="csheet-val">10.0%</td></tr>
+          <tr><td>Impuestos recuperables USD</td><td class="csheet-val">11,230.98</td></tr>
+          <tr><td>Margen neto de caja</td><td class="csheet-val">-6,038.48</td></tr>
+          <tr><td>Margen neto de caja %</td><td class="csheet-val">-11.6%</td></tr>
+      <tr class="csheet-spacer"><td colspan="2"></td></tr>
+      <tr class="csheet-section"><td colspan="2">× 2 UNIDADES (contenedor compartido)</td></tr>
+      <tr><td>Landed cost total</td><td class="csheet-val">103,850.00</td></tr>
+          <tr><td>Precio de venta total (ex-IGV)</td><td class="csheet-val">114,235.00</td></tr>
+          <tr><td>IGV ventas total</td><td class="csheet-val">20,562.30</td></tr>
+          <tr><td>Precio final total (USD)</td><td class="csheet-val">134,797.30</td></tr>
+          <tr><td>Precio final total (S/, ref.)</td><td class="csheet-val">498,750.01</td></tr>
+          <tr><td>Margen bruto total</td><td class="csheet-val">10,385.00</td></tr>
+    </tbody>
+  </table>
+
+  <p class="csheet-note">
+    <b>Supuestos no especificados en este pedido</b> — tomados de los valores por defecto de TOWER
+    (DEFAULT_INPUTS): flete Zofratacna US$500, gastos portuarios US$375, agencia de aduana US$300,
+    tipo de cambio S/ 3.70. La cotización previa (COT-WA-2026-0826) había usado S/ 3.50 como
+    referencia y no incluía flete Zofratacna — de ahí la diferencia frente a esa cifra. Ajustar estos
+    valores si difieren del caso real antes de usar esta hoja para decidir precio.
+  </p>
+
+  <p class="csheet-foot">
+    Wings Global Trade · Documento interno de costeo. Cifras en USD salvo indicación. Tipo de cambio 3.7 PEN/USD.
+  </p>
+</article>
+</div>
+</body>
+</html>
