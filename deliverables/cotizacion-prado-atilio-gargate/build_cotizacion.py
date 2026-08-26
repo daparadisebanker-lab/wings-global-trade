@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Build the Wings Automóviles branded CLIENT quotation (Cotización) for a
-Toyota Land Cruiser Prado 2026 2.4T Híbrido (FULL / Flagship VX), issued to
-Atilio Gargate Huayanay, port of arrival Callao, Perú.
+"""Build the Wings Global Trade branded CLIENT quotation (Cotización) for a
+Toyota Land Cruiser Prado 2026 2.4T Híbrido (FULL), issued to Atilio Gargate
+Huayanay, port of arrival Callao, Perú.
 
 Re-issued 2026-08-26: pricing now comes from FORMULA_DE_COSTOS_1.xlsx (the
 client's updated cost sheet — sheet "PRADO", column D, the only column
@@ -13,19 +13,33 @@ the same 2-unit shared container, so Flete Internacional/unit is now
 $4,300 (was $3,000) and Costo total de importación/unit (D60) is now
 $83,569.50 (was $82,250.00).
 
+Content/layout finalized 2026-08-26 against the client's own reference PDF
+(Cotizacion_prado_flagship_26.08.pdf, second round — they'd trimmed fields
+down and this is the confirmed final element set): the letterhead/sign-off
+use the full "WINGS GLOBAL TRADE" lockup (the Vendedor box + footer still
+carry the legal issuing entity, IMP. Y EXP. WINGS AUTOMÓVILES S.R.L. + RUC —
+Wings Global Trade is the client-facing trade name, the RUC holder is
+unchanged); the line-item description dropped its origin/nacionalización
+subtitle; Cantidad shows a bare centered number, no "unidades" suffix; the
+in-table "Valor de venta" repeat row is gone (the totals block below already
+carries it); column headers dropped their "(USD)" suffix (currency is
+already stated in the dateline); "Precio total" dropped its "(Callao)"
+suffix (port is already in the dateline); and section bars are centered.
+
 The client sees only the final commercial price — Wings' internal landed
 cost and margin are never shown, only the resulting Valor de Venta + IGV,
 which is how Peru B2B quotations are conventionally itemized. Reuses the
-`pdoc` grid/layout/logo from the Wings quotation family. Run:
+`pdoc` grid/layout from the Wings quotation family. Run:
   python3 build_cotizacion.py
 """
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-LOGO_SVG = HERE / "wings-icon.svg"  # icon-only mark — the full lockup SVG spells out
-# "WINGS GLOBAL TRADE" as vector artwork, which would misrepresent the issuing
-# entity here (Wings Automóviles S.R.L., a distinct Peru RUC). This is the same
-# wing icon with the wordmark portion of the source SVG excluded.
+LOGO_SVG = HERE / "wings-icon.svg"  # icon-only mark (the full lockup SVG stacks
+# "WINGS GLOBAL TRADE" in three condensed lines beside the icon — not the single
+# bold line + tagline the reference shows below the icon), paired with plain
+# "WINGS GLOBAL TRADE" text set in the document's own type, matching the
+# reference exactly.
 
 # ── Source: FORMULA_DE_COSTOS_1.xlsx, sheet "PRADO", column D ─────────────
 # Costo total de importación (landed cost, pre-nationalization IGV) = D60,
@@ -105,16 +119,15 @@ HTMLDOC = f"""<!doctype html>
   .pdoc-table {{ width: 100%; border-collapse: collapse; table-layout: fixed; }}
   .pdoc-table thead th {{ background: var(--pd-bar); font-size: 10.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 6px 9px; text-align: center; border: 1px solid var(--pd-line); }}
   .pdoc-table th.pd-col-item {{ width: 7%; }}
-  .pdoc-table th.pd-col-desc {{ width: 53%; }}
-  .pdoc-table th.pd-col-qty {{ width: 10%; }}
+  .pdoc-table th.pd-col-desc {{ width: 45%; }}
+  .pdoc-table th.pd-col-qty {{ width: 13%; }}
   .pdoc-table tbody tr {{ break-inside: avoid; }}
   .pdoc-table tbody td {{ border: 1px solid var(--pd-line); padding: 12px 9px; vertical-align: top; font-size: 11.5px; }}
   .pd-item {{ font-weight: 600; text-align: center; }}
   .pd-desc {{ text-align: left; }}
-  .pd-desc .pd-model {{ font-weight: 600; display: block; margin-bottom: 3px; }}
-  .pd-desc .pd-spec {{ color: var(--pd-muted); font-size: 11px; }}
+  .pd-desc .pd-model {{ font-weight: 600; }}
+  .pd-qty {{ text-align: center; font-weight: 600; }}
   .pd-cell-num {{ text-align: right; font-family: var(--font-mono, monospace); font-variant-numeric: tabular-nums; }}
-  .pd-row-total td {{ background: var(--pd-tint); font-weight: 700; }}
 
   .pdoc-totals {{ margin: 18px 0 6px auto; width: 360px; }}
   .pdoc-total-row {{ display: flex; justify-content: space-between; gap: 24px; padding: 10px 6px; border-top: 1px solid var(--pd-line); }}
@@ -124,8 +137,8 @@ HTMLDOC = f"""<!doctype html>
   .pdoc-total-row[data-emphasis='true'] .pd-total-label, .pdoc-total-row[data-emphasis='true'] .pd-total-value {{ font-size: 14.5px; font-weight: 700; white-space: nowrap; }}
   .pdoc-total-note {{ margin: 4px 0 0 auto; width: 360px; text-align: right; font-size: 10.5px; color: var(--pd-muted); }}
 
-  .pdoc-section-bar {{ background: var(--pd-bar); padding: 7px 12px; margin: 12px 0 8px; font-size: 11.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }}
-  .pdoc-section-bar--observaciones {{ margin-top: 40px; }}
+  .pdoc-section-bar {{ background: var(--pd-bar); padding: 7px 12px; margin: 12px 0 8px; font-size: 11.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-align: center; }}
+  .pdoc-section-bar--observaciones {{ margin-top: 130px; }}
   .pdoc-terms {{ display: grid; grid-template-columns: 210px 1fr; gap: 4px 16px; padding: 0 4px; font-size: 11.5px; }}
   .pdoc-term-label {{ font-weight: 600; }}
   .pdoc-observations {{ margin: 0; padding: 0 4px; list-style: none; font-size: 11.5px; }}
@@ -170,7 +183,7 @@ HTMLDOC = f"""<!doctype html>
     </div>
     <div class="pdoc-brand">
       {LOGO}
-      <span class="pdoc-brand-name">WINGS AUTOMÓVILES</span>
+      <span class="pdoc-brand-name">WINGS GLOBAL TRADE</span>
       <span class="pdoc-tagline">SOLUCIONES INTEGRALES EN IMPORTACIÓN</span>
     </div>
   </header>
@@ -208,26 +221,18 @@ HTMLDOC = f"""<!doctype html>
         <th class="pd-col-item">Ítem</th>
         <th class="pd-col-desc">Descripción</th>
         <th class="pd-col-qty">Cantidad</th>
-        <th>Valor unit. (USD)</th>
-        <th>Importe (USD)</th>
+        <th>Valor Unitario</th>
+        <th>Importe</th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td class="pd-item">1</td>
         <td class="pd-desc">
-          <span class="pd-model">Toyota Land Cruiser Prado 2026 — FULL (tope de gama, Flagship VX)</span>
-          <span class="pd-spec">2.4T Híbrido · Origen: China · Nacionalizado, puesto en Callao</span>
+          <span class="pd-model">Toyota Land Cruiser Prado 2026 — FULL 2.4T Híbrido</span>
         </td>
-        <td class="pd-cell-num">{UNITS} unidades</td>
+        <td class="pd-qty">{UNITS}</td>
         <td class="pd-cell-num">{fmt(VALOR_VENTA_UNIT)}</td>
-        <td class="pd-cell-num">{fmt(VALOR_VENTA)}</td>
-      </tr>
-      <tr class="pd-row-total">
-        <td class="pd-item"></td>
-        <td class="pd-desc">Valor de venta</td>
-        <td class="pd-cell-num">{UNITS} unidades</td>
-        <td class="pd-cell-num"></td>
         <td class="pd-cell-num">{fmt(VALOR_VENTA)}</td>
       </tr>
     </tbody>
@@ -243,7 +248,7 @@ HTMLDOC = f"""<!doctype html>
       <span class="pd-total-value">{fmt(IGV)}</span>
     </div>
     <div class="pdoc-total-row" data-emphasis="true">
-      <span class="pd-total-label">Precio total (Callao)</span>
+      <span class="pd-total-label">Precio total</span>
       <span class="pd-total-value">USD {fmt(PRECIO_TOTAL)}</span>
     </div>
   </div>
@@ -270,7 +275,7 @@ HTMLDOC = f"""<!doctype html>
   <div class="pdoc-close-row">
     <div class="pdoc-close">
       <div>Atentamente,</div>
-      <div class="pdoc-close-signoff">WINGS AUTOMÓVILES</div>
+      <div class="pdoc-close-signoff">WINGS GLOBAL TRADE</div>
     </div>
   </div>
 
