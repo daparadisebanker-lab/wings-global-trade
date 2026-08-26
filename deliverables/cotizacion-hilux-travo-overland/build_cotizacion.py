@@ -104,7 +104,6 @@ HTMLDOC = f"""<!doctype html>
     box-sizing: border-box; width: 100%; max-width: 820px; margin: 0 auto;
     padding: 22px 52px 20px; background: #ffffff; color: var(--pd-ink);
     font-family: var(--font-ui, system-ui, sans-serif); font-size: 12px; line-height: 1.35;
-    display: flex; flex-direction: column; min-height: 1040px;
   }}
   .pdoc *, .pdoc *::before, .pdoc *::after {{ box-sizing: border-box; }}
 
@@ -161,7 +160,7 @@ HTMLDOC = f"""<!doctype html>
   .pdoc-observations li {{ position: relative; padding-left: 18px; margin-bottom: 2px; }}
   .pdoc-observations li::before {{ content: '•'; position: absolute; left: 4px; }}
 
-  .pdoc-tail {{ margin-top: auto; padding-top: 10px; }}
+  .pdoc-tail {{ margin-top: 26px; padding-top: 10px; }}
   .pdoc-close-row {{ display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; }}
   .pdoc-close-signoff {{ margin-top: 2px; font-weight: 600; }}
 
@@ -183,7 +182,7 @@ HTMLDOC = f"""<!doctype html>
     body {{ background: #ffffff; }}
     .pdoc-page {{ min-height: 0; padding: 0; }}
     .pdoc-page .pdoc {{ box-shadow: none; }}
-    .pdoc {{ max-width: none; padding: 0; min-height: 280mm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }}
+    .pdoc {{ max-width: none; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }}
     .pdoc-close-row, .pdoc-footer {{ break-inside: avoid; }}
   }}
 </style>
