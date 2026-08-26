@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
 """Build a Wings Automóviles branded CLIENT quotation TEMPLATE (Cotización)
-for 2× Toyota Hilux Travo Overland, following the same cost-buildup and
-margin-then-IGV logic used for the Prado quotation (see
-../cotizacion-prado-atilio-gargate/build_cotizacion.py) — reused here because
-no cost spreadsheet was supplied for this unit, only FOB + freight:
+for 2× Toyota Hilux Travo Overland, priced from TOWER's own SUNAT
+import-cost engine — a faithful port of
+apps/tower/src/lib/costing/engine.ts (computeImportCost), the same port
+used in ../costeo-hilux-travo-overland/build_costeo.py. Fixes the prior
+version of this document, which used a hand-approximated cost buildup
+(no Zofratacna freight leg, S/ 3.50 TC guessed rather than TOWER's own
+S/ 3.70 default) instead of running the actual engine:
 
-  Costo (per unit) = FOB + Flete/unidad + Seguro (1.5%) + Gastos portuarios
-                      + Agencia de aduana + Manipuleo y Estiba
-  Margen  = Costo × 10% (Wings Global Trade's standard rate, per instruction —
-            the Prado deal used a custom 12%; this one explicitly asked for 10%)
+  Costo (landed, per unit) = CIF + Ad Valorem + ISC + Gastos vinculados
+    where CIF = FOB + Flete/unidad + Seguro (1.5%); Gastos vinculados =
+    Flete Zofratacna + Gastos portuarios + Agencia de aduana + Manipuleo
+  Margen = Costo × 10% (Wings Global Trade's standard rate, per instruction)
   Valor de venta = Costo + Margen
-  IGV = Valor de venta × 18%
-  Precio total = Valor de venta + IGV
+  IGV ventas = Valor de venta × 18%
+  Precio final = Valor de venta + IGV ventas
 
 No client was specified — this is a reusable TEMPLATE with placeholder
 Comprador fields (bracketed, muted) to be filled in per deal. The client sees
@@ -20,37 +23,55 @@ shown, per house rule. Reuses the `pdoc` grid/layout/logo from the Wings
 quotation family. Run:
   python3 build_cotizacion.py
 """
+from decimal import Decimal, ROUND_HALF_UP
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 LOGO_SVG = HERE / "wings-icon.svg"  # icon-only mark — see the Prado cotización
 # for why the full "WINGS GLOBAL TRADE" lockup SVG isn't used for this entity.
 
-# ── Cost buildup (per unit) — internal only, never shown to the client ────
-FOB_UNIT = 46000.00
-FREIGHT_TOTAL = 8000.00
+
+def d(x) -> Decimal:
+    return Decimal(str(x))
+
+
+def r2(x: Decimal) -> Decimal:
+    return x.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+
+# ── ImportInputs — TOWER field names kept verbatim for traceability;
+# same inputs as ../costeo-hilux-travo-overland/build_costeo.py ─────────────
 UNITS = 2
-FREIGHT_UNIT = FREIGHT_TOTAL / UNITS  # container fits 2 units, so the freight is split
-SEGURO_RATE = 0.015  # standard Wings Automóviles rate (1.5% of FOB + flete)
-GASTOS_PORTUARIOS = 375.00
-AGENCIA_ADUANA = 300.00
-MANIPULEO_ESTIBA = 0.00
+FOB_UNIT = d(46000)
+FREIGHT_UNIT = d(8000) / UNITS       # container fits 2 units, freight split
+FREIGHT_ZOFRATACNA = d(500)          # TOWER DEFAULT_INPUTS — not specified for this deal
+GASTOS_PORTUARIOS = d(375)           # TOWER DEFAULT_INPUTS
+AGENCIA_ADUANA = d(300)              # TOWER DEFAULT_INPUTS
+MANIPULEO_ESTIBA = d(0)              # TOWER DEFAULT_INPUTS
+AD_VALOREM_RATE = d(0)               # TOWER DEFAULT_INPUTS (China origin)
+IGV_RATE = d("0.18")
+INSURANCE_RATE = d("0.015")
+MARKUP_PCT = d("0.10")               # Wings Global Trade's standard margin, per instruction
+TIPO_CAMBIO = d("3.7")               # TOWER DEFAULT_INPUTS (was guessed as 3.5 before — the fix)
+ISC_RATE = d(0)                      # deriveISCRate: diesel -> 0
 
-SEGURO_UNIT = round(SEGURO_RATE * (FOB_UNIT + FREIGHT_UNIT), 2)
-COSTO_IMPORTACION_UNIT = round(
-    FOB_UNIT + FREIGHT_UNIT + SEGURO_UNIT + GASTOS_PORTUARIOS + AGENCIA_ADUANA + MANIPULEO_ESTIBA, 2
-)
+# ── computeImportCost (FOB incoterm path) — per unit ───────────────────────
+cif_base = r2(FOB_UNIT + FREIGHT_UNIT)
+insurance = r2(INSURANCE_RATE * cif_base)
+cif = r2(cif_base + insurance)
+ad_valorem = r2(AD_VALOREM_RATE * cif)
+isc = r2(ISC_RATE * (cif + ad_valorem))
+gastos_vinculados = r2(FREIGHT_ZOFRATACNA + GASTOS_PORTUARIOS + AGENCIA_ADUANA + MANIPULEO_ESTIBA)
+landed_cost_unit = r2(cif + ad_valorem + isc + gastos_vinculados)
 
-MARKUP_PCT = 0.10  # Wings Global Trade's standard margin, per instruction
-IGV_PCT = 0.18
-TIPO_CAMBIO = 3.5  # referencial, S/ por USD
+margen_unit = r2(landed_cost_unit * MARKUP_PCT)
+valor_venta_unit = r2(landed_cost_unit + margen_unit)
 
-MARGEN_UNIT = round(COSTO_IMPORTACION_UNIT * MARKUP_PCT, 2)
-VALOR_VENTA_UNIT = round(COSTO_IMPORTACION_UNIT + MARGEN_UNIT, 2)
-VALOR_VENTA = round(VALOR_VENTA_UNIT * UNITS, 2)
-IGV = round(VALOR_VENTA * IGV_PCT, 2)
-PRECIO_TOTAL = round(VALOR_VENTA + IGV, 2)
-PRECIO_TOTAL_SOLES = round(PRECIO_TOTAL * TIPO_CAMBIO, 2)
+VALOR_VENTA_UNIT = valor_venta_unit
+VALOR_VENTA = r2(valor_venta_unit * UNITS)
+IGV = r2(VALOR_VENTA * IGV_RATE)
+PRECIO_TOTAL = r2(VALOR_VENTA + IGV)
+PRECIO_TOTAL_SOLES = r2(PRECIO_TOTAL * TIPO_CAMBIO)
 
 
 def fmt(n: float) -> str:
@@ -301,6 +322,7 @@ HTMLDOC = f"""<!doctype html>
 out = HERE / "cotizacion.html"
 out.write_text(HTMLDOC, encoding="utf-8")
 print(f"wrote {out} ({len(HTMLDOC):,} bytes)")
-print(f"FOB/unit={fmt(FOB_UNIT)} Flete/unit={fmt(FREIGHT_UNIT)} Seguro/unit={fmt(SEGURO_UNIT)}")
-print(f"Costo/unit={fmt(COSTO_IMPORTACION_UNIT)} Margen(10%)/unit={fmt(MARGEN_UNIT)} Valor_venta/unit={fmt(VALOR_VENTA_UNIT)}")
+print(f"FOB/unit={fmt(FOB_UNIT)} Flete/unit={fmt(FREIGHT_UNIT)} Seguro/unit={fmt(insurance)}")
+print(f"CIF/unit={fmt(cif)} Gastos_vinculados/unit={fmt(gastos_vinculados)} Landed_cost/unit={fmt(landed_cost_unit)}")
+print(f"Margen(10%)/unit={fmt(margen_unit)} Valor_venta/unit={fmt(VALOR_VENTA_UNIT)}")
 print(f"units={UNITS} valor_venta_total={fmt(VALOR_VENTA)} igv={fmt(IGV)} precio_total={fmt(PRECIO_TOTAL)}")
