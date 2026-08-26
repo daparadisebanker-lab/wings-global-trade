@@ -3,9 +3,16 @@
 Toyota Land Cruiser Prado 2026 2.4T Híbrido (FULL / Flagship VX), issued to
 Atilio Gargate Huayanay, port of arrival Callao, Perú.
 
-Pricing is derived from FORMULA_DE_COSTOS.xlsx (sheet "PRADO", column D —
-the only column relevant to this vehicle; the sheet's other columns hold
-unrelated reference data for other vehicles/clients and are not used here).
+Re-issued 2026-08-26: pricing now comes from FORMULA_DE_COSTOS_1.xlsx (the
+client's updated cost sheet — sheet "PRADO", column D, the only column
+relevant to this vehicle; other columns hold unrelated reference data for
+other vehicles/clients) at an 8% margin (was 12% in the first version, sent
+as COT-WA-2026-0813 — see git history for that figure). The freight leg
+changed too: A9/A10 (FREIGHT 40 HQ) moved from $6,000 to $8,600 total for
+the same 2-unit shared container, so Flete Internacional/unit is now
+$4,300 (was $3,000) and Costo total de importación/unit (D60) is now
+$83,569.50 (was $82,250.00).
+
 The client sees only the final commercial price — Wings' internal landed
 cost and margin are never shown, only the resulting Valor de Venta + IGV,
 which is how Peru B2B quotations are conventionally itemized. Reuses the
@@ -20,15 +27,15 @@ LOGO_SVG = HERE / "wings-icon.svg"  # icon-only mark — the full lockup SVG spe
 # entity here (Wings Automóviles S.R.L., a distinct Peru RUC). This is the same
 # wing icon with the wordmark portion of the source SVG excluded.
 
-# ── Source: FORMULA_DE_COSTOS.xlsx, sheet "PRADO", column D ───────────────
+# ── Source: FORMULA_DE_COSTOS_1.xlsx, sheet "PRADO", column D ─────────────
 # Costo total de importación (landed cost, pre-nationalization IGV) = D60,
 # already a PER-UNIT figure: the sheet allocates the 40'HQ container freight
-# (A10=6000 / B10=2 units) down to a per-unit share before summing, so this
+# (A10=8600 / B10=2 units) down to a per-unit share before summing, so this
 # is "what one of two units sharing a container costs" — exactly this order.
 # Internal only — never shown to the client, per house rule.
-COSTO_IMPORTACION_UNIT = 82250.00
+COSTO_IMPORTACION_UNIT = 83569.50
 UNITS = 2
-MARKUP_PCT = 0.12
+MARKUP_PCT = 0.08  # was 0.12 in the first version of this quotation
 IGV_PCT = 0.18
 TIPO_CAMBIO = 3.5  # referencial, S/ por USD (D18 en la hoja de costos)
 
@@ -70,7 +77,6 @@ HTMLDOC = f"""<!doctype html>
     box-sizing: border-box; width: 100%; max-width: 820px; margin: 0 auto;
     padding: 22px 52px 20px; background: #ffffff; color: var(--pd-ink);
     font-family: var(--font-ui, system-ui, sans-serif); font-size: 12px; line-height: 1.35;
-    display: flex; flex-direction: column; min-height: 1040px;
   }}
   .pdoc *, .pdoc *::before, .pdoc *::after {{ box-sizing: border-box; }}
 
@@ -125,7 +131,7 @@ HTMLDOC = f"""<!doctype html>
   .pdoc-observations li {{ position: relative; padding-left: 18px; margin-bottom: 2px; }}
   .pdoc-observations li::before {{ content: '•'; position: absolute; left: 4px; }}
 
-  .pdoc-tail {{ margin-top: auto; padding-top: 10px; }}
+  .pdoc-tail {{ margin-top: 26px; padding-top: 10px; }}
   .pdoc-close-row {{ display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; }}
   .pdoc-close-signoff {{ margin-top: 2px; font-weight: 600; }}
 
@@ -147,7 +153,7 @@ HTMLDOC = f"""<!doctype html>
     body {{ background: #ffffff; }}
     .pdoc-page {{ min-height: 0; padding: 0; }}
     .pdoc-page .pdoc {{ box-shadow: none; }}
-    .pdoc {{ max-width: none; padding: 0; min-height: 280mm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }}
+    .pdoc {{ max-width: none; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }}
     .pdoc-close-row, .pdoc-footer {{ break-inside: avoid; }}
   }}
 </style>
@@ -159,7 +165,7 @@ HTMLDOC = f"""<!doctype html>
   <header class="pdoc-header">
     <div>
       <h1 class="pdoc-title">Cotización</h1>
-      <p class="pdoc-number">COT-WA-2026-0813</p>
+      <p class="pdoc-number">COT-WA-2026-0826</p>
     </div>
     <div class="pdoc-brand">
       {LOGO}
@@ -170,7 +176,7 @@ HTMLDOC = f"""<!doctype html>
   <div class="pdoc-rule" aria-hidden="true"></div>
 
   <div class="pdoc-dateline">
-    <span>Lima, 13-08-2026</span>
+    <span>Lima, 26-08-2026</span>
     <span>Validez: 15 días</span>
     <span>Puerto de llegada: Callao, Perú</span>
     <span>Moneda: USD</span>
@@ -286,5 +292,5 @@ HTMLDOC = f"""<!doctype html>
 out = HERE / "cotizacion.html"
 out.write_text(HTMLDOC, encoding="utf-8")
 print(f"wrote {out} ({len(HTMLDOC):,} bytes)")
-print(f"units={UNITS} costo_interno_unit={fmt(COSTO_IMPORTACION_UNIT)} margen_12%_unit={fmt(MARGEN_UNIT)}")
+print(f"units={UNITS} costo_interno_unit={fmt(COSTO_IMPORTACION_UNIT)} margen_{MARKUP_PCT*100:.0f}%_unit={fmt(MARGEN_UNIT)}")
 print(f"valor_venta_unit={fmt(VALOR_VENTA_UNIT)} valor_venta_total={fmt(VALOR_VENTA)} igv={fmt(IGV)} precio_total={fmt(PRECIO_TOTAL)}")
