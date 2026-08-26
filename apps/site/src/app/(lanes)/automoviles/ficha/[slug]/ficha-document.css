@@ -1,0 +1,317 @@
+/* Ficha técnica print document — WGT/07 Automóviles.
+   Mirrors the pattern proven in TOWER's own ficha técnica (apps/tower/src/
+   components/pipeline/ficha-document): a self-contained light A4 sheet,
+   window.print()-driven (no PDF library), toolbar hidden via
+   [data-print-hidden] under @media print, numbers exhibited tabular-mono
+   as brand assets (root CLAUDE.md Directive 5). Values below are the
+   automóviles livery's own tokens (packages/liveries/automoviles/livery.css)
+   copied at authoring time, not read live — a print stylesheet needs to
+   survive window.print() rendering reliably, and TOWER's own ficha CSS
+   makes the same choice for the same reason. */
+
+.fdoc-page {
+  min-height: 100vh;
+  background: #efeff1; /* --surface-2, the lane's own inset-well tone */
+  padding: 32px 16px 64px;
+}
+
+.fdoc-page .fdoc {
+  box-shadow: 0 8px 40px rgba(21, 22, 27, 0.18);
+}
+
+.fdoc-toolbar {
+  max-width: 700px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 16px;
+  background: #15161b; /* --ink-primary, the chrome-ground inverse */
+  color: #ffffff;
+}
+.fdoc-toolbar-back {
+  font-family: 'Teko', ui-monospace, monospace;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+}
+.fdoc-toolbar-back:hover {
+  color: #ffffff;
+}
+.fdoc-toolbar-label {
+  font-family: 'Teko', ui-monospace, monospace;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+}
+.fdoc-toolbar-btn {
+  padding: 9px 20px;
+  background: #ffffff;
+  color: #15161b;
+  border: none;
+  font-family: 'Teko', ui-monospace, monospace;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 8px; /* --radius-control */
+}
+.fdoc-toolbar-btn:hover {
+  background: #e4e4e7;
+}
+
+.fdoc-error {
+  max-width: 700px;
+  margin: 80px auto;
+  padding: 40px;
+  background: #ffffff;
+  text-align: center;
+  font-family: system-ui, sans-serif;
+}
+.fdoc-error-sub {
+  margin-top: 8px;
+  color: #8b8c91;
+  font-size: 13px;
+}
+
+/* ── The sheet itself ──────────────────────────────────────────────────── */
+.fdoc {
+  --fd-ink: #15161b;
+  --fd-muted: #55565c;
+  --fd-line: #e4e4e7;
+  --fd-bar: #efeff1;
+  --fd-tint: #fafafb;
+  --fd-accent: #2f5bc7;
+
+  box-sizing: border-box;
+  width: 700px;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 40px;
+  background: #ffffff;
+  color: var(--fd-ink);
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.fdoc *,
+.fdoc *::before,
+.fdoc *::after {
+  box-sizing: border-box;
+}
+
+.fdoc-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+.fdoc-kicker {
+  display: block;
+  font-family: 'Teko', ui-monospace, monospace;
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fd-accent);
+  margin-bottom: 6px;
+}
+.fdoc-brandline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.fdoc-brand-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--oem-accent, var(--fd-accent));
+}
+.fdoc-brand-name {
+  font-family: 'Teko', ui-monospace, monospace;
+  font-size: 15px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--fd-muted);
+}
+.fdoc-title {
+  margin: 0;
+  font-family: 'NissanOpti', Georgia, serif;
+  font-weight: 400;
+  font-size: 34px;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+.fdoc-subtitle {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: var(--fd-muted);
+  max-width: 46ch;
+}
+.fdoc-number {
+  margin-top: 14px;
+  font-family: 'Teko', ui-monospace, monospace;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  color: var(--fd-muted);
+}
+.fdoc-logo-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.fdoc-logo {
+  height: 40px;
+  width: auto;
+  filter: brightness(0);
+}
+.fdoc-type-icon {
+  height: 22px;
+  width: 40px;
+}
+.fdoc-tagline {
+  font-family: 'Teko', ui-monospace, monospace;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--fd-muted);
+  text-transform: uppercase;
+}
+
+.fdoc-rule {
+  position: relative;
+  height: 3px;
+  margin: 20px 0 28px;
+  background: var(--fd-line);
+}
+.fdoc-rule::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 120px;
+  background: var(--oem-accent, var(--fd-accent));
+}
+
+.fdoc-section-bar {
+  background: var(--fd-bar);
+  padding: 8px 12px;
+  margin: 0 0 12px;
+  font-family: 'Teko', ui-monospace, monospace;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.fdoc-spec-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 28px;
+}
+.fdoc-spec-table th,
+.fdoc-spec-table td {
+  border-bottom: 1px solid var(--fd-line);
+  padding: 8px 4px;
+  text-align: left;
+  vertical-align: top;
+  font-size: 13px;
+}
+.fdoc-spec-table th {
+  font-weight: 400;
+  color: var(--fd-muted);
+  width: 40%;
+}
+.fdoc-spec-value {
+  font-family: 'Teko', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 15px;
+}
+
+.fdoc-trims {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+.fdoc-trim {
+  border: 1px solid var(--fd-line);
+  border-radius: 8px; /* --radius-control */
+  padding: 6px 12px;
+  font-family: 'Teko', ui-monospace, monospace;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.fdoc-empty {
+  color: var(--fd-muted);
+  font-size: 12px;
+  margin: 0 0 28px;
+}
+
+.fdoc-notice {
+  border: 1px solid var(--fd-line);
+  background: var(--fd-tint);
+  padding: 14px 16px;
+  margin-bottom: 28px;
+  font-size: 12px;
+  color: var(--fd-muted);
+}
+
+.fdoc-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 40px;
+  padding-top: 14px;
+  border-top: 1px solid var(--fd-line);
+  color: var(--fd-muted);
+  font-size: 12px;
+}
+.fdoc-footer .fdoc-foot-right {
+  text-align: right;
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 20mm 16mm;
+  }
+  .fdoc-page {
+    background: #ffffff;
+    padding: 0;
+  }
+  .fdoc-page .fdoc {
+    box-shadow: none;
+    width: 100%;
+    padding: 0;
+  }
+  [data-print-hidden] {
+    display: none !important;
+  }
+  /* This route is nested under the lane (so [data-lane='automoviles'] keeps
+     resolving --oem-accent — see the brand dot/rule below), which means it
+     also inherits the global SiteNav and AutoLaneNav. Unlike TOWER's ficha
+     (which lives outside its shell entirely), this site has no chrome-drop
+     mechanism outside src/pasillo (apps/site/CLAUDE.md) — hiding these two
+     specific, precisely-selected elements on print is the narrow equivalent
+     without touching that law. Selectors match SiteNav.tsx's own
+     `fixed inset-x-0 top-0 z-50` header and AutoLaneNav's own aria-label. */
+  header.fixed.top-0.z-50,
+  nav[aria-label='Navegación de Automóviles'],
+  /* TrustFooter's root <footer> (packages/ui/src/organs/TrustFooter.tsx) —
+     matched by its chrome-ground background utility, since Tailwind's
+     arbitrary-value class needs its literal string, and this document's own
+     <footer class="fdoc-footer"> never carries that class. Same reasoning
+     for the Mister launcher: matched by its own aria-label, not a class. */
+  footer[class*='chrome-ground'],
+  button[aria-label*='Mister'] {
+    display: none !important;
+  }
+}

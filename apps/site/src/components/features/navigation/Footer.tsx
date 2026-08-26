@@ -19,6 +19,7 @@ import {
 } from '@/lib/constants'
 import { buildWhatsAppLink } from '@/lib/utils'
 import { LANES } from '@/lib/lanes/registry'
+import { categoryHref } from '@/lib/category-href'
 import { TrustFooter, type FooterSection } from '@wings/trade-ui'
 
 interface FooterProps {
@@ -49,13 +50,19 @@ const SERVICES = [
  * whole architecture from day one — the same argument the lane page makes for
  * showing six disciplines with one open.
  */
-const DIVISIONS: { code: string; slug: string; label: string }[] = [
+const DIVISIONS: { code: string; slug: string; label: string; href?: string }[] = [
   { code: 'WGT/01', slug: 'catalogo', label: 'Maquinaria y automotriz' },
   { code: 'WGT/02', slug: 'interiores', label: 'Interiores' },
   { code: 'WGT/03', slug: 'provisiones', label: 'Provisiones' },
   { code: 'WGT/04', slug: 'living', label: 'Living' },
   { code: 'WGT/05', slug: 'representacion', label: 'Representación' },
   { code: 'WGT/06', slug: 'exportacion', label: 'Exportación' },
+  // WGT/07 registered 2026-08-23, route migration landed 2026-08-24 — the
+  // generic `/${slug}` build below now resolves correctly to the real live
+  // /automoviles route, so no href override is needed (it was pinned to
+  // /catalogo/automoviles here for one commit while that migration was
+  // pending).
+  { code: 'WGT/07', slug: 'automoviles', label: 'Automóviles' },
 ]
 
 export function Footer({ categories }: FooterProps) {
@@ -72,7 +79,7 @@ export function Footer({ categories }: FooterProps) {
     const lane = registered.get(d.slug)
     const isLive = d.slug === 'catalogo' || lane?.status === 'ACTIVE' || lane?.status === 'OPENING'
     return {
-      href: isLive ? `/${d.slug}` : '#',
+      href: d.href ?? (isLive ? `/${d.slug}` : '#'),
       label: d.label,
       code: d.code,
       status: (isLive ? 'ACTIVE' : 'OPENING') as 'ACTIVE' | 'OPENING',
@@ -86,7 +93,7 @@ export function Footer({ categories }: FooterProps) {
       label: 'Catálogo',
       links: [
         { href: '/catalogo', label: 'Todo el catálogo' },
-        ...categories.map((c) => ({ href: `/catalogo/${c.slug}`, label: c.name_es })),
+        ...categories.map((c) => ({ href: categoryHref(c.slug), label: c.name_es })),
       ],
     },
     { id: 'servicios', label: 'Servicios', links: SERVICES },

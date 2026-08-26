@@ -42,6 +42,12 @@ const CATEGORY_SEO: Record<
   string,
   { title: string; description: string; markets: string }
 > = {
+  automoviles: {
+    title: 'Automóviles Importados — 11 Marcas de Fábrica China | Wings',
+    description:
+      'Sedanes, SUV, MPV e híbridos de Toyota, Jetour, KIA, Audi, BMW, Hyundai, Mercedes-Benz, MG, Changan, Star 5 y Wuling. Catálogo directo de fábrica, consulta técnica sin registro.',
+    markets: 'China',
+  },
   'maquinaria-agricola': {
     title: 'Maquinaria Agrícola Importada — China y Tailandia | Wings',
     description:

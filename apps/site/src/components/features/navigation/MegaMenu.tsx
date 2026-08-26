@@ -4,6 +4,7 @@
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Category } from '@/types/database'
+import { categoryHref } from '@/lib/category-href'
 
 interface MegaMenuProps {
   categories: Category[]
@@ -27,7 +28,24 @@ interface MegaColumn {
   items: SubItem[]
 }
 
+// Automóviles leads the mega-menu — the category with the strongest
+// commercial traction, promoted to first position (site direction,
+// 2026-08-23 — see programs/automobiles/SCOPE.md).
 const COLUMNS: MegaColumn[] = [
+  {
+    categorySlug: 'automoviles',
+    heading: 'Automóviles',
+    items: [
+      { label: 'Toyota', href: '/automoviles/marcas/toyota' },
+      { label: 'Jetour', href: '/automoviles/marcas/jetour' },
+      { label: 'KIA', href: '/automoviles/marcas/kia' },
+      { label: 'Audi', href: '/automoviles/marcas/audi' },
+      // No dedicated hybrid view exists in the new lane IA yet (models carry
+      // fuel in specs, not as a page-level facet) — lane root is the honest
+      // destination until that's built, not a fabricated filtered page.
+      { label: 'Híbridos', href: '/automoviles' },
+    ],
+  },
   {
     categorySlug: 'maquinaria-agricola',
     heading: 'Maquinaria Agrícola',
@@ -69,17 +87,6 @@ const COLUMNS: MegaColumn[] = [
       { label: 'Compactadores', sub: 'compactadores' },
       { label: 'Generadores', sub: 'generadores' },
       { label: 'Motores JDM', href: '/repuestos' },
-    ],
-  },
-  {
-    categorySlug: 'automoviles',
-    heading: 'Automóviles',
-    items: [
-      { label: 'Changan', href: '/catalogo/automoviles?brand=Changan' },
-      { label: 'Toyota', href: '/catalogo/automoviles?brand=Toyota' },
-      { label: 'Hyundai', href: '/catalogo/automoviles?brand=Hyundai' },
-      { label: 'Jetour', href: '/catalogo/automoviles?brand=Jetour' },
-      { label: 'Híbridos', href: '/catalogo/automoviles?fuel=hibrido' },
     ],
   },
 ]
@@ -125,7 +132,7 @@ const QUICK_ITEMS: QuickItem[] = [
 // --------------------------------------------------------------------------
 function buildHref(categorySlug: string, item: SubItem): string {
   if (item.href) return item.href
-  const base = `/catalogo/${categorySlug}`
+  const base = categoryHref(categorySlug)
   return item.sub ? `${base}?sub=${item.sub}` : base
 }
 
@@ -200,7 +207,7 @@ export function MegaMenu({ categories: _categories, open }: MegaMenuProps) {
 
                 {/* Ver todo link */}
                 <Link
-                  href={`/catalogo/${col.categorySlug}`}
+                  href={categoryHref(col.categorySlug)}
                   className="mt-5 block font-mono text-[11px] text-gold/70 transition-colors duration-150 hover:text-gold"
                 >
                   Ver todo →

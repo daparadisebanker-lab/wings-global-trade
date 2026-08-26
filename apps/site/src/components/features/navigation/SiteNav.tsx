@@ -24,6 +24,12 @@ interface SiteNavProps {
 const INK_70 = 'text-[color:color-mix(in_srgb,var(--chrome-ink,#F8F6F0)_70%,transparent)]'
 
 const LINKS = [
+  // Automóviles leads the menu — the category with the strongest commercial
+  // traction, promoted ahead of Catálogo itself (site direction, 2026-08-23 —
+  // see programs/automobiles/SCOPE.md). It gets its own top-level link rather
+  // than living only inside the Catálogo mega-menu, matching how Interiores
+  // earned one when it became a named destination.
+  { href: '/automoviles', label: 'Automóviles' },
   { href: '/proceso',    label: 'Cómo importar' },
   // WGT/02 — the lane, not the catalogue. "Azulejos" is what sits inside it;
   // a buyer scanning a menu for finishes looks for the discipline first.
@@ -122,9 +128,11 @@ export function SiteNav({ categories }: SiteNavProps) {
     pathname?.startsWith('/contenedor') ||
     // Brand shelves sit on the pure-white canvas — transparent nav is illegible there
     pathname?.startsWith('/marcas') ||
-    // Lane grounds are light (bone). A transparent nav over them needs a scrim,
-    // and a navy scrim on bone reads as grey mud — go solid immediately.
-    pathname?.startsWith('/interiores')
+    // Lane grounds are light (bone / white). A transparent nav over them
+    // needs a scrim, and a navy scrim on a light ground reads as grey mud —
+    // go solid immediately.
+    pathname?.startsWith('/interiores') ||
+    pathname?.startsWith('/automoviles')
   const solid = scrolled || forceSolid
 
   return (

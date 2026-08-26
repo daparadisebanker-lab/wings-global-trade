@@ -8,6 +8,7 @@ import { PageHero } from '@/components/features/shared/PageHero'
 import { CategoryNav } from '@/components/features/catalog/CategoryNav'
 import { ProductGrid } from '@/components/features/catalog/ProductGrid'
 import { Button } from '@/components/ui/button'
+import { categoryHref } from '@/lib/category-href'
 
 export const metadata = {
   title: 'Catálogo — Wings Global Trade',
@@ -23,7 +24,10 @@ export default async function CatalogIndexPage({
   const categories = await getCategories()
 
   if (!q) {
-    redirect(`/catalogo/${categories[0]?.slug ?? 'maquinaria-agricola'}`)
+    // categoryHref avoids a double-hop through the /catalogo/automoviles →
+    // /automoviles redirect (next.config.mjs) when the first category is
+    // automóviles — go straight to the canonical URL.
+    redirect(categoryHref(categories[0]?.slug ?? 'maquinaria-agricola'))
   }
 
   const { products } = await getProducts({ q })

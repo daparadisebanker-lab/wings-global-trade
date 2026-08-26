@@ -1,0 +1,209 @@
+/* ============================================================
+   WGT/07 Automóviles — Tier 2 semantic tokens
+   ------------------------------------------------------------
+   AMENDED 2026-08-24 — showroom pivot (see registry.md for the full
+   record; nothing below is deleted, only superseded). The original
+   Phase-2 derivation shipped a dark asphalt ground for a single-vendor
+   EQUIPMENT lane. The brief changed: automóviles is a multi-brand
+   showroom (11 OEM factories under one desk), and a single dark
+   identity fights the thing it needs to showcase — eleven brands' own
+   colors and imagery. Re-derived light, same rules, same rigor:
+
+     Ground  white #FFFFFF      — same argument RB's (brands) canvas
+                                   already uses for the identical reason:
+                                   multiple partner palettes need a
+                                   neutral ground, or the Wings warm cast
+                                   (or a single dark identity) tints/fights
+                                   them. EQUIPMENT's "may go dark" (step 1)
+                                   was always permissive, never mandatory.
+     Ink     asphalt #15161B    — the ORIGINAL ground, kept, now playing
+                                   ink instead: 18.06:1 on white. The
+                                   industrial read isn't gone, it moved
+                                   from the background to the text.
+     Accent  ion blue #5590FF   — kept, same rationale (every trim's LED
+             (decorative)         DRL/xenon glow) — but light blue on
+             + #2F5BC7            white measures only 3.08:1, so it now
+             (accent-ink,          splits into two roles like RB's Áladín
+             text-safe)            green: --accent (large graphics, ≥3:1)
+                                   and --accent-ink (a deeper cobalt in
+                                   the same hue family, 6.1:1, carries
+                                   text/links/borders). This is the lane's
+                                   OWN quiet signature — used sparingly on
+                                   lane-level chrome (stamp, roster page,
+                                   segment browsing) — not the dominant
+                                   color of every brand page. Each of the
+                                   11 OEM brands layers its OWN accent on
+                                   top via oem-canvas.css when a buyer
+                                   commits to one; ion blue recedes there.
+     Texture blueprint-grid     — kept, and arguably MORE authentic now:
+                                   a real blueprint is pale blue linework
+                                   on white/cream paper, not white-on-dark.
+     Type    compressed-caps    — unchanged, EQUIPMENT's fixed posture
+                                   (step 6), independent of ground color.
+
+   Tier-2 ONLY. Nothing here changes a spacing step, a type step, a grid
+   value or a motion curve — those are frozen in
+   @wings/trade-ui/tokens/skeleton.css and a lane that needs to move one
+   has a content problem, not a skeleton problem.
+
+   NOT YET LIVE on /catalogo/automoviles. It IS live on the new
+   apps/site/src/app/(lanes)/automoviles/ routes (roster + brand
+   sub-pages), which stamp [data-lane="automoviles"] directly — the
+   first real Phase 3 surface. /catalogo/automoviles still renders on
+   shared house chrome until the full migration (redirects from every
+   already-linked URL) ships — see programs/automobiles/SCOPE.md §5.
+   ============================================================ */
+
+[data-lane='automoviles'] {
+  /* --- Ground / ink --- */
+  --surface-0: #ffffff; /* white — the showroom ground */
+  --surface-1: #fafafb; /* raised card — a whisper off white, not a color */
+  --surface-2: #efeff1; /* inset well, table zebra, rule ground */
+  /* Measured against every surface the lane actually renders text on. */
+  --ink-primary: #15161b; /* asphalt, reused as ink — 18.06:1 on white, 17.32:1 on surface-1, 15.73:1 on surface-2 */
+  --ink-secondary: rgba(21, 22, 27, 0.64); /* → #696A6D · 5.41:1 on white */
+  /* NOT text — decorative tier only (hairlines, dividers, disabled marks),
+     same discipline as every other lane's equivalent token. */
+  --ink-decoration: rgba(21, 22, 27, 0.18); /* → #D5D5D6 · 1.47:1 — non-text by definition */
+
+  /* --- Accent — the LANE's own quiet signature, not the showroom's loud
+     voice (that's each OEM brand's job, see oem-canvas.css) --- *
+   * Ion blue at full saturation fails text contrast on white (3.08:1) —
+   * unlike oxblood on bone or the dark-ground pass this token got before,
+   * it genuinely needs the --accent-ink split RB's Áladín contract already
+   * established a precedent for: --accent stays the authentic hue for large
+   * graphics/icons/decoration (≥3:1, WCAG's large-text/UI-component floor);
+   * --accent-ink is a deeper value in the SAME hue family (219° neighborhood)
+   * that clears 4.5:1 for running text, links and small labels. */
+  --accent: #5590ff; /* 3.08:1 on white — large graphics/decoration only, never body text */
+  --accent-ink: #2f5bc7; /* 6.10:1 on white — text-safe: links, labels, borders-as-signal */
+  --accent-hover: #3d6fe0; /* 4.62:1 — clears text but with less margin, hover only */
+  --accent-active: #1e4295; /* 9.26:1 — press-state, ample margin */
+  /* Alpha variants are declared, not composed: Tailwind slash opacity cannot
+     modify a var() color (precedent: --livery-gold-subtle, --rb-accent-soft). */
+  --accent-soft: rgba(85, 144, 255, 0.08);
+  --accent-border: rgba(85, 144, 255, 0.32);
+
+  /* --- Button system — "Ficha Técnica" direction (2026-08-25) ---
+     Fixes a real bug this pass surfaced: every on-page CTA in the lane was
+     built with --chrome-accent/--chrome-accent-ink (white fill, asphalt
+     text) — tokens meant for a control sitting ON the dark overlay chrome
+     (SiteNav's hero state, WhatsAppButton; see those files). On this lane's
+     actual page ground (white, --surface-0) that rendered a white button on
+     a white card: legible only via the hover dim, never as a filled shape.
+     The primary CTA now fills with the lane's own ink, the way a printed
+     document's signature plate would — never the chrome pair, which stays
+     reserved for controls literally on the dark nav overlay. */
+  --btn-primary-bg: var(--ink-primary);
+  --btn-primary-bg-hover: #2c2d33; /* one step off asphalt; white text stays >15:1 */
+  --btn-primary-ink: #ffffff;
+  --btn-outline-ink: var(--accent-ink);
+  --btn-outline-border: var(--accent-ink);
+  --btn-outline-bg-hover: var(--accent-soft);
+
+  /* --- Cargo tint — FillMeter reads this for the lane's cargo set --- */
+  --cargo: #5590ff; /* the accent itself, at full saturation — decoration only, never text */
+
+  /* --- Type posture: compressed-caps ---
+     Unchanged by the ground pivot — EQUIPMENT's fixed posture (Phase-2
+     step 6), independent of light vs. dark. */
+  --lane-display-weight: 600;
+  --lane-display-tracking: -0.01em;
+  --lane-label-tracking: 0.1em;
+  --lane-type-stamp: 11px;
+
+  /* --- Texture: blueprint-grid, exactly one ---
+     Unchanged mechanism (two crossed repeating-linear-gradients), inverted
+     for the new ground: pale ion-blue lines on white — the authentic
+     blueprint register (pale blue linework on white/cream paper), where the
+     dark-ground version was the less common cyanotype inversion. */
+  --texture: repeating-linear-gradient(
+      0deg,
+      rgba(85, 144, 255, 0.06) 0px,
+      rgba(85, 144, 255, 0.06) 1px,
+      transparent 1px,
+      transparent 40px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(85, 144, 255, 0.06) 0px,
+      rgba(85, 144, 255, 0.06) 1px,
+      transparent 1px,
+      transparent 40px
+    );
+
+  /* --- Site chrome, on lane routes only ---
+     A light lane ground needs a dark chrome inverse for the fixed header to
+     stay legible over photography/hero imagery — same reasoning Interiores'
+     walnut inverse uses, recomputed for this lane's own palette rather than
+     copied. Asphalt (the lane's own ink) is the natural inverse: it's
+     already in the palette, already dark enough, already the lane's own
+     value rather than a borrowed one. */
+  --chrome-ground: #15161b;
+  --chrome-ink: #ffffff; /* 18.06:1 on asphalt */
+  /* The CTA fill is ink-on-ground inverted (bright fill, dark text) — same
+     shape as Interiores' bone-on-walnut CTA, NOT a solid accent fill: white
+     text directly on #5590FF measures only 1.75:1 on the accent, unusable. */
+  --chrome-accent: #ffffff;
+  --chrome-accent-ink: #15161b; /* 18.06:1 — dark text on the bright CTA */
+  --chrome-scrim: rgba(21, 22, 27, 0.55);
+  /* Alpha is baked into these because a Tailwind opacity modifier cannot be
+     applied to an arbitrary var() with a comma in its fallback. */
+  --chrome-nav-bg: rgba(21, 22, 27, 0.95);
+  --chrome-hairline: rgba(255, 255, 255, 0.1);
+  --chrome-label: rgba(255, 255, 255, 0.55); /* → #A2A3A6 on asphalt · 5.28:1 — 10px uppercase text owes the full 4.5 */
+  --chrome-accent-line: rgba(85, 144, 255, 0.35);
+
+  background-color: var(--surface-0);
+  color: var(--ink-primary);
+}
+
+/* The focus ring is the lane's, not the house's. globals.css paints
+   *:focus-visible with --color-gold site-wide; on this lane that reads as a
+   stray house signal. --accent-ink is 6.10:1 on white, far past the 3:1 an
+   indicator needs. Scoped to the attribute — no other route moves. */
+[data-lane='automoviles'] :focus-visible {
+  outline-color: var(--accent-ink);
+}
+
+/* The lane stamp — stencil-marked lane code, container-marking grammar
+   (ISO 6346 / BIC). Every lane draws this identically; only the tokens
+   differ, which is the swap test in one element. */
+[data-lane='automoviles'] .lane-stamp {
+  font-variant-numeric: var(--numeric-variant);
+  letter-spacing: var(--lane-label-tracking);
+  text-transform: uppercase;
+  border: 1px solid var(--accent-border);
+  color: var(--accent-ink);
+  /* A container marking has a hard edge. Structural 0 is explicitly retained
+     under the macOS amendment's own clause. */
+  border-radius: var(--radius-structural);
+}
+
+/* The check digit — the boxed final cell of a BIC unit number, and the single
+   most recognisable gesture of container marking. It is what makes this a
+   stamp rather than a chip. */
+[data-lane='automoviles'] .lane-stamp-check {
+  border: 1px solid var(--accent-border);
+  color: var(--accent-ink);
+  border-radius: var(--radius-structural);
+}
+
+/* An OPENING segment (taxonomy status, see lane.config.ts) is legible, never
+   decorative-only: it drops to the secondary ink (5.41:1 — still well past
+   text-safe) and takes a hairline rule rather than a fill, so "not yet"
+   reads as a state and not as a broken card. Mirrors Interiores' identical
+   rule for OPENING disciplines. */
+[data-lane='automoviles'] [data-status='OPENING'] {
+  color: var(--ink-secondary);
+  border-color: var(--ink-decoration);
+}
+
+/* The status stamp is the second stamp voice: same type, no plate. A utility
+   class cannot express this — `.border-0` is one class against the two-part
+   `[data-lane] .lane-stamp` selector and loses on specificity, which is how
+   the status ended up boxed like a unit number. It belongs in the livery. */
+[data-lane='automoviles'] .lane-stamp[data-status] {
+  border: 0;
+  padding: 0;
+}

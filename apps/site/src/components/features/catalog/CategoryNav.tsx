@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import type { Category } from '@/types/database'
 import { cn } from '@/lib/utils'
+import { categoryHref } from '@/lib/category-href'
 
 interface CategoryNavProps {
   categories: Category[]
@@ -16,7 +17,7 @@ export function CategoryNav({ categories, activeSlug }: CategoryNavProps) {
         return (
           <Link
             key={c.id}
-            href={`/catalogo/${c.slug}`}
+            href={categoryHref(c.slug)}
             aria-current={active ? 'page' : undefined}
             className={cn(
               'shrink-0 rounded-wings border px-4 py-2 font-body text-sm transition-colors',
