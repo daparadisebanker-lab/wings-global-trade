@@ -833,3 +833,75 @@ this catalog will likely pass through tomorrow) — worth a quick look once
 the real files arrive, since a card with no image should probably keep
 today's typography-only layout rather than reserve dead space for one
 that never comes.
+
+## 0k · Vehicle-type icon system + brand-page filtration (2026-08-26)
+
+Client asked for an SVG "vehicle type selection engine" in the vein of
+dubicars' body-type picker — bi-color icons, anchored across product
+pages, with a filtration animation, responsive nav, and trims/specs kept
+intact. Built rather than borrowed: no stock/photographic icon set (same
+refusal §0j already applied to photography), a hand-authored family
+instead.
+
+**`VehicleTypeIcon`** (`src/components/features/automoviles/
+VehicleTypeIcon.tsx`) — one component, five silhouettes, one per
+`lane.config.ts` taxonomy entry (sedán, SUV compacto, SUV mediano y
+grande, SUV todoterreno, MPV/furgoneta). Shared 120×48 grid, shared
+construction rule: body is a stroke only (matches the lane's
+blueprint-grid texture), glass + wheels are filled in a second color —
+bi-color by construction, not by accident. Differentiated by roofline
+height, greenhouse length and wheel size, tuned to read at 32px rather
+than survive close inspection. `bodyColor`/`accentColor` props default
+to the lane's own ink/accent tokens but are meant to be overridden with
+`--oem-accent` wherever an icon sits inside a `[data-oem]` scope — the
+same "brand takes over the accent role" pattern every other card in this
+lane already uses, not a parallel one.
+
+Anchored in five places:
+- **Lane root** (`/automoviles`) — the primary showcase. "Por segmento"
+  retitled "Por tipo de carrocería"; each of the 5 segment cards now
+  leads with its icon above the name/count.
+- **Segment pages** (`/automoviles/[segment]`) — icon beside the H1.
+- **Brand pages** (`/automoviles/marcas/[oem]`) — new filter chip bar
+  (see below), one icon per chip.
+- **Explorar feed** (`ExplorarFeed.tsx`) — small icon in the per-card
+  segment badge, between the brand dot and the segment link.
+- **Ficha técnica** (`FichaAutomovilDocument.tsx`) — icon in the header
+  logo block, above the Wings logo; new `segmentSlug` field threaded
+  through `ficha.ts`'s `buildFichaDocument()` (reuses the existing
+  `segmentSlug()` mapping table, not a new one). Verified in both screen
+  and print-media emulation — the icon survives the print stylesheet's
+  chrome-hiding rules untouched.
+
+**Filtration** — extracted the brand page's model grid into a new client
+component, `BrandModelGrid.tsx` (the `[oem]/page.tsx` server component
+now just fetches and passes `products`/`brandName`). Filter bar renders
+only when a brand actually carries more than one segment (`segmentCounts.
+size > 1` — a single-segment brand shows no filter UI, never a dead
+control). One chip per segment the brand actually has stock in, plus a
+"Todos (N)" reset — no chip for a segment with zero matches. Grid
+transitions on `motion.div layout` + `AnimatePresence mode="popLayout"`,
+matching the fade/scale-settle convention `MotionCard` already uses
+elsewhere in this lane (`--ease-settle`), `useReducedMotion`-gated.
+Verified concretely on Audi (7 models: 5 sedán + 1 SUV compacto + 1 SUV
+mediano y grande) — clicking "Sedán (5)" correctly narrows the grid to
+exactly those 5 cards with a clean settle, no layout artifacts.
+
+**Verified**: `pnpm --filter site typecheck` clean, full `pnpm build`
+green across all affected routes (`/marcas/[oem]` bundle grew 732B →
+2.38kB, expected from the new client-side filter/animation code).
+Playwright pass across lane root, segment header, Audi desktop (all +
+filtered), Audi mobile (375px — chips wrap cleanly into two rows, full
+labels retained, no overflow), Explorar feed, and the ficha document
+(screen + print) — zero horizontal overflow anywhere, zero clipping.
+
+Not done, on purpose: the five reference vehicle photos the client
+uploaded (Changan CS75 PRO, two Jetour SUVs, Hyundai Sonata N Line,
+Toyota Camry) and the linked Google Drive folder — the client
+redirected to this icon/filtration work before either was addressed;
+still pending, picked up next if they redirect back to it. The Drive
+folder is shared "anyone with the link → reader" only, which does not
+grant this session's connected account list/download rights even though
+direct-by-ID metadata lookup succeeds (confirmed via
+`get_file_permissions`) — resolving it needs either a direct share to
+the connected account or a manual upload.

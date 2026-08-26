@@ -21,6 +21,7 @@ import type { Product } from '@/types/database'
 import { getOemBrandByName } from '@/lib/automoviles/oem-brands'
 import { lane } from '@wings/liveries/automoviles/lane.config'
 import { useReducedMotion } from '@/hooks/useReducedMotion'
+import { VehicleTypeIcon, type VehicleSegmentSlug } from './VehicleTypeIcon'
 
 const EASE_SETTLE = [0.22, 1, 0.36, 1] as const
 
@@ -173,6 +174,10 @@ export function ExplorarFeed({ products }: ExplorarFeedProps) {
                       <span className="text-[color:var(--ink-decoration)]" aria-hidden>
                         ·
                       </span>
+                      <VehicleTypeIcon
+                        segment={segment.slug as VehicleSegmentSlug}
+                        className="h-4 w-7 shrink-0 text-[color:var(--ink-secondary)]"
+                      />
                       <Link
                         href={`/automoviles/${segment.slug}`}
                         className="font-mono text-[11px] uppercase tracking-widest-2 text-[color:var(--ink-secondary)] transition-colors hover:text-[color:var(--ink-primary)]"

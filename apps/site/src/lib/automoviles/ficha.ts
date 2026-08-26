@@ -15,6 +15,7 @@
 // anywhere on the site.
 import type { Product } from '@/types/database'
 import { getOemBrandByName, type OemBrand } from './oem-brands'
+import { segmentSlug as toSegmentSlug } from './segments'
 
 export interface FichaSpecRow {
   label: string
@@ -32,6 +33,9 @@ export interface FichaDocument {
   nameEs: string
   brand: OemBrand | null
   segmentLabel: string | null
+  /** Canonical taxonomy slug for segmentLabel (lane.config.ts), when the
+   *  label maps to one — drives the VehicleTypeIcon anchor on the document. */
+  segmentSlug: string | null
   descriptionEs: string | null
   specs: FichaSpecRow[]
   trims: string[]
@@ -69,6 +73,8 @@ export function buildFichaDocument(product: Product): FichaDocument {
     nameEs: brand ? product.name_es.replace(`${brand.name} `, '') : product.name_es,
     brand,
     segmentLabel: typeof product.specs?.['Segmento'] === 'string' ? product.specs['Segmento'] : null,
+    segmentSlug:
+      typeof product.specs?.['Segmento'] === 'string' ? (toSegmentSlug(product.specs['Segmento']) ?? null) : null,
     descriptionEs: product.description_es || null,
     specs,
     trims: (product.models ?? []).map((m) => m.name),

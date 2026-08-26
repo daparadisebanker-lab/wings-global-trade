@@ -6,6 +6,7 @@
 // this lane already uses — not a parallel one.
 import type { FichaDocument } from '@/lib/automoviles/ficha'
 import { WINGS_PUBLIC_EMAIL, WINGS_PUBLIC_WHATSAPP, WINGS_TAGLINE } from '@/lib/constants'
+import { VehicleTypeIcon, type VehicleSegmentSlug } from '@/components/features/automoviles/VehicleTypeIcon'
 import './ficha-document.css'
 
 export function FichaAutomovilDocument({ doc }: { doc: FichaDocument }) {
@@ -28,6 +29,14 @@ export function FichaAutomovilDocument({ doc }: { doc: FichaDocument }) {
           </p>
         </div>
         <div className="fdoc-logo-block">
+          {doc.segmentSlug && (
+            <VehicleTypeIcon
+              segment={doc.segmentSlug as VehicleSegmentSlug}
+              bodyColor="var(--fd-ink)"
+              accentColor="var(--fd-accent)"
+              className="fdoc-type-icon"
+            />
+          )}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img className="fdoc-logo" src="/Wings-logo-imagotipo-color.svg" alt="Wings Global Trade" />
           <span className="fdoc-tagline">{WINGS_TAGLINE}</span>

@@ -12,8 +12,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getProducts } from '@/lib/catalog-data'
 import { getOemBrand, OEM_BRANDS } from '@/lib/automoviles/oem-brands'
-import { segmentSlug } from '@/lib/automoviles/segments'
-import { MotionCard } from '@/components/features/automoviles/MotionCard'
+import { BrandModelGrid } from '@/components/features/automoviles/BrandModelGrid'
 
 interface PageProps {
   params: Promise<{ oem: string }>
@@ -60,77 +59,7 @@ export default async function AutomovilesBrandPage({ params }: PageProps) {
           la configuración final se confirma al cotizar.
         </p>
 
-        {products.length === 0 ? (
-          <p className="mt-10 text-body-md text-[color:var(--ink-decoration)]">
-            Sin líneas activas en catálogo por el momento. Escríbanos — Wings importa bajo
-            pedido más allá del catálogo publicado.
-          </p>
-        ) : (
-          <div className="mt-10 grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
-            {products.map((p) => (
-              <MotionCard
-                key={p.id}
-                dataOem={brand.slug}
-                imageUrl={p.images?.[0]}
-                imageAlt={p.name_es}
-                className="border border-[color:var(--ink-decoration)] bg-[color:var(--surface-1)] p-6"
-              >
-                <p className="font-display text-xl text-[color:var(--ink-primary)]">
-                  {p.name_es.replace(`${brand.name} `, '')}
-                </p>
-                <dl className="mt-3 space-y-1 font-mono text-[12px] text-[color:var(--ink-secondary)]">
-                  {p.specs?.['Segmento'] && (
-                    <div className="flex justify-between gap-3">
-                      <dt className="text-[color:var(--ink-decoration)]">Segmento</dt>
-                      <dd className="text-right">
-                        {segmentSlug(p.specs['Segmento']) ? (
-                          <Link
-                            href={`/automoviles/${segmentSlug(p.specs['Segmento'])}`}
-                            className="underline decoration-[color:var(--ink-decoration)] underline-offset-2 transition-colors hover:text-[color:var(--oem-accent)]"
-                          >
-                            {p.specs['Segmento']}
-                          </Link>
-                        ) : (
-                          p.specs['Segmento']
-                        )}
-                      </dd>
-                    </div>
-                  )}
-                  {p.specs?.['Motor'] && (
-                    <div className="flex justify-between gap-3">
-                      <dt className="text-[color:var(--ink-decoration)]">Motor</dt>
-                      <dd className="text-right">{p.specs['Motor']}</dd>
-                    </div>
-                  )}
-                  {p.specs?.['Transmisión'] && (
-                    <div className="flex justify-between gap-3">
-                      <dt className="text-[color:var(--ink-decoration)]">Transmisión</dt>
-                      <dd className="text-right">{p.specs['Transmisión']}</dd>
-                    </div>
-                  )}
-                  {p.specs?.['Plazas'] && (
-                    <div className="flex justify-between gap-3">
-                      <dt className="text-[color:var(--ink-decoration)]">Plazas</dt>
-                      <dd className="text-right">{p.specs['Plazas']}</dd>
-                    </div>
-                  )}
-                </dl>
-                <div aria-hidden className="mt-4 h-px w-full bg-[color:var(--ink-decoration)]" />
-                <div className="mt-4 flex items-center justify-between gap-3">
-                  <p className="font-mono text-[10px] uppercase text-[color:var(--oem-accent)]">
-                    {p.models?.length ?? 0} {p.models?.length === 1 ? 'versión' : 'versiones'}
-                  </p>
-                  <Link
-                    href={`/automoviles/ficha/${p.slug}`}
-                    className="font-mono text-[10px] uppercase tracking-widest-2 text-[color:var(--ink-secondary)] transition-colors hover:text-[color:var(--ink-primary)]"
-                  >
-                    Ficha técnica ↓
-                  </Link>
-                </div>
-              </MotionCard>
-            ))}
-          </div>
-        )}
+        <BrandModelGrid products={products} brandName={brand.name} />
 
         <div className="mt-16 flex flex-col gap-6 border border-[color:var(--ink-decoration)] bg-[color:var(--surface-2)] p-8 md:flex-row md:items-center md:justify-between">
           <p className="max-w-xl text-body-md text-[color:var(--ink-secondary)]">

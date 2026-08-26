@@ -12,6 +12,7 @@ import { getProducts } from '@/lib/catalog-data'
 import { OEM_BRANDS } from '@/lib/automoviles/oem-brands'
 import { lane } from '@wings/liveries/automoviles/lane.config'
 import { MotionCard } from '@/components/features/automoviles/MotionCard'
+import { VehicleTypeIcon, type VehicleSegmentSlug } from '@/components/features/automoviles/VehicleTypeIcon'
 
 export const metadata: Metadata = {
   title: 'Automóviles — Once marcas, un solo escritorio | Wings Global Trade',
@@ -94,11 +95,12 @@ export default async function AutomovilesLaneRootPage() {
         </div>
       </section>
 
-      {/* Segments — the canonical taxonomy, now real links */}
+      {/* Segments — the canonical taxonomy, the vehicle-type selection
+          engine: pick a body type by its own silhouette, not just a word. */}
       <section className="mx-auto max-w-6xl px-5 py-16 md:px-8 md:py-20">
         <div className="flex items-center justify-between gap-4">
           <h2 className="font-mono text-mono-sm uppercase tracking-[var(--lane-label-tracking)] text-[color:var(--ink-decoration)]">
-            Por segmento
+            Por tipo de carrocería
           </h2>
         </div>
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -108,7 +110,11 @@ export default async function AutomovilesLaneRootPage() {
               className="group border border-[color:var(--ink-decoration)] bg-[color:var(--surface-1)] transition-colors hover:border-[color:var(--accent-border)]"
             >
               <Link href={`/automoviles/${seg.slug}`} className="block p-6">
-                <p className="text-base font-medium text-[color:var(--ink-primary)]">{seg.name.es}</p>
+                <VehicleTypeIcon
+                  segment={seg.slug as VehicleSegmentSlug}
+                  className="h-10 w-full text-[color:var(--ink-primary)]"
+                />
+                <p className="mt-4 text-base font-medium text-[color:var(--ink-primary)]">{seg.name.es}</p>
                 <p className="mt-2 font-mono text-[11px] uppercase text-[color:var(--ink-decoration)]">
                   {segmentCounts.get(seg.slug) ?? 0} modelos
                 </p>

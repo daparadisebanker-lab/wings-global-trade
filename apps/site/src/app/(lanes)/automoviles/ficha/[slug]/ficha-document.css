@@ -171,6 +171,10 @@
   width: auto;
   filter: brightness(0);
 }
+.fdoc-type-icon {
+  height: 22px;
+  width: 40px;
+}
 .fdoc-tagline {
   font-family: 'Teko', ui-monospace, monospace;
   font-size: 12px;

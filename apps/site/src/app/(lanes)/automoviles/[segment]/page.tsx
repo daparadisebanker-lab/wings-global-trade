@@ -12,6 +12,7 @@ import { getProducts } from '@/lib/catalog-data'
 import { getOemBrandByName } from '@/lib/automoviles/oem-brands'
 import { lane } from '@wings/liveries/automoviles/lane.config'
 import { MotionCard } from '@/components/features/automoviles/MotionCard'
+import { VehicleTypeIcon, type VehicleSegmentSlug } from '@/components/features/automoviles/VehicleTypeIcon'
 
 interface PageProps {
   params: Promise<{ segment: string }>
@@ -51,9 +52,15 @@ export default async function AutomovilesSegmentPage({ params }: PageProps) {
       <p className="font-mono text-mono-sm uppercase tracking-widest-2 text-[color:var(--accent-ink)]">
         WGT/07 · Automóviles
       </p>
-      <h1 className="mt-3 text-3xl font-medium text-[color:var(--ink-primary)] md:text-4xl">
-        {segment.name.es}
-      </h1>
+      <div className="mt-3 flex items-center gap-3">
+        <VehicleTypeIcon
+          segment={segment.slug as VehicleSegmentSlug}
+          className="h-9 w-16 shrink-0 text-[color:var(--ink-primary)]"
+        />
+        <h1 className="text-3xl font-medium text-[color:var(--ink-primary)] md:text-4xl">
+          {segment.name.es}
+        </h1>
+      </div>
       <p className="mt-4 max-w-2xl text-body-lg text-[color:var(--ink-secondary)]">
         {products.length} {products.length === 1 ? 'modelo' : 'modelos'} en este segmento, de{' '}
         {new Set(products.map((p) => (p.filter_attrs as Record<string, unknown> | undefined)?.brand)).size}{' '}
