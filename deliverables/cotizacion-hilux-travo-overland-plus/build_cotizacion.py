@@ -53,6 +53,8 @@ FOB_UNIT = D(43000)
 FREIGHT_INT_UNIT = D(5250)
 UNITS = 2
 ORIGIN = "Tailandia"
+PUERTO_LLEGADA = "Iquique, Chile"  # 2026-08-28: was Callao, Perú
+CONDICION_PRECIO = "Nacionalizado, incluye IGV — puesto en Zofratacna, Tacna"
 
 # ── Assumed / TOWER defaults (disclosed in Observaciones) ──────────────
 FREIGHT_ZOFRATACNA = D(500)
@@ -227,7 +229,7 @@ HTMLDOC = f"""<!doctype html>
   <header class="pdoc-header">
     <div>
       <h1 class="pdoc-title">Cotización</h1>
-      <p class="pdoc-number">COT-WGT-2026-0827</p>
+      <p class="pdoc-number">COT-WGT-2026-0828</p>
     </div>
     <div class="pdoc-brand">
       {LOGO}
@@ -238,9 +240,9 @@ HTMLDOC = f"""<!doctype html>
   <div class="pdoc-rule" aria-hidden="true"></div>
 
   <div class="pdoc-dateline">
-    <span>Lima, 27-08-2026</span>
+    <span>Lima, 28-08-2026</span>
     <span>Validez: 15 días</span>
-    <span>Puerto de llegada: Callao, Perú</span>
+    <span>Puerto de llegada: {PUERTO_LLEGADA}</span>
     <span>Moneda: USD</span>
   </div>
 
@@ -305,8 +307,8 @@ HTMLDOC = f"""<!doctype html>
   <div class="pdoc-section-bar">Condiciones comerciales</div>
   <div class="pdoc-terms">
     <span class="pdoc-term-label">Origen</span><span>{ORIGIN}</span>
-    <span class="pdoc-term-label">Puerto de llegada</span><span>Callao, Perú</span>
-    <span class="pdoc-term-label">Condición del precio</span><span>Nacionalizado, incluye IGV — puesto en Callao</span>
+    <span class="pdoc-term-label">Puerto de llegada</span><span>{PUERTO_LLEGADA}</span>
+    <span class="pdoc-term-label">Condición del precio</span><span>{CONDICION_PRECIO}</span>
     <span class="pdoc-term-label">Forma de pago</span><span>50% a la confirmación del pedido; 50% antes del despacho a nombre del cliente.</span>
     <span class="pdoc-term-label">Tiempo de entrega</span><span>A coordinar según disponibilidad de stock e itinerario de nacionalización.</span>
     <span class="pdoc-term-label">Vigencia de la oferta</span><span>15 días desde la fecha de esta cotización.</span>
