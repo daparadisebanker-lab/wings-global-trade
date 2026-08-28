@@ -87,7 +87,14 @@ cash_outlay = r2(landed_cost + igv_importacion + percepcion)
 min_by_usd = D(1000) / landed_cost if landed_cost > 0 else D(0)
 margin_rate = max(MARGIN_PCT, min_by_usd)
 margin_usd = r2(landed_cost * margin_rate)
-sale_price_unit = r2(landed_cost + margin_usd)  # Valor de venta, sin IGV, por unidad
+sale_price_unit_raw = r2(landed_cost + margin_usd)  # Valor de venta, sin IGV, por unidad
+
+# Commercial rounding: bump the per-unit sale price so the 2-unit, IGV-included
+# total lands on a round USD 130,300 (requested 2026-08-27), instead of the
+# raw-margin total of USD 130,186.16. +48.24/unit added on top of the 10%
+# margin — same rounding-up-to-a-clean-number practice as any other quote.
+ROUNDING_ADJUSTMENT_UNIT = D("48.24")
+sale_price_unit = r2(sale_price_unit_raw + ROUNDING_ADJUSTMENT_UNIT)
 
 igv_ventas_unit = r2(sale_price_unit * IGV_RATE)
 sale_price_final_unit = r2(sale_price_unit + igv_ventas_unit)
