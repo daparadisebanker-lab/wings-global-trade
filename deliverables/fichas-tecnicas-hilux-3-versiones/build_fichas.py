@@ -7,14 +7,16 @@ on that trim (positive-listing style, matching every prior Wings ficha) —
 translated to Spanish, using the established `pdoc` grid/logo/footer and
 audit-informed typography (check-badge for boolean specs).
 
-Nameplates (per established Wings convention — the very first Hilux ficha
-this session mapped "Hilux Trailhunter" -> "Toyota Hilux Travo Overland"):
-  Hilux Standard 2.8 4x2 MT   -> Toyota Hilux Travo
-  Hilux Pro 2.8 4x2 AT        -> Toyota Hilux Travo Pro
-  Hilux Trailhunter 2.8 4x4 AT -> Toyota Hilux Travo Overland (fuller/updated
-    dataset than the original ficha-tecnica-hilux-travo-overland/ — that
-    folder is left untouched; this is a new, separate deliverable using the
-    source sheet's own numbers. Flag to the user whether to reconcile.)
+Nameplates: kept as the ORIGINAL Toyota trim names from the source sheet
+(2026-08-28 correction — "Travo" was a one-off custom nameplate created for
+a different, unrelated Hilux ficha earlier this session; it does not apply
+here):
+  Hilux Standard 2.8 4x2 MT    -> Toyota Hilux Standard
+  Hilux Pro 2.8 4x2 AT         -> Toyota Hilux Pro
+  Hilux Trailhunter 2.8 4x4 AT -> Toyota Hilux Trailhunter (unrelated to,
+    and a separate deliverable from, ficha-tecnica-hilux-travo-overland/ —
+    that "Travo Overland" ficha covers a different custom-branded vehicle
+    and is left untouched)
 
 Run:
   python3 build_fichas.py
@@ -28,9 +30,9 @@ DOC_DATE = "28-08-2026"
 # ── Per-trim content ─────────────────────────────────────────────────────
 TRIMS = [
     {
-        "slug": "travo",
+        "slug": "standard",
         "doc_number": "FT-WGT-2026-0829",
-        "model_name": "Toyota Hilux Travo",
+        "model_name": "Toyota Hilux Standard",
         "model_trim": "2.8L Diésel · 4x2 · Manual de 6 velocidades",
         "hero_stats": [
             ("Potencia máxima", "204 PS"),
@@ -40,7 +42,7 @@ TRIMS = [
         ],
         "sections": [
             (1, "Identificación", [
-                ("Modelo", "Toyota Hilux Travo"),
+                ("Modelo", "Toyota Hilux Standard"),
                 ("Versión", "2.8L Diésel · 4x2 · Manual de 6 velocidades"),
                 ("Carrocería", "Pickup, 4 puertas, doble cabina"),
                 ("Tipo de combustible", "Diésel"),
@@ -118,9 +120,9 @@ TRIMS = [
         ],
     },
     {
-        "slug": "travo-pro",
+        "slug": "pro",
         "doc_number": "FT-WGT-2026-0830",
-        "model_name": "Toyota Hilux Travo Pro",
+        "model_name": "Toyota Hilux Pro",
         "model_trim": "2.8L Diésel · 4x2 · Automática de 6 velocidades",
         "hero_stats": [
             ("Potencia máxima", "204 PS"),
@@ -130,7 +132,7 @@ TRIMS = [
         ],
         "sections": [
             (1, "Identificación", [
-                ("Modelo", "Toyota Hilux Travo Pro"),
+                ("Modelo", "Toyota Hilux Pro"),
                 ("Versión", "2.8L Diésel · 4x2 · Automática de 6 velocidades"),
                 ("Carrocería", "Pickup, 4 puertas, doble cabina"),
                 ("Tipo de combustible", "Diésel"),
@@ -219,9 +221,9 @@ TRIMS = [
         ],
     },
     {
-        "slug": "travo-overland",
+        "slug": "trailhunter",
         "doc_number": "FT-WGT-2026-0831",
-        "model_name": "Toyota Hilux Travo Overland",
+        "model_name": "Toyota Hilux Trailhunter",
         "model_trim": "2.8L Diésel · 4WD · Automática de 6 velocidades",
         "hero_stats": [
             ("Potencia máxima", "204 PS"),
@@ -231,7 +233,7 @@ TRIMS = [
         ],
         "sections": [
             (1, "Identificación", [
-                ("Modelo", "Toyota Hilux Travo Overland"),
+                ("Modelo", "Toyota Hilux Trailhunter"),
                 ("Versión", "2.8L Diésel · 4WD · Automática de 6 velocidades"),
                 ("Carrocería", "Pickup, 4 puertas, doble cabina"),
                 ("Tipo de combustible", "Diésel"),
