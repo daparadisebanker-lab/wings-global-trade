@@ -36,6 +36,7 @@ TRIMS = [
         "doc_number": "FT-WGT-2026-0829",
         "model_name": "Toyota Hilux Standard",
         "model_trim": "2.8L Diésel · 4x2 · Manual de 6 velocidades",
+        "tail_spacer_px": 305,
         "hero_stats": [
             ("Potencia máxima", "204 PS"),
             ("Torque máximo", "420 N·m"),
@@ -126,6 +127,7 @@ TRIMS = [
         "doc_number": "FT-WGT-2026-0830",
         "model_name": "Toyota Hilux Pro",
         "model_trim": "2.8L Diésel · 4x2 · Automática de 6 velocidades",
+        "tail_spacer_px": 885,
         "hero_stats": [
             ("Potencia máxima", "204 PS"),
             ("Torque máximo", "500 N·m"),
@@ -227,6 +229,7 @@ TRIMS = [
         "doc_number": "FT-WGT-2026-0831",
         "model_name": "Toyota Hilux Trailhunter",
         "model_trim": "2.8L Diésel · 4WD · Automática de 6 velocidades",
+        "tail_spacer_px": 392,
         "hero_stats": [
             ("Potencia máxima", "204 PS"),
             ("Torque máximo", "500 N·m"),
@@ -540,6 +543,7 @@ def build(trim: dict) -> Path:
   {sections_html}
 
   <div class="pdoc-tail">
+  <div class="pdoc-tail-spacer" style="height: {trim['tail_spacer_px']}px;" aria-hidden="true"></div>
   <p class="pdoc-note">Las especificaciones anteriores se presentan como referencia técnica y pueden variar según lote de producción; se recomienda confirmar contra la unidad física antes de la compra.</p>
   <div class="pdoc-close-row">
     <div class="pdoc-close">
