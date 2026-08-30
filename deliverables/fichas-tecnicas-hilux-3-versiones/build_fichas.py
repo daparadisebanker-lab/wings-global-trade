@@ -34,7 +34,7 @@ TRIMS = [
     {
         "slug": "standard",
         "doc_number": "FT-WGT-2026-0829",
-        "model_name": "Toyota Hilux Standard",
+        "model_name": "Toyota Hilux 4x2 Manual",
         "model_trim": "2.8L Diésel · 4x2 · Manual de 6 velocidades",
         "hero_stats": [
             ("Potencia máxima", "204 PS"),
@@ -44,7 +44,7 @@ TRIMS = [
         ],
         "sections": [
             (1, "Identificación", [
-                ("Modelo", "Toyota Hilux Standard"),
+                ("Modelo", "Toyota Hilux 4x2 Manual"),
                 ("Versión", "2.8L Diésel · 4x2 · Manual de 6 velocidades"),
                 ("Carrocería", "Pickup, 4 puertas, doble cabina"),
                 ("Tipo de combustible", "Diésel"),
@@ -124,7 +124,7 @@ TRIMS = [
     {
         "slug": "pro",
         "doc_number": "FT-WGT-2026-0830",
-        "model_name": "Toyota Hilux Pro",
+        "model_name": "Toyota Hilux 4x2 Automática",
         "model_trim": "2.8L Diésel · 4x2 · Automática de 6 velocidades",
         "hero_stats": [
             ("Potencia máxima", "204 PS"),
@@ -134,7 +134,7 @@ TRIMS = [
         ],
         "sections": [
             (1, "Identificación", [
-                ("Modelo", "Toyota Hilux Pro"),
+                ("Modelo", "Toyota Hilux 4x2 Automática"),
                 ("Versión", "2.8L Diésel · 4x2 · Automática de 6 velocidades"),
                 ("Carrocería", "Pickup, 4 puertas, doble cabina"),
                 ("Tipo de combustible", "Diésel"),
@@ -225,7 +225,7 @@ TRIMS = [
     {
         "slug": "trailhunter",
         "doc_number": "FT-WGT-2026-0831",
-        "model_name": "Toyota Hilux Trailhunter",
+        "model_name": "Toyota Hilux 4x4 Automática",
         "model_trim": "2.8L Diésel · 4WD · Automática de 6 velocidades",
         "hero_stats": [
             ("Potencia máxima", "204 PS"),
@@ -235,7 +235,7 @@ TRIMS = [
         ],
         "sections": [
             (1, "Identificación", [
-                ("Modelo", "Toyota Hilux Trailhunter"),
+                ("Modelo", "Toyota Hilux 4x4 Automática"),
                 ("Versión", "2.8L Diésel · 4WD · Automática de 6 velocidades"),
                 ("Carrocería", "Pickup, 4 puertas, doble cabina"),
                 ("Tipo de combustible", "Diésel"),
