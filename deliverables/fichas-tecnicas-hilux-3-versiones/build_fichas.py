@@ -36,7 +36,7 @@ TRIMS = [
         "doc_number": "FT-WGT-2026-0829",
         "model_name": "Toyota Hilux Standard",
         "model_trim": "2.8L Diésel · 4x2 · Manual de 6 velocidades",
-        "tail_spacer_px": 275,
+        "tail_spacer_px": 462,
         "hero_stats": [
             ("Potencia máxima", "204 PS"),
             ("Torque máximo", "420 N·m"),
@@ -127,7 +127,7 @@ TRIMS = [
         "doc_number": "FT-WGT-2026-0830",
         "model_name": "Toyota Hilux Pro",
         "model_trim": "2.8L Diésel · 4x2 · Automática de 6 velocidades",
-        "tail_spacer_px": 855,
+        "tail_spacer_px": 452,
         "hero_stats": [
             ("Potencia máxima", "204 PS"),
             ("Torque máximo", "500 N·m"),
@@ -229,7 +229,7 @@ TRIMS = [
         "doc_number": "FT-WGT-2026-0831",
         "model_name": "Toyota Hilux Trailhunter",
         "model_trim": "2.8L Diésel · 4WD · Automática de 6 velocidades",
-        "tail_spacer_px": 362,
+        "tail_spacer_px": 523,
         "hero_stats": [
             ("Potencia máxima", "204 PS"),
             ("Torque máximo", "500 N·m"),
@@ -445,16 +445,16 @@ CSS = FONT_FACE_CSS + """
 
   .pdoc-section-bar {
     display: flex; align-items: baseline; gap: 10px; background: var(--pd-bar);
-    border-left: 3px solid var(--pd-accent); padding: 7px 12px; margin: 26px 0 12px;
+    border-left: 3px solid var(--pd-accent); padding: 7px 12px; margin: 14px 0 7px;
     break-after: avoid; break-inside: avoid;
   }
   .pdoc-spec-section:first-of-type .pdoc-section-bar { margin-top: 0; }
   .pd-sec-index { font-family: var(--font-mono, monospace); font-weight: 700; font-size: 15px; color: var(--pd-accent); }
   .pd-sec-title { font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
 
-  .pdoc-spec-section { margin-bottom: 4px; }
+  .pdoc-spec-section { margin-bottom: 2px; }
   .pdoc-spec-grid { display: flex; flex-direction: column; padding: 0 4px; font-size: 11.5px; }
-  .spec-row { display: grid; grid-template-columns: 260px 1fr; align-items: start; gap: 6px 16px; border-bottom: 1px solid var(--pd-tint); padding-bottom: 7px; margin-bottom: 7px; break-inside: avoid; }
+  .spec-row { display: grid; grid-template-columns: 260px 1fr; align-items: start; gap: 4px 16px; border-bottom: 1px solid var(--pd-tint); padding-bottom: 4.5px; margin-bottom: 4.5px; break-inside: avoid; }
   .spec-label { font-weight: 600; color: var(--pd-ink); }
   .spec-value { color: var(--pd-ink); display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
 
