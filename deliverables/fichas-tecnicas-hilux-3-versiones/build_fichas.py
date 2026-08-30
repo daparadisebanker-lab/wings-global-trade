@@ -21,10 +21,12 @@ here):
 Run:
   python3 build_fichas.py
 """
+import base64
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 LOGO_SVG = "/home/user/wings-global-trade/apps/tower/public/brand/wings-imagotipo.svg"
+FONT_WOFF2 = HERE / "assets" / "Inter-Latin-Variable.woff2"
 DOC_DATE = "28-08-2026"
 
 # ── Per-trim content ─────────────────────────────────────────────────────
@@ -380,7 +382,25 @@ LOGO_RAW = Path(LOGO_SVG).read_text(encoding="utf-8")
 LOGO_RAW = LOGO_RAW[LOGO_RAW.index("<svg"):]
 LOGO_RAW = LOGO_RAW.replace("<svg ", '<svg class="pdoc-logo" ', 1)
 
-CSS = """
+# Audit finding (visual-audit skill, 2026-08-30): every prior Wings PDF in this
+# series declared `font-family: 'Inter', ...` but never actually loaded Inter —
+# the render sandbox has no system Inter, so every document has silently been
+# rendering in the DejaVu Sans fallback. Embedding the real variable font here
+# (base64, self-contained — no network dependency at render time) is the
+# single highest-impact typography fix available.
+FONT_B64 = base64.b64encode(FONT_WOFF2.read_bytes()).decode("ascii")
+
+FONT_FACE_CSS = f"""
+  @font-face {{
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url(data:font/woff2;base64,{FONT_B64}) format('woff2');
+  }}
+"""
+
+CSS = FONT_FACE_CSS + """
   :root {
     --font-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     --font-mono: 'Inter', ui-monospace, 'SF Mono', Menlo, monospace;
@@ -403,7 +423,7 @@ CSS = """
   .pdoc-title { margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -0.02em; line-height: 0.92; }
   .pdoc-number { margin-top: 10px; font-family: var(--font-mono, monospace); font-size: 12.5px; letter-spacing: 0.02em; color: var(--pd-ink); }
   .pdoc-brand { display: flex; flex-direction: column; align-items: flex-end; text-align: right; gap: 6px; flex-shrink: 0; }
-  .pdoc-logo { height: 46px; width: auto; filter: brightness(0); }
+  .pdoc-logo { height: 58px; width: auto; filter: brightness(0); }
   .pdoc-tagline { font-size: 10.5px; letter-spacing: 0.02em; color: var(--pd-muted); text-transform: uppercase; }
 
   .pdoc-rule { position: relative; height: 3px; margin: 10px 0 16px; background: var(--pd-line); }
@@ -422,15 +442,16 @@ CSS = """
 
   .pdoc-section-bar {
     display: flex; align-items: baseline; gap: 10px; background: var(--pd-bar);
-    border-left: 3px solid var(--pd-accent); padding: 6px 12px; margin: 0 0 6px;
+    border-left: 3px solid var(--pd-accent); padding: 7px 12px; margin: 26px 0 12px;
     break-after: avoid; break-inside: avoid;
   }
+  .pdoc-spec-section:first-of-type .pdoc-section-bar { margin-top: 0; }
   .pd-sec-index { font-family: var(--font-mono, monospace); font-weight: 700; font-size: 15px; color: var(--pd-accent); }
   .pd-sec-title { font-size: 12px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
 
-  .pdoc-spec-section { margin-bottom: 10px; }
+  .pdoc-spec-section { margin-bottom: 4px; }
   .pdoc-spec-grid { display: flex; flex-direction: column; padding: 0 4px; font-size: 11.5px; }
-  .spec-row { display: grid; grid-template-columns: 260px 1fr; align-items: start; gap: 4.5px 16px; border-bottom: 1px solid var(--pd-tint); padding-bottom: 4.5px; margin-bottom: 4.5px; break-inside: avoid; }
+  .spec-row { display: grid; grid-template-columns: 260px 1fr; align-items: start; gap: 6px 16px; border-bottom: 1px solid var(--pd-tint); padding-bottom: 7px; margin-bottom: 7px; break-inside: avoid; }
   .spec-label { font-weight: 600; color: var(--pd-ink); }
   .spec-value { color: var(--pd-ink); display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
 
@@ -442,7 +463,7 @@ CSS = """
   .spec-affirm { font-weight: 600; }
   .spec-detail { color: var(--pd-muted); }
 
-  .pdoc-tail { margin-top: 20px; padding-top: 10px; }
+  .pdoc-tail { margin-top: 20px; padding-top: 10px; break-inside: avoid; }
   .pdoc-note { font-size: 10.5px; color: var(--pd-muted); font-style: italic; margin-bottom: 10px; }
   .pdoc-close-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; }
   .pdoc-close-signoff { margin-top: 2px; font-weight: 600; }
