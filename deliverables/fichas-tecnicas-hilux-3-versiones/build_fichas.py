@@ -36,7 +36,7 @@ TRIMS = [
         "doc_number": "FT-WGT-2026-0829",
         "model_name": "Toyota Hilux Standard",
         "model_trim": "2.8L Diésel · 4x2 · Manual de 6 velocidades",
-        "tail_spacer_px": 305,
+        "tail_spacer_px": 275,
         "hero_stats": [
             ("Potencia máxima", "204 PS"),
             ("Torque máximo", "420 N·m"),
@@ -127,7 +127,7 @@ TRIMS = [
         "doc_number": "FT-WGT-2026-0830",
         "model_name": "Toyota Hilux Pro",
         "model_trim": "2.8L Diésel · 4x2 · Automática de 6 velocidades",
-        "tail_spacer_px": 885,
+        "tail_spacer_px": 855,
         "hero_stats": [
             ("Potencia máxima", "204 PS"),
             ("Torque máximo", "500 N·m"),
@@ -229,7 +229,7 @@ TRIMS = [
         "doc_number": "FT-WGT-2026-0831",
         "model_name": "Toyota Hilux Trailhunter",
         "model_trim": "2.8L Diésel · 4WD · Automática de 6 velocidades",
-        "tail_spacer_px": 392,
+        "tail_spacer_px": 362,
         "hero_stats": [
             ("Potencia máxima", "204 PS"),
             ("Torque máximo", "500 N·m"),
@@ -474,6 +474,9 @@ CSS = FONT_FACE_CSS + """
   .pdoc-footer { display: flex; justify-content: space-between; gap: 24px; margin-top: 10px; padding-top: 6px; border-top: 1px solid var(--pd-line); color: var(--pd-muted); font-size: 11.5px; break-inside: avoid; }
   .pdoc-footer .pd-foot-right { text-align: right; }
 
+  .pdoc-whatsapp { margin-top: 8px; text-align: center; break-inside: avoid; }
+  .pdoc-whatsapp a { display: inline-block; padding: 7px 16px; background: var(--pd-accent); color: #fff; font-size: 11px; font-weight: 700; text-decoration: none; border-radius: 3px; letter-spacing: 0.01em; }
+
   @media (max-width: 640px) {
     .pdoc { padding: 26px 20px 28px; }
     .pdoc-title { font-size: 32px; }
@@ -561,6 +564,9 @@ def build(trim: dict) -> Path:
       <div>wingsglobaltrade.com</div>
     </div>
   </footer>
+  <div class="pdoc-whatsapp">
+    <a href="https://wa.me/message/5GKD6PBYCCD6K1">Escríbenos por WhatsApp — wa.me/message/5GKD6PBYCCD6K1</a>
+  </div>
   </div>
 
 </article>
