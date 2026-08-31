@@ -526,12 +526,6 @@ def build(trim: dict) -> Path:
   </header>
   <div class="pdoc-rule" aria-hidden="true"></div>
 
-  <div class="pdoc-dateline">
-    <span>Preparado: {DOC_DATE}</span>
-    <span>Origen: Tailandia</span>
-    <span>Segmento: Pickup 4x4</span>
-  </div>
-
   <div class="pdoc-hero">
     <div class="pdoc-hero-name">{trim['model_name']}</div>
     <div class="pdoc-hero-trim">{trim['model_trim']}</div>
