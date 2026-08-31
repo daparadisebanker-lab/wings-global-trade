@@ -834,6 +834,38 @@ the real files arrive, since a card with no image should probably keep
 today's typography-only layout rather than reserve dead space for one
 that never comes.
 
+## 0l · Buyer-list reconciliation (2026-08-31)
+
+`lane.config.ts`'s Phase 0 answer to "who is the buyer" (§0, item 1) recorded
+three trade buyers — car dealers/lots, fleet and corporate buyers,
+independent resellers/importers — from the 2026-08-23 interview. It never
+listed an individual/personal buyer.
+
+Separately, in a later session (audit-and-scope work on this category, not
+a lane-protocol interview), the account owner stated directly that
+personal buyers are real here too. A dual-buyer RFQ toggle
+(`buyer_type: 'personal' | 'empresa'`, `RFQFlow`'s `showBuyerType` prop,
+gated to `automoviles` via `InquiryForm`'s `DUAL_BUYER_CATEGORIES`) shipped
+on that basis — before this file or `lane.config.ts` were updated to match.
+That left the lane's own documented buyer research inconsistent with its
+shipped behavior: the config said "trade buyers only," the product said
+otherwise.
+
+**Fixed:** `lane.config.ts`'s `buyer` array now includes
+`'individual / personal use'` as a fourth entry, dated and reasoned in
+place (append-only discipline, same as every other amendment in this
+file). Not treated as a case for the original note's "revisit once real
+RFQ volume shows which is converting" — that note was about ranking the
+three trade buyers against each other, not about whether a fourth buyer
+type exists at all. Direct confirmation from the account owner settles
+existence; volume can still decide ranking later.
+
+**Not done, on purpose:** no change to `misterPack`/diagnosis-set content
+(still not built, §4), no change to the segment/brand taxonomy (buyer type
+and vehicle taxonomy are independent axes), no lead-data backfill (leads
+captured before this session simply have `buyer_type: null`, same as any
+other newly-added optional field).
+
 ## 0k · Vehicle-type icon system + brand-page filtration (2026-08-26)
 
 Client asked for an SVG "vehicle type selection engine" in the vein of

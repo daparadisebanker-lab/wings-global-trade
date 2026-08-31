@@ -40,8 +40,23 @@ export const lane = {
   // sheet's own breadth (11 brands, mixed segments) and the account owner's
   // own answer ("mixed — no single dominant buyer yet") argue against
   // pretending otherwise this early. Revisit once real RFQ volume shows
-  // which of these three is actually converting.
-  buyer: ['car dealers / lots', 'fleet and corporate buyers', 'independent resellers / importers'],
+  // which of these four is actually converting.
+  //
+  // Amended 2026-08-31 — a fourth buyer added: individual / personal use.
+  // The original Phase 0 interview (2026-08-23) recorded three trade
+  // buyers only. The account owner separately confirmed, directly, that
+  // personal buyers are real here too; RFQFlow already ships a
+  // buyer_type selector (personal/empresa) on this category's product
+  // pages on that basis (see programs/automobiles/SCOPE.md §0l). This
+  // list was left inconsistent with that shipped behavior until now —
+  // corrected rather than revisited later per the note above, since the
+  // gap was closed by direct confirmation, not by waiting on RFQ data.
+  buyer: [
+    'individual / personal use',
+    'car dealers / lots',
+    'fleet and corporate buyers',
+    'independent resellers / importers',
+  ],
 
   // Phase 0 · Q3. Confirmed dual rather than per-unit-only: a fleet buyer
   // orders N repeats of one trim, which is container/slot math, not just a
