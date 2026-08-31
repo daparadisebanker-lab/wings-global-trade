@@ -21,7 +21,7 @@ import { RecordProvider } from '@/pasillo/lib/record'
 import '@/pasillo/pasillo.css'
 
 export const metadata: Metadata = {
-  title: 'Azulejos — WGT/02 Interiores',
+  title: 'Azulejos — Interiores | Wings Global Trade',
   // This route is noindex, but the description still renders in WhatsApp and
   // Slack link previews — which is exactly how a buyer shares this URL with a
   // colleague. So it is a buyer-facing string, and "pasillo" may not appear in

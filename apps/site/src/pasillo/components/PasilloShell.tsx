@@ -94,7 +94,7 @@ export function LaneExit({ variant = 'inline' }: { variant?: 'inline' | 'fixed' 
                   }`}
     >
       <span aria-hidden>←</span>
-      <span>WGT/02 · Interiores</span>
+      <span>Interiores</span>
     </Link>
   )
 

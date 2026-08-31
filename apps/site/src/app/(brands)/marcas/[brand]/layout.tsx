@@ -39,7 +39,7 @@ export default async function BrandLayout({
           plays per hard load, SPA navs use BrandCurtain instead */}
       <BrandReveal brand={{ name: brand.name, claim: brand.claim, isotipo: brand.logo.isotipo }} />
       <BrandShelfNav
-        brand={{ slug: brand.slug, name: brand.name, code: brand.code, isologo: brand.logo.isologo }}
+        brand={{ slug: brand.slug, name: brand.name, isologo: brand.logo.isologo }}
       />
       {children}
     </div>

@@ -37,7 +37,7 @@ export default async function BrandAboutPage({ params }: PageProps) {
       <header className="grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-center">
         <div>
           <p className="font-mono text-[11px] uppercase tracking-widest-2 text-[var(--rb-accent-ink)]">
-            {brand.code} · Representada desde {brand.representedSince}
+            Representada desde {brand.representedSince}
           </p>
           <div className="mt-6">
             <Image
@@ -134,7 +134,7 @@ export default async function BrandAboutPage({ params }: PageProps) {
         aria-label="Sello de la marca"
       >
         <p className="font-mono text-[11px] uppercase tracking-widest-3 text-neutral-500" data-reveal>
-          {brand.name} © {brand.representedSince} · {brand.code} — Representada por Wings Global Trade
+          {brand.name} © {brand.representedSince} — Representada por Wings Global Trade
         </p>
         <p
           data-split-words

@@ -5,9 +5,11 @@
 //
 // THE DIVISIONS SECTION IS DERIVED, not typed. It reads the same lane configs
 // the routes and the Mister packs read, so opening WGT/03 puts it in the footer
-// with its code and its status automatically — and an OPENING division renders
-// as a stamp rather than a link, because there is no page behind it yet. That is
-// the whole point of building this as a hub: lane N+1 costs nothing here.
+// with its status automatically — and an OPENING division renders as a stamp
+// rather than a link, because there is no page behind it yet. That is the
+// whole point of building this as a hub: lane N+1 costs nothing here. The
+// internal WGT/xx code is kept in DIVISIONS as bookkeeping but never rendered
+// (account owner's direction, 2026-08-31) — buyers see the label, not the code.
 
 import Link from 'next/link'
 import type { Category } from '@/types/database'
@@ -81,7 +83,9 @@ export function Footer({ categories }: FooterProps) {
     return {
       href: d.href ?? (isLive ? `/${d.slug}` : '#'),
       label: d.label,
-      code: d.code,
+      // d.code (WGT/01 etc.) is internal lane codification, not buyer-facing
+      // (account owner's direction, 2026-08-31) — deliberately not passed to
+      // TrustFooter, which renders `code` as visible text when present.
       status: (isLive ? 'ACTIVE' : 'OPENING') as 'ACTIVE' | 'OPENING',
     }
   })

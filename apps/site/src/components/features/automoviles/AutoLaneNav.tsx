@@ -83,7 +83,7 @@ export function AutoLaneNav() {
                   href="/automoviles"
                   className="mr-2 shrink-0 py-3.5 font-mono text-[11px] uppercase tracking-widest-2 text-[color:var(--ink-primary)]"
                 >
-                  {lane.code}
+                  {lane.name}
                 </Link>
                 {lane.taxonomy.map((seg) => {
                   const href = `/automoviles/${seg.slug}`

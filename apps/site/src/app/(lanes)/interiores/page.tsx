@@ -28,7 +28,7 @@ import { Escala } from './Escala'
 import { Umbral } from './Umbral'
 
 export const metadata: Metadata = {
-  title: 'Interiores — WGT/02',
+  title: 'Interiores | Wings Global Trade',
   // Says what ships. The old description listed five disciplines with nothing
   // behind them — the same overclaim the page itself no longer makes, except
   // this one was the version that reached a search result.

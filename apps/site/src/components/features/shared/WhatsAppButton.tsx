@@ -10,10 +10,12 @@ interface WhatsAppButtonProps {
   /**
    * `gold`/`green` are the in-page variants and stay brand-literal — the lane
    * page draws them on ITS own ground, where the chrome contract is wrong
-   * (bone-on-bone). `chrome` is for the header only: it reads --chrome-* and so
-   * follows the lane, falling back to exactly the gold pair off a lane route.
+   * (bone-on-bone). `chrome` reads --chrome-* and follows the lane; kept for
+   * any surface that still wants lane-reactive chrome. `mono` is for the
+   * achromatic header/drawer system (--nav-*) — outline, not filled, since
+   * the header's one filled element is the Cotizar CTA (root CLAUDE.md §1.2).
    */
-  variant?: 'gold' | 'green' | 'chrome'
+  variant?: 'gold' | 'green' | 'chrome' | 'mono'
 }
 
 function WhatsAppIcon() {
@@ -42,6 +44,8 @@ export function WhatsAppButton({
         variant === 'green' && 'bg-whatsapp text-white hover:brightness-95',
         variant === 'chrome' &&
           'bg-[var(--chrome-accent,var(--color-gold))] text-[color:var(--chrome-accent-ink,var(--color-navy))] hover:opacity-90',
+        variant === 'mono' &&
+          'border border-[var(--nav-rule-strong)] bg-transparent text-[color:var(--nav-ink)] hover:border-[var(--nav-ink)]',
         className,
       )}
     >

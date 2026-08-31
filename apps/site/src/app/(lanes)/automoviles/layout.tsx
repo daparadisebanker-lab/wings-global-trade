@@ -26,7 +26,7 @@ import { BrandChoreography, BrandCurtain } from '@/components/features/brands/Br
 import { AutoLaneNav } from '@/components/features/automoviles/AutoLaneNav'
 
 export const metadata: Metadata = {
-  title: 'Automóviles — WGT/07',
+  title: 'Automóviles | Wings Global Trade',
   description:
     'Autos de pasajeros 0 km importados desde China: sedanes, SUV, MPV e híbridos de 11 marcas, vendidos por unidad configurada o por contenedor.',
 }

@@ -63,7 +63,7 @@ export default async function AutomovilesLaneRootPage() {
       <section className="border-b border-[color:var(--ink-decoration)]">
         <div className="mx-auto max-w-6xl px-5 py-16 md:px-8 md:py-24">
           <p className="font-mono text-mono-sm uppercase tracking-[var(--lane-label-tracking)] text-[color:var(--accent-ink)]">
-            {lane.code} · Automóviles
+            Automóviles
           </p>
           <h1
             data-split

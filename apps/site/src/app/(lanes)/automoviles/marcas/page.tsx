@@ -31,7 +31,7 @@ export default async function AutomovilesMarcasPage() {
     <div className="mx-auto max-w-6xl px-5 py-16 md:px-8 md:py-24">
       <header className="max-w-3xl">
         <p className="font-mono text-mono-sm uppercase tracking-widest-2 text-[color:var(--accent-ink)]">
-          WGT/07 · Automóviles
+          Automóviles
         </p>
         <h1 className="mt-3 font-display text-display-lg text-[color:var(--ink-primary)]">Marcas</h1>
         <p className="mt-5 text-body-lg text-[color:var(--ink-secondary)]">

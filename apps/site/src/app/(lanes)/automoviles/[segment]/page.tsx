@@ -50,7 +50,7 @@ export default async function AutomovilesSegmentPage({ params }: PageProps) {
   return (
     <div className="mx-auto max-w-6xl px-5 py-12 md:px-8 md:py-16">
       <p className="font-mono text-mono-sm uppercase tracking-widest-2 text-[color:var(--accent-ink)]">
-        WGT/07 · Automóviles
+        Automóviles
       </p>
       <div className="mt-3 flex items-center gap-3">
         <VehicleTypeIcon

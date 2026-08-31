@@ -17,7 +17,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Interiores — WGT/02',
+  title: 'Interiores | Wings Global Trade',
   description:
     'FF&E, OS&E, acabados duros, textiles e iluminación para proyectos de hospitalidad y residenciales. Importación directa por contenedor, con cobertura en m² y llenado declarado antes de cotizar.',
 }

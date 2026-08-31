@@ -28,24 +28,13 @@ interface MegaColumn {
   items: SubItem[]
 }
 
-// Automóviles leads the mega-menu — the category with the strongest
-// commercial traction, promoted to first position (site direction,
-// 2026-08-23 — see programs/automobiles/SCOPE.md).
+// Automóviles is deliberately NOT a column here — it has its own top-level
+// nav link and its own lane (/automoviles: landing, segments, 11 brand
+// pages). Keeping a second, older entry point into it here would be exactly
+// the redundant-path problem this menu already had (two labels — "Motores"
+// and "Motores JDM" — pointing at the same /repuestos destination before
+// this rebuild). This menu is now honestly what it's labeled: Maquinaria.
 const COLUMNS: MegaColumn[] = [
-  {
-    categorySlug: 'automoviles',
-    heading: 'Automóviles',
-    items: [
-      { label: 'Toyota', href: '/automoviles/marcas/toyota' },
-      { label: 'Jetour', href: '/automoviles/marcas/jetour' },
-      { label: 'KIA', href: '/automoviles/marcas/kia' },
-      { label: 'Audi', href: '/automoviles/marcas/audi' },
-      // No dedicated hybrid view exists in the new lane IA yet (models carry
-      // fuel in specs, not as a page-level facet) — lane root is the honest
-      // destination until that's built, not a fabricated filtered page.
-      { label: 'Híbridos', href: '/automoviles' },
-    ],
-  },
   {
     categorySlug: 'maquinaria-agricola',
     heading: 'Maquinaria Agrícola',
@@ -170,16 +159,16 @@ export function MegaMenu({ categories: _categories, open }: MegaMenuProps) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.28, ease: [0.25, 1, 0.5, 1] }}
-          className="w-full border-t border-[rgba(196,147,63,0.12)] bg-[#000C1F] shadow-card-hover"
+          className="w-full border-t border-[var(--nav-rule)] bg-[var(--nav-ground)] shadow-card-hover"
           role="region"
-          aria-label="Menú de catálogo"
+          aria-label="Menú de maquinaria"
         >
-          <div className="mx-auto grid max-w-7xl grid-cols-6 gap-0 px-10 py-10">
+          <div className="mx-auto grid max-w-7xl grid-cols-5 gap-0 px-10 py-10">
             {/* ---- Category columns ---- */}
             {COLUMNS.map((col) => (
               <div key={col.categorySlug} className="pr-8">
                 {/* Column heading */}
-                <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.15em] text-gold/40">
+                <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.15em] text-[color:var(--nav-ink-3)]">
                   {col.heading}
                 </p>
 
@@ -197,7 +186,7 @@ export function MegaMenu({ categories: _categories, open }: MegaMenuProps) {
                     >
                       <Link
                         href={buildHref(col.categorySlug, item)}
-                        className="block font-mono text-[11px] text-warm-white/70 transition-colors duration-150 hover:text-gold"
+                        className="block font-mono text-[11px] text-[color:var(--nav-ink-2)] transition-colors duration-150 hover:text-[color:var(--nav-ink)]"
                       >
                         {item.label}
                       </Link>
@@ -208,7 +197,7 @@ export function MegaMenu({ categories: _categories, open }: MegaMenuProps) {
                 {/* Ver todo link */}
                 <Link
                   href={categoryHref(col.categorySlug)}
-                  className="mt-5 block font-mono text-[11px] text-gold/70 transition-colors duration-150 hover:text-gold"
+                  className="mt-5 block font-mono text-[11px] text-[color:var(--nav-ink-3)] transition-colors duration-150 hover:text-[color:var(--nav-ink)]"
                 >
                   Ver todo →
                 </Link>
@@ -216,8 +205,8 @@ export function MegaMenu({ categories: _categories, open }: MegaMenuProps) {
             ))}
 
             {/* ---- Acceso rápido column ---- */}
-            <div className="border-l border-warm-white/[0.06] pl-8">
-              <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.15em] text-gold/40">
+            <div className="border-l border-[var(--nav-rule)] pl-8">
+              <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.15em] text-[color:var(--nav-ink-3)]">
                 Acceso rápido
               </p>
 
@@ -233,12 +222,12 @@ export function MegaMenu({ categories: _categories, open }: MegaMenuProps) {
                       href={item.href}
                       className={
                         item.highlight
-                          ? 'block font-mono text-[11px] uppercase tracking-nav text-gold transition-colors duration-150 hover:text-gold-hover'
-                          : 'block font-mono text-[11px] text-warm-white/70 transition-colors duration-150 hover:text-gold'
+                          ? 'block font-mono text-[11px] uppercase tracking-nav text-[color:var(--nav-ink)] transition-opacity duration-150 hover:opacity-70'
+                          : 'block font-mono text-[11px] text-[color:var(--nav-ink-2)] transition-colors duration-150 hover:text-[color:var(--nav-ink)]'
                       }
                     >
                       {item.prefix && (
-                        <span className="mr-1.5 text-gold/70">{item.prefix}</span>
+                        <span className="mr-1.5 text-[color:var(--nav-ink-3)]">{item.prefix}</span>
                       )}
                       {item.label}
                     </Link>

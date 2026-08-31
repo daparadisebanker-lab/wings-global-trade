@@ -141,7 +141,7 @@ export const ALADIN: RbPublicBrand = {
     'Sin químicos ni lejía',
     '4 capas · 30 metros por rollo',
     'Biodegradable',
-    'RB/01 · Representada desde 2026',
+    'Representada desde 2026',
   ],
   manifesto:
     'El bambú crece sin pedir permiso y vuelve a la tierra sin dejar rastro. Papel que cuida tu salud y nuestro planeta — hecho para durar lo que debe y desaparecer cuando debe.',

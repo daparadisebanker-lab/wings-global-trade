@@ -88,7 +88,7 @@ export default async function HomePage() {
                   className="h-12 w-auto"
                 />
                 <span className="font-mono text-[10px] uppercase tracking-widest-2 text-neutral-500">
-                  {brand.code} · desde {brand.representedSince}
+                  Desde {brand.representedSince}
                 </span>
               </Link>
             ))}

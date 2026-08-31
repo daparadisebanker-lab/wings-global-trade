@@ -14,7 +14,7 @@ export function FichaAutomovilDocument({ doc }: { doc: FichaDocument }) {
     <article className="fdoc" data-oem={doc.brand?.slug}>
       <header className="fdoc-header">
         <div>
-          <span className="fdoc-kicker">Ficha técnica · WGT/07 Automóviles</span>
+          <span className="fdoc-kicker">Ficha técnica · Automóviles</span>
           {doc.brand && (
             <div className="fdoc-brandline">
               <span className="fdoc-brand-dot" aria-hidden />

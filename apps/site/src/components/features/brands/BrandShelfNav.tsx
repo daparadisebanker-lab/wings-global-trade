@@ -13,7 +13,7 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 
 interface Props {
-  brand: { slug: string; name: string; code: string; isologo: string }
+  brand: { slug: string; name: string; isologo: string }
 }
 
 export function BrandShelfNav({ brand }: Props) {
@@ -88,7 +88,7 @@ export function BrandShelfNav({ brand }: Props) {
           )
         })}
         <span className="ml-auto hidden shrink-0 font-mono text-[11px] uppercase tracking-widest-2 text-neutral-400 md:block">
-          {brand.code}
+          {brand.name}
         </span>
       </div>
     </nav>

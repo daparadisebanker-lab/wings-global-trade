@@ -16,28 +16,24 @@ interface SiteNavProps {
   categories: Category[]
 }
 
-// TAILWIND CANNOT APPLY AN OPACITY MODIFIER TO AN ARBITRARY var() COLOUR:
-// `text-[color:var(--chrome-ink,#F8F6F0)]/35` emits NO RULE AT ALL, so the
-// element silently inherits and only looks right while the inherited ink
-// happens to be near-white. color-mix() survives compilation, and Tailwind's
-// scanner only sees string literals, so the ladder lives here.
-const INK_70 = 'text-[color:color-mix(in_srgb,var(--chrome-ink,#F8F6F0)_70%,transparent)]'
-
+// ACHROMATIC — same reasoning as the drawer (see the --nav-* block in
+// globals.css). The header used to read --chrome-*, which meant it changed
+// colour by lane: navy+gold on the house pages, asphalt+ion-blue on
+// /automoviles, walnut on /interiores. That made the header page chrome, not
+// site chrome — a buyer could not learn what "Wings" looks like from it,
+// because it never looked like the same thing twice. Rebuilt (2026-08-31,
+// account owner's direction) to the drawer's own black/white system: this is
+// the base Wings identity, and it is the same on every route, lane or not.
 const LINKS = [
-  // Automóviles leads the menu — the category with the strongest commercial
-  // traction, promoted ahead of Catálogo itself (site direction, 2026-08-23 —
-  // see programs/automobiles/SCOPE.md). It gets its own top-level link rather
-  // than living only inside the Catálogo mega-menu, matching how Interiores
-  // earned one when it became a named destination.
+  // Automóviles and Interiores are real lanes with their own destination —
+  // each gets a direct top-level link, exactly like the drawer's "worlds".
+  // Automóviles leads (site direction, 2026-08-23 — programs/automobiles/
+  // SCOPE.md): the category with the strongest commercial traction.
   { href: '/automoviles', label: 'Automóviles' },
-  { href: '/proceso',    label: 'Cómo importar' },
-  // WGT/02 — the lane, not the catalogue. "Azulejos" is what sits inside it;
-  // a buyer scanning a menu for finishes looks for the discipline first.
-  { href: '/interiores', label: 'Interiores' },
-  { href: '/repuestos',  label: 'Motores' },
-  { href: '/marcas',     label: 'Marcas' },
-  { href: '/mister',     label: 'Mister IA' },
-  { href: '/nosotros',   label: 'Nosotros' },
+  { href: '/interiores',  label: 'Interiores' },
+  { href: '/marcas',      label: 'Marcas' },
+  { href: '/proceso',     label: 'Cómo importar' },
+  { href: '/nosotros',    label: 'Nosotros' },
 ]
 
 export function SiteNav({ categories }: SiteNavProps) {
@@ -52,7 +48,7 @@ export function SiteNav({ categories }: SiteNavProps) {
   const hiddenRef = useRef(false)
   const progressBarRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLElement>(null)
-  const catalogTriggerRef = useRef<HTMLAnchorElement>(null)
+  const machineryTriggerRef = useRef<HTMLAnchorElement>(null)
   const searchTriggerRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
@@ -95,7 +91,7 @@ export function SiteNav({ categories }: SiteNavProps) {
       if (e.key !== 'Escape') return
       if (menuHovered) {
         setMenuHovered(false)
-        catalogTriggerRef.current?.focus()
+        machineryTriggerRef.current?.focus()
       }
       if (searchOpen) {
         setSearchOpen(false)
@@ -121,16 +117,16 @@ export function SiteNav({ categories }: SiteNavProps) {
   // Mister page is a fullscreen world takeover — nav would break the world boundary.
   if (pathname === '/mister') return null
 
+  // Not about lane colour anymore (the header no longer has one) — about page
+  // background LIGHTNESS. A transparent white-text header is illegible the
+  // instant it sits over a light/white ground instead of a dark hero image,
+  // so these routes force solid immediately rather than waiting for scroll.
   const forceSolid =
     pathname?.startsWith('/catalogo') ||
     pathname?.startsWith('/repuestos') ||
     pathname?.startsWith('/g/') ||
     pathname?.startsWith('/contenedor') ||
-    // Brand shelves sit on the pure-white canvas — transparent nav is illegible there
     pathname?.startsWith('/marcas') ||
-    // Lane grounds are light (bone / white). A transparent nav over them
-    // needs a scrim, and a navy scrim on a light ground reads as grey mud —
-    // go solid immediately.
     pathname?.startsWith('/interiores') ||
     pathname?.startsWith('/automoviles')
   const solid = scrolled || forceSolid
@@ -141,29 +137,24 @@ export function SiteNav({ categories }: SiteNavProps) {
         ref={headerRef}
         className={cn(
           'fixed inset-x-0 top-0 z-50 transition-all duration-300',
-          // WITH THE DRAWER OPEN THE BAR IS PART OF THE DRAWER.
-          // The drawer is universal black; the bar is lane chrome. Left solid,
-          // opening the menu on /interiores put a walnut strip across the top
-          // of a black panel — two surfaces where the buyer sees one. It goes
-          // transparent so the logo and the close control sit directly on the
-          // drawer's own ground.
+          // With the drawer open the bar is part of the drawer, so it goes
+          // transparent and lets the drawer's own ground show through —
+          // both are --nav-ground now, so this used to matter more than it
+          // does today, but two stacked opaque black surfaces is still one
+          // surface too many.
           menuOpen
             ? 'bg-transparent'
             : solid
-            // The alpha lives IN the token, not in a Tailwind modifier:
-            // `/95` cannot be applied to an arbitrary var() whose fallback
-            // contains a comma — the class silently emits nothing and the
-            // header renders transparent.
-            ? 'bg-[var(--chrome-nav-bg,rgba(0,12,31,0.95))] backdrop-blur-md border-b border-[var(--chrome-hairline,rgba(248,246,240,0.07))]'
+            ? 'bg-[var(--nav-ground)] border-b border-[var(--nav-rule)]'
             : 'bg-transparent',
           hidden && !menuOpen && '-translate-y-full',
         )}
         onMouseLeave={() => setMenuHovered(false)}
       >
-        {/* Scrim behind the transparent nav — keeps links legible over light hero imagery */}
+        {/* Scrim behind the transparent nav — keeps white text legible over hero imagery */}
         {!solid && !menuOpen && (
           <div
-            className="pointer-events-none absolute inset-x-0 top-0 z-0 h-32 bg-gradient-to-b from-[var(--chrome-scrim,rgba(0,12,31,0.6))] to-transparent md:h-40"
+            className="pointer-events-none absolute inset-x-0 top-0 z-0 h-32 bg-gradient-to-b from-black/60 to-transparent md:h-40"
             aria-hidden
           />
         )}
@@ -183,7 +174,9 @@ export function SiteNav({ categories }: SiteNavProps) {
               <NavLink key={l.href} {...l} active={pathname === l.href} />
             ))}
 
-            {/* Catálogo trigger — hover-opens for mouse, click/Enter toggles for keyboard, Escape closes */}
+            {/* Maquinaria trigger — hover-opens for mouse, click/Enter toggles for keyboard, Escape closes.
+                Named for what it actually contains now that Automóviles has its own top-level link and
+                lane: tractores, camiones, buses, industrial, repuestos — machinery, not "everything". */}
             <div
               className="relative"
               onMouseEnter={() => {
@@ -192,22 +185,23 @@ export function SiteNav({ categories }: SiteNavProps) {
               }}
             >
               <Link
-                ref={catalogTriggerRef}
+                ref={machineryTriggerRef}
                 href="/catalogo"
                 aria-haspopup="true"
                 aria-expanded={menuHovered}
-                aria-controls="catalogo-mega-menu"
+                aria-controls="maquinaria-mega-menu"
                 onClick={(e: ReactMouseEvent) => {
                   e.preventDefault()
                   setSearchOpen(false)
                   setMenuHovered((o) => !o)
                 }}
                 className={cn(
-                  `flex items-center gap-1 font-mono text-[11px] uppercase tracking-nav ${INK_70} transition-colors hover:text-[color:var(--chrome-ink,#F8F6F0)]`,
-                  (pathname?.startsWith('/catalogo')) && 'text-[color:var(--chrome-ink,#F8F6F0)] after:absolute after:bottom-[-2px] after:left-0 after:w-full after:h-px after:bg-[var(--chrome-accent,var(--color-gold))]',
+                  'flex items-center gap-1 font-mono text-[11px] uppercase tracking-nav text-[color:var(--nav-ink-2)] transition-colors hover:text-[color:var(--nav-ink)]',
+                  pathname?.startsWith('/catalogo') &&
+                    'text-[color:var(--nav-ink)] after:absolute after:bottom-[-2px] after:left-0 after:w-full after:h-px after:bg-[var(--nav-ink)]',
                 )}
               >
-                Catálogo
+                Maquinaria
                 {/* Chevron icon */}
                 <svg
                   width="10"
@@ -248,7 +242,7 @@ export function SiteNav({ categories }: SiteNavProps) {
                 setMenuHovered(false)
                 setSearchOpen((o) => !o)
               }}
-              className={`flex h-8 w-8 items-center justify-center ${INK_70} transition-colors duration-200 hover:text-[color:var(--chrome-ink,#F8F6F0)]`}
+              className="flex h-8 w-8 items-center justify-center text-[color:var(--nav-ink-2)] transition-colors duration-200 hover:text-[color:var(--nav-ink)]"
             >
               <svg
                 viewBox="0 0 20 20"
@@ -264,18 +258,20 @@ export function SiteNav({ categories }: SiteNavProps) {
             </button>
             <Link
               href="/contacto"
-              className={`font-mono text-[11px] uppercase tracking-nav ${INK_70} transition-colors duration-200 hover:text-[color:var(--chrome-ink,#F8F6F0)]`}
+              className="font-mono text-[11px] uppercase tracking-nav text-[color:var(--nav-ink-2)] transition-colors duration-200 hover:text-[color:var(--nav-ink)]"
             >
               Contacto
             </Link>
+            {/* The one solid-filled element in the bar — the primary action gets
+                the weight, per root CLAUDE.md §1.2. Everything else is outline or text. */}
             <Link
               href="/cotizar"
-              className="inline-flex items-center gap-2 border border-[var(--chrome-label,rgba(196,147,63,0.30))] px-4 py-2 font-mono text-[11px] uppercase tracking-nav text-[var(--chrome-accent,var(--color-gold))] transition-all duration-200 hover:bg-[var(--chrome-accent,var(--color-gold))] hover:text-[color:var(--chrome-accent-ink,var(--color-navy))]"
+              className="inline-flex items-center gap-2 bg-[var(--nav-cta)] px-4 py-2 font-mono text-[11px] uppercase tracking-nav text-[color:var(--nav-cta-ink)] transition-opacity duration-200 hover:opacity-85"
             >
               Cotizar
             </Link>
             <WhatsAppButton
-              variant={solid ? 'chrome' : 'green'}
+              variant="mono"
               label="WhatsApp"
               message="Hola, estoy revisando el catálogo de Wings Global Trade y me gustaría más información."
             />
@@ -286,12 +282,7 @@ export function SiteNav({ categories }: SiteNavProps) {
             aria-label="Abrir menú"
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((o) => !o)}
-            className={cn(
-              'relative z-50 flex h-11 w-11 items-center justify-center lg:hidden',
-              menuOpen
-                ? 'text-[color:var(--nav-ink)]'
-                : 'text-[color:var(--chrome-ink,#F8F6F0)]',
-            )}
+            className="relative z-50 flex h-11 w-11 items-center justify-center text-[color:var(--nav-ink)] lg:hidden"
           >
             <div className="flex flex-col gap-1.5">
               <span
@@ -306,7 +297,7 @@ export function SiteNav({ categories }: SiteNavProps) {
         </div>
 
         {/* Mega-menu panel — sits inside <header> so mouse enter/leave is unified */}
-        <div id="catalogo-mega-menu" className="relative z-10 hidden lg:block">
+        <div id="maquinaria-mega-menu" className="relative z-10 hidden lg:block">
           <MegaMenu categories={categories} open={menuHovered} />
         </div>
 
@@ -321,7 +312,7 @@ export function SiteNav({ categories }: SiteNavProps) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.2, ease: [0.25, 1, 0.5, 1] }}
-                className="border-t border-[var(--chrome-hairline,rgba(196,147,63,0.12))] bg-[var(--chrome-ground,#000C1F)] px-10 py-6 shadow-card-hover"
+                className="border-t border-[var(--nav-rule)] bg-[var(--nav-ground)] px-10 py-6 shadow-card-hover"
               >
                 <div className="mx-auto max-w-xl">
                   <SearchBar
@@ -339,7 +330,7 @@ export function SiteNav({ categories }: SiteNavProps) {
         {/* Scroll progress indicator — transform-driven, updated via ref (no re-render per pixel) */}
         <div
           ref={progressBarRef}
-          className="absolute bottom-0 left-0 z-10 h-px w-full origin-left bg-[var(--chrome-accent,var(--color-gold))]"
+          className="absolute bottom-0 left-0 z-10 h-px w-full origin-left bg-[var(--nav-ink)]"
           style={{ transform: 'scaleX(0)' }}
           aria-hidden
         />
@@ -355,8 +346,8 @@ function NavLink({ href, label, active }: { href: string; label: string; active:
     <Link
       href={href}
       className={cn(
-        `font-mono text-[11px] uppercase tracking-nav ${INK_70} transition-colors duration-200 hover:text-[color:var(--chrome-ink,#F8F6F0)] relative`,
-        active && 'text-[color:var(--chrome-ink,#F8F6F0)] after:absolute after:bottom-[-2px] after:left-0 after:w-full after:h-px after:bg-[var(--chrome-accent,var(--color-gold))]',
+        'font-mono text-[11px] uppercase tracking-nav text-[color:var(--nav-ink-2)] transition-colors duration-200 hover:text-[color:var(--nav-ink)] relative',
+        active && 'text-[color:var(--nav-ink)] after:absolute after:bottom-[-2px] after:left-0 after:w-full after:h-px after:bg-[var(--nav-ink)]',
       )}
     >
       {label}

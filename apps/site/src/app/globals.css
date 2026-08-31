@@ -25,19 +25,22 @@
 /* ============================================================
    THE NAVIGATION SYSTEM — universal, and deliberately achromatic
    ============================================================
-   The mobile drawer is the one surface that spans every world on this site:
-   machinery, Interiores, the represented brands, and whatever opens next. It
-   is where a buyer goes precisely BECAUSE they are not where they want to be.
+   Originally the mobile drawer only: the one surface that spans every world
+   on this site — machinery, Interiores, the represented brands, and whatever
+   opens next. It is where a buyer goes precisely BECAUSE they are not where
+   they want to be, so it wears no world's identity.
 
-   So it wears no world's identity. It was reading --chrome-*, which made it
-   walnut inside /interiores and navy everywhere else — a navigation panel that
-   changed colour depending on where you happened to be standing, which is the
-   opposite of what navigation is for.
+   Extended to the desktop header bar (SiteNav + MegaMenu) 2026-08-31, account
+   owner's direction: the header was reading --chrome-*, which made it walnut
+   inside /interiores and navy everywhere else — changing colour depending on
+   where you happened to be standing, the opposite of what navigation is for.
+   Same fix as the drawer already had, applied to the surface it was never
+   applied to. The footer keeps --chrome-* (page chrome, themes with the lane)
+   — only the two elements a buyer uses to get somewhere else, the header bar
+   and the drawer, are now base Wings identity rather than page identity.
 
    These live at :root and are NEVER redefined under [data-lane] or
-   [data-brand]. A livery that themes the drawer has broken it. The header bar
-   and the footer stay lane-aware — they are page chrome and they belong to the
-   page. The drawer belongs to the site.
+   [data-brand]. A livery that themes the header or the drawer has broken it.
 
    Contrast, measured against #0B0B0B: ink 19.6:1, ink-2 6.5:1, ink-3 5.0:1 —
    all three carry text. --nav-rule is decoration and carries none. */

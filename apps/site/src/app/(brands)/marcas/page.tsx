@@ -78,7 +78,7 @@ export default function MarcasPage() {
                 Territorio del mandato: {brand.territory}
               </p>
               <p className="mt-5 font-mono text-[11px] uppercase tracking-widest-2 text-[var(--rb-accent-ink)]">
-                {brand.code} · Representada desde {brand.representedSince}
+                Representada desde {brand.representedSince}
               </p>
             </Link>
           ))}
