@@ -39,6 +39,9 @@ export function formatWhatsAppMessage(payload: NotificationPayload, leadId = '')
       DIVIDER,
       row('PRODUCTO', payload.product_name),
       row('CANTIDAD', payload.quantity),
+      payload.buyer_type
+        ? row('TIPO COMPRA', payload.buyer_type === 'personal' ? 'Uso personal' : 'Empresa/flota')
+        : '',
       row('DESTINO', payload.destination_country),
       payload.message ? row('MENSAJE', payload.message) : '',
       DIVIDER,

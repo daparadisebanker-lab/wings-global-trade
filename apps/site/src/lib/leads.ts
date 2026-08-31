@@ -3,7 +3,7 @@
 // When Supabase is unconfigured, returns a synthetic id so dev flows work.
 
 import { createServiceClient } from '@/lib/supabase/server'
-import type { LeadFlow } from '@/types/database'
+import type { LeadBuyerType, LeadFlow } from '@/types/database'
 
 export interface LeadInsert {
   flow: LeadFlow
@@ -15,6 +15,7 @@ export interface LeadInsert {
   product_id?: string | null
   product_name_snapshot?: string | null
   quantity?: string | null
+  buyer_type?: LeadBuyerType | null
   message?: string | null
   mister_project_id?: string | null
   source_url?: string | null
@@ -44,6 +45,7 @@ export async function insertLead(input: LeadInsert): Promise<string> {
       product_id: input.product_id ?? null,
       product_name_snapshot: input.product_name_snapshot ?? null,
       quantity: input.quantity ?? null,
+      buyer_type: input.buyer_type ?? null,
       message: input.message ?? null,
       mister_project_id: input.mister_project_id ?? null,
       source_url: input.source_url ?? null,

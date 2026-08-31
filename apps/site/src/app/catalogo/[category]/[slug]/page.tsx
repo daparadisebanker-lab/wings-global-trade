@@ -57,7 +57,14 @@ export default async function ProductPage({ params }: PageProps) {
 
   const cat = await getCategoryBySlug(category)
 
-  const heroSubtitle = `${cat?.name_es ?? 'Catálogo'} · Origen: ${product.source_markets.join(', ')} · Disponible vía ZOFRATACNA / ZOFRI`
+  // Automóviles serves personal-use buyers as well as fleets/dealers (root
+  // CLAUDE.md's wholesale-only default doesn't hold here) — the free-trade-zone
+  // import detail is operational language that presumes a business buyer.
+  const isDualBuyerCategory = category === 'automoviles'
+
+  const heroSubtitle = isDualBuyerCategory
+    ? `${cat?.name_es ?? 'Catálogo'} · Origen: ${product.source_markets.join(', ')}`
+    : `${cat?.name_es ?? 'Catálogo'} · Origen: ${product.source_markets.join(', ')} · Disponible vía ZOFRATACNA / ZOFRI`
 
   // Breadcrumb schema (JSON-LD)
   const breadcrumbs = [
@@ -167,11 +174,14 @@ export default async function ProductPage({ params }: PageProps) {
             Mister · Asistente IA
           </p>
           <h2 className="mt-2 font-display text-display-md font-semibold text-warm-white">
-            ¿Necesitas importarlo desde China a volumen?
+            {isDualBuyerCategory
+              ? '¿Tienes dudas sobre este modelo?'
+              : '¿Necesitas importarlo desde China a volumen?'}
           </h2>
           <p className="mx-auto mt-3 max-w-lg font-body text-lg text-text-muted-inverse">
-            Mister te acompaña en todo el proceso — desde la cotización CIF hasta la
-            nacionalización en destino, vía ZOFRATACNA o ZOFRI.
+            {isDualBuyerCategory
+              ? 'Mister resuelve tus preguntas sobre el modelo y te conecta con el equipo de Wings para cotizar tu importación, sea para uso personal o para tu empresa.'
+              : 'Mister te acompaña en todo el proceso — desde la cotización CIF hasta la nacionalización en destino, vía ZOFRATACNA o ZOFRI.'}
           </p>
           <div className="mt-8">
             <MagneticButton className="inline-block">

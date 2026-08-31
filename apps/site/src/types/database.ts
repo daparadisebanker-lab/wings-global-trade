@@ -3,6 +3,7 @@
 
 export type LeadFlow = 'catalog' | 'mister' | 'contact'
 export type LeadStatus = 'new' | 'contacted' | 'qualified' | 'closed_won' | 'closed_lost'
+export type LeadBuyerType = 'personal' | 'empresa'
 // Phase 2A: added 'standard' level per ai-engineer.md §REGLAS DE COMPLETENESS
 // partial: 1-2 fields | minimum: fields 1,3,4,5 | standard: fields 1-6 | complete: all 10
 export type TprCompleteness = 'partial' | 'minimum' | 'standard' | 'complete'
@@ -141,6 +142,7 @@ export interface Lead {
   product_id: string | null
   product_name_snapshot: string | null
   quantity: string | null
+  buyer_type: LeadBuyerType | null
   message: string | null
   mister_project_id: string | null
   whatsapp_sent_at: string | null

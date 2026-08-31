@@ -13,12 +13,18 @@ import { RFQFlow } from '@wings/trade-ui'
 
 interface InquiryFormProps {
   product: Product
+  categorySlug?: string
   selectedVariant?: string
   onSuccess?: () => void
 }
 
-export function InquiryForm({ product, selectedVariant, onSuccess }: InquiryFormProps) {
+// Categories where personal-use and business/fleet buyers are both legitimate —
+// the RFQ form asks which, up front, instead of presuming a bulk order.
+const DUAL_BUYER_CATEGORIES = new Set(['automoviles'])
+
+export function InquiryForm({ product, categorySlug, selectedVariant, onSuccess }: InquiryFormProps) {
   const { toast } = useToast()
+  const isDualBuyer = Boolean(categorySlug && DUAL_BUYER_CATEGORIES.has(categorySlug))
   return (
     <RFQFlow
       productId={product.id}
@@ -31,6 +37,8 @@ export function InquiryForm({ product, selectedVariant, onSuccess }: InquiryForm
       notify={(message, type) => toast(message, type)}
       renderSuccess={() => <InquirySuccess productName={product.name_es} />}
       onSuccess={onSuccess}
+      showBuyerType={isDualBuyer}
+      quantityPlaceholder={isDualBuyer ? 'Ej: 1' : undefined}
     />
   )
 }

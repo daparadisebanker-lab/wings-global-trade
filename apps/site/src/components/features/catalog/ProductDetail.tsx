@@ -317,6 +317,7 @@ export function ProductDetail({ product, categorySlug }: ProductDetailProps) {
                 <div id="inquiry-form">
                   <InquiryForm
                     product={product}
+                    categorySlug={category}
                     selectedVariant={selectedVariant}
                     onSuccess={() => {}}
                   />

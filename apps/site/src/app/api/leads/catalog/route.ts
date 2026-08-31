@@ -16,6 +16,7 @@ const CatalogLeadSchema = z.object({
   product_id: z.string().uuid().optional(),
   product_name: z.string().min(1).max(200),
   quantity: z.string().min(1).max(100),
+  buyer_type: z.enum(['personal', 'empresa']).optional(),
   message: z.string().max(2000).optional(),
   source_url: z.string().url().optional(),
 })
@@ -39,6 +40,7 @@ export async function POST(request: NextRequest) {
       product_id: data.product_id ?? null,
       product_name_snapshot: data.product_name,
       quantity: data.quantity,
+      buyer_type: data.buyer_type ?? null,
       message: data.message ?? null,
       source_url: data.source_url ?? null,
       user_agent: userAgent,
@@ -53,6 +55,7 @@ export async function POST(request: NextRequest) {
       destination_country: data.destination_country,
       product_name: data.product_name,
       quantity: data.quantity,
+      buyer_type: data.buyer_type ?? null,
       phone: data.phone,
       email: data.email,
       message: data.message ?? null,

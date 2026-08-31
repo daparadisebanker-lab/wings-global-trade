@@ -26,6 +26,7 @@ interface SavedInquiry {
     phone: string
     destination_country: string
     quantity: string
+    buyer_type: string
     message: string
   }
   savedAt: number
@@ -47,14 +48,27 @@ export interface RFQFlowProps {
   /** Success state renderer (injected, e.g. Wings InquirySuccess). */
   renderSuccess: () => ReactNode
   onSuccess?: () => void
+  /** Shows a required "personal use vs. company/fleet" selector (dual-buyer categories, e.g. automóviles). */
+  showBuyerType?: boolean
+  /** Overrides the quantity field's placeholder — default presumes a bulk order, which is wrong for personal-use categories. */
+  quantityPlaceholder?: string
 }
 
-const FIELD_SEQUENCE = ['full_name', 'company', 'email', 'phone', 'destination_country', 'quantity']
+const FIELD_SEQUENCE_BASE = ['full_name', 'company', 'email', 'phone', 'destination_country', 'quantity']
+const FIELD_SEQUENCE_WITH_BUYER_TYPE = [
+  'full_name',
+  'buyer_type',
+  'company',
+  'email',
+  'phone',
+  'destination_country',
+  'quantity',
+]
 
-function getNextField(current: string): string | null {
-  const idx = FIELD_SEQUENCE.indexOf(current)
-  if (idx === -1 || idx === FIELD_SEQUENCE.length - 1) return null
-  return FIELD_SEQUENCE[idx + 1]
+function getNextField(sequence: string[], current: string): string | null {
+  const idx = sequence.indexOf(current)
+  if (idx === -1 || idx === sequence.length - 1) return null
+  return sequence[idx + 1]
 }
 
 function checkFieldValid(field: string, value: string): boolean {
@@ -64,6 +78,7 @@ function checkFieldValid(field: string, value: string): boolean {
     case 'phone': return value.trim().length >= 7
     case 'destination_country': return Boolean(value)
     case 'quantity': return value.trim().length >= 1
+    case 'buyer_type': return value === 'personal' || value === 'empresa'
     default: return true
   }
 }
@@ -86,14 +101,18 @@ export function RFQFlow({
   notify,
   renderSuccess,
   onSuccess,
+  showBuyerType,
+  quantityPlaceholder = 'Ej: 10 unidades',
 }: RFQFlowProps) {
   const { values, errors, status, setField, submit } = useRFQForm({
     productId,
     productName,
     selectedModel: selectedVariant,
     endpoint,
+    requireBuyerType: showBuyerType,
   })
 
+  const fieldSequence = showBuyerType ? FIELD_SEQUENCE_WITH_BUYER_TYPE : FIELD_SEQUENCE_BASE
   const slug = productSlug
   const storageKey = (s: string) => `${storageKeyPrefix}${s}`
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -109,7 +128,8 @@ export function RFQFlow({
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email) &&
     values.phone.trim().length >= 7 &&
     Boolean(values.destination_country) &&
-    values.quantity.trim().length >= 1
+    values.quantity.trim().length >= 1 &&
+    (!showBuyerType || Boolean(values.buyer_type))
 
   useEffect(() => {
     try {
@@ -127,6 +147,7 @@ export function RFQFlow({
       if (d.phone) setField('phone', d.phone)
       if (d.destination_country) setField('destination_country', d.destination_country)
       if (d.quantity) setField('quantity', d.quantity)
+      if (d.buyer_type) setField('buyer_type', d.buyer_type)
       if (d.message) setField('message', d.message)
     } catch {
       // localStorage unavailable or corrupt — continue silently
@@ -212,7 +233,7 @@ export function RFQFlow({
   }
 
   function focusFirstInvalidField() {
-    for (const field of FIELD_SEQUENCE) {
+    for (const field of fieldSequence) {
       if (checkFieldValid(field, values[field as keyof typeof values])) continue
       const el = document.getElementById(field)
       if (el instanceof HTMLElement) {
@@ -228,7 +249,7 @@ export function RFQFlow({
     if (prefersReducedMotion()) return
     const isValid = checkFieldValid(field, values[field as keyof typeof values])
     if (isValid) {
-      const next = getNextField(field)
+      const next = getNextField(fieldSequence, field)
       if (next) {
         setPulseField(next)
         setTimeout(() => setPulseField(null), 200)
@@ -268,6 +289,33 @@ export function RFQFlow({
             autoComplete="name"
           />
         </Field>
+
+        {showBuyerType && (
+          <Field
+            label="¿Para qué lo necesitas?"
+            htmlFor="buyer_type"
+            error={errors.buyer_type}
+            required
+            pulse={pulseField === 'buyer_type'}
+          >
+            <Select
+              id="buyer_type"
+              value={values.buyer_type}
+              onChange={(e) => {
+                setField('buyer_type', e.target.value)
+                if (e.target.value) triggerSelectPulse('company')
+              }}
+              hasError={Boolean(errors.buyer_type)}
+              aria-invalid={errors.buyer_type ? true : undefined}
+              aria-describedby={errors.buyer_type ? 'buyer_type-error' : undefined}
+              disabled={disabled}
+            >
+              <option value="">Selecciona una opción</option>
+              <option value="personal">Uso personal</option>
+              <option value="empresa">Empresa o flota</option>
+            </Select>
+          </Field>
+        )}
 
         <Field label="Empresa" htmlFor="company" pulse={pulseField === 'company'}>
           <Input
@@ -350,7 +398,7 @@ export function RFQFlow({
               aria-invalid={errors.quantity ? true : undefined}
               aria-describedby={errors.quantity ? 'quantity-error' : undefined}
               disabled={disabled}
-              placeholder="Ej: 10 unidades"
+              placeholder={quantityPlaceholder}
             />
           </Field>
         </div>

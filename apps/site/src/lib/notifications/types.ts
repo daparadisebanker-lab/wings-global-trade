@@ -1,6 +1,8 @@
 // src/lib/notifications/types.ts
 // Shared notification payload shapes.
 
+import type { LeadBuyerType } from '@/types/database'
+
 export interface CatalogNotificationPayload {
   flow: 'catalog'
   full_name: string
@@ -8,6 +10,7 @@ export interface CatalogNotificationPayload {
   destination_country: string
   product_name: string
   quantity: string
+  buyer_type?: LeadBuyerType | null
   phone: string
   email: string
   message?: string | null

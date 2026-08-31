@@ -12,6 +12,10 @@ interface RFQFormState {
   phone: string
   destination_country: string
   quantity: string
+  /** '' = unselected, else 'personal' | 'empresa' (enforced by the Select's fixed options,
+   *  not the type — kept as `string` here so it fits the generic setField(field, value: string)
+   *  signature shared by every other field). Only validated when requireBuyerType is set. */
+  buyer_type: string
   message: string
 }
 
@@ -22,6 +26,7 @@ const EMPTY: RFQFormState = {
   phone: '',
   destination_country: '',
   quantity: '',
+  buyer_type: '',
   message: '',
 }
 
@@ -36,6 +41,7 @@ export interface RFQLeadRequest {
   product_id?: string
   product_name: string
   quantity: string
+  buyer_type?: 'personal' | 'empresa'
   message?: string
   source_url?: string
 }
@@ -46,13 +52,21 @@ interface UseRFQFormArgs {
   selectedModel?: string
   /** Endpoint the RFQ posts to (e.g. '/api/leads/catalog'). Injected by the lane. */
   endpoint: string
+  /** When true, buyer_type becomes a required field (dual-buyer categories, e.g. automóviles). */
+  requireBuyerType?: boolean
 }
 
 /** 'invalid' = client validation failed (guide to field, no toast);
  *  'network_error' = request failed (show fallback toast). */
 export type RFQSubmitResult = 'ok' | 'invalid' | 'network_error'
 
-export function useRFQForm({ productId, productName, selectedModel, endpoint }: UseRFQFormArgs) {
+export function useRFQForm({
+  productId,
+  productName,
+  selectedModel,
+  endpoint,
+  requireBuyerType,
+}: UseRFQFormArgs) {
   const [values, setValues] = useState<RFQFormState>(EMPTY)
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
   const [errors, setErrors] = useState<Partial<Record<keyof RFQFormState, string>>>({})
@@ -73,9 +87,10 @@ export function useRFQForm({ productId, productName, selectedModel, endpoint }: 
     if (values.phone.trim().length < 7) next.phone = 'Ingresa un número válido'
     if (!values.destination_country) next.destination_country = 'Selecciona un país'
     if (values.quantity.trim().length < 1) next.quantity = 'Indica la cantidad requerida'
+    if (requireBuyerType && !values.buyer_type) next.buyer_type = 'Selecciona una opción'
     setErrors(next)
     return Object.keys(next).length === 0
-  }, [values])
+  }, [values, requireBuyerType])
 
   const submit = useCallback(async (): Promise<RFQSubmitResult> => {
     if (status === 'submitting') return 'invalid'
@@ -95,6 +110,7 @@ export function useRFQForm({ productId, productName, selectedModel, endpoint }: 
       product_id: productId,
       product_name: effectiveName,
       quantity: values.quantity.trim(),
+      buyer_type: values.buyer_type === 'personal' || values.buyer_type === 'empresa' ? values.buyer_type : undefined,
       message: values.message.trim() || undefined,
       source_url: typeof window !== 'undefined' ? window.location.href : undefined,
     }

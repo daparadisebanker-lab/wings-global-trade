@@ -38,6 +38,9 @@ export function renderLeadEmailHtml(payload: NotificationPayload): string {
       row('País', payload.destination_country),
       row('Producto', payload.product_name),
       row('Cantidad', payload.quantity),
+      payload.buyer_type
+        ? row('Tipo de compra', payload.buyer_type === 'personal' ? 'Uso personal' : 'Empresa/flota')
+        : '',
       row('WhatsApp', payload.phone),
       row('Email', payload.email),
       row('Mensaje', payload.message ?? '—'),
