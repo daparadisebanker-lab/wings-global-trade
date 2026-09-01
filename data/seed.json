@@ -1333,7 +1333,10 @@
       "source_markets": [
         "China"
       ],
-      "images": [],
+      "images": [
+        "/images/listings/toyota-camry/hero.png",
+        "/images/listings/toyota-camry/card.png"
+      ],
       "models": [
         {
           "name": "2.0 Elite",
@@ -1394,7 +1397,10 @@
       "source_markets": [
         "China"
       ],
-      "images": [],
+      "images": [
+        "/images/listings/toyota-corolla/hero.png",
+        "/images/listings/toyota-corolla/card.png"
+      ],
       "models": [
         {
           "name": "1.2T S-CVT Pioneer Edition",
@@ -1500,7 +1506,10 @@
       "source_markets": [
         "China"
       ],
-      "images": [],
+      "images": [
+        "/images/listings/toyota-rav4/hero.png",
+        "/images/listings/toyota-rav4/card.png"
+      ],
       "models": [
         {
           "name": "2.0L AWD Luxury Edition",
@@ -1557,7 +1566,10 @@
       "source_markets": [
         "China"
       ],
-      "images": [],
+      "images": [
+        "/images/listings/toyota-prado/hero.png",
+        "/images/listings/toyota-prado/card.png"
+      ],
       "models": [
         {
           "name": "2.4T Hybrid Flagship VX · 5 plazas",
@@ -1649,7 +1661,10 @@
       "source_markets": [
         "China"
       ],
-      "images": [],
+      "images": [
+        "/images/listings/jetour-traveler/hero.png",
+        "/images/listings/jetour-traveler/card.png"
+      ],
       "models": [
         {
           "name": "1.5TD Explore+",
@@ -1707,7 +1722,10 @@
       "source_markets": [
         "China"
       ],
-      "images": [],
+      "images": [
+        "/images/listings/jetour-x70l/hero.png",
+        "/images/listings/jetour-x70l/card.png"
+      ],
       "models": [
         {
           "name": "Comfort · 7 plazas",
@@ -1749,7 +1767,10 @@
       "source_markets": [
         "China"
       ],
-      "images": [],
+      "images": [
+        "/images/listings/jetour-x70plus/hero.png",
+        "/images/listings/jetour-x70plus/card.png"
+      ],
       "models": [
         {
           "name": "Comfort",
@@ -2673,6 +2694,190 @@
       },
       "is_active": true,
       "sort_order": 31,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "36db4765-5f9a-4c1f-baf7-62d256c012bc",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "changan-new-cs75-plus",
+      "name_es": "Changan New CS75 Plus",
+      "name_en": "Changan New CS75 Plus",
+      "description_es": "SUV compacto insignia de la gama Changan, motor 1.5T Blue Whale (178 HP / 280 N·m) y caja automática. Nombre y especificaciones confirmados contra el sitio oficial del importador Changan en Perú (changan.com.pe).",
+      "description_en": null,
+      "specs": {
+        "Segmento": "SUV compacto",
+        "Motor": "1.5T",
+        "Transmisión": "Automática",
+        "Tracción": "Delantera",
+        "Plazas": "5",
+        "Versiones disponibles": "Flagship 1.5 AT, Signature 1.5 AT"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [
+        "/images/listings/changan-new-cs75-plus/hero.png",
+        "/images/listings/changan-new-cs75-plus/card.png"
+      ],
+      "models": [
+        {
+          "name": "Flagship 1.5 AT",
+          "specs_override": {}
+        },
+        {
+          "name": "Signature 1.5 AT",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Changan",
+        "fuel": "gasolina",
+        "transmission": "Automática",
+        "traction": "Delantera",
+        "segment": "suv-compacto"
+      },
+      "is_active": true,
+      "sort_order": 32,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "35454c6b-c259-4a04-a833-e27caa38e94b",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "changan-cs75-pro",
+      "name_es": "Changan CS75 Pro",
+      "name_en": "Changan CS75 Pro",
+      "description_es": "SUV de tres filas y 7 plazas, motor 1.5T (185 HP / 300 N·m), disponible con caja manual de 6 velocidades o DCT de 7 velocidades. La nomenclatura \"CS75 Pro\" corresponde al mercado de exportación; el importador oficial de Changan en Perú comercializa la misma plataforma como \"X7 Plus\" — confirmar la correspondencia exacta contra la ficha del proveedor antes de RFQ.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "SUV mediano 7 plazas",
+        "Motor": "1.5T",
+        "Transmisión": "Manual 6 velocidades / DCT 7 velocidades",
+        "Tracción": "Delantera (4x2)",
+        "Plazas": "7",
+        "Versiones disponibles": "Luxury 1.5 MT 4x2, Luxury 1.5 AT 4x2, Limited 1.5 MT 4x2, Limited 1.5 AT 4x2"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [
+        "/images/listings/changan-cs75-pro/hero.png",
+        "/images/listings/changan-cs75-pro/card.png"
+      ],
+      "models": [
+        {
+          "name": "Luxury 1.5 MT 4x2",
+          "specs_override": {}
+        },
+        {
+          "name": "Luxury 1.5 AT 4x2",
+          "specs_override": {}
+        },
+        {
+          "name": "Limited 1.5 MT 4x2",
+          "specs_override": {}
+        },
+        {
+          "name": "Limited 1.5 AT 4x2",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Changan",
+        "fuel": "gasolina",
+        "transmission": "Manual 6 velocidades / DCT 7 velocidades",
+        "traction": "Delantera",
+        "segment": "suv-mediano-grande"
+      },
+      "is_active": true,
+      "sort_order": 33,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "6d0d1902-ecd6-47e4-b98e-57678ee810dc",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "changan-x5-plus",
+      "name_es": "Changan X5 Plus",
+      "name_en": "Changan X5 Plus",
+      "description_es": "SUV compacto de la familia Changan X, motor Blue Whale NE1.5T (188 HP / 300 N·m) y caja DCT húmeda de 7 velocidades. No comercializado por el importador oficial de Changan en Perú — unidad de abastecimiento directo desde China; nomenclatura de versión pendiente de confirmar contra la ficha del proveedor.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "SUV compacto",
+        "Motor": "1.5T",
+        "Transmisión": "DCT 7 velocidades",
+        "Tracción": "Delantera",
+        "Plazas": "5",
+        "Versiones disponibles": "1.5T DCT 188 HP"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [
+        "/images/listings/changan-x5-plus/hero.png",
+        "/images/listings/changan-x5-plus/card.png"
+      ],
+      "models": [
+        {
+          "name": "1.5T DCT 188 HP",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Changan",
+        "fuel": "gasolina",
+        "transmission": "DCT 7 velocidades",
+        "traction": "Delantera",
+        "segment": "suv-compacto"
+      },
+      "is_active": true,
+      "sort_order": 34,
+      "meta_title_es": null,
+      "meta_desc_es": null
+    },
+    {
+      "id": "5466c155-906c-4764-8c14-f83bbfd63621",
+      "category_id": "11111111-1111-1111-1111-111111111106",
+      "slug": "hyundai-sonata",
+      "name_es": "Hyundai Sonata",
+      "name_en": "Hyundai Sonata",
+      "description_es": "Sedán ejecutivo de 11ª generación de Beijing-Hyundai (mercado chino), motor 1.5T o 2.0T y caja automática de 8 velocidades. Nomenclatura de versiones aproximada — confirmar contra la ficha del proveedor antes de RFQ, mismo criterio ya usado en este catálogo para Audi E5 Sportback / E7X.",
+      "description_en": null,
+      "specs": {
+        "Segmento": "Sedán ejecutivo",
+        "Motor": "1.5T / 2.0T",
+        "Transmisión": "Automática 8 velocidades",
+        "Tracción": "Delantera",
+        "Plazas": "5",
+        "Versiones disponibles": "1.5T GLX Elite Edition, 2.0T GLX Premium Edition"
+      },
+      "source_markets": [
+        "China"
+      ],
+      "images": [
+        "/images/listings/hyundai-sonata/hero.png",
+        "/images/listings/hyundai-sonata/card.png"
+      ],
+      "models": [
+        {
+          "name": "1.5T GLX Elite Edition",
+          "specs_override": {}
+        },
+        {
+          "name": "2.0T GLX Premium Edition",
+          "specs_override": {}
+        }
+      ],
+      "filter_attrs": {
+        "brand": "Hyundai",
+        "fuel": "gasolina",
+        "transmission": "Automática 8 velocidades",
+        "traction": "Delantera",
+        "segment": "sedan"
+      },
+      "is_active": true,
+      "sort_order": 35,
       "meta_title_es": null,
       "meta_desc_es": null
     }

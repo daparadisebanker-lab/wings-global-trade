@@ -1,15 +1,26 @@
 // data/automoviles-catalog.ts
 //
-// Canonical brand/model roster for the Automóviles category, sourced from
-// the fleet costing sheet (Costeo SUNAT — Wings Global Trade, 2026-08-14):
-// 76 configured trims across 31 model lines and 11 brands. Landed cost, FOB
-// and margin figures live in Rowe, not here — this file carries only the
-// specs a buyer needs to shortlist a model before requesting a quote.
+// Canonical brand/model roster for the Automóviles category. The original
+// 76 configured trims across 31 model lines and 11 brands were sourced from
+// the fleet costing sheet (Costeo SUNAT — Wings Global Trade, 2026-08-14).
+// Landed cost, FOB and margin figures live in Rowe, not here — this file
+// carries only the specs a buyer needs to shortlist a model before
+// requesting a quote.
 //
 // Specs are basic/reference-level (segment, engine, transmission, traction,
 // seats) researched per nameplate. Exact configuration depends on the unit
-// Wings has landed — confirm final spec at RFQ. Photography is pending for
-// every line (see programs/automobiles/SCOPE.md); the catalog therefore ships
+// Wings has landed — confirm final spec at RFQ. Photography landed for 11
+// nameplates 2026-08-31 (see programs/automobiles/SCOPE.md §0j/§0m) — each
+// carries a two-image pair, `[heroUrl, cardCutoutUrl]`: index 0 is the
+// white-background studio hero (ProductGallery, OG image, comparison tool),
+// index 1 is the transparent-background cutout the automóviles card
+// breakout treatment (MotionCard) requires. Four of those 11 (Changan New
+// CS75 Plus, Changan CS75 Pro, Changan X5 Plus, Hyundai Sonata) were also
+// new nameplates as of that date — not in the original 31-line Rowe sheet
+// import, added from photography the account owner supplied plus specs
+// researched from official importer sites / manufacturer sources (flagged
+// per-entry where a name/spec is approximate) rather than fabricated; still
+// pending confirmation against Rowe. The remaining lines still ship
 // typography-and-spec-led, the same interim launch mode WGT/02 used.
 
 export interface CarModel {
@@ -42,7 +53,7 @@ export const TOYOTA_MODELS: CarModel[] = [
     seats: 5,
     trims: ["2.0 Elite", "2.0 Sport", "2.5 Flagship", "2.5 Premium", "Hybrid 2.5 Premium", "Hybrid 2.5 Sport PLUS"],
     description: "Sedán ejecutivo de referencia de Toyota, con versiones a gasolina 2.0/2.5 y versiones híbridas 2.5 de mayor eficiencia.",
-    images: [],
+    images: ["/images/listings/toyota-camry/hero.png", "/images/listings/toyota-camry/card.png"],
   },
   {
     id: "toyota-corolla",
@@ -56,7 +67,7 @@ export const TOYOTA_MODELS: CarModel[] = [
     seats: 5,
     trims: ["1.2T S-CVT Pioneer Edition", "Smart Hybrid Dual Engine 1.8L E-CVT Elite Edition", "Smart Hybrid Dual Engine 1.8L E-CVT Pioneer Edition"],
     description: "Sedán compacto de mayor volumen de ventas de Toyota, con versión turbo 1.2T y versión híbrida de doble motor 1.8L.",
-    images: [],
+    images: ["/images/listings/toyota-corolla/hero.png", "/images/listings/toyota-corolla/card.png"],
   },
   {
     id: "toyota-corolla-cross",
@@ -84,7 +95,7 @@ export const TOYOTA_MODELS: CarModel[] = [
     seats: 5,
     trims: ["2.0L AWD Luxury Edition", "Hybrid Dual Turbo 2.5L 4WD Flagship Edition", "Hybrid Twin Turbo 2.0L 2WD Deluxe Edition", "Hybrid Twin Turbo 2.0L 2WD Elite Edition", "Hybrid Twin Turbo 2.5L 4WD Deluxe Edition"],
     description: "SUV mediano insignia de Toyota, con versión a gasolina AWD y versiones híbridas de dos y cuatro ruedas motrices.",
-    images: [],
+    images: ["/images/listings/toyota-rav4/hero.png", "/images/listings/toyota-rav4/card.png"],
   },
   {
     id: "toyota-prado",
@@ -98,7 +109,7 @@ export const TOYOTA_MODELS: CarModel[] = [
     seats: 5,
     trims: ["2.4T Hybrid Flagship VX · 5 plazas"],
     description: "SUV todoterreno de chasis robusto, motor 2.4T híbrido y tracción integral 4x4, acabado tope de gama Flagship VX.",
-    images: [],
+    images: ["/images/listings/toyota-prado/hero.png", "/images/listings/toyota-prado/card.png"],
   },
 ]
 
@@ -131,7 +142,7 @@ export const JETOUR_MODELS: CarModel[] = [
     seats: 5,
     trims: ["1.5TD Explore+", "2.0TD XWD Conqueror", "2.0TD XWD Crossover", "2.0TD XWD Discovery", "Pony Edition 2.0TD XWD Crossover", "Pony Edition 2.0TD XWD Discovery"],
     description: "SUV todoterreno de diseño robusto tipo utilitario, con versiones 1.5T de tracción delantera y 2.0T con tracción integral XWD. Configuración de 5 o 7 plazas según mercado.",
-    images: [],
+    images: ["/images/listings/jetour-traveler/hero.png", "/images/listings/jetour-traveler/card.png"],
   },
   {
     id: "jetour-x70l",
@@ -145,7 +156,7 @@ export const JETOUR_MODELS: CarModel[] = [
     seats: 7,
     trims: ["Comfort · 7 plazas", "Luxury · 7 plazas"],
     description: "SUV mediano de tres filas, motor 1.5T con caja DCT de 7 velocidades.",
-    images: [],
+    images: ["/images/listings/jetour-x70l/hero.png", "/images/listings/jetour-x70l/card.png"],
   },
   {
     id: "jetour-x70plus",
@@ -159,7 +170,7 @@ export const JETOUR_MODELS: CarModel[] = [
     seats: 5,
     trims: ["Comfort", "Luxury"],
     description: "SUV mediano de cinco plazas, motor 1.5T con caja DCT de 6 velocidades.",
-    images: [],
+    images: ["/images/listings/jetour-x70plus/hero.png", "/images/listings/jetour-x70plus/card.png"],
   },
 ]
 
@@ -378,6 +389,20 @@ export const BMW_MODELS: CarModel[] = [
 
 export const HYUNDAI_MODELS: CarModel[] = [
   {
+    id: "hyundai-sonata",
+    brand: "Hyundai",
+    model: "Sonata",
+    segment: "Sedán ejecutivo",
+    engine: "1.5T / 2.0T",
+    fuel: ["gasolina"],
+    transmission: "Automática 8 velocidades",
+    traction: "Delantera",
+    seats: 5,
+    trims: ["1.5T GLX Elite Edition", "2.0T GLX Premium Edition"],
+    description: "Sedán ejecutivo de 11ª generación de Beijing-Hyundai (mercado chino), motor 1.5T o 2.0T y caja automática de 8 velocidades. Nomenclatura de versiones aproximada — confirmar contra la ficha del proveedor antes de RFQ, mismo criterio ya usado en este catálogo para Audi E5 Sportback / E7X.",
+    images: ["/images/listings/hyundai-sonata/hero.png", "/images/listings/hyundai-sonata/card.png"],
+  },
+  {
     id: "hyundai-elantra",
     brand: "Hyundai",
     model: "Elantra",
@@ -481,6 +506,48 @@ export const MG_MODELS: CarModel[] = [
 // ─── Changan ───────────────────────────────────────────────────────────────
 
 export const CHANGAN_MODELS: CarModel[] = [
+  {
+    id: "changan-new-cs75-plus",
+    brand: "Changan",
+    model: "New CS75 Plus",
+    segment: "SUV compacto",
+    engine: "1.5T",
+    fuel: ["gasolina"],
+    transmission: "Automática",
+    traction: "Delantera",
+    seats: 5,
+    trims: ["Flagship 1.5 AT", "Signature 1.5 AT"],
+    description: "SUV compacto insignia de la gama Changan, motor 1.5T Blue Whale (178 HP / 280 N·m) y caja automática. Nombre y especificaciones confirmados contra el sitio oficial del importador Changan en Perú (changan.com.pe).",
+    images: ["/images/listings/changan-new-cs75-plus/hero.png", "/images/listings/changan-new-cs75-plus/card.png"],
+  },
+  {
+    id: "changan-cs75-pro",
+    brand: "Changan",
+    model: "CS75 Pro",
+    segment: "SUV mediano 7 plazas",
+    engine: "1.5T",
+    fuel: ["gasolina"],
+    transmission: "Manual 6 velocidades / DCT 7 velocidades",
+    traction: "Delantera (4x2)",
+    seats: 7,
+    trims: ["Luxury 1.5 MT 4x2", "Luxury 1.5 AT 4x2", "Limited 1.5 MT 4x2", "Limited 1.5 AT 4x2"],
+    description: "SUV de tres filas y 7 plazas, motor 1.5T (185 HP / 300 N·m), disponible con caja manual de 6 velocidades o DCT de 7 velocidades. La nomenclatura \"CS75 Pro\" corresponde al mercado de exportación; el importador oficial de Changan en Perú comercializa la misma plataforma como \"X7 Plus\" — confirmar la correspondencia exacta contra la ficha del proveedor antes de RFQ.",
+    images: ["/images/listings/changan-cs75-pro/hero.png", "/images/listings/changan-cs75-pro/card.png"],
+  },
+  {
+    id: "changan-x5-plus",
+    brand: "Changan",
+    model: "X5 Plus",
+    segment: "SUV compacto",
+    engine: "1.5T",
+    fuel: ["gasolina"],
+    transmission: "DCT 7 velocidades",
+    traction: "Delantera",
+    seats: 5,
+    trims: ["1.5T DCT 188 HP"],
+    description: "SUV compacto de la familia Changan X, motor Blue Whale NE1.5T (188 HP / 300 N·m) y caja DCT húmeda de 7 velocidades. No comercializado por el importador oficial de Changan en Perú — unidad de abastecimiento directo desde China; nomenclatura de versión pendiente de confirmar contra la ficha del proveedor.",
+    images: ["/images/listings/changan-x5-plus/hero.png", "/images/listings/changan-x5-plus/card.png"],
+  },
   {
     id: "changan-m60",
     brand: "Changan",

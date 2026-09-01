@@ -121,7 +121,7 @@ export function BrandModelGrid({ products, brandName }: BrandModelGridProps) {
               transition={{ duration: 0.25, ease: EASE_SETTLE }}
             >
               <MotionCard
-                imageUrl={p.images?.[0]}
+                imageUrl={p.images?.[1]}
                 imageAlt={p.name_es}
                 className="border border-[color:var(--ink-decoration)] bg-[color:var(--surface-1)] p-6"
               >

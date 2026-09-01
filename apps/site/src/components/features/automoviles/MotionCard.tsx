@@ -12,13 +12,14 @@
 // card) breaks the vehicle cutout out over the card's top edge, drop-
 // shadowed, rather than boxing it inside the padding. Confirmed with the
 // client: incoming photography will be transparent-background cutouts, the
-// format this treatment actually requires. `product.images` is empty for
-// every nameplate today (programs/automobiles/SCOPE.md §4·1) — this stays
-// completely dormant, rendering exactly the prior typography-only card,
-// until real image URLs land. Absolutely positioned (not in-flow) so it
-// never affects this card's own grid-track height; the caller's grid still
-// needs a taller row gap to give the breakout clearance from the row above
-// — see the gap-y-8 callers.
+// format this treatment actually requires — never `product.images[0]`
+// (that slot is the white-background studio photo every other consumer of
+// `images` expects: ProductGallery's hero, ProductCard, the OG image, the
+// comparison tool, Mister's tool cards). Callers must pass `p.images?.[1]`,
+// the transparent cutout. Absolutely positioned (not in-flow) so it never
+// affects this card's own grid-track height; the caller's grid still needs
+// a taller row gap to give the breakout clearance from the row above — see
+// the gap-y-8 callers.
 'use client'
 
 import { motion } from 'framer-motion'

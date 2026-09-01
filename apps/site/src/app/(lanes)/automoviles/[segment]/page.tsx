@@ -81,7 +81,7 @@ export default async function AutomovilesSegmentPage({ params }: PageProps) {
               <MotionCard
                 key={p.id}
                 dataOem={oem?.slug}
-                imageUrl={p.images?.[0]}
+                imageUrl={p.images?.[1]}
                 imageAlt={p.name_es}
                 className="border border-[color:var(--ink-decoration)] bg-[color:var(--surface-1)] p-6 transition-colors hover:border-[color:var(--oem-accent,_var(--accent-border))]"
               >

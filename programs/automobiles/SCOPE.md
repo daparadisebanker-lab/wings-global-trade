@@ -8,6 +8,112 @@ in-lane nav, a comprehensive landing page, and `/catalogo/automoviles` now
 the site points directly at the new URL; only external/indexed links to the
 old one round-trip through the redirect).**
 
+## 0m · First real photography lands + 4 new nameplates (2026-08-31)
+
+The account owner supplied a zip of 24 PNGs ("Autos para web"), two per
+model — a white-background studio hero and a transparent-background cutout
+— for 12 nameplates. This is the first real photography this lane has ever
+had; every gap logged in §0j/§4·1 about `images: []` and no asset folder
+existing is now partially closed.
+
+**Mapping, not assumed 1:1.** 7 of the 12 photographed nameplates matched
+existing catalog entries exactly (Toyota Camry, RAV4, Prado, Corolla —
+photographed as "Corolla Hybrid XLE" but wired to the general Corolla
+nameplate, no separate hybrid-trim product exists — Jetour X70L, X70Plus,
+Traveler). The Jetour Traveler pair had two source sets, "T1 Jetour" and
+"Jetour Traveller T2" (real Changan-family trim/generation naming); T2 was
+used as the canonical pair (newer generation), T1's originals are unused —
+worth a five-second confirmation with the account owner if T1 was meant to
+be the primary instead. One filename gotcha caught, not assumed: "Jetour
+Traveller T2.png" had no "FONDO"/"SIN FONDO" suffix at all; confirmed via
+`sharp` alpha-channel inspection (opaque white corners = hero, transparent
+corners = cutout) rather than guessed from the name.
+
+**4 of the 12 had no catalog entry at all**: Changan New CS75 Plus, Changan
+CS75 Pro, Changan X5 Plus, Hyundai Sonata (2024, red unit photographed).
+Flagged to the account owner rather than silently fabricated or silently
+dropped — confirmed to research real specs and add them. Sourced from
+official importer/manufacturer material, not invented: Changan Perú's own
+site (changan.com.pe) for New CS75 Plus (exact trim names, engine, power)
+and confirmed X5 Plus and CS75 Pro are NOT in that importer's lineup —
+X5 Plus is China-domestic-only (AutoCango spec listings), and CS75 Pro's
+export nameplate very plausibly corresponds to Changan Perú's own "X7
+Plus" (same 1.5T/185HP/300Nm, same 6MT/7DCT options, same 3-row 7-seat
+body) — flagged inline in that product's description as needing Rowe
+confirmation rather than asserted as certain. Hyundai Sonata sourced from
+Beijing-Hyundai's 11th-gen China launch (1.5T/2.0T, 8AT); exact trim names
+weren't findable, so trim strings follow this catalog's existing
+Beijing-Hyundai GLX/Elite/Premium convention and are flagged as
+approximate — same discipline already applied to Audi E5/E7X's fuel-label
+uncertainty.
+
+**Processing.** Originals were 2732×2050 PNGs, ~1–1.8MB each (33MB total).
+Resized/compressed with `sharp` (already a repo dependency): hero → max
+2000px edge, high-quality PNG (~250–390KB); card cutout → max 900px edge,
+palette-quantized PNG with alpha preserved (~60–90KB) — verified
+programmatically post-compression that palette quantization didn't
+flatten the transparency (`ensureAlpha().raw()`, corner alpha still 0).
+Stored at `apps/site/public/images/listings/{slug}/{hero,card}.png`,
+matching the folder-per-slug convention the maquinaria-agricola listings
+already established (not a new pattern).
+
+**A real architectural gap this surfaced, fixed, not worked around.**
+`MotionCard`'s card-breakout treatment (§0j) and every other `images`
+consumer (`ProductGallery`'s hero, `ProductCard`, the OG image, the
+comparison tool, Mister's tool cards — all grep'd, all confirmed) both
+read `images[0]`, which cannot simultaneously be a white-background hero
+and a transparent cutout. Fixed by convention, not a schema change: index
+0 stays the hero (every non-automóviles consumer is untouched), index 1 is
+the transparent cutout — only `MotionCard`'s two callers
+(`BrandModelGrid.tsx`, `(lanes)/automoviles/[segment]/page.tsx`) changed,
+from `p.images?.[0]` to `p.images?.[1]`. Documented inline in
+`MotionCard.tsx`'s own comment so the next photography drop doesn't
+silently regress it.
+
+**Data written to all three places this lane's data already lived in
+parallel** (the §1 "gotcha" about the two seed.json files drifting is a
+known risk, not a surprise): `apps/site/src/data/seed.json` (the file the
+app actually imports), root `data/seed.json` (the infra-pipeline source),
+and `data/automoviles-catalog.ts` (documentation-only, confirmed via grep
+not imported by any app code, but kept accurate per root CLAUDE.md's
+"a stale line is worse than a missing one"). The 4 new products used the
+same UUIDs across all three plus Supabase, rather than three different ids
+for the same car.
+
+**Production write, done with explicit go-ahead, not bundled silently.**
+Consistent with this file's own earlier note (§4·2) that pushing rows into
+the shared, live Supabase project needs an explicit go-ahead: asked before
+writing anything. Confirmed, then ran a scoped `UPDATE ... WHERE slug = …`
+per existing row for the 7 image pairs (`public.products`, explicitly
+schema-qualified — `information_schema.columns` showed a same-named
+`tower.products` table with a materially different shape, brand_id/lane_id/
+status/spec_schema_id/etc., confirming CLAUDE.md's danger-zone warning
+about that schema is real and not theoretical), then an explicit-column
+`INSERT` for the 4 new nameplates (sort_order 32–35, appended after Wuling
+rather than renumbering existing rows to preserve brand-adjacent
+ordering). All 11 rows re-queried post-write to confirm, not assumed.
+
+**Verified.** `pnpm --filter site typecheck` and `pnpm build` both green
+(all `/automoviles/marcas/[oem]` and `/automoviles/[segment]` SSG params
+rebuilt). Rebuilding was required for the second, live-Supabase-backed
+verification pass — these routes are SSG (`generateStaticParams`), so a
+`pnpm start` from a build taken before the Supabase writes still served
+stale (imageless) HTML even though the database was already correct; this
+cost one extra build/restart cycle before the served HTML actually showed
+the new `/images/listings/...` paths. Confirmed via direct image inspection
+(`sharp`, corner-alpha check) that cutouts are genuinely transparent, not
+just visually appearing so in a preview tool that composites onto white.
+
+**Not done, on purpose:** the 8 remaining photographed-but-still-uncataloged
+nameplates from the original 31 (everything outside Toyota/Jetour/the 4 new
+Changan+Hyundai entries) still ship `images: []` — no photography exists
+for them yet. The unused "T1 Jetour" pair is not deleted, just unwired.
+No deploy to the live Vercel production URL was triggered by this session —
+verification ran against a local `pnpm build && pnpm start` pointed at the
+real Supabase project; the next `git push`/deploy will pick up the code
+changes (image-index convention, seed.json) automatically, and the
+Supabase data change is already live regardless of deploy state.
+
 ## 0e · Redirect (2026-08-24, same day)
 
 `next.config.mjs` now 308-redirects `/catalogo/automoviles` → `/automoviles`,
