@@ -338,7 +338,6 @@ HTMLDOC = f"""<!doctype html>
     </div>
     <div class="cover-manufacturer">
       <strong>{MANUFACTURER}</strong>
-      Preparado: {DOC_DATE}
     </div>
   </div>
 </div>
