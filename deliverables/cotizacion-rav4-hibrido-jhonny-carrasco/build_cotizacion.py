@@ -179,7 +179,11 @@ HTMLDOC = f"""<!doctype html>
     body {{ background: #ffffff; }}
     .pdoc-page {{ min-height: 0; padding: 0; }}
     .pdoc-page .pdoc {{ box-shadow: none; }}
-    .pdoc {{ max-width: none; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }}
+    .pdoc {{
+      max-width: none; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact;
+      display: flex; flex-direction: column; min-height: 281mm;
+    }}
+    .pdoc-tail {{ margin-top: auto; }}
     .pdoc-close-row, .pdoc-footer {{ break-inside: avoid; }}
   }}
 </style>
