@@ -1,41 +1,34 @@
 #!/usr/bin/env python3
 """Build the Wings Global Trade branded CLIENT quotation (Cotización) for
-3x Toyota RAV4 Híbrido 2026, client Jhonny Carrasco, Chile.
+3x Toyota Corolla Cross Híbrido Elite 2.0L, client Jhonny Carrasco.
 
 Source data: uploaded workbook COSTO_DE_LOS_VEHICULOS_2026_CLADEY_01.09.26.xlsx,
-sheet "Hoja3" (2026-09-04). That sheet is headed "PRECIO POR 3 CARROS / UN
-CONTENEDOR DE 40 HQ" / "PRECIO PUESTO EN IQQ CHILE (USD)" — i.e. these three
-unit prices are already the landed, puesto-en-Iquique sell price per the
-Chilean-market pricing tab (as opposed to the Peru-market "COSTO HILUX" tab
-or the "CHANGAN"/"PARA BOLIVIA" tabs in the same workbook). Values are plain
-hardcoded cells in the source (no formulas), so they are ported as-is —
-no landed-cost/margin engine applied here, unlike the Peru cotizaciones.
-Trim naming cross-checked against the Joice catalog (not printed on the
-client doc — internal sourcing reference only).
+sheet "PARA BOLIVIA " (2026-09-04), block "TOYOTA COROLLA CROSS
+HIBRIDO/ELITE/2.0 L" (rows 4-14): FOB 17,200 + Flete CN-IQQ 3,000/unidad
+(9,000/3) + gastos portuario y aduana hasta IQQ 1,000 = TOTAL 21,200;
+profit por carro 10% = 2,120; PRECIO FINAL X UNIDAD PARA EL CLIENTE =
+23,320. Values are plain hardcoded cells in the source (no formulas),
+ported as-is. Quantity = 3 (same as the block's own "PROFIT POR
+CONTENEDOR" QTY column) → sum shown this time, per client request, since
+it's a single-item order of 3 units (unlike the earlier 3-different-trims
+RAV4 quote, where the sum was dropped so the client could compare unit
+prices side by side).
 
 Client-specified inputs (2026-09-04):
-  Cliente: Jhonny Carrasco · Puesto en: Iquique, Chile · Moneda: USD
-  Sin IGV — importación chilena (Peruvian IGV does not apply to a sale
-  landed and sold into Chile; any Chilean import taxes are the buyer's
-  responsibility, disclosed in Observaciones).
-  Orden de ítems: 2.0L Deluxe → 2.5L 4x4 Deluxe → 4x4 Full Equipada.
+  Cliente: Jhonny Carrasco · Puesto en: Iquique, Chile (Zofri) · Moneda: USD
+  Same vendor identity and commercial conditions as the prior RAV4
+  quotation to this client (company details unchanged).
 
-Vendedor: this is issued by the group's Chilean entity — "the chilean
-company" per the user (2026-09-04 correction; the first draft wrongly
-kept the Peru entity). Ported from the SHINING_STAR_CL issuer record in
-apps/tower/src/lib/quotation/issuers.ts (id 'shining-star-cl'):
-IMPORT - EXPORT SHINING STAR LIMITADA, RUT 76029544-2, Iquique, Chile —
-the same entity TOWER uses for the Iquique/ZOFRI export route.
+Vendedor: issued by the group's Chilean entity, ported from the
+SHINING_STAR_CL issuer record in apps/tower/src/lib/quotation/issuers.ts
+(id 'shining-star-cl'): IMPORT - EXPORT SHINING STAR LIMITADA,
+RUT 76029544-2, Iquique, Chile — the same entity TOWER uses for the
+Iquique/ZOFRI export route.
 
 Reuses the `pdoc` grid/layout finalized on the Prado/Travo cotizaciones
-(icon-only logo, "WINGS GLOBAL TRADE" letterhead, centered section bars).
-No totals/sum row: client wants to compare the three trims' unit prices
-side by side, not a combined total (2026-09-04). An Observaciones note
-discloses that the three unit prices are set in proportion to filling
-one 40HQ container with these three units together, per the sourcing
-sheet's "PRECIO POR 3 CARROS / UN CONTENEDOR DE 40 HQ" heading — pricing
-is per-container-fill, not a standalone per-unit price. Run:
-python3 build_cotizacion.py
+(icon-only logo, "WINGS GLOBAL TRADE" letterhead, centered section bars),
+with the Importe column and totals block restored (single item × 3
+units, sum requested). Run: python3 build_cotizacion.py
 """
 from decimal import Decimal
 from pathlib import Path
@@ -52,8 +45,8 @@ def fmt(x: Decimal) -> str:
     return f"{x:,.2f}"
 
 
-# ── Source data — Hoja3, "PRECIO PUESTO EN IQQ CHILE (USD)" ────────────
-CLIENTE = "Sr. Chambi Yordan"
+# ── Source data — "PARA BOLIVIA ", Toyota Corolla Cross Híbrido/Elite 2.0L ──
+CLIENTE = "Sr. Jhonny Carrasco"
 PAIS_CLIENTE = "Bolivia"
 PUERTO_LLEGADA = "Iquique, Chile"
 CONDICION_PRECIO = "Puesto en Zofri, Iquique, Chile"
@@ -61,10 +54,10 @@ DOC_NUMBER = "COT-WGT-2026-0904"
 DOC_DATE = "04-09-2026"
 
 VEHICLES = [
-    ("RAV4 Híbrido 2026 Doble Turbo 2.0L 2WD (4x2) Deluxe Edition", D(33660)),
-    ("RAV4 Híbrido 2026 Doble Turbo 2.5L 4WD (4x4) Versión Deluxe", D(38280)),
-    ("RAV4 Híbrido 2026 Doble Turbo 2.5L 4WD (4x4) Full Equipado", D(41200)),
+    ("Toyota Corolla Cross Híbrido Elite 2.0L", D(23320), 3),
 ]
+
+PRECIO_TOTAL = sum(price * qty for _, price, qty in VEHICLES)
 
 ROWS_HTML = "\n".join(
     f"""      <tr>
@@ -72,10 +65,11 @@ ROWS_HTML = "\n".join(
         <td class="pd-desc">
           <span class="pd-model">{name}</span>
         </td>
-        <td class="pd-qty">1</td>
+        <td class="pd-qty">{qty}</td>
         <td class="pd-cell-num">{fmt(price)}</td>
+        <td class="pd-cell-num">{fmt(price * qty)}</td>
       </tr>"""
-    for i, (name, price) in enumerate(VEHICLES, start=1)
+    for i, (name, price, qty) in enumerate(VEHICLES, start=1)
 )
 
 LOGO = Path(LOGO_SVG).read_text(encoding="utf-8")
@@ -87,7 +81,7 @@ HTMLDOC = f"""<!doctype html>
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Cotización · Wings Global Trade · Toyota RAV4 Híbrido 2026 · Jhonny Carrasco</title>
+<title>Cotización · Wings Global Trade · Toyota Corolla Cross Híbrido Elite · Jhonny Carrasco</title>
 <style>
   :root {{
     --font-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -239,12 +233,20 @@ HTMLDOC = f"""<!doctype html>
         <th class="pd-col-desc">Descripción</th>
         <th class="pd-col-qty">Cantidad</th>
         <th>Valor Unitario</th>
+        <th>Importe</th>
       </tr>
     </thead>
     <tbody>
 {ROWS_HTML}
     </tbody>
   </table>
+
+  <div class="pdoc-totals">
+    <div class="pdoc-total-row" data-emphasis="true">
+      <span class="pd-total-label">Precio total (3 unidades)</span>
+      <span class="pd-total-value">USD {fmt(PRECIO_TOTAL)}</span>
+    </div>
+  </div>
 
   <div class="pdoc-section-bar">Condiciones comerciales</div>
   <div class="pdoc-terms">
@@ -257,7 +259,6 @@ HTMLDOC = f"""<!doctype html>
 
   <div class="pdoc-section-bar pdoc-section-bar--observaciones">Observaciones</div>
   <ul class="pdoc-observations">
-    <li>Los precios de las tres unidades están calculados en proporción al llenado de un contenedor de 40 pies (40HQ) con estas tres unidades en conjunto; reflejan el flete y los costos compartidos de ese contenedor completo, y podrían variar si la combinación de unidades despachadas cambia.</li>
     <li>Los precios están calculados según la tarifa de flete internacional vigente a la fecha de esta cotización. Los precios podrían variar si el flete cambia al momento en que el cliente decida proceder con el pedido.</li>
     <li>Precio sujeto a confirmación de disponibilidad de las unidades.</li>
   </ul>
@@ -290,5 +291,6 @@ out = HERE / "cotizacion.html"
 out.write_text(HTMLDOC, encoding="utf-8")
 print(f"wrote {out} ({len(HTMLDOC):,} bytes)")
 print(f"--- client-facing ---")
-for name, price in VEHICLES:
-    print(f"  {name}: {fmt(price)}")
+for name, price, qty in VEHICLES:
+    print(f"  {name} x{qty}: {fmt(price)} c/u")
+print(f"precio_total={fmt(PRECIO_TOTAL)}")
