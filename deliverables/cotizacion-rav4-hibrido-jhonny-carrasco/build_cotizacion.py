@@ -20,6 +20,13 @@ Client-specified inputs (2026-09-04):
   responsibility, disclosed in Observaciones).
   Orden de ítems: 2.0L Deluxe → 2.5L 4x4 Deluxe → 4x4 Full Equipada.
 
+Vendedor: this is issued by the group's Chilean entity — "the chilean
+company" per the user (2026-09-04 correction; the first draft wrongly
+kept the Peru entity). Ported from the SHINING_STAR_CL issuer record in
+apps/tower/src/lib/quotation/issuers.ts (id 'shining-star-cl'):
+IMPORT - EXPORT SHINING STAR LIMITADA, RUT 76029544-2, Iquique, Chile —
+the same entity TOWER uses for the Iquique/ZOFRI export route.
+
 Reuses the `pdoc` grid/layout finalized on the Prado/Travo cotizaciones
 (icon-only logo, "WINGS GLOBAL TRADE" letterhead, centered section bars),
 with the totals block simplified to a single Precio Total row (no IGV/
@@ -195,7 +202,7 @@ HTMLDOC = f"""<!doctype html>
   <div class="pdoc-rule" aria-hidden="true"></div>
 
   <div class="pdoc-dateline">
-    <span>Lima, {DOC_DATE}</span>
+    <span>Iquique, {DOC_DATE}</span>
     <span>Validez: 15 días</span>
     <span>Puerto de llegada: {PUERTO_LLEGADA}</span>
     <span>Moneda: USD</span>
@@ -204,10 +211,10 @@ HTMLDOC = f"""<!doctype html>
   <div class="pdoc-parties">
     <div class="pdoc-party">
       <div class="pdoc-party-head">Vendedor</div>
-      <div class="pdoc-party-name">IMP. Y EXP. WINGS AUTOMÓVILES S.R.L.</div>
+      <div class="pdoc-party-name">IMPORT - EXPORT SHINING STAR LIMITADA</div>
       <dl class="pdoc-party-meta">
-        <dt>RUC</dt><dd>20532415650</dd>
-        <dt>País</dt><dd>Perú</dd>
+        <dt>RUT</dt><dd>76029544-2</dd>
+        <dt>País</dt><dd>Chile</dd>
       </dl>
     </div>
     <div class="pdoc-party">
@@ -247,8 +254,8 @@ HTMLDOC = f"""<!doctype html>
   <div class="pdoc-terms">
     <span class="pdoc-term-label">Puerto de llegada</span><span>{PUERTO_LLEGADA}</span>
     <span class="pdoc-term-label">Condición del precio</span><span>{CONDICION_PRECIO}</span>
-    <span class="pdoc-term-label">Forma de pago</span><span>50% a la confirmación del pedido; 50% antes del despacho a nombre del cliente.</span>
-    <span class="pdoc-term-label">Tiempo de entrega</span><span>A coordinar según disponibilidad de stock e itinerario de despacho hacia Chile.</span>
+    <span class="pdoc-term-label">Forma de pago</span><span>50% adelantado y 50% al embarque en el puerto de origen.</span>
+    <span class="pdoc-term-label">Tiempo de entrega</span><span>Embarque dentro de 30 días naturales tras recibir el pago final.</span>
     <span class="pdoc-term-label">Vigencia de la oferta</span><span>15 días desde la fecha de esta cotización.</span>
   </div>
 
@@ -269,10 +276,10 @@ HTMLDOC = f"""<!doctype html>
 
   <footer class="pdoc-footer">
     <div>
-      <div>IMP. Y EXP. WINGS AUTOMÓVILES S.R.L.</div>
+      <div>IMPORT - EXPORT SHINING STAR LIMITADA</div>
     </div>
     <div class="pd-foot-right">
-      <div>RUC 20532415650</div>
+      <div>RUT 76029544-2</div>
     </div>
   </footer>
   </div>
