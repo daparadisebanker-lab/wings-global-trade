@@ -53,8 +53,8 @@ def fmt(x: Decimal) -> str:
 
 
 # ── Source data — Hoja3, "PRECIO PUESTO EN IQQ CHILE (USD)" ────────────
-CLIENTE = "Jhonny Carrasco"
-PAIS_CLIENTE = "Chile"
+CLIENTE = "Sr. Jhonny Carrasco"
+PAIS_CLIENTE = "Bolivia"
 PUERTO_LLEGADA = "Iquique, Chile"
 CONDICION_PRECIO = "Puesto en Zofri, Iquique, Chile"
 DOC_NUMBER = "COT-WGT-2026-0904"
