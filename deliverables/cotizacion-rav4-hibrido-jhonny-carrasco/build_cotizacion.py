@@ -52,7 +52,7 @@ def fmt(x: Decimal) -> str:
 CLIENTE = "Jhonny Carrasco"
 PAIS_CLIENTE = "Chile"
 PUERTO_LLEGADA = "Iquique, Chile"
-CONDICION_PRECIO = "Puesto en Iquique, Chile — no incluye IGV (importación chilena)"
+CONDICION_PRECIO = "Puesto en Iquique, Chile"
 DOC_NUMBER = "COT-WGT-2026-0904"
 DOC_DATE = "04-09-2026"
 
@@ -248,7 +248,6 @@ HTMLDOC = f"""<!doctype html>
       <span class="pd-total-value">USD {fmt(PRECIO_TOTAL)}</span>
     </div>
   </div>
-  <p class="pdoc-total-note">Precio sin IGV — importación chilena</p>
 
   <div class="pdoc-section-bar">Condiciones comerciales</div>
   <div class="pdoc-terms">
@@ -261,7 +260,6 @@ HTMLDOC = f"""<!doctype html>
 
   <div class="pdoc-section-bar pdoc-section-bar--observaciones">Observaciones</div>
   <ul class="pdoc-observations">
-    <li>Precios puestos en Iquique, Chile; no incluyen IGV — corresponden a una importación chilena. Los tributos y trámites de nacionalización en Chile son de cargo del comprador.</li>
     <li>Los precios están calculados según la tarifa de flete internacional vigente a la fecha de esta cotización. Los precios podrían variar si el flete cambia al momento en que el cliente decida proceder con el pedido.</li>
     <li>Precio sujeto a confirmación de disponibilidad de las unidades.</li>
   </ul>
