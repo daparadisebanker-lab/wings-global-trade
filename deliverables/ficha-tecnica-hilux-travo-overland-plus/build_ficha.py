@@ -5,13 +5,45 @@ data supplied by the client, superseding the earlier Hilux Travo Overland
 ficha (deliverables/ficha-tecnica-hilux-travo-overland/). Same `pdoc` grid/
 logo/footer and audit-informed typography (real type scale, check-badge for
 boolean specs). This is a NEW, separate document — the original is untouched.
+
+Photography added 2026-09-05 (client-supplied):
+  - Cover: a pre-composed marketing frame (already carries the Wings
+    logo, "TOYOTA | HILUX TRAVO OVERLAND" lockup, feature icons and
+    tagline baked into the image itself, assets/opt/cover.jpg, square
+    1080x1080) — since it's square and the page is a taller A4 portrait,
+    it's centered/letterboxed (not cropped) on a charcoal ground sampled
+    from the image's own dark tones, following the full-bleed named-page
+    `@page cover` pattern established on the KQ280 drone ficha. A slim
+    doc-number chip + Wings mark sits in the top letterbox band; a small
+    credit line in the bottom band — the image's own baked-in text is
+    never overlaid or duplicated.
+  - Hero product photo: a studio cutout of the truck (assets/opt/
+    hero-cutout.jpg, opaque white background) placed right after the
+    identity card, sized by natural aspect (no cropping) in a bordered
+    card — same idea as the Prado ficha's photo-interleaving, adapted
+    for a product-render image rather than in-context photography
+    (the Prado's full-bleed `object-fit:cover` banner treatment isn't a
+    good fit for a cutout render, so it uses object-fit:contain-style
+    sizing instead). The client also supplied a transparent-background
+    export of the same render (near-identical to the white-background
+    one) — not used, to avoid a duplicate photo in the doc.
 Run:
   python3 build_ficha.py
 """
+import base64
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+IMG_DIR = HERE / "assets" / "opt"
 LOGO_SVG = "/home/user/wings-global-trade/apps/tower/public/brand/wings-imagotipo.svg"
+
+
+def img_b64(name: str) -> str:
+    return base64.b64encode((IMG_DIR / name).read_bytes()).decode("ascii")
+
+
+COVER_B64 = img_b64("cover.jpg")
+HERO_PHOTO_B64 = img_b64("hero-cutout.jpg")
 
 DOC_NUMBER = "FT-WGT-2026-0826"
 DOC_DATE = "26-08-2026"
@@ -169,6 +201,34 @@ HTMLDOC = f"""<!doctype html>
   body {{ background: #52555a; }}
   .pdoc-page {{ min-height: 100vh; padding: 28px 16px 48px; }}
   .pdoc-page .pdoc {{ box-shadow: 0 8px 40px rgba(0, 0, 0, 0.35); }}
+  .pdoc-page.cover-page {{ padding: 0; }}
+  .pdoc-page.cover-page .pdoc-cover {{ box-shadow: 0 8px 40px rgba(0, 0, 0, 0.35); }}
+
+  /* ── Cover: full marketing frame, letterboxed on its own charcoal ground ── */
+  .pdoc-cover {{
+    position: relative; width: 100%; max-width: 820px; margin: 0 auto;
+    aspect-ratio: 820 / 1160; overflow: hidden; background: #15171b;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-family: var(--font-ui, system-ui, sans-serif);
+  }}
+  .pdoc-cover img {{ width: 100%; height: auto; display: block; }}
+  .cover-frame-top {{
+    position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center;
+    justify-content: flex-end; padding: 22px 30px;
+  }}
+  .cover-doc-chip {{
+    color: rgba(255,255,255,0.85); font-family: var(--font-mono, monospace); font-size: 10.5px;
+    letter-spacing: 0.03em; background: rgba(255,255,255,0.12); padding: 5px 10px; border-radius: 3px;
+  }}
+  .cover-frame-bottom {{
+    position: absolute; bottom: 0; left: 0; right: 0; text-align: center; padding: 18px 30px 22px;
+    color: rgba(255,255,255,0.55); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+  }}
+
+  /* ── Hero product photo: studio cutout on white, no crop ── */
+  .pdoc-hero-photo {{ border: 1px solid var(--pd-line); border-radius: 12px; padding: 10px; margin-bottom: 12px; break-inside: avoid; }}
+  .pdoc-hero-photo img {{ width: 100%; height: auto; display: block; border-radius: 6px; }}
+  .pdoc-hero-photo figcaption {{ margin: 8px 2px 0; font-size: 10.5px; color: var(--pd-muted); font-style: italic; text-align: center; }}
 
   .pdoc {{
     --pd-ink: #0f1216; --pd-muted: #6b7280; --pd-line: #d1d5db;
@@ -245,15 +305,33 @@ HTMLDOC = f"""<!doctype html>
 
   @media print {{
     @page {{ size: A4 portrait; margin: 8mm; }}
+    @page cover {{ margin: 0; }}
     body {{ background: #ffffff; }}
     .pdoc-page {{ min-height: 0; padding: 0; }}
     .pdoc-page .pdoc {{ box-shadow: none; }}
     .pdoc {{ --pd-pad-x: 0px; max-width: none; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }}
     .pdoc-close-row, .pdoc-footer {{ break-inside: avoid; }}
+    .cover-page {{ page: cover; break-after: page; }}
+    .pdoc-page.cover-page .pdoc-cover {{ box-shadow: none; }}
+    .pdoc-cover {{
+      max-width: none; width: 100%; height: 100vh; aspect-ratio: auto;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }}
   }}
 </style>
 </head>
 <body>
+
+<div class="pdoc-page cover-page">
+  <div class="pdoc-cover">
+    <div class="cover-frame-top">
+      <span class="cover-doc-chip">{DOC_NUMBER}</span>
+    </div>
+    <img src="data:image/jpeg;base64,{COVER_B64}" alt="{MODEL_NAME} en terreno" />
+    <div class="cover-frame-bottom">Wings Global Trade · Soluciones Integrales en Importación</div>
+  </div>
+</div>
+
 <div class="pdoc-page">
 <article class="pdoc">
 
@@ -282,6 +360,11 @@ HTMLDOC = f"""<!doctype html>
       {HERO_STATS_HTML}
     </div>
   </div>
+
+  <figure class="pdoc-hero-photo">
+    <img src="data:image/jpeg;base64,{HERO_PHOTO_B64}" alt="{MODEL_NAME}" />
+    <figcaption>Toyota Hilux Travo Overland Plus 4TREX — vista frontal 3/4</figcaption>
+  </figure>
 
   {SECTIONS_HTML}
 
