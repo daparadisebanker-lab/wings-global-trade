@@ -59,7 +59,7 @@ BLOCKS = [
         ("Ángulo de ataque / salida (°)", "31.0 / 22.0"),
         ("Peso en orden de marcha (kg)", "2,530"),
         ("Peso bruto vehicular (kg)", "3,050"),
-        ("Capacidad del estanque de combustible (L)", "68.0"),
+        ("Capacidad del tanque de combustible (L)", "68.0"),
     ]},
     {"type": "banner", "img": "image6", "caption": "Motor 2.4L Turbo Híbrido — cableado de alto voltaje"},
     {"type": "section", "idx": 3, "title": "Motor de Combustión y Transmisión", "rows": [
@@ -133,9 +133,9 @@ BLOCKS = [
         ("Asiento piloto", "Eléctrico, ventilado, calefaccionado, con memoria"),
         ("Asiento copiloto", "Eléctrico, ventilado, calefaccionado"),
         ("Asientos traseros", "Abatibles 40:60, calefaccionados"),
-        ("Timón (Material)", "Cuero"),
-        ("Timón (Ajuste)", "Eléctrico, en altura y profundidad"),
-        ("Timón (Funciones)", "Multifunción, levas de cambio, memoria, calefacción"),
+        ("Volante (Material)", "Cuero"),
+        ("Volante (Ajuste)", "Eléctrico, en altura y profundidad"),
+        ("Volante (Funciones)", "Multifunción, levas de cambio, memoria, calefacción"),
         ("Instrumental", "Pantalla digital LCD de 12.3\""),
         ("Pantalla central multimedia", "Táctil, 12.3\""),
         ("Sistema de audio (Marca)", "JBL"),
@@ -191,10 +191,20 @@ BLOCKS = [
 ]
 
 
+def value_html(value: str) -> str:
+    """Boolean specs get a check badge instead of plain 'Sí' text — same
+    scannability fix already applied on the Travo Overland Plus ficha."""
+    if value.startswith("Sí"):
+        rest = value[2:].lstrip(",").strip()
+        detail = f' <span class="spec-detail">{rest}</span>' if rest else ""
+        return f'<span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Sí</span>{detail}'
+    return value
+
+
 def rows_html(rows: list[tuple[str, str]]) -> str:
     return "\n".join(
         f'<div class="spec-row"><span class="spec-label">{label}</span>'
-        f'<span class="spec-value">{value}</span></div>'
+        f'<span class="spec-value">{value_html(value)}</span></div>'
         for label, value in rows
     )
 
@@ -317,7 +327,16 @@ HTMLDOC = f"""<!doctype html>
   .pdoc-spec-grid {{ display: flex; flex-direction: column; padding: 0 4px; font-size: 11.5px; }}
   .spec-row {{ display: grid; grid-template-columns: 250px 1fr; gap: 4.5px 16px; border-bottom: 1px solid var(--pd-tint); padding-bottom: 4.5px; margin-bottom: 4.5px; break-inside: avoid; }}
   .spec-label {{ font-weight: 600; color: var(--pd-ink); }}
-  .spec-value {{ color: var(--pd-ink); }}
+  .spec-value {{ color: var(--pd-ink); display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }}
+
+  /* ── Boolean rows: a check badge instead of repeating "Sí" ── */
+  .spec-check {{
+    display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px;
+    border-radius: 3px; background: var(--pd-accent); color: #fff; font-size: 10px; font-weight: 700;
+    flex-shrink: 0; line-height: 1;
+  }}
+  .spec-affirm {{ font-weight: 600; }}
+  .spec-detail {{ color: var(--pd-muted); }}
 
   /* ── Mid-section full-bleed banner with caption pill ── */
   .pdoc-banner {{ position: relative; margin: 4px calc(var(--pd-pad-x) * -1) 14px; width: calc(100% + var(--pd-pad-x) * 2); break-inside: avoid; }}
