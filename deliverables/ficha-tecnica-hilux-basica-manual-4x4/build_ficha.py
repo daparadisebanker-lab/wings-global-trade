@@ -1,27 +1,41 @@
 #!/usr/bin/env python3
 """Build the Wings Global Trade branded technical spec sheet (Ficha Técnica)
-for the Toyota Hilux 2.8 4x4 V M/T — client-facing name "Hilux Full Manual
-4x4" (2026-09-07 rename request: the raw Toyota grade-letter codes E/V read
-as meaningless to the client, so V -> "Full Manual" and its sibling E ->
-"Básica Manual", both suffixed "4x4" since both trims happen to be 4x4
+for the Toyota Hilux 2.8 4x4 E M/T — client-facing name "Hilux Básica
+Manual 4x4" (2026-09-07 rename request: raw Toyota grade-letter codes E/V
+read as meaningless to the client, so E -> "Básica Manual" and its sibling
+V -> "Full Manual", both suffixed "4x4" since both trims happen to be 4x4
 manuals in this catalog. See the sibling doc
-deliverables/ficha-tecnica-hilux-basica-manual-4x4/ for the E M/T trim).
+deliverables/ficha-tecnica-hilux-2.8-4x4-v-mt/ for the V M/T "Full Manual"
+trim).
 
 Source: uploaded Toyota Hilux ICE global catalog (DOC20260828WA0134.pdf,
-page 2) — a 7-variant comparison table (2.8 4x4 Conquest A/T · 2.8 4x4
-V M/T · 2.8 4x2 Conquest A/T · 2.8 4x2 G A/T · 2.8 4x2 G M/T · 2.8 4x4
-E M/T · 2.8 4x2 E A/T). The user pointed at the "2.8 4x4 V M/T" column
-specifically (screenshot). Values below were read directly from that
-column, cross-checking each merged-cell boundary against the header row
-to avoid misreading a value that actually belongs to a neighboring trim.
-Only specs this trim actually HAS are listed — features present on the
-Conquest trim but absent on V M/T (sportsbar, roof rail, side decals,
-multi-terrain select) are simply omitted, same convention as the other
-Wings fichas (no explicit "no disponible" rows). No manufacturing origin
-is stated anywhere in the source catalog, so the "Origen" dateline field
-used on other fichas is left out here rather than guessed. Doc number
-kept as originally issued (this is a rename/relabel of the same sheet,
-not a new document).
+page 2) — same 7-variant comparison table used for the Full Manual ficha.
+This is the "2.8 4x4 E M/T" column (6th of 7). Values were read directly
+from that column, cross-checking each merged-cell boundary against the
+header row — this trim sits in the LOWER equipment-tier group (columns
+4-7: G A/T, G M/T, E M/T, E A/T) except for drivetrain-linked items
+(diff lock, rear brakes stay grouped with the 4x4 trims regardless of
+trim letter... actually rear brakes/diff lock follow their own grouping,
+verified per-row, not assumed from the trim tier). Confirmed differences
+vs. the Full Manual (V M/T) sibling worth noting for accuracy:
+  - Plain "6-Speed M/T" here, no iMT (Intelligent Manual Transmission) —
+    that feature is exclusive to V M/T in this catalog.
+  - Fabric seats (not synthetic leather), manual driver's seat (not
+    8-way power), smaller 265/65R17 wheels (not 265/60R18), rear drum
+    brakes (not ventilated discs), 7" screen/wired CarPlay (not 12.3"/
+    wireless), manual A/C (not dual-zone auto), lever parking brake
+    (not electric), only 3 airbags (not 7), and no Toyota Safety Sense
+    3.0 active-safety suite (PCS/AHB/LTA/LDA), no BSM, no DAC, no
+    multi-terrain select, no sportsbar/roof rail/side decals — all
+    simply omitted below rather than listed as "no", same convention
+    as the other Wings fichas. It does keep: rear diff lock, A-TRC
+    (active traction control), and basic (non-adaptive) cruise control,
+    since this trim is still 4x4.
+  - Colors: Attitude Black Mica, Super White 2, Silver Metallic (no
+    Emotional Red 2 or Ash — those are exclusive to the Conquest/V M/T
+    equipment-tier group).
+No manufacturing origin is stated anywhere in the source catalog, so the
+"Origen" dateline field used on other fichas is left out here too.
 Run:
   python3 build_ficha.py
 """
@@ -30,16 +44,16 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 LOGO_SVG = "/home/user/wings-global-trade/apps/tower/public/brand/wings-imagotipo.svg"
 
-DOC_NUMBER = "FT-WGT-2026-0907"
+DOC_NUMBER = "FT-WGT-2026-0908"
 DOC_DATE = "07-09-2026"
 
-MODEL_NAME = "Toyota Hilux Full Manual 4x4"
-MODEL_TRIM = "2.8L Diésel · 4x4 · Manual de 6 velocidades con iMT"
+MODEL_NAME = "Toyota Hilux Básica Manual 4x4"
+MODEL_TRIM = "2.8L Diésel · 4x4 · Manual de 6 velocidades"
 
 HERO_STATS = [
     ("Potencia máxima", "204 PS"),
     ("Torque máximo", "420 N·m"),
-    ("Transmisión", "6MT + iMT"),
+    ("Transmisión", "6MT"),
     ("Tracción", "4x4"),
 ]
 
@@ -47,12 +61,12 @@ HERO_STATS = [
 SECTIONS = [
     (1, "Identificación", [
         ("Modelo", "Toyota Hilux"),
-        ("Versión", "Full Manual 4x4 — 2.8L Diésel · 4x4 · Manual de 6 velocidades con iMT"),
+        ("Versión", "Básica Manual 4x4 — 2.8L Diésel · 4x4 · Manual de 6 velocidades"),
         ("Carrocería", "Pickup, 4 puertas, doble cabina"),
         ("Tipo de combustible", "Diésel"),
         ("Fabricante", "Toyota"),
         ("Capacidad de asientos", "5"),
-        ("Colores disponibles", "Rojo Emotional Red 2, Ash, Negro Attitude Black Mica, Blanco Super White 2"),
+        ("Colores disponibles", "Negro Attitude Black Mica, Blanco Super White 2, Plata Silver Metallic"),
     ]),
     (2, "Dimensiones y Pesos", [
         ("Longitud × Ancho × Alto (mm)", "5,320 × 1,885 × 1,865"),
@@ -65,15 +79,15 @@ SECTIONS = [
         ("Cilindrada (cc)", "2,755"),
         ("Potencia máxima", "204 PS / 3,000–3,400 rpm"),
         ("Torque máximo", "420 N·m / 1,400–3,400 rpm"),
-        ("Transmisión", "Manual de 6 velocidades con iMT (Intelligent Manual Transmission)"),
+        ("Transmisión", "Manual de 6 velocidades"),
         ("Tracción", "4x4"),
         ("Bloqueo de diferencial", "Trasero"),
     ]),
     (4, "Chasis, Frenos y Neumáticos", [
-        ("Neumáticos / Aros", "265/60R18, aleación"),
+        ("Neumáticos / Aros", "265/65R17, aleación"),
         ("Llanta de repuesto", "De acero, medida completa"),
         ("Frenos (Delanteros)", "Discos ventilados"),
-        ("Frenos (Posteriores)", "Discos ventilados"),
+        ("Frenos (Posteriores)", "Tambor"),
         ("Suspensión (Delantera)", "Doble horquilla"),
         ("Suspensión (Posterior)", "Ballestas de eje rígido"),
     ]),
@@ -82,35 +96,33 @@ SECTIONS = [
         ("Luces diurnas (DRL)", "LED"),
         ("Luces de cortesía (Clearance)", "Sí"),
         ("Faros antiniebla (Delanteros)", "LED"),
-        ("Faros antiniebla (Posteriores)", "LED"),
         ("Luz combinada trasera", "LED"),
-        ("Espejos retrovisores exteriores", "Ajuste eléctrico, plegado automático"),
+        ("Espejos retrovisores exteriores", "Ajuste eléctrico"),
         ("Limpiaparabrisas", "Intermitente, con ajuste de tiempo"),
         ("Guardabarros", "Incluidos"),
         ("Estribo trasero", "Incluido"),
     ]),
     (6, "Interior, Confort y Tecnología", [
-        ("Material de asientos", "Cuero sintético"),
-        ("Asiento del conductor", "Ajuste eléctrico de 8 direcciones"),
+        ("Material de asientos", "Tela"),
+        ("Asiento del conductor", "Ajuste manual, 6 direcciones"),
         ("Asiento del copiloto", "Ajuste manual, 4 direcciones"),
         ("Asiento trasero", "División 60:40"),
-        ("Espejo retrovisor interior", "Auto-atenuante"),
-        ("Portavasos", "6"),
+        ("Espejo retrovisor interior", "Día y noche"),
+        ("Portavasos", "5"),
         ("Portabotellas", "4"),
         ("Dirección", "Asistencia eléctrica (EPS)"),
         ("Ajuste del volante", "Inclinación y telescópico"),
-        ("Controles en el volante",
-         "Audio, teléfono, pantalla, control por voz, control crucero, asistencia de mantenimiento de carril"),
+        ("Controles en el volante", "Audio, teléfono, pantalla, control por voz, control crucero"),
         ("Modos de manejo", "Eco, Normal, Sport"),
         ("Entrada sin llave", "Inteligente (Smart Entry)"),
         ("Encendido", "Botón de arranque (Push Start)"),
-        ("Freno de estacionamiento", "Eléctrico, con función de retención (Brake Hold)"),
+        ("Freno de estacionamiento", "Tipo palanca"),
         ("Ventanas eléctricas", "Subida/bajada automática, con protección anti-atrapamiento"),
         ("Seguro de puertas", "Sensible a la velocidad"),
-        ("Aire acondicionado", "Climatizador automático de doble zona"),
+        ("Aire acondicionado", "Manual"),
         ("Iluminación inteligente", "Encendido automático de luces, luz de bienvenida y Follow Me Home"),
-        ("Panel de instrumentos", "Pantalla digital TFT de 12.3\""),
-        ("Pantalla multimedia", "12.3\" — Apple CarPlay y Android Auto inalámbricos"),
+        ("Panel de instrumentos", "Pantalla digital TFT de 7\""),
+        ("Pantalla multimedia", "8\" — Apple CarPlay y Android Auto (con cable)"),
         ("Sistema de audio", "8 parlantes"),
         ("Puertos USB Tipo-C", "2 delanteros + 2 traseros"),
         ("Toma de 12V", "1"),
@@ -118,24 +130,18 @@ SECTIONS = [
         ("Módulo de comunicación de datos (DCM)", "Con funcionalidad remota"),
     ]),
     (7, "Seguridad", [
-        ("Airbags SRS", "Conductor, rodilla del conductor, copiloto, laterales, cortina (7 en total)"),
+        ("Airbags SRS", "Conductor, rodilla del conductor, copiloto (3 en total)"),
         ("Cinturones delanteros", "3 puntos ELR, con pretensor y limitador de fuerza"),
         ("Cinturones traseros", "3 puntos ELR x3"),
         ("Sistema de retención infantil", "ISOFIX + anclaje de correa, 2 posiciones"),
-        ("Sistema de pre-colisión (PCS)", "Sí"),
-        ("Luces altas automáticas (AHB)", "Sí"),
-        ("Asistencia de mantenimiento de carril (LTA)", "Sí"),
-        ("Alerta de salida de carril (LDA)", "Sí"),
-        ("Control crucero", "Dynamic Radar Cruise Control (adaptativo)"),
+        ("Control crucero", "Sí"),
         ("Sistema de seguridad Toyota", "Inmovilizador + bocina"),
         ("Señal de frenado de emergencia", "Sí"),
         ("Frenos antibloqueo (ABS)", "Con distribución electrónica de frenado (EBD)"),
         ("Control de estabilidad (VSC)", "Con asistencia de frenado (Brake Assist)"),
         ("Asistencia de ascenso (HAC)", "Sí"),
-        ("Asistencia de descenso (DAC)", "Sí"),
         ("Control de balanceo de remolque", "Sí"),
         ("Control de tracción (TRC)", "Sistema activo de control de tracción (A-TRC)"),
-        ("Monitor de punto ciego (BSM)", "Con alerta de tráfico cruzado trasero"),
         ("Cámara de reversa", "Panoramic View Monitor (vista 360°)"),
         ("Sensores de estacionamiento", "Delanteros 2 / Traseros 4"),
     ]),
@@ -190,7 +196,7 @@ HTMLDOC = f"""<!doctype html>
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Ficha Técnica · Wings Global Trade · Toyota Hilux Full Manual 4x4</title>
+<title>Ficha Técnica · Wings Global Trade · Toyota Hilux Básica Manual 4x4</title>
 <style>
   :root {{
     --font-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -316,7 +322,7 @@ HTMLDOC = f"""<!doctype html>
   {SECTIONS_HTML}
 
   <div class="pdoc-tail">
-  <p class="pdoc-note">Especificaciones según catálogo global Toyota Hilux ICE, variante 2.8 4x4 V M/T (referida en este documento como "Full Manual 4x4"); pueden variar según lote de producción y mercado. Se recomienda confirmar contra la unidad física antes de la compra.</p>
+  <p class="pdoc-note">Especificaciones según catálogo global Toyota Hilux ICE, variante 2.8 4x4 E M/T (referida en este documento como "Básica Manual 4x4"); pueden variar según lote de producción y mercado. Se recomienda confirmar contra la unidad física antes de la compra.</p>
   <div class="pdoc-close-row">
     <div class="pdoc-close">
       <div>Atentamente,</div>
