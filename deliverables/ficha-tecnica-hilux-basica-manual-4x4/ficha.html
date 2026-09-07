@@ -70,6 +70,11 @@
   .spec-affirm { font-weight: 600; }
   .spec-detail { color: var(--pd-muted); }
 
+  /* ── Color availability: a bar per color, like the source catalog's table ── */
+  .color-swatches { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+  .color-chip { display: inline-flex; align-items: center; gap: 6px; }
+  .color-bar { display: inline-block; width: 22px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+
   .pdoc-tail { margin-top: 20px; padding-top: 10px; }
   .pdoc-note { font-size: 10.5px; color: var(--pd-muted); font-style: italic; margin-bottom: 10px; }
   .pdoc-close-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; }
@@ -142,7 +147,7 @@
 <div class="spec-row"><span class="spec-label">Tipo de combustible</span><span class="spec-value">Diésel</span></div>
 <div class="spec-row"><span class="spec-label">Fabricante</span><span class="spec-value">Toyota</span></div>
 <div class="spec-row"><span class="spec-label">Capacidad de asientos</span><span class="spec-value">5</span></div>
-<div class="spec-row"><span class="spec-label">Colores disponibles</span><span class="spec-value">Negro Attitude Black Mica, Blanco Super White 2, Plata Silver Metallic</span></div>
+<div class="spec-row"><span class="spec-label">Colores disponibles</span><span class="spec-value"><div class="color-swatches"><span class="color-chip"><span class="color-bar" style="background:#1c1c1e;"></span>Negro Attitude Black Mica</span><span class="color-chip"><span class="color-bar" style="background:#ffffff;border:1px solid var(--pd-line);"></span>Blanco Super White 2</span><span class="color-chip"><span class="color-bar" style="background:#b7bcc2;"></span>Plata Silver Metallic</span></div></span></div>
     </div>
   </div>
 

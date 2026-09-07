@@ -52,7 +52,12 @@ SECTIONS = [
         ("Tipo de combustible", "Diésel"),
         ("Fabricante", "Toyota"),
         ("Capacidad de asientos", "5"),
-        ("Colores disponibles", "Rojo Emotional Red 2, Ash, Negro Attitude Black Mica, Blanco Super White 2"),
+        ("Colores disponibles", [
+            ("Rojo Emotional Red 2", "#c1272d"),
+            ("Ash", "#8a8d90"),
+            ("Negro Attitude Black Mica", "#1c1c1e"),
+            ("Blanco Super White 2", "#ffffff"),
+        ]),
     ]),
     (2, "Dimensiones y Pesos", [
         ("Longitud × Ancho × Alto (mm)", "5,320 × 1,885 × 1,865"),
@@ -142,9 +147,23 @@ SECTIONS = [
 ]
 
 
-def value_html(value: str) -> str:
+def color_swatches_html(colors: list[tuple[str, str]]) -> str:
+    """Color bars instead of a plain comma-separated name list — same idea
+    as the source catalog's "Color Variation" table, one bar per color."""
+    chips = "".join(
+        f'<span class="color-chip"><span class="color-bar" style="background:{hex_};'
+        f'{"border:1px solid var(--pd-line);" if hex_.lower() in ("#ffffff", "#fff") else ""}"></span>{name}</span>'
+        for name, hex_ in colors
+    )
+    return f'<div class="color-swatches">{chips}</div>'
+
+
+def value_html(value) -> str:
     """Boolean specs get a check badge instead of plain 'Sí' text — same
-    scannability fix applied throughout the ficha family."""
+    scannability fix applied throughout the ficha family. A list value is
+    the color-availability row, rendered as swatch bars."""
+    if isinstance(value, list):
+        return color_swatches_html(value)
     if value.startswith("Sí"):
         rest = value[2:].lstrip(",").strip()
         detail = f' <span class="spec-detail">{rest}</span>' if rest else ""
@@ -256,6 +275,11 @@ HTMLDOC = f"""<!doctype html>
   }}
   .spec-affirm {{ font-weight: 600; }}
   .spec-detail {{ color: var(--pd-muted); }}
+
+  /* ── Color availability: a bar per color, like the source catalog's table ── */
+  .color-swatches {{ display: flex; flex-wrap: wrap; gap: 8px 16px; }}
+  .color-chip {{ display: inline-flex; align-items: center; gap: 6px; }}
+  .color-bar {{ display: inline-block; width: 22px; height: 12px; border-radius: 2px; flex-shrink: 0; }}
 
   .pdoc-tail {{ margin-top: 20px; padding-top: 10px; }}
   .pdoc-note {{ font-size: 10.5px; color: var(--pd-muted); font-style: italic; margin-bottom: 10px; }}
