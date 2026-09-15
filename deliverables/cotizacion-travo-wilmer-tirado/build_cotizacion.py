@@ -1,15 +1,24 @@
 #!/usr/bin/env python3
 """Build the Wings Global Trade branded CLIENT quotation (Cotización) for
-1x Toyota Hilux Travo Overland Plus — the automatic-transmission version
-(6AT) of the Hilux, as opposed to the Full Manual 4x4 / Básica Manual 4x4
-manual-transmission trims — client Wilmer Omar Tirado Bautista (Cajamarca).
+client Wilmer Omar Tirado Bautista (Cajamarca), now listing TWO vehicles:
 
-Same cost-engine inputs/derivation and standing per-unit sale price
-(55,211.87 / 65,150.01, including the standing +48.24/unit commercial
-rounding adjustment) as every other Overland Plus cotización this
-session — see PRICING_NOTES.md. UNITS = 1 per explicit request ("one
-travel the automatic version"). No DNI or company data was provided, so
-only name and city are shown (house rule: never fabricate client data).
+  1. Toyota Hilux Travo Overland Plus — the automatic-transmission version
+     (6AT) of the Hilux — 1 unit. Same cost-engine inputs/derivation and
+     standing per-unit sale price (55,211.87 / 65,150.01, including the
+     standing +48.24/unit commercial rounding adjustment) as every other
+     Overland Plus cotización this session — see PRICING_NOTES.md.
+  2. Toyota Land Cruiser Prado 2026 — FULL 2.4T Híbrido — 1 unit, added
+     per follow-up request ("Add in it the Prado"). Reuses the standing
+     per-unit price already quoted (Atilio Gargate / Pablo Peláez basis:
+     costo de importación 83,569.50, margen 8% → valor de venta
+     90,255.06, IGV 16,245.91, total 106,500.97) rather than recomputing.
+
+No DNI or company data was provided for this client, so only name and
+city are shown (house rule: never fabricate client data). The combined
+totals below sum both vehicles' USD figures; the referencial soles note
+uses the Hilux's T.C. 3.70 (the Prado's own cost sheet uses T.C. 3.5
+internally, but that only affects its internal soles workings — both
+prices are already fixed in USD).
 
 Run: python3 build_cotizacion.py
 """
@@ -74,12 +83,24 @@ sale_price_unit = r2(sale_price_unit_raw + ROUNDING_ADJUSTMENT_UNIT)
 igv_ventas_unit = r2(sale_price_unit * IGV_RATE)
 sale_price_final_unit = r2(sale_price_unit + igv_ventas_unit)
 
-# ── Totals for UNITS ─────────────────────────────────────────────────────
+# ── Totals for UNITS (Hilux Travo Overland Plus) ────────────────────────
 VALOR_VENTA_UNIT = sale_price_unit
 VALOR_VENTA = r2(sale_price_unit * UNITS)
 IGV = r2(igv_ventas_unit * UNITS)
 PRECIO_TOTAL = r2(sale_price_final_unit * UNITS)
-PRECIO_TOTAL_SOLES = r2(PRECIO_TOTAL * EXCHANGE_RATE)
+
+# ── Prado — standing per-unit price (Atilio Gargate / Pablo Peláez basis) ─
+UNITS_PRADO = 1
+VALOR_VENTA_UNIT_PRADO = D("90255.06")
+VALOR_VENTA_PRADO = r2(VALOR_VENTA_UNIT_PRADO * UNITS_PRADO)
+IGV_PRADO = r2(VALOR_VENTA_PRADO * IGV_RATE)
+PRECIO_TOTAL_PRADO = r2(VALOR_VENTA_PRADO + IGV_PRADO)
+
+# ── Combined totals (both vehicles) ─────────────────────────────────────
+VALOR_VENTA_COMBINADO = r2(VALOR_VENTA + VALOR_VENTA_PRADO)
+IGV_COMBINADO = r2(IGV + IGV_PRADO)
+PRECIO_TOTAL_COMBINADO = r2(PRECIO_TOTAL + PRECIO_TOTAL_PRADO)
+PRECIO_TOTAL_SOLES = r2(PRECIO_TOTAL_COMBINADO * EXCHANGE_RATE)
 
 
 def fmt(x: Decimal) -> str:
@@ -95,7 +116,7 @@ HTMLDOC = f"""<!doctype html>
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Cotización · Wings Global Trade · Toyota Hilux Travo Overland Plus</title>
+<title>Cotización · Wings Global Trade · Toyota Hilux Travo Overland Plus + Prado</title>
 <style>
   :root {{
     --font-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -110,7 +131,7 @@ HTMLDOC = f"""<!doctype html>
     --pd-ink: #0f1216; --pd-muted: #6b7280; --pd-line: #d1d5db;
     --pd-bar: #ececec; --pd-tint: #f7f8f9;
     box-sizing: border-box; width: 100%; max-width: 820px; margin: 0 auto;
-    padding: 22px 52px 20px; background: #ffffff; color: var(--pd-ink);
+    padding: 16px 52px 12px; background: #ffffff; color: var(--pd-ink);
     font-family: var(--font-ui, system-ui, sans-serif); font-size: 12px; line-height: 1.35;
   }}
   .pdoc *, .pdoc *::before, .pdoc *::after {{ box-sizing: border-box; }}
@@ -123,16 +144,16 @@ HTMLDOC = f"""<!doctype html>
   .pdoc-brand-name {{ font-size: 15px; font-weight: 700; letter-spacing: 0.01em; margin-top: 2px; }}
   .pdoc-tagline {{ font-size: 10.5px; letter-spacing: 0.02em; color: var(--pd-muted); text-transform: uppercase; }}
 
-  .pdoc-rule {{ position: relative; height: 3px; margin: 16px 0 16px; background: var(--pd-line); }}
+  .pdoc-rule {{ position: relative; height: 3px; margin: 10px 0 10px; background: var(--pd-line); }}
   .pdoc-rule::before {{ content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 168px; background: var(--pd-ink); }}
 
-  .pdoc-dateline {{ display: flex; flex-wrap: wrap; gap: 5px 16px; margin-bottom: 14px; font-size: 11.5px; color: var(--pd-muted); }}
+  .pdoc-dateline {{ display: flex; flex-wrap: wrap; gap: 5px 16px; margin-bottom: 10px; font-size: 11.5px; color: var(--pd-muted); }}
   .pdoc-dateline span:not(:last-child)::after {{ content: '|'; margin-left: 16px; color: var(--pd-line); }}
 
-  .pdoc-parties {{ display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }}
-  .pdoc-party {{ border: 1px solid var(--pd-line); padding: 14px 16px; }}
-  .pdoc-party-head {{ font-size: 10.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 7px; }}
-  .pdoc-party-name {{ font-weight: 600; margin-bottom: 7px; }}
+  .pdoc-parties {{ display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }}
+  .pdoc-party {{ border: 1px solid var(--pd-line); padding: 10px 14px; }}
+  .pdoc-party-head {{ font-size: 10.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 5px; }}
+  .pdoc-party-name {{ font-weight: 600; margin-bottom: 5px; }}
   .pdoc-party-meta {{ display: grid; grid-template-columns: 80px 1fr; gap: 3px 12px; margin: 0; font-size: 11.5px; }}
   .pdoc-party-meta dt {{ color: var(--pd-muted); }}
   .pdoc-party-meta dd {{ margin: 0; }}
@@ -143,34 +164,34 @@ HTMLDOC = f"""<!doctype html>
   .pdoc-table th.pd-col-desc {{ width: 45%; }}
   .pdoc-table th.pd-col-qty {{ width: 13%; }}
   .pdoc-table tbody tr {{ break-inside: avoid; }}
-  .pdoc-table tbody td {{ border: 1px solid var(--pd-line); padding: 12px 9px; vertical-align: top; font-size: 11.5px; }}
+  .pdoc-table tbody td {{ border: 1px solid var(--pd-line); padding: 9px; vertical-align: top; font-size: 11.5px; }}
   .pd-item {{ font-weight: 600; text-align: center; }}
   .pd-desc {{ text-align: left; }}
   .pd-desc .pd-model {{ font-weight: 600; }}
   .pd-qty {{ text-align: center; font-weight: 600; }}
   .pd-cell-num {{ text-align: right; font-family: var(--font-mono, monospace); font-variant-numeric: tabular-nums; }}
 
-  .pdoc-totals {{ margin: 18px 0 6px auto; width: 360px; }}
-  .pdoc-total-row {{ display: flex; justify-content: space-between; gap: 24px; padding: 10px 6px; border-top: 1px solid var(--pd-line); }}
+  .pdoc-totals {{ margin: 12px 0 4px auto; width: 360px; }}
+  .pdoc-total-row {{ display: flex; justify-content: space-between; gap: 24px; padding: 7px 6px; border-top: 1px solid var(--pd-line); }}
   .pdoc-total-row .pd-total-label {{ font-weight: 600; }}
   .pdoc-total-row .pd-total-value {{ font-family: var(--font-mono, monospace); font-variant-numeric: tabular-nums; }}
   .pdoc-total-row[data-emphasis='true'] {{ border-top: 2px solid var(--pd-ink); }}
   .pdoc-total-row[data-emphasis='true'] .pd-total-label, .pdoc-total-row[data-emphasis='true'] .pd-total-value {{ font-size: 14.5px; font-weight: 700; white-space: nowrap; }}
   .pdoc-total-note {{ margin: 4px 0 0 auto; width: 360px; text-align: right; font-size: 10.5px; color: var(--pd-muted); }}
 
-  .pdoc-section-bar {{ background: var(--pd-bar); padding: 7px 12px; margin: 12px 0 8px; font-size: 11.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-align: center; }}
-  .pdoc-section-bar--observaciones {{ margin-top: 60px; }}
+  .pdoc-section-bar {{ background: var(--pd-bar); padding: 6px 12px; margin: 10px 0 6px; font-size: 11.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-align: center; }}
+  .pdoc-section-bar--observaciones {{ margin-top: 16px; }}
   .pdoc-terms {{ display: grid; grid-template-columns: 210px 1fr; gap: 4px 16px; padding: 0 4px; font-size: 11.5px; }}
   .pdoc-term-label {{ font-weight: 600; }}
   .pdoc-observations {{ margin: 0; padding: 0 4px; list-style: none; font-size: 11.5px; }}
   .pdoc-observations li {{ position: relative; padding-left: 18px; margin-bottom: 2px; }}
   .pdoc-observations li::before {{ content: '•'; position: absolute; left: 4px; }}
 
-  .pdoc-tail {{ margin-top: 26px; padding-top: 10px; }}
+  .pdoc-tail {{ margin-top: 12px; padding-top: 6px; }}
   .pdoc-close-row {{ display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; }}
   .pdoc-close-signoff {{ margin-top: 2px; font-weight: 600; }}
 
-  .pdoc-footer {{ display: flex; justify-content: space-between; gap: 24px; margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--pd-line); color: var(--pd-muted); font-size: 11.5px; break-inside: avoid; }}
+  .pdoc-footer {{ display: flex; justify-content: space-between; gap: 24px; margin-top: 4px; padding-top: 4px; border-top: 1px solid var(--pd-line); color: var(--pd-muted); font-size: 11.5px; break-inside: avoid; }}
   .pdoc-footer .pd-foot-right {{ text-align: right; }}
 
   @media (max-width: 640px) {{
@@ -213,7 +234,7 @@ HTMLDOC = f"""<!doctype html>
   <div class="pdoc-dateline">
     <span>{FECHA}</span>
     <span>Validez: 15 días</span>
-    <span>Puerto de llegada: {PUERTO_LLEGADA}</span>
+    <span>Puerto de llegada: {PUERTO_LLEGADA} / Callao, Perú</span>
     <span>Moneda: USD</span>
   </div>
 
@@ -235,7 +256,7 @@ HTMLDOC = f"""<!doctype html>
     </div>
   </div>
 
-  <div class="pdoc-section-bar">Vehículo cotizado</div>
+  <div class="pdoc-section-bar">Vehículos cotizados</div>
   <table class="pdoc-table">
     <thead>
       <tr>
@@ -256,30 +277,39 @@ HTMLDOC = f"""<!doctype html>
         <td class="pd-cell-num">{fmt(VALOR_VENTA_UNIT)}</td>
         <td class="pd-cell-num">{fmt(VALOR_VENTA)}</td>
       </tr>
+      <tr>
+        <td class="pd-item">2</td>
+        <td class="pd-desc">
+          <span class="pd-model">Toyota Land Cruiser Prado 2026 — FULL 2.4T Híbrido</span>
+        </td>
+        <td class="pd-qty">{UNITS_PRADO}</td>
+        <td class="pd-cell-num">{fmt(VALOR_VENTA_UNIT_PRADO)}</td>
+        <td class="pd-cell-num">{fmt(VALOR_VENTA_PRADO)}</td>
+      </tr>
     </tbody>
   </table>
 
   <div class="pdoc-totals">
     <div class="pdoc-total-row">
       <span class="pd-total-label">Valor de venta</span>
-      <span class="pd-total-value">{fmt(VALOR_VENTA)}</span>
+      <span class="pd-total-value">{fmt(VALOR_VENTA_COMBINADO)}</span>
     </div>
     <div class="pdoc-total-row">
       <span class="pd-total-label">IGV (18%)</span>
-      <span class="pd-total-value">{fmt(IGV)}</span>
+      <span class="pd-total-value">{fmt(IGV_COMBINADO)}</span>
     </div>
     <div class="pdoc-total-row" data-emphasis="true">
       <span class="pd-total-label">Precio total</span>
-      <span class="pd-total-value">USD {fmt(PRECIO_TOTAL)}</span>
+      <span class="pd-total-value">USD {fmt(PRECIO_TOTAL_COMBINADO)}</span>
     </div>
   </div>
   <p class="pdoc-total-note">Referencial: S/ {fmt(PRECIO_TOTAL_SOLES)} (T.C. {EXCHANGE_RATE})</p>
 
   <div class="pdoc-section-bar">Condiciones comerciales</div>
   <div class="pdoc-terms">
-    <span class="pdoc-term-label">Origen</span><span>{ORIGIN}</span>
-    <span class="pdoc-term-label">Puerto de llegada</span><span>{PUERTO_LLEGADA}</span>
-    <span class="pdoc-term-label">Condición del precio</span><span>{CONDICION_PRECIO}</span>
+    <span class="pdoc-term-label">Origen</span><span>{ORIGIN} (Hilux) · China (Prado)</span>
+    <span class="pdoc-term-label">Puerto de llegada</span><span>{PUERTO_LLEGADA} (Hilux) · Callao, Perú (Prado)</span>
+    <span class="pdoc-term-label">Condición del precio</span><span>Nacionalizado, incluye IGV — puesto en Zofratacna, Tacna (Hilux) / Callao (Prado)</span>
     <span class="pdoc-term-label">Forma de pago</span><span>50% a la confirmación del pedido; 50% antes del despacho a nombre del cliente.</span>
     <span class="pdoc-term-label">Tiempo de entrega</span><span>A coordinar según disponibilidad de stock e itinerario de nacionalización.</span>
     <span class="pdoc-term-label">Vigencia de la oferta</span><span>15 días desde la fecha de esta cotización.</span>
@@ -287,10 +317,10 @@ HTMLDOC = f"""<!doctype html>
 
   <div class="pdoc-section-bar pdoc-section-bar--observaciones">Observaciones</div>
   <ul class="pdoc-observations">
-    <li>Precio final nacionalizado en Perú, incluye IGV (18%); no incluye trámites de placa/registro posteriores a la entrega.</li>
-    <li>Ad Valorem 0% aplicado por origen Tailandia, sujeto a confirmación por partida arancelaria exacta al momento del despacho.</li>
+    <li>Precios finales nacionalizados en Perú, incluyen IGV (18%); no incluyen trámites de placa/registro posteriores a la entrega.</li>
+    <li>Ad Valorem 0% aplicado a la Hilux por origen Tailandia, sujeto a confirmación por partida arancelaria exacta al momento del despacho.</li>
     <li>Tipo de cambio referencial S/ {EXCHANGE_RATE} por USD; el precio final se factura en la moneda acordada al momento del pago.</li>
-    <li>Precio sujeto a confirmación de disponibilidad de las unidades y variaciones de tipo de cambio o tributos aduaneros vigentes a la fecha de nacionalización.</li>
+    <li>Precios sujetos a confirmación de disponibilidad de las unidades y variaciones de tipo de cambio o tributos aduaneros vigentes a la fecha de nacionalización.</li>
   </ul>
 
   <div class="pdoc-tail">
@@ -323,5 +353,6 @@ print(f"wrote {out} ({len(HTMLDOC):,} bytes)")
 print(f"--- internal (not shown to client) ---")
 print(f"cif_unit={fmt(cif)} landed_cost_unit={fmt(landed_cost)} margin10%_unit={fmt(margin_usd)}")
 print(f"--- client-facing ---")
-print(f"units={UNITS} valor_venta_unit={fmt(VALOR_VENTA_UNIT)} valor_venta_total={fmt(VALOR_VENTA)}")
-print(f"igv={fmt(IGV)} precio_total={fmt(PRECIO_TOTAL)} (S/ {fmt(PRECIO_TOTAL_SOLES)})")
+print(f"Hilux: units={UNITS} valor_venta_unit={fmt(VALOR_VENTA_UNIT)} valor_venta_total={fmt(VALOR_VENTA)} igv={fmt(IGV)} precio_total={fmt(PRECIO_TOTAL)}")
+print(f"Prado: units={UNITS_PRADO} valor_venta_unit={fmt(VALOR_VENTA_UNIT_PRADO)} valor_venta_total={fmt(VALOR_VENTA_PRADO)} igv={fmt(IGV_PRADO)} precio_total={fmt(PRECIO_TOTAL_PRADO)}")
+print(f"Combinado: valor_venta={fmt(VALOR_VENTA_COMBINADO)} igv={fmt(IGV_COMBINADO)} precio_total={fmt(PRECIO_TOTAL_COMBINADO)} (S/ {fmt(PRECIO_TOTAL_SOLES)})")
