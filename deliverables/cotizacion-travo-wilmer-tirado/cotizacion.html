@@ -48,23 +48,14 @@
   .pdoc-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .pdoc-table thead th { background: var(--pd-bar); font-size: 10.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 6px 9px; text-align: center; border: 1px solid var(--pd-line); }
   .pdoc-table th.pd-col-item { width: 7%; }
-  .pdoc-table th.pd-col-desc { width: 45%; }
-  .pdoc-table th.pd-col-qty { width: 13%; }
+  .pdoc-table th.pd-col-desc { width: 44%; }
   .pdoc-table tbody tr { break-inside: avoid; }
-  .pdoc-table tbody td { border: 1px solid var(--pd-line); padding: 9px; vertical-align: top; font-size: 11.5px; }
+  .pdoc-table tbody td { border: 1px solid var(--pd-line); padding: 10px 9px; vertical-align: top; font-size: 11.5px; }
   .pd-item { font-weight: 600; text-align: center; }
   .pd-desc { text-align: left; }
   .pd-desc .pd-model { font-weight: 600; }
-  .pd-qty { text-align: center; font-weight: 600; }
+  .pd-desc .pd-motor { color: var(--pd-muted); font-size: 10.5px; }
   .pd-cell-num { text-align: right; font-family: var(--font-mono, monospace); font-variant-numeric: tabular-nums; }
-
-  .pdoc-totals { margin: 12px 0 4px auto; width: 360px; }
-  .pdoc-total-row { display: flex; justify-content: space-between; gap: 24px; padding: 7px 6px; border-top: 1px solid var(--pd-line); }
-  .pdoc-total-row .pd-total-label { font-weight: 600; }
-  .pdoc-total-row .pd-total-value { font-family: var(--font-mono, monospace); font-variant-numeric: tabular-nums; }
-  .pdoc-total-row[data-emphasis='true'] { border-top: 2px solid var(--pd-ink); }
-  .pdoc-total-row[data-emphasis='true'] .pd-total-label, .pdoc-total-row[data-emphasis='true'] .pd-total-value { font-size: 14.5px; font-weight: 700; white-space: nowrap; }
-  .pdoc-total-note { margin: 4px 0 0 auto; width: 360px; text-align: right; font-size: 10.5px; color: var(--pd-muted); }
 
   .pdoc-section-bar { background: var(--pd-bar); padding: 6px 12px; margin: 10px 0 6px; font-size: 11.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-align: center; }
   .pdoc-section-bar--observaciones { margin-top: 16px; }
@@ -86,7 +77,6 @@
     .pdoc-title { font-size: 32px; }
     .pdoc-parties { grid-template-columns: 1fr; }
     .pdoc-terms { grid-template-columns: 1fr; gap: 0; }
-    .pdoc-totals, .pdoc-total-note { width: 100%; }
     .pdoc-close-row { flex-direction: column; align-items: flex-start; gap: 16px; }
     .pdoc-footer { flex-direction: column; gap: 12px; }
   }
@@ -146,54 +136,40 @@
     </div>
   </div>
 
-  <div class="pdoc-section-bar">Vehículos cotizados</div>
+  <div class="pdoc-section-bar">Vehículos cotizados — precio por unidad</div>
   <table class="pdoc-table">
     <thead>
       <tr>
         <th class="pd-col-item">Ítem</th>
-        <th class="pd-col-desc">Descripción</th>
-        <th class="pd-col-qty">Cantidad</th>
-        <th>Valor Unitario</th>
-        <th>Importe</th>
+        <th class="pd-col-desc">Modelo</th>
+        <th>Valor de Venta</th>
+        <th>IGV (18%)</th>
+        <th>Precio Total</th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td class="pd-item">1</td>
         <td class="pd-desc">
-          <span class="pd-model">Toyota Hilux Travo Overland Plus — 2.8L Diésel 4WD Automática</span>
+          <span class="pd-model">Toyota Hilux Travo Overland Plus</span><br />
+          <span class="pd-motor">2.8L Diésel 4WD Automática</span>
         </td>
-        <td class="pd-qty">1</td>
         <td class="pd-cell-num">55,211.87</td>
-        <td class="pd-cell-num">55,211.87</td>
+        <td class="pd-cell-num">9,938.14</td>
+        <td class="pd-cell-num">65,150.01</td>
       </tr>
       <tr>
         <td class="pd-item">2</td>
         <td class="pd-desc">
-          <span class="pd-model">Toyota Land Cruiser Prado 2026 — FULL 2.4T Híbrido</span>
+          <span class="pd-model">Toyota Land Cruiser Prado 2026</span><br />
+          <span class="pd-motor">FULL 2.4T Híbrido</span>
         </td>
-        <td class="pd-qty">1</td>
         <td class="pd-cell-num">90,255.06</td>
-        <td class="pd-cell-num">90,255.06</td>
+        <td class="pd-cell-num">16,245.91</td>
+        <td class="pd-cell-num">106,500.97</td>
       </tr>
     </tbody>
   </table>
-
-  <div class="pdoc-totals">
-    <div class="pdoc-total-row">
-      <span class="pd-total-label">Valor de venta</span>
-      <span class="pd-total-value">145,466.93</span>
-    </div>
-    <div class="pdoc-total-row">
-      <span class="pd-total-label">IGV (18%)</span>
-      <span class="pd-total-value">26,184.05</span>
-    </div>
-    <div class="pdoc-total-row" data-emphasis="true">
-      <span class="pd-total-label">Precio total</span>
-      <span class="pd-total-value">USD 171,650.98</span>
-    </div>
-  </div>
-  <p class="pdoc-total-note">Referencial: S/ 635,108.63 (T.C. 3.70)</p>
 
   <div class="pdoc-section-bar">Condiciones comerciales</div>
   <div class="pdoc-terms">
@@ -207,7 +183,7 @@
 
   <div class="pdoc-section-bar pdoc-section-bar--observaciones">Observaciones</div>
   <ul class="pdoc-observations">
-    <li>Precios finales nacionalizados en Perú, incluyen IGV (18%); no incluyen trámites de placa/registro posteriores a la entrega.</li>
+    <li>Precios por unidad, nacionalizados en Perú, incluyen IGV (18%); no incluyen trámites de placa/registro posteriores a la entrega.</li>
     <li>Ad Valorem 0% aplicado a la Hilux por origen Tailandia, sujeto a confirmación por partida arancelaria exacta al momento del despacho.</li>
     <li>Tipo de cambio referencial S/ 3.70 por USD; el precio final se factura en la moneda acordada al momento del pago.</li>
     <li>Precios sujetos a confirmación de disponibilidad de las unidades y variaciones de tipo de cambio o tributos aduaneros vigentes a la fecha de nacionalización.</li>
