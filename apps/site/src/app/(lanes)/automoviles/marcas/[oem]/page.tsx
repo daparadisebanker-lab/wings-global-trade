@@ -12,7 +12,9 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getProducts } from '@/lib/catalog-data'
 import { getOemBrand, OEM_BRANDS } from '@/lib/automoviles/oem-brands'
+import { pluralizeCount } from '@/lib/pluralize'
 import { BrandModelGrid } from '@/components/features/automoviles/BrandModelGrid'
+import { SectionHero } from '@/components/features/automoviles/SectionHero'
 
 interface PageProps {
   params: Promise<{ oem: string }>
@@ -26,9 +28,30 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { oem } = await params
   const brand = getOemBrand(oem)
   if (!brand) return {}
+  const title = `${brand.name} — Automóviles | Wings Global Trade`
+  const description = `Catálogo ${brand.name}: ${brand.note}. Consulta técnica sin registro, cotización por unidad configurada o por contenedor.`
+  const url = `https://wingsglobaltrade.com/automoviles/marcas/${brand.slug}`
+  // First product of this brand with a real studio hero (index 0), if any —
+  // the same "no image if none exists" discipline the generic catalog
+  // product page already uses, never a fabricated OG asset.
+  const { products } = await getProducts({ category: 'automoviles', brand: brand.filterBrand, limit: 1 })
+  const ogImage = products[0]?.images?.[0]
   return {
-    title: `${brand.name} — Automóviles | Wings Global Trade`,
-    description: `Catálogo ${brand.name}: ${brand.note}. Consulta técnica sin registro, cotización por unidad configurada o por contenedor.`,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      locale: 'es_PE',
+      type: 'website',
+      url,
+      ...(ogImage && { images: [{ url: ogImage, width: 1200, height: 630 }] }),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+    },
     // The old /catalogo/automoviles?brand=X redirect (next.config.mjs)
     // forwards its query string by default (documented Next.js redirect
     // behavior — a destination with no matching capture group doesn't
@@ -47,18 +70,15 @@ export default async function AutomovilesBrandPage({ params }: PageProps) {
 
   return (
     <div data-oem={brand.slug}>
-      <div className="mx-auto max-w-6xl px-5 pb-12 pt-10 md:px-8 md:pb-16 md:pt-14">
-        <div className="flex flex-wrap items-baseline justify-between gap-3">
-          <h1 className="text-3xl font-medium text-[color:var(--ink-primary)] md:text-4xl">{brand.name}</h1>
-          <span className="font-mono text-[11px] uppercase tracking-widest-2 text-[color:var(--ink-decoration)]">
-            {products.length} {products.length === 1 ? 'línea de modelo' : 'líneas de modelo'}
-          </span>
-        </div>
-        <p data-reveal className="mt-4 max-w-2xl text-body-lg text-[color:var(--ink-secondary)]">
-          {brand.note}. Catálogo directo de fábrica — especificaciones básicas de referencia;
-          la configuración final se confirma al cotizar.
-        </p>
+      <SectionHero
+        kicker="Automóviles / Marcas"
+        title={brand.name}
+        meta={pluralizeCount(products.length, 'línea de modelo', 'líneas de modelo')}
+        description={`${brand.note}. Catálogo directo de fábrica — especificaciones básicas de referencia; la configuración final se confirma al cotizar.`}
+        accentColor="var(--oem-accent)"
+      />
 
+      <div className="mx-auto max-w-6xl px-5 py-12 md:px-8 md:py-16">
         <BrandModelGrid products={products} brandName={brand.name} />
 
         <div className="mt-16 flex flex-col gap-6 border border-[color:var(--ink-decoration)] bg-[color:var(--surface-2)] p-8 md:flex-row md:items-center md:justify-between">

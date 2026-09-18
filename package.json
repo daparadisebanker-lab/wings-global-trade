@@ -4,13 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "pnpm --filter site dev",
-    "build": "pnpm --filter site build",
+    "build": "node scripts/check-automoviles-images.mjs && pnpm --filter site build",
     "start": "pnpm --filter site start",
     "lint": "pnpm --filter site lint",
     "test": "pnpm --filter site test",
     "typecheck": "pnpm --filter site typecheck",
     "swap-test": "node scripts/swap-test.mjs",
-    "generate-icons": "node scripts/generate-icons.mjs"
+    "generate-icons": "node scripts/generate-icons.mjs",
+    "check:automoviles-images": "node scripts/check-automoviles-images.mjs"
   },
   "devDependencies": {
     "@resvg/resvg-js": "^2.6.2",

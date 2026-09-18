@@ -4,8 +4,9 @@
 // Structured quotation form with visual catalog category selection and
 // context-aware product suggestions.
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { useToast } from '@/components/ui/toast'
@@ -91,9 +92,19 @@ const EMPTY: Values = {
 // Component
 // ---------------------------------------------------------------------------
 
-export function QuotationForm() {
+function QuotationFormInner() {
   const { toast } = useToast()
-  const [values, setValues] = useState<Values>(EMPTY)
+  // A ficha técnica's "Solicitar cotización" CTA (or any other future link)
+  // carries its model name via ?producto=, prefilling this field instead
+  // of a buyer having to retype it. No category is force-selected: this
+  // form's CATEGORIES list predates the automóviles lane and doesn't have
+  // an "Automóviles" tile — prefilling category to a wrong existing tile
+  // would be more misleading than leaving it for the buyer to pick.
+  const searchParams = useSearchParams()
+  const [values, setValues] = useState<Values>(() => ({
+    ...EMPTY,
+    product: searchParams.get('producto') ?? EMPTY.product,
+  }))
   const [errors, setErrors] = useState<Partial<Record<keyof Values, string>>>({})
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success'>('idle')
 
@@ -473,6 +484,17 @@ export function QuotationForm() {
         </p>
       </div>
     </form>
+  )
+}
+
+export function QuotationForm() {
+  // useSearchParams requires a Suspense boundary — this is that boundary,
+  // kept here so every existing call site (just <QuotationForm />) needs no
+  // change.
+  return (
+    <Suspense fallback={<div className="min-h-[600px]" aria-hidden />}>
+      <QuotationFormInner />
+    </Suspense>
   )
 }
 

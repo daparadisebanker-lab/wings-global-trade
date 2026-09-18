@@ -15,6 +15,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import type { Product } from '@/types/database'
@@ -147,6 +148,8 @@ export function ExplorarFeed({ products }: ExplorarFeedProps) {
           const segment =
             typeof rawSegment === 'string' ? lane.taxonomy.find((s) => s.slug === rawSegment) : undefined
 
+          const heroImage = p.images?.[0]
+
           return (
             <section
               key={p.id}
@@ -154,12 +157,30 @@ export function ExplorarFeed({ products }: ExplorarFeedProps) {
                 cardRefs.current[i] = el
               }}
               data-oem={oem?.slug}
-              className="flex h-full snap-start flex-col justify-center border-b border-[color:var(--ink-decoration)] px-5 py-10 md:px-8"
+              className="relative flex h-full snap-start flex-col justify-center overflow-hidden border-b border-[color:var(--ink-decoration)] px-5 py-10 md:px-8"
             >
+              {heroImage && (
+                <>
+                  <Image
+                    src={heroImage}
+                    alt=""
+                    aria-hidden
+                    fill
+                    sizes="100vw"
+                    loading={i === 0 ? undefined : 'lazy'}
+                    priority={i === 0}
+                    className="object-contain object-center opacity-[0.14] blur-[1px]"
+                  />
+                  <div
+                    aria-hidden
+                    className="absolute inset-0 bg-gradient-to-t from-[color:var(--surface-0)] via-transparent to-[color:var(--surface-0)]/40"
+                  />
+                </>
+              )}
               <motion.div
                 animate={reduced ? undefined : { opacity: activeIndex === i ? 1 : 0.35, scale: activeIndex === i ? 1 : 0.97 }}
                 transition={{ duration: 0.3, ease: EASE_SETTLE }}
-                className="mx-auto flex w-full max-w-2xl flex-col"
+                className="relative z-[1] mx-auto flex w-full max-w-2xl flex-col"
               >
                 <div className="flex items-center gap-2">
                   <span
@@ -231,9 +252,12 @@ export function ExplorarFeed({ products }: ExplorarFeedProps) {
                   </Link>
                   <Link
                     href={`/automoviles/ficha/${p.slug}`}
-                    className="font-mono text-[11px] uppercase tracking-widest-2 text-[color:var(--ink-secondary)] transition-colors hover:text-[color:var(--ink-primary)]"
+                    className="group/ficha inline-flex items-center gap-1 font-mono text-[11px] uppercase tracking-widest-2 text-[color:var(--ink-secondary)] transition-colors hover:text-[color:var(--ink-primary)]"
                   >
-                    Ficha técnica ↓
+                    Ficha técnica
+                    <span aria-hidden className="transition-transform group-hover/ficha:translate-x-0.5">
+                      →
+                    </span>
                   </Link>
                 </div>
               </motion.div>

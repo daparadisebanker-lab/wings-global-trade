@@ -11,13 +11,30 @@ import Link from 'next/link'
 import { getProducts } from '@/lib/catalog-data'
 import { OEM_BRANDS } from '@/lib/automoviles/oem-brands'
 import { lane } from '@wings/liveries/automoviles/lane.config'
+import { pluralizeCount } from '@/lib/pluralize'
 import { MotionCard } from '@/components/features/automoviles/MotionCard'
+import { SectionHero } from '@/components/features/automoviles/SectionHero'
 import { VehicleTypeIcon, type VehicleSegmentSlug } from '@/components/features/automoviles/VehicleTypeIcon'
 
+const TITLE = 'Automóviles — Once marcas, un solo escritorio | Wings Global Trade'
+const DESCRIPTION =
+  'Sedanes, SUV, MPV e híbridos de 11 marcas: Toyota, Jetour, KIA, Audi, BMW, Hyundai, Mercedes-Benz, MG, Star 5, Changan y Wuling. Catálogo directo de fábrica, por unidad configurada o por contenedor.'
+
 export const metadata: Metadata = {
-  title: 'Automóviles — Once marcas, un solo escritorio | Wings Global Trade',
-  description:
-    'Sedanes, SUV, MPV e híbridos de 11 marcas: Toyota, Jetour, KIA, Audi, BMW, Hyundai, Mercedes-Benz, MG, Star 5, Changan y Wuling. Catálogo directo de fábrica, por unidad configurada o por contenedor.',
+  title: TITLE,
+  description: DESCRIPTION,
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    locale: 'es_PE',
+    type: 'website',
+    url: 'https://wingsglobaltrade.com/automoviles',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: TITLE,
+    description: DESCRIPTION,
+  },
   // The old /catalogo/automoviles?fuel=hibrido redirect (next.config.mjs)
   // forwards that query string here by default — canonical keeps it out of
   // search results as a separate URL.
@@ -59,22 +76,19 @@ export default async function AutomovilesLaneRootPage() {
 
   return (
     <div>
-      {/* Hero */}
-      <section className="border-b border-[color:var(--ink-decoration)]">
-        <div className="mx-auto max-w-6xl px-5 py-16 md:px-8 md:py-24">
-          <p className="font-mono text-mono-sm uppercase tracking-[var(--lane-label-tracking)] text-[color:var(--accent-ink)]">
-            Automóviles
-          </p>
-          <h1
-            data-split
-            className="mt-4 max-w-3xl text-5xl uppercase text-[color:var(--ink-primary)] tracking-[var(--lane-display-tracking)] font-[var(--lane-display-weight)] md:text-6xl"
-          >
-            Once fábricas.<br />Un solo escritorio.
-          </h1>
-          <p className="mt-6 max-w-xl text-body-lg text-[color:var(--ink-secondary)]">
-            {lane.scope.es}
-          </p>
-          <div className="mt-10 flex flex-wrap items-center gap-4">
+      <SectionHero
+        size="lg"
+        kicker="Automóviles"
+        title={
+          <>
+            Once fábricas.
+            <br />
+            Un solo escritorio.
+          </>
+        }
+        description={lane.scope.es}
+        actions={
+          <>
             {/* Primary = the quote conversation (root CLAUDE.md §1.2: "the
                 primary action of every lane is always: start a quote
                 conversation"), not the browse link — the fill follows that
@@ -91,32 +105,32 @@ export default async function AutomovilesLaneRootPage() {
             >
               Ver las 11 marcas
             </Link>
-          </div>
-        </div>
-      </section>
+          </>
+        }
+      />
 
       {/* Segments — the canonical taxonomy, the vehicle-type selection
           engine: pick a body type by its own silhouette, not just a word. */}
-      <section className="mx-auto max-w-6xl px-5 py-16 md:px-8 md:py-20">
+      <section className="mx-auto max-w-6xl px-5 py-16 md:px-8 md:py-24 lg:py-28">
         <div className="flex items-center justify-between gap-4">
           <h2 className="font-mono text-mono-sm uppercase tracking-[var(--lane-label-tracking)] text-[color:var(--ink-decoration)]">
             Por tipo de carrocería
           </h2>
         </div>
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
           {lane.taxonomy.map((seg) => (
             <MotionCard
               key={seg.slug}
               className="group border border-[color:var(--ink-decoration)] bg-[color:var(--surface-1)] transition-colors hover:border-[color:var(--accent-border)]"
             >
-              <Link href={`/automoviles/${seg.slug}`} className="block p-6">
+              <Link href={`/automoviles/${seg.slug}`} className="block p-7">
                 <VehicleTypeIcon
                   segment={seg.slug as VehicleSegmentSlug}
                   className="h-10 w-full text-[color:var(--ink-primary)]"
                 />
-                <p className="mt-4 text-base font-medium text-[color:var(--ink-primary)]">{seg.name.es}</p>
+                <p className="mt-5 text-base font-medium text-[color:var(--ink-primary)]">{seg.name.es}</p>
                 <p className="mt-2 font-mono text-[11px] uppercase text-[color:var(--ink-decoration)]">
-                  {segmentCounts.get(seg.slug) ?? 0} modelos
+                  {pluralizeCount(segmentCounts.get(seg.slug) ?? 0, 'modelo')}
                 </p>
                 <div className="mt-4 h-[2px] w-8 bg-[color:var(--accent-ink)] transition-all group-hover:w-12" aria-hidden />
               </Link>
@@ -126,9 +140,11 @@ export default async function AutomovilesLaneRootPage() {
       </section>
 
       {/* Explorar — the vertical discovery feed, a second way to browse the
-          same 31 nameplates. A banner, not a nav item: keeps AutoLaneNav's
-          tab row from getting crowded again (see SCOPE.md §0g) and reads as
-          an optional deeper mode rather than competing with the grid IA. */}
+          same nameplates (count read live off the catalog, not hardcoded —
+          it drifted out of sync with the catalog once already). A banner,
+          not a nav item: keeps AutoLaneNav's tab row from getting crowded
+          again (see SCOPE.md §0g) and reads as an optional deeper mode
+          rather than competing with the grid IA. */}
       <section className="border-t border-[color:var(--ink-decoration)] bg-[color:var(--surface-2)]">
         <Link
           href="/automoviles/explorar"
@@ -139,7 +155,8 @@ export default async function AutomovilesLaneRootPage() {
               Modo vertical
             </p>
             <p className="mt-2 text-xl text-[color:var(--ink-primary)]">
-              Recorra las 31 líneas de modelo una a la vez, con teclado, mouse o dedo.
+              Recorra las {pluralizeCount(products.length, 'línea de modelo', 'líneas de modelo')} una a la vez, con
+              teclado, mouse o dedo.
             </p>
           </div>
           <span className="inline-flex shrink-0 items-center gap-2 font-mono text-[11px] uppercase tracking-widest-2 text-[color:var(--ink-primary)]">
@@ -153,12 +170,12 @@ export default async function AutomovilesLaneRootPage() {
 
       {/* Unit math — the dual RFQ shape the hero promises but never explained */}
       <section className="border-t border-[color:var(--ink-decoration)]">
-        <div className="mx-auto max-w-6xl px-5 py-16 md:px-8 md:py-20">
+        <div className="mx-auto max-w-6xl px-5 py-16 md:px-8 md:py-24 lg:py-28">
           <h2 className="font-mono text-mono-sm uppercase tracking-[var(--lane-label-tracking)] text-[color:var(--ink-decoration)]">
             Cómo se compra
           </h2>
           <p className="mt-3 max-w-2xl text-body-md text-[color:var(--ink-secondary)]">{lane.unitMath}</p>
-          <ol className="mt-10 grid gap-10 md:grid-cols-3">
+          <ol className="mt-12 grid gap-10 md:grid-cols-3">
             {UNIT_MATH.map((step) => (
               <li key={step.n}>
                 <span className="font-mono text-mono-lg text-[color:var(--accent-ink)]">{step.n}</span>
@@ -172,7 +189,7 @@ export default async function AutomovilesLaneRootPage() {
 
       {/* Full brand grid — all 11, not a preview */}
       <section className="border-t border-[color:var(--ink-decoration)] bg-[color:var(--surface-2)]">
-        <div className="mx-auto max-w-6xl px-5 py-16 md:px-8 md:py-20">
+        <div className="mx-auto max-w-6xl px-5 py-16 md:px-8 md:py-24 lg:py-28">
           <div className="flex items-center justify-between gap-4">
             <h2 className="font-mono text-mono-sm uppercase tracking-[var(--lane-label-tracking)] text-[color:var(--ink-decoration)]">
               Las 11 marcas
@@ -181,7 +198,7 @@ export default async function AutomovilesLaneRootPage() {
               Ver catálogo completo →
             </Link>
           </div>
-          <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+          <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
             {OEM_BRANDS.map((b) => (
               <MotionCard
                 key={b.slug}
@@ -194,7 +211,7 @@ export default async function AutomovilesLaneRootPage() {
                 >
                   <span className="text-sm font-medium text-[color:var(--ink-primary)]">{b.name}</span>
                   <span className="font-mono text-[10px] uppercase text-[color:var(--ink-decoration)]">
-                    {brandCounts.get(b.filterBrand) ?? 0} modelos
+                    {pluralizeCount(brandCounts.get(b.filterBrand) ?? 0, 'modelo')}
                   </span>
                 </Link>
               </MotionCard>

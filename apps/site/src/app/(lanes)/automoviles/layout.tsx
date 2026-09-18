@@ -25,10 +25,25 @@ import type { Metadata } from 'next'
 import { BrandChoreography, BrandCurtain } from '@/components/features/brands/BrandChoreography'
 import { AutoLaneNav } from '@/components/features/automoviles/AutoLaneNav'
 
+const LAYOUT_TITLE = 'Automóviles | Wings Global Trade'
+const LAYOUT_DESCRIPTION =
+  'Autos de pasajeros 0 km importados desde China: sedanes, SUV, MPV e híbridos de 11 marcas, vendidos por unidad configurada o por contenedor.'
+
+// A fallback only — every route under this layout sets its own full
+// metadata (including openGraph/twitter), so this rarely resolves in
+// practice. Still carries openGraph itself: a route added later that
+// forgets to set its own should not silently inherit the homepage's.
 export const metadata: Metadata = {
-  title: 'Automóviles | Wings Global Trade',
-  description:
-    'Autos de pasajeros 0 km importados desde China: sedanes, SUV, MPV e híbridos de 11 marcas, vendidos por unidad configurada o por contenedor.',
+  title: LAYOUT_TITLE,
+  description: LAYOUT_DESCRIPTION,
+  openGraph: {
+    title: LAYOUT_TITLE,
+    description: LAYOUT_DESCRIPTION,
+    locale: 'es_PE',
+    type: 'website',
+    url: 'https://wingsglobaltrade.com/automoviles',
+  },
+  twitter: { card: 'summary_large_image', title: LAYOUT_TITLE, description: LAYOUT_DESCRIPTION },
 }
 
 export default function AutomovilesLaneLayout({ children }: { children: React.ReactNode }) {

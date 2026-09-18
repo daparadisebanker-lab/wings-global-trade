@@ -97,7 +97,10 @@ export function Footer({ categories }: FooterProps) {
       label: 'Catálogo',
       links: [
         { href: '/catalogo', label: 'Todo el catálogo' },
-        ...categories.map((c) => ({ href: categoryHref(c.slug), label: c.name_es })),
+        // Automóviles is excluded here — it already owns a Divisiones entry
+        // (WGT/07, linking to its richer /automoviles lane root) above, and
+        // listing it twice in the same footer read as a bug, not emphasis.
+        ...categories.filter((c) => c.slug !== 'automoviles').map((c) => ({ href: categoryHref(c.slug), label: c.name_es })),
       ],
     },
     { id: 'servicios', label: 'Servicios', links: SERVICES },

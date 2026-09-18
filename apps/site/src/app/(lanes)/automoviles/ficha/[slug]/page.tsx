@@ -9,6 +9,7 @@ import type { Metadata } from 'next'
 import { getCategoryBySlug, getProductBySlug, getProducts } from '@/lib/catalog-data'
 import { buildFichaDocument } from '@/lib/automoviles/ficha'
 import { FichaAutomovilDocument } from './FichaAutomovilDocument'
+import { FichaScreen } from './FichaScreen'
 import { PrintBar } from './PrintBar'
 
 interface PageProps {
@@ -24,9 +25,23 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params
   const product = await getProductBySlug(slug)
   if (!product) return {}
+  const title = `Ficha técnica — ${product.name_es} | Wings Global Trade`
+  const description = `Especificaciones técnicas de ${product.name_es}: ${product.description_es ?? 'catálogo directo de fábrica'}.`
+  const url = `https://wingsglobaltrade.com/automoviles/ficha/${slug}`
+  const ogImage = product.images?.[0]
   return {
-    title: `Ficha técnica — ${product.name_es} | Wings Global Trade`,
-    description: `Especificaciones técnicas de ${product.name_es}: ${product.description_es ?? 'catálogo directo de fábrica'}.`,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      locale: 'es_PE',
+      type: 'website',
+      url,
+      ...(ogImage && { images: [{ url: ogImage, width: 1200, height: 630 }] }),
+    },
+    twitter: { card: 'summary_large_image', title, description },
+    alternates: { canonical: url },
     robots: { index: false, follow: true }, // a reference document, not a landing page
   }
 }
@@ -51,9 +66,16 @@ export default async function FichaAutomovilPage({ params }: PageProps) {
   const backHref = doc.brand ? `/automoviles/marcas/${doc.brand.slug}` : '/automoviles/marcas'
 
   return (
-    <div className="fdoc-page">
-      <PrintBar reference={doc.reference} backHref={backHref} />
-      <FichaAutomovilDocument doc={doc} />
-    </div>
+    <>
+      <FichaScreen doc={doc} heroImage={product.images?.[0]} />
+
+      {/* Print only — the exact document this route always produced,
+          untouched. Hidden on screen (print:hidden governs FichaScreen
+          above; this half is the mirror: invisible until @media print). */}
+      <div className="fdoc-page hidden print:block">
+        <PrintBar reference={doc.reference} backHref={backHref} />
+        <FichaAutomovilDocument doc={doc} />
+      </div>
+    </>
   )
 }

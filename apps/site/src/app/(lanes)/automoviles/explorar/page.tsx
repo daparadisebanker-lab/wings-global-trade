@@ -8,10 +8,21 @@ import type { Metadata } from 'next'
 import { getProducts } from '@/lib/catalog-data'
 import { ExplorarFeed } from '@/components/features/automoviles/ExplorarFeed'
 
+const TITLE = 'Explorar — Automóviles | Wings Global Trade'
+const DESCRIPTION =
+  'Recorre las líneas de modelo del catálogo de automóviles Wings, una a la vez: marca, segmento, especificación y versiones disponibles.'
+
 export const metadata: Metadata = {
-  title: 'Explorar — Automóviles | Wings Global Trade',
-  description:
-    'Recorre las 31 líneas de modelo del catálogo de automóviles Wings, una a la vez: marca, segmento, especificación y versiones disponibles.',
+  title: TITLE,
+  description: DESCRIPTION,
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    locale: 'es_PE',
+    type: 'website',
+    url: 'https://wingsglobaltrade.com/automoviles/explorar',
+  },
+  twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION },
   alternates: { canonical: '/automoviles/explorar' },
 }
 
