@@ -27,13 +27,12 @@ Zofratacna Hilux costeo:
   Markup — Scenario 1 (6.3%)            5,930.50
   SELLING PRICE — Scenario 1          100,065.45
 
-Following the same convention used throughout this project (landed cost,
-which already embeds import IGV, gets a commercial margin to produce a
-pre-resale-invoice "Valor de Venta"; a fresh 18% IGV is then charged on
-top for the local sale invoice — see e.g. the Hilux Travo Overland Plus
-costeo), the sheet's own "Selling Price — Scenario 1" (100,065.45) is
-treated as VALOR_VENTA_UNIT, with IGV (18%) added on top for the
-client-facing Precio Total. Internal landed cost, Octavio's fee and the
+Per client correction (2026-09-23): unlike the Hilux line's SUNAT-engine
+costeo, this sheet's "Selling Price — Scenario 1" (100,065.45) ALREADY
+INCLUDES IGV — it is NOT a pre-tax Valor de Venta to which a fresh 18%
+should be added. So here Valor de Venta is back-calculated as
+Precio Total / 1.18, and IGV is the difference — the reverse of the
+Hilux-style layering. Internal landed cost, Octavio's fee and the
 Peru-dealer comparison are NOT shown to the client (house rule).
 
 Run: python3 build_cotizacion.py
@@ -90,14 +89,17 @@ subtotal = r2(cif + ad_valorem + igv_importacion + GASTOS_PORTUARIOS + AGENCIA_A
 landed_cost = r2(subtotal + OCTAVIO_FEE)
 
 margin_usd = r2(landed_cost * MARKUP_RATE)
-selling_price = r2(landed_cost + margin_usd)  # Valor de venta, sin IGV de reventa, por unidad
+selling_price = r2(landed_cost + margin_usd)  # Precio total, YA incluye IGV (per client correction)
 
-# ── Client-facing: fresh 18% IGV on the resale, same convention as every
-# other cotización in this project ──────────────────────────────────────
-VALOR_VENTA_UNIT = selling_price
+# ── Client-facing: selling_price is IGV-INCLUSIVE (per client correction),
+# so back out Valor de Venta and IGV from it rather than adding IGV on top.
+PRECIO_TOTAL_UNIT = selling_price
+VALOR_VENTA_UNIT = r2(PRECIO_TOTAL_UNIT / (D(1) + IGV_RATE))
+IGV_UNIT = r2(PRECIO_TOTAL_UNIT - VALOR_VENTA_UNIT)
+
 VALOR_VENTA = r2(VALOR_VENTA_UNIT * UNITS)
-IGV = r2(VALOR_VENTA * IGV_RATE)
-PRECIO_TOTAL = r2(VALOR_VENTA + IGV)
+IGV = r2(IGV_UNIT * UNITS)
+PRECIO_TOTAL = r2(PRECIO_TOTAL_UNIT * UNITS)
 PRECIO_TOTAL_SOLES = r2(PRECIO_TOTAL * EXCHANGE_RATE)
 
 
