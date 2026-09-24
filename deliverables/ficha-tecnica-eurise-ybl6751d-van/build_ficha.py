@@ -53,7 +53,7 @@ def img_uri(name: str) -> str:
 
 
 BLOCKS = [
-    {"type": "section", "idx": 1, "title": "Identificación", "rows": [
+    {"type": "section", "idx": 1, "title": "Identificación", "break_before": True, "rows": [
         ("Modelo comercial", MODEL_NAME),
         ("Modelo / código de fábrica", "EURISE YBL6751D"),
         ("Marca de fábrica", "EURISE (欧睿)"),
@@ -245,8 +245,9 @@ def block_html(b: dict) -> str:
     else:
         body = f'<div class="pdoc-spec-grid">{grid}</div>'
 
+    section_class = "pdoc-spec-section pdoc-break-before" if b.get("break_before") else "pdoc-spec-section"
     return f"""
-  <div class="pdoc-spec-section">
+  <div class="{section_class}">
     {bar}
     {body}
   </div>"""
@@ -298,9 +299,15 @@ HTMLDOC = f"""<!doctype html>
   .pdoc-rule {{ position: relative; height: 3px; margin: 10px 0 14px; background: var(--pd-line); }}
   .pdoc-rule::before {{ content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 168px; background: var(--pd-ink); }}
 
+  /* ── Cover photo: the complete image, uncropped, shown right under the
+     title — its own dedicated cover page, separate from the identity text
+     panel below it and from the spec content (which starts on page 2). ── */
+  .pdoc-cover-photo {{ margin: 0 0 14px; border-radius: 12px; overflow: hidden; break-inside: avoid; }}
+  .pdoc-cover-photo img {{ width: 100%; height: auto; display: block; }}
+
   /* ── Text-only identity block: a solid ink panel, kept separate from the
-     photo (shown as its own banner right below) so the identity text never
-     loses legibility sitting on top of an image. ── */
+     photo so the identity text never loses legibility sitting on top of
+     an image. ── */
   .pdoc-identity {{
     background: var(--pd-ink); color: #fff; border-radius: 14px;
     padding: 14px 22px 13px; margin-bottom: 10px;
@@ -329,6 +336,7 @@ HTMLDOC = f"""<!doctype html>
     font-size: 10.5px; font-weight: 700; flex-shrink: 0;
   }}
   .pdoc-spec-section {{ margin-bottom: 5px; }}
+  .pdoc-break-before {{ break-before: page; }}
   .pdoc-spec-grid {{ display: flex; flex-direction: column; font-size: 11.5px; }}
   .spec-row {{
     display: grid; grid-template-columns: 270px 1fr; align-items: start; gap: 4.5px 16px;
@@ -413,6 +421,10 @@ HTMLDOC = f"""<!doctype html>
   </header>
   <div class="pdoc-rule" aria-hidden="true"></div>
 
+  <figure class="pdoc-cover-photo">
+    <img src="{img_uri('cover-front')}" alt="{MODEL_NAME}" />
+  </figure>
+
   <div class="pdoc-identity">
     <div class="pdoc-identity-kicker">Ficha Técnica · Wings Global Trade</div>
     <div class="pdoc-identity-name">{MODEL_NAME}</div>
@@ -421,11 +433,6 @@ HTMLDOC = f"""<!doctype html>
     {HERO_STATS_HTML}
     </div>
   </div>
-
-  <figure class="pdoc-banner pdoc-banner--hero">
-    <img src="{img_uri('hero-front')}" alt="{MODEL_NAME}" />
-    <figcaption>Vista frontal (foto referencial)</figcaption>
-  </figure>
 
   <div class="pdoc-dateline">
     <span>Preparado: {DOC_DATE}</span>
@@ -436,7 +443,6 @@ HTMLDOC = f"""<!doctype html>
   {BLOCKS_HTML}
 
   <div class="pdoc-tail">
-  <p class="pdoc-note">Ficha denominada "Asiastar" siguiendo el branding visible en la fotografía de referencia; las especificaciones técnicas provienen de la hoja de cotización del proveedor de fábrica (EURISE, modelo YBL6751D — ver Identificación). El documento fuente no incluye precio, condiciones de pago, plazo de entrega ni términos de garantía, por lo que no se muestran en esta ficha. Las fotografías corresponden a una van de chasis cabinado de configuración similar, no a la unidad exacta a entregar; se recomienda confirmar branding, equipamiento y especificaciones contra la unidad física antes de la compra. La sección "Aire acondicionado" presenta una discrepancia en la fuente entre 12 kW (columna en chino) y 10 kW (columna en inglés) — se recomienda confirmar con el proveedor. Las secciones de "Configuración Opcional" no vienen de serie y están sujetas a cotización adicional.</p>
   <div class="pdoc-close-row">
     <div class="pdoc-close">
       <div>Atentamente,</div>
@@ -467,7 +473,7 @@ n_rows = sum(len(b["rows"]) for b in BLOCKS if b["type"] == "section")
 n_photos = len(set(
     [b["img"] for b in BLOCKS if b["type"] == "banner"]
     + [b["side_img"] for b in BLOCKS if b.get("side_img")]
-    + ["hero-front"]
+    + ["cover-front"]
 ))
 print(f"wrote {out} ({len(HTMLDOC):,} bytes)")
 print(f"sections={sum(1 for b in BLOCKS if b['type']=='section')} rows={n_rows} photos={n_photos}")
