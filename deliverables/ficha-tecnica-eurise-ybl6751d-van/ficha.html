@@ -33,10 +33,14 @@
   .pdoc-rule { position: relative; height: 3px; margin: 10px 0 14px; background: var(--pd-line); }
   .pdoc-rule::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 168px; background: var(--pd-ink); }
 
-  /* ── Cover photo: the complete image, uncropped, shown right under the
-     title — its own dedicated cover page, separate from the identity text
-     panel below it and from the spec content (which starts on page 2). ── */
-  .pdoc-cover-photo { margin: 0 0 14px; border-radius: 12px; overflow: hidden; break-inside: avoid; }
+  /* ── Cover photo: full bleed, edge-to-edge (no margin, no rounded
+     corners) — the complete image, uncropped, shown right under the title
+     on its own dedicated cover page, separate from the identity text panel
+     below it and from the spec content (which starts on page 2). ── */
+  .pdoc-cover-photo {
+    position: relative; margin: 0 calc(var(--pd-pad-x) * -1) 14px; width: calc(100% + var(--pd-pad-x) * 2);
+    overflow: hidden; break-inside: avoid;
+  }
   .pdoc-cover-photo img { width: 100%; height: auto; display: block; }
 
   /* ── Text-only identity block: a solid ink panel, kept separate from the
@@ -130,11 +134,14 @@
   }
 
   @media print {
-    @page { size: A4 portrait; margin: 8mm; }
+    /* Zero page margin so full-bleed photos (cover + banners) can reach the
+       literal paper edge; --pd-pad-x is reintroduced here (instead of the
+       old @page margin) so text content stays inset by the same amount. */
+    @page { size: A4 portrait; margin: 0; }
     body { background: #ffffff; }
     .pdoc-page { min-height: 0; padding: 0; }
     .pdoc-page .pdoc { box-shadow: none; }
-    .pdoc { --pd-pad-x: 0px; max-width: none; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .pdoc { --pd-pad-x: 30px; max-width: none; padding: 24px var(--pd-pad-x) 26px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .pdoc-close-row, .pdoc-footer { break-inside: avoid; }
   }
 </style>
