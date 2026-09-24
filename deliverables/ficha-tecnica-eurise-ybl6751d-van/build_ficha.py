@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Build the Wings Global Trade branded technical spec sheet (Ficha Técnica)
-for a 20-seat diesel passenger van — retitled "Van de Pasajeros de 20" per
-follow-up request, now WITH photography (a full-bleed photo hero + two
-mid-section banners + one side-image), reusing the ink-colored section-bar
-system from the redesigned Land Cruiser Prado Híbrida ficha.
+for a 20-seat diesel passenger van — retitled "Van de 20 Pasajeros - Asiastar"
+per follow-up request. The hero photo is shown as its own plain banner,
+separate from a solid-ink text identity panel (ported from the Land Cruiser
+Prado Híbrida ficha) so the identity text is never overlaid on the image —
+the earlier photo-overlay-with-scrim hero was flagged as hard to read.
 
 Source specs: client-supplied "QUOTATION OF EURISE" spec sheet (PDF,
 bilingual Chinese/English) for model YBL6751D — kept in the identity
@@ -34,7 +35,7 @@ LOGO_SVG = "/home/user/wings-global-trade/apps/tower/public/brand/wings-imagotip
 DOC_NUMBER = "FT-WGT-2026-0924"
 DOC_DATE = "24-09-2026"
 
-MODEL_NAME = "Van de Pasajeros de 20"
+MODEL_NAME = "Van de 20 Pasajeros - Asiastar"
 MODEL_TRIM = "EURISE YBL6751D · 2.8T Diésel · 6MT"
 
 HERO_STATS = [
@@ -253,8 +254,8 @@ def block_html(b: dict) -> str:
 
 BLOCKS_HTML = "\n".join(block_html(b) for b in BLOCKS)
 HERO_STATS_HTML = "\n      ".join(
-    f'<div class="pdoc-hero-stat2"><span class="pd-hero-label2">{label}</span>'
-    f'<span class="pd-hero-value2">{value}</span></div>'
+    f'<div class="pdoc-hero-stat"><span class="pd-hero-label">{label}</span>'
+    f'<span class="pd-hero-value">{value}</span></div>'
     for label, value in HERO_STATS
 )
 
@@ -297,25 +298,21 @@ HTMLDOC = f"""<!doctype html>
   .pdoc-rule {{ position: relative; height: 3px; margin: 10px 0 14px; background: var(--pd-line); }}
   .pdoc-rule::before {{ content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 168px; background: var(--pd-ink); }}
 
-  /* ── Photo hero: full-bleed image + dark scrim + overlaid identity ── */
-  .pdoc-hero-banner {{
-    position: relative; margin: 0 calc(var(--pd-pad-x) * -1) 10px; width: calc(100% + var(--pd-pad-x) * 2);
-    border-radius: 0 0 16px 16px; overflow: hidden; break-inside: avoid;
+  /* ── Text-only identity block: a solid ink panel, kept separate from the
+     photo (shown as its own banner right below) so the identity text never
+     loses legibility sitting on top of an image. ── */
+  .pdoc-identity {{
+    background: var(--pd-ink); color: #fff; border-radius: 14px;
+    padding: 14px 22px 13px; margin-bottom: 10px;
   }}
-  .pdoc-hero-img {{ width: 100%; height: 258px; object-fit: cover; display: block; }}
-  .pdoc-hero-scrim {{
-    position: absolute; inset: 0;
-    background: linear-gradient(to top, rgba(8,10,12,.92) 0%, rgba(8,10,12,.55) 34%, rgba(8,10,12,0) 66%);
-  }}
-  .pdoc-hero-overlay {{ position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 22px 16px; color: #fff; }}
-  .pdoc-hero-kicker {{ font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: #9fb3d9; font-weight: 700; margin-bottom: 6px; }}
-  .pdoc-hero-name2 {{ font-size: 23px; font-weight: 700; letter-spacing: -0.01em; }}
-  .pdoc-hero-trim2 {{ margin-top: 2px; font-size: 11.5px; color: rgba(255,255,255,.78); }}
-  .pdoc-hero-stats2 {{ display: flex; margin-top: 11px; background: rgba(8,10,12,.5); border-radius: 12px; padding: 8px 6px; }}
-  .pdoc-hero-stat2 {{ flex: 1; text-align: center; border-left: 1px solid rgba(255,255,255,.18); padding: 0 4px; }}
-  .pdoc-hero-stat2:first-child {{ border-left: none; }}
-  .pd-hero-label2 {{ display: block; font-size: 8.5px; letter-spacing: .05em; text-transform: uppercase; color: rgba(255,255,255,.68); }}
-  .pd-hero-value2 {{ display: block; margin-top: 2px; font-family: var(--font-mono, monospace); font-weight: 700; font-size: 13px; color: #fff; font-variant-numeric: tabular-nums; }}
+  .pdoc-identity-kicker {{ font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; color: #9fb3d9; font-weight: 700; margin-bottom: 5px; }}
+  .pdoc-identity-name {{ font-size: 21px; font-weight: 700; letter-spacing: -0.01em; color: #fff; }}
+  .pdoc-identity-trim {{ margin-top: 3px; font-size: 11.5px; color: rgba(255,255,255,.72); }}
+  .pdoc-hero-stats {{ display: flex; margin-top: 10px; background: rgba(255,255,255,.08); border-radius: 10px; padding: 7px 6px; }}
+  .pdoc-hero-stat {{ flex: 1; text-align: center; border-left: 1px solid rgba(255,255,255,.18); padding: 0 4px; }}
+  .pdoc-hero-stat:first-child {{ border-left: none; }}
+  .pd-hero-label {{ display: block; font-size: 8.5px; letter-spacing: .05em; text-transform: uppercase; color: rgba(255,255,255,.62); }}
+  .pd-hero-value {{ display: block; margin-top: 2px; font-family: var(--font-mono, monospace); font-weight: 700; font-size: 13px; color: #fff; font-variant-numeric: tabular-nums; }}
 
   .pdoc-dateline {{ display: flex; flex-wrap: wrap; gap: 5px 16px; margin-bottom: 12px; font-size: 11.5px; color: var(--pd-muted); }}
   .pdoc-dateline span:not(:last-child)::after {{ content: '|'; margin-left: 16px; color: var(--pd-line); }}
@@ -331,11 +328,11 @@ HTMLDOC = f"""<!doctype html>
     border-radius: 5px; background: var(--pd-accent); color: #fff; font-family: var(--font-mono, monospace);
     font-size: 10.5px; font-weight: 700; flex-shrink: 0;
   }}
-  .pdoc-spec-section {{ margin-bottom: 7px; }}
+  .pdoc-spec-section {{ margin-bottom: 5px; }}
   .pdoc-spec-grid {{ display: flex; flex-direction: column; font-size: 11.5px; }}
   .spec-row {{
     display: grid; grid-template-columns: 270px 1fr; align-items: start; gap: 4.5px 16px;
-    padding: 5.5px 8px; border-bottom: 1px solid var(--pd-tint); break-inside: avoid;
+    padding: 4.5px 8px; border-bottom: 1px solid var(--pd-tint); break-inside: avoid;
   }}
   .spec-row:nth-child(even) {{ background: var(--pd-tint); }}
   .spec-label {{ font-weight: 600; color: var(--pd-ink); }}
@@ -358,8 +355,8 @@ HTMLDOC = f"""<!doctype html>
   }}
 
   /* ── Mid-section full-bleed banner with caption pill ── */
-  .pdoc-banner {{ position: relative; margin: 4px calc(var(--pd-pad-x) * -1) 14px; width: calc(100% + var(--pd-pad-x) * 2); break-inside: avoid; }}
-  .pdoc-banner img {{ width: 100%; height: 168px; object-fit: cover; display: block; }}
+  .pdoc-banner {{ position: relative; margin: 4px calc(var(--pd-pad-x) * -1) 11px; width: calc(100% + var(--pd-pad-x) * 2); break-inside: avoid; }}
+  .pdoc-banner img {{ width: 100%; height: 145px; object-fit: cover; display: block; }}
   .pdoc-banner figcaption {{
     position: absolute; left: 16px; bottom: 10px; color: #fff; font-size: 10.5px; font-weight: 600;
     background: rgba(8,10,12,.55); padding: 4px 11px; border-radius: 999px; letter-spacing: 0.01em;
@@ -367,8 +364,8 @@ HTMLDOC = f"""<!doctype html>
 
   /* ── Section with a side detail photo ── */
   .pdoc-section-split {{ display: flex; gap: 14px; align-items: flex-start; }}
-  .pdoc-side-img {{ width: 168px; flex-shrink: 0; border-radius: 12px; overflow: hidden; break-inside: avoid; }}
-  .pdoc-side-img img {{ width: 100%; height: 200px; object-fit: cover; display: block; }}
+  .pdoc-side-img {{ width: 155px; flex-shrink: 0; border-radius: 12px; overflow: hidden; break-inside: avoid; }}
+  .pdoc-side-img img {{ width: 100%; height: 175px; object-fit: cover; display: block; }}
   .pdoc-spec-grid--narrow {{ flex: 1; min-width: 0; }}
   .pdoc-spec-grid--narrow .spec-row {{ grid-template-columns: 178px 1fr; }}
 
@@ -416,17 +413,18 @@ HTMLDOC = f"""<!doctype html>
   </header>
   <div class="pdoc-rule" aria-hidden="true"></div>
 
-  <figure class="pdoc-hero-banner">
-    <img class="pdoc-hero-img" src="{img_uri('hero-front')}" alt="{MODEL_NAME}" />
-    <div class="pdoc-hero-scrim"></div>
-    <div class="pdoc-hero-overlay">
-      <div class="pdoc-hero-kicker">Ficha Técnica · Wings Global Trade</div>
-      <div class="pdoc-hero-name2">{MODEL_NAME}</div>
-      <div class="pdoc-hero-trim2">{MODEL_TRIM}</div>
-      <div class="pdoc-hero-stats2">
-      {HERO_STATS_HTML}
-      </div>
+  <div class="pdoc-identity">
+    <div class="pdoc-identity-kicker">Ficha Técnica · Wings Global Trade</div>
+    <div class="pdoc-identity-name">{MODEL_NAME}</div>
+    <div class="pdoc-identity-trim">{MODEL_TRIM}</div>
+    <div class="pdoc-hero-stats">
+    {HERO_STATS_HTML}
     </div>
+  </div>
+
+  <figure class="pdoc-banner pdoc-banner--hero">
+    <img src="{img_uri('hero-front')}" alt="{MODEL_NAME}" />
+    <figcaption>Vista frontal (foto referencial)</figcaption>
   </figure>
 
   <div class="pdoc-dateline">
@@ -438,7 +436,7 @@ HTMLDOC = f"""<!doctype html>
   {BLOCKS_HTML}
 
   <div class="pdoc-tail">
-  <p class="pdoc-note">Especificaciones tomadas de la hoja de cotización del proveedor (EURISE, modelo YBL6751D). El documento fuente no incluye precio, condiciones de pago, plazo de entrega ni términos de garantía, por lo que no se muestran en esta ficha. Las fotografías son imágenes referenciales de una van de chasis cabinado de configuración similar (con branding "ASIASTAR" visible en la parrilla) — no corresponden a fotografías de fábrica de la unidad EURISE YBL6751D exacta; se muestran solo con fines ilustrativos del tipo de vehículo. La sección "Aire acondicionado" presenta una discrepancia en la fuente entre 12 kW (columna en chino) y 10 kW (columna en inglés) — se recomienda confirmar con el proveedor. Las secciones de "Configuración Opcional" no vienen de serie y están sujetas a cotización adicional. Se recomienda confirmar equipamiento y especificaciones contra la unidad física antes de la compra.</p>
+  <p class="pdoc-note">Ficha denominada "Asiastar" siguiendo el branding visible en la fotografía de referencia; las especificaciones técnicas provienen de la hoja de cotización del proveedor de fábrica (EURISE, modelo YBL6751D — ver Identificación). El documento fuente no incluye precio, condiciones de pago, plazo de entrega ni términos de garantía, por lo que no se muestran en esta ficha. Las fotografías corresponden a una van de chasis cabinado de configuración similar, no a la unidad exacta a entregar; se recomienda confirmar branding, equipamiento y especificaciones contra la unidad física antes de la compra. La sección "Aire acondicionado" presenta una discrepancia en la fuente entre 12 kW (columna en chino) y 10 kW (columna en inglés) — se recomienda confirmar con el proveedor. Las secciones de "Configuración Opcional" no vienen de serie y están sujetas a cotización adicional.</p>
   <div class="pdoc-close-row">
     <div class="pdoc-close">
       <div>Atentamente,</div>
