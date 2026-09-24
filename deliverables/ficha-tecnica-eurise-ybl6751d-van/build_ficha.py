@@ -299,19 +299,40 @@ HTMLDOC = f"""<!doctype html>
   .pdoc-rule {{ position: relative; height: 3px; margin: 10px 0 14px; background: var(--pd-line); }}
   .pdoc-rule::before {{ content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 168px; background: var(--pd-ink); }}
 
-  /* ── Cover photo: full bleed, edge-to-edge (no margin, no rounded
-     corners) — the complete image, uncropped, shown right under the title
-     on its own dedicated cover page, separate from the identity text panel
-     below it and from the spec content (which starts on page 2). ── */
+  /* ── Cover: a single full-page photo (edge-to-edge, both directions) with
+     the title/identity overlaid via top and bottom gradient scrims — its
+     own dedicated first page; content starts fresh on page 2. ── */
   .pdoc-cover-photo {{
-    position: relative; margin: 0 calc(var(--pd-pad-x) * -1) 14px; width: calc(100% + var(--pd-pad-x) * 2);
-    overflow: hidden; break-inside: avoid;
+    position: relative; overflow: hidden; break-inside: avoid;
+    margin: 0 calc(var(--pd-pad-x) * -1) 0; width: calc(100% + var(--pd-pad-x) * 2); height: 640px;
   }}
-  .pdoc-cover-photo img {{ width: 100%; height: auto; display: block; }}
+  .pdoc-cover-photo img {{ width: 100%; height: 100%; object-fit: cover; object-position: center 38%; display: block; }}
+  .pdoc-cover-scrim-top {{
+    position: absolute; top: 0; left: 0; right: 0; height: 34%;
+    background: linear-gradient(to bottom, rgba(8,10,12,.85) 0%, rgba(8,10,12,0) 100%);
+  }}
+  .pdoc-cover-scrim-bottom {{
+    position: absolute; bottom: 0; left: 0; right: 0; height: 56%;
+    background: linear-gradient(to top, rgba(8,10,12,.95) 0%, rgba(8,10,12,.62) 55%, rgba(8,10,12,0) 100%);
+  }}
+  .pdoc-cover-topbar {{
+    position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: flex-start;
+    justify-content: space-between; padding: 22px 30px 0; color: #fff;
+  }}
+  .pdoc-cover-kicker {{ font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; color: #9fb3d9; font-weight: 700; }}
+  .pdoc-cover-docnum {{ margin-top: 6px; font-family: var(--font-mono, monospace); font-size: 11px; letter-spacing: .02em; color: rgba(255,255,255,.85); }}
+  .pdoc-cover-brand {{ display: flex; flex-direction: column; align-items: flex-end; text-align: right; gap: 6px; }}
+  .pdoc-cover-brand .pdoc-logo {{ height: 34px; filter: brightness(0) invert(1); }}
+  .pdoc-cover-tagline {{ font-size: 9.5px; letter-spacing: .02em; color: rgba(255,255,255,.75); text-transform: uppercase; }}
+  .pdoc-cover-bottombar {{ position: absolute; left: 0; right: 0; bottom: 0; padding: 0 30px 24px; }}
+  .pdoc-cover-dateline {{
+    display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 11px; font-size: 10px; color: rgba(255,255,255,.75);
+  }}
+  .pdoc-cover-dateline span:not(:last-child)::after {{ content: '|'; margin-left: 14px; color: rgba(255,255,255,.3); }}
 
-  /* ── Text-only identity block: a solid ink panel, kept separate from the
-     photo so the identity text never loses legibility sitting on top of
-     an image. ── */
+  /* ── Text-only identity block: a solid ink panel — reused inside the
+     cover's bottom overlay, and elsewhere kept as a standalone header
+     when a photo isn't in play. ── */
   .pdoc-identity {{
     background: var(--pd-ink); color: #fff; border-radius: 14px;
     padding: 14px 22px 13px; margin-bottom: 10px;
@@ -409,6 +430,10 @@ HTMLDOC = f"""<!doctype html>
     .pdoc-page .pdoc {{ box-shadow: none; }}
     .pdoc {{ --pd-pad-x: 30px; max-width: none; padding: 24px var(--pd-pad-x) 26px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }}
     .pdoc-close-row, .pdoc-footer {{ break-inside: avoid; }}
+    /* The cover photo covers the entire first page: its negative top margin
+       cancels .pdoc's own top padding so the image starts at the literal
+       page edge, and its height is the full A4 page height. */
+    .pdoc-cover-photo {{ height: 297mm; margin: -24px calc(var(--pd-pad-x) * -1) 0; }}
   }}
 </style>
 </head>
@@ -416,36 +441,35 @@ HTMLDOC = f"""<!doctype html>
 <div class="pdoc-page">
 <article class="pdoc">
 
-  <header class="pdoc-header">
-    <div>
-      <h1 class="pdoc-title">Ficha Técnica</h1>
-      <p class="pdoc-number">{DOC_NUMBER}</p>
-    </div>
-    <div class="pdoc-brand">
-      {LOGO}
-      <span class="pdoc-tagline">SOLUCIONES INTEGRALES EN IMPORTACIÓN</span>
-    </div>
-  </header>
-  <div class="pdoc-rule" aria-hidden="true"></div>
-
   <figure class="pdoc-cover-photo">
     <img src="{img_uri('cover-front')}" alt="{MODEL_NAME}" />
-  </figure>
-
-  <div class="pdoc-identity">
-    <div class="pdoc-identity-kicker">Ficha Técnica · Wings Global Trade</div>
-    <div class="pdoc-identity-name">{MODEL_NAME}</div>
-    <div class="pdoc-identity-trim">{MODEL_TRIM}</div>
-    <div class="pdoc-hero-stats">
-    {HERO_STATS_HTML}
+    <div class="pdoc-cover-scrim-top"></div>
+    <div class="pdoc-cover-scrim-bottom"></div>
+    <div class="pdoc-cover-topbar">
+      <div>
+        <div class="pdoc-cover-kicker">Ficha Técnica · Wings Global Trade</div>
+        <div class="pdoc-cover-docnum">{DOC_NUMBER}</div>
+      </div>
+      <div class="pdoc-cover-brand">
+        {LOGO}
+        <span class="pdoc-cover-tagline">Soluciones integrales en importación</span>
+      </div>
     </div>
-  </div>
-
-  <div class="pdoc-dateline">
-    <span>Preparado: {DOC_DATE}</span>
-    <span>Origen: China</span>
-    <span>Segmento: Van / minibús de pasajeros</span>
-  </div>
+    <div class="pdoc-cover-bottombar">
+      <div class="pdoc-identity">
+        <div class="pdoc-identity-name">{MODEL_NAME}</div>
+        <div class="pdoc-identity-trim">{MODEL_TRIM}</div>
+        <div class="pdoc-hero-stats">
+        {HERO_STATS_HTML}
+        </div>
+      </div>
+      <div class="pdoc-cover-dateline">
+        <span>Preparado: {DOC_DATE}</span>
+        <span>Origen: China</span>
+        <span>Segmento: Van / minibús de pasajeros</span>
+      </div>
+    </div>
+  </figure>
 
   {BLOCKS_HTML}
 
