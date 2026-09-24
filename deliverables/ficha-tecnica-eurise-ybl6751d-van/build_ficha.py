@@ -1,61 +1,75 @@
 #!/usr/bin/env python3
 """Build the Wings Global Trade branded technical spec sheet (Ficha Técnica)
-for the EURISE YBL6751D — a 20-seat diesel passenger van/minibus — in the
-SAME text-only, image-free style used for the redesigned "Land Cruiser
-Prado Híbrida" ficha (solid-ink identity header + solid-ink section bars,
-no photography, no price, no warranty section).
+for a 20-seat diesel passenger van — retitled "Van de Pasajeros de 20" per
+follow-up request, now WITH photography (a full-bleed photo hero + two
+mid-section banners + one side-image), reusing the ink-colored section-bar
+system from the redesigned Land Cruiser Prado Híbrida ficha.
 
-Source: client-supplied "QUOTATION OF EURISE" spec sheet (PDF, bilingual
-Chinese/English) for model YBL6751D. FOB price, currency/payment/delivery/
-warranty terms and price-validity conditions were all left BLANK in the
-source document — so, consistent with the no-price/no-warranty convention
-already used on the Land Cruiser Prado Híbrida ficha, none of that is
-shown here (there is nothing to show).
+Source specs: client-supplied "QUOTATION OF EURISE" spec sheet (PDF,
+bilingual Chinese/English) for model YBL6751D — kept in the identity
+section as the underlying model code. FOB price, currency/payment/
+delivery/warranty terms and price-validity conditions were all left BLANK
+in the source document, so none of that is shown here.
 
-One discrepancy in the source itself, disclosed in Observaciones: the
-Chinese column for the A/C says "12KW前后舱空调" (12 kW) while the English
-column next to it says "10KW front & rear air conditioning" — both are
-shown, unresolved, since the source itself doesn't clarify which is
-correct.
+Photos: 5 client-supplied reference photos of a similar chassis-cab
+passenger van — IMPORTANT: these photos show "ASIASTAR" branding on the
+grille/plate, not "EURISE" — they are used here as REFERENCE photography
+of a comparable van of this type/configuration, not as exact renders of
+the quoted EURISE YBL6751D. This is disclosed in Observaciones so the
+mismatch is never silently implied as the exact unit.
+
+One more disclosed discrepancy (already flagged before): the source's
+Chinese A/C column says 12 kW, the English column says 10 kW.
 
 Run: python3 build_ficha.py
 """
+import base64
 import re
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+IMG_DIR = HERE / "assets" / "opt"
 LOGO_SVG = "/home/user/wings-global-trade/apps/tower/public/brand/wings-imagotipo.svg"
 
 DOC_NUMBER = "FT-WGT-2026-0924"
 DOC_DATE = "24-09-2026"
 
-MODEL_NAME = "EURISE YBL6751D"
-MODEL_TRIM = "Van de Pasajeros Diésel · 20 asientos (incl. conductor) · 6MT"
+MODEL_NAME = "Van de Pasajeros de 20"
+MODEL_TRIM = "EURISE YBL6751D · 2.8T Diésel · 6MT"
 
 HERO_STATS = [
-    ("Motor", "2.8T", "RA428, tecnología VM"),
-    ("Potencia", "120 kW", "nominal"),
-    ("Torque máximo", "420 N·m", "—"),
-    ("Transmisión", "6MT", "manual"),
-    ("Asientos", "20", "incl. conductor"),
+    ("Motor", "2.8T"),
+    ("Potencia", "120 kW"),
+    ("Torque máximo", "420 N·m"),
+    ("Transmisión", "6MT"),
+    ("Asientos", "20"),
 ]
 
-SECTIONS = [
-    {"idx": 1, "title": "Identificación", "rows": [
-        ("Modelo", MODEL_NAME),
-        ("Marca", "EURISE (欧睿)"),
+
+def img_uri(name: str) -> str:
+    data = (IMG_DIR / f"{name}.jpg").read_bytes()
+    return f"data:image/jpeg;base64,{base64.b64encode(data).decode('ascii')}"
+
+
+BLOCKS = [
+    {"type": "section", "idx": 1, "title": "Identificación", "rows": [
+        ("Modelo comercial", MODEL_NAME),
+        ("Modelo / código de fábrica", "EURISE YBL6751D"),
+        ("Marca de fábrica", "EURISE (欧睿)"),
         ("Tipo de carrocería", "Van / minibús de pasajeros"),
         ("Tipo de energía", "Diésel"),
         ("Capacidad de asientos", "20 (incluye asiento del conductor)"),
     ]},
-    {"idx": 2, "title": "Dimensiones y Capacidad", "rows": [
+    {"type": "banner", "img": "chassis-3q", "caption": "Vista general — chasis cabinado (foto referencial)"},
+    {"type": "section", "idx": 2, "title": "Dimensiones y Capacidad", "rows": [
         ("Dimensiones — largo x ancho x alto (mm)", "7,490 x 2,000 x 2,875"),
         ("Distancia entre ejes (mm)", "4,325"),
         ("Peso bruto vehicular (kg)", "5,450"),
         ("Velocidad máxima (km/h)", "120"),
         ("Consumo de combustible (L/100 km)", "10.5"),
     ]},
-    {"idx": 3, "title": "Motor y Transmisión", "rows": [
+    {"type": "banner", "img": "engine-bay", "caption": "Compartimento del motor (foto referencial)"},
+    {"type": "section", "idx": 3, "title": "Motor y Transmisión", "rows": [
         ("Tipo", "RA428 2.8T (tecnología VM)"),
         ("Potencia nominal (kW)", "120"),
         ("Torque máximo (N·m)", "420"),
@@ -63,14 +77,14 @@ SECTIONS = [
         ("Caja de cambios", "6MT (manual, 6 velocidades)"),
         ("Tipo de combustible", "Diésel"),
     ]},
-    {"idx": 4, "title": "Chasis, Frenos y Neumáticos", "rows": [
+    {"type": "section", "idx": 4, "title": "Chasis, Frenos y Neumáticos", "side_img": "chassis-frame", "rows": [
         ("Capacidad del tanque de combustible (L)", "80"),
         ("Neumáticos", "195/75R16LT (Zhongce, incluye llanta de repuesto)"),
         ("Sistema de frenos", "Discos delanteros y traseros"),
         ("Suspensión delantera", "McPherson, independiente"),
         ("Suspensión trasera", "Ballesta de sección variable (paquete reducido de hojas)"),
     ]},
-    {"idx": 5, "title": "Equipamiento de Serie — Exterior e Interior", "rows": [
+    {"type": "section", "idx": 5, "title": "Equipamiento de Serie — Exterior e Interior", "side_img": "grille-detail", "rows": [
         ("Pintura", "Color sólido estándar (blanco)"),
         ("Ventanas laterales", "Fijas, tipo cerrado (vidrio verde)"),
         ("Vidrios eléctricos", "Solo ventana delantera del lado del conductor"),
@@ -87,7 +101,7 @@ SECTIONS = [
         ("Asientos de pasajeros", "Cuerina (símil cuero), cinturón de 2 puntos, marca Fuhao A"),
         ("Diagnóstico", "CAN-BUS"),
     ]},
-    {"idx": 6, "title": "Equipamiento de Serie — Seguridad", "rows": [
+    {"type": "section", "idx": 6, "title": "Equipamiento de Serie — Seguridad", "rows": [
         ("Sistema antirrobo", "Sí, para todo el vehículo"),
         ("Airbag del conductor", "Sí"),
         ("Cinturón del conductor", "3 puntos, con alarma de no abrochado"),
@@ -101,7 +115,7 @@ SECTIONS = [
         ("Indicador de autonomía disponible", "Sí"),
         ("Luz de freno de posición alta", "Sí"),
     ]},
-    {"idx": 7, "title": "Equipamiento de Serie — Confort y Conveniencia", "rows": [
+    {"type": "section", "idx": 7, "title": "Equipamiento de Serie — Confort y Conveniencia", "rows": [
         ("Audio", "Radio + reproductor MP3"),
         ("Desempañador de luna trasera", "Eléctrico"),
         ("Espejos retrovisores exteriores", "Eléctricos, calefaccionados, con luz direccional integrada"),
@@ -115,7 +129,7 @@ SECTIONS = [
         ("Bloqueo automático por velocidad", "Sí, a partir de 15 km/h"),
         ("Cierre centralizado", "Sí"),
     ]},
-    {"idx": 8, "title": "Configuración Opcional — Motor y Chasis", "rows": [
+    {"type": "section", "idx": 8, "title": "Configuración Opcional — Motor y Chasis", "rows": [
         ("Motor RA428Q163E50, Euro V", "Sin límite de velocidad"),
         ("Motor RA428Q163E50, Euro V", "Límite de velocidad 120 km/h, sin certificación de emisiones"),
         ("Motor RA428Q163E61, Euro VI", "Sin límite de velocidad"),
@@ -127,7 +141,7 @@ SECTIONS = [
         ("Doble filtro de combustible diésel", "Opcional"),
         ("Batería resistente a bajas temperaturas", "Opcional"),
     ]},
-    {"idx": 9, "title": "Configuración Opcional — Exterior e Interior", "rows": [
+    {"type": "section", "idx": 9, "title": "Configuración Opcional — Exterior e Interior", "rows": [
         ("Cantidad de asientos", "17 a 21 (21 asientos solo con puerta corrediza)"),
         ("Pintura metálica", "Opcional"),
         ("Tablero de instrumentos actualizado", "Opcional (excepto versión de techo estándar)"),
@@ -173,11 +187,11 @@ SECTIONS = [
         ("Sistema MP5 + cámara de retroceso", "Opcional, pantalla grande o pequeña — solo tablero estándar"),
         ("Tratamiento anticorrosión y contra el frío mejorado", "Opcional, en pintura"),
     ]},
-    {"idx": 10, "title": "Configuración Opcional — Seguridad", "rows": [
+    {"type": "section", "idx": 10, "title": "Configuración Opcional — Seguridad", "rows": [
         ("Extintor automático en el compartimento del motor", "Opcional"),
         ("Retardador (freno auxiliar)", "Opcional"),
     ]},
-    {"idx": 11, "title": "Configuración Opcional — Confort y Conveniencia", "rows": [
+    {"type": "section", "idx": 11, "title": "Configuración Opcional — Confort y Conveniencia", "rows": [
         ("Estribo eléctrico de bienvenida", "Opcional, excepto con puerta oscilante eléctrica"),
     ]},
 ]
@@ -210,21 +224,38 @@ def rows_html(rows: list[tuple[str, str]]) -> str:
     )
 
 
-def section_html(s: dict) -> str:
-    bar = f'<div class="pdoc-section-bar"><span class="pd-sec-index">{s["idx"]:02d}</span>{s["title"]}</div>'
-    grid = rows_html(s["rows"])
+def block_html(b: dict) -> str:
+    if b["type"] == "banner":
+        return f"""
+  <figure class="pdoc-banner">
+    <img src="{img_uri(b['img'])}" alt="" />
+    <figcaption>{b['caption']}</figcaption>
+  </figure>"""
+
+    bar = f'<div class="pdoc-section-bar"><span class="pd-sec-index">{b["idx"]:02d}</span>{b["title"]}</div>'
+    grid = rows_html(b["rows"])
+
+    if b.get("side_img"):
+        body = f"""
+    <div class="pdoc-section-split">
+      <div class="pdoc-side-img"><img src="{img_uri(b['side_img'])}" alt="" /></div>
+      <div class="pdoc-spec-grid pdoc-spec-grid--narrow">{grid}</div>
+    </div>"""
+    else:
+        body = f'<div class="pdoc-spec-grid">{grid}</div>'
+
     return f"""
   <div class="pdoc-spec-section">
     {bar}
-    <div class="pdoc-spec-grid">{grid}</div>
+    {body}
   </div>"""
 
 
-SECTIONS_HTML = "\n".join(section_html(s) for s in SECTIONS)
+BLOCKS_HTML = "\n".join(block_html(b) for b in BLOCKS)
 HERO_STATS_HTML = "\n      ".join(
-    f'<div class="pdoc-hero-stat"><span class="pd-hero-label">{label}</span>'
-    f'<span class="pd-hero-value">{value}</span><span class="pd-hero-sub">{sub}</span></div>'
-    for label, value, sub in HERO_STATS
+    f'<div class="pdoc-hero-stat2"><span class="pd-hero-label2">{label}</span>'
+    f'<span class="pd-hero-value2">{value}</span></div>'
+    for label, value in HERO_STATS
 )
 
 LOGO = Path(LOGO_SVG).read_text(encoding="utf-8")
@@ -236,7 +267,7 @@ HTMLDOC = f"""<!doctype html>
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Ficha Técnica · Wings Global Trade · EURISE YBL6751D</title>
+<title>Ficha Técnica · Wings Global Trade · {MODEL_NAME}</title>
 <style>
   :root {{
     --font-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -263,25 +294,30 @@ HTMLDOC = f"""<!doctype html>
   .pdoc-logo {{ height: 42px; width: auto; filter: brightness(0); }}
   .pdoc-tagline {{ font-size: 10.5px; letter-spacing: 0.02em; color: var(--pd-muted); text-transform: uppercase; }}
 
-  .pdoc-rule {{ position: relative; height: 3px; margin: 14px 0 16px; background: var(--pd-line); }}
+  .pdoc-rule {{ position: relative; height: 3px; margin: 10px 0 14px; background: var(--pd-line); }}
   .pdoc-rule::before {{ content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 168px; background: var(--pd-ink); }}
 
-  /* ── Text-only identity block — solid ink panel ── */
-  .pdoc-identity {{
-    background: var(--pd-ink); color: #fff; border-radius: 14px;
-    padding: 18px 22px 16px; margin-bottom: 18px;
+  /* ── Photo hero: full-bleed image + dark scrim + overlaid identity ── */
+  .pdoc-hero-banner {{
+    position: relative; margin: 0 calc(var(--pd-pad-x) * -1) 10px; width: calc(100% + var(--pd-pad-x) * 2);
+    border-radius: 0 0 16px 16px; overflow: hidden; break-inside: avoid;
   }}
-  .pdoc-identity-kicker {{ font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; color: #9fb3d9; font-weight: 700; margin-bottom: 5px; }}
-  .pdoc-identity-name {{ font-size: 23px; font-weight: 700; letter-spacing: -0.01em; color: #fff; }}
-  .pdoc-identity-trim {{ margin-top: 3px; font-size: 12px; color: rgba(255,255,255,.72); }}
-  .pdoc-hero-stats {{ display: flex; margin-top: 14px; background: rgba(255,255,255,.08); border-radius: 10px; padding: 9px 6px; }}
-  .pdoc-hero-stat {{ flex: 1; text-align: center; border-left: 1px solid rgba(255,255,255,.18); padding: 0 6px; display: flex; flex-direction: column; }}
-  .pdoc-hero-stat:first-child {{ border-left: none; }}
-  .pd-hero-label {{ font-size: 8.5px; letter-spacing: .06em; text-transform: uppercase; color: rgba(255,255,255,.62); }}
-  .pd-hero-value {{ margin-top: 3px; font-family: var(--font-mono, monospace); font-weight: 700; font-size: 15px; color: #fff; font-variant-numeric: tabular-nums; }}
-  .pd-hero-sub {{ margin-top: 1px; font-size: 9px; color: rgba(255,255,255,.55); }}
+  .pdoc-hero-img {{ width: 100%; height: 258px; object-fit: cover; display: block; }}
+  .pdoc-hero-scrim {{
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(8,10,12,.92) 0%, rgba(8,10,12,.55) 34%, rgba(8,10,12,0) 66%);
+  }}
+  .pdoc-hero-overlay {{ position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 22px 16px; color: #fff; }}
+  .pdoc-hero-kicker {{ font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: #9fb3d9; font-weight: 700; margin-bottom: 6px; }}
+  .pdoc-hero-name2 {{ font-size: 23px; font-weight: 700; letter-spacing: -0.01em; }}
+  .pdoc-hero-trim2 {{ margin-top: 2px; font-size: 11.5px; color: rgba(255,255,255,.78); }}
+  .pdoc-hero-stats2 {{ display: flex; margin-top: 11px; background: rgba(8,10,12,.5); border-radius: 12px; padding: 8px 6px; }}
+  .pdoc-hero-stat2 {{ flex: 1; text-align: center; border-left: 1px solid rgba(255,255,255,.18); padding: 0 4px; }}
+  .pdoc-hero-stat2:first-child {{ border-left: none; }}
+  .pd-hero-label2 {{ display: block; font-size: 8.5px; letter-spacing: .05em; text-transform: uppercase; color: rgba(255,255,255,.68); }}
+  .pd-hero-value2 {{ display: block; margin-top: 2px; font-family: var(--font-mono, monospace); font-weight: 700; font-size: 13px; color: #fff; font-variant-numeric: tabular-nums; }}
 
-  .pdoc-dateline {{ display: flex; flex-wrap: wrap; gap: 5px 16px; margin-bottom: 14px; font-size: 11.5px; color: var(--pd-muted); }}
+  .pdoc-dateline {{ display: flex; flex-wrap: wrap; gap: 5px 16px; margin-bottom: 12px; font-size: 11.5px; color: var(--pd-muted); }}
   .pdoc-dateline span:not(:last-child)::after {{ content: '|'; margin-left: 16px; color: var(--pd-line); }}
 
   /* ── Section bars: solid ink background + accent numbered chip ── */
@@ -295,7 +331,7 @@ HTMLDOC = f"""<!doctype html>
     border-radius: 5px; background: var(--pd-accent); color: #fff; font-family: var(--font-mono, monospace);
     font-size: 10.5px; font-weight: 700; flex-shrink: 0;
   }}
-  .pdoc-spec-section {{ margin-bottom: 9px; }}
+  .pdoc-spec-section {{ margin-bottom: 7px; }}
   .pdoc-spec-grid {{ display: flex; flex-direction: column; font-size: 11.5px; }}
   .spec-row {{
     display: grid; grid-template-columns: 270px 1fr; align-items: start; gap: 4.5px 16px;
@@ -321,20 +357,35 @@ HTMLDOC = f"""<!doctype html>
     border: 1px solid var(--pd-line); border-radius: 999px; padding: 2px 9px; flex-shrink: 0;
   }}
 
-  .pdoc-tail {{ margin-top: 10px; padding-top: 6px; }}
-  .pdoc-note {{ font-size: 10.5px; color: var(--pd-muted); font-style: italic; margin-bottom: 8px; }}
+  /* ── Mid-section full-bleed banner with caption pill ── */
+  .pdoc-banner {{ position: relative; margin: 4px calc(var(--pd-pad-x) * -1) 14px; width: calc(100% + var(--pd-pad-x) * 2); break-inside: avoid; }}
+  .pdoc-banner img {{ width: 100%; height: 168px; object-fit: cover; display: block; }}
+  .pdoc-banner figcaption {{
+    position: absolute; left: 16px; bottom: 10px; color: #fff; font-size: 10.5px; font-weight: 600;
+    background: rgba(8,10,12,.55); padding: 4px 11px; border-radius: 999px; letter-spacing: 0.01em;
+  }}
+
+  /* ── Section with a side detail photo ── */
+  .pdoc-section-split {{ display: flex; gap: 14px; align-items: flex-start; }}
+  .pdoc-side-img {{ width: 168px; flex-shrink: 0; border-radius: 12px; overflow: hidden; break-inside: avoid; }}
+  .pdoc-side-img img {{ width: 100%; height: 200px; object-fit: cover; display: block; }}
+  .pdoc-spec-grid--narrow {{ flex: 1; min-width: 0; }}
+  .pdoc-spec-grid--narrow .spec-row {{ grid-template-columns: 178px 1fr; }}
+
+  .pdoc-tail {{ margin-top: 6px; padding-top: 4px; }}
+  .pdoc-note {{ font-size: 10.5px; color: var(--pd-muted); font-style: italic; margin-bottom: 6px; }}
   .pdoc-close-row {{ display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; }}
   .pdoc-close-signoff {{ margin-top: 2px; font-weight: 600; }}
 
-  .pdoc-footer {{ display: flex; justify-content: space-between; gap: 24px; margin-top: 6px; padding-top: 4px; border-top: 1px solid var(--pd-line); color: var(--pd-muted); font-size: 11.5px; break-inside: avoid; }}
+  .pdoc-footer {{ display: flex; justify-content: space-between; gap: 24px; margin-top: 4px; padding-top: 3px; border-top: 1px solid var(--pd-line); color: var(--pd-muted); font-size: 11.5px; break-inside: avoid; }}
   .pdoc-footer .pd-foot-right {{ text-align: right; }}
 
   @media (max-width: 640px) {{
     .pdoc {{ padding: 26px 20px 28px; }}
     .pdoc-title {{ font-size: 32px; }}
     .spec-row {{ grid-template-columns: 1fr; gap: 0; }}
-    .pdoc-hero-stats {{ flex-wrap: wrap; }}
-    .pdoc-hero-stat {{ flex: 1 1 40%; border-left: none; border-top: 1px solid rgba(255,255,255,.18); padding-top: 8px; margin-top: 8px; }}
+    .pdoc-section-split {{ flex-direction: column; }}
+    .pdoc-side-img {{ width: 100%; }}
     .pdoc-close-row {{ flex-direction: column; align-items: flex-start; gap: 16px; }}
     .pdoc-footer {{ flex-direction: column; gap: 12px; }}
   }}
@@ -365,14 +416,18 @@ HTMLDOC = f"""<!doctype html>
   </header>
   <div class="pdoc-rule" aria-hidden="true"></div>
 
-  <div class="pdoc-identity">
-    <div class="pdoc-identity-kicker">Ficha Técnica · Wings Global Trade</div>
-    <div class="pdoc-identity-name">{MODEL_NAME}</div>
-    <div class="pdoc-identity-trim">{MODEL_TRIM}</div>
-    <div class="pdoc-hero-stats">
+  <figure class="pdoc-hero-banner">
+    <img class="pdoc-hero-img" src="{img_uri('hero-front')}" alt="{MODEL_NAME}" />
+    <div class="pdoc-hero-scrim"></div>
+    <div class="pdoc-hero-overlay">
+      <div class="pdoc-hero-kicker">Ficha Técnica · Wings Global Trade</div>
+      <div class="pdoc-hero-name2">{MODEL_NAME}</div>
+      <div class="pdoc-hero-trim2">{MODEL_TRIM}</div>
+      <div class="pdoc-hero-stats2">
       {HERO_STATS_HTML}
+      </div>
     </div>
-  </div>
+  </figure>
 
   <div class="pdoc-dateline">
     <span>Preparado: {DOC_DATE}</span>
@@ -380,10 +435,10 @@ HTMLDOC = f"""<!doctype html>
     <span>Segmento: Van / minibús de pasajeros</span>
   </div>
 
-  {SECTIONS_HTML}
+  {BLOCKS_HTML}
 
   <div class="pdoc-tail">
-  <p class="pdoc-note">Especificaciones tomadas de la hoja de cotización del proveedor (EURISE, modelo YBL6751D). El documento fuente no incluye precio, condiciones de pago, plazo de entrega ni términos de garantía, por lo que no se muestran en esta ficha. La sección "Aire acondicionado" presenta una discrepancia en la fuente entre 12 kW (columna en chino) y 10 kW (columna en inglés) — se recomienda confirmar con el proveedor. Las secciones de "Configuración Opcional" no vienen de serie y están sujetas a cotización adicional. Se recomienda confirmar equipamiento y especificaciones contra la unidad física antes de la compra.</p>
+  <p class="pdoc-note">Especificaciones tomadas de la hoja de cotización del proveedor (EURISE, modelo YBL6751D). El documento fuente no incluye precio, condiciones de pago, plazo de entrega ni términos de garantía, por lo que no se muestran en esta ficha. Las fotografías son imágenes referenciales de una van de chasis cabinado de configuración similar (con branding "ASIASTAR" visible en la parrilla) — no corresponden a fotografías de fábrica de la unidad EURISE YBL6751D exacta; se muestran solo con fines ilustrativos del tipo de vehículo. La sección "Aire acondicionado" presenta una discrepancia en la fuente entre 12 kW (columna en chino) y 10 kW (columna en inglés) — se recomienda confirmar con el proveedor. Las secciones de "Configuración Opcional" no vienen de serie y están sujetas a cotización adicional. Se recomienda confirmar equipamiento y especificaciones contra la unidad física antes de la compra.</p>
   <div class="pdoc-close-row">
     <div class="pdoc-close">
       <div>Atentamente,</div>
@@ -410,6 +465,11 @@ HTMLDOC = f"""<!doctype html>
 
 out = HERE / "ficha.html"
 out.write_text(HTMLDOC, encoding="utf-8")
-n_rows = sum(len(s["rows"]) for s in SECTIONS)
+n_rows = sum(len(b["rows"]) for b in BLOCKS if b["type"] == "section")
+n_photos = len(set(
+    [b["img"] for b in BLOCKS if b["type"] == "banner"]
+    + [b["side_img"] for b in BLOCKS if b.get("side_img")]
+    + ["hero-front"]
+))
 print(f"wrote {out} ({len(HTMLDOC):,} bytes)")
-print(f"sections={len(SECTIONS)} rows={n_rows} images=0")
+print(f"sections={sum(1 for b in BLOCKS if b['type']=='section')} rows={n_rows} photos={n_photos}")
