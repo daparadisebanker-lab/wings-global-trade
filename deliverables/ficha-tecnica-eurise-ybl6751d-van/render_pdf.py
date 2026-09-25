@@ -2,11 +2,12 @@
 """Render ficha.html to ficha.pdf via headless Chromium, then post-process
 with pymupdf to add:
 
-  - a running per-page mini-header (brand + doc code) and a "Página X de Y"
-    footer on every page. Chromium's --print-to-pdf CLI has no header/footer
-    templating, and its print engine doesn't reliably support CSS
-    counter(page)/counter(pages), so these are drawn directly onto the
-    rendered PDF instead of relying on print CSS.
+  - a running per-page "Página X de Y" footer on every page. Chromium's
+    --print-to-pdf CLI has no header/footer templating, and its print
+    engine doesn't reliably support CSS counter(page)/counter(pages), so
+    this is drawn directly onto the rendered PDF instead of relying on
+    print CSS. (A running top mini-header used to be drawn here too — removed
+    per feedback; the page-number footer stays.)
 
   - the table of contents' page numbers and jump links. build_ficha.py
     leaves a unique placeholder token per TOC row ("•PN01•" etc.)
@@ -22,14 +23,13 @@ from pathlib import Path
 
 import pymupdf
 
-from build_ficha import DOC_NUMBER, TOC_SECTIONS
+from build_ficha import TOC_SECTIONS
 
 HERE = Path(__file__).resolve().parent
 HTML = HERE / "ficha.html"
 PDF = HERE / "ficha.pdf"
 CHROMIUM = "/opt/pw-browsers/chromium"
 
-BRAND = "WINGS GLOBAL TRADE"
 MUTED = (0.42, 0.44, 0.47)
 
 # Pages before the numbered sections start: 0 = cover, 1 = table of contents.
@@ -97,15 +97,11 @@ def fill_toc(doc: "pymupdf.Document", section_pages: dict[int, int]) -> None:
             })
 
 
-def add_running_header_footer(doc: "pymupdf.Document") -> None:
+def add_page_number_footer(doc: "pymupdf.Document") -> None:
     n = len(doc)
     for i, page in enumerate(doc):
         page_num = i + 1
         w, h = page.rect.width, page.rect.height
-
-        if page_num > 1:  # the cover already carries the logo/doc code
-            header = f"{BRAND}  ·  {DOC_NUMBER}"
-            page.insert_text((34, 15), header, fontsize=7, fontname="helv", color=MUTED)
 
         footer = f"Página {page_num} de {n}"
         tw = pymupdf.get_text_length(footer, fontname="helv", fontsize=7)
@@ -117,12 +113,12 @@ def main() -> None:
     doc = pymupdf.open(PDF)
     section_pages = find_section_pages(doc)
     fill_toc(doc, section_pages)
-    add_running_header_footer(doc)
+    add_page_number_footer(doc)
     doc.saveIncr()
     doc.close()
 
     doc = pymupdf.open(PDF)
-    print(f"rendered {PDF} ({len(doc)} pages) with TOC + running header/footer")
+    print(f"rendered {PDF} ({len(doc)} pages) with TOC + page-number footer")
     doc.close()
 
 
