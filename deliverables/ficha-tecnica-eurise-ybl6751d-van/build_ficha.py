@@ -603,7 +603,6 @@ HTMLDOC = f"""<!doctype html>
     <div class="pdoc-gallery">
       <div class="pdoc-gallery-kicker">Ficha Técnica · Wings Global Trade</div>
       <div class="pdoc-gallery-title">Galería de Imágenes</div>
-      <p class="pdoc-section-note">Fotografías de referencia de una van de chasis cabinado de configuración similar (branding "ASIASTAR") — no corresponden a fotografías de fábrica de la unidad EURISE YBL6751D exacta.</p>
       <div class="pdoc-gallery-grid">
       {GALLERY_TILES_HTML}
       </div>
