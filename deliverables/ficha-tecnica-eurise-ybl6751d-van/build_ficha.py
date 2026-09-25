@@ -226,6 +226,8 @@ GALLERY_IMAGES = [
     ("engine-bay", "Compartimento del motor"),
     ("chassis-frame", "Vista del chasis"),
     ("grille-detail", "Detalle de parrilla"),
+    ("cabin-dash", "Interior — cabina del conductor"),
+    ("passenger-seats", "Interior — área de pasajeros"),
 ]
 
 
