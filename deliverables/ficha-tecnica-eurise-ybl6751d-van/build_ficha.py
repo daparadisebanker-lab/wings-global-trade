@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 """Build the Wings Global Trade branded technical spec sheet (Ficha Técnica)
-for a 20-seat diesel passenger van — retitled "Van de 20 Pasajeros - Asiastar"
-per follow-up request. The hero photo is shown as its own plain banner,
-separate from a solid-ink text identity panel (ported from the Land Cruiser
-Prado Híbrida ficha) so the identity text is never overlaid on the image —
-the earlier photo-overlay-with-scrim hero was flagged as hard to read.
+for a 20-seat diesel passenger van — "Van de 20 Pasajeros - Asiastar".
 
 Source specs: client-supplied "QUOTATION OF EURISE" spec sheet (PDF,
 bilingual Chinese/English) for model YBL6751D — kept in the identity
@@ -13,16 +9,25 @@ delivery/warranty terms and price-validity conditions were all left BLANK
 in the source document, so none of that is shown here.
 
 Photos: 5 client-supplied reference photos of a similar chassis-cab
-passenger van — IMPORTANT: these photos show "ASIASTAR" branding on the
-grille/plate, not "EURISE" — they are used here as REFERENCE photography
-of a comparable van of this type/configuration, not as exact renders of
-the quoted EURISE YBL6751D. This is disclosed in Observaciones so the
-mismatch is never silently implied as the exact unit.
+passenger van, showing "ASIASTAR" branding — used as reference photography
+of a comparable van, not exact renders of the quoted EURISE YBL6751D.
 
-One more disclosed discrepancy (already flagged before): the source's
-Chinese A/C column says 12 kW, the English column says 10 kW.
+QA pass (2026-09-24), against the source PDF's own bilingual text:
+- Fixed: near-invisible zebra-row divider (border color matched the tint
+  background), collapsed row spacing at a page break, a leaked internal QA
+  aside inside the Aire acondicionado value, a duplicate spare-tire mention,
+  and an image/table height mismatch in sections 04-05 (side images pulled
+  out into full-width lead-in banners instead of a stretched side column).
+- Verified, not changed: "Fuhao A" (§05, source page 1: 富豪A) and "Jiulong
+  Fuhua" (§09, source page 3: 九龙富华) are two different Chinese terms for
+  two different seat suppliers — not a typo.
+- Added: running per-page header/footer with page numbers and a table of
+  contents, both filled in by render_pdf.py after Chromium renders the base
+  PDF (Chromium's --print-to-pdf has no header/footer templating and its
+  print engine doesn't reliably support CSS counter(pages), so this is done
+  by drawing directly on the rendered PDF instead of relying on print CSS).
 
-Run: python3 build_ficha.py
+Run: python3 build_ficha.py && python3 render_pdf.py
 """
 import base64
 import re
@@ -78,14 +83,19 @@ BLOCKS = [
         ("Caja de cambios", "6MT (manual, 6 velocidades)"),
         ("Tipo de combustible", "Diésel"),
     ]},
-    {"type": "section", "idx": 4, "title": "Chasis, Frenos y Neumáticos", "side_img": "chassis-frame", "rows": [
+    {"type": "banner", "img": "chassis-frame", "caption": "Vista del chasis (foto referencial)"},
+    {"type": "section", "idx": 4, "title": "Chasis, Frenos y Neumáticos", "rows": [
         ("Capacidad del tanque de combustible (L)", "80"),
+        # Spare-tire mention kept here only (was also repeated under "Llantas"
+        # in §05 — the source PDF states it twice too, once per part, but the
+        # client-facing ficha keeps it in one place only).
         ("Neumáticos", "195/75R16LT (Zhongce, incluye llanta de repuesto)"),
         ("Sistema de frenos", "Discos delanteros y traseros"),
         ("Suspensión delantera", "McPherson, independiente"),
         ("Suspensión trasera", "Ballesta de sección variable (paquete reducido de hojas)"),
     ]},
-    {"type": "section", "idx": 5, "title": "Equipamiento de Serie — Exterior e Interior", "side_img": "grille-detail", "rows": [
+    {"type": "banner", "img": "grille-detail", "caption": "Detalle de parrilla (foto referencial)"},
+    {"type": "section", "idx": 5, "title": "Equipamiento de Serie — Exterior e Interior", "rows": [
         ("Pintura", "Color sólido estándar (blanco)"),
         ("Ventanas laterales", "Fijas, tipo cerrado (vidrio verde)"),
         ("Vidrios eléctricos", "Solo ventana delantera del lado del conductor"),
@@ -93,12 +103,15 @@ BLOCKS = [
         ("Luces diurnas (DRL)", "LED"),
         ("Faros antiniebla delanteros", "Sí"),
         ("Puerta trasera", "Portón trasero"),
-        ("Llantas", "Acero, incluye llanta de repuesto"),
+        ("Llantas", "Acero"),
         ("Asiento del conductor", "Ajustable en 6 direcciones"),
         ("Interior", "Color beige"),
         ("Paneles laterales", "Revestidos en cuerina beige"),
         ("Piso", "Vinilo con textura de madera clara"),
         ("Asiento del conductor (marca)", "Estándar, Jiangdu Jiulong"),
+        # "Fuhao A" verified against source PDF p.1 (富豪A) — a different
+        # Chinese term/brand from "Jiulong Fuhua" in §09 (source p.3, 九龙富
+        # 华). Not a typo; do not merge or "correct" one into the other.
         ("Asientos de pasajeros", "Cuerina (símil cuero), cinturón de 2 puntos, marca Fuhao A"),
         ("Diagnóstico", "CAN-BUS"),
     ]},
@@ -122,7 +135,13 @@ BLOCKS = [
         ("Espejos retrovisores exteriores", "Eléctricos, calefaccionados, con luz direccional integrada"),
         ("Volante", "Multifunción"),
         ("Parlantes", "Rango completo"),
-        ("Aire acondicionado", "12 kW, delantero y trasero (columna en inglés de la fuente indica 10 kW — confirmar con proveedor)"),
+        # INTERNAL QA NOTE (not for the client-facing PDF): source PDF p.2
+        # states 12 kW in the Chinese column but 10 kW in the English column
+        # for this field ("12KW前后舱空调" vs "10KW front & rear air
+        # conditioning") — confirm the real spec with the supplier before
+        # this ficha goes out. Chinese column kept here as the primary text;
+        # flag to Muaaz if the supplier confirms 10 kW instead.
+        ("Aire acondicionado", "12 kW, delantero y trasero"),
         ("Calefacción zona de pasajeros", "Radiadores, 2 m lado izquierdo"),
         ("Llaves", "2 unidades, control remoto plegable"),
         ("Faros de cortesía", "Función \"sígueme a casa\""),
@@ -130,7 +149,7 @@ BLOCKS = [
         ("Bloqueo automático por velocidad", "Sí, a partir de 15 km/h"),
         ("Cierre centralizado", "Sí"),
     ]},
-    {"type": "section", "idx": 8, "title": "Configuración Opcional — Motor y Chasis", "rows": [
+    {"type": "section", "idx": 8, "title": "Configuración Opcional — Motor y Chasis", "cols2": True, "rows": [
         ("Motor RA428Q163E50, Euro V", "Sin límite de velocidad"),
         ("Motor RA428Q163E50, Euro V", "Límite de velocidad 120 km/h, sin certificación de emisiones"),
         ("Motor RA428Q163E61, Euro VI", "Sin límite de velocidad"),
@@ -142,7 +161,7 @@ BLOCKS = [
         ("Doble filtro de combustible diésel", "Opcional"),
         ("Batería resistente a bajas temperaturas", "Opcional"),
     ]},
-    {"type": "section", "idx": 9, "title": "Configuración Opcional — Exterior e Interior", "rows": [
+    {"type": "section", "idx": 9, "title": "Configuración Opcional — Exterior e Interior", "cols2": True, "rows": [
         ("Cantidad de asientos", "17 a 21 (21 asientos solo con puerta corrediza)"),
         ("Pintura metálica", "Opcional"),
         ("Tablero de instrumentos actualizado", "Opcional (excepto versión de techo estándar)"),
@@ -154,6 +173,8 @@ BLOCKS = [
         ("Puerta oscilante eléctrica delantera", "Opcional, con control remoto"),
         ("Asiento del copiloto", "Opcional, individual o doble — solo con puerta corrediza"),
         ("Asientos de pasajeros", "Opcional, configuración de 20 o 22 plazas"),
+        # "Jiulong Fuhua" — see the verification note by "Fuhao A" in §05;
+        # confirmed as a distinct supplier name, not a duplicate/typo of it.
         ("Asientos de pasajeros Jiulong Fuhua (tipo angosto)", "Opcional, cinturón de 2 o 3 puntos"),
         ("Asientos de pasajeros con cinturón de 3 puntos", "Opcional"),
         ("Vidrios laterales grises", "Opcional, transmitancia de 20% o 50%"),
@@ -242,6 +263,8 @@ def block_html(b: dict) -> str:
       <div class="pdoc-side-img"><img src="{img_uri(b['side_img'])}" alt="" /></div>
       <div class="pdoc-spec-grid pdoc-spec-grid--narrow">{grid}</div>
     </div>"""
+    elif b.get("cols2"):
+        body = f'<div class="pdoc-spec-grid pdoc-spec-grid--cols2">{grid}</div>'
     else:
         body = f'<div class="pdoc-spec-grid">{grid}</div>'
 
@@ -254,6 +277,24 @@ def block_html(b: dict) -> str:
 
 
 BLOCKS_HTML = "\n".join(block_html(b) for b in BLOCKS)
+
+# Table of contents: one row per numbered section. The page-number cell is a
+# unique placeholder token ("•PN01•" etc.) left blank here on purpose —
+# render_pdf.py finds each section's actual landing page in the rendered PDF
+# (page numbers aren't known until Chromium paginates the content) and
+# replaces each token with the real number, then adds a clickable jump link
+# over the row.
+TOC_SECTIONS = [(b["idx"], b["title"]) for b in BLOCKS if b["type"] == "section"]
+TOC_ROWS_HTML = "\n    ".join(
+    f'<div class="pdoc-toc-row">'
+    f'<span class="pd-sec-index">{idx:02d}</span>'
+    f'<span class="pdoc-toc-label">{title}</span>'
+    f'<span class="pdoc-toc-dots"></span>'
+    f'<span class="pdoc-toc-page">•PN{idx:02d}•</span>'
+    f'</div>'
+    for idx, title in TOC_SECTIONS
+)
+
 HERO_STATS_HTML = "\n      ".join(
     f'<div class="pdoc-hero-stat"><span class="pd-hero-label">{label}</span>'
     f'<span class="pd-hero-value">{value}</span></div>'
@@ -365,7 +406,7 @@ HTMLDOC = f"""<!doctype html>
   .pdoc-spec-grid {{ display: flex; flex-direction: column; font-size: 11.5px; }}
   .spec-row {{
     display: grid; grid-template-columns: 270px 1fr; align-items: start; gap: 4.5px 16px;
-    padding: 4.5px 8px; border-bottom: 1px solid var(--pd-tint); break-inside: avoid;
+    padding: 4.5px 8px; border-bottom: 1px solid var(--pd-line); break-inside: avoid;
   }}
   .spec-row:nth-child(even) {{ background: var(--pd-tint); }}
   .spec-label {{ font-weight: 600; color: var(--pd-ink); }}
@@ -402,6 +443,28 @@ HTMLDOC = f"""<!doctype html>
   .pdoc-spec-grid--narrow {{ flex: 1; min-width: 0; }}
   .pdoc-spec-grid--narrow .spec-row {{ grid-template-columns: 178px 1fr; }}
 
+  /* ── Two-column layout for the long "Configuración Opcional" sections:
+     each row stays an atomic flex item (never split mid-row) and just wraps
+     two-per-line, roughly halving vertical length without relying on CSS
+     multi-column balancing (which doesn't paginate reliably in Chromium's
+     print engine). ── */
+  .pdoc-spec-grid--cols2 {{ display: flex; flex-flow: row wrap; }}
+  .pdoc-spec-grid--cols2 .spec-row {{
+    flex: 0 0 50%; width: 50%; grid-template-columns: 150px 1fr; gap: 3px 10px;
+  }}
+  .pdoc-spec-grid--cols2 .spec-row:nth-child(odd) {{ padding-right: 12px; }}
+  .pdoc-spec-grid--cols2 .spec-row:nth-child(even) {{ padding-left: 12px; }}
+
+  /* ── Table of contents ── */
+  .pdoc-toc-kicker {{ font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--pd-muted); font-weight: 700; margin-bottom: 6px; }}
+  .pdoc-toc-title {{ font-size: 26px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 6px; }}
+  .pdoc-toc-list {{ margin-top: 20px; }}
+  .pdoc-toc-row {{ display: flex; align-items: baseline; gap: 10px; padding: 11px 2px; border-bottom: 1px solid var(--pd-line); }}
+  .pdoc-toc-row .pd-sec-index {{ width: 24px; height: 24px; font-size: 11px; }}
+  .pdoc-toc-label {{ font-size: 14px; font-weight: 600; }}
+  .pdoc-toc-dots {{ flex: 1; border-bottom: 1px dotted var(--pd-line); margin: 0 2px 4px; }}
+  .pdoc-toc-page {{ font-family: var(--font-mono, monospace); font-size: 13px; color: var(--pd-muted); font-variant-numeric: tabular-nums; }}
+
   .pdoc-tail {{ margin-top: 6px; padding-top: 4px; }}
   .pdoc-note {{ font-size: 10.5px; color: var(--pd-muted); font-style: italic; margin-bottom: 6px; }}
   .pdoc-close-row {{ display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; }}
@@ -423,17 +486,30 @@ HTMLDOC = f"""<!doctype html>
   @media print {{
     /* Zero page margin so full-bleed photos (cover + banners) can reach the
        literal paper edge; --pd-pad-x is reintroduced here (instead of the
-       old @page margin) so text content stays inset by the same amount. */
+       old @page margin) so text content stays inset by the same amount.
+       Margins are even and generous on all four sides (~9mm), with a touch
+       of extra top/bottom room reserved for the running header/footer that
+       render_pdf.py draws into that margin band after Chromium paginates. */
     @page {{ size: A4 portrait; margin: 0; }}
     body {{ background: #ffffff; }}
     .pdoc-page {{ min-height: 0; padding: 0; }}
     .pdoc-page .pdoc {{ box-shadow: none; }}
-    .pdoc {{ --pd-pad-x: 30px; max-width: none; padding: 24px var(--pd-pad-x) 26px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }}
+    /* box-decoration-break defaults to "slice": since .pdoc is a single
+       block sliced across every printed page, its padding was only being
+       applied at the very start and very end of that block — i.e. only on
+       page 1 and the last page — leaving every interior page with ZERO
+       top/bottom margin (content ran flush to the physical edge). "clone"
+       reapplies the padding at each page fragment instead. */
+    .pdoc {{
+      --pd-pad-x: 34px; max-width: none; padding: 44px var(--pd-pad-x) 36px;
+      -webkit-print-color-adjust: exact; print-color-adjust: exact;
+      -webkit-box-decoration-break: clone; box-decoration-break: clone;
+    }}
     .pdoc-close-row, .pdoc-footer {{ break-inside: avoid; }}
     /* The cover photo covers the entire first page: its negative top margin
        cancels .pdoc's own top padding so the image starts at the literal
        page edge, and its height is the full A4 page height. */
-    .pdoc-cover-photo {{ height: 297mm; margin: -24px calc(var(--pd-pad-x) * -1) 0; }}
+    .pdoc-cover-photo {{ height: 297mm; margin: -44px calc(var(--pd-pad-x) * -1) 0; }}
   }}
 </style>
 </head>
@@ -470,6 +546,14 @@ HTMLDOC = f"""<!doctype html>
       </div>
     </div>
   </figure>
+
+  <div class="pdoc-toc pdoc-break-before">
+    <div class="pdoc-toc-kicker">Ficha Técnica · Wings Global Trade</div>
+    <div class="pdoc-toc-title">Índice</div>
+    <div class="pdoc-toc-list">
+    {TOC_ROWS_HTML}
+    </div>
+  </div>
 
   {BLOCKS_HTML}
 
