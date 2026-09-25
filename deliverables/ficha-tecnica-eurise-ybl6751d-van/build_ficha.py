@@ -600,7 +600,6 @@ HTMLDOC = f"""<!doctype html>
   </figure>
 
   <div class="pdoc-toc pdoc-break-before">
-    <div class="pdoc-toc-kicker">Ficha Técnica · Wings Global Trade</div>
     <div class="pdoc-toc-title">Índice</div>
     <div class="pdoc-toc-list">
     {TOC_ROWS_HTML}
