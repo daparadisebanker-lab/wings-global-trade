@@ -20,6 +20,10 @@ apps/*/out/
 .DS_Store
 *.pem
 
+# python (deliverable build scripts)
+__pycache__/
+*.pyc
+
 # debug
 npm-debug.log*
 yarn-debug.log*
