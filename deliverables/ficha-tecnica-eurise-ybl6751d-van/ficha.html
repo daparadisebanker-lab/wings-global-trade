@@ -51,16 +51,16 @@
   }
   .pdoc-cover-topbar {
     position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: flex-start;
-    justify-content: space-between; padding: 22px 30px 0; color: #fff;
+    justify-content: space-between; padding: 30px 36px 0; color: #fff;
   }
-  .pdoc-cover-kicker { font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; color: #9fb3d9; font-weight: 700; }
-  .pdoc-cover-docnum { margin-top: 6px; font-family: var(--font-mono, monospace); font-size: 11px; letter-spacing: .02em; color: rgba(255,255,255,.85); }
-  .pdoc-cover-brand { display: flex; flex-direction: column; align-items: flex-end; text-align: right; gap: 6px; }
-  .pdoc-cover-brand .pdoc-logo { height: 34px; filter: brightness(0) invert(1); }
-  .pdoc-cover-tagline { font-size: 9.5px; letter-spacing: .02em; color: rgba(255,255,255,.75); text-transform: uppercase; }
-  .pdoc-cover-bottombar { position: absolute; left: 0; right: 0; bottom: 0; padding: 0 30px 24px; }
+  .pdoc-cover-kicker { font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: #9fb3d9; font-weight: 700; }
+  .pdoc-cover-docnum { margin-top: 8px; font-family: var(--font-mono, monospace); font-size: 15px; letter-spacing: .02em; color: rgba(255,255,255,.85); }
+  .pdoc-cover-brand { display: flex; flex-direction: column; align-items: flex-end; text-align: right; gap: 9px; }
+  .pdoc-cover-brand .pdoc-logo { height: 64px; filter: brightness(0) invert(1); }
+  .pdoc-cover-tagline { font-size: 12px; letter-spacing: .02em; color: rgba(255,255,255,.78); text-transform: uppercase; }
+  .pdoc-cover-bottombar { position: absolute; left: 0; right: 0; bottom: 0; padding: 0 36px 30px; }
   .pdoc-cover-dateline {
-    display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 11px; font-size: 10px; color: rgba(255,255,255,.75);
+    display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 16px; font-size: 12px; color: rgba(255,255,255,.78);
   }
   .pdoc-cover-dateline span:not(:last-child)::after { content: '|'; margin-left: 14px; color: rgba(255,255,255,.3); }
 
@@ -68,17 +68,17 @@
      cover's bottom overlay, and elsewhere kept as a standalone header
      when a photo isn't in play. ── */
   .pdoc-identity {
-    background: var(--pd-ink); color: #fff; border-radius: 14px;
-    padding: 14px 22px 13px; margin-bottom: 10px;
+    background: var(--pd-ink); color: #fff; border-radius: 16px;
+    padding: 26px 30px 24px; margin-bottom: 12px;
   }
   .pdoc-identity-kicker { font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; color: #9fb3d9; font-weight: 700; margin-bottom: 5px; }
-  .pdoc-identity-name { font-size: 21px; font-weight: 700; letter-spacing: -0.01em; color: #fff; }
-  .pdoc-identity-trim { margin-top: 3px; font-size: 11.5px; color: rgba(255,255,255,.72); }
-  .pdoc-hero-stats { display: flex; margin-top: 10px; background: rgba(255,255,255,.08); border-radius: 10px; padding: 7px 6px; }
-  .pdoc-hero-stat { flex: 1; text-align: center; border-left: 1px solid rgba(255,255,255,.18); padding: 0 4px; }
+  .pdoc-identity-name { font-size: 44px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; color: #fff; }
+  .pdoc-identity-trim { margin-top: 8px; font-size: 16px; color: rgba(255,255,255,.75); }
+  .pdoc-hero-stats { display: flex; margin-top: 18px; background: rgba(255,255,255,.08); border-radius: 12px; padding: 13px 10px; }
+  .pdoc-hero-stat { flex: 1; text-align: center; border-left: 1px solid rgba(255,255,255,.18); padding: 0 6px; }
   .pdoc-hero-stat:first-child { border-left: none; }
-  .pd-hero-label { display: block; font-size: 8.5px; letter-spacing: .05em; text-transform: uppercase; color: rgba(255,255,255,.62); }
-  .pd-hero-value { display: block; margin-top: 2px; font-family: var(--font-mono, monospace); font-weight: 700; font-size: 13px; color: #fff; font-variant-numeric: tabular-nums; }
+  .pd-hero-label { display: block; font-size: 10.5px; letter-spacing: .05em; text-transform: uppercase; color: rgba(255,255,255,.65); }
+  .pd-hero-value { display: block; margin-top: 4px; font-family: var(--font-mono, monospace); font-weight: 700; font-size: 20px; color: #fff; font-variant-numeric: tabular-nums; }
 
   .pdoc-dateline { display: flex; flex-wrap: wrap; gap: 5px 16px; margin-bottom: 12px; font-size: 11.5px; color: var(--pd-muted); }
   .pdoc-dateline span:not(:last-child)::after { content: '|'; margin-left: 16px; color: var(--pd-line); }
@@ -114,12 +114,9 @@
   .spec-affirm { font-weight: 600; }
   .spec-detail { color: var(--pd-muted); }
 
-  /* ── "Opcional" — its own visual state ── */
-  .spec-optional {
-    display: inline-flex; align-items: center; font-size: 10px; font-weight: 700; letter-spacing: .02em;
-    text-transform: uppercase; color: var(--pd-accent); background: var(--pd-accent-tint);
-    border: 1px solid var(--pd-line); border-radius: 999px; padding: 2px 9px; flex-shrink: 0;
-  }
+  /* ── One-line explanation for a whole "optional configuration" block,
+     instead of repeating the word on every row ── */
+  .pdoc-section-note { margin: 6px 2px 8px; font-size: 10.5px; color: var(--pd-muted); font-style: italic; }
 
   /* ── Mid-section full-bleed banner with caption pill ── */
   .pdoc-banner { position: relative; margin: 4px calc(var(--pd-pad-x) * -1) 11px; width: calc(100% + var(--pd-pad-x) * 2); break-inside: avoid; }
@@ -265,6 +262,7 @@
   
   <div class="pdoc-spec-section pdoc-break-before">
     <div class="pdoc-section-bar"><span class="pd-sec-index">01</span>Identificación</div>
+    
     <div class="pdoc-spec-grid"><div class="spec-row"><span class="spec-label">Modelo comercial</span><span class="spec-value">Van de 20 Pasajeros - Asiastar</span></div>
 <div class="spec-row"><span class="spec-label">Modelo / código de fábrica</span><span class="spec-value">EURISE YBL6751D</span></div>
 <div class="spec-row"><span class="spec-label">Marca de fábrica</span><span class="spec-value">EURISE (欧睿)</span></div>
@@ -280,6 +278,7 @@
 
   <div class="pdoc-spec-section">
     <div class="pdoc-section-bar"><span class="pd-sec-index">02</span>Dimensiones y Capacidad</div>
+    
     <div class="pdoc-spec-grid"><div class="spec-row"><span class="spec-label">Dimensiones — largo x ancho x alto (mm)</span><span class="spec-value">7,490 x 2,000 x 2,875</span></div>
 <div class="spec-row"><span class="spec-label">Distancia entre ejes (mm)</span><span class="spec-value">4,325</span></div>
 <div class="spec-row"><span class="spec-label">Peso bruto vehicular (kg)</span><span class="spec-value">5,450</span></div>
@@ -294,6 +293,7 @@
 
   <div class="pdoc-spec-section">
     <div class="pdoc-section-bar"><span class="pd-sec-index">03</span>Motor y Transmisión</div>
+    
     <div class="pdoc-spec-grid"><div class="spec-row"><span class="spec-label">Tipo</span><span class="spec-value">RA428 2.8T (tecnología VM)</span></div>
 <div class="spec-row"><span class="spec-label">Potencia nominal (kW)</span><span class="spec-value">120</span></div>
 <div class="spec-row"><span class="spec-label">Torque máximo (N·m)</span><span class="spec-value">420</span></div>
@@ -309,6 +309,7 @@
 
   <div class="pdoc-spec-section">
     <div class="pdoc-section-bar"><span class="pd-sec-index">04</span>Chasis, Frenos y Neumáticos</div>
+    
     <div class="pdoc-spec-grid"><div class="spec-row"><span class="spec-label">Capacidad del tanque de combustible (L)</span><span class="spec-value">80</span></div>
 <div class="spec-row"><span class="spec-label">Neumáticos</span><span class="spec-value">195/75R16LT (Zhongce, incluye llanta de repuesto)</span></div>
 <div class="spec-row"><span class="spec-label">Sistema de frenos</span><span class="spec-value">Discos delanteros y traseros</span></div>
@@ -323,6 +324,7 @@
 
   <div class="pdoc-spec-section">
     <div class="pdoc-section-bar"><span class="pd-sec-index">05</span>Equipamiento de Serie — Exterior e Interior</div>
+    
     <div class="pdoc-spec-grid"><div class="spec-row"><span class="spec-label">Pintura</span><span class="spec-value">Color sólido estándar (blanco)</span></div>
 <div class="spec-row"><span class="spec-label">Ventanas laterales</span><span class="spec-value">Fijas, tipo cerrado (vidrio verde)</span></div>
 <div class="spec-row"><span class="spec-label">Vidrios eléctricos</span><span class="spec-value">Solo ventana delantera del lado del conductor</span></div>
@@ -342,6 +344,7 @@
 
   <div class="pdoc-spec-section">
     <div class="pdoc-section-bar"><span class="pd-sec-index">06</span>Equipamiento de Serie — Seguridad</div>
+    
     <div class="pdoc-spec-grid"><div class="spec-row"><span class="spec-label">Sistema antirrobo</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Sí</span> <span class="spec-detail">para todo el vehículo</span></span></div>
 <div class="spec-row"><span class="spec-label">Airbag del conductor</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Sí</span></span></div>
 <div class="spec-row"><span class="spec-label">Cinturón del conductor</span><span class="spec-value">3 puntos, con alarma de no abrochado</span></div>
@@ -358,6 +361,7 @@
 
   <div class="pdoc-spec-section">
     <div class="pdoc-section-bar"><span class="pd-sec-index">07</span>Equipamiento de Serie — Confort y Conveniencia</div>
+    
     <div class="pdoc-spec-grid"><div class="spec-row"><span class="spec-label">Audio</span><span class="spec-value">Radio + reproductor MP3</span></div>
 <div class="spec-row"><span class="spec-label">Desempañador de luna trasera</span><span class="spec-value">Eléctrico</span></div>
 <div class="spec-row"><span class="spec-label">Espejos retrovisores exteriores</span><span class="spec-value">Eléctricos, calefaccionados, con luz direccional integrada</span></div>
@@ -374,75 +378,79 @@
 
   <div class="pdoc-spec-section">
     <div class="pdoc-section-bar"><span class="pd-sec-index">08</span>Configuración Opcional — Motor y Chasis</div>
+    <p class="pdoc-section-note">Las secciones 08 a 11 son configuración opcional adicional a la unidad base — no vienen de serie y están sujetas a cotización aparte.</p>
     <div class="pdoc-spec-grid pdoc-spec-grid--cols2"><div class="spec-row"><span class="spec-label">Motor RA428Q163E50, Euro V</span><span class="spec-value">Sin límite de velocidad</span></div>
 <div class="spec-row"><span class="spec-label">Motor RA428Q163E50, Euro V</span><span class="spec-value">Límite de velocidad 120 km/h, sin certificación de emisiones</span></div>
 <div class="spec-row"><span class="spec-label">Motor RA428Q163E61, Euro VI</span><span class="spec-value">Sin límite de velocidad</span></div>
 <div class="spec-row"><span class="spec-label">Motor RA428Q163E61, Euro VI</span><span class="spec-value">Límite de velocidad 120 km/h</span></div>
-<div class="spec-row"><span class="spec-label">Tanque de combustible auxiliar</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div>
-<div class="spec-row"><span class="spec-label">Calefacción de línea de combustible</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div>
-<div class="spec-row"><span class="spec-label">Cubierta protectora del tanque de AdBlue (urea)</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div>
-<div class="spec-row"><span class="spec-label">Cubierta protectora del chasis/motor (con orificio para aceite)</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div>
-<div class="spec-row"><span class="spec-label">Doble filtro de combustible diésel</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div>
-<div class="spec-row"><span class="spec-label">Batería resistente a bajas temperaturas</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div></div>
+<div class="spec-row"><span class="spec-label">Tanque de combustible auxiliar</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div>
+<div class="spec-row"><span class="spec-label">Calefacción de línea de combustible</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div>
+<div class="spec-row"><span class="spec-label">Cubierta protectora del tanque de AdBlue (urea)</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div>
+<div class="spec-row"><span class="spec-label">Cubierta protectora del chasis/motor (con orificio para aceite)</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div>
+<div class="spec-row"><span class="spec-label">Doble filtro de combustible diésel</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div>
+<div class="spec-row"><span class="spec-label">Batería resistente a bajas temperaturas</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div></div>
   </div>
 
   <div class="pdoc-spec-section">
     <div class="pdoc-section-bar"><span class="pd-sec-index">09</span>Configuración Opcional — Exterior e Interior</div>
+    
     <div class="pdoc-spec-grid pdoc-spec-grid--cols2"><div class="spec-row"><span class="spec-label">Cantidad de asientos</span><span class="spec-value">17 a 21 (21 asientos solo con puerta corrediza)</span></div>
-<div class="spec-row"><span class="spec-label">Pintura metálica</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div>
-<div class="spec-row"><span class="spec-label">Tablero de instrumentos actualizado</span><span class="spec-value"><span class="spec-optional">Opcional</span> <span class="spec-detail">(excepto versión de techo estándar)</span></span></div>
-<div class="spec-row"><span class="spec-label">Interior gris con amarillo (versión anterior)</span><span class="spec-value"><span class="spec-optional">Opcional</span> <span class="spec-detail">solo con tablero estándar</span></span></div>
-<div class="spec-row"><span class="spec-label">Paneles laterales de aluminio-plástico</span><span class="spec-value"><span class="spec-optional">Opcional</span> <span class="spec-detail">colores blanco marfil o marrón</span></span></div>
-<div class="spec-row"><span class="spec-label">Paneles laterales en fibra revestida en cuerina</span><span class="spec-value"><span class="spec-optional">Opcional</span> <span class="spec-detail">colores gris o marrón</span></span></div>
-<div class="spec-row"><span class="spec-label">Asiento del conductor Grammer</span><span class="spec-value"><span class="spec-optional">Opcional</span> <span class="spec-detail">con amortiguación neumática tipo airbag</span></span></div>
-<div class="spec-row"><span class="spec-label">Puerta corrediza (lado derecho)</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div>
-<div class="spec-row"><span class="spec-label">Puerta oscilante eléctrica delantera</span><span class="spec-value"><span class="spec-optional">Opcional</span> <span class="spec-detail">con control remoto</span></span></div>
-<div class="spec-row"><span class="spec-label">Asiento del copiloto</span><span class="spec-value"><span class="spec-optional">Opcional</span> <span class="spec-detail">individual o doble — solo con puerta corrediza</span></span></div>
-<div class="spec-row"><span class="spec-label">Asientos de pasajeros</span><span class="spec-value"><span class="spec-optional">Opcional</span> <span class="spec-detail">configuración de 20 o 22 plazas</span></span></div>
-<div class="spec-row"><span class="spec-label">Asientos de pasajeros Jiulong Fuhua (tipo angosto)</span><span class="spec-value"><span class="spec-optional">Opcional</span> <span class="spec-detail">cinturón de 2 o 3 puntos</span></span></div>
-<div class="spec-row"><span class="spec-label">Asientos de pasajeros con cinturón de 3 puntos</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div>
-<div class="spec-row"><span class="spec-label">Vidrios laterales grises</span><span class="spec-value"><span class="spec-optional">Opcional</span> <span class="spec-detail">transmitancia de 20% o 50%</span></span></div>
-<div class="spec-row"><span class="spec-label">Vidrio termopanel (doble) en ventanas laterales</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div>
-<div class="spec-row"><span class="spec-label">Ventana lateral corrediza</span><span class="spec-value"><span class="spec-optional">Opcional</span> <span class="spec-detail">por unidad</span></span></div>
-<div class="spec-row"><span class="spec-label">Ventanas laterales ampliadas</span><span class="spec-value"><span class="spec-optional">Opcional</span> <span class="spec-detail">8 vidrios grandes</span></span></div>
-<div class="spec-row"><span class="spec-label">Vidrio de puerta trasera</span><span class="spec-value"><span class="spec-optional">Opcional</span> <span class="spec-detail">color gris 20%</span></span></div>
-<div class="spec-row"><span class="spec-label">Logotipo trasero</span><span class="spec-value"><span class="spec-optional">Opcional</span> <span class="spec-detail">EURISE o EURISE + nombre del modelo</span></span></div>
-<div class="spec-row"><span class="spec-label">Cortinas</span><span class="spec-value"><span class="spec-optional">Opcional</span> <span class="spec-detail">todas las ventanas laterales</span></span></div>
-<div class="spec-row"><span class="spec-label">Sistema de videovigilancia</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div>
-<div class="spec-row"><span class="spec-label">Airbag del copiloto</span><span class="spec-value"><span class="spec-optional">Opcional</span> <span class="spec-detail">solo con tablero estándar</span></span></div>
-<div class="spec-row"><span class="spec-label">Pasamanos/guardapiés en el pilar A</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div>
-<div class="spec-row"><span class="spec-label">Monitoreo de presión de neumáticos</span><span class="spec-value"><span class="spec-optional">Opcional</span> <span class="spec-detail">solo delanteros o las 4 ruedas</span></span></div>
-<div class="spec-row"><span class="spec-label">Techo corredizo con ventilador extractor</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div>
-<div class="spec-row"><span class="spec-label">Compartimento de equipaje de dos niveles</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div>
-<div class="spec-row"><span class="spec-label">Interior del compartimento de equipaje</span><span class="spec-value"><span class="spec-optional">Opcional</span> <span class="spec-detail">panel en fibra revestida + piso estándar, o panel con relieve de aluminio + piso</span></span></div>
-<div class="spec-row"><span class="spec-label">Luz interior del compartimento de equipaje</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div>
-<div class="spec-row"><span class="spec-label">Agarradera del pilar A (lado del conductor)</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div>
-<div class="spec-row"><span class="spec-label">Calefacción del asiento del conductor</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div>
-<div class="spec-row"><span class="spec-label">Calefacción de asientos del conductor y copiloto</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div>
-<div class="spec-row"><span class="spec-label">Portaequipaje interior</span><span class="spec-value"><span class="spec-optional">Opcional</span> <span class="spec-detail">un lado o ambos lados</span></span></div>
-<div class="spec-row"><span class="spec-label">Televisor fijo de 19"</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div>
-<div class="spec-row"><span class="spec-label">Televisor eléctrico plegable de 19"</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div>
-<div class="spec-row"><span class="spec-label">Puerto USB en el tablero</span><span class="spec-value"><span class="spec-optional">Opcional</span> <span class="spec-detail">1 o 2 puertos — solo tablero estándar</span></span></div>
-<div class="spec-row"><span class="spec-label">Puerto USB en cada asiento de pasajero</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div>
-<div class="spec-row"><span class="spec-label">Sistema auxiliar de calefacción por combustible (Hauck)</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div>
-<div class="spec-row"><span class="spec-label">Micrófono inalámbrico</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div>
-<div class="spec-row"><span class="spec-label">Reloj digital</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div>
-<div class="spec-row"><span class="spec-label">Paquete de reducción de ruido en zona de pasajeros</span><span class="spec-value"><span class="spec-optional">Opcional</span> <span class="spec-detail">nivel C+ o B</span></span></div>
-<div class="spec-row"><span class="spec-label">Calefacción en zona de pasajeros</span><span class="spec-value"><span class="spec-optional">Opcional</span> <span class="spec-detail">2 m a cada lado</span></span></div>
-<div class="spec-row"><span class="spec-label">Control de crucero</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div>
-<div class="spec-row"><span class="spec-label">Sistema MP5 + cámara de retroceso</span><span class="spec-value"><span class="spec-optional">Opcional</span> <span class="spec-detail">pantalla grande o pequeña — solo tablero estándar</span></span></div>
-<div class="spec-row"><span class="spec-label">Tratamiento anticorrosión y contra el frío mejorado</span><span class="spec-value"><span class="spec-optional">Opcional</span> <span class="spec-detail">en pintura</span></span></div></div>
+<div class="spec-row"><span class="spec-label">Pintura metálica</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div>
+<div class="spec-row"><span class="spec-label">Tablero de instrumentos actualizado</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span> <span class="spec-detail">(excepto versión de techo estándar)</span></span></div>
+<div class="spec-row"><span class="spec-label">Interior gris con amarillo (versión anterior)</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span> <span class="spec-detail">solo con tablero estándar</span></span></div>
+<div class="spec-row"><span class="spec-label">Paneles laterales de aluminio-plástico</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span> <span class="spec-detail">colores blanco marfil o marrón</span></span></div>
+<div class="spec-row"><span class="spec-label">Paneles laterales en fibra revestida en cuerina</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span> <span class="spec-detail">colores gris o marrón</span></span></div>
+<div class="spec-row"><span class="spec-label">Asiento del conductor Grammer</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span> <span class="spec-detail">con amortiguación neumática tipo airbag</span></span></div>
+<div class="spec-row"><span class="spec-label">Puerta corrediza (lado derecho)</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div>
+<div class="spec-row"><span class="spec-label">Puerta oscilante eléctrica delantera</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span> <span class="spec-detail">con control remoto</span></span></div>
+<div class="spec-row"><span class="spec-label">Asiento del copiloto</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span> <span class="spec-detail">individual o doble — solo con puerta corrediza</span></span></div>
+<div class="spec-row"><span class="spec-label">Asientos de pasajeros</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span> <span class="spec-detail">configuración de 20 o 22 plazas</span></span></div>
+<div class="spec-row"><span class="spec-label">Asientos de pasajeros Jiulong Fuhua (tipo angosto)</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span> <span class="spec-detail">cinturón de 2 o 3 puntos</span></span></div>
+<div class="spec-row"><span class="spec-label">Asientos de pasajeros con cinturón de 3 puntos</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div>
+<div class="spec-row"><span class="spec-label">Vidrios laterales grises</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span> <span class="spec-detail">transmitancia de 20% o 50%</span></span></div>
+<div class="spec-row"><span class="spec-label">Vidrio termopanel (doble) en ventanas laterales</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div>
+<div class="spec-row"><span class="spec-label">Ventana lateral corrediza</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span> <span class="spec-detail">por unidad</span></span></div>
+<div class="spec-row"><span class="spec-label">Ventanas laterales ampliadas</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span> <span class="spec-detail">8 vidrios grandes</span></span></div>
+<div class="spec-row"><span class="spec-label">Vidrio de puerta trasera</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span> <span class="spec-detail">color gris 20%</span></span></div>
+<div class="spec-row"><span class="spec-label">Logotipo trasero</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span> <span class="spec-detail">EURISE o EURISE + nombre del modelo</span></span></div>
+<div class="spec-row"><span class="spec-label">Cortinas</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span> <span class="spec-detail">todas las ventanas laterales</span></span></div>
+<div class="spec-row"><span class="spec-label">Sistema de videovigilancia</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div>
+<div class="spec-row"><span class="spec-label">Airbag del copiloto</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span> <span class="spec-detail">solo con tablero estándar</span></span></div>
+<div class="spec-row"><span class="spec-label">Pasamanos/guardapiés en el pilar A</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div>
+<div class="spec-row"><span class="spec-label">Monitoreo de presión de neumáticos</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span> <span class="spec-detail">solo delanteros o las 4 ruedas</span></span></div>
+<div class="spec-row"><span class="spec-label">Techo corredizo con ventilador extractor</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div>
+<div class="spec-row"><span class="spec-label">Compartimento de equipaje de dos niveles</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div>
+<div class="spec-row"><span class="spec-label">Interior del compartimento de equipaje</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span> <span class="spec-detail">panel en fibra revestida + piso estándar, o panel con relieve de aluminio + piso</span></span></div>
+<div class="spec-row"><span class="spec-label">Luz interior del compartimento de equipaje</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div>
+<div class="spec-row"><span class="spec-label">Agarradera del pilar A (lado del conductor)</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div>
+<div class="spec-row"><span class="spec-label">Calefacción del asiento del conductor</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div>
+<div class="spec-row"><span class="spec-label">Calefacción de asientos del conductor y copiloto</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div>
+<div class="spec-row"><span class="spec-label">Portaequipaje interior</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span> <span class="spec-detail">un lado o ambos lados</span></span></div>
+<div class="spec-row"><span class="spec-label">Televisor fijo de 19"</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div>
+<div class="spec-row"><span class="spec-label">Televisor eléctrico plegable de 19"</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div>
+<div class="spec-row"><span class="spec-label">Puerto USB en el tablero</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span> <span class="spec-detail">1 o 2 puertos — solo tablero estándar</span></span></div>
+<div class="spec-row"><span class="spec-label">Puerto USB en cada asiento de pasajero</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div>
+<div class="spec-row"><span class="spec-label">Sistema auxiliar de calefacción por combustible (Hauck)</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div>
+<div class="spec-row"><span class="spec-label">Micrófono inalámbrico</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div>
+<div class="spec-row"><span class="spec-label">Reloj digital</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div>
+<div class="spec-row"><span class="spec-label">Paquete de reducción de ruido en zona de pasajeros</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span> <span class="spec-detail">nivel C+ o B</span></span></div>
+<div class="spec-row"><span class="spec-label">Calefacción en zona de pasajeros</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span> <span class="spec-detail">2 m a cada lado</span></span></div>
+<div class="spec-row"><span class="spec-label">Control de crucero</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div>
+<div class="spec-row"><span class="spec-label">Sistema MP5 + cámara de retroceso</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span> <span class="spec-detail">pantalla grande o pequeña — solo tablero estándar</span></span></div>
+<div class="spec-row"><span class="spec-label">Tratamiento anticorrosión y contra el frío mejorado</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span> <span class="spec-detail">en pintura</span></span></div></div>
   </div>
 
   <div class="pdoc-spec-section">
     <div class="pdoc-section-bar"><span class="pd-sec-index">10</span>Configuración Opcional — Seguridad</div>
-    <div class="pdoc-spec-grid"><div class="spec-row"><span class="spec-label">Extintor automático en el compartimento del motor</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div>
-<div class="spec-row"><span class="spec-label">Retardador (freno auxiliar)</span><span class="spec-value"><span class="spec-optional">Opcional</span></span></div></div>
+    
+    <div class="pdoc-spec-grid"><div class="spec-row"><span class="spec-label">Extintor automático en el compartimento del motor</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div>
+<div class="spec-row"><span class="spec-label">Retardador (freno auxiliar)</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span></span></div></div>
   </div>
 
   <div class="pdoc-spec-section">
     <div class="pdoc-section-bar"><span class="pd-sec-index">11</span>Configuración Opcional — Confort y Conveniencia</div>
-    <div class="pdoc-spec-grid"><div class="spec-row"><span class="spec-label">Estribo eléctrico de bienvenida</span><span class="spec-value"><span class="spec-optional">Opcional</span> <span class="spec-detail">excepto con puerta oscilante eléctrica</span></span></div></div>
+    
+    <div class="pdoc-spec-grid"><div class="spec-row"><span class="spec-label">Estribo eléctrico de bienvenida</span><span class="spec-value"><span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span> <span class="spec-detail">excepto con puerta oscilante eléctrica</span></span></div></div>
   </div>
 
   <div class="pdoc-tail">

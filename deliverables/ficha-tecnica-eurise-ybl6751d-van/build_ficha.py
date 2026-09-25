@@ -149,7 +149,9 @@ BLOCKS = [
         ("Bloqueo automático por velocidad", "Sí, a partir de 15 km/h"),
         ("Cierre centralizado", "Sí"),
     ]},
-    {"type": "section", "idx": 8, "title": "Configuración Opcional — Motor y Chasis", "cols2": True, "rows": [
+    {"type": "section", "idx": 8, "title": "Configuración Opcional — Motor y Chasis", "cols2": True,
+     "note": "Las secciones 08 a 11 son configuración opcional adicional a la unidad base — no vienen de serie y están sujetas a cotización aparte.",
+     "rows": [
         ("Motor RA428Q163E50, Euro V", "Sin límite de velocidad"),
         ("Motor RA428Q163E50, Euro V", "Límite de velocidad 120 km/h, sin certificación de emisiones"),
         ("Motor RA428Q163E61, Euro VI", "Sin límite de velocidad"),
@@ -223,9 +225,11 @@ OPTIONAL_RE = re.compile(r"^Opcional\b", re.IGNORECASE)
 
 
 def value_html(value: str) -> str:
-    """Boolean specs get a check badge instead of plain 'Sí' text; rows
-    whose value starts with 'Opcional' get a pill so an optional-equipment
-    section still reads at a glance even without the check-badge pattern."""
+    """Boolean specs get a check badge instead of plain 'Sí' text. Rows whose
+    value starts with 'Opcional' get the same check-badge treatment but
+    labeled 'Disponible' — the word 'Opcional' isn't repeated on every row;
+    the whole block explains once that these sections are optional
+    configuration (see OPTIONAL_SECTION_NOTE)."""
     if value.startswith("Sí"):
         rest = value[2:].lstrip(",").strip()
         detail = f' <span class="spec-detail">{rest}</span>' if rest else ""
@@ -234,7 +238,7 @@ def value_html(value: str) -> str:
     if m:
         rest = value[m.end():].strip(" ,").strip()
         detail = f' <span class="spec-detail">{rest}</span>' if rest else ""
-        return f'<span class="spec-optional">Opcional</span>{detail}'
+        return f'<span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span>{detail}'
     return value
 
 
@@ -268,10 +272,12 @@ def block_html(b: dict) -> str:
     else:
         body = f'<div class="pdoc-spec-grid">{grid}</div>'
 
+    note = f'<p class="pdoc-section-note">{b["note"]}</p>' if b.get("note") else ""
     section_class = "pdoc-spec-section pdoc-break-before" if b.get("break_before") else "pdoc-spec-section"
     return f"""
   <div class="{section_class}">
     {bar}
+    {note}
     {body}
   </div>"""
 
@@ -358,16 +364,16 @@ HTMLDOC = f"""<!doctype html>
   }}
   .pdoc-cover-topbar {{
     position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: flex-start;
-    justify-content: space-between; padding: 22px 30px 0; color: #fff;
+    justify-content: space-between; padding: 30px 36px 0; color: #fff;
   }}
-  .pdoc-cover-kicker {{ font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; color: #9fb3d9; font-weight: 700; }}
-  .pdoc-cover-docnum {{ margin-top: 6px; font-family: var(--font-mono, monospace); font-size: 11px; letter-spacing: .02em; color: rgba(255,255,255,.85); }}
-  .pdoc-cover-brand {{ display: flex; flex-direction: column; align-items: flex-end; text-align: right; gap: 6px; }}
-  .pdoc-cover-brand .pdoc-logo {{ height: 34px; filter: brightness(0) invert(1); }}
-  .pdoc-cover-tagline {{ font-size: 9.5px; letter-spacing: .02em; color: rgba(255,255,255,.75); text-transform: uppercase; }}
-  .pdoc-cover-bottombar {{ position: absolute; left: 0; right: 0; bottom: 0; padding: 0 30px 24px; }}
+  .pdoc-cover-kicker {{ font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: #9fb3d9; font-weight: 700; }}
+  .pdoc-cover-docnum {{ margin-top: 8px; font-family: var(--font-mono, monospace); font-size: 15px; letter-spacing: .02em; color: rgba(255,255,255,.85); }}
+  .pdoc-cover-brand {{ display: flex; flex-direction: column; align-items: flex-end; text-align: right; gap: 9px; }}
+  .pdoc-cover-brand .pdoc-logo {{ height: 64px; filter: brightness(0) invert(1); }}
+  .pdoc-cover-tagline {{ font-size: 12px; letter-spacing: .02em; color: rgba(255,255,255,.78); text-transform: uppercase; }}
+  .pdoc-cover-bottombar {{ position: absolute; left: 0; right: 0; bottom: 0; padding: 0 36px 30px; }}
   .pdoc-cover-dateline {{
-    display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 11px; font-size: 10px; color: rgba(255,255,255,.75);
+    display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 16px; font-size: 12px; color: rgba(255,255,255,.78);
   }}
   .pdoc-cover-dateline span:not(:last-child)::after {{ content: '|'; margin-left: 14px; color: rgba(255,255,255,.3); }}
 
@@ -375,17 +381,17 @@ HTMLDOC = f"""<!doctype html>
      cover's bottom overlay, and elsewhere kept as a standalone header
      when a photo isn't in play. ── */
   .pdoc-identity {{
-    background: var(--pd-ink); color: #fff; border-radius: 14px;
-    padding: 14px 22px 13px; margin-bottom: 10px;
+    background: var(--pd-ink); color: #fff; border-radius: 16px;
+    padding: 26px 30px 24px; margin-bottom: 12px;
   }}
   .pdoc-identity-kicker {{ font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; color: #9fb3d9; font-weight: 700; margin-bottom: 5px; }}
-  .pdoc-identity-name {{ font-size: 21px; font-weight: 700; letter-spacing: -0.01em; color: #fff; }}
-  .pdoc-identity-trim {{ margin-top: 3px; font-size: 11.5px; color: rgba(255,255,255,.72); }}
-  .pdoc-hero-stats {{ display: flex; margin-top: 10px; background: rgba(255,255,255,.08); border-radius: 10px; padding: 7px 6px; }}
-  .pdoc-hero-stat {{ flex: 1; text-align: center; border-left: 1px solid rgba(255,255,255,.18); padding: 0 4px; }}
+  .pdoc-identity-name {{ font-size: 44px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; color: #fff; }}
+  .pdoc-identity-trim {{ margin-top: 8px; font-size: 16px; color: rgba(255,255,255,.75); }}
+  .pdoc-hero-stats {{ display: flex; margin-top: 18px; background: rgba(255,255,255,.08); border-radius: 12px; padding: 13px 10px; }}
+  .pdoc-hero-stat {{ flex: 1; text-align: center; border-left: 1px solid rgba(255,255,255,.18); padding: 0 6px; }}
   .pdoc-hero-stat:first-child {{ border-left: none; }}
-  .pd-hero-label {{ display: block; font-size: 8.5px; letter-spacing: .05em; text-transform: uppercase; color: rgba(255,255,255,.62); }}
-  .pd-hero-value {{ display: block; margin-top: 2px; font-family: var(--font-mono, monospace); font-weight: 700; font-size: 13px; color: #fff; font-variant-numeric: tabular-nums; }}
+  .pd-hero-label {{ display: block; font-size: 10.5px; letter-spacing: .05em; text-transform: uppercase; color: rgba(255,255,255,.65); }}
+  .pd-hero-value {{ display: block; margin-top: 4px; font-family: var(--font-mono, monospace); font-weight: 700; font-size: 20px; color: #fff; font-variant-numeric: tabular-nums; }}
 
   .pdoc-dateline {{ display: flex; flex-wrap: wrap; gap: 5px 16px; margin-bottom: 12px; font-size: 11.5px; color: var(--pd-muted); }}
   .pdoc-dateline span:not(:last-child)::after {{ content: '|'; margin-left: 16px; color: var(--pd-line); }}
@@ -421,12 +427,9 @@ HTMLDOC = f"""<!doctype html>
   .spec-affirm {{ font-weight: 600; }}
   .spec-detail {{ color: var(--pd-muted); }}
 
-  /* ── "Opcional" — its own visual state ── */
-  .spec-optional {{
-    display: inline-flex; align-items: center; font-size: 10px; font-weight: 700; letter-spacing: .02em;
-    text-transform: uppercase; color: var(--pd-accent); background: var(--pd-accent-tint);
-    border: 1px solid var(--pd-line); border-radius: 999px; padding: 2px 9px; flex-shrink: 0;
-  }}
+  /* ── One-line explanation for a whole "optional configuration" block,
+     instead of repeating the word on every row ── */
+  .pdoc-section-note {{ margin: 6px 2px 8px; font-size: 10.5px; color: var(--pd-muted); font-style: italic; }}
 
   /* ── Mid-section full-bleed banner with caption pill ── */
   .pdoc-banner {{ position: relative; margin: 4px calc(var(--pd-pad-x) * -1) 11px; width: calc(100% + var(--pd-pad-x) * 2); break-inside: avoid; }}
