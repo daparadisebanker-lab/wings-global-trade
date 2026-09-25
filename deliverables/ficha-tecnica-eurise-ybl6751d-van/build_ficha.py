@@ -214,12 +214,18 @@ BLOCKS = [
     {"type": "section", "idx": 11, "title": "Configuración Opcional — Confort y Conveniencia", "rows": [
         ("Estribo eléctrico de bienvenida", "Opcional, excepto con puerta oscilante eléctrica"),
     ]},
-    {"type": "gallery", "break_before": True, "images": [
-        ("chassis-3q", "Vista general — chasis cabinado"),
-        ("engine-bay", "Compartimento del motor"),
-        ("chassis-frame", "Vista del chasis"),
-        ("grille-detail", "Detalle de parrilla"),
-    ]},
+]
+
+# Closing gallery — kept separate from BLOCKS (rather than a "gallery" block
+# type) so it can be wrapped together with the closing signature/footer in
+# one fixed-height flex container on the last page (see .pdoc-last-page):
+# that's what pins the footer to the physical bottom of the page instead of
+# floating right under the gallery with dead space beneath it.
+GALLERY_IMAGES = [
+    ("chassis-3q", "Vista general — chasis cabinado"),
+    ("engine-bay", "Compartimento del motor"),
+    ("chassis-frame", "Vista del chasis"),
+    ("grille-detail", "Detalle de parrilla"),
 ]
 
 
@@ -228,10 +234,11 @@ OPTIONAL_RE = re.compile(r"^Opcional\b", re.IGNORECASE)
 
 def value_html(value: str) -> str:
     """Boolean specs get a check badge instead of plain 'Sí' text. Rows whose
-    value starts with 'Opcional' get the same check-badge treatment but
-    labeled 'Disponible' — the word 'Opcional' isn't repeated on every row;
-    the whole block explains once that these sections are optional
-    configuration (see OPTIONAL_SECTION_NOTE)."""
+    value starts with 'Opcional' show only the remaining detail (if any) with
+    no badge or "Disponible"/"Opcional" label at all — every row in an
+    optional-configuration section is available by definition (that's what
+    the section note above says once), so tagging each row individually was
+    redundant and, per feedback, must not come back."""
     if value.startswith("Sí"):
         rest = value[2:].lstrip(",").strip()
         detail = f' <span class="spec-detail">{rest}</span>' if rest else ""
@@ -239,8 +246,7 @@ def value_html(value: str) -> str:
     m = OPTIONAL_RE.match(value)
     if m:
         rest = value[m.end():].strip(" ,").strip()
-        detail = f' <span class="spec-detail">{rest}</span>' if rest else ""
-        return f'<span class="spec-check" aria-hidden="true">✓</span><span class="spec-affirm">Disponible</span>{detail}'
+        return f'<span class="spec-detail">{rest}</span>' if rest else ""
     return value
 
 
@@ -259,23 +265,6 @@ def block_html(b: dict) -> str:
     <img src="{img_uri(b['img'])}" alt="" />
     <figcaption>{b['caption']}</figcaption>
   </figure>"""
-
-    if b["type"] == "gallery":
-        tiles = "\n    ".join(
-            f'<figure class="pdoc-gallery-tile"><img src="{img_uri(img)}" alt="" />'
-            f'<figcaption>{caption}</figcaption></figure>'
-            for img, caption in b["images"]
-        )
-        gallery_class = "pdoc-gallery pdoc-break-before" if b.get("break_before") else "pdoc-gallery"
-        return f"""
-  <div class="{gallery_class}">
-    <div class="pdoc-gallery-kicker">Ficha Técnica · Wings Global Trade</div>
-    <div class="pdoc-gallery-title">Galería de Imágenes</div>
-    <p class="pdoc-section-note">Fotografías de referencia de una van de chasis cabinado de configuración similar (branding "ASIASTAR") — no corresponden a fotografías de fábrica de la unidad EURISE YBL6751D exacta.</p>
-    <div class="pdoc-gallery-grid">
-    {tiles}
-    </div>
-  </div>"""
 
     bar = f'<div class="pdoc-section-bar"><span class="pd-sec-index">{b["idx"]:02d}</span>{b["title"]}</div>'
     grid = rows_html(b["rows"])
@@ -302,6 +291,12 @@ def block_html(b: dict) -> str:
 
 
 BLOCKS_HTML = "\n".join(block_html(b) for b in BLOCKS)
+
+GALLERY_TILES_HTML = "\n    ".join(
+    f'<figure class="pdoc-gallery-tile"><img src="{img_uri(img)}" alt="" />'
+    f'<figcaption>{caption}</figcaption></figure>'
+    for img, caption in GALLERY_IMAGES
+)
 
 # Table of contents: one row per numbered section. The page-number cell is a
 # unique placeholder token ("•PN01•" etc.) left blank here on purpose —
@@ -487,6 +482,13 @@ HTMLDOC = f"""<!doctype html>
   .pdoc-toc-dots {{ flex: 1; border-bottom: 1px dotted var(--pd-line); margin: 0 2px 4px; }}
   .pdoc-toc-page {{ font-family: var(--font-mono, monospace); font-size: 13px; color: var(--pd-muted); font-variant-numeric: tabular-nums; }}
 
+  /* ── The last page: gallery on top, closing signature/footer pinned to
+     the physical bottom via flex (instead of floating right under the
+     gallery with dead space beneath it). The min-height is one page's
+     content area (297mm minus .pdoc's own cloned top/bottom padding). ── */
+  .pdoc-last-page {{ display: flex; flex-direction: column; }}
+  .pdoc-tail {{ margin-top: auto; padding-top: 4px; }}
+
   /* ── Closing image gallery: a 2x2 grid, kept off the spec tables entirely
      so the reference photos read as a gallery, not as claims about a
      specific row's spec. ── */
@@ -499,8 +501,6 @@ HTMLDOC = f"""<!doctype html>
     position: absolute; left: 12px; bottom: 10px; color: #fff; font-size: 10.5px; font-weight: 600;
     background: rgba(8,10,12,.55); padding: 4px 11px; border-radius: 999px; letter-spacing: 0.01em;
   }}
-
-  .pdoc-tail {{ margin-top: 6px; padding-top: 4px; }}
   .pdoc-note {{ font-size: 10.5px; color: var(--pd-muted); font-style: italic; margin-bottom: 6px; }}
   .pdoc-close-row {{ display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; }}
   .pdoc-close-signoff {{ margin-top: 2px; font-weight: 600; }}
@@ -546,6 +546,10 @@ HTMLDOC = f"""<!doctype html>
        cancels .pdoc's own top padding so the image starts at the literal
        page edge, and its height is the full A4 page height. */
     .pdoc-cover-photo {{ height: 297mm; margin: -44px calc(var(--pd-pad-x) * -1) 0; }}
+    /* Fill exactly one page's content area (297mm minus this page's own
+       cloned top+bottom padding) so the flex layout has room to push
+       .pdoc-tail all the way down to the bottom edge. */
+    .pdoc-last-page {{ min-height: calc(297mm - 44px - 36px); }}
   }}
 </style>
 </head>
@@ -593,23 +597,34 @@ HTMLDOC = f"""<!doctype html>
 
   {BLOCKS_HTML}
 
-  <div class="pdoc-tail">
-  <div class="pdoc-close-row">
-    <div class="pdoc-close">
-      <div>Atentamente,</div>
-      <div class="pdoc-close-signoff">WINGS GLOBAL TRADE</div>
+  <div class="pdoc-last-page pdoc-break-before">
+    <div class="pdoc-gallery">
+      <div class="pdoc-gallery-kicker">Ficha Técnica · Wings Global Trade</div>
+      <div class="pdoc-gallery-title">Galería de Imágenes</div>
+      <p class="pdoc-section-note">Fotografías de referencia de una van de chasis cabinado de configuración similar (branding "ASIASTAR") — no corresponden a fotografías de fábrica de la unidad EURISE YBL6751D exacta.</p>
+      <div class="pdoc-gallery-grid">
+      {GALLERY_TILES_HTML}
+      </div>
     </div>
-  </div>
 
-  <footer class="pdoc-footer">
-    <div>
-      <div>¿Consultas? · importaciones@wingsglobaltrade.com</div>
-      <div>Tel: +507 6025-07</div>
+    <div class="pdoc-tail">
+    <div class="pdoc-close-row">
+      <div class="pdoc-close">
+        <div>Atentamente,</div>
+        <div class="pdoc-close-signoff">WINGS GLOBAL TRADE</div>
+      </div>
     </div>
-    <div class="pd-foot-right">
-      <div>wingsglobaltrade.com</div>
+
+    <footer class="pdoc-footer">
+      <div>
+        <div>¿Consultas? · importaciones@wingsglobaltrade.com</div>
+        <div>Tel: +507 6025-07</div>
+      </div>
+      <div class="pd-foot-right">
+        <div>wingsglobaltrade.com</div>
+      </div>
+    </footer>
     </div>
-  </footer>
   </div>
 
 </article>
@@ -624,7 +639,7 @@ n_rows = sum(len(b["rows"]) for b in BLOCKS if b["type"] == "section")
 n_photos = len(set(
     [b["img"] for b in BLOCKS if b["type"] == "banner"]
     + [b["side_img"] for b in BLOCKS if b.get("side_img")]
-    + [img for b in BLOCKS if b["type"] == "gallery" for img, _ in b["images"]]
+    + [img for img, _ in GALLERY_IMAGES]
     + ["cover-front"]
 ))
 print(f"wrote {out} ({len(HTMLDOC):,} bytes)")
