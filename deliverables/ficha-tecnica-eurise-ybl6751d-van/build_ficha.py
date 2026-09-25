@@ -248,6 +248,16 @@ def value_html(value: str) -> str:
     m = OPTIONAL_RE.match(value)
     if m:
         rest = value[m.end():].strip(" ,").strip()
+        if rest:
+            # Capitalize the first letter of the first word, skipping a
+            # leading "(" like in "(excepto versión de techo estándar)" —
+            # but never hunting past a leading number ("8 vidrios grandes"
+            # stays as-is; there's no letter to capitalize at position 0).
+            prefix = "(" if rest.startswith("(") else ""
+            body = rest[1:] if prefix else rest
+            if body and body[0].isalpha():
+                body = body[0].upper() + body[1:]
+            rest = prefix + body
         return f'<span class="spec-detail">{rest}</span>' if rest else ""
     return value
 
@@ -423,7 +433,7 @@ HTMLDOC = f"""<!doctype html>
     border-radius: 5px; background: var(--pd-accent); color: #fff; font-family: var(--font-mono, monospace);
     font-size: 10.5px; font-weight: 700; flex-shrink: 0;
   }}
-  .pdoc-spec-section {{ margin-bottom: 5px; }}
+  .pdoc-spec-section {{ margin-bottom: calc(5px + 2pt); }}
   .pdoc-break-before {{ break-before: page; }}
   .pdoc-spec-grid {{ display: flex; flex-direction: column; font-size: 11.5px; }}
   .spec-row {{
