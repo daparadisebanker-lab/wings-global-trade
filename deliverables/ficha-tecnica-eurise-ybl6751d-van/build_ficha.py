@@ -66,7 +66,6 @@ BLOCKS = [
         ("Tipo de energía", "Diésel"),
         ("Capacidad de asientos", "20 (incluye asiento del conductor)"),
     ]},
-    {"type": "banner", "img": "chassis-3q", "caption": "Vista general — chasis cabinado (foto referencial)"},
     {"type": "section", "idx": 2, "title": "Dimensiones y Capacidad", "rows": [
         ("Dimensiones — largo x ancho x alto (mm)", "7,490 x 2,000 x 2,875"),
         ("Distancia entre ejes (mm)", "4,325"),
@@ -74,7 +73,6 @@ BLOCKS = [
         ("Velocidad máxima (km/h)", "120"),
         ("Consumo de combustible (L/100 km)", "10.5"),
     ]},
-    {"type": "banner", "img": "engine-bay", "caption": "Compartimento del motor (foto referencial)"},
     {"type": "section", "idx": 3, "title": "Motor y Transmisión", "rows": [
         ("Tipo", "RA428 2.8T (tecnología VM)"),
         ("Potencia nominal (kW)", "120"),
@@ -83,7 +81,6 @@ BLOCKS = [
         ("Caja de cambios", "6MT (manual, 6 velocidades)"),
         ("Tipo de combustible", "Diésel"),
     ]},
-    {"type": "banner", "img": "chassis-frame", "caption": "Vista del chasis (foto referencial)"},
     {"type": "section", "idx": 4, "title": "Chasis, Frenos y Neumáticos", "rows": [
         ("Capacidad del tanque de combustible (L)", "80"),
         # Spare-tire mention kept here only (was also repeated under "Llantas"
@@ -94,7 +91,6 @@ BLOCKS = [
         ("Suspensión delantera", "McPherson, independiente"),
         ("Suspensión trasera", "Ballesta de sección variable (paquete reducido de hojas)"),
     ]},
-    {"type": "banner", "img": "grille-detail", "caption": "Detalle de parrilla (foto referencial)"},
     {"type": "section", "idx": 5, "title": "Equipamiento de Serie — Exterior e Interior", "rows": [
         ("Pintura", "Color sólido estándar (blanco)"),
         ("Ventanas laterales", "Fijas, tipo cerrado (vidrio verde)"),
@@ -218,6 +214,12 @@ BLOCKS = [
     {"type": "section", "idx": 11, "title": "Configuración Opcional — Confort y Conveniencia", "rows": [
         ("Estribo eléctrico de bienvenida", "Opcional, excepto con puerta oscilante eléctrica"),
     ]},
+    {"type": "gallery", "break_before": True, "images": [
+        ("chassis-3q", "Vista general — chasis cabinado"),
+        ("engine-bay", "Compartimento del motor"),
+        ("chassis-frame", "Vista del chasis"),
+        ("grille-detail", "Detalle de parrilla"),
+    ]},
 ]
 
 
@@ -257,6 +259,23 @@ def block_html(b: dict) -> str:
     <img src="{img_uri(b['img'])}" alt="" />
     <figcaption>{b['caption']}</figcaption>
   </figure>"""
+
+    if b["type"] == "gallery":
+        tiles = "\n    ".join(
+            f'<figure class="pdoc-gallery-tile"><img src="{img_uri(img)}" alt="" />'
+            f'<figcaption>{caption}</figcaption></figure>'
+            for img, caption in b["images"]
+        )
+        gallery_class = "pdoc-gallery pdoc-break-before" if b.get("break_before") else "pdoc-gallery"
+        return f"""
+  <div class="{gallery_class}">
+    <div class="pdoc-gallery-kicker">Ficha Técnica · Wings Global Trade</div>
+    <div class="pdoc-gallery-title">Galería de Imágenes</div>
+    <p class="pdoc-section-note">Fotografías de referencia de una van de chasis cabinado de configuración similar (branding "ASIASTAR") — no corresponden a fotografías de fábrica de la unidad EURISE YBL6751D exacta.</p>
+    <div class="pdoc-gallery-grid">
+    {tiles}
+    </div>
+  </div>"""
 
     bar = f'<div class="pdoc-section-bar"><span class="pd-sec-index">{b["idx"]:02d}</span>{b["title"]}</div>'
     grid = rows_html(b["rows"])
@@ -468,6 +487,19 @@ HTMLDOC = f"""<!doctype html>
   .pdoc-toc-dots {{ flex: 1; border-bottom: 1px dotted var(--pd-line); margin: 0 2px 4px; }}
   .pdoc-toc-page {{ font-family: var(--font-mono, monospace); font-size: 13px; color: var(--pd-muted); font-variant-numeric: tabular-nums; }}
 
+  /* ── Closing image gallery: a 2x2 grid, kept off the spec tables entirely
+     so the reference photos read as a gallery, not as claims about a
+     specific row's spec. ── */
+  .pdoc-gallery-kicker {{ font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--pd-muted); font-weight: 700; margin-bottom: 6px; }}
+  .pdoc-gallery-title {{ font-size: 26px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 8px; }}
+  .pdoc-gallery-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 18px; }}
+  .pdoc-gallery-tile {{ position: relative; border-radius: 12px; overflow: hidden; break-inside: avoid; }}
+  .pdoc-gallery-tile img {{ width: 100%; height: 230px; object-fit: cover; display: block; }}
+  .pdoc-gallery-tile figcaption {{
+    position: absolute; left: 12px; bottom: 10px; color: #fff; font-size: 10.5px; font-weight: 600;
+    background: rgba(8,10,12,.55); padding: 4px 11px; border-radius: 999px; letter-spacing: 0.01em;
+  }}
+
   .pdoc-tail {{ margin-top: 6px; padding-top: 4px; }}
   .pdoc-note {{ font-size: 10.5px; color: var(--pd-muted); font-style: italic; margin-bottom: 6px; }}
   .pdoc-close-row {{ display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; }}
@@ -482,6 +514,7 @@ HTMLDOC = f"""<!doctype html>
     .spec-row {{ grid-template-columns: 1fr; gap: 0; }}
     .pdoc-section-split {{ flex-direction: column; }}
     .pdoc-side-img {{ width: 100%; }}
+    .pdoc-gallery-grid {{ grid-template-columns: 1fr; }}
     .pdoc-close-row {{ flex-direction: column; align-items: flex-start; gap: 16px; }}
     .pdoc-footer {{ flex-direction: column; gap: 12px; }}
   }}
@@ -591,6 +624,7 @@ n_rows = sum(len(b["rows"]) for b in BLOCKS if b["type"] == "section")
 n_photos = len(set(
     [b["img"] for b in BLOCKS if b["type"] == "banner"]
     + [b["side_img"] for b in BLOCKS if b.get("side_img")]
+    + [img for b in BLOCKS if b["type"] == "gallery" for img, _ in b["images"]]
     + ["cover-front"]
 ))
 print(f"wrote {out} ({len(HTMLDOC):,} bytes)")
